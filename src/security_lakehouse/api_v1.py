@@ -97,6 +97,140 @@ COLLECTION_LOADERS: dict[str, tuple[str, Callable[[Path], list[JsonObject]]]] = 
 _WRITABLE = {"/api/v1/snapshots": ["POST"]}
 
 
+# Typed write/read routes served only by the FastAPI server (``server_app``).
+#
+# ``SINGLETON_LOADERS`` / ``COLLECTION_LOADERS`` above cover the lake-backed
+# read surface that both deployment modes share. The remediation workflow,
+# tagging, saved views, and insights routes are stateful (database-backed) and
+# live only in server mode, so they are not in the loader tables -- yet they are
+# the verbs an agent needs to *act*. Enumerating them here keeps the
+# self-describing ``GET /api/v1`` catalog honest about the full contract.
+#
+# Paths, methods, and scopes are kept in lockstep with the ``@app.<verb>``
+# decorators and their ``Depends(_require_*)`` defaults in ``server_app``.
+EXTENDED_RESOURCES: list[JsonObject] = [
+    {
+        "resource": "remediation.tasks",
+        "path": "/api/v1/remediation/tasks",
+        "kind": "collection",
+        "methods": ["GET", "POST"],
+        "scopes": ["read", "write"],
+    },
+    {
+        "resource": "remediation.tasks",
+        "path": "/api/v1/remediation/tasks/{task_id}",
+        "kind": "singleton",
+        "methods": ["GET", "PATCH"],
+        "scopes": ["read", "write"],
+        "path_params": ["task_id"],
+    },
+    {
+        "resource": "remediation.evidence-requests",
+        "path": "/api/v1/remediation/evidence-requests",
+        "kind": "collection",
+        "methods": ["GET", "POST"],
+        "scopes": ["read", "evidence_request"],
+    },
+    {
+        "resource": "remediation.evidence-requests",
+        "path": "/api/v1/remediation/evidence-requests/{request_id}",
+        "kind": "singleton",
+        "methods": ["PATCH"],
+        "scopes": ["evidence_request"],
+        "path_params": ["request_id"],
+    },
+    {
+        "resource": "remediation.exceptions",
+        "path": "/api/v1/remediation/exceptions",
+        "kind": "collection",
+        "methods": ["GET", "POST"],
+        "scopes": ["read", "control_manage"],
+    },
+    {
+        "resource": "remediation.exceptions",
+        "path": "/api/v1/remediation/exceptions/{exception_id}",
+        "kind": "singleton",
+        "methods": ["DELETE"],
+        "scopes": ["control_manage"],
+        "path_params": ["exception_id"],
+    },
+    {
+        "resource": "tags",
+        "path": "/api/v1/tags",
+        "kind": "collection",
+        "methods": ["GET", "POST"],
+        "scopes": ["read", "write"],
+    },
+    {
+        "resource": "tags",
+        "path": "/api/v1/tags/{tag_id}",
+        "kind": "singleton",
+        "methods": ["DELETE"],
+        "scopes": ["write"],
+        "path_params": ["tag_id"],
+    },
+    {
+        "resource": "tags.attach",
+        "path": "/api/v1/tags/attach",
+        "kind": "singleton",
+        "methods": ["POST"],
+        "scopes": ["write"],
+    },
+    {
+        "resource": "tags.detach",
+        "path": "/api/v1/tags/detach",
+        "kind": "singleton",
+        "methods": ["POST"],
+        "scopes": ["write"],
+    },
+    {
+        "resource": "tags.for",
+        "path": "/api/v1/tags/for",
+        "kind": "collection",
+        "methods": ["GET"],
+        "scopes": ["read"],
+        "query": ["entity_type", "entity_id"],
+    },
+    {
+        "resource": "saved-views",
+        "path": "/api/v1/saved-views",
+        "kind": "collection",
+        "methods": ["GET", "POST"],
+        "scopes": ["read", "write"],
+    },
+    {
+        "resource": "saved-views",
+        "path": "/api/v1/saved-views/{view_id}",
+        "kind": "singleton",
+        "methods": ["DELETE"],
+        "scopes": ["write"],
+        "path_params": ["view_id"],
+    },
+    {
+        "resource": "insights.timeseries",
+        "path": "/api/v1/insights/timeseries",
+        "kind": "collection",
+        "methods": ["GET"],
+        "scopes": ["read"],
+        "query": ["limit"],
+    },
+    {
+        "resource": "insights.remediation",
+        "path": "/api/v1/insights/remediation",
+        "kind": "singleton",
+        "methods": ["GET"],
+        "scopes": ["read"],
+    },
+    {
+        "resource": "insights.capture",
+        "path": "/api/v1/insights/capture",
+        "kind": "singleton",
+        "methods": ["POST"],
+        "scopes": ["write"],
+    },
+]
+
+
 def resource_catalog() -> list[JsonObject]:
     """Self-describing list of v1 resources, for headless/agent discovery."""
     catalog: list[JsonObject] = []
@@ -121,6 +255,7 @@ def resource_catalog() -> list[JsonObject]:
                 "query": ["limit", "offset", "sort", "<field>=<value>"],
             }
         )
+    catalog.extend(dict(entry) for entry in EXTENDED_RESOURCES)
     return sorted(catalog, key=lambda row: row["path"])
 
 
