@@ -25,7 +25,11 @@ from security_lakehouse.validation import validate_raw_events
 
 
 def run_pipeline(
-    raw_path: str | Path, out_dir: str | Path, *, mapping_path: str | Path | None = None
+    raw_path: str | Path,
+    out_dir: str | Path,
+    *,
+    mapping_path: str | Path | None = None,
+    tenant_id: str = "default",
 ) -> PipelineResult:
     raw_rows = read_jsonl(raw_path)
     errors = validate_raw_events(raw_rows)
@@ -98,6 +102,7 @@ def run_pipeline(
         evidence_freshness_rows,
         asset_rows,
         metrics,
+        tenant_id=tenant_id,
     )
 
     write_json(
@@ -134,6 +139,7 @@ def run_pipeline(
         evidence_freshness_rows,
         asset_rows,
         metrics,
+        tenant_id=tenant_id,
     )
     from security_lakehouse.assessment import write_current_posture
 
@@ -396,6 +402,8 @@ def _write_sqlite_mart(
     evidence_freshness_rows: list[dict[str, Any]],
     asset_rows: list[dict[str, Any]],
     metrics: dict[str, Any],
+    *,
+    tenant_id: str = "default",
 ) -> None:
     if mart_path.exists():
         mart_path.unlink()
@@ -426,6 +434,7 @@ def _write_sqlite_mart(
         conn.execute(
             """
             CREATE TABLE control_posture (
+                tenant_id TEXT NOT NULL,
                 control_id TEXT PRIMARY KEY,
                 framework TEXT NOT NULL,
                 title TEXT NOT NULL,
@@ -444,6 +453,7 @@ def _write_sqlite_mart(
         conn.execute(
             """
             CREATE TABLE asset_risk (
+                tenant_id TEXT NOT NULL,
                 asset_id TEXT PRIMARY KEY,
                 asset_type TEXT NOT NULL,
                 asset_owner TEXT NOT NULL,
@@ -459,6 +469,7 @@ def _write_sqlite_mart(
         conn.execute(
             """
             CREATE TABLE control_tests (
+                tenant_id TEXT NOT NULL,
                 test_id TEXT PRIMARY KEY,
                 program_id TEXT NOT NULL,
                 control_id TEXT NOT NULL,
@@ -525,17 +536,17 @@ def _write_sqlite_mart(
             [{**row, "control_ids_json": json.dumps(row["control_ids"])} for row in silver_rows],
         )
         conn.executemany(
-            "INSERT INTO control_posture VALUES (:control_id,:framework,:title,:risk_domain,:owner,:status,:risk_score,:event_count,:open_event_count,:evidence_count,:evidence_coverage,:latest_event_time)",
-            control_rows,
+            "INSERT INTO control_posture VALUES (:tenant_id,:control_id,:framework,:title,:risk_domain,:owner,:status,:risk_score,:event_count,:open_event_count,:evidence_count,:evidence_coverage,:latest_event_time)",
+            [{"tenant_id": tenant_id, **row} for row in control_rows],
         )
         conn.executemany(
-            "INSERT INTO asset_risk VALUES (:asset_id,:asset_type,:asset_owner,:environment,:risk_score,:critical_open,:high_open,:event_count,:latest_event_time)",
-            asset_rows,
+            "INSERT INTO asset_risk VALUES (:tenant_id,:asset_id,:asset_type,:asset_owner,:environment,:risk_score,:critical_open,:high_open,:event_count,:latest_event_time)",
+            [{"tenant_id": tenant_id, **row} for row in asset_rows],
         )
         conn.executemany(
             """
             INSERT INTO control_tests VALUES (
-                :test_id, :program_id, :control_id, :framework, :name, :owner,
+                :tenant_id, :test_id, :program_id, :control_id, :framework, :name, :owner,
                 :cadence, :automation_level, :agent_skill, :status, :result,
                 :confidence_score, :confidence_inputs_json, :required_evidence_types_json,
                 :observed_evidence_types_json, :missing_evidence_types_json,
@@ -545,7 +556,7 @@ def _write_sqlite_mart(
                 :remediation_sla_hours, :next_action, :api_refs_json, :evaluated_at
             )
             """,
-            [_control_test_sql_row(row) for row in control_test_rows],
+            [{"tenant_id": tenant_id, **_control_test_sql_row(row)} for row in control_test_rows],
         )
         conn.executemany(
             """
@@ -591,6 +602,8 @@ def _write_duckdb_mart_if_available(
     evidence_freshness_rows: list[dict[str, Any]],
     asset_rows: list[dict[str, Any]],
     metrics: dict[str, Any],
+    *,
+    tenant_id: str = "default",
 ) -> bool:
     if importlib.util.find_spec("duckdb") is None:
         return False
@@ -626,6 +639,7 @@ def _write_duckdb_mart_if_available(
         conn.execute(
             """
             CREATE TABLE control_posture (
+                tenant_id VARCHAR,
                 control_id VARCHAR,
                 framework VARCHAR,
                 title VARCHAR,
@@ -644,6 +658,7 @@ def _write_duckdb_mart_if_available(
         conn.execute(
             """
             CREATE TABLE asset_risk (
+                tenant_id VARCHAR,
                 asset_id VARCHAR,
                 asset_type VARCHAR,
                 asset_owner VARCHAR,
@@ -659,6 +674,7 @@ def _write_duckdb_mart_if_available(
         conn.execute(
             """
             CREATE TABLE control_tests (
+                tenant_id VARCHAR,
                 test_id VARCHAR,
                 program_id VARCHAR,
                 control_id VARCHAR,
@@ -743,9 +759,10 @@ def _write_duckdb_mart_if_available(
             ],
         )
         conn.executemany(
-            "INSERT INTO control_posture VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO control_posture VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 (
+                    tenant_id,
                     row["control_id"],
                     row["framework"],
                     row["title"],
@@ -763,9 +780,10 @@ def _write_duckdb_mart_if_available(
             ],
         )
         conn.executemany(
-            "INSERT INTO asset_risk VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO asset_risk VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 (
+                    tenant_id,
                     row["asset_id"],
                     row["asset_type"],
                     row["asset_owner"],
@@ -780,9 +798,10 @@ def _write_duckdb_mart_if_available(
             ],
         )
         conn.executemany(
-            "INSERT INTO control_tests VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO control_tests VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 (
+                    tenant_id,
                     row["test_id"],
                     row["program_id"],
                     row["control_id"],
