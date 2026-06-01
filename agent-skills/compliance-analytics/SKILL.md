@@ -64,11 +64,11 @@ security-lakehouse serve --lake build/lakehouse --port 8787
 
 Agent routes:
 
-- `GET /api/posture/current`
-- `GET /api/violations`
-- `GET /api/controls`
-- `GET /api/assets`
-- `POST /api/snapshots`
+- `GET /api/v1/posture/current`
+- `GET /api/v1/violations`
+- `GET /api/v1/controls`
+- `GET /api/v1/assets`
+- `POST /api/v1/snapshots`
 
 ## Query Patterns
 

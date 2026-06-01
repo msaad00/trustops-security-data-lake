@@ -85,8 +85,7 @@ export default function TrustCenterPage() {
           <CardTitle>Issue a new share</CardTitle>
           <CardDescription>
             Auditor role · scope <code>posture_full</code>. Token expires
-            automatically; you can also revoke it below at any time. PR 7 adds
-            per-framework scoping.
+            automatically; you can also revoke it below at any time.
           </CardDescription>
         </CardHeader>
         <div className="grid gap-3 p-5 pt-0 sm:grid-cols-[200px_auto_1fr]">

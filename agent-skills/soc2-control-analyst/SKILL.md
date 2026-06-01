@@ -20,9 +20,9 @@ licensed standard text.
 
 ## Workflow
 
-1. Read `GET /api/posture/current` or `build/lakehouse/gold/current_posture.json`.
+1. Read `GET /api/v1/posture/current` or `build/lakehouse/gold/current_posture.json`.
 2. Filter controls where `framework == "SOC 2"`.
-3. Pull violations for those controls from `GET /api/violations`.
+3. Pull violations for those controls from `GET /api/v1/violations`.
 4. Validate each claim against local evidence fields:
    - `control_id`
    - `event_id`
