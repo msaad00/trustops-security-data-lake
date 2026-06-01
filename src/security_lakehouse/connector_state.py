@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -22,9 +22,13 @@ from security_lakehouse.connectors import (
     SENSITIVE_FIELD_NAMES,
     load_connector_catalog,
 )
+from security_lakehouse.models import parse_event_time, utc_iso
 
 CONFIG_FILE = "connector_config.jsonl"
 RUNS_FILE = "connector_runs.jsonl"
+
+# Fallback SLO when a connector entry omits ``freshness_slo_minutes`` (one day).
+DEFAULT_FRESHNESS_SLO_MINUTES = 1440
 
 VALID_STATES = {"enabled", "disabled"}
 VALID_RUN_KINDS = {"probe", "sync"}
@@ -172,6 +176,53 @@ def list_runs(
     return rows[:limit]
 
 
+def _evaluate_freshness(
+    base: dict[str, Any],
+    sync: dict[str, Any] | None,
+    *,
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    """Derive a freshness signal for a connector from its latest sync.
+
+    Pure compute over already-on-disk data: compares the latest *successful*
+    sync's ``occurred_at`` against the connector's ``freshness_slo_minutes`` to
+    flag when evidence has aged past its SLO and the dependent controls are at
+    risk. Returns ``freshness_state`` ("fresh" | "stale" | "never_synced") and
+    an ISO ``next_run_at`` (when the next sync is due).
+    """
+    evaluated_at = (now or datetime.now(UTC)).astimezone(UTC)
+    try:
+        slo_minutes = int(base.get("freshness_slo_minutes") or DEFAULT_FRESHNESS_SLO_MINUTES)
+    except (TypeError, ValueError):
+        slo_minutes = DEFAULT_FRESHNESS_SLO_MINUTES
+    if slo_minutes <= 0:
+        slo_minutes = DEFAULT_FRESHNESS_SLO_MINUTES
+    slo = timedelta(minutes=slo_minutes)
+
+    last_sync_at: datetime | None = None
+    if sync and sync.get("result") == "ok" and sync.get("occurred_at"):
+        try:
+            last_sync_at = parse_event_time(str(sync["occurred_at"]))
+        except (TypeError, ValueError):
+            last_sync_at = None
+
+    if last_sync_at is None:
+        return {
+            "freshness_slo_minutes": slo_minutes,
+            "freshness_state": "never_synced",
+            "last_sync_at": None,
+            "next_run_at": utc_iso(evaluated_at),
+        }
+
+    state = "stale" if (evaluated_at - last_sync_at) > slo else "fresh"
+    return {
+        "freshness_slo_minutes": slo_minutes,
+        "freshness_state": state,
+        "last_sync_at": utc_iso(last_sync_at),
+        "next_run_at": utc_iso(last_sync_at + slo),
+    }
+
+
 def build_catalog_view(lake_dir: str | Path) -> list[dict[str, Any]]:
     """Return the catalog joined with current configuration + latest probe.
 
@@ -193,6 +244,7 @@ def build_catalog_view(lake_dir: str | Path) -> list[dict[str, Any]]:
                 "configured_options": (config or {}).get("options") or {},
                 "last_probe": probe,
                 "last_sync": sync,
+                **_evaluate_freshness(base, sync),
             }
         )
     out.sort(key=lambda c: (c.get("production_status", "z"), c.get("connector_id", "")))

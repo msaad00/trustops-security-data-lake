@@ -21,6 +21,19 @@ from security_lakehouse.catalog import load_control_catalog, load_framework_regi
 from security_lakehouse.io import read_jsonl
 
 
+def _escape_id_segment(value: str) -> str:
+    """Escape a free-text segment so it can't collide across node id namespaces.
+
+    Node ids join a kind prefix and a variable segment with ``:`` (e.g.
+    ``evidence:{event_type}``, ``asset:{asset_id}``). A raw value that itself
+    contains ``:`` could otherwise produce an id that collides with a value
+    from another namespace. Escaping the backslash first, then the delimiter,
+    keeps the mapping injective while leaving delimiter-free values untouched
+    (so ids are byte-identical to the pre-hardening output for normal inputs).
+    """
+    return value.replace("\\", "\\\\").replace(":", "\\:")
+
+
 def _gold_asset_rows(lake_dir: Path) -> list[dict[str, Any]]:
     path = lake_dir / "gold" / "asset_risk.jsonl"
     return read_jsonl(path) if path.is_file() else []
@@ -53,10 +66,17 @@ def build_compliance_graph(lake_dir: str | Path) -> dict[str, Any]:
 
     nodes: list[dict[str, Any]] = []
     edges: list[dict[str, Any]] = []
+    # Single membership index updated as nodes are appended, so control→evidence
+    # edge wiring stays O(1) instead of rederiving the id set per control.
+    existing_ids: set[str] = set()
+
+    def _add_node(node: dict[str, Any]) -> None:
+        nodes.append(node)
+        existing_ids.add(node["id"])
 
     # Framework nodes
     for framework_id, framework in frameworks.items():
-        nodes.append(
+        _add_node(
             {
                 "id": f"framework:{framework_id}",
                 "kind": "framework",
@@ -69,7 +89,7 @@ def build_compliance_graph(lake_dir: str | Path) -> dict[str, Any]:
     # Control nodes + framework→control edges
     for control_id, control in controls.items():
         framework_id = control.get("framework_id") or ""
-        nodes.append(
+        _add_node(
             {
                 "id": f"control:{control_id}",
                 "kind": "control",
@@ -104,8 +124,8 @@ def build_compliance_graph(lake_dir: str | Path) -> dict[str, Any]:
             assets_for.add(str(asset_id))
 
     for event_type, count in evidence_count_by_type.items():
-        node_id = f"evidence:{event_type}"
-        nodes.append(
+        node_id = f"evidence:{_escape_id_segment(event_type)}"
+        _add_node(
             {
                 "id": node_id,
                 "kind": "evidence_type",
@@ -115,7 +135,7 @@ def build_compliance_graph(lake_dir: str | Path) -> dict[str, Any]:
             }
         )
         for cid in type_to_controls.get(event_type, set()):
-            if f"control:{cid}" not in {n["id"] for n in nodes}:
+            if f"control:{cid}" not in existing_ids:
                 continue
             edges.append(
                 {
@@ -133,12 +153,14 @@ def build_compliance_graph(lake_dir: str | Path) -> dict[str, Any]:
         for asset_id in asset_ids:
             if not asset_id:
                 continue
+            asset_node_id = f"asset:{_escape_id_segment(asset_id)}"
+            evidence_node_id = f"evidence:{_escape_id_segment(event_type)}"
             if asset_id not in seen_assets:
                 seen_assets.add(asset_id)
                 row = asset_rows.get(asset_id, {})
-                nodes.append(
+                _add_node(
                     {
-                        "id": f"asset:{asset_id}",
+                        "id": asset_node_id,
                         "kind": "asset",
                         "label": asset_id,
                         "subtitle": row.get("asset_type") or "asset",
@@ -150,8 +172,8 @@ def build_compliance_graph(lake_dir: str | Path) -> dict[str, Any]:
             edges.append(
                 {
                     "id": f"e:t{event_type}-a{asset_id}",
-                    "source": f"evidence:{event_type}",
-                    "target": f"asset:{asset_id}",
+                    "source": evidence_node_id,
+                    "target": asset_node_id,
                     "kind": "evidence_covers_asset",
                 }
             )
