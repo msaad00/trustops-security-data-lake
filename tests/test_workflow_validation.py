@@ -17,9 +17,7 @@ def _nodes() -> list[dict]:
 
 
 def _save(tmp_path: Path, nodes: list[dict], edges: list[dict]):
-    return save_workflow(
-        tmp_path, workflow_id=None, name="wf", description="", nodes=nodes, edges=edges
-    )
+    return save_workflow(tmp_path, workflow_id=None, name="wf", description="", nodes=nodes, edges=edges)
 
 
 def test_valid_dag_saves(tmp_path: Path) -> None:
