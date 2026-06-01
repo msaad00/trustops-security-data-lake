@@ -14,7 +14,7 @@ Persistence
 * ``gold/workflow_runs.jsonl`` — append-only execution log; each line is
   one whole-DAG run with per-node results.
 
-Action library (PR 6 ships six; the registry is the extension point):
+Action library (the registry is the extension point):
 
   trigger.evidence_changed     fires when new silver events land
   trigger.cron                 fires on a cron schedule (informational)

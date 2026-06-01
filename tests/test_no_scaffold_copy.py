@@ -31,7 +31,7 @@ _TEXT_SUFFIXES = {".py", ".ts", ".tsx", ".js", ".jsx", ".md", ".mdx", ".json"}
 # introduced a code path.
 _SCAFFOLD_PATTERNS = (
     re.compile(r"Coming in PR", re.IGNORECASE),
-    re.compile(r"PR \d+ (adds|wires|will add|will wire)", re.IGNORECASE),
+    re.compile(r"PR \d+ (adds|wires|ships|will add|will wire|will ship)", re.IGNORECASE),
     re.compile(r"wires this to a real", re.IGNORECASE),
     re.compile(r"for now we synthesi[sz]e", re.IGNORECASE),
     re.compile(r"scaffolding only", re.IGNORECASE),
