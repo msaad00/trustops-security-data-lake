@@ -61,3 +61,13 @@ repos:
     hooks:
       - id: commitizen
         stages: [commit-msg]
+
+  - repo: local
+    hooks:
+      - id: no-editor-copy-artifacts
+        name: block editor/Finder copy artifacts
+        # Finder/editor duplicates like "models 2.py" or "Card 3.tsx". A duplicated
+        # Alembic migration of this kind produces two heads and breaks `db upgrade`.
+        entry: "copy artifact detected — rename or delete the duplicated file"
+        language: fail
+        files: '( [0-9]| copy)\.(py|ts|tsx)$|\.(bak|orig)$'

@@ -79,10 +79,16 @@ SINGLETON_LOADERS: dict[str, tuple[str, Callable[[Path], Any]]] = {
 
 # Route -> (resource name, loader) for endpoints returning a row collection.
 COLLECTION_LOADERS: dict[str, tuple[str, Callable[[Path], list[JsonObject]]]] = {
-    "/api/v1/controls": ("controls", lambda lake: read_jsonl(lake / "gold" / "control_posture.jsonl")),
-    "/api/v1/control-tests": ("control-tests", lambda lake: read_jsonl(lake / "gold" / "control_tests.jsonl")),
-    "/api/v1/evidence": ("evidence", lambda lake: read_jsonl(lake / "silver" / "normalized_events.jsonl")),
-    "/api/v1/assets": ("assets", lambda lake: read_jsonl(lake / "gold" / "asset_risk.jsonl")),
+    "/api/v1/controls": ("controls", lambda lake: read_jsonl(lake / "gold" / "control_posture.jsonl", missing_ok=True)),
+    "/api/v1/control-tests": (
+        "control-tests",
+        lambda lake: read_jsonl(lake / "gold" / "control_tests.jsonl", missing_ok=True),
+    ),
+    "/api/v1/evidence": (
+        "evidence",
+        lambda lake: read_jsonl(lake / "silver" / "normalized_events.jsonl", missing_ok=True),
+    ),
+    "/api/v1/assets": ("assets", lambda lake: read_jsonl(lake / "gold" / "asset_risk.jsonl", missing_ok=True)),
     "/api/v1/violations": ("violations", lambda lake: build_current_posture(lake)["violations"]),
     "/api/v1/snapshots": ("snapshots", list_snapshots),
 }

@@ -6,6 +6,19 @@ build/
 dist/
 *.egg-info/
 .DS_Store
+
+# macOS Finder / editor copy artifacts (e.g. "models 2.py", "Card 3.tsx", "x copy.ts").
+# A duplicated Alembic migration of this kind produces two heads and breaks
+# `db upgrade`; block them from ever being committed.
+* [0-9].py
+* [0-9].ts
+* [0-9].tsx
+* copy.py
+* copy.ts
+* copy.tsx
+*.bak
+*.orig
+
 # Root-level safety net; per-package node_modules entries below stay too.
 node_modules/
 
