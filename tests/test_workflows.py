@@ -108,7 +108,7 @@ def _bootstrap_silver(lake: Path) -> None:
     )
 
 
-def test_action_catalog_includes_six_nodes() -> None:
+def test_action_catalog_includes_all_nodes() -> None:
     catalog = action_catalog()
     node_types = {a["node_type"] for a in catalog}
     assert node_types == {
@@ -118,6 +118,7 @@ def test_action_catalog_includes_six_nodes() -> None:
         "check.control_pass",
         "action.snapshot",
         "action.assign_owner",
+        "action.webhook",
     }
     for action in catalog:
         assert action["kind"] in {"trigger", "check", "action"}
@@ -395,7 +396,7 @@ def test_workflow_endpoints_round_trip(tmp_path: Path) -> None:
     try:
         status, body = _request(server, "GET", "/api/workflows/actions")
         assert status == HTTPStatus.OK
-        assert len(body["actions"]) == 6
+        assert len(body["actions"]) == 7
 
         nodes, edges = _trivial_dag()
         status, body = _request(
