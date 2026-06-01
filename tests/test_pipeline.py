@@ -56,7 +56,7 @@ def test_framework_registry_and_catalog_are_official_source_linked() -> None:
         assert framework["official_source_url"].startswith("https://"), framework_id
     # Keep the spot-checks on the seed frameworks so the test still catches
     # accidental URL drift on the controls we ship out of the box.
-    assert registry["soc2"]["official_source_url"].startswith("https://www.aicpa.com/")
+    assert registry["soc2"]["official_source_url"].startswith("https://www.aicpa-cima.com/")
     assert registry["nist-ai-rmf"]["official_source_url"].startswith("https://www.nist.gov/")
 
 

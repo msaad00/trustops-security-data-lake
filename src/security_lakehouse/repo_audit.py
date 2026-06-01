@@ -29,7 +29,7 @@ CONTROL_MAP = {
     "dependency_manifest": ["PCI-DSS-11", "NIST-AI-RMF-MAP-1.5"],
     "container_build": ["PCI-DSS-11", "GDPR-Art.32"],
     "iac": ["SOC2-CC6.1", "ISO27001-A.5.15"],
-    "ai_artifact": ["NIST-AI-RMF-MAP-1.5", "EU-AI-ACT-Art.10", "ISO42001-8.2"],
+    "ai_artifact": ["NIST-AI-RMF-MAP-1.5", "EU-AI-ACT-Art.10", "ISO42001-8.1"],
     "release_signal": ["SOC2-CC7.2", "ISO27001-A.8.16"],
 }
 
