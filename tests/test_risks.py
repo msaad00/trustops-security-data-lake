@@ -180,10 +180,10 @@ def test_risk_tenant_isolation(tmp_path: Path) -> None:
     b_list = client.get("/api/v1/risks", headers=_bearer(token_b)).json()["data"]
     assert b_list == []
     # ...and cannot fetch/patch/delete it by id.
-    assert client.patch(
-        f"/api/v1/risks/{risk_id}", json={"status": "closed"}, headers=_bearer(token_b)
-    ).status_code == (HTTPStatus.NOT_FOUND)
-    assert client.delete(f"/api/v1/risks/{risk_id}", headers=_bearer(token_b)).status_code == HTTPStatus.NOT_FOUND
+    patch_response = client.patch(f"/api/v1/risks/{risk_id}", json={"status": "closed"}, headers=_bearer(token_b))
+    delete_response = client.delete(f"/api/v1/risks/{risk_id}", headers=_bearer(token_b))
+    assert patch_response.status_code == HTTPStatus.NOT_FOUND
+    assert delete_response.status_code == HTTPStatus.NOT_FOUND
 
     # Tenant A still has it.
     a_list = client.get("/api/v1/risks", headers=_bearer(token_a)).json()["data"]
