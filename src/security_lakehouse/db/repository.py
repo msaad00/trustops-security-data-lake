@@ -53,6 +53,11 @@ def get_tenant_by_slug(session: Session, *, slug: str) -> Tenant | None:
     return session.scalars(select(Tenant).where(Tenant.slug == slug)).one_or_none()
 
 
+def list_tenant_ids(session: Session) -> list[str]:
+    """All tenant ids, ordered by creation, for binding a flat single-tenant lake."""
+    return list(session.scalars(select(Tenant.id).order_by(Tenant.created_at, Tenant.id)))
+
+
 def get_user_by_id(session: Session, *, user_id: str) -> User | None:
     """Look up a user by id."""
     return session.get(User, user_id)
