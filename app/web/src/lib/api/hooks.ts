@@ -31,6 +31,7 @@ import type {
   RemediationTask,
   EvidenceRequestItem,
   ControlExceptionItem,
+  Risk,
 } from "./types";
 
 const STALE = 15_000;
@@ -500,6 +501,50 @@ export function useRevokeControlExceptionMutation() {
     mutationFn: (id: string) => api.revokeControlException(id),
     onSuccess: () =>
       qc.invalidateQueries({ queryKey: ["remediation", "exceptions"] }),
+  });
+}
+
+// --- risk register ---
+
+export function useRisks(query = "", opts?: Opts<Risk[]>) {
+  return useQuery({
+    queryKey: ["risks", query],
+    queryFn: () => api.risks(query),
+    staleTime: STALE,
+    refetchInterval: LIVE,
+    refetchOnWindowFocus: true,
+    ...opts,
+  });
+}
+
+export function useCreateRiskMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: Partial<Risk> & { title: string }) =>
+      api.createRisk(payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["risks"] }),
+  });
+}
+
+export function useUpdateRiskMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: Record<string, unknown>;
+    }) => api.updateRisk(id, payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["risks"] }),
+  });
+}
+
+export function useDeleteRiskMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.deleteRisk(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["risks"] }),
   });
 }
 
