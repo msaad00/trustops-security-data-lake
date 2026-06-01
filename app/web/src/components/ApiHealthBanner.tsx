@@ -27,8 +27,8 @@ export function ApiHealthBanner() {
       className="mx-7 mt-5 rounded-xl border border-[#f3b9b3] bg-[#fef3f2] px-4 py-3 text-sm font-semibold text-[#b42318]"
     >
       Can&apos;t reach the assessment API — some data failed to load. What you
-      see may be incomplete, not an all-clear. Check that the server is reachable
-      and use Refresh to retry.
+      see may be incomplete, not an all-clear. Check that the server is
+      reachable and use Refresh to retry.
     </div>
   );
 }
