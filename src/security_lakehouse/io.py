@@ -8,9 +8,12 @@ from pathlib import Path
 from typing import Any
 
 
-def read_jsonl(path: str | Path) -> list[dict[str, Any]]:
+def read_jsonl(path: str | Path, *, missing_ok: bool = False) -> list[dict[str, Any]]:
+    target = Path(path)
+    if missing_ok and not target.exists():
+        return []
     rows: list[dict[str, Any]] = []
-    for line_no, line in enumerate(Path(path).read_text(encoding="utf-8").splitlines(), start=1):
+    for line_no, line in enumerate(target.read_text(encoding="utf-8").splitlines(), start=1):
         stripped = line.strip()
         if not stripped:
             continue

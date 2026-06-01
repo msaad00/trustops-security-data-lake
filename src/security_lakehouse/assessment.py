@@ -37,9 +37,9 @@ def build_current_posture(
     """Build the continuously refreshed compliance posture from lake artifacts."""
     lake = Path(lake_dir)
     evaluated_at = now or datetime.now(UTC)
-    events = read_jsonl(lake / "silver" / "normalized_events.jsonl")
-    controls = read_jsonl(lake / "gold" / "control_posture.jsonl")
-    assets = read_jsonl(lake / "gold" / "asset_risk.jsonl")
+    events = read_jsonl(lake / "silver" / "normalized_events.jsonl", missing_ok=True)
+    controls = read_jsonl(lake / "gold" / "control_posture.jsonl", missing_ok=True)
+    assets = read_jsonl(lake / "gold" / "asset_risk.jsonl", missing_ok=True)
     violations = _build_violations(events)
     evidence_freshness = build_evidence_freshness(
         events,
