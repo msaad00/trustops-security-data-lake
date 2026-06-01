@@ -26,13 +26,14 @@ from http import HTTPStatus
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from security_lakehouse import api_legacy, api_v1
+from security_lakehouse import api_legacy, api_v1, tenancy
 from security_lakehouse.auth.dependencies import get_session, require_scope
 from security_lakehouse.auth.oidc import OIDCLoginError, build_oauth, complete_oidc_login, load_oidc_config
 from security_lakehouse.auth.rbac import Identity
@@ -202,7 +203,9 @@ async def posture_event_stream(lake: Path, request: Request, *, interval: float 
     """
     last = ""
     while not await request.is_disconnected():
-        _status, body = api_v1.handle_get("/api/v1/posture/current", {}, lake)
+        # Posture is rebuilt from lake files; offload so the per-tick read does
+        # not block the event loop for other connections.
+        _status, body = await run_in_threadpool(api_v1.handle_get, "/api/v1/posture/current", {}, lake)
         payload = json.dumps(body.get("data", {}), default=str)
         if payload != last:
             last = payload
@@ -242,6 +245,24 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     app.state.sessionmaker = session_factory(engine)
     app.state.require_auth = require_auth and not _insecure_requested()
 
+    def lake_for(identity: Identity) -> Path:
+        """Resolve the per-request lake for ``identity`` so one tenant can never
+        read another tenant's compliance evidence.
+
+        Each tenant reads ``<root>/tenants/<id>``; a flat lake at the root (the
+        CLI/fixtures layout) is served only to the single tenant of a
+        single-tenant deployment (or the synthetic insecure tenant). Resolved per
+        request — not snapshotted at startup — so a tenant provisioned after the
+        server boots still binds correctly, and a second tenant fails closed.
+        """
+        if app.state.require_auth:
+            with app.state.sessionmaker() as session:
+                tenant_ids = repository.list_tenant_ids(session)
+        else:
+            tenant_ids = []
+        bound = tenancy.resolve_bound_tenant(lake, require_auth=app.state.require_auth, tenant_ids=tenant_ids)
+        return tenancy.tenant_lake(lake, identity.tenant_id, bound_tenant=bound)
+
     # OIDC SSO is optional; the OAuth client + signed session middleware are only
     # wired when an identity provider is configured via the environment.
     app.state.oidc_config = load_oidc_config()
@@ -262,7 +283,10 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         path = request.url.path
         # Audit authorization decisions on the secured API surfaces only; health is open.
         if path.startswith("/api/") and path not in {"/api/healthz", "/api/v1/healthz"}:
-            append_request_audit(
+            # Offload the synchronous append so the audit write never blocks the
+            # event loop on every authenticated request.
+            await run_in_threadpool(
+                append_request_audit,
                 lake,
                 method=request.method,
                 route=path,
@@ -325,9 +349,9 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     # EventSource carries only cookies, so this is the session-authenticated
     # (human app) surface; headless agents poll /api/v1/posture/current instead.
     @app.get("/api/v1/stream")
-    async def stream(request: Request, _identity: Identity = Depends(_require_read)) -> StreamingResponse:
+    async def stream(request: Request, identity: Identity = Depends(_require_read)) -> StreamingResponse:
         return StreamingResponse(
-            posture_event_stream(lake, request),
+            posture_event_stream(lake_for(identity), request),
             media_type="text/event-stream",
             headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
         )
@@ -881,7 +905,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         identity: Identity = Depends(_require_write),
         session: Session = Depends(get_session),
     ) -> JSONResponse:
-        point = metrics_db.capture_metric_point(session, tenant_id=identity.tenant_id, lake_dir=lake)
+        point = metrics_db.capture_metric_point(session, tenant_id=identity.tenant_id, lake_dir=lake_for(identity))
         session.commit()
         return JSONResponse(
             api_v1.envelope("insights.timeseries", metrics_db.metric_point_to_dict(point)),
@@ -896,23 +920,25 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     # --- versioned data surface (authenticated) ---
     @app.get("/api/v1/{rest:path}")
     def v1_get(rest: str, request: Request, identity: Identity = Depends(_require_read)) -> JSONResponse:
-        _status, body = api_v1.handle_get(f"/api/v1/{rest}", _params(request), lake)
+        _status, body = api_v1.handle_get(f"/api/v1/{rest}", _params(request), lake_for(identity))
         return JSONResponse(_redact_payload(body, identity), status_code=int(_status))
 
     @app.post("/api/v1/{rest:path}")
-    async def v1_post(rest: str, request: Request, _identity: Identity = Depends(_require_snapshot)) -> JSONResponse:
+    async def v1_post(rest: str, request: Request, identity: Identity = Depends(_require_snapshot)) -> JSONResponse:
         try:
             body = await request.json()
         except Exception:  # noqa: BLE001 - empty/invalid body is treated as no body
             body = {}
-        _status, payload = api_v1.handle_post(f"/api/v1/{rest}", body, lake)
+        # handle_post rebuilds posture and writes a snapshot; offload so it does
+        # not block the event loop.
+        _status, payload = await run_in_threadpool(api_v1.handle_post, f"/api/v1/{rest}", body, lake_for(identity))
         return JSONResponse(payload, status_code=int(_status))
 
     # --- legacy console surface (authenticated; same handlers as local mode) ---
     # Registered after the v1 routes so /api/v1/* and /api/healthz keep priority.
     @app.get("/api/{rest:path}")
     def legacy_get(rest: str, request: Request, identity: Identity = Depends(_require_read)) -> JSONResponse:
-        _status, body = api_legacy.handle_get(f"/api/{rest}", _params(request), lake)
+        _status, body = api_legacy.handle_get(f"/api/{rest}", _params(request), lake_for(identity))
         return JSONResponse(_redact_payload(body, identity), status_code=int(_status))
 
     @app.post("/api/{rest:path}")
@@ -928,7 +954,9 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"requires scope: {required_scope}",
             )
-        return _legacy_post_response(legacy_path, body, lake, identity)
+        # Legacy POSTs run workflows, connector syncs (full pipeline + network),
+        # and scheduler ticks; offload so they do not block the event loop.
+        return await run_in_threadpool(_legacy_post_response, legacy_path, body, lake_for(identity), identity)
 
     @app.get("/", response_class=HTMLResponse)
     @app.get("/console", response_class=HTMLResponse)

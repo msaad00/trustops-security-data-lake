@@ -8,6 +8,7 @@ import { Breadcrumbs } from "./Breadcrumbs";
 import { CommandPalette } from "./CommandPalette";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
+import { ApiHealthBanner } from "@/components/ApiHealthBanner";
 import { AuditorBanner } from "@/components/AuditorBanner";
 import { SnapshotModal } from "@/components/modals/SnapshotModal";
 import { api } from "@/lib/api/client";
@@ -58,7 +59,10 @@ export function Shell({ children }: { children: ReactNode }) {
         <Sidebar />
         <div className="grid grid-rows-[auto_1fr] overflow-hidden">
           <Breadcrumbs />
-          <main className="overflow-auto bg-panel">{children}</main>
+          <main className="overflow-auto bg-panel">
+            <ApiHealthBanner />
+            {children}
+          </main>
         </div>
       </div>
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
