@@ -10,7 +10,7 @@
         {
           "article_id": "CC6.1",
           "title": "Logical and physical access controls",
-          "official_source_url": "https://www.aicpa.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-23T00:00:00Z",
           "rationale": "Direct mapping: control identifier matches the AICPA SOC 2 TSC CC6.1 criterion verbatim."
@@ -24,7 +24,7 @@
         {
           "article_id": "CC7.2",
           "title": "Monitoring controls (security monitoring + anomaly detection)",
-          "official_source_url": "https://www.aicpa.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-23T00:00:00Z",
           "rationale": "Direct mapping: control identifier matches the AICPA SOC 2 TSC CC7.2 criterion verbatim."
@@ -466,16 +466,16 @@
       ]
     },
     {
-      "control_id": "ISO42001-8.2",
+      "control_id": "ISO42001-8.1",
       "framework_id": "iso-42001-2023",
       "articles": [
         {
-          "article_id": "8.2",
-          "title": "AI system impact assessment process",
+          "article_id": "8.1",
+          "title": "Operational planning and control",
           "official_source_url": "https://www.iso.org/standard/42001",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "ISO/IEC 42001:2023 clause 8.2 — operational planning and control for the AI system across its lifecycle, with impact assessment."
+          "rationale": "ISO/IEC 42001:2023 clause 8.1 — the organization plans, implements, and controls the operational AI processes and retains evidence of their operation (clause 8.2 is AI risk assessment, 8.4 is AI system impact assessment)."
         }
       ]
     }
