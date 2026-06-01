@@ -444,22 +444,38 @@ def run_workflow(
     node_results: list[dict[str, Any]] = []
     outputs_by_node: dict[str, dict[str, Any]] = {}
     results_by_node: dict[str, dict[str, Any]] = {}
-    failed = False
+    # Per-branch failure isolation: a node that errors (or is skipped because an
+    # upstream node never completed) only blocks its *downstream descendants*.
+    # Independent parallel branches keep running, instead of aborting the whole
+    # DAG on the first error.
+    any_failed = False
+    failed_nodes: set[str] = set()
+    blocked: set[str] = set()
     for node_id in order:
         node = nodes_by_id[node_id]
         node_type = str(node.get("node_type") or "")
         raw_params = node.get("params") or {}
-        # Gate on incoming edge conditions: skip the node if *any* parent
-        # edge declines (failed condition with the parent's `passed=true`,
-        # or vice versa). This mirrors how Tines edges flow conditionally.
+        # Branch isolation gate (runs before the edge-condition gate): if any
+        # parent errored or was itself blocked, this node cannot run. Skip it
+        # and mark it blocked so its own descendants skip too.
         skip_reason: str | None = None
         for edge in parents.get(node_id, []):
             parent_id = str(edge.get("source"))
-            parent_result = results_by_node.get(parent_id)
-            if not _edge_allows(edge, parent_result):
-                condition = str(edge.get("condition") or "always")
-                skip_reason = f"edge from {parent_id} declined (condition={condition})"
+            if parent_id in failed_nodes or parent_id in blocked:
+                skip_reason = f"upstream node {parent_id} did not complete"
+                blocked.add(node_id)
                 break
+        # Gate on incoming edge conditions: skip the node if *any* parent
+        # edge declines (failed condition with the parent's `passed=true`,
+        # or vice versa). This mirrors how Tines edges flow conditionally.
+        if skip_reason is None:
+            for edge in parents.get(node_id, []):
+                parent_id = str(edge.get("source"))
+                parent_result = results_by_node.get(parent_id)
+                if not _edge_allows(edge, parent_result):
+                    condition = str(edge.get("condition") or "always")
+                    skip_reason = f"edge from {parent_id} declined (condition={condition})"
+                    break
         if skip_reason:
             entry = {
                 "node_id": node_id,
@@ -483,18 +499,19 @@ def run_workflow(
             result_entry["output"] = output
             outputs_by_node[node_id] = output
         except Exception as exc:  # surface every failure in the run log
-            failed = True
+            any_failed = True
+            failed_nodes.add(node_id)
             result_entry["result"] = "error"
             result_entry["error"] = str(exc)
         node_results.append(result_entry)
         results_by_node[node_id] = result_entry
-        if failed:
-            break
+        # No break: a node failure only blocks its descendants (handled by the
+        # branch-isolation gate above); independent branches keep running.
     run = {
         "workflow_id": workflow_id,
         "workflow_version": workflow["version"],
         "actor": actor,
-        "result": "error" if failed else "ok",
+        "result": "error" if any_failed else "ok",
         "started_at": started_at,
         "finished_at": _utc_now_iso(),
         "node_results": node_results,
