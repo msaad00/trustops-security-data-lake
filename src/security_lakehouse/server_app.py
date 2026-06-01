@@ -51,6 +51,7 @@ from security_lakehouse.auth.sessions import SESSION_COOKIE
 from security_lakehouse.dashboard import render_dashboard
 from security_lakehouse.db import metrics as metrics_db
 from security_lakehouse.db import migrate, remediation, repository
+from security_lakehouse.db import risks as risks_db
 from security_lakehouse.db import tags as tags_db
 from security_lakehouse.db.base import create_engine_for, session_factory
 from security_lakehouse.web import web_dist_dir, web_dist_index
@@ -127,6 +128,36 @@ class CreateExceptionRequest(_StrictModel):
     reason: str = ""
     approved_by: str = ""
     expires_at: str | None = None
+
+
+class CreateRiskRequest(_StrictModel):
+    title: str
+    description: str = ""
+    category: str = ""
+    severity: str = "medium"
+    likelihood: str = "medium"
+    impact: str = "medium"
+    status: str = "open"
+    treatment: str = ""
+    owner: str = ""
+    control_id: str | None = None
+    asset_id: str | None = None
+    due_at: str | None = None
+
+
+class UpdateRiskRequest(_StrictModel):
+    title: str | None = None
+    description: str | None = None
+    category: str | None = None
+    severity: str | None = None
+    likelihood: str | None = None
+    impact: str | None = None
+    status: str | None = None
+    treatment: str | None = None
+    owner: str | None = None
+    control_id: str | None = None
+    asset_id: str | None = None
+    due_at: str | None = None
 
 
 class CreateTagRequest(_StrictModel):
@@ -762,6 +793,81 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="exception not found or not active")
         session.commit()
         return JSONResponse(api_v1.envelope("remediation.exceptions", remediation.exception_to_dict(revoked)))
+
+    # --- risk register (GRC) ---
+    @app.get("/api/v1/risks")
+    def list_risks(
+        request: Request, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        params = _params(request)
+        rows = risks_db.list_risks(
+            session,
+            tenant_id=identity.tenant_id,
+            status=(params.get("status") or [None])[0],
+            severity=(params.get("severity") or [None])[0],
+            owner=(params.get("owner") or [None])[0],
+        )
+        data = [risks_db.risk_to_dict(row) for row in rows]
+        return JSONResponse(api_v1.envelope("risks", _redact_payload(data, identity), meta={"count": len(data)}))
+
+    @app.post("/api/v1/risks", status_code=status.HTTP_201_CREATED)
+    def create_risk(
+        body: CreateRiskRequest,
+        identity: Identity = Depends(_require_write),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        try:
+            risk = risks_db.create_risk(
+                session,
+                tenant_id=identity.tenant_id,
+                title=body.title,
+                description=body.description,
+                category=body.category,
+                severity=body.severity,
+                likelihood=body.likelihood,
+                impact=body.impact,
+                status=body.status,
+                treatment=body.treatment,
+                owner=body.owner,
+                control_id=body.control_id,
+                asset_id=body.asset_id,
+                due_at=_parse_dt(body.due_at),
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        session.commit()
+        return JSONResponse(api_v1.envelope("risks", risks_db.risk_to_dict(risk)), status_code=status.HTTP_201_CREATED)
+
+    @app.patch("/api/v1/risks/{risk_id}")
+    def update_risk(
+        risk_id: str,
+        body: UpdateRiskRequest,
+        identity: Identity = Depends(_require_write),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        changes = body.model_dump(exclude_unset=True)
+        if "due_at" in changes:
+            changes["due_at"] = _parse_dt(changes["due_at"])
+        try:
+            risk = risks_db.update_risk(session, tenant_id=identity.tenant_id, risk_id=risk_id, changes=changes)
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        if risk is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="risk not found")
+        session.commit()
+        return JSONResponse(api_v1.envelope("risks", risks_db.risk_to_dict(risk)))
+
+    @app.delete("/api/v1/risks/{risk_id}")
+    def delete_risk(
+        risk_id: str,
+        identity: Identity = Depends(_require_write),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        deleted = risks_db.delete_risk(session, tenant_id=identity.tenant_id, risk_id=risk_id)
+        if not deleted:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="risk not found")
+        session.commit()
+        return JSONResponse(api_v1.envelope("risks", {"id": risk_id, "deleted": True}))
 
     # --- tags ---
     @app.get("/api/v1/tags")
