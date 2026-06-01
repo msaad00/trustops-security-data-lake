@@ -11,7 +11,7 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, UniqueConstraint, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, Index, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from security_lakehouse.db.base import Base
@@ -26,6 +26,10 @@ REMEDIATION_CLOSED = {"resolved", "dismissed"}
 REMEDIATION_PRIORITIES = ("low", "medium", "high", "critical")
 EVIDENCE_REQUEST_STATUSES = ("open", "fulfilled", "cancelled")
 EXCEPTION_STATUSES = ("active", "revoked", "expired")
+
+# GRC risk-register vocabularies (Drata/Vanta pillar).
+RISK_STATUSES = ("open", "mitigating", "accepted", "closed")
+RISK_LEVELS = ("low", "medium", "high", "critical")
 
 
 def _uuid() -> str:
@@ -188,6 +192,42 @@ class RemediationTask(Base):
         if self.due_at is None or not self.is_open:
             return False
         return _as_aware(self.due_at) < (now or _utcnow())
+
+
+class Risk(Base):
+    """A GRC risk-register entry: an identified risk with treatment and owner.
+
+    The risk register is a load-bearing GRC pillar — risks are scored
+    (severity/likelihood/impact), assigned a treatment and owner, and optionally
+    linked to a mitigating control or affected asset. Status walks the
+    open → mitigating → accepted/closed lifecycle.
+    """
+
+    __tablename__ = "risks"
+    __table_args__ = (Index("ix_risks_tenant_status", "tenant_id", "status"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    category: Mapped[str] = mapped_column(String(128), nullable=False, default="")
+    severity: Mapped[str] = mapped_column(String(16), nullable=False, default="medium")
+    likelihood: Mapped[str] = mapped_column(String(16), nullable=False, default="medium")
+    impact: Mapped[str] = mapped_column(String(16), nullable=False, default="medium")
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="open")
+    treatment: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    owner: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    control_id: Mapped[str | None] = mapped_column(String(128), nullable=True, index=True)
+    asset_id: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
+    due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
 
 
 class EvidenceRequest(Base):

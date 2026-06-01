@@ -155,6 +155,21 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "path_params": ["exception_id"],
     },
     {
+        "resource": "risks",
+        "path": "/api/v1/risks",
+        "kind": "collection",
+        "methods": ["GET", "POST"],
+        "scopes": ["read", "write"],
+    },
+    {
+        "resource": "risks",
+        "path": "/api/v1/risks/{risk_id}",
+        "kind": "singleton",
+        "methods": ["PATCH", "DELETE"],
+        "scopes": ["write"],
+        "path_params": ["risk_id"],
+    },
+    {
         "resource": "tags",
         "path": "/api/v1/tags",
         "kind": "collection",
