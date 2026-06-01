@@ -22,6 +22,19 @@ Action library (the registry is the extension point):
   check.control_pass           passes when a control_id's latest test is "pass"
   action.snapshot              freezes a point-in-time assessment snapshot
   action.assign_owner          appends a triage event with assignee + state
+  action.webhook               POSTs to an allowlisted, SSRF-guarded URL
+
+Egress safety
+-------------
+``action.webhook`` is the engine's first OUTBOUND action. Egress is
+deny-by-default: a target host must match ``TRUSTOPS_WORKFLOW_EGRESS_ALLOWLIST``
+(comma-separated ``host`` or ``host:port`` patterns) or the action refuses to
+run. Every target is additionally SSRF-guarded — only ``http``/``https`` is
+allowed and the *resolved* IP(s) must be public (private, loopback, link-local,
+reserved and multicast ranges are rejected, as is ``localhost``). Secrets are
+referenced as ``{{secret.NAME}}`` and resolved from ``TRUSTOPS_SECRET_<NAME>``
+at run time; the resolved value is never written to the run log — the persisted
+params keep the ``{{secret.NAME}}`` token.
 
 Every action declares its input schema (the params the user fills in) and
 its output schema (the keys downstream nodes can read), so the canvas can
@@ -32,11 +45,18 @@ display the live result.
 from __future__ import annotations
 
 import hashlib
+import ipaddress
 import json
+import os
 import re
+import socket
+import time
+import urllib.error
+import urllib.request
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 from security_lakehouse.assessment import write_assessment_snapshot
 from security_lakehouse.io import read_jsonl
@@ -46,6 +66,13 @@ WORKFLOWS_FILE = "workflows.jsonl"
 RUNS_FILE = "workflow_runs.jsonl"
 
 _RUN_ACTORS = {"console", "scheduler", "api"}
+
+# --- webhook egress safety -------------------------------------------------
+EGRESS_ALLOWLIST_ENV = "TRUSTOPS_WORKFLOW_EGRESS_ALLOWLIST"
+SECRET_ENV_PREFIX = "TRUSTOPS_SECRET_"
+_WEBHOOK_TIMEOUT_SECONDS = 15
+_WEBHOOK_BACKOFF_CAP_SECONDS = 2.0
+_SECRET_RE = re.compile(r"\{\{\s*secret\.([A-Za-z0-9_]+)\s*\}\}")
 
 
 # ---------------------------------------------------------------------------
@@ -119,6 +146,228 @@ def _action_assign_owner(lake: Path, params: dict[str, Any]) -> dict[str, Any]:
     return {"violation_id": violation_id, "assignee": assignee, "tracking_id": record["tracking_id"]}
 
 
+# ---------------------------------------------------------------------------
+# action.webhook — first OUTBOUND/egress action (deny-by-default + SSRF guard)
+# ---------------------------------------------------------------------------
+
+
+def _webhook_backoff_sleep(seconds: float) -> None:
+    """Indirection point so tests can monkeypatch the retry sleep to a no-op."""
+    time.sleep(seconds)
+
+
+def _load_egress_allowlist() -> set[str]:
+    """Parse ``TRUSTOPS_WORKFLOW_EGRESS_ALLOWLIST`` into normalized host[:port] entries.
+
+    An empty/unset env means egress is disabled (deny-by-default); the caller
+    treats an empty set as "deny all".
+    """
+    raw = os.environ.get(EGRESS_ALLOWLIST_ENV, "")
+    entries: set[str] = set()
+    for chunk in raw.split(","):
+        entry = chunk.strip().lower()
+        if entry:
+            entries.add(entry)
+    return entries
+
+
+def _host_is_allowlisted(host: str, port: int, allowlist: set[str]) -> bool:
+    """A target matches if its bare host or its explicit ``host:port`` is listed."""
+    host = host.lower()
+    if host in allowlist:
+        return True
+    return f"{host}:{port}" in allowlist
+
+
+def _assert_resolved_ip_is_public(host: str) -> list[str]:
+    """Resolve ``host`` and reject any address in a non-public range (SSRF guard).
+
+    The private/loopback/link-local/reserved/multicast check runs on the
+    *resolved* address(es), not just the hostname string, so a public-looking
+    name that resolves to ``127.0.0.1`` (DNS rebinding / internal split-horizon)
+    is still blocked. Returns the resolved addresses on success.
+    """
+    if host.lower() == "localhost":
+        raise ValueError("webhook target 'localhost' is not allowed")
+    try:
+        infos = socket.getaddrinfo(host, None, proto=socket.IPPROTO_TCP)
+    except OSError as exc:
+        raise ValueError(f"webhook target host {host!r} did not resolve: {exc}") from exc
+    addresses: list[str] = []
+    for info in infos:
+        sockaddr = info[4]
+        addresses.append(str(sockaddr[0]))
+    if not addresses:
+        raise ValueError(f"webhook target host {host!r} did not resolve to any address")
+    for raw_ip in addresses:
+        # Strip any IPv6 scope id (e.g. fe80::1%eth0) before parsing.
+        ip = ipaddress.ip_address(raw_ip.split("%", 1)[0])
+        if (
+            ip.is_private
+            or ip.is_loopback
+            or ip.is_link_local
+            or ip.is_reserved
+            or ip.is_multicast
+            or ip.is_unspecified
+        ):
+            raise ValueError(f"webhook target resolves to non-public address {raw_ip} (SSRF blocked)")
+    return addresses
+
+
+def _resolve_secrets(value: Any) -> Any:
+    """Replace ``{{secret.NAME}}`` tokens from ``TRUSTOPS_SECRET_<NAME>`` env.
+
+    Applied to the request actually sent on the wire. The caller must NOT feed
+    the resolved result back into anything that is persisted — the run log keeps
+    the pre-resolution token form so the secret value never lands on disk.
+    """
+    if isinstance(value, str):
+
+        def repl(match: re.Match[str]) -> str:
+            name = match.group(1)
+            env_key = f"{SECRET_ENV_PREFIX}{name}"
+            secret = os.environ.get(env_key)
+            if secret is None:
+                raise ValueError(f"secret {name!r} is not set (expected env {env_key})")
+            return secret
+
+        return _SECRET_RE.sub(repl, value)
+    if isinstance(value, list):
+        return [_resolve_secrets(item) for item in value]
+    if isinstance(value, dict):
+        return {k: _resolve_secrets(v) for k, v in value.items()}
+    return value
+
+
+def _redact_secret_tokens(value: Any) -> Any:
+    """Best-effort: rewrite any ``{{secret.NAME}}`` token to ``[secret]``.
+
+    Defense in depth for output echoing — even though secrets are only resolved
+    on the outbound copy, this guards against a token (and never the value) ever
+    being surfaced verbatim in a snippet that mirrors request content.
+    """
+    if isinstance(value, str):
+        return _SECRET_RE.sub("[secret]", value)
+    if isinstance(value, list):
+        return [_redact_secret_tokens(item) for item in value]
+    if isinstance(value, dict):
+        return {k: _redact_secret_tokens(v) for k, v in value.items()}
+    return value
+
+
+def _webhook_idempotency_key(params: dict[str, Any]) -> str:
+    """Stable per-node-run key so retries/replays of identical params don't double-fire.
+
+    Derived from the *templated* (pre-secret-resolution) params, so the key
+    never depends on — or leaks — a secret value, yet stays constant across the
+    retry loop of a single run.
+    """
+    canonical = json.dumps(params, sort_keys=True, separators=(",", ":"), default=str)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def _action_webhook(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
+    """POST to an allowlisted, SSRF-guarded URL with retry + idempotency.
+
+    ``params`` arrives already templated for ``{{node.output.*}}`` (resolved by
+    ``run_workflow``) but still carrying ``{{secret.NAME}}`` tokens — secrets are
+    resolved here, on the outbound request only, so the persisted node params and
+    this output keep the token form.
+    """
+    url_template = params.get("url")
+    if not url_template or not isinstance(url_template, str):
+        raise ValueError("webhook 'url' is required")
+
+    # --- allowlist + SSRF guard run on the *templated* url (pre-secret) so a
+    # secret can never smuggle the request past the gate. ---
+    parsed = urlsplit(url_template)
+    if parsed.scheme not in {"http", "https"}:
+        raise ValueError(f"webhook url scheme {parsed.scheme!r} is not allowed (http/https only)")
+    host = parsed.hostname
+    if not host:
+        raise ValueError("webhook url has no host")
+    port = parsed.port or (443 if parsed.scheme == "https" else 80)
+
+    allowlist = _load_egress_allowlist()
+    if not allowlist:
+        raise ValueError("workflow egress is disabled; set TRUSTOPS_WORKFLOW_EGRESS_ALLOWLIST")
+    if not _host_is_allowlisted(host, port, allowlist):
+        raise ValueError(f"webhook target host {host!r} is not in the egress allowlist")
+    _assert_resolved_ip_is_public(host)
+
+    try:
+        max_retries = int(params.get("max_retries", 2))
+    except (TypeError, ValueError):
+        max_retries = 2
+    max_retries = max(0, max_retries)
+
+    idempotency_key = _webhook_idempotency_key(params)
+
+    # Resolve secrets ONLY on the outbound copy. raw_* stays token-form.
+    url = str(_resolve_secrets(url_template))
+    raw_body = params.get("body")
+    body_value = _resolve_secrets(raw_body) if raw_body is not None else None
+    if body_value is None:
+        data = None
+    elif isinstance(body_value, str):
+        data = body_value.encode("utf-8")
+    else:
+        data = json.dumps(body_value, separators=(",", ":")).encode("utf-8")
+
+    header_template = params.get("headers") or {}
+    if not isinstance(header_template, dict):
+        raise ValueError("webhook 'headers' must be an object")
+    headers: dict[str, str] = {str(k): str(_resolve_secrets(v)) for k, v in header_template.items()}
+    headers.setdefault("Idempotency-Key", idempotency_key)
+    if data is not None and not any(k.lower() == "content-type" for k in headers):
+        headers["Content-Type"] = "application/json"
+
+    last_error: str | None = None
+    status_code = 0
+    response_snippet = ""
+    ok = False
+    attempts = 0
+    for attempt in range(max_retries + 1):
+        attempts = attempt + 1
+        request = urllib.request.Request(url, data=data, headers=headers, method="POST")  # noqa: S310 (scheme + allowlist + SSRF guarded above)
+        try:
+            with urllib.request.urlopen(request, timeout=_WEBHOOK_TIMEOUT_SECONDS) as resp:  # noqa: S310
+                status_code = int(getattr(resp, "status", 0) or 0)
+                payload = resp.read(2048)
+                response_snippet = payload.decode("utf-8", errors="replace")[:500]
+                ok = 200 <= status_code < 300
+                last_error = None
+                break
+        except urllib.error.HTTPError as exc:
+            status_code = int(exc.code)
+            try:
+                response_snippet = exc.read(2048).decode("utf-8", errors="replace")[:500]
+            except Exception:  # noqa: BLE001 — snippet is best-effort
+                response_snippet = ""
+            ok = False
+            if 400 <= status_code < 500:
+                # 4xx is a client error — not retryable.
+                last_error = None
+                break
+            last_error = f"HTTP {status_code}"
+        except (urllib.error.URLError, TimeoutError, OSError) as exc:
+            last_error = f"{type(exc).__name__}: {exc}"
+            status_code = 0
+            ok = False
+        if attempt < max_retries:
+            sleep_for = min(_WEBHOOK_BACKOFF_CAP_SECONDS, 0.1 * (2**attempt))
+            _webhook_backoff_sleep(sleep_for)
+
+    return {
+        "status_code": status_code,
+        "ok": ok,
+        "response_snippet": _redact_secret_tokens(response_snippet),
+        "attempts": attempts,
+        "idempotency_key": idempotency_key,
+        "error": last_error,
+    }
+
+
 ACTION_LIBRARY: dict[str, dict[str, Any]] = {
     "trigger.evidence_changed": {
         "kind": "trigger",
@@ -181,6 +430,27 @@ ACTION_LIBRARY: dict[str, dict[str, Any]] = {
         },
         "output_schema": {"violation_id": "string", "assignee": "string", "tracking_id": "string"},
         "handler": _action_assign_owner,
+    },
+    "action.webhook": {
+        "kind": "action",
+        "label": "Send webhook",
+        "description": (
+            "POSTs to an allowlisted, SSRF-guarded URL. Egress is deny-by-default "
+            "(TRUSTOPS_WORKFLOW_EGRESS_ALLOWLIST); {{secret.NAME}} tokens resolve "
+            "from TRUSTOPS_SECRET_<NAME> at run time and are never persisted."
+        ),
+        "input_schema": {
+            "url": {"type": "string", "label": "URL", "required": True},
+            "body": {"type": "string", "label": "Body (JSON or text)", "optional": True},
+            "headers": {"type": "object", "label": "Headers", "optional": True},
+            "max_retries": {"type": "number", "label": "Max retries", "default": 2},
+        },
+        "output_schema": {
+            "status_code": "number",
+            "ok": "boolean",
+            "response_snippet": "string",
+        },
+        "handler": _action_webhook,
     },
 }
 
