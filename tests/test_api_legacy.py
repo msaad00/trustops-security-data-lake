@@ -48,6 +48,23 @@ def _bearer(token: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {token}"}
 
 
+def _normalize_legacy_body(path: str, body: Any) -> Any:
+    """Drop the only wall-clock-derived field so the parity check stays stable.
+
+    ``/api/connectors`` carries a ``next_run_at`` freshness signal. For a
+    never-synced connector that value anchors to "now", which legitimately
+    differs by a few milliseconds between the two independently spun servers.
+    Every other field (including ``freshness_state``) is file-derived, so we
+    strip only ``next_run_at`` for never-synced rows and still assert the rest
+    of the surface matches byte-for-byte.
+    """
+    if path == "/api/connectors" and isinstance(body, dict):
+        for connector in body.get("connectors", []):
+            if isinstance(connector, dict) and connector.get("freshness_state") == "never_synced":
+                connector.pop("next_run_at", None)
+    return body
+
+
 def test_legacy_surface_matches_stdlib(tmp_path: Path) -> None:
     _seed_lake(tmp_path)
     client = TestClient(create_app(tmp_path, require_auth=False))
@@ -57,7 +74,7 @@ def test_legacy_surface_matches_stdlib(tmp_path: Path) -> None:
             stdlib_status, stdlib_body = _request(stdlib, "GET", path)
             resp = client.get(path)
             assert resp.status_code == stdlib_status, path
-            assert resp.json() == stdlib_body, path
+            assert _normalize_legacy_body(path, resp.json()) == _normalize_legacy_body(path, stdlib_body), path
     finally:
         stdlib.shutdown()
 
