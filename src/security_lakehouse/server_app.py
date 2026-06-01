@@ -27,9 +27,10 @@ from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.concurrency import run_in_threadpool
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -73,13 +74,25 @@ _require_control_manage = require_scope("control_manage")
 _REDACTED_FIELDS = {"owner", "asset_owner", "actor", "assignee", "note", "credentials"}
 
 
-class CreateKeyRequest(BaseModel):
+class _StrictModel(BaseModel):
+    """Base for request bodies: reject unknown fields.
+
+    Without this, Pydantic's default ``extra="ignore"`` silently drops a
+    misnamed key, so an agent that sends the wrong field gets a ``201`` with the
+    wrong persisted state and no error. Forbidding extras turns that into a
+    ``422`` naming the offending field.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class CreateKeyRequest(_StrictModel):
     user_email: str
     name: str = ""
     expires_in_days: int | None = None
 
 
-class CreateTaskRequest(BaseModel):
+class CreateTaskRequest(_StrictModel):
     title: str
     description: str = ""
     control_id: str | None = None
@@ -89,7 +102,7 @@ class CreateTaskRequest(BaseModel):
     due_at: str | None = None
 
 
-class UpdateTaskRequest(BaseModel):
+class UpdateTaskRequest(_StrictModel):
     title: str | None = None
     description: str | None = None
     owner: str | None = None
@@ -98,36 +111,36 @@ class UpdateTaskRequest(BaseModel):
     due_at: str | None = None
 
 
-class CreateEvidenceRequestRequest(BaseModel):
+class CreateEvidenceRequestRequest(_StrictModel):
     control_id: str
     requested_from: str = ""
     note: str = ""
     due_at: str | None = None
 
 
-class EvidenceRequestStatusRequest(BaseModel):
+class EvidenceRequestStatusRequest(_StrictModel):
     status: str
 
 
-class CreateExceptionRequest(BaseModel):
+class CreateExceptionRequest(_StrictModel):
     control_id: str
     reason: str = ""
     approved_by: str = ""
     expires_at: str | None = None
 
 
-class CreateTagRequest(BaseModel):
+class CreateTagRequest(_StrictModel):
     name: str
     color: str = ""
 
 
-class AttachTagRequest(BaseModel):
+class AttachTagRequest(_StrictModel):
     tag_id: str
     entity_type: str
     entity_id: str
 
 
-class CreateSavedViewRequest(BaseModel):
+class CreateSavedViewRequest(_StrictModel):
     surface: str
     name: str
     filters: dict = {}
@@ -305,6 +318,18 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             api_v1.error_envelope(code, str(exc.detail)),
             status_code=exc.status_code,
             headers=getattr(exc, "headers", None),
+        )
+
+    @app.exception_handler(RequestValidationError)
+    async def _validation_envelope(request: Request, exc: RequestValidationError) -> JSONResponse:
+        # Body/query validation (incl. unknown fields) returns the same v1 error
+        # envelope as the rest of the surface, naming each offending field, so an
+        # agent gets one consistent, machine-parsable error shape.
+        parts = [f"{'.'.join(str(p) for p in err.get('loc', []))}: {err.get('msg')}" for err in exc.errors()]
+        detail = "; ".join(parts) or "invalid request"
+        return JSONResponse(
+            api_v1.error_envelope("unprocessable_entity", detail),
+            status_code=422,
         )
 
     # --- open health checks (registered before the authenticated catch-all) ---
