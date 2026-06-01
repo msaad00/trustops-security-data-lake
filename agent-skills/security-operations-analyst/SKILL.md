@@ -16,10 +16,10 @@ violations.
 
 Prefer API routes when the server is running:
 
-- `GET /api/posture/current`
-- `GET /api/violations`
-- `GET /api/assets`
-- `GET /api/controls`
+- `GET /api/v1/posture/current`
+- `GET /api/v1/violations`
+- `GET /api/v1/assets`
+- `GET /api/v1/controls`
 
 Fallback artifacts:
 
