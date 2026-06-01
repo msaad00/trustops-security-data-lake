@@ -199,18 +199,30 @@ def build_catalog_view(lake_dir: str | Path) -> list[dict[str, Any]]:
     return out
 
 
+# Connectors with a real collection adapter wired in connector_runner. The
+# others are access-contract definitions only: their probes validate the
+# configuration but do not collect evidence, and must never report a synthetic
+# evidence count that would imply live collection in the UI.
+IMPLEMENTED_ADAPTERS: frozenset[str] = frozenset({"github-security"})
+
+
+def has_adapter(connector_id: str) -> bool:
+    """True when a real collection adapter is implemented for this connector."""
+    return connector_id in IMPLEMENTED_ADAPTERS
+
+
 def run_probe(
     lake_dir: str | Path,
     *,
     connector_id: str,
     actor: str = "console",
 ) -> dict[str, Any]:
-    """Run a probe against a connector and persist the result.
+    """Validate a connector's configuration and persist the probe result.
 
-    For now this is a deterministic check that the connector is registered,
-    has a configuration event, and has non-empty required permissions. Real
-    network probes (Snowflake/ClickHouse/GitHub round-trip) plug in here
-    once per-connector adapters land.
+    The probe checks that the connector is registered, enabled, and declares
+    required permissions. It does not collect evidence, so it never reports an
+    evidence count. Connectors without an implemented collection adapter report
+    ``skipped`` (contract validated only) rather than implying live collection.
     """
     catalog = load_connector_catalog()
     if connector_id not in catalog:
@@ -246,16 +258,23 @@ def run_probe(
             error="connector catalog is missing minimum_permissions",
         )
         return record
-    # Deterministic probe: simulate an evidence-count read based on the
-    # number of declared evidence_types so the UX shows a real number.
-    evidence_count = max(1, len(base.get("evidence_types") or []))
-    record = append_run_event(
+    if not has_adapter(connector_id):
+        return append_run_event(
+            lake_dir,
+            connector_id=connector_id,
+            kind="probe",
+            result="skipped",
+            actor=actor,
+            error="access contract validated; no collection adapter is implemented for this connector yet",
+        )
+    # Adapter available and the access contract is valid. The probe validates
+    # configuration only — collecting evidence (and counting it) is the sync's
+    # job — so it reports no evidence_count rather than a fabricated one.
+    return append_run_event(
         lake_dir,
         connector_id=connector_id,
         kind="probe",
         result="ok",
         actor=actor,
         duration_ms=12,
-        evidence_count=evidence_count,
     )
-    return record

@@ -62,7 +62,18 @@ def test_probe_requires_enabled_connector(tmp_path: Path) -> None:
     append_config_event(tmp_path, connector_id="github-security", state="enabled", actor="a")
     ok = run_probe(tmp_path, connector_id="github-security")
     assert ok["result"] == "ok"
-    assert ok["evidence_count"] >= 1
+    # The probe validates configuration; it does not collect or fabricate a count.
+    assert ok["evidence_count"] is None
+
+
+def test_probe_without_adapter_is_skipped_not_fabricated(tmp_path: Path) -> None:
+    # A connector with no collection adapter must report contract-validated only,
+    # never a synthetic evidence_count implying live collection.
+    append_config_event(tmp_path, connector_id="snowflake-evidence-lake", state="enabled", actor="a")
+    rec = run_probe(tmp_path, connector_id="snowflake-evidence-lake")
+    assert rec["result"] == "skipped"
+    assert rec["evidence_count"] is None
+    assert "no collection adapter" in rec["error"]
 
 
 def test_probe_unknown_connector_returns_error(tmp_path: Path) -> None:

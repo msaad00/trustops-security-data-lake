@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from security_lakehouse.connector_state import append_run_event, latest_config
+from security_lakehouse.connector_state import append_run_event, has_adapter, latest_config
 from security_lakehouse.connectors import load_connector_catalog
 from security_lakehouse.io import read_jsonl, write_jsonl
 from security_lakehouse.pipeline import run_pipeline
@@ -109,7 +109,7 @@ def _collect(
     fixture_dir: str | Path | None,
     token_env: str,
 ) -> list[dict[str, Any]]:
-    if connector_id != "github-security":
+    if not has_adapter(connector_id):
         raise ValueError(f"no sync runner registered for connector_id {connector_id!r}")
     if not repo:
         raise ValueError("github-security sync requires --repo")
