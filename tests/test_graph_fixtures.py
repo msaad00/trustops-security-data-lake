@@ -187,6 +187,65 @@ def _write_repo_bronze(lake: Path) -> None:
     )
 
 
+def test_build_compliance_graph_ids_stable_for_delimiter_free_values(tmp_path: Path) -> None:
+    """Delimiter-free event types / asset ids keep byte-identical node ids."""
+    (tmp_path / "silver").mkdir(parents=True, exist_ok=True)
+    (tmp_path / "silver" / "normalized_events.jsonl").write_text(
+        json.dumps(
+            {
+                "event_id": "evt-0",
+                "event_type": "cloud_config",
+                "asset_id": "svc-0",
+                "control_ids": ["SOC2-CC6.1"],
+                "status": "passed",
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    graph = build_compliance_graph(tmp_path)
+    ids = {n["id"] for n in graph["nodes"]}
+    assert "evidence:cloud_config" in ids
+    assert "asset:svc-0" in ids
+    edge_targets = {e["target"] for e in graph["edges"] if e["kind"] == "evidence_covers_asset"}
+    assert "asset:svc-0" in edge_targets
+
+
+def test_build_compliance_graph_escapes_delimiter_collisions(tmp_path: Path) -> None:
+    """Two event types differing only by an embedded ``:`` keep distinct node ids."""
+    (tmp_path / "silver").mkdir(parents=True, exist_ok=True)
+    (tmp_path / "silver" / "normalized_events.jsonl").write_text(
+        "\n".join(
+            json.dumps(
+                {
+                    "event_id": f"evt-{i}",
+                    "event_type": event_type,
+                    "asset_id": asset_id,
+                    "control_ids": ["SOC2-CC6.1"],
+                    "status": "passed",
+                }
+            )
+            for i, (event_type, asset_id) in enumerate(
+                [
+                    ("a:b", "x:y"),
+                    ("a", "x"),
+                ]
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    graph = build_compliance_graph(tmp_path)
+    evidence_ids = {n["id"] for n in graph["nodes"] if n["kind"] == "evidence_type"}
+    asset_ids = {n["id"] for n in graph["nodes"] if n["kind"] == "asset"}
+    # Without escaping, "evidence:a:b" and a hypothetical "evidence:a" + ":b"
+    # namespace would be ambiguous; escaping keeps the two event types distinct.
+    assert evidence_ids == {"evidence:a\\:b", "evidence:a"}
+    assert asset_ids == {"asset:x\\:y", "asset:x"}
+    assert len(evidence_ids) == 2
+    assert len(asset_ids) == 2
+
+
 def test_build_repository_graph_links_repo_governance_and_controls(tmp_path: Path) -> None:
     _write_repo_bronze(tmp_path)
     graph = build_repository_graph(tmp_path)
