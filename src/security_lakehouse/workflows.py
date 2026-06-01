@@ -250,6 +250,57 @@ def _slugify(text: str) -> str:
     return clean.strip("-") or "workflow"
 
 
+def _validate_workflow_graph(nodes: list[dict[str, Any]], edges: list[dict[str, Any]]) -> None:
+    """Reject structurally invalid workflows before they are persisted.
+
+    Guards against unknown node types, missing/duplicate node ids, edges that
+    reference non-existent nodes, and cycles. A saved workflow is therefore
+    always a runnable DAG over known actions, rather than failing opaquely (or
+    running in a nondeterministic order) at execution time.
+    """
+    if not isinstance(edges, list):
+        raise ValueError("workflow edges must be a list")
+    ids: list[str] = []
+    for node in nodes:
+        node_id = str(node.get("id") or "").strip()
+        if not node_id:
+            raise ValueError("every workflow node requires a non-empty 'id'")
+        node_type = str(node.get("node_type") or "")
+        if node_type not in ACTION_LIBRARY:
+            raise ValueError(f"unknown node_type {node_type!r} for node {node_id!r}")
+        ids.append(node_id)
+    id_set = set(ids)
+    if len(id_set) != len(ids):
+        duplicates = sorted({nid for nid in ids if ids.count(nid) > 1})
+        raise ValueError(f"duplicate node ids: {duplicates}")
+
+    incoming: dict[str, list[str]] = {nid: [] for nid in id_set}
+    outgoing: dict[str, list[str]] = {nid: [] for nid in id_set}
+    for edge in edges:
+        source = str(edge.get("source") or "")
+        target = str(edge.get("target") or "")
+        if source not in id_set:
+            raise ValueError(f"edge source {source!r} is not a node id")
+        if target not in id_set:
+            raise ValueError(f"edge target {target!r} is not a node id")
+        incoming[target].append(source)
+        outgoing[source].append(target)
+
+    # Kahn's algorithm: if any node never reaches in-degree 0, a cycle exists.
+    indegree = {nid: len(parents) for nid, parents in incoming.items()}
+    ready = [nid for nid, degree in indegree.items() if degree == 0]
+    visited = 0
+    while ready:
+        nid = ready.pop()
+        visited += 1
+        for child in outgoing[nid]:
+            indegree[child] -= 1
+            if indegree[child] == 0:
+                ready.append(child)
+    if visited != len(id_set):
+        raise ValueError("workflow graph must be acyclic (a cycle was detected)")
+
+
 def save_workflow(
     lake_dir: str | Path,
     *,
@@ -265,6 +316,7 @@ def save_workflow(
         raise ValueError("workflow name is required")
     if not isinstance(nodes, list) or not nodes:
         raise ValueError("workflow must declare at least one node")
+    _validate_workflow_graph(nodes, edges)
     workflow_id = workflow_id or _slugify(name)
     existing = list_workflows(lake_dir)
     versions = [w for w in existing if w["workflow_id"] == workflow_id]
