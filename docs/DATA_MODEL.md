@@ -77,6 +77,7 @@ erDiagram
 | Bronze  | `raw_events`               | immutable source evidence plus raw hash         |
 | Silver  | `normalized_events`        | canonical evidence facts                        |
 | Gold    | `control_posture`          | current control status and evidence coverage    |
+| Gold    | `control_tests`            | control test results and confidence             |
 | Gold    | `asset_risk`               | owner-ready risk queue                          |
 | Gold    | `current_posture`          | live assessment result                          |
 | Gold    | `assessment_snapshots`     | point-in-time assessment exports                |
@@ -84,6 +85,26 @@ erDiagram
 | API     | `/api/violations`          | open violation contract                         |
 | Catalog | `frameworks/registry.json` | official framework source registry              |
 | Catalog | `controls/catalog.json`    | implemented controls with evidence requirements |
+
+## Tenant Isolation
+
+Every gold table — `control_posture`, `control_tests`, and `asset_risk` —
+carries a `tenant_id` column as its first field, mirroring the silver
+`normalized_events` table. This lets a single shared warehouse host multiple
+tenants without one tenant's control posture, tests, or asset risk collapsing
+into another's.
+
+- **Shared warehouses (ClickHouse / Snowflake):** `tenant_id` is the leading
+  key. In ClickHouse it leads every gold table's `ORDER BY` and is the
+  partition key, so `ReplacingMergeTree` deduplicates within a tenant rather
+  than across tenants (two tenants reporting the same `control_id` no longer
+  last-writer-collapse). In Snowflake it leads the primary key and the
+  clustering key.
+- **File mart (SQLite / DuckDB):** the local mart is single-tenant per
+  deployment. `run_pipeline(..., tenant_id="acme")` stamps every gold row with
+  that value; it defaults to `"default"` so existing single-tenant pipelines
+  are unaffected. The gold JSONL row shape is unchanged — `tenant_id` lives
+  only on the warehouse DDL and the mart tables.
 
 ## Schema Contracts
 

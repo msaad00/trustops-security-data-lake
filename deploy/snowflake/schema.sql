@@ -40,6 +40,7 @@ create table if not exists SECURITY_SILVER.NORMALIZED_EVENTS (
 );
 
 create table if not exists SECURITY_GOLD.CONTROL_POSTURE (
+  tenant_id string not null,
   control_id string not null,
   framework string not null,
   title string not null,
@@ -53,10 +54,12 @@ create table if not exists SECURITY_GOLD.CONTROL_POSTURE (
   evidence_coverage float not null,
   latest_event_time timestamp_tz not null,
   loaded_at timestamp_tz default current_timestamp(),
-  primary key (control_id)
-);
+  primary key (tenant_id, control_id)
+)
+cluster by (tenant_id, framework);
 
 create table if not exists SECURITY_GOLD.CONTROL_TESTS (
+  tenant_id string not null,
   test_id string not null,
   program_id string not null,
   control_id string not null,
@@ -83,10 +86,12 @@ create table if not exists SECURITY_GOLD.CONTROL_TESTS (
   api_refs variant not null,
   evaluated_at timestamp_tz not null,
   loaded_at timestamp_tz default current_timestamp(),
-  primary key (test_id)
-);
+  primary key (tenant_id, test_id)
+)
+cluster by (tenant_id, program_id, framework);
 
 create table if not exists SECURITY_GOLD.ASSET_RISK (
+  tenant_id string not null,
   asset_id string not null,
   asset_type string not null,
   asset_owner string not null,
@@ -97,8 +102,9 @@ create table if not exists SECURITY_GOLD.ASSET_RISK (
   event_count number not null,
   latest_event_time timestamp_tz not null,
   loaded_at timestamp_tz default current_timestamp(),
-  primary key (asset_id)
-);
+  primary key (tenant_id, asset_id)
+)
+cluster by (tenant_id, environment);
 
 create or replace view SECURITY_GOLD.AUDITOR_CONTROL_EVIDENCE as
 select

@@ -31,6 +31,7 @@ ttl event_time + interval 730 day;
 
 create table if not exists security.control_posture
 (
+  tenant_id LowCardinality(String),
   control_id String,
   framework LowCardinality(String),
   title String,
@@ -46,10 +47,12 @@ create table if not exists security.control_posture
   loaded_at DateTime64(3, 'UTC') default now64(3)
 )
 engine = ReplacingMergeTree(loaded_at)
-order by (framework, control_id);
+partition by tenant_id
+order by (tenant_id, framework, control_id);
 
 create table if not exists security.control_tests
 (
+  tenant_id LowCardinality(String),
   test_id String,
   program_id LowCardinality(String),
   control_id String,
@@ -78,10 +81,12 @@ create table if not exists security.control_tests
   loaded_at DateTime64(3, 'UTC') default now64(3)
 )
 engine = ReplacingMergeTree(loaded_at)
-order by (program_id, framework, result, control_id);
+partition by tenant_id
+order by (tenant_id, program_id, framework, result, control_id);
 
 create table if not exists security.asset_risk
 (
+  tenant_id LowCardinality(String),
   asset_id String,
   asset_type LowCardinality(String),
   asset_owner LowCardinality(String),
@@ -94,7 +99,8 @@ create table if not exists security.asset_risk
   loaded_at DateTime64(3, 'UTC') default now64(3)
 )
 engine = ReplacingMergeTree(loaded_at)
-order by (environment, asset_owner, asset_id);
+partition by tenant_id
+order by (tenant_id, environment, asset_owner, asset_id);
 
 create view if not exists security.control_test_readiness as
 select
