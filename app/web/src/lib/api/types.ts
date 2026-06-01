@@ -535,6 +535,28 @@ export interface RemediationTask {
   resolved_at: string | null;
 }
 
+export type RiskLevel = "low" | "medium" | "high" | "critical";
+export type RiskStatus = "open" | "mitigating" | "accepted" | "closed";
+
+export interface Risk {
+  id: string;
+  tenant_id?: string;
+  title: string;
+  description: string;
+  category: string;
+  severity: RiskLevel;
+  likelihood: RiskLevel;
+  impact: RiskLevel;
+  status: RiskStatus;
+  treatment: string;
+  owner: string;
+  control_id: string | null;
+  asset_id: string | null;
+  due_at: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
 export interface EvidenceRequestItem {
   id: string;
   control_id: string;

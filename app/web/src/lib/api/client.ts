@@ -9,6 +9,7 @@ import type {
   PostureMetricPoint,
   RemediationInsights,
   RemediationTask,
+  Risk,
   AuditLogEntry,
   ComplianceGraph,
   ConfigurePayload,
@@ -160,6 +161,21 @@ export const api = {
   revokeControlException: (id: string) =>
     mutate<{ data: ControlExceptionItem }>(
       `/v1/remediation/exceptions/${encodeURIComponent(id)}`,
+      "DELETE",
+    ).then((b) => b.data),
+  risks: (query = "") =>
+    get<{ data: Risk[] }>(`/v1/risks${query}`).then((b) => b.data),
+  createRisk: (payload: Partial<Risk> & { title: string }) =>
+    post<{ data: Risk }>("/v1/risks", payload).then((b) => b.data),
+  updateRisk: (id: string, payload: Record<string, unknown>) =>
+    mutate<{ data: Risk }>(
+      `/v1/risks/${encodeURIComponent(id)}`,
+      "PATCH",
+      payload,
+    ).then((b) => b.data),
+  deleteRisk: (id: string) =>
+    mutate<{ data: { id: string; deleted: boolean } }>(
+      `/v1/risks/${encodeURIComponent(id)}`,
       "DELETE",
     ).then((b) => b.data),
   posture: () => get<Assessment>("/posture/current"),

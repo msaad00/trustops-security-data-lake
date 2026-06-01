@@ -14,6 +14,7 @@ import {
   Network,
   Plug,
   Search,
+  ShieldAlert,
   ShieldCheck,
   Sparkles,
   Workflow,
@@ -57,6 +58,13 @@ const ROUTE_ITEMS: PaletteItem[] = [
     label: "Violations",
     href: "/violations",
     Icon: AlertOctagon,
+  },
+  {
+    id: "r:risks",
+    group: "Routes",
+    label: "Risk register",
+    href: "/risks",
+    Icon: ShieldAlert,
   },
   {
     id: "r:evidence",
