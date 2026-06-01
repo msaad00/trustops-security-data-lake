@@ -432,7 +432,7 @@
       "official_source_ref": "iso-42001-2023"
     },
     {
-      "control_id": "ISO42001-8.2",
+      "control_id": "ISO42001-8.1",
       "framework_id": "iso-42001-2023",
       "framework": "ISO 42001:2023",
       "title": "Operational AI controls produce continuous evidence",
