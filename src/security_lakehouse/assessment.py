@@ -115,6 +115,114 @@ def write_assessment_snapshot(
     return output_path
 
 
+def _parse_iso(value: str | datetime) -> datetime:
+    """Parse an ISO date/datetime into a tz-aware UTC datetime.
+
+    Accepts trailing ``Z``, naive values (assumed UTC), and bare dates
+    (``2026-05-20`` -> start of that day). Raises ``ValueError`` on garbage so
+    callers can surface a 400.
+    """
+    if isinstance(value, datetime):
+        parsed = value
+    else:
+        text = value.strip()
+        if not text:
+            raise ValueError("timestamp must not be empty")
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=UTC)
+    return parsed.astimezone(UTC)
+
+
+def _iter_snapshots(lake_dir: str | Path) -> list[tuple[datetime, dict[str, Any], Path]]:
+    """Load assessment snapshots as ``(evaluated_at, payload, path)`` tuples.
+
+    Snapshots with a missing/unparseable ``evaluated_at`` are skipped. The
+    result is sorted oldest-first by ``evaluated_at``.
+    """
+    snapshots_dir = Path(lake_dir) / "gold" / "snapshots"
+    if not snapshots_dir.is_dir():
+        return []
+    rows: list[tuple[datetime, dict[str, Any], Path]] = []
+    for path in snapshots_dir.glob("assessment-*.json"):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        raw = payload.get("evaluated_at")
+        if not isinstance(raw, str):
+            continue
+        try:
+            evaluated_at = _parse_iso(raw)
+        except ValueError:
+            continue
+        rows.append((evaluated_at, payload, path))
+    return sorted(rows, key=lambda item: item[0])
+
+
+def list_snapshot_times(lake_dir: str | Path) -> list[str]:
+    """Return the ``evaluated_at`` timestamps of all snapshots, oldest-first."""
+    return [payload.get("evaluated_at") for _ts, payload, _path in _iter_snapshots(lake_dir)]
+
+
+def posture_as_of(lake_dir: str | Path, *, as_of: str | datetime) -> dict[str, Any]:
+    """Return the posture from the most recent snapshot at/before ``as_of``.
+
+    Walks the immutable point-in-time snapshots in ``gold/snapshots/`` and picks
+    the newest one whose ``evaluated_at`` is ``<= as_of``. The returned object
+    carries the snapshot's ``posture`` summary plus the snapshot's
+    ``evaluated_at`` / ``assessment_hash`` and the ``requested_as_of`` echo.
+
+    If no snapshot exists at/before ``as_of`` (or none exist at all), returns a
+    null-posture result with ``available_from`` set to the earliest snapshot's
+    ``evaluated_at`` (``None`` when there are no snapshots) so the caller can
+    explain why the answer is empty.
+
+    ``as_of`` may be a ``datetime`` or an ISO date/datetime string; an invalid
+    string raises ``ValueError``.
+    """
+    requested = _parse_iso(as_of)
+    requested_iso = utc_iso(requested)
+    snapshots = _iter_snapshots(lake_dir)
+    available_from = snapshots[0][1].get("evaluated_at") if snapshots else None
+
+    selected: tuple[datetime, dict[str, Any], Path] | None = None
+    for entry in snapshots:
+        if entry[0] <= requested:
+            selected = entry
+        else:
+            break
+
+    if selected is None:
+        return {
+            "schema_version": "trustops.assessment.v1",
+            "assessment_type": "point_in_time_query",
+            "requested_as_of": requested_iso,
+            "found": False,
+            "evaluated_at": None,
+            "assessment_hash": None,
+            "available_from": available_from,
+            "snapshot_count": len(snapshots),
+            "posture": None,
+        }
+
+    _ts, payload, path = selected
+    return {
+        "schema_version": "trustops.assessment.v1",
+        "assessment_type": "point_in_time_query",
+        "requested_as_of": requested_iso,
+        "found": True,
+        "evaluated_at": payload.get("evaluated_at"),
+        "assessment_hash": payload.get("assessment_hash"),
+        "snapshot_reason": payload.get("snapshot_reason") or "manual",
+        "snapshot_path": str(path),
+        "available_from": available_from,
+        "snapshot_count": len(snapshots),
+        "posture": payload.get("posture"),
+        "frameworks": payload.get("frameworks", []),
+    }
+
+
 def _build_violations(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
     violations: list[dict[str, Any]] = []
     for event in events:
