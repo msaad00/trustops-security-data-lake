@@ -23,7 +23,7 @@ from http import HTTPStatus
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from security_lakehouse import api_v1
+from security_lakehouse import api_v1, workflows
 from security_lakehouse.assessment import build_current_posture
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
@@ -130,6 +130,79 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         params) used by the HTTP API — the same contract these MCP tools wrap.
         """
         return api_v1.resource_catalog()
+
+    # ------------------------------------------------------------------
+    # Write tools — lake-backed actions an agent can take, not just read.
+    #
+    # Each of these mutates the lake directory (gold zone) only: writing a
+    # snapshot, persisting a workflow, or executing one. None of them touch
+    # the application-state DB or require tenant auth, so they are safe over
+    # the local stdio transport. DB-backed writes (risks, tasks, assignments)
+    # are intentionally NOT exposed here — they belong behind a shared
+    # services layer and an authenticated MCP transport.
+    # ------------------------------------------------------------------
+
+    @mcp.tool()
+    def create_snapshot(reason: str = "mcp_request") -> JsonObject:
+        """Write a point-in-time assessment snapshot to the gold zone.
+
+        Captures the current posture, controls, violations, and evidence
+        rollups as an immutable record (for audit trails / just-in-time
+        review). Returns the snapshot file path and the recorded reason.
+
+        This is a WRITE: it appends a new snapshot file to the lake.
+        """
+        status, body = api_v1.handle_post("/api/v1/snapshots", {"reason": reason}, lake)
+        if status != HTTPStatus.CREATED:
+            errors = body.get("errors") or [{"detail": "snapshot failed"}]
+            raise ValueError(errors[0].get("detail", "snapshot failed"))
+        return body["data"]
+
+    @mcp.tool()
+    def list_workflows() -> list[JsonObject]:
+        """List saved automation workflows (latest version per workflow, newest first).
+
+        Each row carries the workflow id, name, description, version, and its
+        node/edge graph — the automations an agent can run via ``run_workflow``.
+        """
+        return workflows.list_workflows(lake)
+
+    @mcp.tool()
+    def get_workflow(workflow_id: str) -> JsonObject:
+        """Fetch a single saved workflow (latest version) by its id.
+
+        Returns the full record including its node/edge graph, or raises if no
+        workflow with that id exists.
+        """
+        workflow = workflows.get_workflow(lake, workflow_id)
+        if workflow is None:
+            raise ValueError(f"unknown workflow_id {workflow_id!r}")
+        return workflow
+
+    @mcp.tool()
+    def list_workflow_actions() -> list[JsonObject]:
+        """List the available workflow action node types (the automation building blocks).
+
+        Returns each node type with its kind, label, description, and input/output
+        schemas — so an agent can discover what steps a workflow can be built from
+        before saving or running one.
+        """
+        return workflows.action_catalog()
+
+    @mcp.tool()
+    def run_workflow(workflow_id: str) -> JsonObject:
+        """Execute a saved workflow end-to-end and return the run result.
+
+        Runs every node in topological order against the lake, substituting
+        ``{{nodeId.output.field}}`` references and honoring conditional edges,
+        then persists the run to the gold zone. Returns the run record with a
+        per-node ``node_results`` list and an overall ``result`` ("ok"/"error").
+
+        WARNING: this EXECUTES the workflow. Action nodes can have side effects,
+        including assigning owners and sending allowlisted outbound webhooks
+        (network egress). Only run workflows you intend to fire.
+        """
+        return workflows.run_workflow(lake, workflow_id=workflow_id, actor="api")
 
     return mcp
 
