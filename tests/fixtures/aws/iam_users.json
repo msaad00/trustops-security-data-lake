@@ -1,0 +1,26 @@
+[
+  {
+    "UserName": "ada-lovelace",
+    "UserId": "AIDAEXAMPLEMFAENROLLED",
+    "Arn": "arn:aws:iam::123456789012:user/ada-lovelace",
+    "Path": "/",
+    "CreateDate": "2026-01-04T09:00:00Z",
+    "PasswordLastUsed": "2026-05-27T18:14:00Z"
+  },
+  {
+    "UserName": "grace-hopper",
+    "UserId": "AIDAEXAMPLENOMFA00000",
+    "Arn": "arn:aws:iam::123456789012:user/grace-hopper",
+    "Path": "/",
+    "CreateDate": "2026-02-11T11:20:00Z",
+    "PasswordLastUsed": "2026-05-26T07:42:00Z"
+  },
+  {
+    "UserName": "break-glass-admin",
+    "UserId": "AIDAEXAMPLEADMINPATH0",
+    "Arn": "arn:aws:iam::123456789012:user/admins/break-glass-admin",
+    "Path": "/admins/",
+    "CreateDate": "2025-09-01T08:00:00Z",
+    "PasswordLastUsed": "2026-05-20T08:00:00Z"
+  }
+]

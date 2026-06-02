@@ -1,0 +1,17 @@
+{
+  "ada-lovelace": [
+    {
+      "UserName": "ada-lovelace",
+      "SerialNumber": "arn:aws:iam::123456789012:mfa/ada-lovelace",
+      "EnableDate": "2026-01-04T09:10:00Z"
+    }
+  ],
+  "grace-hopper": [],
+  "break-glass-admin": [
+    {
+      "UserName": "break-glass-admin",
+      "SerialNumber": "arn:aws:iam::123456789012:mfa/break-glass-admin",
+      "EnableDate": "2025-09-01T08:30:00Z"
+    }
+  ]
+}

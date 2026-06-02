@@ -99,6 +99,24 @@
       "production_status": "supported_path"
     },
     {
+      "connector_id": "aws-posture",
+      "name": "AWS Posture",
+      "category": "cloud",
+      "collection_mode": "direct_api_read",
+      "access_boundary": "scoped_token",
+      "credential_type": "aws_read_only_keys",
+      "minimum_permissions": [
+        "iam:ListUsers",
+        "iam:ListMFADevices",
+        "iam:GetAccountPasswordPolicy",
+        "iam:GetAccountSummary"
+      ],
+      "evidence_types": ["identity", "config", "mfa"],
+      "default_route": "dual",
+      "freshness_slo_minutes": 360,
+      "production_status": "supported_path"
+    },
+    {
       "connector_id": "identity-provider",
       "name": "Identity Provider",
       "category": "identity",

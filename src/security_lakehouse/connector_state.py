@@ -255,7 +255,7 @@ def build_catalog_view(lake_dir: str | Path) -> list[dict[str, Any]]:
 # others are access-contract definitions only: their probes validate the
 # configuration but do not collect evidence, and must never report a synthetic
 # evidence count that would imply live collection in the UI.
-IMPLEMENTED_ADAPTERS: frozenset[str] = frozenset({"github-security", "okta-identity"})
+IMPLEMENTED_ADAPTERS: frozenset[str] = frozenset({"github-security", "okta-identity", "aws-posture"})
 
 
 def has_adapter(connector_id: str) -> bool:
