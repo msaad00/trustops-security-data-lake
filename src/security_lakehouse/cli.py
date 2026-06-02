@@ -13,6 +13,12 @@ from security_lakehouse.io import read_jsonl
 from security_lakehouse.pipeline import run_pipeline
 from security_lakehouse.validation import validate_raw_events
 
+# Risk vocabulary mirrored from security_lakehouse.db.models (RISK_LEVELS /
+# RISK_STATUSES). Duplicated as plain literals so the argument parser can be
+# built without importing the 'server' extra (which pulls in SQLAlchemy).
+_RISK_LEVEL_CHOICES = ("low", "medium", "high", "critical")
+_RISK_STATUS_CHOICES = ("open", "mitigating", "accepted", "closed")
+
 
 def main(argv: list[str] | None = None) -> int:
     parser = _parser()
@@ -259,6 +265,41 @@ def _parser() -> argparse.ArgumentParser:
     seed_dev.add_argument("--email", default="admin@localhost", help="admin user email")
     seed_dev.add_argument("--display-name", default="Local Admin", help="admin user display name")
     seed_dev.set_defaults(func=_platform_seed_dev)
+
+    risk = sub.add_parser("risk", help="server-mode GRC risk register (requires the 'server' extra)")
+    risk_sub = risk.add_subparsers(dest="risk_command", required=True)
+    risk_list = risk_sub.add_parser("list", help="list risks in a tenant register")
+    risk_list.add_argument("--lake", required=True, help="security data lake output directory")
+    risk_list.add_argument("--tenant", required=True, help="tenant slug")
+    risk_list.add_argument("--status", default=None, choices=list(_RISK_STATUS_CHOICES), help="optional status filter")
+    risk_list.add_argument(
+        "--severity", default=None, choices=list(_RISK_LEVEL_CHOICES), help="optional severity filter"
+    )
+    risk_list.add_argument("--owner", default=None, help="optional owner filter")
+    risk_list.set_defaults(func=_risk_list)
+    risk_add = risk_sub.add_parser("add", help="add a risk to a tenant register")
+    risk_add.add_argument("--lake", required=True, help="security data lake output directory")
+    risk_add.add_argument("--tenant", required=True, help="tenant slug")
+    risk_add.add_argument("--title", required=True, help="risk title")
+    risk_add.add_argument("--description", default="", help="risk description")
+    risk_add.add_argument("--category", default="", help="risk category")
+    risk_add.add_argument("--severity", default="medium", choices=list(_RISK_LEVEL_CHOICES), help="risk severity")
+    risk_add.add_argument("--likelihood", default="medium", choices=list(_RISK_LEVEL_CHOICES), help="risk likelihood")
+    risk_add.add_argument("--impact", default="medium", choices=list(_RISK_LEVEL_CHOICES), help="risk impact")
+    risk_add.add_argument("--owner", default="", help="risk owner")
+    risk_add.add_argument("--control-id", default=None, help="linked control id")
+    risk_add.set_defaults(func=_risk_add)
+
+    workflow = sub.add_parser("workflow", help="lake-backed automation workflow engine")
+    workflow_sub = workflow.add_subparsers(dest="workflow_command", required=True)
+    workflow_list = workflow_sub.add_parser("list", help="list saved workflows (latest version per workflow)")
+    workflow_list.add_argument("--lake", required=True, help="security data lake output directory")
+    workflow_list.set_defaults(func=_workflow_list)
+    workflow_run = workflow_sub.add_parser("run", help="execute a saved workflow and print the run record")
+    workflow_run.add_argument("--lake", required=True, help="security data lake output directory")
+    workflow_run.add_argument("--id", required=True, dest="workflow_id", help="workflow_id to run")
+    workflow_run.add_argument("--actor", default="api", choices=["api", "console", "scheduler"], help="run actor")
+    workflow_run.set_defaults(func=_workflow_run)
 
     policy = sub.add_parser("policy", help="controls-as-code policy engine")
     policy_sub = policy.add_subparsers(dest="policy_command", required=True)
@@ -590,6 +631,63 @@ def _platform_seed_dev(args: argparse.Namespace) -> int:
             "note": "Seeded dev principal and key metadata. CLI output is non-secret.",
         }
     print(json.dumps(result, indent=2, sort_keys=True))
+    return 0
+
+
+def _risk_list(args: argparse.Namespace) -> int:
+    from security_lakehouse.db import risks
+
+    with _auth_session(args.lake) as session:
+        tenant = _auth_resolve_tenant(session, args.tenant)
+        rows = [
+            risks.risk_to_dict(risk)
+            for risk in risks.list_risks(
+                session,
+                tenant_id=tenant.id,
+                status=args.status,
+                severity=args.severity,
+                owner=args.owner,
+            )
+        ]
+    print(json.dumps({"tenant": tenant.slug, "count": len(rows), "risks": rows}, indent=2, sort_keys=True))
+    return 0
+
+
+def _risk_add(args: argparse.Namespace) -> int:
+    from security_lakehouse.db import risks
+
+    with _auth_session(args.lake) as session:
+        tenant = _auth_resolve_tenant(session, args.tenant)
+        risk = risks.create_risk(
+            session,
+            tenant_id=tenant.id,
+            title=args.title,
+            description=args.description,
+            category=args.category,
+            severity=args.severity,
+            likelihood=args.likelihood,
+            impact=args.impact,
+            owner=args.owner,
+            control_id=args.control_id,
+        )
+        payload = risks.risk_to_dict(risk)
+    print(json.dumps(payload, indent=2, sort_keys=True))
+    return 0
+
+
+def _workflow_list(args: argparse.Namespace) -> int:
+    from security_lakehouse.workflows import list_workflows
+
+    rows = list_workflows(args.lake)
+    print(json.dumps({"count": len(rows), "workflows": rows}, indent=2, sort_keys=True))
+    return 0
+
+
+def _workflow_run(args: argparse.Namespace) -> int:
+    from security_lakehouse.workflows import run_workflow
+
+    run = run_workflow(args.lake, workflow_id=args.workflow_id, actor=args.actor)
+    print(json.dumps(run, indent=2, sort_keys=True))
     return 0
 
 
