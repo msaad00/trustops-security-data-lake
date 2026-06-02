@@ -18,6 +18,10 @@ export function Shell({ children }: { children: ReactNode }) {
   const normalizedPathname = pathname.replace(/\/$/, "");
   const isLoginRoute =
     normalizedPathname === "/login" || normalizedPathname.endsWith("/login");
+  // The public trust center is rendered for unauthenticated external reviewers
+  // holding a token; it must bypass the authed Shell (nav, auditor banner,
+  // API-health probes) entirely, the same way /login does.
+  const isPublicTrustRoute = /(^|\/)trust\/[^/]+$/.test(normalizedPathname);
   const qc = useQueryClient();
   const [toast, setToast] = useState<string | null>(null);
   const [snapshotOpen, setSnapshotOpen] = useState(false);
@@ -43,7 +47,7 @@ export function Shell({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  if (isLoginRoute) {
+  if (isLoginRoute || isPublicTrustRoute) {
     return <div className="min-h-screen bg-panel">{children}</div>;
   }
 

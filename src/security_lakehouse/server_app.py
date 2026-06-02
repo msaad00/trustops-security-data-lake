@@ -34,10 +34,11 @@ from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from security_lakehouse import api_legacy, api_v1, tenancy
+from security_lakehouse import api_legacy, api_v1, tenancy, trust_share
+from security_lakehouse.assessment import build_current_posture
 from security_lakehouse.auth.dependencies import get_session, require_scope
 from security_lakehouse.auth.oidc import OIDCLoginError, build_oauth, complete_oidc_login, load_oidc_config
-from security_lakehouse.auth.rbac import Identity
+from security_lakehouse.auth.rbac import Identity, scopes_for_role
 from security_lakehouse.auth.request_audit import append_request_audit
 from security_lakehouse.auth.saml import (
     SAMLLoginError,
@@ -211,6 +212,66 @@ def _redact_payload(payload: object, identity: Identity) -> object:
     return payload
 
 
+def _public_trust_summary(lake: Path, share: dict[str, object]) -> dict[str, object]:
+    """Build the redacted, read-only posture an external token holder may see.
+
+    Starts from the full posture, applies the *same* auditor-lens redaction the
+    ``auditor`` role gets (owners/notes/actor/credentials → ``[redacted]``), then
+    trims to a public summary: posture score/state and per-framework readiness
+    with control counts only. Raw violations, asset/evidence internals, and any
+    owner fields never reach the wire — only this summary leaves the lake.
+    """
+    posture = build_current_posture(lake)
+    auditor = Identity(
+        user_id="public-trust-share",
+        tenant_id="public",
+        email="anonymous",
+        role="auditor",
+        scopes=scopes_for_role("auditor"),
+    )
+    redacted = _redact_payload(posture, auditor)
+    if not isinstance(redacted, dict):
+        redacted = {}
+    posture_block = redacted.get("posture")
+    posture_block = posture_block if isinstance(posture_block, dict) else {}
+    frameworks_raw = redacted.get("frameworks")
+    frameworks: list[dict[str, object]] = []
+    if isinstance(frameworks_raw, list):
+        for row in frameworks_raw:
+            if not isinstance(row, dict):
+                continue
+            frameworks.append(
+                {
+                    "framework": row.get("framework"),
+                    "score": row.get("score"),
+                    "state": row.get("state"),
+                    "control_count": row.get("control_count"),
+                    "failing_control_count": row.get("failing_control_count"),
+                    "stale_control_count": row.get("stale_control_count"),
+                }
+            )
+    return {
+        "schema_version": "trustops.public_trust.v1",
+        "data_residency": "evidence never leaves this lake; only this summary is shared",
+        "issued_by": share.get("created_by"),
+        "scope": share.get("scope"),
+        "role": share.get("role"),
+        "expires_at": share.get("expires_at"),
+        "evaluated_at": redacted.get("evaluated_at"),
+        "posture": {
+            "score": posture_block.get("score"),
+            "state": posture_block.get("state"),
+            "framework_count": posture_block.get("framework_count"),
+            "control_count": posture_block.get("control_count"),
+            "open_violation_count": posture_block.get("open_violation_count"),
+            "critical_violation_count": posture_block.get("critical_violation_count"),
+            "high_violation_count": posture_block.get("high_violation_count"),
+            "stale_control_count": posture_block.get("stale_control_count"),
+        },
+        "frameworks": frameworks,
+    }
+
+
 def _legacy_error_payload(status_code: HTTPStatus) -> dict[str, str]:
     """Return generic server-mode legacy API errors.
 
@@ -372,6 +433,20 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     def v1_healthz() -> JSONResponse:
         _status, body = api_v1.handle_get("/api/v1/healthz", {}, lake)
         return JSONResponse(body, status_code=int(_status))
+
+    # --- public trust center (UNAUTHENTICATED, token-scoped) ---
+    # The consumption side of trust shares: an external reviewer holding a
+    # scoped/expiring/revocable token reaches a redacted, read-only posture
+    # without any internal-grade access. Registered before the authenticated
+    # catch-alls so it is never shadowed, and carries NO auth dependency. A
+    # miss/expired/revoked token returns a generic 404 (no detail leak). The
+    # request-audit middleware records the access as anonymous public.
+    @app.get("/api/public/trust/{token}", tags=["discovery"])
+    def public_trust(token: str) -> JSONResponse:
+        share = trust_share.resolve_share(lake, token)
+        if share is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not found")
+        return JSONResponse(_public_trust_summary(lake, share))
 
     @app.get("/api/v1", tags=["discovery"])
     def v1_index(_identity: Identity = Depends(_require_read)) -> JSONResponse:
@@ -1095,6 +1170,19 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         return HTMLResponse(dashboard.read_text(encoding="utf-8"))
 
     if web_dist is not None:
+        # The public trust page is a static export under a dynamic segment, so
+        # only one placeholder is prebuilt. Serve that prebuilt HTML for any
+        # token path (the client reads the real token from the URL); registered
+        # before the StaticFiles mount so arbitrary tokens are not a 404. No
+        # auth — this is the unauthenticated reviewer surface.
+        trust_page = web_dist / "trust" / "share" / "index.html"
+
+        @app.get("/console/trust/{token}", response_class=HTMLResponse)
+        def public_trust_page(token: str) -> HTMLResponse:  # noqa: ARG001 - token read client-side
+            if not trust_page.is_file():
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not found")
+            return HTMLResponse(trust_page.read_text(encoding="utf-8"))
+
         # Next.js static export; html=True resolves /console/<route>/ to index.html.
         app.mount("/console", StaticFiles(directory=str(web_dist), html=True), name="console")
 
