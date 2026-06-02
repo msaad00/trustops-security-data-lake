@@ -1,0 +1,135 @@
+"""Public trust-center consumption view (BR-8).
+
+The issuer side (``trust_share.create_share``) mints scoped, expiring,
+revocable tokens. These tests prove the consumption side: an external reviewer
+holding a token reaches a redacted, read-only posture at an UNAUTHENTICATED
+route, while a miss/expired/revoked token returns a generic 404 with no detail
+leak — and no owner/note/evidence internals ever cross the wire.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+
+pytest.importorskip("fastapi")
+pytest.importorskip("httpx")
+
+from fastapi.testclient import TestClient  # noqa: E402
+
+from security_lakehouse import trust_share  # noqa: E402
+from security_lakehouse.server_app import create_app  # noqa: E402
+from test_api_v1 import _seed_lake  # noqa: E402
+
+# Owner-grade fields that the auditor lens redacts and the public summary must
+# never surface, recursively, anywhere in the payload.
+_FORBIDDEN_KEYS = {"owner", "asset_owner", "actor", "assignee", "note", "credentials"}
+
+
+def _issue(lake: Path) -> str:
+    share = trust_share.create_share(lake, role="auditor", expires_in_hours=24)
+    return share["token"]
+
+
+def _walk_keys(payload: object) -> set[str]:
+    found: set[str] = set()
+    if isinstance(payload, dict):
+        for key, value in payload.items():
+            found.add(key)
+            found |= _walk_keys(value)
+    elif isinstance(payload, list):
+        for item in payload:
+            found |= _walk_keys(item)
+    return found
+
+
+def test_public_trust_returns_redacted_posture(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    token = _issue(tmp_path)
+    # Auth is ON: the public route must answer without any bearer token.
+    client = TestClient(create_app(tmp_path, require_auth=True))
+
+    res = client.get(f"/api/public/trust/{token}")
+    assert res.status_code == 200, res.text
+    body = res.json()
+
+    # Residency promise is present and explicit.
+    assert body["data_residency"] == "evidence never leaves this lake; only this summary is shared"
+    assert body["schema_version"] == "trustops.public_trust.v1"
+
+    # Trimmed public posture: score/state + per-framework readiness.
+    assert isinstance(body["posture"]["score"], (int, float))
+    assert body["posture"]["state"]
+    assert body["frameworks"], "seeded lake produces framework readiness rows"
+    for row in body["frameworks"]:
+        assert {"framework", "score", "state", "control_count"} <= set(row)
+
+    # Issuing-org context (created_by) is carried for the reviewer.
+    assert body["issued_by"] == "console"
+
+    # No owner/evidence internals anywhere in the payload.
+    leaked = _FORBIDDEN_KEYS & _walk_keys(body)
+    assert not leaked, f"public summary leaked redacted fields: {leaked}"
+    # Raw violations / asset internals are dropped entirely, not just redacted.
+    assert "violations" not in body
+    assert "top_risk_assets" not in body
+    assert "evidence_freshness" not in body
+
+
+def test_public_trust_requires_no_auth(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    token = _issue(tmp_path)
+    client = TestClient(create_app(tmp_path, require_auth=True))
+
+    # A protected route refuses without a bearer; the public route does not.
+    assert client.get("/api/v1/posture/current").status_code in {401, 403}
+    assert client.get(f"/api/public/trust/{token}").status_code == 200
+
+
+def test_public_trust_unknown_token_is_404(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    client = TestClient(create_app(tmp_path, require_auth=True))
+    res = client.get("/api/public/trust/trust_does_not_exist")
+    assert res.status_code == 404
+    # Generic: no detail about why (unknown vs revoked vs expired).
+    assert "owner" not in res.text
+
+
+def test_public_trust_revoked_token_is_404(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    share = trust_share.create_share(tmp_path, role="auditor", expires_in_hours=24)
+    token = share["token"]
+    client = TestClient(create_app(tmp_path, require_auth=True))
+    assert client.get(f"/api/public/trust/{token}").status_code == 200
+
+    trust_share.revoke_share(tmp_path, share["share_id"])
+    assert client.get(f"/api/public/trust/{token}").status_code == 404
+
+
+def test_public_trust_expired_token_is_404(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    share = trust_share.create_share(tmp_path, role="auditor", expires_in_hours=1)
+    token = share["token"]
+
+    # Rewrite the share record with an expiry in the past.
+    path = tmp_path / "gold" / trust_share.SHARES_FILE
+    rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    rows[-1]["expires_at"] = "2000-01-01T00:00:00Z"
+    path.write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
+
+    client = TestClient(create_app(tmp_path, require_auth=True))
+    assert client.get(f"/api/public/trust/{token}").status_code == 404
+
+
+def test_resolve_share_validates_hash_and_lifecycle(tmp_path: Path) -> None:
+    share = trust_share.create_share(tmp_path, role="auditor", expires_in_hours=24)
+    token = share["token"]
+
+    resolved = trust_share.resolve_share(tmp_path, token)
+    assert resolved is not None
+    assert resolved["share_id"] == share["share_id"]
+
+    assert trust_share.resolve_share(tmp_path, "wrong-token") is None
+    assert trust_share.resolve_share(tmp_path, "") is None

@@ -113,6 +113,30 @@ def list_shares(lake_dir: str | Path, *, include_revoked: bool = False) -> list[
     return rows
 
 
+def resolve_share(lake_dir: str | Path, token: str) -> dict[str, Any] | None:
+    """Resolve a raw token to its live share record, or ``None``.
+
+    Hashes the presented token and returns the matching share only if it is
+    neither revoked nor expired. Returns ``None`` for any miss so the caller
+    can answer a generic 404 without leaking whether the token was unknown,
+    revoked, or simply past its expiry.
+    """
+    if not token:
+        return None
+    token_hash = _hash_token(token)
+    now = _iso(_utc_now())
+    for record in list_shares(lake_dir, include_revoked=False):
+        if record.get("token_sha256") != token_hash:
+            continue
+        if record.get("revoked_at"):
+            return None
+        expires_at = record.get("expires_at")
+        if expires_at and str(expires_at) < now:
+            return None
+        return record
+    return None
+
+
 def revoke_share(lake_dir: str | Path, share_id: str, *, actor: str = "console") -> dict[str, Any] | None:
     """Append a revocation record so the share can no longer be presented."""
     shares = list_shares(lake_dir, include_revoked=True)
