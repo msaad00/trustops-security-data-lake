@@ -19,6 +19,7 @@ from typing import Any
 
 from security_lakehouse.assessment import build_current_posture, write_assessment_snapshot
 from security_lakehouse.framework_detail import build_framework_detail
+from security_lakehouse.graph import analyze_coverage
 from security_lakehouse.io import read_jsonl
 
 API_VERSION = "v1"
@@ -75,6 +76,7 @@ def list_snapshots(lake_dir: str | Path) -> list[JsonObject]:
 SINGLETON_LOADERS: dict[str, tuple[str, Callable[[Path], Any]]] = {
     "/api/v1/healthz": ("healthz", lambda _lake: {"ok": True, "service": "trustops-assessment"}),
     "/api/v1/posture/current": ("posture.current", build_current_posture),
+    "/api/v1/graph/coverage": ("graph.coverage", analyze_coverage),
 }
 
 # Route -> (resource name, loader) for endpoints returning a row collection.
