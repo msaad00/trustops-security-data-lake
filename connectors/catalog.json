@@ -82,6 +82,23 @@
       "production_status": "supported_path"
     },
     {
+      "connector_id": "okta-identity",
+      "name": "Okta Identity",
+      "category": "identity",
+      "collection_mode": "direct_api_read",
+      "access_boundary": "scoped_token",
+      "credential_type": "okta_api_token",
+      "minimum_permissions": [
+        "okta.users.read",
+        "okta.userFactors.read",
+        "okta.policies.read"
+      ],
+      "evidence_types": ["identity", "mfa", "policy"],
+      "default_route": "dual",
+      "freshness_slo_minutes": 240,
+      "production_status": "supported_path"
+    },
+    {
       "connector_id": "identity-provider",
       "name": "Identity Provider",
       "category": "identity",

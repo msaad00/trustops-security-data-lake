@@ -1,0 +1,25 @@
+{
+  "00u1mfaenrolled01": [
+    {
+      "id": "opf1factorwebauthn",
+      "factorType": "webauthn",
+      "provider": "FIDO",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "opf1factortotp0001",
+      "factorType": "token:software:totp",
+      "provider": "OKTA",
+      "status": "ACTIVE"
+    }
+  ],
+  "00u2nomfa00000002": [
+    {
+      "id": "opf2factorpending1",
+      "factorType": "sms",
+      "provider": "OKTA",
+      "status": "PENDING_ACTIVATION"
+    }
+  ],
+  "00u3deprovision03": []
+}

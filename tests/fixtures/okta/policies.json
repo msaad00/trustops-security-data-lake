@@ -1,0 +1,16 @@
+[
+  {
+    "id": "00p1mfaenrollpolicy",
+    "name": "Require MFA for all users",
+    "type": "MFA_ENROLL",
+    "status": "ACTIVE",
+    "system": false
+  },
+  {
+    "id": "00p2legacypolicy002",
+    "name": "Legacy optional MFA",
+    "type": "MFA_ENROLL",
+    "status": "INACTIVE",
+    "system": false
+  }
+]

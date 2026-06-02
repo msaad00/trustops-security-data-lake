@@ -8,6 +8,7 @@ collector and writes raw evidence into the lake's managed raw-event file.
 
 from __future__ import annotations
 
+import os
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -15,12 +16,21 @@ from typing import Any
 
 from security_lakehouse.connector_state import append_run_event, has_adapter, latest_config
 from security_lakehouse.connectors import load_connector_catalog
+from security_lakehouse.connectors_okta import (
+    OktaClient,
+    OktaFixtureClient,
+    collect_okta_evidence,
+)
 from security_lakehouse.io import read_jsonl, write_jsonl
 from security_lakehouse.pipeline import run_pipeline
 from security_lakehouse.repo_governance import sync_repo_governance
 from security_lakehouse.validation import validate_raw_events
 
 CONNECTOR_RAW_FILE = "raw/connector_events.jsonl"
+
+# Environment variable carrying the Okta org base URL for live collection. The
+# token is read from ``token_env`` (defaults to OKTA_API_TOKEN for this runner).
+OKTA_ORG_URL_ENV = "OKTA_ORG_URL"
 
 
 @dataclass(frozen=True)
@@ -111,9 +121,33 @@ def _collect(
 ) -> list[dict[str, Any]]:
     if not has_adapter(connector_id):
         raise ValueError(f"no sync runner registered for connector_id {connector_id!r}")
+    if connector_id == "okta-identity":
+        return _collect_okta(fixture_dir=fixture_dir, token_env=token_env)
     if not repo:
         raise ValueError("github-security sync requires --repo")
     return sync_repo_governance(repo, fixture_dir=fixture_dir, token_env=token_env)
+
+
+def _collect_okta(
+    *,
+    fixture_dir: str | Path | None,
+    token_env: str,
+) -> list[dict[str, Any]]:
+    client: OktaClient | OktaFixtureClient
+    if fixture_dir:
+        client = OktaFixtureClient(fixture_dir)
+    else:
+        org_url = os.environ.get(OKTA_ORG_URL_ENV)
+        # The CLI default token_env is GITHUB_TOKEN; fall back to the Okta var
+        # when the caller did not override it for this connector.
+        token = os.environ.get(token_env) or os.environ.get("OKTA_API_TOKEN")
+        if not org_url or not token:
+            raise ValueError(
+                "okta-identity sync requires --fixture-dir, or "
+                f"{OKTA_ORG_URL_ENV} plus a read-only API token (OKTA_API_TOKEN or --token-env)"
+            )
+        client = OktaClient(org_url, token=token)
+    return collect_okta_evidence(client)
 
 
 def _upsert_raw_events(raw_path: Path, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
