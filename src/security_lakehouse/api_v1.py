@@ -17,7 +17,11 @@ from http import HTTPStatus
 from pathlib import Path
 from typing import Any
 
-from security_lakehouse.assessment import build_current_posture, write_assessment_snapshot
+from security_lakehouse.assessment import (
+    build_current_posture,
+    posture_as_of,
+    write_assessment_snapshot,
+)
 from security_lakehouse.framework_detail import build_framework_detail
 from security_lakehouse.graph import analyze_coverage
 from security_lakehouse.io import read_jsonl
@@ -260,6 +264,15 @@ def resource_catalog() -> list[JsonObject]:
             "path_params": ["framework_id"],
         }
     )
+    catalog.append(
+        {
+            "resource": "posture.as_of",
+            "path": "/api/v1/posture/as-of",
+            "kind": "singleton",
+            "methods": ["GET"],
+            "query": ["as_of"],
+        }
+    )
     for path, (name, _loader) in SINGLETON_LOADERS.items():
         catalog.append({"resource": name, "path": path, "kind": "singleton", "methods": ["GET"]})
     for path, (name, _loader) in COLLECTION_LOADERS.items():
@@ -366,6 +379,20 @@ def handle_get(path: str, params: Params, lake_dir: str | Path) -> tuple[HTTPSta
         if detail is None:
             return HTTPStatus.NOT_FOUND, error_envelope("not_found", "unknown framework", resource="framework.detail")
         return HTTPStatus.OK, envelope("framework.detail", detail)
+    if path == "/api/v1/posture/as-of":
+        as_of_values = params.get("as_of") or []
+        as_of = as_of_values[0] if as_of_values else ""
+        if not as_of:
+            return HTTPStatus.BAD_REQUEST, error_envelope(
+                "bad_request", "query parameter 'as_of' is required", resource="posture.as_of"
+            )
+        try:
+            data = posture_as_of(lake, as_of=as_of)
+        except ValueError:
+            return HTTPStatus.BAD_REQUEST, error_envelope(
+                "bad_request", f"invalid 'as_of' value: {as_of!r}", resource="posture.as_of"
+            )
+        return HTTPStatus.OK, envelope("posture.as_of", data)
     singleton = SINGLETON_LOADERS.get(path)
     if singleton is not None:
         resource, loader = singleton

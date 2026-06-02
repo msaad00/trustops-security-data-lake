@@ -1,6 +1,14 @@
 -- ClickHouse schema for high-volume security telemetry analytics.
 -- The tables mirror the local gold/silver artifacts and are optimized for
 -- time-window investigations, dashboard aggregates, and runtime event analytics.
+--
+-- Point-in-time posture history: the assessment snapshots written to
+-- gold/snapshots/assessment-<ts>.json (each immutable, with an evaluated_at and
+-- assessment_hash) are the authoritative "posture as of date X" record and are
+-- queryable via assessment.posture_as_of / GET /api/v1/posture/as-of?as_of=.
+-- The MergeTree tables below carry loaded_at/event_time, but a dedicated
+-- valid_from/valid_to temporal model for these analytics tables is a follow-up;
+-- the snapshot history is the current source of truth for as-of queries.
 
 create database if not exists security;
 
