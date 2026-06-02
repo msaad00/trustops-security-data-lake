@@ -16,6 +16,11 @@ from typing import Any
 
 from security_lakehouse.connector_state import append_run_event, has_adapter, latest_config
 from security_lakehouse.connectors import load_connector_catalog
+from security_lakehouse.connectors_aws import (
+    AWSClient,
+    AWSFixtureClient,
+    collect_aws_evidence,
+)
 from security_lakehouse.connectors_okta import (
     OktaClient,
     OktaFixtureClient,
@@ -31,6 +36,12 @@ CONNECTOR_RAW_FILE = "raw/connector_events.jsonl"
 # Environment variable carrying the Okta org base URL for live collection. The
 # token is read from ``token_env`` (defaults to OKTA_API_TOKEN for this runner).
 OKTA_ORG_URL_ENV = "OKTA_ORG_URL"
+
+# Environment variables carrying the AWS account id + region for live
+# collection. Credentials resolve through boto3's standard provider chain
+# (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_SESSION_TOKEN / profiles).
+AWS_ACCOUNT_ID_ENV = "AWS_ACCOUNT_ID"
+AWS_REGION_ENV = "AWS_REGION"
 
 
 @dataclass(frozen=True)
@@ -123,6 +134,8 @@ def _collect(
         raise ValueError(f"no sync runner registered for connector_id {connector_id!r}")
     if connector_id == "okta-identity":
         return _collect_okta(fixture_dir=fixture_dir, token_env=token_env)
+    if connector_id == "aws-posture":
+        return _collect_aws(fixture_dir=fixture_dir)
     if not repo:
         raise ValueError("github-security sync requires --repo")
     return sync_repo_governance(repo, fixture_dir=fixture_dir, token_env=token_env)
@@ -148,6 +161,24 @@ def _collect_okta(
             )
         client = OktaClient(org_url, token=token)
     return collect_okta_evidence(client)
+
+
+def _collect_aws(
+    *,
+    fixture_dir: str | Path | None,
+) -> list[dict[str, Any]]:
+    if fixture_dir:
+        fixture_account = os.environ.get(AWS_ACCOUNT_ID_ENV) or "000000000000"
+        return collect_aws_evidence(AWSFixtureClient(fixture_dir), account_id=fixture_account)
+    account_id = os.environ.get(AWS_ACCOUNT_ID_ENV)
+    if not account_id:
+        raise ValueError(
+            "aws-posture sync requires --fixture-dir, or "
+            f"{AWS_ACCOUNT_ID_ENV} plus read-only AWS credentials "
+            "(AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY via the standard provider chain)"
+        )
+    client = AWSClient(region_name=os.environ.get(AWS_REGION_ENV))
+    return collect_aws_evidence(client, account_id=account_id)
 
 
 def _upsert_raw_events(raw_path: Path, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
