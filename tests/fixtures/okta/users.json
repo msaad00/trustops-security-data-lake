@@ -1,0 +1,41 @@
+[
+  {
+    "id": "00u1mfaenrolled01",
+    "status": "ACTIVE",
+    "created": "2026-01-04T09:00:00.000Z",
+    "lastLogin": "2026-05-27T18:14:00.000Z",
+    "statusChanged": "2026-01-04T09:05:00.000Z",
+    "profile": {
+      "login": "ada.lovelace@acme.example",
+      "email": "ada.lovelace@acme.example",
+      "firstName": "Ada",
+      "lastName": "Lovelace"
+    }
+  },
+  {
+    "id": "00u2nomfa00000002",
+    "status": "ACTIVE",
+    "created": "2026-02-11T11:20:00.000Z",
+    "lastLogin": "2026-05-26T07:42:00.000Z",
+    "statusChanged": "2026-02-11T11:25:00.000Z",
+    "profile": {
+      "login": "grace.hopper@acme.example",
+      "email": "grace.hopper@acme.example",
+      "firstName": "Grace",
+      "lastName": "Hopper"
+    }
+  },
+  {
+    "id": "00u3deprovision03",
+    "status": "DEPROVISIONED",
+    "created": "2025-09-01T08:00:00.000Z",
+    "lastLogin": "2026-03-01T08:00:00.000Z",
+    "statusChanged": "2026-04-30T08:00:00.000Z",
+    "profile": {
+      "login": "alan.turing@acme.example",
+      "email": "alan.turing@acme.example",
+      "firstName": "Alan",
+      "lastName": "Turing"
+    }
+  }
+]

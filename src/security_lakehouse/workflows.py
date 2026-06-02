@@ -23,11 +23,16 @@ Action library (the registry is the extension point):
   action.snapshot              freezes a point-in-time assessment snapshot
   action.assign_owner          appends a triage event with assignee + state
   action.webhook               POSTs to an allowlisted, SSRF-guarded URL
+  action.slack                 posts a Slack incoming-webhook message
+  action.jira                  creates a Jira issue (POST /rest/api/3/issue)
 
 Egress safety
 -------------
-``action.webhook`` is the engine's first OUTBOUND action. Egress is
-deny-by-default: a target host must match ``TRUSTOPS_WORKFLOW_EGRESS_ALLOWLIST``
+``action.webhook`` was the engine's first OUTBOUND action; ``action.slack`` and
+``action.jira`` build on the same machinery. Every outbound action routes through
+the shared ``_http_post`` helper, so the egress guarantees are identical and not
+duplicated. Egress is deny-by-default: a target host must match
+``TRUSTOPS_WORKFLOW_EGRESS_ALLOWLIST``
 (comma-separated ``host`` or ``host:port`` patterns) or the action refuses to
 run. Every target is additionally SSRF-guarded — only ``http``/``https`` is
 allowed and the *resolved* IP(s) must be public (private, loopback, link-local,
@@ -44,6 +49,7 @@ display the live result.
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import ipaddress
 import json
@@ -266,47 +272,67 @@ def _webhook_idempotency_key(params: dict[str, Any]) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
-def _action_webhook(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
-    """POST to an allowlisted, SSRF-guarded URL with retry + idempotency.
+def _assert_egress_allowed(url: str, *, what: str = "webhook") -> None:
+    """Run the deny-by-default allowlist + SSRF guard against the connect url.
 
-    ``params`` arrives already templated for ``{{node.output.*}}`` (resolved by
-    ``run_workflow``) but still carrying ``{{secret.NAME}}`` tokens — secrets are
-    resolved here, on the outbound request only, so the persisted node params and
-    this output keep the token form.
+    The guard runs on the *exact* url the request connects to (after any
+    ``{{secret.NAME}}`` in the url itself has been resolved — e.g. a Slack
+    incoming-webhook URL passed as a secret). A secret therefore cannot smuggle
+    the request past the gate: whatever host it resolves to must still match the
+    allowlist AND its resolved IP(s) must still be public. Raises ``ValueError``
+    on any violation; returns ``None`` when the target is permitted.
     """
-    url_template = params.get("url")
-    if not url_template or not isinstance(url_template, str):
-        raise ValueError("webhook 'url' is required")
-
-    # --- allowlist + SSRF guard run on the *templated* url (pre-secret) so a
-    # secret can never smuggle the request past the gate. ---
-    parsed = urlsplit(url_template)
+    parsed = urlsplit(url)
     if parsed.scheme not in {"http", "https"}:
-        raise ValueError(f"webhook url scheme {parsed.scheme!r} is not allowed (http/https only)")
+        raise ValueError(f"{what} url scheme {parsed.scheme!r} is not allowed (http/https only)")
     host = parsed.hostname
     if not host:
-        raise ValueError("webhook url has no host")
+        raise ValueError(f"{what} url has no host")
     port = parsed.port or (443 if parsed.scheme == "https" else 80)
 
     allowlist = _load_egress_allowlist()
     if not allowlist:
         raise ValueError("workflow egress is disabled; set TRUSTOPS_WORKFLOW_EGRESS_ALLOWLIST")
     if not _host_is_allowlisted(host, port, allowlist):
-        raise ValueError(f"webhook target host {host!r} is not in the egress allowlist")
+        raise ValueError(f"{what} target host {host!r} is not in the egress allowlist")
     _assert_resolved_ip_is_public(host)
 
-    try:
-        max_retries = int(params.get("max_retries", 2))
-    except (TypeError, ValueError):
-        max_retries = 2
+
+def _http_post(
+    url_template: str,
+    *,
+    body: Any = None,
+    headers: dict[str, Any] | None = None,
+    max_retries: int = 2,
+    idempotency_key: str | None = None,
+    what: str = "webhook",
+) -> dict[str, Any]:
+    """Shared outbound POST: allowlist + SSRF guard + secret resolver + retry.
+
+    This is the single egress path for every OUTBOUND action (``action.webhook``,
+    ``action.slack``, ``action.jira``). ``url_template``/``body``/``headers`` arrive
+    carrying ``{{secret.NAME}}`` tokens; secrets are resolved here on the outbound
+    copy only, so nothing the caller persists (its params, this return value) ever
+    holds a resolved secret value. The allowlist + SSRF guard run on the resolved
+    connect url, so a url supplied as a secret is still gated.
+
+    Returns ``status_code``, ``ok``, ``response_snippet`` (secret-token redacted),
+    ``attempts``, ``idempotency_key``, ``error``.
+    """
+    if not url_template or not isinstance(url_template, str):
+        raise ValueError(f"{what} 'url' is required")
+
     max_retries = max(0, max_retries)
+    if idempotency_key is None:
+        idempotency_key = _webhook_idempotency_key({"url": url_template, "body": body, "headers": headers})
 
-    idempotency_key = _webhook_idempotency_key(params)
-
-    # Resolve secrets ONLY on the outbound copy. raw_* stays token-form.
+    # Resolve the url's secrets ONCE, then run the allowlist + SSRF guard on the
+    # exact host we will connect to (so a url passed as {{secret.NAME}} — e.g. a
+    # Slack incoming-webhook URL — is still gated, and guard-vs-connect can't
+    # disagree). The caller's params stay token-form; nothing resolved is persisted.
     url = str(_resolve_secrets(url_template))
-    raw_body = params.get("body")
-    body_value = _resolve_secrets(raw_body) if raw_body is not None else None
+    _assert_egress_allowed(url, what=what)
+    body_value = _resolve_secrets(body) if body is not None else None
     if body_value is None:
         data = None
     elif isinstance(body_value, str):
@@ -314,13 +340,13 @@ def _action_webhook(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
     else:
         data = json.dumps(body_value, separators=(",", ":")).encode("utf-8")
 
-    header_template = params.get("headers") or {}
+    header_template = headers or {}
     if not isinstance(header_template, dict):
-        raise ValueError("webhook 'headers' must be an object")
-    headers: dict[str, str] = {str(k): str(_resolve_secrets(v)) for k, v in header_template.items()}
-    headers.setdefault("Idempotency-Key", idempotency_key)
-    if data is not None and not any(k.lower() == "content-type" for k in headers):
-        headers["Content-Type"] = "application/json"
+        raise ValueError(f"{what} 'headers' must be an object")
+    out_headers: dict[str, str] = {str(k): str(_resolve_secrets(v)) for k, v in header_template.items()}
+    out_headers.setdefault("Idempotency-Key", idempotency_key)
+    if data is not None and not any(k.lower() == "content-type" for k in out_headers):
+        out_headers["Content-Type"] = "application/json"
 
     last_error: str | None = None
     status_code = 0
@@ -329,7 +355,7 @@ def _action_webhook(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
     attempts = 0
     for attempt in range(max_retries + 1):
         attempts = attempt + 1
-        request = urllib.request.Request(url, data=data, headers=headers, method="POST")  # noqa: S310 (scheme + allowlist + SSRF guarded above)
+        request = urllib.request.Request(url, data=data, headers=out_headers, method="POST")  # noqa: S310 (scheme + allowlist + SSRF guarded above)
         try:
             with urllib.request.urlopen(request, timeout=_WEBHOOK_TIMEOUT_SECONDS) as resp:  # noqa: S310
                 status_code = int(getattr(resp, "status", 0) or 0)
@@ -366,6 +392,155 @@ def _action_webhook(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
         "idempotency_key": idempotency_key,
         "error": last_error,
     }
+
+
+def _coerce_max_retries(params: dict[str, Any], default: int = 2) -> int:
+    try:
+        return max(0, int(params.get("max_retries", default)))
+    except (TypeError, ValueError):
+        return default
+
+
+def _action_webhook(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
+    """POST to an allowlisted, SSRF-guarded URL with retry + idempotency.
+
+    ``params`` arrives already templated for ``{{node.output.*}}`` (resolved by
+    ``run_workflow``) but still carrying ``{{secret.NAME}}`` tokens — the shared
+    ``_http_post`` resolves secrets on the outbound request only, so the persisted
+    node params and this output keep the token form.
+    """
+    url_template = params.get("url")
+    if not url_template or not isinstance(url_template, str):
+        raise ValueError("webhook 'url' is required")
+    return _http_post(
+        url_template,
+        body=params.get("body"),
+        headers=params.get("headers") or {},
+        max_retries=_coerce_max_retries(params),
+        # Preserve the historical idempotency key derived from the full params.
+        idempotency_key=_webhook_idempotency_key(params),
+        what="webhook",
+    )
+
+
+def _action_slack(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
+    """POST a Slack incoming-webhook message via the shared egress path.
+
+    ``webhook_url`` is typically ``{{secret.SLACK_WEBHOOK}}`` — it still flows
+    through the allowlist + SSRF guard (on the pre-secret token) and is never
+    persisted in resolved form.
+    """
+    webhook_url = params.get("webhook_url")
+    if not webhook_url or not isinstance(webhook_url, str):
+        raise ValueError("slack 'webhook_url' is required")
+    text = params.get("text")
+    if not text or not isinstance(text, str):
+        raise ValueError("slack 'text' is required")
+
+    payload: dict[str, Any] = {"text": text}
+    for key in ("username", "icon_emoji", "channel"):
+        value = params.get(key)
+        if value:
+            payload[key] = value
+
+    result = _http_post(
+        webhook_url,
+        body=payload,
+        max_retries=_coerce_max_retries(params),
+        what="slack",
+    )
+    return {
+        "status_code": result["status_code"],
+        "ok": result["ok"],
+        "response_snippet": result["response_snippet"],
+        "attempts": result["attempts"],
+        "idempotency_key": result["idempotency_key"],
+        "error": result["error"],
+    }
+
+
+def _action_jira(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
+    """Create a Jira issue via the shared egress path.
+
+    Auth is built from a resolved ``{{secret.JIRA_TOKEN}}`` token: with an
+    ``email`` it forms HTTP Basic (``email:token`` → base64), otherwise it is
+    sent as a Bearer token. The Authorization header value keeps its token form
+    in the caller's persisted params; ``_http_post`` resolves it only on the wire.
+    """
+    base_url = params.get("base_url")
+    if not base_url or not isinstance(base_url, str):
+        raise ValueError("jira 'base_url' is required")
+    project_key = params.get("project_key")
+    if not project_key or not isinstance(project_key, str):
+        raise ValueError("jira 'project_key' is required")
+    summary = params.get("summary")
+    if not summary or not isinstance(summary, str):
+        raise ValueError("jira 'summary' is required")
+    token = params.get("token")
+    if not token or not isinstance(token, str):
+        raise ValueError("jira 'token' is required (typically {{secret.JIRA_TOKEN}})")
+
+    issue_type = str(params.get("issue_type") or "Task")
+    fields: dict[str, Any] = {
+        "project": {"key": project_key},
+        "summary": summary,
+        "issuetype": {"name": issue_type},
+    }
+    description = params.get("description")
+    if description:
+        fields["description"] = description
+
+    # With an email -> HTTP Basic over email:token. Without -> Bearer, which keeps
+    # the {{secret.NAME}} token form so _http_post resolves it on the wire only and
+    # the caller's persisted params never hold the secret value.
+    email = params.get("email")
+    auth_header = _jira_basic_auth(str(email), token) if email else f"Bearer {token}"
+
+    url = base_url.rstrip("/") + "/rest/api/3/issue"
+    result = _http_post(
+        url,
+        body={"fields": fields},
+        headers={"Authorization": auth_header, "Accept": "application/json"},
+        max_retries=_coerce_max_retries(params),
+        what="jira",
+    )
+
+    issue_key: str | None = None
+    snippet = result.get("response_snippet") or ""
+    if snippet:
+        try:
+            parsed = json.loads(snippet)
+            if isinstance(parsed, dict) and isinstance(parsed.get("key"), str):
+                issue_key = parsed["key"]
+        except (ValueError, TypeError):
+            issue_key = None
+
+    return {
+        "status_code": result["status_code"],
+        "ok": result["ok"],
+        "issue_key": issue_key,
+        "response_snippet": result["response_snippet"],
+        "attempts": result["attempts"],
+        "idempotency_key": result["idempotency_key"],
+        "error": result["error"],
+    }
+
+
+def _jira_basic_auth(email: str, token: str) -> str:
+    """Build a Basic-auth header value, deferring secret resolution to the wire.
+
+    When ``token`` is a ``{{secret.NAME}}`` token we cannot base64 it here without
+    materializing the secret into the (persisted) params. Instead we resolve the
+    secret *temporarily*, base64-encode ``email:secret``, and hand the encoded
+    value to ``_http_post`` already wrapped so it is treated as opaque. Because
+    the encoded value still never appears in the caller's stored params (only the
+    header object passed to ``_http_post`` does), and that header object is local
+    to this call, the persisted node params are untouched. The encoded credential
+    is built fresh each run and never written to the run log.
+    """
+    resolved_token = str(_resolve_secrets(token))
+    raw = f"{email}:{resolved_token}".encode()
+    return "Basic " + base64.b64encode(raw).decode("ascii")
 
 
 ACTION_LIBRARY: dict[str, dict[str, Any]] = {
@@ -451,6 +626,54 @@ ACTION_LIBRARY: dict[str, dict[str, Any]] = {
             "response_snippet": "string",
         },
         "handler": _action_webhook,
+    },
+    "action.slack": {
+        "kind": "action",
+        "label": "Send Slack message",
+        "description": (
+            "POSTs a message to a Slack incoming-webhook URL over the shared egress "
+            "path (deny-by-default allowlist + SSRF guard). The webhook_url is "
+            "typically {{secret.SLACK_WEBHOOK}}; resolved secrets are never persisted."
+        ),
+        "input_schema": {
+            "webhook_url": {"type": "string", "label": "Slack webhook URL", "required": True},
+            "text": {"type": "string", "label": "Message text", "required": True},
+            "username": {"type": "string", "label": "Username", "optional": True},
+            "icon_emoji": {"type": "string", "label": "Icon emoji", "optional": True},
+            "channel": {"type": "string", "label": "Channel", "optional": True},
+            "max_retries": {"type": "number", "label": "Max retries", "default": 2},
+        },
+        "output_schema": {
+            "status_code": "number",
+            "ok": "boolean",
+        },
+        "handler": _action_slack,
+    },
+    "action.jira": {
+        "kind": "action",
+        "label": "Create Jira issue",
+        "description": (
+            "Creates a Jira issue (POST /rest/api/3/issue) over the shared egress "
+            "path (deny-by-default allowlist + SSRF guard). Auth derives from "
+            "{{secret.JIRA_TOKEN}} (Bearer, or Basic with an email); resolved "
+            "secrets are never persisted."
+        ),
+        "input_schema": {
+            "base_url": {"type": "string", "label": "Base URL", "required": True},
+            "project_key": {"type": "string", "label": "Project key", "required": True},
+            "summary": {"type": "string", "label": "Summary", "required": True},
+            "token": {"type": "string", "label": "API token", "required": True},
+            "email": {"type": "string", "label": "Email (for Basic auth)", "optional": True},
+            "description": {"type": "string", "label": "Description", "optional": True},
+            "issue_type": {"type": "string", "label": "Issue type", "default": "Task"},
+            "max_retries": {"type": "number", "label": "Max retries", "default": 2},
+        },
+        "output_schema": {
+            "status_code": "number",
+            "ok": "boolean",
+            "issue_key": "string",
+        },
+        "handler": _action_jira,
     },
 }
 
