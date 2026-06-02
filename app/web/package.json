@@ -21,7 +21,7 @@
     "@radix-ui/react-tooltip": "^1.1.6",
     "@tanstack/react-query": "^5.62.7",
     "@tanstack/react-table": "^8.20.6",
-    "@xyflow/react": "^12.4.4",
+    "@xyflow/react": "^12.11.0",
     "caniuse-lite": "^1.0.30001793",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
