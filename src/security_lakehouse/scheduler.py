@@ -28,6 +28,7 @@ need full crontab grammar should call ``scheduler tick`` from a real cron.
 
 from __future__ import annotations
 
+import fcntl
 import json
 import re
 import time
@@ -41,6 +42,7 @@ from security_lakehouse.connector_state import build_catalog_view
 from security_lakehouse.workflows import list_workflows, run_workflow
 
 STATE_FILE = "scheduler_state.jsonl"
+LOCK_FILE = ".scheduler.lock"
 DEFAULT_TICK_SECONDS = 60
 
 _INTERVAL_RE = re.compile(r"^every\s+(\d+)\s*(m|h)$", re.IGNORECASE)
@@ -191,6 +193,10 @@ def _write_state(lake_dir: str | Path, *, target_kind: str, target_id: str, fire
         fh.write(json.dumps(record, separators=(",", ":")) + "\n")
 
 
+def _lock_path(lake_dir: str | Path) -> Path:
+    return _gold(lake_dir) / LOCK_FILE
+
+
 def tick(
     lake_dir: str | Path,
     *,
@@ -203,7 +209,42 @@ def tick(
     Returns one record per attempted run. ``runner`` remains the workflow
     runner override used by tests; ``connector_runner`` is the equivalent
     override for scheduled connector syncs.
+
+    The read-state -> fire -> write-state critical section is guarded by a
+    non-blocking advisory file lock (``gold/.scheduler.lock``) so two
+    concurrent ticks (cron overlap, ``concurrencyPolicy: Allow``, daemon plus
+    a manual API tick) cannot both observe the same ``last_fired`` and
+    double-fire. A tick that cannot acquire the lock is a no-op and returns a
+    single ``{"skipped_locked": True}`` record instead of firing.
     """
+    lock_path = _lock_path(lake_dir)
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    lock_fd = lock_path.open("w", encoding="utf-8")
+    try:
+        try:
+            fcntl.flock(lock_fd.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            return [{"target_kind": None, "skipped_locked": True, "fired": []}]
+        try:
+            return _tick_locked(
+                lake_dir,
+                now=now,
+                runner=runner,
+                connector_runner=connector_runner,
+            )
+        finally:
+            fcntl.flock(lock_fd.fileno(), fcntl.LOCK_UN)
+    finally:
+        lock_fd.close()
+
+
+def _tick_locked(
+    lake_dir: str | Path,
+    *,
+    now: datetime | None = None,
+    runner: Any | None = None,
+    connector_runner: Any | None = None,
+) -> list[dict[str, Any]]:
     moment = (now or _utc_now()).astimezone(UTC)
     scheduled = _scheduled_from_workflows(list_workflows(lake_dir))
     state = _read_state(lake_dir)
