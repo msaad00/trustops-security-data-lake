@@ -119,6 +119,8 @@ def test_action_catalog_includes_all_nodes() -> None:
         "action.snapshot",
         "action.assign_owner",
         "action.webhook",
+        "action.slack",
+        "action.jira",
     }
     for action in catalog:
         assert action["kind"] in {"trigger", "check", "action"}
@@ -396,7 +398,7 @@ def test_workflow_endpoints_round_trip(tmp_path: Path) -> None:
     try:
         status, body = _request(server, "GET", "/api/workflows/actions")
         assert status == HTTPStatus.OK
-        assert len(body["actions"]) == 7
+        assert len(body["actions"]) == 9
 
         nodes, edges = _trivial_dag()
         status, body = _request(
