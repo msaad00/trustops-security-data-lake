@@ -50,7 +50,7 @@ export default function DashboardPage() {
           <h1 className="mt-1 text-3xl font-black text-ink">Trust Home</h1>
           <p className="mt-2 max-w-[760px] text-sm text-muted">
             Continuous posture computed from normalized evidence,
-            controls-as-code rules, source freshness, and signed snapshots.
+            controls-as-code rules, source freshness, and hashed snapshots.
           </p>
         </div>
         <div className="flex items-center gap-2">
