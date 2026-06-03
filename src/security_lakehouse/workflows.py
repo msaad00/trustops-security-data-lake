@@ -86,7 +86,7 @@ _SECRET_RE = re.compile(r"\{\{\s*secret\.([A-Za-z0-9_]+)\s*\}\}")
 # ---------------------------------------------------------------------------
 
 
-def _evidence_changed(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
+def _evidence_changed(_lake: Path, params: dict[str, Any], *, dry_run: bool = False) -> dict[str, Any]:
     return {
         "trigger_kind": "evidence_changed",
         "since": params.get("since"),
@@ -94,11 +94,11 @@ def _evidence_changed(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _cron(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
+def _cron(_lake: Path, params: dict[str, Any], *, dry_run: bool = False) -> dict[str, Any]:
     return {"trigger_kind": "cron", "schedule": params.get("schedule") or "@hourly"}
 
 
-def _check_evidence_exists(lake: Path, params: dict[str, Any]) -> dict[str, Any]:
+def _check_evidence_exists(lake: Path, params: dict[str, Any], *, dry_run: bool = False) -> dict[str, Any]:
     control_id = str(params.get("control_id") or "")
     minimum = int(params.get("minimum") or 1)
     silver = lake / "silver" / "normalized_events.jsonl"
@@ -111,7 +111,7 @@ def _check_evidence_exists(lake: Path, params: dict[str, Any]) -> dict[str, Any]
     return {"matched_count": matched, "passed": matched >= minimum, "minimum": minimum}
 
 
-def _check_control_pass(lake: Path, params: dict[str, Any]) -> dict[str, Any]:
+def _check_control_pass(lake: Path, params: dict[str, Any], *, dry_run: bool = False) -> dict[str, Any]:
     control_id = str(params.get("control_id") or "")
     tests = lake / "gold" / "control_tests.jsonl"
     if not tests.is_file():
@@ -129,17 +129,33 @@ def _check_control_pass(lake: Path, params: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _action_snapshot(lake: Path, params: dict[str, Any]) -> dict[str, Any]:
+def _action_snapshot(lake: Path, params: dict[str, Any], *, dry_run: bool = False) -> dict[str, Any]:
     reason = str(params.get("reason") or "workflow_run")
+    if dry_run:
+        return {
+            "dry_run": True,
+            "would": f"write an assessment snapshot to gold/snapshots/ (reason={reason!r})",
+            "snapshot_path": None,
+            "reason": reason,
+        }
     path = write_assessment_snapshot(lake, reason=reason)
     return {"snapshot_path": str(path), "reason": reason}
 
 
-def _action_assign_owner(lake: Path, params: dict[str, Any]) -> dict[str, Any]:
+def _action_assign_owner(lake: Path, params: dict[str, Any], *, dry_run: bool = False) -> dict[str, Any]:
     violation_id = str(params.get("violation_id") or "")
     assignee = str(params.get("assignee") or "")
     if not violation_id:
         raise ValueError("violation_id is required")
+    if dry_run:
+        state = str(params.get("state") or "triaged")
+        return {
+            "dry_run": True,
+            "would": (f"append a triage event for violation {violation_id!r} (assignee={assignee!r}, state={state!r})"),
+            "violation_id": violation_id,
+            "assignee": assignee,
+            "tracking_id": None,
+        }
     record = append_triage_event(
         lake,
         violation_id=violation_id,
@@ -401,7 +417,7 @@ def _coerce_max_retries(params: dict[str, Any], default: int = 2) -> int:
         return default
 
 
-def _action_webhook(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
+def _action_webhook(_lake: Path, params: dict[str, Any], *, dry_run: bool = False) -> dict[str, Any]:
     """POST to an allowlisted, SSRF-guarded URL with retry + idempotency.
 
     ``params`` arrives already templated for ``{{node.output.*}}`` (resolved by
@@ -412,6 +428,13 @@ def _action_webhook(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
     url_template = params.get("url")
     if not url_template or not isinstance(url_template, str):
         raise ValueError("webhook 'url' is required")
+    if dry_run:
+        return {
+            "dry_run": True,
+            "would": f"POST a webhook to {_redact_secret_tokens(url_template)}",
+            "status_code": None,
+            "ok": None,
+        }
     return _http_post(
         url_template,
         body=params.get("body"),
@@ -423,7 +446,7 @@ def _action_webhook(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
     )
 
 
-def _action_slack(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
+def _action_slack(_lake: Path, params: dict[str, Any], *, dry_run: bool = False) -> dict[str, Any]:
     """POST a Slack incoming-webhook message via the shared egress path.
 
     ``webhook_url`` is typically ``{{secret.SLACK_WEBHOOK}}`` — it still flows
@@ -436,6 +459,14 @@ def _action_slack(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
     text = params.get("text")
     if not text or not isinstance(text, str):
         raise ValueError("slack 'text' is required")
+
+    if dry_run:
+        return {
+            "dry_run": True,
+            "would": f"post a Slack message to {_redact_secret_tokens(webhook_url)}",
+            "status_code": None,
+            "ok": None,
+        }
 
     payload: dict[str, Any] = {"text": text}
     for key in ("username", "icon_emoji", "channel"):
@@ -459,7 +490,7 @@ def _action_slack(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _action_jira(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
+def _action_jira(_lake: Path, params: dict[str, Any], *, dry_run: bool = False) -> dict[str, Any]:
     """Create a Jira issue via the shared egress path.
 
     Auth is built from a resolved ``{{secret.JIRA_TOKEN}}`` token: with an
@@ -479,6 +510,19 @@ def _action_jira(_lake: Path, params: dict[str, Any]) -> dict[str, Any]:
     token = params.get("token")
     if not token or not isinstance(token, str):
         raise ValueError("jira 'token' is required (typically {{secret.JIRA_TOKEN}})")
+
+    if dry_run:
+        return {
+            "dry_run": True,
+            "would": (
+                f"create a Jira {str(params.get('issue_type') or 'Task')!r} issue in "
+                f"project {project_key!r} at {_redact_secret_tokens(base_url)} "
+                f"(summary={summary!r})"
+            ),
+            "status_code": None,
+            "ok": None,
+            "issue_key": None,
+        }
 
     issue_type = str(params.get("issue_type") or "Task")
     fields: dict[str, Any] = {
@@ -698,13 +742,21 @@ def run_action(
     *,
     node_type: str,
     params: dict[str, Any] | None = None,
+    dry_run: bool = False,
 ) -> dict[str, Any]:
-    """Execute a single action node against the lake and return its output."""
+    """Execute a single action node against the lake and return its output.
+
+    When ``dry_run=True``, side-effecting actions (``action.snapshot``,
+    ``action.assign_owner``, ``action.webhook``, ``action.slack``,
+    ``action.jira``) skip their side effect and return a ``{"dry_run": True,
+    "would": ...}`` preview instead. Read-only checks and triggers run normally
+    so downstream branching stays realistic.
+    """
     spec = ACTION_LIBRARY.get(node_type)
     if spec is None:
         raise ValueError(f"unknown node_type {node_type!r}")
     handler = spec["handler"]
-    return handler(Path(lake_dir), params or {})
+    return handler(Path(lake_dir), params or {}, dry_run=dry_run)
 
 
 # ---------------------------------------------------------------------------
@@ -888,18 +940,164 @@ def _substitute_variables(
     return {k: resolve(v) for k, v in params.items()}
 
 
+# ``output.<field> <op> <literal>``; the membership form ``output.<field> in <list>``
+# is matched separately because its operator is a word, not a symbol.
+_EXPR_RE = re.compile(r"^\s*output\.([A-Za-z0-9_]+)\s*(==|!=|>=|<=|>|<)\s*(.+?)\s*$")
+_EXPR_IN_RE = re.compile(r"^\s*output\.([A-Za-z0-9_]+)\s+in\s+(.+?)\s*$")
+
+
+def _coerce_literal(token: str) -> Any:
+    """Parse an edge-expression right-hand literal into a Python value.
+
+    ``true``/``false``/``null`` map to ``True``/``False``/``None`` (case
+    insensitive); quoted strings drop their quotes; bare numbers become
+    ``int``/``float``; everything else stays a string. This is a tiny, total
+    parser — there is no ``eval``/``exec`` anywhere on this path.
+    """
+    raw = token.strip()
+    low = raw.lower()
+    if low == "true":
+        return True
+    if low == "false":
+        return False
+    if low in ("null", "none"):
+        return None
+    if len(raw) >= 2 and raw[0] in "\"'" and raw[-1] == raw[0]:
+        return raw[1:-1]
+    try:
+        return int(raw)
+    except ValueError:
+        pass
+    try:
+        return float(raw)
+    except ValueError:
+        pass
+    return raw
+
+
+def _coerce_pair(left: Any, right: Any) -> tuple[Any, Any]:
+    """Coerce ``left`` (parent output value) toward ``right``'s type for comparison.
+
+    If the literal is numeric, try to read the output value as a number too so
+    ``output.status == 403`` matches whether the producer emitted ``403`` or
+    ``"403"``. If the literal is a bool, coerce the output value with ``bool``.
+    Otherwise both sides are compared as strings.
+    """
+    if isinstance(right, bool):
+        return bool(left), right
+    if isinstance(right, (int, float)) and not isinstance(left, bool):
+        try:
+            return type(right)(left), right
+        except (TypeError, ValueError):
+            return left, right
+    return left, right
+
+
+def _apply_operator(op: str, left: Any, right: Any) -> bool:
+    if op == "==":
+        return left == right
+    if op == "!=":
+        return left != right
+    # Ordering comparisons need mutually-orderable operands.
+    try:
+        if op == ">":
+            return left > right
+        if op == ">=":
+            return left >= right
+        if op == "<":
+            return left < right
+        if op == "<=":
+            return left <= right
+    except TypeError:
+        return False
+    return False
+
+
+def _evaluate_expression(expr: str, output: dict[str, Any]) -> bool:
+    """Safely evaluate an edge-condition expression over the parent output.
+
+    Grammar (all over the parent node's ``output`` dict; no ``eval``/``exec``):
+
+      output.<field> == <literal>
+      output.<field> != <literal>
+      output.<field> >  <number>
+      output.<field> >= <number>
+      output.<field> <  <number>
+      output.<field> <= <number>
+      output.<field> in <json-list-or-comma-list>
+
+    ``<literal>`` is ``true``/``false``/``null``, a quoted string, a number, or a
+    bare string. A reference to a field the parent never emitted (or a malformed
+    expression) declines the edge rather than raising, so a typo can't crash a
+    run. Returns ``True`` when the edge should fire.
+    """
+    in_match = _EXPR_IN_RE.match(expr)
+    if in_match:
+        field, rhs = in_match.group(1), in_match.group(2).strip()
+        if field not in output:
+            return False
+        members: list[Any]
+        try:
+            parsed = json.loads(rhs)
+            members = parsed if isinstance(parsed, list) else [parsed]
+        except (ValueError, TypeError):
+            members = [_coerce_literal(part) for part in rhs.split(",") if part.strip()]
+        left = output.get(field)
+        for member in members:
+            coerced_left, coerced_right = _coerce_pair(left, member)
+            if coerced_left == coerced_right:
+                return True
+        return False
+
+    match = _EXPR_RE.match(expr)
+    if not match:
+        return False
+    field, op, rhs = match.group(1), match.group(2), match.group(3)
+    if field not in output:
+        return False
+    left = output.get(field)
+    right = _coerce_literal(rhs)
+    left, right = _coerce_pair(left, right)
+    return _apply_operator(op, left, right)
+
+
+def _is_expression_condition(condition: str) -> bool:
+    """An edge condition is an expression when it references ``output.<field>``."""
+    return condition.strip().startswith("output.")
+
+
 def _edge_allows(edge: dict[str, Any], parent_result: dict[str, Any] | None) -> bool:
-    """Return True if `edge` should fire given the parent node's run result."""
-    condition = str(edge.get("condition") or "always").lower()
-    if condition == "always":
+    """Return True if `edge` should fire given the parent node's run result.
+
+    The ``condition`` is either a legacy literal — ``"always"`` (default),
+    ``"passed"``, ``"failed"`` — or a safe expression over the parent node's
+    output (see :func:`_evaluate_expression` for the grammar), e.g.
+    ``"output.status == 403"`` or ``"output.matched_count > 0"``. A condition may
+    also be supplied as an object ``{"expression": "output.ok != true"}``.
+
+    Expression and ``passed``/``failed`` conditions require the parent to have
+    completed (``result == "ok"``); ``always`` fires regardless.
+    """
+    raw_condition = edge.get("condition")
+    if isinstance(raw_condition, dict):
+        condition = str(raw_condition.get("expression") or raw_condition.get("condition") or "always")
+    else:
+        condition = str(raw_condition or "always")
+
+    if condition.strip().lower() == "always":
         return True
     if parent_result is None or parent_result.get("result") != "ok":
         return False
     output = parent_result.get("output") or {}
+
+    if _is_expression_condition(condition):
+        return _evaluate_expression(condition, output)
+
     passed = bool(output.get("passed"))
-    if condition == "passed":
+    legacy = condition.lower()
+    if legacy == "passed":
         return passed
-    if condition == "failed":
+    if legacy == "failed":
         return not passed
     return True
 
@@ -909,13 +1107,21 @@ def run_workflow(
     *,
     workflow_id: str,
     actor: str = "console",
+    dry_run: bool = False,
 ) -> dict[str, Any]:
     """Execute every node in a workflow (topological order) and persist the run.
 
     Variable references ``{{nodeId.output.field}}`` in params are substituted
     from upstream node outputs before each action runs. Edges with
-    ``condition: "passed"|"failed"`` gate the target node based on the parent
-    check's ``output.passed`` boolean.
+    ``condition: "passed"|"failed"`` — or an expression such as
+    ``"output.matched_count > 0"`` (see :func:`_evaluate_expression`) — gate the
+    target node based on the parent node's output.
+
+    When ``dry_run=True`` the whole DAG is previewed safely: read-only checks and
+    triggers run for real (so branching is realistic), but side-effecting actions
+    (snapshot, assign_owner, webhook, slack, jira) skip their side effect and
+    return a ``{"dry_run": True, "would": ...}`` preview instead. The persisted
+    run record is marked ``dry_run: true``.
     """
     if actor not in _RUN_ACTORS:
         actor = "console"
@@ -987,7 +1193,7 @@ def run_workflow(
             "params": params,
         }
         try:
-            output = run_action(lake_dir, node_type=node_type, params=params)
+            output = run_action(lake_dir, node_type=node_type, params=params, dry_run=dry_run)
             result_entry["result"] = "ok"
             result_entry["output"] = output
             outputs_by_node[node_id] = output
@@ -1004,6 +1210,7 @@ def run_workflow(
         "workflow_id": workflow_id,
         "workflow_version": workflow["version"],
         "actor": actor,
+        "dry_run": dry_run,
         "result": "error" if any_failed else "ok",
         "started_at": started_at,
         "finished_at": _utc_now_iso(),
