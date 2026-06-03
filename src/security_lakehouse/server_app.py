@@ -52,9 +52,10 @@ from security_lakehouse.auth.sessions import SESSION_COOKIE
 from security_lakehouse.dashboard import render_dashboard
 from security_lakehouse.db import metrics as metrics_db
 from security_lakehouse.db import migrate, remediation, repository
-from security_lakehouse.db import risks as risks_db
 from security_lakehouse.db import tags as tags_db
 from security_lakehouse.db.base import create_engine_for, session_factory
+from security_lakehouse.services import NotFound, ValidationError
+from security_lakehouse.services import grc as grc_services
 from security_lakehouse.web import web_dist_dir, web_dist_index
 
 _COOKIE_SECURE = os.environ.get("TRUSTOPS_COOKIE_SECURE", "true").lower() in {"1", "true", "yes", "on"}
@@ -698,14 +699,13 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         params = _params(request)
         overdue_raw = (params.get("overdue") or [None])[0]
         overdue = None if overdue_raw is None else overdue_raw.lower() in {"1", "true", "yes"}
-        tasks = remediation.list_tasks(
+        rows = grc_services.list_tasks(
             session,
-            tenant_id=identity.tenant_id,
+            identity.tenant_id,
             status=(params.get("status") or [None])[0],
             owner=(params.get("owner") or [None])[0],
             overdue=overdue,
         )
-        rows = [remediation.task_to_dict(task) for task in tasks]
         return JSONResponse(
             api_v1.envelope("remediation.tasks", _redact_payload(rows, identity), meta={"count": len(rows)})
         )
@@ -715,9 +715,9 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         body: CreateTaskRequest, identity: Identity = Depends(_require_write), session: Session = Depends(get_session)
     ) -> JSONResponse:
         try:
-            task = remediation.create_task(
+            task = grc_services.create_task(
                 session,
-                tenant_id=identity.tenant_id,
+                identity.tenant_id,
                 title=body.title,
                 description=body.description,
                 control_id=body.control_id,
@@ -727,12 +727,9 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
                 due_at=_parse_dt(body.due_at),
                 created_by=identity.email,
             )
-        except ValueError as exc:
+        except ValidationError as exc:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
-        session.commit()
-        return JSONResponse(
-            api_v1.envelope("remediation.tasks", remediation.task_to_dict(task)), status_code=status.HTTP_201_CREATED
-        )
+        return JSONResponse(api_v1.envelope("remediation.tasks", task), status_code=status.HTTP_201_CREATED)
 
     @app.get("/api/v1/remediation/tasks/{task_id}")
     def get_task(
@@ -756,13 +753,12 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         if "due_at" in changes:
             changes["due_at"] = _parse_dt(changes["due_at"])
         try:
-            task = remediation.update_task(session, tenant_id=identity.tenant_id, task_id=task_id, changes=changes)
-        except ValueError as exc:
+            task = grc_services.update_task(session, identity.tenant_id, task_id, changes=changes)
+        except ValidationError as exc:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
-        if task is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="task not found")
-        session.commit()
-        return JSONResponse(api_v1.envelope("remediation.tasks", remediation.task_to_dict(task)))
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("remediation.tasks", task))
 
     @app.get("/api/v1/remediation/evidence-requests")
     def list_evidence_requests(
@@ -875,14 +871,13 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         request: Request, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
     ) -> JSONResponse:
         params = _params(request)
-        rows = risks_db.list_risks(
+        data = grc_services.list_risks(
             session,
-            tenant_id=identity.tenant_id,
+            identity.tenant_id,
             status=(params.get("status") or [None])[0],
             severity=(params.get("severity") or [None])[0],
             owner=(params.get("owner") or [None])[0],
         )
-        data = [risks_db.risk_to_dict(row) for row in rows]
         return JSONResponse(api_v1.envelope("risks", _redact_payload(data, identity), meta={"count": len(data)}))
 
     @app.post("/api/v1/risks", status_code=status.HTTP_201_CREATED)
@@ -892,9 +887,9 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         session: Session = Depends(get_session),
     ) -> JSONResponse:
         try:
-            risk = risks_db.create_risk(
+            risk = grc_services.create_risk(
                 session,
-                tenant_id=identity.tenant_id,
+                identity.tenant_id,
                 title=body.title,
                 description=body.description,
                 category=body.category,
@@ -908,10 +903,9 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
                 asset_id=body.asset_id,
                 due_at=_parse_dt(body.due_at),
             )
-        except ValueError as exc:
+        except ValidationError as exc:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
-        session.commit()
-        return JSONResponse(api_v1.envelope("risks", risks_db.risk_to_dict(risk)), status_code=status.HTTP_201_CREATED)
+        return JSONResponse(api_v1.envelope("risks", risk), status_code=status.HTTP_201_CREATED)
 
     @app.patch("/api/v1/risks/{risk_id}")
     def update_risk(
@@ -924,13 +918,12 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         if "due_at" in changes:
             changes["due_at"] = _parse_dt(changes["due_at"])
         try:
-            risk = risks_db.update_risk(session, tenant_id=identity.tenant_id, risk_id=risk_id, changes=changes)
-        except ValueError as exc:
+            risk = grc_services.update_risk(session, identity.tenant_id, risk_id, changes=changes)
+        except ValidationError as exc:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
-        if risk is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="risk not found")
-        session.commit()
-        return JSONResponse(api_v1.envelope("risks", risks_db.risk_to_dict(risk)))
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("risks", risk))
 
     @app.delete("/api/v1/risks/{risk_id}")
     def delete_risk(
@@ -938,11 +931,11 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         identity: Identity = Depends(_require_write),
         session: Session = Depends(get_session),
     ) -> JSONResponse:
-        deleted = risks_db.delete_risk(session, tenant_id=identity.tenant_id, risk_id=risk_id)
-        if not deleted:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="risk not found")
-        session.commit()
-        return JSONResponse(api_v1.envelope("risks", {"id": risk_id, "deleted": True}))
+        try:
+            result = grc_services.delete_risk(session, identity.tenant_id, risk_id)
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("risks", result))
 
     # --- tags ---
     @app.get("/api/v1/tags")
