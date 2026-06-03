@@ -251,16 +251,32 @@ def build_catalog_view(lake_dir: str | Path) -> list[dict[str, Any]]:
     return out
 
 
-# Connectors with a real collection adapter wired in connector_runner. The
-# others are access-contract definitions only: their probes validate the
-# configuration but do not collect evidence, and must never report a synthetic
-# evidence count that would imply live collection in the UI.
-IMPLEMENTED_ADAPTERS: frozenset[str] = frozenset({"github-security", "okta-identity", "aws-posture"})
+def _implemented_adapters() -> frozenset[str]:
+    """The connector_ids with a real collection adapter.
+
+    This is derived from connector catalog metadata to avoid importing
+    ``connector_runner`` from this module, which introduces a cyclic import.
+    Connectors absent from the implemented set are access-contract definitions
+    only: their probes validate configuration but never report a synthetic
+    evidence count implying live collection in the UI.
+    """
+    catalog = load_connector_catalog()
+    return frozenset(
+        connector_id for connector_id, definition in catalog.items() if bool(definition.get("is_implemented"))
+    )
+
+
+def __getattr__(name: str) -> Any:
+    # Expose IMPLEMENTED_ADAPTERS as a computed module attribute so callers
+    # cannot mutate a stale module-level frozenset.
+    if name == "IMPLEMENTED_ADAPTERS":
+        return _implemented_adapters()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def has_adapter(connector_id: str) -> bool:
     """True when a real collection adapter is implemented for this connector."""
-    return connector_id in IMPLEMENTED_ADAPTERS
+    return connector_id in _implemented_adapters()
 
 
 def run_probe(
