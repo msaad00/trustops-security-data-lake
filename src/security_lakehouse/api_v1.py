@@ -11,6 +11,8 @@ agent-facing contract cannot drift between local mode and server mode.
 
 from __future__ import annotations
 
+import base64
+import binascii
 import json
 from collections.abc import Callable, Mapping
 from http import HTTPStatus
@@ -291,7 +293,7 @@ def resource_catalog() -> list[JsonObject]:
 
 def filter_collection(rows: list[JsonObject], params: Params) -> tuple[list[JsonObject], dict[str, list[str]]]:
     """Apply ``field=value`` query filters (comma-separated, list-field aware)."""
-    reserved = {"limit", "offset", "sort"}
+    reserved = {"limit", "offset", "sort", "cursor"}
     filters = {
         key: [value for raw in values for value in raw.split(",") if value]
         for key, values in params.items()
@@ -337,35 +339,94 @@ def sort_collection(rows: list[JsonObject], params: Params) -> tuple[list[JsonOb
     return sorted(sortable, key=sort_key, reverse=reverse) + missing, sort
 
 
+def encode_cursor(offset: int) -> str:
+    """Encode a next-page start ``offset`` into an opaque base64 cursor.
+
+    The cursor today is an *offset cursor*: it carries the absolute start
+    offset of the next page as base64-encoded JSON (``{"offset": N}``). This
+    keeps the public contract opaque so callers treat it as a token to follow
+    rather than a number to compute, while a future revision can switch the
+    payload to a keyset/streaming position over the SQL mart without changing
+    the wire shape. The applied limit/sort/filters are not embedded — the page
+    boundary is the offset; callers should keep limit/sort/filters stable
+    across pages (the existing ``meta`` echoes them back for that purpose).
+    """
+    raw = json.dumps({"offset": offset}, separators=(",", ":")).encode("utf-8")
+    return base64.urlsafe_b64encode(raw).decode("ascii")
+
+
+def decode_cursor(cursor: str) -> int:
+    """Decode an opaque cursor produced by :func:`encode_cursor` to an offset.
+
+    Raises ``ValueError`` (the same path as a bad ``limit``/``offset``) when the
+    cursor is not valid base64, not JSON, or does not carry a non-negative
+    integer ``offset``.
+    """
+    try:
+        raw = base64.urlsafe_b64decode(cursor.encode("ascii"))
+        payload = json.loads(raw)
+    except (binascii.Error, ValueError, UnicodeError) as exc:
+        raise ValueError("invalid cursor") from exc
+    if not isinstance(payload, dict):
+        raise ValueError("invalid cursor")
+    offset = payload.get("offset")
+    if not isinstance(offset, int) or isinstance(offset, bool) or offset < 0:
+        raise ValueError("invalid cursor")
+    return offset
+
+
 def paginate_collection(rows: list[JsonObject], params: Params) -> tuple[list[JsonObject], int, int]:
-    """Apply ``limit`` (1-1000, default 100) and ``offset`` (>=0, default 0)."""
+    """Apply ``limit`` (1-1000, default 100) and a start offset.
+
+    The start offset comes from an opaque ``cursor`` when present (see
+    :func:`encode_cursor`); ``cursor`` takes precedence over a raw ``offset``
+    when both are supplied. Otherwise it falls back to ``offset`` (>=0,
+    default 0). An invalid cursor raises ``ValueError`` like a bad limit/offset.
+    """
     try:
         limit = int((params.get("limit") or ["100"])[0])
-        offset = int((params.get("offset") or ["0"])[0])
     except ValueError as exc:
         raise ValueError("limit and offset must be integers") from exc
     if limit < 1 or limit > 1000:
         raise ValueError("limit must be between 1 and 1000")
-    if offset < 0:
-        raise ValueError("offset must be greater than or equal to 0")
+    cursor_values = params.get("cursor") or []
+    if cursor_values and cursor_values[0]:
+        offset = decode_cursor(cursor_values[0])
+    else:
+        try:
+            offset = int((params.get("offset") or ["0"])[0])
+        except ValueError as exc:
+            raise ValueError("limit and offset must be integers") from exc
+        if offset < 0:
+            raise ValueError("offset must be greater than or equal to 0")
     return rows[offset : offset + limit], limit, offset
 
 
 def collection_response(resource: str, rows: list[JsonObject], params: Params) -> JsonObject:
-    """Filter, sort, and paginate ``rows`` into a v1 collection envelope."""
+    """Filter, sort, and paginate ``rows`` into a v1 collection envelope.
+
+    The ``meta`` always includes ``next_cursor``: an opaque cursor for the next
+    page when more filtered rows remain (``offset + limit < count``), else
+    ``None``. The offset/limit/count/returned/sort/filters fields are unchanged,
+    so offset-based pagination keeps working exactly as before.
+    """
     filtered_rows, applied_filters = filter_collection(rows, params)
     sorted_rows, sort = sort_collection(filtered_rows, params)
     page_rows, limit, offset = paginate_collection(sorted_rows, params)
+    count = len(filtered_rows)
+    next_offset = offset + limit
+    next_cursor = encode_cursor(next_offset) if next_offset < count else None
     return envelope(
         resource,
         page_rows,
         meta={
-            "count": len(filtered_rows),
+            "count": count,
             "returned": len(page_rows),
             "limit": limit,
             "offset": offset,
             "sort": sort,
             "filters": applied_filters,
+            "next_cursor": next_cursor,
         },
     )
 
