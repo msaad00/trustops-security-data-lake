@@ -79,6 +79,7 @@
       ],
       "default_route": "dual",
       "freshness_slo_minutes": 60,
+      "is_implemented": true,
       "production_status": "supported_path"
     },
     {
@@ -96,6 +97,7 @@
       "evidence_types": ["identity", "mfa", "policy"],
       "default_route": "dual",
       "freshness_slo_minutes": 240,
+      "is_implemented": true,
       "production_status": "supported_path"
     },
     {
@@ -114,6 +116,7 @@
       "evidence_types": ["identity", "config", "mfa"],
       "default_route": "dual",
       "freshness_slo_minutes": 360,
+      "is_implemented": true,
       "production_status": "supported_path"
     },
     {

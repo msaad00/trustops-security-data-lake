@@ -252,24 +252,23 @@ def build_catalog_view(lake_dir: str | Path) -> list[dict[str, Any]]:
 
 
 def _implemented_adapters() -> frozenset[str]:
-    """The connector_ids with a real collection adapter, derived from the runner.
+    """The connector_ids with a real collection adapter.
 
-    The connector sync registry in ``connector_runner.REGISTRY`` is the single
-    source of truth for which connectors have a live collection adapter. The
-    import is lazy to avoid an import cycle (``connector_runner`` imports this
-    module at load time). Connectors absent from the registry are access-
-    contract definitions only: their probes validate configuration but never
-    report a synthetic evidence count implying live collection in the UI.
+    This is derived from connector catalog metadata to avoid importing
+    ``connector_runner`` from this module, which introduces a cyclic import.
+    Connectors absent from the implemented set are access-contract definitions
+    only: their probes validate configuration but never report a synthetic
+    evidence count implying live collection in the UI.
     """
-    from security_lakehouse.connector_runner import registered_connector_ids
-
-    return registered_connector_ids()
+    catalog = load_connector_catalog()
+    return frozenset(
+        connector_id for connector_id, definition in catalog.items() if bool(definition.get("is_implemented"))
+    )
 
 
 def __getattr__(name: str) -> Any:
-    # Expose IMPLEMENTED_ADAPTERS as a module attribute derived from the
-    # registry, evaluated lazily so importing this module never forces
-    # connector_runner to import at module-load time (avoids the cycle).
+    # Expose IMPLEMENTED_ADAPTERS as a computed module attribute so callers
+    # cannot mutate a stale module-level frozenset.
     if name == "IMPLEMENTED_ADAPTERS":
         return _implemented_adapters()
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

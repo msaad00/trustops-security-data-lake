@@ -157,9 +157,9 @@ ConnectorBuilder = Callable[[SyncInputs], list[dict[str, Any]]]
 #      ``_build_<x>`` is a builder closure that reads the relevant fields off
 #      ``SyncInputs`` and calls your ``collect_*`` function.
 #
-# ``connector_state.IMPLEMENTED_ADAPTERS`` derives its id set from this
-# registry's keys, so registering here is the single source of truth for which
-# connectors report a real adapter to the probe/console.
+# Registering here wires sync dispatch. Mark the same connector_id with
+# ``is_implemented`` in ``connectors/catalog.json`` so connector probes and the
+# console can report adapter availability without importing this module.
 # ---------------------------------------------------------------------------
 
 
@@ -187,8 +187,8 @@ REGISTRY: dict[str, ConnectorBuilder] = {
 def registered_connector_ids() -> frozenset[str]:
     """The set of connector_ids with a sync builder registered in REGISTRY.
 
-    This is the single source of truth for "has a real collection adapter" and
-    is consumed by ``connector_state.IMPLEMENTED_ADAPTERS`` / ``has_adapter``.
+    Tests compare this against the catalog's ``is_implemented`` metadata so the
+    runner dispatch table and UI/probe adapter flags cannot drift.
     """
     return frozenset(REGISTRY)
 
