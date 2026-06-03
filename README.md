@@ -2,9 +2,9 @@
 
 Self-hosted trust operations for AI-era security teams.
 
-TrustOps turns security evidence into continuous compliance posture, owner
-workflows, audit snapshots, repository governance graphs, and agent-readable
-APIs while keeping the evidence in your lake or your cloud boundary.
+TrustOps turns security evidence into live compliance posture, remediation
+workflows, audit snapshots, repository governance graphs, and agent-readable APIs
+while keeping evidence inside the customer's cloud, data lake, or local boundary.
 
 <p align="center">
   <img src="docs/images/trustops-readme-banner.svg" alt="TrustOps product workflow" width="100%">
@@ -23,98 +23,187 @@ APIs while keeping the evidence in your lake or your cloud boundary.
 </p>
 
 <p align="center">
-  <img src="docs/images/trustops-framework-coverage.svg" alt="TrustOps framework coverage summary" width="100%">
+  <img src="docs/images/trustops-demo-dashboard.png" alt="TrustOps Trust Home showing posture, failing controls, evidence freshness, and remediation queue" width="100%">
 </p>
 
 <p align="center">
-  <img src="docs/images/trustops-console.png" alt="TrustOps console" width="92%">
+  <img src="docs/images/trustops-demo-workflows.png" alt="TrustOps workflow canvas with action library and workflow test run" width="49%">
+  <img src="docs/images/trustops-demo-frameworks.png" alt="TrustOps framework coverage and source provenance workbench" width="49%">
 </p>
 
-## What Ships
+## Why It Exists
 
-TrustOps is an assessment platform, not an ingestion demo.
-
-For a concise shipped-versus-planned walkthrough, start with
-[Product Walkthrough](docs/PRODUCT_WALKTHROUGH.md).
-
-The current repo includes:
-
-| Layer             | Shipped surface                                                                                                                        |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Workbench         | Next.js console with dashboard, controls, evidence, violations, workflows, graphs, connectors, frameworks, audit log, and trust center |
-| Server mode       | FastAPI behind `.[server]`, API keys, OIDC, SAML, RBAC, request audit events, and tenant/user spine                                    |
-| Evidence model    | bronze replay records, silver normalized facts, gold posture/tests/assets/freshness, SQLite/DuckDB local marts                         |
-| Continuous inputs | GitHub evidence runner, scheduled connector syncs, public repo audit, authenticated repo governance sync                               |
-| Policy logic      | controls-as-code rule engine with lintable evaluation rules and rule reasons in posture output                                         |
-| Human + agent API | `/api/v1/*` envelopes plus console-compatible `/api/*`; agents and humans use the same auth boundary                                   |
-
-It can run in two evidence modes:
-
-| Mode                  | Use when                                                                               | What it does                                                      |
-| --------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| Existing lake mode    | You already have Snowflake, ClickHouse, object storage, SIEM, scanners, or GRC exports | Reads normalized evidence and evaluates posture                   |
-| Managed evidence mode | You need a local proof-of-value first                                                  | Creates bronze, silver, gold, mart, API, dashboard, and snapshots |
-
-## Product Surface
-
-| Surface           | Human workflow                                              | Agent workflow                                |
-| ----------------- | ----------------------------------------------------------- | --------------------------------------------- |
-| Trust dashboard   | report current posture, freshness, confidence, and risk     | `GET /api/posture/current`                    |
-| Control workbench | inspect tests, owners, evidence, and failures               | `GET /api/control-tests`, `GET /api/controls` |
-| Violation queue   | assign remediation from failing evidence                    | `GET /api/violations`                         |
-| Evidence room     | trace source records, hashes, artifacts, and mappings       | normalized JSONL + local SQL mart             |
-| Snapshot engine   | freeze point-in-time posture for audit or vendor review     | `POST /api/snapshots`                         |
-| Analyst skills    | SOC analyst, SOC 2, AI governance, PCI/ISO expansion guards | skill-pack instructions                       |
-
-Pilot sequencing is tracked in [Pilot Roadmap Tracker](docs/PILOT_ROADMAP.md).
-
-## Connector Access Model
-
-TrustOps uses the smallest viable access boundary:
+Security and compliance teams need current posture, not stale spreadsheets.
+TrustOps is built for companies that want to evaluate evidence where it already
+lives, operate the control plane themselves, and expose the same facts to humans,
+auditors, CI, and agents.
 
 ```mermaid
 flowchart LR
-  Lake[Existing security data lake] -->|read-only role| Assess[TrustOps assessment engine]
-  Tool[Source tool API] -->|scoped token| Assess
-  Managed[Managed evidence objects] -->|dedicated schema| Assess
-  Assess --> Posture[Current posture]
-  Assess --> Violations[Violation queue]
-  Assess --> Snapshots[Point-in-time snapshots]
+  Sources[Cloud, identity, repo, runtime, scanner, SIEM evidence] --> Lake[Customer-controlled security data lake]
+  Lake --> Eval[Controls-as-code assessment engine]
+  Eval --> Workbench[TrustOps workbench]
+  Eval --> API[Agent API + OpenAPI]
+  Eval --> Snapshots[Hashed point-in-time snapshots]
+  Workbench --> Owners[Owners, SLAs, remediation, trust shares]
+  API --> Agents[CI, MCP tools, coding agents, GRC agents]
 ```
 
-Preferred order:
+The default demo is intentionally small and self-contained. The production shape
+is self-hosted server mode with API keys, OIDC/SAML, RBAC, tenant-scoped lake
+paths, request audit events, scheduled connector syncs, and customer-owned
+evidence storage.
 
-1. Read from existing Snowflake, ClickHouse, object storage, SIEM, or scanner evidence.
-2. Create managed evidence objects only when the company does not have normalized evidence yet.
-3. Use direct tool tokens only when the source system is the evidence authority.
+## Shipped Surfaces
 
-See [Connector And Access Model](docs/CONNECTORS.md).
+| Surface             | What is live in the repo                                                                                                                                                                                 |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Trust workbench     | Next.js console with Trust Home, controls, evidence, violations, remediation, risk register, workflows, graph, insights, connectors, frameworks, crosswalk, audit log, trust center, and agent API views |
+| Server mode         | FastAPI behind `.[server]`, API keys, OIDC, SAML, RBAC, request audit events, tenant/user spine, tenant-scoped lake resolution, and protected `/api/v1/*` plus `/api/*`                                  |
+| Evidence pipeline   | Bronze raw replay records, silver normalized facts, gold posture/tests/assets/freshness, snapshots, SQLite local mart, optional DuckDB analytics                                                         |
+| Continuous inputs   | GitHub, AWS, and Okta evidence runners; scheduled connector syncs; public repo audit; authenticated repo governance sync                                                                                 |
+| Policy logic        | Controls-as-code rule engine with lintable rules, rule reasons, stale-evidence handling, and posture output annotations                                                                                  |
+| Remediation         | Owner tasks, evidence requests, SLA dates, exceptions, risk register, and workflow actions                                                                                                               |
+| Workflow automation | Workflow canvas plus snapshot, assignment, trust-share, webhook, Slack, and Jira actions on a guarded egress path                                                                                        |
+| Agent/headless      | Versioned `/api/v1/*` envelopes, OpenAPI export, Python async SDK, MCP read/write tools, and the same auth/RBAC boundary as the UI                                                                       |
 
-## Live Demo
+## Run The Demo
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -e ".[dev]"
+pip install -e ".[dev,server]"
 
-security-lakehouse pipeline run \
-  --raw data/raw/security_events.jsonl \
-  --out build/lakehouse
-
+security-lakehouse fixtures load --company fintech --out build/lakehouse
+security-lakehouse db upgrade --lake build/lakehouse
 security-lakehouse serve \
   --lake build/lakehouse \
+  --server \
+  --allow-insecure-no-auth \
   --port 8787
 ```
 
-Optional local analytical mart:
+Open:
 
-```bash
-pip install -e ".[dev,analytics]"
-security-lakehouse pipeline run --raw data/raw/security_events.jsonl --out build/lakehouse
-security-lakehouse query --engine duckdb --lake build/lakehouse "select * from control_posture"
+```text
+http://127.0.0.1:8787/console/dashboard/
 ```
 
-Validate connector access contracts:
+The fixture data is synthetic and intentionally contains failing controls so the
+workbench shows remediation queues, stale/freshness signals, evidence links, and
+snapshot actions. It is separate from production use. Production deployments
+read from customer-controlled evidence stores and connector runners.
+
+Quick API probes:
+
+```bash
+curl -s http://127.0.0.1:8787/api/v1/posture/current | jq .
+curl -s 'http://127.0.0.1:8787/api/v1/control-tests?result=fail&limit=10' | jq .
+security-lakehouse openapi --out build/openapi.json
+```
+
+## Evidence Flow
+
+```mermaid
+flowchart LR
+  Raw[Raw evidence JSONL] --> Bronze[Bronze: immutable replay + SHA-256]
+  Bronze --> Silver[Silver: normalized security facts]
+  Silver --> Rules[Controls-as-code rules]
+  Rules --> Gold[Gold: posture, tests, assets, freshness]
+  Gold --> Workbench[Workbench]
+  Gold --> V1[/api/v1 envelopes/]
+  Gold --> Snapshots[Snapshots + posture-as-of]
+  Gold --> Mart[SQLite or DuckDB mart]
+
+  Snow[(Snowflake / Iceberg / Polaris)] -. production governed evidence .-> Silver
+  Click[(ClickHouse)] -. runtime telemetry analytics .-> Silver
+```
+
+TrustOps can start with managed local evidence, but the preferred production
+path is read-only access to an existing security data lake or customer-owned
+object store. Direct source tokens are used only when the source system is the
+authority for that evidence.
+
+See [Connector And Access Model](docs/CONNECTORS.md).
+
+## Product Screens
+
+<p align="center">
+  <img src="docs/images/trustops-demo-connectors.png" alt="TrustOps connector workbench with read-only lake, direct connector, and managed evidence modes" width="49%">
+  <img src="docs/images/trustops-demo-trust-center.png" alt="TrustOps trust center share portal with expiring reviewer tokens" width="49%">
+</p>
+
+| View            | What it proves                                                                                   |
+| --------------- | ------------------------------------------------------------------------------------------------ |
+| Trust Home      | Current posture, confidence, freshness, failing controls, remediation queue, and live API status |
+| Workflow canvas | Reusable remediation and evidence workflows with guarded outbound actions                        |
+| Frameworks      | Source-linked framework scope, readiness gates, coverage, and provenance                         |
+| Connectors      | Read-only-first integration strategy, connector state, and sync boundaries                       |
+| Trust center    | Expiring reviewer shares with token hashing and auditor redaction                                |
+
+## Framework Coverage
+
+TrustOps currently ships **34 source-linked controls** across **8 framework
+families**, with reviewed mappings for every seeded control.
+
+| Framework family    | Seeded controls | Reviewed mappings |
+| ------------------- | --------------: | ----------------: |
+| NIST AI RMF         |               6 |                 6 |
+| HIPAA Security Rule |               6 |                 6 |
+| GDPR                |               6 |                 6 |
+| EU AI Act           |               6 |                 6 |
+| ISO/IEC 27001       |               3 |                 3 |
+| PCI DSS             |               3 |                 3 |
+| SOC 2 TSC           |               2 |                 2 |
+| ISO/IEC 42001       |               2 |                 2 |
+
+Coverage details, source URLs, readiness gates, and roadmap percentages live in
+the [Framework Coverage Matrix](docs/FRAMEWORK_COVERAGE.md).
+
+Framework names are rendered as neutral text labels in product and docs. TrustOps
+does **not** ship made-up logos, lookalike seals, regulator marks, or
+certification badges. Official third-party logos are added only when usage terms,
+attribution, owner, and review date are recorded in the
+[Third-Party Asset Policy](docs/THIRD_PARTY_ASSETS.md).
+
+## Human And Agent API
+
+`/api/v1/*` is the stable headless contract for agents and external clients. It
+returns `{data, meta, errors}` envelopes and supports filtering and pagination on
+list resources.
+
+| Route                                     | Purpose                                         |
+| ----------------------------------------- | ----------------------------------------------- |
+| `GET /api/v1/healthz`                     | service status                                  |
+| `GET /api/v1/posture/current`             | current posture, scores, confidence, violations |
+| `GET /api/v1/control-tests`               | control tests, owners, confidence, next action  |
+| `GET /api/v1/violations`                  | open control and asset violations               |
+| `GET /api/v1/evidence`                    | normalized evidence facts                       |
+| `GET /api/v1/assets`                      | asset risk queue                                |
+| `GET /api/v1/insights/timeseries`         | captured posture and trend points               |
+| `GET /api/v1/public/trust-shares/{token}` | auditor-scoped public posture                   |
+| `POST /api/v1/snapshots`                  | point-in-time assessment snapshot               |
+
+Server mode requires auth for non-health routes. API keys, OIDC, and SAML all
+resolve to the same tenant, user, role, and audit boundary. See
+[Server Auth](docs/SERVER_AUTH.md) and [Agent API](docs/api/AGENT_API.md).
+
+## Core Commands
+
+```bash
+security-lakehouse validate --raw data/raw/security_events.jsonl
+security-lakehouse pipeline run --raw data/raw/security_events.jsonl --out build/lakehouse
+security-lakehouse assessment status --lake build/lakehouse
+security-lakehouse assessment tests --lake build/lakehouse
+security-lakehouse assessment violations --lake build/lakehouse
+security-lakehouse assessment snapshot --lake build/lakehouse --reason vendor_due_diligence
+curl -s 'http://127.0.0.1:8787/api/v1/posture/as-of?as_of=2026-05-20T17:00:00Z' | jq .
+security-lakehouse query --lake build/lakehouse "select * from control_posture order by risk_score desc"
+security-lakehouse repo audit https://github.com/OWNER/REPO --out build/repo-audit.jsonl
+GITHUB_TOKEN=... security-lakehouse repo governance-sync OWNER/REPO --out build/repo-governance.jsonl
+```
+
+Connector examples:
 
 ```bash
 security-lakehouse connectors validate
@@ -130,116 +219,12 @@ security-lakehouse connectors sync \
   --fixture-dir tests/fixtures/github-governance
 ```
 
-Open:
+Workflow examples:
 
-```text
-http://127.0.0.1:8787/
+```bash
+security-lakehouse workflow list --lake build/lakehouse
+security-lakehouse workflow run --lake build/lakehouse --id <workflow_id>
 ```
-
-## Assessment Workflow
-
-```mermaid
-flowchart LR
-  A[Security evidence] --> B[Bronze raw records]
-  B --> C[Silver normalized facts]
-  C --> D[Control catalog]
-  D --> P[Compliance program + control tests]
-  P --> E[Assessment engine]
-  E --> F[Current posture]
-  E --> G[Violations]
-  E --> H[Point-in-time snapshots]
-  F --> I[TrustOps console]
-  G --> I
-  H --> I
-  F --> J[Agent API]
-  G --> J
-
-  C -. governed audit evidence .-> S[(Snowflake)]
-  C -. fast telemetry analytics .-> K[(ClickHouse)]
-```
-
-## Compliance Program Model
-
-TrustOps now has a first-class program and control-test model.
-
-```mermaid
-flowchart TB
-  Program[Compliance program] --> Frameworks[Source-linked framework scope]
-  Program --> Tests[Continuous control tests]
-  Tests --> Evidence[Required evidence types]
-  Tests --> Owners[Owners + SLAs]
-  Evidence --> Confidence[Freshness + coverage + source health + hash integrity]
-  Confidence --> Results[pass / fail / needs evidence]
-  Results --> Workflow[remediation task / evidence request / snapshot]
-```
-
-Each control test has:
-
-| Field                           | Why it matters                                          |
-| ------------------------------- | ------------------------------------------------------- |
-| `program_id` and `control_id`   | ties posture to a scoped internal compliance program    |
-| `required_evidence_types`       | makes evidence collection explicit instead of hand-wavy |
-| `result` and lifecycle `status` | separates test outcome from workflow state              |
-| `confidence_inputs`             | explains whether the reported posture is trustworthy    |
-| `next_action`                   | turns findings into owner work                          |
-| `agent_skill`                   | routes headless analysis to the right guarded skill     |
-
-## Confidence Model
-
-TrustOps separates readiness from confidence.
-
-| Metric             | Meaning                                               |
-| ------------------ | ----------------------------------------------------- |
-| Readiness score    | How many implemented control tests are passing        |
-| Posture confidence | How much trust to place in the reported posture       |
-| Evidence freshness | Latest event time and source availability             |
-| Evidence coverage  | Controls with linked evidence                         |
-| Snapshot hash      | Immutable assessment hash for point-in-time reporting |
-
-This matters because a company can be failing controls and still have high
-confidence in the report. That is useful: leadership sees the true posture,
-owners get a clear remediation queue, and auditors get traceable evidence.
-
-## Data Store Choices
-
-TrustOps separates product logic from storage.
-
-| Store      | Role                                                                      | Status                                      |
-| ---------- | ------------------------------------------------------------------------- | ------------------------------------------- |
-| Snowflake  | governed evidence lake, audit views, retention, RBAC, executive reporting | target production backend                   |
-| ClickHouse | high-volume telemetry, runtime events, trends, fast aggregations          | target production backend                   |
-| DuckDB     | local analytical file for columnar demos and bigger local datasets        | optional analytical mart via `.[analytics]` |
-| SQLite     | zero-dependency local SQL artifact for smoke tests and first-run demos    | current lightweight default                 |
-
-SQLite is not the strategic data lake. It is used because it ships with Python
-and makes the project runnable without cloud credentials. DuckDB is the stronger
-local analytical path when the optional `analytics` extra is installed.
-Snowflake and ClickHouse remain the production architecture.
-
-## Framework Coverage
-
-The repo currently ships **34 source-linked controls** across **8 frameworks**,
-with reviewed source mappings for every seeded control. Public-source frameworks
-now have a minimum of six mapped controls each.
-
-| Framework family    | Seeded controls | Reviewed mappings |
-| ------------------- | --------------: | ----------------: |
-| NIST AI RMF         |               6 |                 6 |
-| HIPAA Security Rule |               6 |                 6 |
-| GDPR                |               6 |                 6 |
-| EU AI Act           |               6 |                 6 |
-| ISO/IEC 27001       |               3 |                 3 |
-| PCI DSS             |               3 |                 3 |
-| SOC 2 TSC           |               2 |                 2 |
-| ISO/IEC 42001       |               2 |                 2 |
-
-See [Framework Coverage Matrix](docs/FRAMEWORK_COVERAGE.md) for official source
-URLs, current coverage, readiness gates, and expansion roadmap.
-
-Framework visuals use neutral text labels unless an official logo/certification
-mark is added with documented permission and attribution under the
-[Third-Party Asset Policy](docs/THIRD_PARTY_ASSETS.md). Public visibility of a
-logo is not the same thing as permission to bundle it or imply certification.
 
 ## Data Model
 
@@ -249,109 +234,53 @@ raw evidence
   -> silver/normalized_events.jsonl   canonical security facts
   -> gold/control_posture.jsonl       framework and control posture
   -> gold/control_tests.jsonl         program tests, owners, SLAs, confidence
+  -> gold/remediation_tasks.jsonl     owner tasks, evidence requests, exceptions
   -> gold/asset_risk.jsonl            owner remediation queue
   -> gold/current_posture.json        live posture contract
-  -> snapshots/*.json                 point-in-time assessment evidence
+  -> gold/snapshots/*.json            point-in-time assessment evidence
   -> mart/security_lakehouse.sqlite   local SQL smoke/demo surface
   -> mart/security_data_lake.duckdb   optional local analytical mart
 ```
 
-## API
+## Storage Strategy
 
-`/api/v1/*` is the stable headless contract for agents and external clients. It
-returns `{data, meta, errors}` envelopes and supports `limit`, `offset`, `sort`,
-and field filters on list resources. The unversioned `/api/*` routes remain for
-the bundled console and are served by both local mode and server mode.
+TrustOps separates product logic from storage.
 
-| Route                         | Purpose                                                   |
-| ----------------------------- | --------------------------------------------------------- |
-| `GET /api/v1/healthz`         | service status                                            |
-| `GET /api/v1/posture/current` | current posture, scores, confidence inputs, violations    |
-| `GET /api/v1/control-tests`   | continuous control tests, owners, confidence, next action |
-| `GET /api/v1/controls`        | control workbench records                                 |
-| `GET /api/v1/violations`      | open control and asset violations                         |
-| `GET /api/v1/evidence`        | normalized evidence facts, filterable by field            |
-| `GET /api/v1/assets`          | asset risk queue                                          |
-| `GET /api/v1/snapshots`       | immutable point-in-time assessment snapshots              |
-| `POST /api/v1/snapshots`      | create an immutable point-in-time assessment snapshot     |
+| Store                         | Role                                                                          | Status                      |
+| ----------------------------- | ----------------------------------------------------------------------------- | --------------------------- |
+| Snowflake / Iceberg / Polaris | governed customer evidence, audit views, retention, RBAC, executive reporting | target production path      |
+| ClickHouse                    | high-volume runtime telemetry, prompt/tool events, trend analytics            | target hot telemetry path   |
+| DuckDB                        | local analytical file for larger local datasets                               | optional via `.[analytics]` |
+| SQLite                        | zero-dependency local mart and app-state demo database                        | default local path          |
 
-Server mode requires auth for non-health `/api/v1/*` and `/api/*` routes. API
-keys, OIDC, and SAML all resolve to the same tenant/user/role model. See
-[Server Auth](docs/SERVER_AUTH.md).
-
-Example:
-
-```bash
-curl -s 'http://127.0.0.1:8787/api/v1/control-tests?result=fail&sort=-confidence_score&limit=10' | jq .
-curl -s 'http://127.0.0.1:8787/api/v1/evidence?control_ids=SOC2-CC6.1' | jq .
-```
-
-## Commands
-
-```bash
-security-lakehouse validate --raw data/raw/security_events.jsonl
-security-lakehouse pipeline run --raw data/raw/security_events.jsonl --out build/lakehouse
-security-lakehouse assessment status --lake build/lakehouse
-security-lakehouse assessment tests --lake build/lakehouse
-security-lakehouse assessment violations --lake build/lakehouse
-security-lakehouse assessment snapshot --lake build/lakehouse --reason vendor_due_diligence
-security-lakehouse query --lake build/lakehouse "select * from control_posture order by risk_score desc"
-security-lakehouse repo audit https://github.com/OWNER/REPO --out build/repo-audit.jsonl
-GITHUB_TOKEN=... security-lakehouse repo governance-sync OWNER/REPO --out build/repo-governance.jsonl
-```
-
-Public repository audit mode works without credentials for public GitHub repos.
-It emits normalized raw evidence for metadata, code ownership, security policy,
-workflows, manifests, IaC, AI artifacts, and a repo code graph. See
-[Public Repository Audit](docs/REPO_AUDIT.md).
-
-Authenticated repository governance sync uses a read-only GitHub token or
-fixture bundle for private and organization-only signals: branch protection,
-collaborators, teams, workflow permissions, and security settings. See
-[Repository Governance Connector](docs/REPO_GOVERNANCE_CONNECTOR.md).
-
-## Repo Map
-
-```text
-src/security_lakehouse/     CLI, pipeline, assessment engine, API, dashboard
-data/raw/                   sample security evidence
-data/schemas/               raw and normalized JSON schemas
-connectors/                 source connector and access-boundary catalog
-controls/                   versioned implemented control catalog
-programs/                   internal compliance program and control-test catalog
-frameworks/                 source-linked framework registry
-deploy/snowflake/           governed evidence lake schema
-deploy/clickhouse/          telemetry analytics lake schema
-docs/                       architecture, diagrams, data model, product artifacts
-agent-skills/               guardrailed analyst skills for humans and agents
-tests/                      pipeline, catalog, mapping, and assessment tests
-```
+SQLite is not the strategic data lake. It is the smallest local artifact that
+makes the product runnable without cloud credentials. Production deployments use
+customer-controlled storage and server-mode auth boundaries.
 
 ## Verification
 
 ```bash
 make smoke
+PYTHONPATH=src pytest -q
+npm --prefix app/web run typecheck
+npm --prefix app/web run build
 ```
 
 The smoke target validates raw evidence, runs the pipeline, renders the console,
 and executes the regression suite.
 
-## Project Identity
-
-Product:
+## Repo Map
 
 ```text
-TrustOps
-```
-
-Repository:
-
-```text
-trustops-security-data-lake
-```
-
-Architecture:
-
-```text
-security data lake assessment workbench
+src/security_lakehouse/     CLI, pipeline, assessment engine, API, auth, server mode
+app/web/                    Next.js workbench
+data/                       sample evidence and JSON schemas
+connectors/                 source connector and access-boundary catalog
+controls/                   implemented control catalog and policy rules
+programs/                   compliance program and control-test catalog
+frameworks/                 source-linked framework registry
+deploy/                     Snowflake, ClickHouse, Docker, Helm, EKS assets
+docs/                       architecture, product walkthrough, coverage, API docs
+agent-skills/               guardrailed analyst skills for humans and agents
+tests/                      pipeline, API, auth, policy, connector, UI contract tests
 ```

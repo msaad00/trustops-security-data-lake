@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -96,9 +97,19 @@ export function Sidebar() {
     "trustops:sidebar:collapsed",
     false,
   );
+  const [compactViewport, setCompactViewport] = useState(false);
   const [closedGroups, setClosedGroups] = usePersistentState<
     Record<string, boolean>
   >("trustops:sidebar:closed-groups", {});
+  const effectiveCollapsed = collapsed || compactViewport;
+
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 767px)");
+    const update = () => setCompactViewport(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
 
   const toggleGroup = (group: string) => {
     setClosedGroups({ ...closedGroups, [group]: !closedGroups[group] });
@@ -108,22 +119,30 @@ export function Sidebar() {
     <aside
       className={cn(
         "grid grid-rows-[auto_1fr_auto] border-r border-railLine bg-rail text-slate-300 transition-[width]",
-        collapsed ? "w-[72px]" : "w-[286px]",
+        effectiveCollapsed ? "w-[72px]" : "w-[286px]",
       )}
     >
       <div className="flex items-center justify-between border-b border-railLine p-3">
-        {!collapsed && (
+        {!effectiveCollapsed && (
           <span className="px-2 text-[10px] font-black uppercase tracking-[0.18em] text-[#708198]">
             Workbench
           </span>
         )}
         <button
           type="button"
-          onClick={() => setCollapsed(!collapsed)}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          onClick={() => {
+            if (!compactViewport) setCollapsed(!collapsed);
+          }}
+          aria-label={
+            compactViewport
+              ? "Sidebar is compact on small screens"
+              : effectiveCollapsed
+                ? "Expand sidebar"
+                : "Collapse sidebar"
+          }
           className="ml-auto grid h-7 w-7 place-items-center rounded-md text-[#9aa9bc] hover:bg-[#152030]"
         >
-          {collapsed ? (
+          {effectiveCollapsed ? (
             <ChevronRight className="h-4 w-4" />
           ) : (
             <ChevronLeft className="h-4 w-4" />
@@ -133,11 +152,11 @@ export function Sidebar() {
 
       <div className="overflow-y-auto p-3">
         {GROUPS.map((group) => {
-          const isClosed = Boolean(closedGroups[group]) && !collapsed;
+          const isClosed = Boolean(closedGroups[group]) && !effectiveCollapsed;
           const groupItems = ITEMS.filter((i) => i.group === group);
           return (
             <div key={group} className="mb-3">
-              {!collapsed ? (
+              {!effectiveCollapsed ? (
                 <button
                   type="button"
                   onClick={() => toggleGroup(group)}
@@ -164,10 +183,10 @@ export function Sidebar() {
                       <Link
                         key={href}
                         href={href}
-                        title={collapsed ? label : undefined}
+                        title={effectiveCollapsed ? label : undefined}
                         className={cn(
                           "flex items-center gap-2.5 rounded-xl border px-3 text-[14px] font-extrabold transition-colors",
-                          collapsed
+                          effectiveCollapsed
                             ? "h-10 justify-center px-0"
                             : "h-[42px] justify-between",
                           active
@@ -178,13 +197,15 @@ export function Sidebar() {
                         <span
                           className={cn(
                             "flex items-center gap-2.5",
-                            collapsed ? "justify-center" : "",
+                            effectiveCollapsed ? "justify-center" : "",
                           )}
                         >
                           <span
                             className={cn(
                               "grid place-items-center rounded-lg",
-                              collapsed ? "h-7 w-7" : "h-[26px] w-[26px]",
+                              effectiveCollapsed
+                                ? "h-7 w-7"
+                                : "h-[26px] w-[26px]",
                               active
                                 ? "bg-[#eff6ff] text-[#1d4ed8]"
                                 : "bg-[#1d2b3d] text-[#9cc2ff]",
@@ -192,9 +213,9 @@ export function Sidebar() {
                           >
                             <Icon className="h-4 w-4" />
                           </span>
-                          {!collapsed && label}
+                          {!effectiveCollapsed && label}
                         </span>
-                        {!collapsed && badge && (
+                        {!effectiveCollapsed && badge && (
                           <b className="rounded-full bg-[#26364b] px-2 py-0.5 text-[11px] text-[#cfe0f5]">
                             {badge}
                           </b>
@@ -209,7 +230,7 @@ export function Sidebar() {
         })}
       </div>
 
-      <SidebarFooter collapsed={collapsed} />
+      <SidebarFooter collapsed={effectiveCollapsed} />
     </aside>
   );
 }

@@ -50,4 +50,4 @@ sample evidence
 
 ## Screenshot
 
-![TrustOps console screenshot](images/trustops-console.png)
+![TrustOps Trust Home screenshot](images/trustops-demo-dashboard.png)

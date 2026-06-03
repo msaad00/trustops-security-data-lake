@@ -4,15 +4,19 @@ This page is the product review index for the public repo.
 
 ## Product Experience
 
-| Artifact                               | Path                                          |
-| -------------------------------------- | --------------------------------------------- |
-| Interactive TrustOps console generator | `src/security_lakehouse/dashboard.py`         |
-| Local console/API server               | `src/security_lakehouse/server.py`            |
-| Continuous assessment engine           | `src/security_lakehouse/assessment.py`        |
-| CLI entry point                        | `src/security_lakehouse/cli.py`               |
-| Vendor diligence use case              | `docs/USE_CASE_VENDOR_DILIGENCE.md`           |
-| Console screenshot                     | `docs/images/trustops-console.png`            |
-| Framework coverage graphic             | `docs/images/trustops-framework-coverage.svg` |
+| Artifact                       | Path                                         |
+| ------------------------------ | -------------------------------------------- |
+| Next.js TrustOps workbench     | `app/web/src/app/`                           |
+| Local console/API server       | `src/security_lakehouse/server.py`           |
+| FastAPI server mode            | `src/security_lakehouse/server_app.py`       |
+| Continuous assessment engine   | `src/security_lakehouse/assessment.py`       |
+| CLI entry point                | `src/security_lakehouse/cli.py`              |
+| Vendor diligence use case      | `docs/USE_CASE_VENDOR_DILIGENCE.md`          |
+| Trust Home screenshot          | `docs/images/trustops-demo-dashboard.png`    |
+| Workflow canvas screenshot     | `docs/images/trustops-demo-workflows.png`    |
+| Framework workbench screenshot | `docs/images/trustops-demo-frameworks.png`   |
+| Connector workbench screenshot | `docs/images/trustops-demo-connectors.png`   |
+| Trust center screenshot        | `docs/images/trustops-demo-trust-center.png` |
 
 Run locally:
 
@@ -29,29 +33,31 @@ http://127.0.0.1:8787/
 
 ## API Surfaces
 
-| Route                         | Purpose                                        |
-| ----------------------------- | ---------------------------------------------- |
-| `GET /api/v1/posture/current` | enveloped current posture and framework scores |
-| `GET /api/v1/violations`      | paginated open control and asset violations    |
-| `GET /api/v1/controls`        | paginated control workbench data               |
-| `GET /api/v1/evidence`        | paginated normalized evidence facts            |
-| `GET /api/v1/assets`          | paginated asset risk queue                     |
-| `POST /api/v1/snapshots`      | point-in-time assessment snapshot              |
+| Route                                     | Purpose                                        |
+| ----------------------------------------- | ---------------------------------------------- |
+| `GET /api/v1/posture/current`             | enveloped current posture and framework scores |
+| `GET /api/v1/violations`                  | paginated open control and asset violations    |
+| `GET /api/v1/controls`                    | paginated control workbench data               |
+| `GET /api/v1/evidence`                    | paginated normalized evidence facts            |
+| `GET /api/v1/assets`                      | paginated asset risk queue                     |
+| `GET /api/v1/insights/timeseries`         | captured posture and trend metrics             |
+| `GET /api/v1/public/trust-shares/{token}` | token-scoped auditor posture view              |
+| `POST /api/v1/snapshots`                  | point-in-time assessment snapshot              |
 
 See [Human and Agent API](api/AGENT_API.md).
 
 ## Diagrams
 
-| Diagram                       | Path                                                                                |
-| ----------------------------- | ----------------------------------------------------------------------------------- |
-| Modular architecture          | [ARCHITECTURE.md](ARCHITECTURE.md)                                                  |
-| Data model                    | [DATA_MODEL.md](DATA_MODEL.md)                                                      |
-| Dual security data lake       | [dual-lakehouse.md](diagrams/dual-lakehouse.md)                                     |
-| Evaluation lifecycle          | [evaluation-lifecycle.md](diagrams/evaluation-lifecycle.md)                         |
-| Hosting model                 | [hosting.md](diagrams/hosting.md)                                                   |
-| ASCII system map              | [ascii-system-map.md](diagrams/ascii-system-map.md)                                 |
-| SVG architecture visual       | [trustops-assessment-architecture.svg](images/trustops-assessment-architecture.svg) |
-| SVG framework coverage visual | [trustops-framework-coverage.svg](images/trustops-framework-coverage.svg)           |
+| Diagram                   | Path                                                                                |
+| ------------------------- | ----------------------------------------------------------------------------------- |
+| Modular architecture      | [ARCHITECTURE.md](ARCHITECTURE.md)                                                  |
+| Data model                | [DATA_MODEL.md](DATA_MODEL.md)                                                      |
+| Dual security data lake   | [dual-lakehouse.md](diagrams/dual-lakehouse.md)                                     |
+| Evaluation lifecycle      | [evaluation-lifecycle.md](diagrams/evaluation-lifecycle.md)                         |
+| Hosting model             | [hosting.md](diagrams/hosting.md)                                                   |
+| ASCII system map          | [ascii-system-map.md](diagrams/ascii-system-map.md)                                 |
+| SVG architecture visual   | [trustops-assessment-architecture.svg](images/trustops-assessment-architecture.svg) |
+| Framework coverage matrix | [FRAMEWORK_COVERAGE.md](FRAMEWORK_COVERAGE.md)                                      |
 
 ## Data And Schema
 
