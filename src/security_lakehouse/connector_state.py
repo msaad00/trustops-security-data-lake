@@ -251,16 +251,33 @@ def build_catalog_view(lake_dir: str | Path) -> list[dict[str, Any]]:
     return out
 
 
-# Connectors with a real collection adapter wired in connector_runner. The
-# others are access-contract definitions only: their probes validate the
-# configuration but do not collect evidence, and must never report a synthetic
-# evidence count that would imply live collection in the UI.
-IMPLEMENTED_ADAPTERS: frozenset[str] = frozenset({"github-security", "okta-identity", "aws-posture"})
+def _implemented_adapters() -> frozenset[str]:
+    """The connector_ids with a real collection adapter, derived from the runner.
+
+    The connector sync registry in ``connector_runner.REGISTRY`` is the single
+    source of truth for which connectors have a live collection adapter. The
+    import is lazy to avoid an import cycle (``connector_runner`` imports this
+    module at load time). Connectors absent from the registry are access-
+    contract definitions only: their probes validate configuration but never
+    report a synthetic evidence count implying live collection in the UI.
+    """
+    from security_lakehouse.connector_runner import registered_connector_ids
+
+    return registered_connector_ids()
+
+
+def __getattr__(name: str) -> Any:
+    # Expose IMPLEMENTED_ADAPTERS as a module attribute derived from the
+    # registry, evaluated lazily so importing this module never forces
+    # connector_runner to import at module-load time (avoids the cycle).
+    if name == "IMPLEMENTED_ADAPTERS":
+        return _implemented_adapters()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def has_adapter(connector_id: str) -> bool:
     """True when a real collection adapter is implemented for this connector."""
-    return connector_id in IMPLEMENTED_ADAPTERS
+    return connector_id in _implemented_adapters()
 
 
 def run_probe(

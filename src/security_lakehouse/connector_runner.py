@@ -10,11 +10,12 @@ from __future__ import annotations
 
 import os
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from security_lakehouse.connector_state import append_run_event, has_adapter, latest_config
+from security_lakehouse.connector_state import append_run_event, latest_config
 from security_lakehouse.connectors import load_connector_catalog
 from security_lakehouse.connectors_aws import (
     AWSClient,
@@ -123,6 +124,75 @@ def _require_enabled(lake: Path, connector_id: str) -> None:
         raise ValueError("connector is not enabled; configure it before sync")
 
 
+@dataclass(frozen=True)
+class SyncInputs:
+    """The sync-call inputs handed to a registered connector builder.
+
+    A builder receives the full set of inputs ``run_connector_sync`` knows
+    about (plus process ``env``) and is free to use whichever apply to it. This
+    keeps the registry contract uniform so a new connector never has to change
+    the dispatch site.
+    """
+
+    repo: str | None
+    fixture_dir: str | Path | None
+    token_env: str
+    env: dict[str, str]
+
+
+# A connector builder takes the uniform :class:`SyncInputs` and returns the
+# collected raw evidence rows. Builders construct the right client (fixture vs
+# live) and delegate to that connector's ``collect_*`` function unchanged.
+ConnectorBuilder = Callable[[SyncInputs], list[dict[str, Any]]]
+
+
+# ---------------------------------------------------------------------------
+# Connector registry — the single dispatch table for sync collection.
+#
+# To add a connector, you do NOT edit run_connector_sync or any if/elif chain:
+#
+#   1. Write ``connectors_<x>.py`` exposing a ``collect_<x>_evidence`` function
+#      (and its live + fixture client classes), mirroring connectors_okta.py.
+#   2. Add one ``REGISTRY["<x>-id"] = _build_<x>`` entry below, where
+#      ``_build_<x>`` is a builder closure that reads the relevant fields off
+#      ``SyncInputs`` and calls your ``collect_*`` function.
+#
+# ``connector_state.IMPLEMENTED_ADAPTERS`` derives its id set from this
+# registry's keys, so registering here is the single source of truth for which
+# connectors report a real adapter to the probe/console.
+# ---------------------------------------------------------------------------
+
+
+def _build_github(inputs: SyncInputs) -> list[dict[str, Any]]:
+    if not inputs.repo:
+        raise ValueError("github-security sync requires --repo")
+    return sync_repo_governance(inputs.repo, fixture_dir=inputs.fixture_dir, token_env=inputs.token_env)
+
+
+def _build_okta(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_okta(fixture_dir=inputs.fixture_dir, token_env=inputs.token_env, env=inputs.env)
+
+
+def _build_aws(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_aws(fixture_dir=inputs.fixture_dir, env=inputs.env)
+
+
+REGISTRY: dict[str, ConnectorBuilder] = {
+    "github-security": _build_github,
+    "okta-identity": _build_okta,
+    "aws-posture": _build_aws,
+}
+
+
+def registered_connector_ids() -> frozenset[str]:
+    """The set of connector_ids with a sync builder registered in REGISTRY.
+
+    This is the single source of truth for "has a real collection adapter" and
+    is consumed by ``connector_state.IMPLEMENTED_ADAPTERS`` / ``has_adapter``.
+    """
+    return frozenset(REGISTRY)
+
+
 def _collect(
     connector_id: str,
     *,
@@ -130,30 +200,33 @@ def _collect(
     fixture_dir: str | Path | None,
     token_env: str,
 ) -> list[dict[str, Any]]:
-    if not has_adapter(connector_id):
+    builder = REGISTRY.get(connector_id)
+    if builder is None:
         raise ValueError(f"no sync runner registered for connector_id {connector_id!r}")
-    if connector_id == "okta-identity":
-        return _collect_okta(fixture_dir=fixture_dir, token_env=token_env)
-    if connector_id == "aws-posture":
-        return _collect_aws(fixture_dir=fixture_dir)
-    if not repo:
-        raise ValueError("github-security sync requires --repo")
-    return sync_repo_governance(repo, fixture_dir=fixture_dir, token_env=token_env)
+    return builder(
+        SyncInputs(
+            repo=repo,
+            fixture_dir=fixture_dir,
+            token_env=token_env,
+            env=dict(os.environ),
+        )
+    )
 
 
 def _collect_okta(
     *,
     fixture_dir: str | Path | None,
     token_env: str,
+    env: dict[str, str],
 ) -> list[dict[str, Any]]:
     client: OktaClient | OktaFixtureClient
     if fixture_dir:
         client = OktaFixtureClient(fixture_dir)
     else:
-        org_url = os.environ.get(OKTA_ORG_URL_ENV)
+        org_url = env.get(OKTA_ORG_URL_ENV)
         # The CLI default token_env is GITHUB_TOKEN; fall back to the Okta var
         # when the caller did not override it for this connector.
-        token = os.environ.get(token_env) or os.environ.get("OKTA_API_TOKEN")
+        token = env.get(token_env) or env.get("OKTA_API_TOKEN")
         if not org_url or not token:
             raise ValueError(
                 "okta-identity sync requires --fixture-dir, or "
@@ -166,18 +239,19 @@ def _collect_okta(
 def _collect_aws(
     *,
     fixture_dir: str | Path | None,
+    env: dict[str, str],
 ) -> list[dict[str, Any]]:
     if fixture_dir:
-        fixture_account = os.environ.get(AWS_ACCOUNT_ID_ENV) or "000000000000"
+        fixture_account = env.get(AWS_ACCOUNT_ID_ENV) or "000000000000"
         return collect_aws_evidence(AWSFixtureClient(fixture_dir), account_id=fixture_account)
-    account_id = os.environ.get(AWS_ACCOUNT_ID_ENV)
+    account_id = env.get(AWS_ACCOUNT_ID_ENV)
     if not account_id:
         raise ValueError(
             "aws-posture sync requires --fixture-dir, or "
             f"{AWS_ACCOUNT_ID_ENV} plus read-only AWS credentials "
             "(AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY via the standard provider chain)"
         )
-    client = AWSClient(region_name=os.environ.get(AWS_REGION_ENV))
+    client = AWSClient(region_name=env.get(AWS_REGION_ENV))
     return collect_aws_evidence(client, account_id=account_id)
 
 
