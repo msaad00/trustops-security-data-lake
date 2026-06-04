@@ -1,0 +1,35 @@
+[
+  {
+    "id": "/subscriptions/11111111-1111-1111-1111-111111111111/providers/Microsoft.Authorization/roleAssignments/aaaa0000-0000-0000-0000-000000000001",
+    "name": "aaaa0000-0000-0000-0000-000000000001",
+    "type": "Microsoft.Authorization/roleAssignments",
+    "properties": {
+      "roleDefinitionName": "Owner",
+      "principalId": "bbbb1111-1111-1111-1111-111111111111",
+      "principalType": "User",
+      "scope": "/subscriptions/11111111-1111-1111-1111-111111111111"
+    }
+  },
+  {
+    "id": "/subscriptions/11111111-1111-1111-1111-111111111111/providers/Microsoft.Authorization/roleAssignments/aaaa0000-0000-0000-0000-000000000002",
+    "name": "aaaa0000-0000-0000-0000-000000000002",
+    "type": "Microsoft.Authorization/roleAssignments",
+    "properties": {
+      "roleDefinitionName": "Reader",
+      "principalId": "cccc2222-2222-2222-2222-222222222222",
+      "principalType": "ServicePrincipal",
+      "scope": "/subscriptions/11111111-1111-1111-1111-111111111111"
+    }
+  },
+  {
+    "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/rg-app/providers/Microsoft.Authorization/roleAssignments/aaaa0000-0000-0000-0000-000000000003",
+    "name": "aaaa0000-0000-0000-0000-000000000003",
+    "type": "Microsoft.Authorization/roleAssignments",
+    "properties": {
+      "roleDefinitionName": "Contributor",
+      "principalId": "dddd3333-3333-3333-3333-333333333333",
+      "principalType": "Group",
+      "scope": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/rg-app"
+    }
+  }
+]

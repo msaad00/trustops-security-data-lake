@@ -22,6 +22,11 @@ from security_lakehouse.connectors_aws import (
     AWSFixtureClient,
     collect_aws_evidence,
 )
+from security_lakehouse.connectors_azure import (
+    AzureClient,
+    AzureFixtureClient,
+    collect_azure_evidence,
+)
 from security_lakehouse.connectors_okta import (
     OktaClient,
     OktaFixtureClient,
@@ -43,6 +48,11 @@ OKTA_ORG_URL_ENV = "OKTA_ORG_URL"
 # (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_SESSION_TOKEN / profiles).
 AWS_ACCOUNT_ID_ENV = "AWS_ACCOUNT_ID"
 AWS_REGION_ENV = "AWS_REGION"
+
+# Environment variable carrying the Azure subscription id for live collection.
+# Credentials resolve through DefaultAzureCredential (service-principal env vars
+# AZURE_CLIENT_ID/AZURE_TENANT_ID/AZURE_CLIENT_SECRET, managed identity, CLI).
+AZURE_SUBSCRIPTION_ID_ENV = "AZURE_SUBSCRIPTION_ID"
 
 
 @dataclass(frozen=True)
@@ -177,10 +187,15 @@ def _build_aws(inputs: SyncInputs) -> list[dict[str, Any]]:
     return _collect_aws(fixture_dir=inputs.fixture_dir, env=inputs.env)
 
 
+def _build_azure(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_azure(fixture_dir=inputs.fixture_dir, env=inputs.env)
+
+
 REGISTRY: dict[str, ConnectorBuilder] = {
     "github-security": _build_github,
     "okta-identity": _build_okta,
     "aws-posture": _build_aws,
+    "azure-posture": _build_azure,
 }
 
 
@@ -253,6 +268,25 @@ def _collect_aws(
         )
     client = AWSClient(region_name=env.get(AWS_REGION_ENV))
     return collect_aws_evidence(client, account_id=account_id)
+
+
+def _collect_azure(
+    *,
+    fixture_dir: str | Path | None,
+    env: dict[str, str],
+) -> list[dict[str, Any]]:
+    if fixture_dir:
+        subscription_id = env.get(AZURE_SUBSCRIPTION_ID_ENV) or "00000000-0000-0000-0000-000000000000"
+        return collect_azure_evidence(AzureFixtureClient(fixture_dir, subscription_id=subscription_id))
+    subscription_id = env.get(AZURE_SUBSCRIPTION_ID_ENV)
+    if not subscription_id:
+        raise ValueError(
+            "azure-posture sync requires --fixture-dir, or "
+            f"{AZURE_SUBSCRIPTION_ID_ENV} plus read-only Azure credentials "
+            "(DefaultAzureCredential: service-principal env vars / managed identity / az login)"
+        )
+    client = AzureClient(subscription_id)
+    return collect_azure_evidence(client)
 
 
 def _upsert_raw_events(raw_path: Path, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
