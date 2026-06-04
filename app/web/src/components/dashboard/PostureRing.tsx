@@ -35,7 +35,7 @@ export function PostureRing({
     <div
       className={
         isCompact
-          ? "relative h-[108px] w-[108px]"
+          ? "relative h-[88px] w-[88px]"
           : "relative h-[208px] w-[208px]"
       }
     >
@@ -65,7 +65,7 @@ export function PostureRing({
         <span
           className={
             isCompact
-              ? "text-[28px] font-black leading-none text-ink"
+              ? "text-[24px] font-black leading-none text-ink"
               : "text-[52px] font-black leading-none text-ink"
           }
         >
@@ -74,7 +74,7 @@ export function PostureRing({
         <span
           className={
             isCompact
-              ? "mt-1 rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-wide"
+              ? "mt-1 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide"
               : "mt-1 rounded-full px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wide"
           }
           style={{ color, background: `${color}1a` }}

@@ -85,7 +85,7 @@ export default function EvidencePage() {
     helper.accessor("asset_id", {
       header: "Asset",
       cell: (info) => (
-        <div className="min-w-[220px] max-w-[360px]">
+        <div className="min-w-[160px] max-w-[260px]">
           <code className="break-all text-xs text-ink">{info.getValue()}</code>
           <div className="text-xs text-muted">
             {info.row.original.asset_owner}
@@ -113,7 +113,7 @@ export default function EvidencePage() {
     helper.accessor("evidence_ref", {
       header: "Evidence ref",
       cell: (info) => (
-        <code className="block min-w-[260px] max-w-[520px] break-all text-xs">
+        <code className="block min-w-[180px] max-w-[360px] break-all text-xs">
           {info.getValue()}
         </code>
       ),
@@ -130,7 +130,7 @@ export default function EvidencePage() {
   });
 
   return (
-    <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
+    <div className="grid min-w-0 gap-4 px-3 py-4 sm:px-4 lg:px-5">
       <PageHeader
         eyebrow="Evidence room"
         title="Normalized evidence facts"
@@ -157,7 +157,7 @@ export default function EvidencePage() {
           </CardDescription>
         </CardHeader>
         <div className="max-w-full overflow-x-auto">
-          <table className="min-w-[980px] w-full text-sm">
+          <table className="w-full min-w-[820px] text-sm">
             <thead>
               {table.getHeaderGroups().map((hg) => (
                 <tr key={hg.id} className="border-y border-line bg-slate-50/60">
@@ -165,7 +165,7 @@ export default function EvidencePage() {
                     <th
                       key={h.id}
                       onClick={h.column.getToggleSortingHandler()}
-                      className="cursor-pointer px-4 py-3 text-left text-[11px] font-black uppercase tracking-wide text-muted"
+                      className="cursor-pointer px-3 py-2.5 text-left text-[10px] font-black uppercase tracking-wide text-muted"
                     >
                       <span className="inline-flex items-center gap-1">
                         {flexRender(h.column.columnDef.header, h.getContext())}
@@ -184,7 +184,7 @@ export default function EvidencePage() {
                   className="cursor-pointer border-b border-line last:border-0 hover:bg-blue-50/40"
                 >
                   {r.getVisibleCells().map((c) => (
-                    <td key={c.id} className="px-4 py-3 align-top">
+                    <td key={c.id} className="px-3 py-2.5 align-top">
                       {flexRender(c.column.columnDef.cell, c.getContext())}
                     </td>
                   ))}
@@ -194,7 +194,7 @@ export default function EvidencePage() {
                 <tr>
                   <td
                     colSpan={columns.length}
-                    className="px-4 py-8 text-center text-sm text-muted"
+                    className="px-3 py-7 text-center text-sm text-muted"
                   >
                     No evidence records match the current filters.
                   </td>

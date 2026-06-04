@@ -3,19 +3,39 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowDownToLine,
+  Activity,
+  AlertTriangle,
+  BookOpen,
+  Boxes,
+  CheckCircle2,
+  ClipboardCheck,
+  Code2,
   Download,
+  FileCode2,
+  FileText,
   Filter,
+  FolderTree,
   GitBranch,
   Layout,
+  LockKeyhole,
   Network,
+  Package,
   Route,
   Search,
+  Server,
+  ShieldCheck,
+  ShieldQuestion,
+  Users,
+  UserRound,
+  Workflow,
   X,
+  type LucideIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -110,26 +130,50 @@ const KIND_TONE: Record<
 
 const KIND_SWATCH: Record<GraphNodeKind, string> = {
   framework: "#4f7cff",
-  control: "#16b364",
+  control: "#12b76a",
   evidence_type: "#f79009",
   asset: "#7a35ff",
   repository: "#0ea5e9",
   directory: "#64748b",
-  language: "#16b364",
-  evidence_signal: "#f79009",
+  language: "#059669",
+  evidence_signal: "#ca8a04",
   governance_signal: "#2563eb",
   signal_gap: "#dc2626",
-  workflow: "#7c3aed",
+  workflow: "#9333ea",
   dependency_manifest: "#c2410c",
   ownership_file: "#0891b2",
-  security_file: "#059669",
-  file: "#94a3b8",
+  security_file: "#047857",
+  file: "#71717a",
   principal: "#be123c",
   team: "#4338ca",
-  review_rule: "#10b981",
-  status_check: "#22c55e",
-  workflow_permission: "#f59e0b",
-  evidence: "#475569",
+  review_rule: "#65a30d",
+  status_check: "#15803d",
+  workflow_permission: "#ea580c",
+  evidence: "#334155",
+};
+
+const KIND_ICON: Record<GraphNodeKind, LucideIcon> = {
+  framework: BookOpen,
+  control: ShieldCheck,
+  evidence_type: FileText,
+  asset: Server,
+  repository: GitBranch,
+  directory: FolderTree,
+  language: Code2,
+  evidence_signal: Activity,
+  governance_signal: ClipboardCheck,
+  signal_gap: AlertTriangle,
+  workflow: Workflow,
+  dependency_manifest: Package,
+  ownership_file: Users,
+  security_file: LockKeyhole,
+  file: FileCode2,
+  principal: UserRound,
+  team: Users,
+  review_rule: ShieldQuestion,
+  status_check: CheckCircle2,
+  workflow_permission: LockKeyhole,
+  evidence: Boxes,
 };
 
 const LAYOUT_LABEL: Record<LayoutDir, string> = {
@@ -137,6 +181,12 @@ const LAYOUT_LABEL: Record<LayoutDir, string> = {
   TB: "Top → Bottom",
   BT: "Bottom → Top",
 };
+
+interface MappingRow {
+  control: GraphNode;
+  evidenceTypes: GraphNode[];
+  assetCount: number;
+}
 
 function downloadBlob(filename: string, blob: Blob) {
   const url = URL.createObjectURL(blob);
@@ -161,7 +211,7 @@ export default function GraphPage() {
   const [visible, setVisible] = useState<Set<GraphNodeKind>>(
     new Set(activeKinds),
   );
-  const [layout, setLayout] = useState<LayoutDir>("LR");
+  const [layout, setLayout] = useState<LayoutDir>("TB");
   const [filterOwner, setFilterOwner] = useState("");
   const [filterEnvironment, setFilterEnvironment] = useState("");
   const [filterFramework, setFilterFramework] = useState("");
@@ -175,6 +225,8 @@ export default function GraphPage() {
   useEffect(() => {
     setVisible(new Set(activeKinds));
     setSelected(null);
+    setFilterFramework("");
+    setLayout(graphMode === "compliance" ? "TB" : "LR");
     clearPath();
   }, [graphMode]);
 
@@ -216,6 +268,102 @@ export default function GraphPage() {
       ).sort(),
     [data],
   );
+
+  useEffect(() => {
+    if (
+      graphMode !== "compliance" ||
+      filterFramework ||
+      frameworks.length === 0
+    )
+      return;
+    setFilterFramework(
+      frameworks.find((id) => id.toLowerCase() === "soc2") ?? frameworks[0],
+    );
+  }, [filterFramework, frameworks, graphMode]);
+
+  const graphIndex = useMemo(() => {
+    const nodesById = new Map<string, GraphNode>();
+    const outgoing = new Map<string, string[]>();
+    for (const node of data?.nodes ?? []) nodesById.set(node.id, node);
+    for (const edge of data?.edges ?? []) {
+      const targets = outgoing.get(edge.source) ?? [];
+      targets.push(edge.target);
+      outgoing.set(edge.source, targets);
+    }
+    return { nodesById, outgoing };
+  }, [data]);
+
+  const frameworkScopeIds = useMemo(() => {
+    if (!data || !filterFramework) return null;
+    const ids = new Set<string>();
+    for (const node of data.nodes) {
+      if (
+        (node.kind === "framework" && node.framework_id === filterFramework) ||
+        (node.kind === "control" && node.framework_id === filterFramework)
+      ) {
+        ids.add(node.id);
+      }
+    }
+    for (let depth = 0; depth < 2; depth += 1) {
+      for (const edge of data.edges) {
+        if (ids.has(edge.source)) ids.add(edge.target);
+      }
+    }
+    return ids;
+  }, [data, filterFramework]);
+
+  const visibleSummary = useMemo(() => {
+    const nodes = (data?.nodes ?? []).filter((n) => {
+      if (!visible.has(n.kind)) return false;
+      if (filterOwner && (n.owner ?? "") !== filterOwner) return false;
+      if (filterEnvironment && (n.environment ?? "") !== filterEnvironment)
+        return false;
+      if (frameworkScopeIds && !frameworkScopeIds.has(n.id)) return false;
+      return true;
+    });
+    const countKind = (kind: GraphNodeKind) =>
+      nodes.filter((node) => node.kind === kind).length;
+    return {
+      nodes: nodes.length,
+      edges:
+        data?.edges.filter((edge) => {
+          const ids = new Set(nodes.map((node) => node.id));
+          return ids.has(edge.source) && ids.has(edge.target);
+        }).length ?? 0,
+      controls: countKind("control"),
+      evidenceTypes: countKind("evidence_type"),
+      assets: countKind("asset"),
+      repositories: countKind("repository"),
+      signals:
+        countKind("governance_signal") +
+        countKind("evidence_signal") +
+        countKind("signal_gap"),
+    };
+  }, [data, filterEnvironment, filterOwner, frameworkScopeIds, visible]);
+
+  const mappingRows = useMemo<MappingRow[]>(() => {
+    if (graphMode !== "compliance" || !data) return [];
+    return data.nodes
+      .filter(
+        (node) =>
+          node.kind === "control" &&
+          (!filterFramework || node.framework_id === filterFramework),
+      )
+      .slice(0, 10)
+      .map((control) => {
+        const evidenceTypes = (graphIndex.outgoing.get(control.id) ?? [])
+          .map((id) => graphIndex.nodesById.get(id))
+          .filter((node): node is GraphNode => node?.kind === "evidence_type");
+        const assetIds = new Set<string>();
+        for (const evidence of evidenceTypes) {
+          for (const assetId of graphIndex.outgoing.get(evidence.id) ?? []) {
+            if (graphIndex.nodesById.get(assetId)?.kind === "asset")
+              assetIds.add(assetId);
+          }
+        }
+        return { control, evidenceTypes, assetCount: assetIds.size };
+      });
+  }, [data, filterFramework, graphIndex, graphMode]);
 
   const toggle = (kind: GraphNodeKind) => {
     setVisible((prev) => {
@@ -276,17 +424,17 @@ export default function GraphPage() {
   }, [pathMode]);
 
   return (
-    <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
+    <div className="grid min-w-0 gap-3 px-3 py-3 sm:px-4 lg:px-4">
       <PageHeader
         eyebrow="Graph"
         title={
           graphMode === "compliance"
-            ? "Framework → control → evidence → asset"
+            ? "Compliance mapping graph"
             : "Repository topology and governance"
         }
         description={
           graphMode === "compliance"
-            ? "Every framework loaded, the controls under it, the evidence types those controls require, and the assets covered. Use the rail to filter, search, toggle layouts, trace a path between any two nodes, or export the view."
+            ? "Focused framework slices show the control-to-evidence-to-asset path clearly. Expand to the wide map only when you need every framework at once."
             : "Public repo audit and authenticated governance evidence rendered as repositories, code structure, workflows, owners, required reviews, status checks, controls, and evidence refs. Public-mode gaps stay explicit."
         }
         actions={
@@ -300,7 +448,7 @@ export default function GraphPage() {
       />
 
       <Card className="overflow-hidden">
-        <div className="flex flex-wrap items-center gap-2 p-3">
+        <div className="flex flex-wrap items-center gap-2 p-2">
           <div className="inline-flex items-center gap-1 rounded-lg border border-line bg-white p-0.5">
             {(["compliance", "repository"] as const).map((mode) => (
               <button
@@ -323,7 +471,7 @@ export default function GraphPage() {
               </button>
             ))}
           </div>
-          <div className="relative min-w-[220px] flex-1">
+          <div className="relative min-w-[180px] flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted" />
             <input
               value={search}
@@ -391,17 +539,70 @@ export default function GraphPage() {
         </div>
       </Card>
 
-      <div className="grid min-w-0 gap-4 xl:grid-cols-[240px_minmax(0,1fr)]">
-        <Card className="max-h-[min(680px,calc(100dvh-300px))] min-h-[520px] overflow-auto">
-          <CardHeader>
+      <div className="grid min-w-0 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+        <Card className="p-2.5">
+          <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+            Focus
+          </div>
+          <div className="mt-0.5 truncate text-lg font-black text-ink">
+            {graphMode === "compliance"
+              ? filterFramework || "All frameworks"
+              : "Repository"}
+          </div>
+          <div className="mt-0.5 text-[11px] text-muted">
+            {visibleSummary.nodes} nodes / {visibleSummary.edges} edges
+          </div>
+        </Card>
+        <Card className="p-2.5">
+          <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+            {graphMode === "compliance" ? "Controls" : "Governance signals"}
+          </div>
+          <div className="mt-0.5 text-lg font-black text-ink">
+            {graphMode === "compliance"
+              ? visibleSummary.controls
+              : visibleSummary.signals}
+          </div>
+          <div className="mt-0.5 text-[11px] text-muted">
+            visible after filters
+          </div>
+        </Card>
+        <Card className="p-2.5">
+          <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+            {graphMode === "compliance" ? "Evidence types" : "Repositories"}
+          </div>
+          <div className="mt-0.5 text-lg font-black text-ink">
+            {graphMode === "compliance"
+              ? visibleSummary.evidenceTypes
+              : visibleSummary.repositories}
+          </div>
+          <div className="mt-0.5 text-[11px] text-muted">
+            mapped in this view
+          </div>
+        </Card>
+        <Card className="p-2.5">
+          <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+            Covered assets
+          </div>
+          <div className="mt-0.5 text-lg font-black text-ink">
+            {visibleSummary.assets}
+          </div>
+          <div className="mt-0.5 text-[11px] text-muted">
+            with evidence paths
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid min-w-0 gap-3 xl:grid-cols-[204px_minmax(0,1fr)]">
+        <Card className="max-h-[min(520px,calc(100dvh-250px))] min-h-[340px] overflow-auto sm:min-h-[380px]">
+          <CardHeader className="p-3 pb-2">
             <CardTitle className="flex items-center gap-2 text-base">
               <Filter className="h-4 w-4 text-muted" /> Layers + facets
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs leading-5">
               Persistent filters drive every other view.
             </CardDescription>
           </CardHeader>
-          <div className="grid gap-3 p-4 pt-0">
+          <div className="grid gap-2 p-3 pt-0">
             <section>
               <div className="mb-2 text-[11px] font-black uppercase tracking-wide text-muted">
                 Layers
@@ -409,23 +610,28 @@ export default function GraphPage() {
               <div className="grid gap-1">
                 {activeKinds.map((kind) => {
                   const on = visible.has(kind);
+                  const Icon = KIND_ICON[kind];
+                  const color = KIND_SWATCH[kind];
                   return (
                     <button
                       key={kind}
                       type="button"
                       onClick={() => toggle(kind)}
                       className={[
-                        "grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border px-2.5 py-1.5 text-left text-[11px] font-extrabold",
+                        "grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1.5 rounded-lg border px-2 py-1.5 text-left text-[11px] font-extrabold",
                         on
-                          ? "border-ink bg-white text-ink"
+                          ? "bg-white text-ink shadow-sm"
                           : "border-line bg-slate-50 text-muted hover:border-brand",
                       ].join(" ")}
+                      style={on ? { borderColor: color } : undefined}
                     >
                       <span
-                        className="h-3 w-3 rounded"
-                        style={{ background: KIND_SWATCH[kind] }}
-                      />
-                      <span>{KIND_LABEL[kind]}</span>
+                        className="grid h-6 w-6 place-items-center rounded-lg"
+                        style={{ background: `${color}18`, color }}
+                      >
+                        <Icon className="h-3.5 w-3.5" />
+                      </span>
+                      <span className="truncate">{KIND_LABEL[kind]}</span>
                       <Badge tone={KIND_TONE[kind]}>{counts[kind] ?? 0}</Badge>
                     </button>
                   );
@@ -440,9 +646,9 @@ export default function GraphPage() {
               <select
                 value={filterFramework}
                 onChange={(e) => setFilterFramework(e.target.value)}
-                className="w-full rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
+                className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
               >
-                <option value="">All frameworks</option>
+                <option value="">All frameworks (wide map)</option>
                 {frameworks.map((f) => (
                   <option key={f} value={f}>
                     {f}
@@ -458,7 +664,7 @@ export default function GraphPage() {
               <select
                 value={filterOwner}
                 onChange={(e) => setFilterOwner(e.target.value)}
-                className="w-full rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
+                className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
               >
                 <option value="">All owners</option>
                 {owners.map((o) => (
@@ -476,7 +682,7 @@ export default function GraphPage() {
               <select
                 value={filterEnvironment}
                 onChange={(e) => setFilterEnvironment(e.target.value)}
-                className="w-full rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
+                className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
               >
                 <option value="">All environments</option>
                 {environments.map((env) => (
@@ -487,17 +693,25 @@ export default function GraphPage() {
               </select>
             </section>
 
-            <section className="rounded-xl border border-line bg-slate-50/60 p-3 text-[11px] text-muted">
+            <section className="rounded-lg border border-line bg-slate-50/60 p-2.5 text-[11px] text-muted">
               <div className="mb-1 font-black uppercase tracking-wide text-muted">
                 Legend
               </div>
               <div className="grid gap-1">
                 {activeKinds.map((kind) => (
                   <div key={kind} className="flex items-center gap-2">
-                    <span
-                      className="h-2.5 w-2.5 rounded"
-                      style={{ background: KIND_SWATCH[kind] }}
-                    />
+                    {(() => {
+                      const Icon = KIND_ICON[kind];
+                      const color = KIND_SWATCH[kind];
+                      return (
+                        <span
+                          className="grid h-5 w-5 place-items-center rounded-md"
+                          style={{ background: `${color}16`, color }}
+                        >
+                          <Icon className="h-3 w-3" />
+                        </span>
+                      );
+                    })()}
                     <span className="text-ink">{KIND_LABEL[kind]}</span>
                   </div>
                 ))}
@@ -555,6 +769,58 @@ export default function GraphPage() {
         </div>
       </div>
 
+      {graphMode === "compliance" && (
+        <Card className="overflow-hidden">
+          <CardHeader>
+            <CardTitle>Mapping inspector</CardTitle>
+            <CardDescription>
+              Control paths currently visible in the graph. Select a row to
+              inspect the mapped control and keep the canvas focused.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            {mappingRows.length > 0 ? (
+              <div className="grid gap-2 md:grid-cols-2 2xl:grid-cols-3">
+                {mappingRows.map(({ control, evidenceTypes, assetCount }) => (
+                  <button
+                    key={control.id}
+                    type="button"
+                    onClick={() => handleSelect(control)}
+                    className="min-w-0 rounded-lg border border-line bg-slate-50 p-3 text-left transition hover:border-brand hover:bg-white"
+                  >
+                    <div className="flex min-w-0 items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="truncate text-sm font-black text-ink">
+                          {control.label}
+                        </div>
+                        <div className="mt-0.5 truncate text-[11px] text-muted">
+                          {control.subtitle}
+                        </div>
+                      </div>
+                      <Badge tone="info">{control.framework_id}</Badge>
+                    </div>
+                    <div className="mt-2 grid grid-cols-[minmax(0,1fr)_auto] gap-2 text-xs">
+                      <span className="truncate text-muted">
+                        {evidenceTypes.length > 0
+                          ? evidenceTypes.map((e) => e.label).join(", ")
+                          : "No evidence type mapped"}
+                      </span>
+                      <span className="font-black text-ink">
+                        {assetCount} assets
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-dashed border-line bg-slate-50 p-4 text-sm text-muted">
+                No mapped control paths match the active filters.
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       <Card className="overflow-hidden">
         <CardHeader>
           <CardTitle>Selected node</CardTitle>
@@ -563,7 +829,7 @@ export default function GraphPage() {
             stored.
           </CardDescription>
         </CardHeader>
-        <div className="p-5 pt-0 text-sm">
+        <div className="p-4 pt-0 text-sm">
           {selected ? (
             <div className="grid gap-3">
               <div className="flex flex-wrap items-center gap-2">

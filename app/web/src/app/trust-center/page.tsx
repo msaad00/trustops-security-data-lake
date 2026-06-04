@@ -67,15 +67,17 @@ export default function TrustCenterPage() {
   };
 
   return (
-    <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
+    <div className="grid min-w-0 gap-4 px-3 py-4 sm:px-4 lg:px-5">
       <PageHeader
         eyebrow="Trust center"
         title="Auditor share portal"
         description="Issue scoped, expiring, revocable share tokens for external reviewers. The server stores only the hash — the raw token shows once, here, and never again. Token holders see the workbench through the auditor lens (read-only, owners and remediation notes redacted)."
         actions={
-          <Badge tone="info">
+          <Badge tone="info" className="max-w-[180px]">
             <ShieldCheck className="mr-1 h-3 w-3" />{" "}
-            {posture.data?.assessment_hash?.slice(0, 12) ?? "—"}…
+            <span className="truncate">
+              {posture.data?.assessment_hash?.slice(0, 12) ?? "—"}…
+            </span>
           </Badge>
         }
       />
@@ -88,7 +90,7 @@ export default function TrustCenterPage() {
             automatically; you can also revoke it below at any time.
           </CardDescription>
         </CardHeader>
-        <div className="grid gap-3 p-5 pt-0 sm:grid-cols-[200px_auto_1fr]">
+        <div className="grid min-w-0 gap-3 p-4 pt-0 sm:grid-cols-[180px_auto_minmax(0,1fr)]">
           <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
             Expires in
             <select

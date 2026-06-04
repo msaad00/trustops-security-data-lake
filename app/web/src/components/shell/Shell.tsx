@@ -52,18 +52,18 @@ export function Shell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex h-dvh min-h-0 w-full min-w-0 flex-col overflow-hidden bg-rail">
+    <div className="flex h-dvh min-h-0 w-full min-w-0 max-w-none flex-col overflow-hidden bg-rail">
       <TopBar
         onRefresh={onRefresh}
         onSnapshot={onSnapshot}
         onOpenPalette={() => setPaletteOpen(true)}
       />
       <AuditorBanner />
-      <div className="grid min-h-0 min-w-0 flex-1 grid-cols-[auto_minmax(0,1fr)]">
+      <div className="grid min-h-0 min-w-0 flex-1 grid-cols-[auto_minmax(0,1fr)] overflow-hidden">
         <Sidebar />
         <div className="grid min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden">
           <Breadcrumbs />
-          <main className="min-h-0 min-w-0 overflow-y-auto overflow-x-hidden bg-panel">
+          <main className="min-h-0 min-w-0 max-w-full overflow-y-auto overflow-x-hidden bg-panel">
             <ApiHealthBanner />
             {children}
           </main>
