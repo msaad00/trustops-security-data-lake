@@ -1,0 +1,35 @@
+[
+  {
+    "id": "100000000000000000001",
+    "primaryEmail": "ada.lovelace@acme.example",
+    "suspended": false,
+    "archived": false,
+    "isAdmin": false,
+    "isEnrolledIn2Sv": true,
+    "isEnforcedIn2Sv": true,
+    "creationTime": "2026-01-04T09:00:00.000Z",
+    "lastLoginTime": "2026-05-27T18:14:00.000Z"
+  },
+  {
+    "id": "100000000000000000002",
+    "primaryEmail": "grace.hopper@acme.example",
+    "suspended": false,
+    "archived": false,
+    "isAdmin": false,
+    "isEnrolledIn2Sv": false,
+    "isEnforcedIn2Sv": false,
+    "creationTime": "2026-02-11T11:20:00.000Z",
+    "lastLoginTime": "2026-05-26T07:42:00.000Z"
+  },
+  {
+    "id": "100000000000000000003",
+    "primaryEmail": "alan.turing@acme.example",
+    "suspended": true,
+    "archived": false,
+    "isAdmin": false,
+    "isEnrolledIn2Sv": false,
+    "isEnforcedIn2Sv": false,
+    "creationTime": "2025-09-01T08:00:00.000Z",
+    "lastLoginTime": "2026-03-01T08:00:00.000Z"
+  }
+]

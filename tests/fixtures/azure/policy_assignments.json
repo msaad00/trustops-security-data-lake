@@ -1,0 +1,24 @@
+[
+  {
+    "id": "/subscriptions/11111111-1111-1111-1111-111111111111/providers/Microsoft.Authorization/policyAssignments/require-https",
+    "name": "require-https",
+    "type": "Microsoft.Authorization/policyAssignments",
+    "properties": {
+      "displayName": "Require HTTPS on storage accounts",
+      "enforcementMode": "Default",
+      "scope": "/subscriptions/11111111-1111-1111-1111-111111111111",
+      "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/404c3081-a854-4457-ae30-26a93ef643f9"
+    }
+  },
+  {
+    "id": "/subscriptions/11111111-1111-1111-1111-111111111111/providers/Microsoft.Authorization/policyAssignments/audit-disk-encryption",
+    "name": "audit-disk-encryption",
+    "type": "Microsoft.Authorization/policyAssignments",
+    "properties": {
+      "displayName": "Audit disk encryption",
+      "enforcementMode": "DoNotEnforce",
+      "scope": "/subscriptions/11111111-1111-1111-1111-111111111111",
+      "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/0961003e-5a0a-4549-abde-af6a37f2724d"
+    }
+  }
+]

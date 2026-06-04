@@ -1,0 +1,348 @@
+"""GCP cloud-posture evidence collector.
+
+A cloud-posture connector mirroring ``connectors_aws``. It collects read-only
+GCP project posture signals — IAM role bindings on the project policy,
+org/project policy constraints, and a Cloud Asset Inventory snapshot — and
+emits them in the lake's raw evidence shape so they flow through the same
+validate -> write -> pipeline path the ``github-security`` / ``okta-identity`` /
+``aws-posture`` runners use.
+
+Two clients sit behind one interface, mirroring ``connectors_aws``:
+
+* :class:`GCPClient` — authenticated, read-only reads via the Google Cloud
+  client libraries (Resource Manager, IAM, Cloud Asset Inventory). The Google
+  client imports are lazy (inside the client) so the base/test install never
+  needs them; CI runs entirely off fixtures.
+* :class:`GCPFixtureClient` — reads ``iam_bindings.json`` / ``org_policies.json``
+  / ``assets.json`` from a fixture directory so collection is fully testable
+  without live GCP credentials.
+
+The collector is strictly read-only and least-privilege: it only ever issues
+``GetIamPolicy`` / ``ListOrgPolicies`` / ``ListAssets`` style reads and never
+mutates GCP state.
+"""
+
+from __future__ import annotations
+
+import re
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Any
+
+from security_lakehouse.io import read_json
+from security_lakehouse.models import utc_iso
+
+# Cloud/config controls that exist in controls/catalog.json. Verified before
+# wiring (SOC2-CC6.1 logical access, ISO27001-A.5.15 access control,
+# HIPAA-164.308(a)(4) access management).
+IAM_CONTROLS = ["SOC2-CC6.1", "ISO27001-A.5.15", "HIPAA-164.308(a)(4)"]
+POLICY_CONTROLS = ["SOC2-CC6.1", "ISO27001-A.5.15"]
+ASSET_CONTROLS = ["SOC2-CC6.1"]
+
+# GCP roles that grant broad, project-wide privilege. A binding to one of these
+# is the noteworthy access signal an auditor should review.
+PRIVILEGED_ROLES = {
+    "roles/owner",
+    "roles/editor",
+    "roles/iam.securityAdmin",
+    "roles/resourcemanager.organizationAdmin",
+}
+
+# Org-policy constraints whose enforcement we expect to be on. An unenforced
+# constraint is an open config finding worth surfacing.
+EXPECTED_ENFORCED_CONSTRAINTS = {
+    "constraints/iam.disableServiceAccountKeyCreation",
+    "constraints/compute.requireOsLogin",
+}
+
+
+class GCPClient:
+    """Authenticated, read-only GCP posture client.
+
+    The Google Cloud client libraries are imported lazily so installs that
+    never touch live GCP do not need them. Credentials resolve through Google's
+    Application Default Credentials chain (``GOOGLE_APPLICATION_CREDENTIALS`` /
+    workload identity / metadata server).
+    """
+
+    def __init__(self, project_id: str) -> None:
+        self.project_id = project_id
+        try:
+            from google.cloud import (  # noqa: PLC0415
+                asset_v1,
+                resourcemanager_v3,
+            )
+        except ImportError as exc:  # pragma: no cover - exercised only with live GCP
+            raise RuntimeError(
+                "gcp-posture live collection requires google-cloud-resource-manager and "
+                "google-cloud-asset; install them or use --fixture-dir"
+            ) from exc
+        self._projects = resourcemanager_v3.ProjectsClient()
+        self._org_policies = resourcemanager_v3.OrgPolicyClient()
+        self._assets = asset_v1.AssetServiceClient()
+
+    def iam_bindings(self) -> list[dict[str, Any]]:
+        policy = self._projects.get_iam_policy(resource=f"projects/{self.project_id}")
+        bindings: list[dict[str, Any]] = []
+        for binding in getattr(policy, "bindings", []):
+            bindings.append(
+                {
+                    "role": getattr(binding, "role", ""),
+                    "members": list(getattr(binding, "members", [])),
+                }
+            )
+        return bindings
+
+    def org_policies(self) -> list[dict[str, Any]]:
+        policies: list[dict[str, Any]] = []
+        for policy in self._org_policies.list_policies(parent=f"projects/{self.project_id}"):
+            spec = getattr(policy, "spec", None)
+            rules = getattr(spec, "rules", []) if spec is not None else []
+            enforced = any(bool(getattr(rule, "enforce", False)) for rule in rules)
+            policies.append(
+                {
+                    "name": getattr(policy, "name", ""),
+                    "constraint": getattr(policy, "name", "").split("/policies/")[-1],
+                    "enforced": enforced,
+                }
+            )
+        return policies
+
+    def assets(self) -> list[dict[str, Any]]:
+        assets: list[dict[str, Any]] = []
+        for asset in self._assets.list_assets(request={"parent": f"projects/{self.project_id}"}):
+            assets.append(
+                {
+                    "name": getattr(asset, "name", ""),
+                    "asset_type": getattr(asset, "asset_type", ""),
+                }
+            )
+        return assets
+
+
+class GCPFixtureClient:
+    """Offline GCP posture client backed by a fixture directory."""
+
+    def __init__(self, fixture_dir: str | Path, *, project_id: str = "fixture-project") -> None:
+        self.fixture = Path(fixture_dir)
+        self.project_id = project_id
+
+    def iam_bindings(self) -> list[dict[str, Any]]:
+        payload = self._read("iam_bindings.json")
+        if isinstance(payload, dict):
+            payload = payload.get("bindings", [])
+        return [item for item in payload if isinstance(item, dict)]
+
+    def org_policies(self) -> list[dict[str, Any]]:
+        return self._read_list("org_policies.json")
+
+    def assets(self) -> list[dict[str, Any]]:
+        payload = self._read("assets.json")
+        if isinstance(payload, dict):
+            payload = payload.get("assets", [])
+        return [item for item in payload if isinstance(item, dict)]
+
+    def _read(self, name: str) -> Any:
+        path = self.fixture / name
+        return read_json(path) if path.exists() else []
+
+    def _read_list(self, name: str) -> list[dict[str, Any]]:
+        payload = self._read(name)
+        if isinstance(payload, list):
+            return [item for item in payload if isinstance(item, dict)]
+        return []
+
+
+def collect_gcp_evidence(
+    client: GCPClient | GCPFixtureClient,
+    *,
+    project_id: str | None = None,
+    collected_at: datetime | None = None,
+    tenant_id: str = "customer-managed",
+) -> list[dict[str, Any]]:
+    """Collect normalized raw posture evidence from a GCP project.
+
+    Emits, per collection:
+
+    * one IAM role-binding event per role bound on the project policy
+      (privileged role -> high open finding for review),
+    * one org/project policy event per policy constraint (an unenforced
+      expected constraint is an open config finding),
+    * one asset-inventory event per discovered resource (-> asset control).
+
+    Every event passes :func:`security_lakehouse.validation.validate_raw_events`.
+    """
+    now = collected_at or datetime.now(UTC)
+    project = _project_slug(project_id or client.project_id)
+    rows: list[dict[str, Any]] = []
+
+    for binding in client.iam_bindings():
+        role = str(binding.get("role") or "").strip()
+        if not role:
+            continue
+        rows.append(_iam_event(project, binding, now, tenant_id))
+
+    for policy in client.org_policies():
+        constraint = str(policy.get("constraint") or policy.get("name") or "").strip()
+        if not constraint:
+            continue
+        rows.append(_policy_event(project, policy, now, tenant_id))
+
+    for asset in client.assets():
+        name = str(asset.get("name") or "").strip()
+        if not name:
+            continue
+        rows.append(_asset_event(project, asset, now, tenant_id))
+
+    return rows
+
+
+def _iam_event(
+    project: str,
+    binding: dict[str, Any],
+    collected_at: datetime,
+    tenant_id: str,
+) -> dict[str, Any]:
+    role = str(binding["role"])
+    members = sorted(str(m) for m in binding.get("members", []) if m)
+    privileged = role in PRIVILEGED_ROLES
+    return _event(
+        project=project,
+        collected_at=collected_at,
+        tenant_id=tenant_id,
+        signal="iam_binding",
+        dedupe_key=role,
+        event_type="gcp.cloud.iam_binding",
+        asset_id=f"gcp:project:{project}:role/{role}",
+        asset_type="iam_binding",
+        controls=IAM_CONTROLS,
+        # Privileged role bindings are the noteworthy ones for review.
+        status="open" if privileged else "observed",
+        severity="high" if privileged else "info",
+        evidence_ref=f"//cloudresourcemanager.googleapis.com/projects/{project}:getIamPolicy",
+        attributes={
+            "role": role,
+            "members": members,
+            "member_count": len(members),
+            "privileged": privileged,
+        },
+    )
+
+
+def _policy_event(
+    project: str,
+    policy: dict[str, Any],
+    collected_at: datetime,
+    tenant_id: str,
+) -> dict[str, Any]:
+    constraint = str(policy.get("constraint") or policy.get("name") or "")
+    enforced = bool(policy.get("enforced"))
+    expected = constraint in EXPECTED_ENFORCED_CONSTRAINTS
+    # An expected-on constraint that is not enforced is the finding to raise.
+    needs_enforcement = expected and not enforced
+    return _event(
+        project=project,
+        collected_at=collected_at,
+        tenant_id=tenant_id,
+        signal="org_policy",
+        dedupe_key=constraint,
+        event_type="gcp.cloud.org_policy",
+        asset_id=f"gcp:project:{project}",
+        asset_type="account_config",
+        controls=POLICY_CONTROLS,
+        status="open" if needs_enforcement else ("pass" if enforced else "observed"),
+        severity="medium" if needs_enforcement else "info",
+        evidence_ref=f"//orgpolicy.googleapis.com/projects/{project}/policies/{constraint}",
+        attributes={
+            "constraint": constraint,
+            "enforced": enforced,
+            "expected_enforced": expected,
+            "needs_enforcement": needs_enforcement,
+        },
+    )
+
+
+def _asset_event(
+    project: str,
+    asset: dict[str, Any],
+    collected_at: datetime,
+    tenant_id: str,
+) -> dict[str, Any]:
+    name = str(asset["name"])
+    asset_type = str(asset.get("asset_type") or "unknown")
+    return _event(
+        project=project,
+        collected_at=collected_at,
+        tenant_id=tenant_id,
+        signal="asset",
+        dedupe_key=name,
+        event_type="gcp.cloud.asset",
+        asset_id=f"gcp:asset:{name}",
+        asset_type="cloud_resource",
+        controls=ASSET_CONTROLS,
+        status="observed",
+        severity="info",
+        evidence_ref=f"//cloudasset.googleapis.com/projects/{project}/assets/{name}",
+        attributes={
+            "asset_name": name,
+            "asset_type": asset_type,
+        },
+    )
+
+
+def _event(
+    *,
+    project: str,
+    collected_at: datetime,
+    tenant_id: str,
+    signal: str,
+    event_type: str,
+    asset_id: str,
+    asset_type: str,
+    controls: list[str],
+    status: str,
+    severity: str,
+    evidence_ref: str,
+    attributes: dict[str, Any],
+    dedupe_key: str | None = None,
+) -> dict[str, Any]:
+    stable = _stable_suffix(project=project, signal=signal, asset_id=asset_id, dedupe_key=dedupe_key)
+    return {
+        "event_id": f"gcp-{stable}",
+        "tenant_id": tenant_id,
+        "workspace_id": "default",
+        "event_time": utc_iso(collected_at),
+        "source": "gcp",
+        "event_type": event_type,
+        "entity": {
+            "asset_id": asset_id,
+            "asset_type": asset_type,
+            "asset_owner": project,
+            "environment": "prod",
+            "org": project,
+        },
+        "severity": severity,
+        "status": status,
+        "controls": controls,
+        "evidence": {
+            "evidence_id": f"ev-{stable}",
+            "evidence_ref": evidence_ref,
+            "evidence_collected_at": utc_iso(collected_at),
+        },
+        "attributes": attributes,
+    }
+
+
+def _project_slug(project_id: str) -> str:
+    slug = re.sub(r"[^a-z0-9_.:-]+", "-", str(project_id).lower()).strip("-")
+    return slug or "gcp-project"
+
+
+def _stable_suffix(*, project: str, signal: str, asset_id: str, dedupe_key: str | None) -> str:
+    """Build a deterministic connector-local id without hashing identity data.
+
+    The pipeline computes the canonical raw evidence hash after collection. These
+    IDs only need to be stable for connector upserts and evidence-room links.
+    """
+    seed = f"{project}:{signal}:{dedupe_key or asset_id}".lower()
+    return re.sub(r"[^a-z0-9_.:-]+", "-", seed).strip("-")[:96] or "gcp"

@@ -203,6 +203,78 @@
       "default_route": "local",
       "freshness_slo_minutes": 1440,
       "production_status": "starter_path"
+    },
+    {
+      "connector_id": "google-workspace-identity",
+      "name": "Google Workspace Identity",
+      "category": "identity",
+      "collection_mode": "direct_api_read",
+      "access_boundary": "scoped_token",
+      "credential_type": "google_oauth_token",
+      "minimum_permissions": [
+        "directory.users.readonly",
+        "directory.groups.readonly",
+        "directory.user.security.readonly"
+      ],
+      "evidence_types": ["identity", "mfa", "group"],
+      "default_route": "dual",
+      "freshness_slo_minutes": 240,
+      "is_implemented": true,
+      "production_status": "supported_path"
+    },
+    {
+      "connector_id": "gcp-posture",
+      "name": "GCP Posture",
+      "category": "cloud",
+      "collection_mode": "direct_api_read",
+      "access_boundary": "scoped_token",
+      "credential_type": "gcp_service_account_token",
+      "minimum_permissions": [
+        "resourcemanager.projects.get",
+        "iam.roles.list",
+        "cloudasset.assets.listResource"
+      ],
+      "evidence_types": ["cloud", "iam", "posture"],
+      "default_route": "dual",
+      "freshness_slo_minutes": 240,
+      "is_implemented": true,
+      "production_status": "supported_path"
+    },
+    {
+      "connector_id": "azure-posture",
+      "name": "Azure Posture",
+      "category": "cloud",
+      "collection_mode": "direct_api_read",
+      "access_boundary": "scoped_token",
+      "credential_type": "azure_service_principal_token",
+      "minimum_permissions": [
+        "Microsoft.Authorization/roleAssignments/read",
+        "Microsoft.Resources/subscriptions/read",
+        "Microsoft.PolicyInsights/policyStates/read"
+      ],
+      "evidence_types": ["cloud", "iam", "posture"],
+      "default_route": "dual",
+      "freshness_slo_minutes": 240,
+      "is_implemented": true,
+      "production_status": "supported_path"
+    },
+    {
+      "connector_id": "jira-ticketing",
+      "name": "Jira Ticketing",
+      "category": "workflow",
+      "collection_mode": "direct_api_read",
+      "access_boundary": "scoped_token",
+      "credential_type": "jira_api_token",
+      "minimum_permissions": [
+        "read:jira-work",
+        "read:jira-user",
+        "read:project:jira"
+      ],
+      "evidence_types": ["workflow", "ticket"],
+      "default_route": "dual",
+      "freshness_slo_minutes": 240,
+      "is_implemented": true,
+      "production_status": "supported_path"
     }
   ]
 }

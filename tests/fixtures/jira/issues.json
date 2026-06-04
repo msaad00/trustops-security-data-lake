@@ -1,0 +1,61 @@
+[
+  {
+    "key": "SEC-101",
+    "fields": {
+      "summary": "Rotate exposed CI credential",
+      "status": {
+        "name": "Done",
+        "statusCategory": { "key": "done", "name": "Done" }
+      },
+      "assignee": {
+        "displayName": "Ada Lovelace",
+        "emailAddress": "ada.lovelace@acme.example",
+        "accountId": "acc-ada"
+      },
+      "duedate": "2026-05-20",
+      "priority": { "name": "High" },
+      "labels": ["security", "remediation"],
+      "project": { "key": "SEC" },
+      "created": "2026-05-01T09:00:00.000+0000",
+      "updated": "2026-05-19T16:00:00.000+0000"
+    }
+  },
+  {
+    "key": "SEC-102",
+    "fields": {
+      "summary": "Remediate public S3 bucket exposure",
+      "status": {
+        "name": "To Do",
+        "statusCategory": { "key": "new", "name": "To Do" }
+      },
+      "assignee": {
+        "displayName": "Grace Hopper",
+        "emailAddress": "grace.hopper@acme.example",
+        "accountId": "acc-grace"
+      },
+      "duedate": "2026-05-10",
+      "priority": { "name": "Critical" },
+      "labels": ["security", "governance"],
+      "project": { "key": "SEC" },
+      "created": "2026-04-15T09:00:00.000+0000",
+      "updated": "2026-05-25T11:00:00.000+0000"
+    }
+  },
+  {
+    "key": "GOV-7",
+    "fields": {
+      "summary": "Document access-review exception",
+      "status": {
+        "name": "In Progress",
+        "statusCategory": { "key": "indeterminate", "name": "In Progress" }
+      },
+      "assignee": null,
+      "duedate": "2026-06-30",
+      "priority": { "name": "Medium" },
+      "labels": ["governance"],
+      "project": { "key": "GOV" },
+      "created": "2026-05-12T09:00:00.000+0000",
+      "updated": "2026-05-27T08:00:00.000+0000"
+    }
+  }
+]
