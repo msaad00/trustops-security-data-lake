@@ -119,10 +119,10 @@ export function Sidebar() {
     <aside
       className={cn(
         "grid grid-rows-[auto_1fr_auto] border-r border-railLine bg-rail text-slate-300 transition-[width]",
-        effectiveCollapsed ? "w-[72px]" : "w-[286px]",
+        effectiveCollapsed ? "w-[64px]" : "w-[248px]",
       )}
     >
-      <div className="flex items-center justify-between border-b border-railLine p-3">
+      <div className="flex items-center justify-between border-b border-railLine p-2.5">
         {!effectiveCollapsed && (
           <span className="px-2 text-[10px] font-black uppercase tracking-[0.18em] text-[#708198]">
             Workbench
@@ -150,7 +150,7 @@ export function Sidebar() {
         </button>
       </div>
 
-      <div className="overflow-y-auto p-3">
+      <div className="overflow-y-auto p-2.5">
         {GROUPS.map((group) => {
           const isClosed = Boolean(closedGroups[group]) && !effectiveCollapsed;
           const groupItems = ITEMS.filter((i) => i.group === group);
@@ -160,7 +160,7 @@ export function Sidebar() {
                 <button
                   type="button"
                   onClick={() => toggleGroup(group)}
-                  className="flex w-full items-center justify-between px-3 py-2 text-[11px] font-black uppercase tracking-[0.08em] text-[#708198] hover:text-[#bcc8d8]"
+                  className="flex w-full items-center justify-between px-2.5 py-1.5 text-[10px] font-black uppercase tracking-[0.08em] text-[#708198] hover:text-[#bcc8d8]"
                 >
                   <span>{group}</span>
                   {isClosed ? (
@@ -185,10 +185,10 @@ export function Sidebar() {
                         href={href}
                         title={effectiveCollapsed ? label : undefined}
                         className={cn(
-                          "flex items-center gap-2.5 rounded-xl border px-3 text-[14px] font-extrabold transition-colors",
+                          "flex items-center gap-2 rounded-lg border px-2.5 text-[13px] font-extrabold transition-colors",
                           effectiveCollapsed
-                            ? "h-10 justify-center px-0"
-                            : "h-[42px] justify-between",
+                            ? "h-9 justify-center px-0"
+                            : "h-9 justify-between",
                           active
                             ? "border-[#31435c] bg-[#172436] text-white"
                             : "border-transparent text-[#c6d1df] hover:bg-[#152030]",
@@ -203,9 +203,7 @@ export function Sidebar() {
                           <span
                             className={cn(
                               "grid place-items-center rounded-lg",
-                              effectiveCollapsed
-                                ? "h-7 w-7"
-                                : "h-[26px] w-[26px]",
+                              effectiveCollapsed ? "h-7 w-7" : "h-6 w-6",
                               active
                                 ? "bg-[#eff6ff] text-[#1d4ed8]"
                                 : "bg-[#1d2b3d] text-[#9cc2ff]",
@@ -216,7 +214,7 @@ export function Sidebar() {
                           {!effectiveCollapsed && label}
                         </span>
                         {!effectiveCollapsed && badge && (
-                          <b className="rounded-full bg-[#26364b] px-2 py-0.5 text-[11px] text-[#cfe0f5]">
+                          <b className="rounded-full bg-[#26364b] px-1.5 py-0.5 text-[10px] text-[#cfe0f5]">
                             {badge}
                           </b>
                         )}

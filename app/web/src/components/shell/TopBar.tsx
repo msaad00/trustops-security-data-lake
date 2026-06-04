@@ -32,18 +32,18 @@ export function TopBar({ onRefresh, onSnapshot, onOpenPalette }: Props) {
   }, [onOpenPalette]);
 
   return (
-    <header className="flex h-14 min-w-0 items-center justify-between gap-2 overflow-hidden border-b border-railLine bg-rail px-2.5 text-slate-100 md:px-4">
-      <div className="flex flex-none items-center gap-2 text-[20px] font-black">
+    <header className="flex h-[52px] min-w-0 items-center justify-between gap-1.5 overflow-hidden border-b border-railLine bg-rail px-2 text-slate-100 md:px-3">
+      <div className="flex flex-none items-center gap-2 text-[18px] font-black">
         <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-brand to-brand-cyan text-sm text-white">
           T
         </span>
-        <span className="hidden lg:inline">TrustOps</span>
+        <span className="hidden xl:inline">TrustOps</span>
       </div>
       <button
         type="button"
         onClick={onOpenPalette}
         aria-label="Open command palette"
-        className="group flex h-9 w-9 flex-none items-center justify-center rounded-lg border border-[#27364a] bg-[#101926] text-left text-sm text-[#7d8ca3] hover:border-[#3b4d68] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-rail md:min-w-[180px] md:flex-1 md:justify-start md:gap-3 md:pl-3.5 md:pr-2 xl:max-w-[520px]"
+        className="group flex h-9 w-9 flex-none items-center justify-center rounded-lg border border-[#27364a] bg-[#101926] text-left text-sm text-[#7d8ca3] hover:border-[#3b4d68] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-rail md:min-w-[150px] md:flex-1 md:justify-start md:gap-2.5 md:pl-3 md:pr-2 xl:max-w-[440px] 2xl:max-w-[520px]"
       >
         <Search className="h-4 w-4 text-[#5b6a7e]" />
         <span className="hidden flex-1 truncate md:block">
@@ -54,7 +54,7 @@ export function TopBar({ onRefresh, onSnapshot, onOpenPalette }: Props) {
         </kbd>
       </button>
       <div className="flex min-w-0 flex-none items-center gap-1.5">
-        <div className="hidden xl:block">
+        <div className="hidden 2xl:block">
           <UserMenu />
         </div>
         <span

@@ -15,6 +15,29 @@ import {
   type NodeProps,
   type NodeTypes,
 } from "@xyflow/react";
+import {
+  Activity,
+  AlertTriangle,
+  BookOpen,
+  Boxes,
+  CheckCircle2,
+  ClipboardCheck,
+  Code2,
+  FileCode2,
+  FileText,
+  FolderTree,
+  GitBranch,
+  LockKeyhole,
+  Network,
+  Package,
+  Server,
+  ShieldCheck,
+  ShieldQuestion,
+  UserRound,
+  Users,
+  Workflow,
+  type LucideIcon,
+} from "lucide-react";
 import "@xyflow/react/dist/style.css";
 import { FrameworkBadge } from "@/components/framework/FrameworkBadge";
 import type {
@@ -40,20 +63,50 @@ const KIND_STYLE: Partial<
   Record<GraphNodeKind, { border: string; bg: string; chip: string }>
 > = {
   framework: { border: "#4f7cff", bg: "#eff6ff", chip: "#1d4ed8" },
-  control: { border: "#16b364", bg: "#ecfdf5", chip: "#067647" },
+  control: { border: "#12b76a", bg: "#ecfdf5", chip: "#067647" },
   evidence_type: { border: "#f79009", bg: "#fffbeb", chip: "#b54708" },
   asset: { border: "#7a35ff", bg: "#f5f0ff", chip: "#6d28d9" },
-  repository: { border: "#0ea5e9", bg: "#eff6ff", chip: "#0369a1" },
+  repository: { border: "#0ea5e9", bg: "#f0f9ff", chip: "#0369a1" },
   directory: { border: "#64748b", bg: "#f8fafc", chip: "#475569" },
-  language: { border: "#16b364", bg: "#ecfdf5", chip: "#067647" },
-  evidence_signal: { border: "#f79009", bg: "#fffbeb", chip: "#b54708" },
+  language: { border: "#059669", bg: "#ecfdf5", chip: "#047857" },
+  evidence_signal: { border: "#ca8a04", bg: "#fefce8", chip: "#854d0e" },
   governance_signal: { border: "#2563eb", bg: "#eff6ff", chip: "#1d4ed8" },
   signal_gap: { border: "#dc2626", bg: "#fef2f2", chip: "#b91c1c" },
-  workflow: { border: "#7c3aed", bg: "#f5f3ff", chip: "#6d28d9" },
+  workflow: { border: "#9333ea", bg: "#f5f3ff", chip: "#7e22ce" },
   dependency_manifest: { border: "#c2410c", bg: "#fff7ed", chip: "#9a3412" },
+  ownership_file: { border: "#0891b2", bg: "#ecfeff", chip: "#0e7490" },
+  security_file: { border: "#047857", bg: "#ecfdf5", chip: "#047857" },
+  file: { border: "#71717a", bg: "#fafafa", chip: "#52525b" },
   principal: { border: "#be123c", bg: "#fff1f2", chip: "#9f1239" },
   team: { border: "#4338ca", bg: "#eef2ff", chip: "#3730a3" },
+  review_rule: { border: "#65a30d", bg: "#f7fee7", chip: "#4d7c0f" },
+  status_check: { border: "#15803d", bg: "#f0fdf4", chip: "#166534" },
+  workflow_permission: { border: "#ea580c", bg: "#fff7ed", chip: "#c2410c" },
   evidence: { border: "#475569", bg: "#f8fafc", chip: "#334155" },
+};
+
+const KIND_ICON: Partial<Record<GraphNodeKind, LucideIcon>> = {
+  framework: BookOpen,
+  control: ShieldCheck,
+  evidence_type: FileText,
+  asset: Server,
+  repository: GitBranch,
+  directory: FolderTree,
+  language: Code2,
+  evidence_signal: Activity,
+  governance_signal: ClipboardCheck,
+  signal_gap: AlertTriangle,
+  workflow: Workflow,
+  dependency_manifest: Package,
+  ownership_file: Users,
+  security_file: LockKeyhole,
+  file: FileCode2,
+  principal: UserRound,
+  team: Users,
+  review_rule: ShieldQuestion,
+  status_check: CheckCircle2,
+  workflow_permission: LockKeyhole,
+  evidence: Boxes,
 };
 
 function emphasisClass(emphasis: GraphNodeData["emphasis"]): string {
@@ -77,6 +130,7 @@ function GraphNodeCard({ data, selected }: NodeProps<FlowGraphNode>) {
     bg: "#f8fafc",
     chip: "#475569",
   };
+  const Icon = KIND_ICON[data.kind] ?? Network;
   return (
     <Tooltip.Root delayDuration={120}>
       <Tooltip.Trigger asChild>
@@ -86,14 +140,15 @@ function GraphNodeCard({ data, selected }: NodeProps<FlowGraphNode>) {
             background: tone.bg,
             borderWidth: selected ? 2 : 1.5,
           }}
-          className={`min-w-[180px] max-w-[220px] rounded-xl px-3 py-2.5 transition-all ${emphasisClass(data.emphasis)}`}
+          className={`min-w-[132px] max-w-[156px] rounded-lg px-2 py-1.5 transition-all ${emphasisClass(data.emphasis)}`}
         >
           <div className="flex items-center justify-between gap-2">
             <span
-              className="rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-wide"
+              className="inline-flex min-w-0 items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide"
               style={{ color: tone.chip, background: "#ffffff" }}
             >
-              {data.kind.replace("_", " ")}
+              <Icon className="h-3 w-3 shrink-0" />
+              <span className="truncate">{data.kind.replace("_", " ")}</span>
             </span>
             {data.kind === "framework" && data.framework_id && (
               <FrameworkBadge
@@ -103,14 +158,14 @@ function GraphNodeCard({ data, selected }: NodeProps<FlowGraphNode>) {
               />
             )}
           </div>
-          <div className="mt-1.5 truncate text-sm font-black text-ink">
+          <div className="mt-1 truncate text-[11px] font-black text-ink">
             {data.label}
           </div>
-          <div className="truncate text-[11px] text-slate-600">
+          <div className="truncate text-[9px] text-slate-600">
             {data.subtitle}
           </div>
           {data.owner && (
-            <div className="mt-1 truncate text-[10px] text-slate-500">
+            <div className="mt-1 truncate text-[9px] text-slate-500">
               owner {data.owner}
             </div>
           )}
@@ -164,9 +219,9 @@ function layoutGraph(
 ): { nodes: FlowGraphNode[]; edges: Edge[] } {
   const g = new dagre.graphlib.Graph();
   g.setDefaultEdgeLabel(() => ({}));
-  g.setGraph({ rankdir, nodesep: 30, ranksep: 70, marginx: 20, marginy: 20 });
+  g.setGraph({ rankdir, nodesep: 14, ranksep: 34, marginx: 10, marginy: 10 });
 
-  rfNodes.forEach((node) => g.setNode(node.id, { width: 200, height: 80 }));
+  rfNodes.forEach((node) => g.setNode(node.id, { width: 146, height: 58 }));
   rfEdges.forEach((edge) => g.setEdge(edge.source, edge.target));
   dagre.layout(g);
 
@@ -174,7 +229,7 @@ function layoutGraph(
     const pos = g.node(node.id);
     return {
       ...node,
-      position: { x: pos.x - 100, y: pos.y - 40 },
+      position: { x: pos.x - 73, y: pos.y - 29 },
     };
   });
   return { nodes: laidOut, edges: rfEdges };
@@ -226,8 +281,27 @@ function InnerGraphCanvas({
   const [hydrated, setHydrated] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   useEffect(() => setHydrated(true), []);
-  const { setCenter } = useReactFlow();
+  const { fitView, setCenter } = useReactFlow();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const frameworkScopeIds = useMemo(() => {
+    if (!graph || !filterFramework) return null;
+    const ids = new Set<string>();
+    for (const node of graph.nodes) {
+      if (
+        (node.kind === "framework" && node.framework_id === filterFramework) ||
+        (node.kind === "control" && node.framework_id === filterFramework)
+      ) {
+        ids.add(node.id);
+      }
+    }
+    for (let depth = 0; depth < 2; depth += 1) {
+      for (const edge of graph.edges) {
+        if (ids.has(edge.source)) ids.add(edge.target);
+      }
+    }
+    return ids;
+  }, [graph, filterFramework]);
 
   // Apply layer + facet filters in one place so the canvas + path-trace + search agree.
   const filteredNodes = useMemo(() => {
@@ -237,21 +311,10 @@ function InnerGraphCanvas({
       if (filterOwner && (n.owner ?? "") !== filterOwner) return false;
       if (filterEnvironment && (n.environment ?? "") !== filterEnvironment)
         return false;
-      if (
-        filterFramework &&
-        n.kind !== "framework" &&
-        (n.framework_id ?? "") !== filterFramework
-      )
-        return false;
-      if (
-        filterFramework &&
-        n.kind === "framework" &&
-        n.framework_id !== filterFramework
-      )
-        return false;
+      if (frameworkScopeIds && !frameworkScopeIds.has(n.id)) return false;
       return true;
     });
-  }, [graph, visibleKinds, filterOwner, filterEnvironment, filterFramework]);
+  }, [graph, visibleKinds, filterOwner, filterEnvironment, frameworkScopeIds]);
 
   const allowedIds = useMemo(
     () => new Set(filteredNodes.map((n) => n.id)),
@@ -382,14 +445,30 @@ function InnerGraphCanvas({
     highlightSet,
   ]);
 
+  useEffect(() => {
+    if (rfNodes.length === 0) return;
+    const frame = window.requestAnimationFrame(() => {
+      fitView({ maxZoom: 0.92, padding: 0.14, duration: 180 });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [
+    fitView,
+    rfNodes.length,
+    layout,
+    filterOwner,
+    filterEnvironment,
+    filterFramework,
+    searchQuery,
+  ]);
+
   // When the search has exactly one match, recentre the viewport on it so the
   // user sees the result immediately.
   useEffect(() => {
     if (!matchSet || matchSet.size !== 1) return;
     const match = rfNodes.find((n) => matchSet.has(n.id));
     if (!match) return;
-    setCenter(match.position.x + 100, match.position.y + 40, {
-      zoom: 1.1,
+    setCenter(match.position.x + 73, match.position.y + 29, {
+      zoom: 1,
       duration: 300,
     });
   }, [matchSet, rfNodes, setCenter]);
@@ -426,14 +505,14 @@ function InnerGraphCanvas({
 
   if (!hydrated) {
     return (
-      <div className="h-[min(680px,calc(100dvh-300px))] min-h-[520px] rounded-2xl border border-line bg-white" />
+      <div className="h-[min(520px,calc(100dvh-250px))] min-h-[340px] rounded-xl border border-line bg-white sm:min-h-[380px]" />
     );
   }
 
   return (
     <div
       ref={wrapperRef}
-      className="h-[min(680px,calc(100dvh-300px))] min-h-[520px] overflow-hidden rounded-2xl border border-line bg-white"
+      className="h-[min(520px,calc(100dvh-250px))] min-h-[340px] overflow-hidden rounded-xl border border-line bg-white sm:min-h-[380px]"
     >
       <ReactFlow
         nodes={rfNodes}
@@ -442,14 +521,21 @@ function InnerGraphCanvas({
         nodesDraggable
         nodesConnectable={false}
         edgesReconnectable={false}
-        defaultViewport={{ x: 96, y: 96, zoom: 0.82 }}
-        minZoom={0.25}
+        fitView
+        fitViewOptions={{ maxZoom: 0.92, padding: 0.14 }}
+        minZoom={0.16}
         maxZoom={1.6}
         proOptions={{ hideAttribution: true }}
         onSelectionChange={handleSelectionChange}
       >
         <Background gap={20} color="#e2e8f0" />
-        <MiniMap pannable zoomable maskColor="rgba(15,23,42,0.06)" />
+        <MiniMap
+          pannable
+          zoomable
+          className="!h-20 !w-28 !rounded-lg !border !border-line !bg-white/90 !shadow-card"
+          style={{ width: 112, height: 80 }}
+          maskColor="rgba(15,23,42,0.06)"
+        />
         <Controls position="bottom-left" />
       </ReactFlow>
     </div>
