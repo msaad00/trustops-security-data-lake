@@ -2,11 +2,16 @@
   "bindings": [
     {
       "role": "roles/owner",
-      "members": ["user:break-glass@example.com", "group:platform-admins@example.com"]
+      "members": [
+        "user:break-glass@example.com",
+        "group:platform-admins@example.com"
+      ]
     },
     {
       "role": "roles/editor",
-      "members": ["serviceAccount:ci-deployer@fixture-project.iam.gserviceaccount.com"]
+      "members": [
+        "serviceAccount:ci-deployer@fixture-project.iam.gserviceaccount.com"
+      ]
     },
     {
       "role": "roles/viewer",
