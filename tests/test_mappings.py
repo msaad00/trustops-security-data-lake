@@ -54,9 +54,21 @@ def test_reviewed_crosswalk_returns_diagonal_and_counts() -> None:
     for row in crosswalk["matrix"]:
         assert row["mapping_count"] >= 1
         assert row["article_count"] >= 1
+        assert row["domain_count"] >= 1
         for cell in row["cells"]:
             if cell["framework_id"] == row["framework_id"]:
                 assert cell["is_self"] is True
+
+
+def test_reviewed_crosswalk_surfaces_cross_framework_domains() -> None:
+    # The crosswalk's value is cross-framework overlap. article_id / control_id
+    # are framework-unique so they only match on the diagonal; risk_domain is
+    # the shared axis. Assert at least one off-diagonal cell shares a domain.
+    crosswalk = build_reviewed_crosswalk()
+    off_diagonal_with_domains = [
+        cell for row in crosswalk["matrix"] for cell in row["cells"] if not cell["is_self"] and cell["shared_domains"]
+    ]
+    assert off_diagonal_with_domains, "crosswalk produced no cross-framework domain overlap"
 
 
 def test_fintech_and_healthcare_fixtures_ship_and_validate() -> None:
