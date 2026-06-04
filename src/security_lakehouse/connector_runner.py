@@ -1,9 +1,9 @@
 """Connector sync runner.
 
 This module turns catalog entries from static access contracts into executable
-evidence collection runs. The first concrete runner is intentionally narrow:
-``github-security`` delegates to the authenticated repository governance
-collector and writes raw evidence into the lake's managed raw-event file.
+evidence collection runs. Registered runners collect from source APIs or
+existing evidence lakes, write raw evidence into the managed raw-event file,
+and optionally materialize bronze/silver/gold outputs.
 """
 
 from __future__ import annotations
@@ -46,6 +46,14 @@ from security_lakehouse.connectors_okta import (
     OktaClient,
     OktaFixtureClient,
     collect_okta_evidence,
+)
+from security_lakehouse.connectors_snowflake import (
+    DEFAULT_VIEWS as SNOWFLAKE_DEFAULT_VIEWS,
+)
+from security_lakehouse.connectors_snowflake import (
+    SnowflakeClient,
+    SnowflakeFixtureClient,
+    collect_snowflake_evidence,
 )
 from security_lakehouse.io import read_jsonl, write_jsonl
 from security_lakehouse.pipeline import run_pipeline
@@ -105,6 +113,16 @@ AZURE_SUBSCRIPTION_ID_ENV = "AZURE_SUBSCRIPTION_ID"
 # ``token_env`` (defaults to JIRA_API_TOKEN for this runner).
 JIRA_BASE_URL_ENV = "JIRA_BASE_URL"
 JIRA_EMAIL_ENV = "JIRA_EMAIL"
+
+# Environment variables carrying Snowflake connection metadata for read-only
+# evidence-lake collection. The credential resolves from SNOWFLAKE_PASSWORD by
+# default, or an explicit ``--token-env`` override.
+SNOWFLAKE_ACCOUNT_ENV = "SNOWFLAKE_ACCOUNT"
+SNOWFLAKE_USER_ENV = "SNOWFLAKE_USER"
+SNOWFLAKE_WAREHOUSE_ENV = "SNOWFLAKE_WAREHOUSE"
+SNOWFLAKE_DATABASE_ENV = "SNOWFLAKE_DATABASE"
+SNOWFLAKE_SCHEMA_ENV = "SNOWFLAKE_SCHEMA"
+SNOWFLAKE_ROLE_ENV = "SNOWFLAKE_ROLE"
 
 
 @dataclass(frozen=True)
@@ -259,7 +277,12 @@ def _build_jira(inputs: SyncInputs) -> list[dict[str, Any]]:
     return _collect_jira(fixture_dir=inputs.fixture_dir, token_env=inputs.token_env, env=inputs.env)
 
 
+def _build_snowflake(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_snowflake(fixture_dir=inputs.fixture_dir, token_env=inputs.token_env, env=inputs.env)
+
+
 REGISTRY: dict[str, ConnectorBuilder] = {
+    "snowflake-evidence-lake": _build_snowflake,
     "github-security": _build_github,
     "okta-identity": _build_okta,
     "aws-posture": _build_aws,
@@ -420,6 +443,41 @@ def _collect_jira(
             )
         client = JiraClient(base_url, email=email, token=token)
     return collect_jira_evidence(client)
+
+
+def _collect_snowflake(
+    *,
+    fixture_dir: str | Path | None,
+    token_env: str,
+    env: dict[str, str],
+) -> list[dict[str, Any]]:
+    client: SnowflakeClient | SnowflakeFixtureClient
+    account = env.get(SNOWFLAKE_ACCOUNT_ENV)
+    if fixture_dir:
+        client = SnowflakeFixtureClient(fixture_dir, account=account or "fixture-snowflake")
+    else:
+        user = env.get(SNOWFLAKE_USER_ENV)
+        credential = _resolve_provider_token(token_env, "SNOWFLAKE_PASSWORD", env)
+        if not account or not user or not credential:
+            raise ValueError(
+                "snowflake-evidence-lake sync requires --fixture-dir, or "
+                f"{SNOWFLAKE_ACCOUNT_ENV} plus {SNOWFLAKE_USER_ENV} and a read-only credential "
+                "(SNOWFLAKE_PASSWORD or --token-env)"
+            )
+        params = {
+            "account": account,
+            "user": user,
+            "password": credential,
+            "warehouse": env.get(SNOWFLAKE_WAREHOUSE_ENV),
+            "database": env.get(SNOWFLAKE_DATABASE_ENV),
+            "schema": env.get(SNOWFLAKE_SCHEMA_ENV),
+            "role": env.get(SNOWFLAKE_ROLE_ENV),
+        }
+        views = {
+            key: env.get(f"SNOWFLAKE_VIEW_{key.upper()}") or default for key, default in SNOWFLAKE_DEFAULT_VIEWS.items()
+        }
+        client = SnowflakeClient(query_params=params, views=views)
+    return collect_snowflake_evidence(client, account=account)
 
 
 def _upsert_raw_events(raw_path: Path, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:

@@ -1,0 +1,22 @@
+[
+  {
+    "asset_id": "snowflake:warehouse:trustops_wh",
+    "asset_type": "warehouse",
+    "owner": "data-platform",
+    "environment": "prod",
+    "risk_score": 82,
+    "status": "open",
+    "controls": ["ISO27001-A.8.8", "SOC2-CC6.1"],
+    "evidence_ref": "snowflake://TRUSTOPS.EVIDENCE.ASSET_RISK/trustops_wh"
+  },
+  {
+    "asset_id": "snowflake:database:trustops_evidence",
+    "asset_type": "database",
+    "owner": "security-platform",
+    "environment": "prod",
+    "risk_score": 10,
+    "status": "observed",
+    "controls": ["SOC2-CC6.1"],
+    "evidence_ref": "snowflake://TRUSTOPS.EVIDENCE.ASSET_RISK/trustops_evidence"
+  }
+]

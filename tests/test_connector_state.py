@@ -69,8 +69,8 @@ def test_probe_requires_enabled_connector(tmp_path: Path) -> None:
 def test_probe_without_adapter_is_skipped_not_fabricated(tmp_path: Path) -> None:
     # A connector with no collection adapter must report contract-validated only,
     # never a synthetic evidence_count implying live collection.
-    append_config_event(tmp_path, connector_id="snowflake-evidence-lake", state="enabled", actor="a")
-    rec = run_probe(tmp_path, connector_id="snowflake-evidence-lake")
+    append_config_event(tmp_path, connector_id="clickhouse-telemetry-lake", state="enabled", actor="a")
+    rec = run_probe(tmp_path, connector_id="clickhouse-telemetry-lake")
     assert rec["result"] == "skipped"
     assert rec["evidence_count"] is None
     assert "no collection adapter" in rec["error"]

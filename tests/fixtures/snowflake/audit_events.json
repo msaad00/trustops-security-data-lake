@@ -1,0 +1,22 @@
+[
+  {
+    "audit_id": "sf-audit-001",
+    "actor": "secops@example.com",
+    "object_name": "TRUSTOPS.EVIDENCE.CONTROL_POSTURE",
+    "query_id": "01b4f2-0001",
+    "event_action": "SELECT",
+    "status": "observed",
+    "severity": "info",
+    "controls": ["SOC2-CC7.2", "ISO27001-A.8.16"]
+  },
+  {
+    "audit_id": "sf-audit-002",
+    "actor": "unknown_service_user",
+    "object_name": "TRUSTOPS.EVIDENCE.ASSET_RISK",
+    "query_id": "01b4f2-0002",
+    "event_action": "SELECT",
+    "status": "open",
+    "severity": "medium",
+    "controls": ["SOC2-CC7.2"]
+  }
+]

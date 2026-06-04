@@ -42,27 +42,28 @@ security-lakehouse connectors list
 
 ## Connector Runner
 
-TrustOps currently has 15 connector contracts. Seven are executable source
-runners; the remaining entries describe read-only lake contracts or managed
-evidence boundaries.
+TrustOps currently has 15 connector contracts. Eight are executable runners:
+seven direct source/API runners plus the Snowflake existing-lake reader. The
+remaining entries describe read-only lake contracts or managed evidence
+boundaries.
 
-| Connector ID                | Source                  | Runner status              |
-| --------------------------- | ----------------------- | -------------------------- |
-| `github-security`           | GitHub repo security    | executable                 |
-| `aws-posture`               | AWS IAM/posture         | executable                 |
-| `okta-identity`             | Okta identity/MFA       | executable                 |
-| `google-workspace-identity` | Google Workspace users  | executable                 |
-| `gcp-posture`               | GCP IAM/posture         | executable                 |
-| `azure-posture`             | Azure IAM/posture       | executable                 |
-| `jira-ticketing`            | Jira tickets/workflows  | executable                 |
-| `snowflake-evidence-lake`   | governed evidence lake  | read-only lake contract    |
-| `clickhouse-telemetry-lake` | telemetry analytics     | read-only lake contract    |
-| `object-storage-evidence`   | object evidence store   | read-only lake contract    |
-| `siem-alerts`               | SIEM/detection exports  | read-only lake contract    |
-| `runtime-gateway`           | runtime policy events   | read-only lake contract    |
-| `identity-provider`         | generic identity source | contract, no direct runner |
-| `ticketing`                 | generic ticketing       | contract, no direct runner |
-| `managed-local-evidence`    | local starter evidence  | managed evidence object    |
+| Connector ID                | Source                  | Runner status                 |
+| --------------------------- | ----------------------- | ----------------------------- |
+| `github-security`           | GitHub repo security    | executable                    |
+| `aws-posture`               | AWS IAM/posture         | executable                    |
+| `okta-identity`             | Okta identity/MFA       | executable                    |
+| `google-workspace-identity` | Google Workspace users  | executable                    |
+| `gcp-posture`               | GCP IAM/posture         | executable                    |
+| `azure-posture`             | Azure IAM/posture       | executable                    |
+| `jira-ticketing`            | Jira tickets/workflows  | executable                    |
+| `snowflake-evidence-lake`   | governed evidence lake  | executable existing-lake read |
+| `clickhouse-telemetry-lake` | telemetry analytics     | read-only lake contract       |
+| `object-storage-evidence`   | object evidence store   | read-only lake contract       |
+| `siem-alerts`               | SIEM/detection exports  | read-only lake contract       |
+| `runtime-gateway`           | runtime policy events   | read-only lake contract       |
+| `identity-provider`         | generic identity source | contract, no direct runner    |
+| `ticketing`                 | generic ticketing       | contract, no direct runner    |
+| `managed-local-evidence`    | local starter evidence  | managed evidence object       |
 
 Every executable runner writes valid raw evidence into:
 
@@ -93,6 +94,38 @@ GITHUB_TOKEN=... security-lakehouse connectors sync \
   --lake build/lakehouse \
   --connector-id github-security \
   --repo OWNER/REPO
+```
+
+Snowflake is the read-existing-lake path. The fixture path mirrors the expected
+views (`audit_events`, `control_posture`, `asset_risk`, and
+`evidence_bundles`) and exercises the same raw-to-gold pipeline:
+
+```bash
+security-lakehouse connectors configure \
+  --lake build/lakehouse \
+  --connector-id snowflake-evidence-lake \
+  --state enabled
+
+security-lakehouse connectors sync \
+  --lake build/lakehouse \
+  --connector-id snowflake-evidence-lake \
+  --fixture-dir tests/fixtures/snowflake
+```
+
+For live Snowflake collection, install the Snowflake Python connector and use a
+least-privilege role with `USAGE` on warehouse/database/schema and `SELECT` on
+the evidence views. TrustOps only issues `SELECT * FROM <view>` reads:
+
+```bash
+SNOWFLAKE_ACCOUNT=... \
+SNOWFLAKE_USER=trustops_reader \
+SNOWFLAKE_PASSWORD=... \
+SNOWFLAKE_WAREHOUSE=TRUSTOPS_READ_WH \
+SNOWFLAKE_DATABASE=TRUSTOPS \
+SNOWFLAKE_SCHEMA=EVIDENCE \
+security-lakehouse connectors sync \
+  --lake build/lakehouse \
+  --connector-id snowflake-evidence-lake
 ```
 
 By default the runner rebuilds bronze, silver, gold, marts, and current posture
