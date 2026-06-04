@@ -29,7 +29,12 @@ export function UserMenu() {
       <DropdownMenu.Trigger asChild>
         <button
           type="button"
-          className="inline-flex items-center gap-2 rounded-lg border border-[#27364a] bg-[#101926] px-3 py-2 text-sm font-extrabold text-[#d9e4f2] hover:bg-[#152030]"
+          aria-label={
+            auditor
+              ? `${workspaceIdentity.orgName} · auditor — account menu`
+              : `${workspaceIdentity.primaryLabel} — account menu`
+          }
+          className="inline-flex items-center gap-2 rounded-lg border border-[#27364a] bg-[#101926] px-3 py-2 text-sm font-extrabold text-[#d9e4f2] hover:bg-[#152030] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-rail"
         >
           <span className="grid h-6 w-6 place-items-center rounded-full bg-gradient-to-br from-brand to-brand-cyan text-[11px] text-white">
             {workspaceIdentity.avatar}

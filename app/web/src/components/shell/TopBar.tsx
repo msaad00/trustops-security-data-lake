@@ -42,7 +42,8 @@ export function TopBar({ onRefresh, onSnapshot, onOpenPalette }: Props) {
       <button
         type="button"
         onClick={onOpenPalette}
-        className="group flex h-9 w-9 flex-none items-center justify-center rounded-lg border border-[#27364a] bg-[#101926] text-left text-sm text-[#7d8ca3] hover:border-[#3b4d68] md:min-w-[180px] md:flex-1 md:justify-start md:gap-3 md:pl-3.5 md:pr-2 xl:max-w-[520px]"
+        aria-label="Open command palette"
+        className="group flex h-9 w-9 flex-none items-center justify-center rounded-lg border border-[#27364a] bg-[#101926] text-left text-sm text-[#7d8ca3] hover:border-[#3b4d68] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-rail md:min-w-[180px] md:flex-1 md:justify-start md:gap-3 md:pl-3.5 md:pr-2 xl:max-w-[520px]"
       >
         <Search className="h-4 w-4 text-[#5b6a7e]" />
         <span className="hidden flex-1 truncate md:block">
@@ -75,11 +76,21 @@ export function TopBar({ onRefresh, onSnapshot, onOpenPalette }: Props) {
         <div className="hidden lg:block">
           <NotificationBell />
         </div>
-        <Button variant="default" size="sm" onClick={onRefresh}>
+        <Button
+          variant="default"
+          size="sm"
+          onClick={onRefresh}
+          aria-label="Refresh data"
+        >
           <RefreshCw className="h-4 w-4" />
           <span className="hidden 2xl:inline">Refresh</span>
         </Button>
-        <Button variant="primary" size="sm" onClick={onSnapshot}>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={onSnapshot}
+          aria-label="Capture snapshot"
+        >
           <Camera className="h-4 w-4" />
           <span className="hidden 2xl:inline">Snapshot</span>
         </Button>
