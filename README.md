@@ -61,10 +61,10 @@ evidence storage.
 | Trust workbench     | Next.js console with Trust Home, controls, evidence, violations, remediation, risk register, workflows, graph, insights, connectors, frameworks, crosswalk, audit log, trust center, and agent API views |
 | Server mode         | FastAPI behind `.[server]`, API keys, OIDC, SAML, RBAC, request audit events, tenant/user spine, tenant-scoped lake resolution, and protected `/api/v1/*` plus `/api/*`                                  |
 | Evidence pipeline   | Bronze raw replay records, silver normalized facts, gold posture/tests/assets/freshness, snapshots, SQLite local mart, optional DuckDB analytics                                                         |
-| Continuous inputs   | GitHub, AWS, and Okta evidence runners; scheduled connector syncs; public repo audit; authenticated repo governance sync                                                                                 |
+| Continuous inputs   | 15 connector contracts; executable GitHub, AWS, Okta, Google Workspace, GCP, Azure, and Jira runners; scheduled syncs; repo audit/governance sync                                                        |
 | Policy logic        | Controls-as-code rule engine with lintable rules, rule reasons, stale-evidence handling, and posture output annotations                                                                                  |
 | Remediation         | Owner tasks, evidence requests, SLA dates, exceptions, risk register, and workflow actions                                                                                                               |
-| Workflow automation | Workflow canvas plus snapshot, assignment, trust-share, webhook, Slack, and Jira actions on a guarded egress path                                                                                        |
+| Workflow automation | Workflow canvas plus dry-run preview, expression routing, snapshot, assignment, trust-share, webhook, Slack, and Jira actions on a guarded egress path                                                   |
 | Agent/headless      | Versioned `/api/v1/*` envelopes, OpenAPI export, Python async SDK, MCP read/write tools, and the same auth/RBAC boundary as the UI                                                                       |
 
 ## Run The Demo
@@ -129,7 +129,7 @@ See [Connector And Access Model](docs/CONNECTORS.md).
 ## Product Screens
 
 <p align="center">
-  <img src="docs/images/trustops-demo-connectors.png" alt="TrustOps connector workbench with read-only lake, direct connector, and managed evidence modes" width="49%">
+  <img src="docs/images/trustops-demo-connectors.png" alt="TrustOps connector workbench with lake contracts and executable source runners" width="49%">
   <img src="docs/images/trustops-demo-trust-center.png" alt="TrustOps trust center share portal with expiring reviewer tokens" width="49%">
 </p>
 
@@ -218,6 +218,12 @@ security-lakehouse connectors sync \
   --repo OWNER/REPO \
   --fixture-dir tests/fixtures/github-governance
 ```
+
+Executable connector runners currently cover `github-security`,
+`aws-posture`, `okta-identity`, `google-workspace-identity`, `gcp-posture`,
+`azure-posture`, and `jira-ticketing`. Snowflake, ClickHouse, object storage,
+SIEM, and runtime-gateway entries are read-only lake contracts unless a direct
+runner is added.
 
 Workflow examples:
 

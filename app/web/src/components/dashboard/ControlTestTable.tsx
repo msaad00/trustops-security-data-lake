@@ -94,8 +94,7 @@ export function ControlTestTable({ rows }: { rows: ControlTest[] }) {
       <CardHeader>
         <CardTitle>Live control test queue</CardTitle>
         <CardDescription>
-          Sorted by result, freshness, and confidence. Click a row in PR 2 to
-          open the control drawer.
+          Sorted by result, freshness, and confidence for reviewer-ready triage.
         </CardDescription>
       </CardHeader>
       <div className="overflow-x-auto">
