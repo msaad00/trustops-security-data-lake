@@ -1,0 +1,27 @@
+{
+  "200000000000000000001": [
+    {
+      "id": "100000000000000000001",
+      "email": "ada.lovelace@acme.example",
+      "role": "OWNER",
+      "type": "USER",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "100000000000000000002",
+      "email": "grace.hopper@acme.example",
+      "role": "MEMBER",
+      "type": "USER",
+      "status": "ACTIVE"
+    }
+  ],
+  "200000000000000000002": [
+    {
+      "id": "100000000000000000002",
+      "email": "grace.hopper@acme.example",
+      "role": "MEMBER",
+      "type": "USER",
+      "status": "ACTIVE"
+    }
+  ]
+}

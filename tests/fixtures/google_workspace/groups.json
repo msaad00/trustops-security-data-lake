@@ -1,0 +1,12 @@
+[
+  {
+    "id": "200000000000000000001",
+    "email": "platform-admins@acme.example",
+    "name": "Platform Owners"
+  },
+  {
+    "id": "200000000000000000002",
+    "email": "all-staff@acme.example",
+    "name": "All Staff"
+  }
+]

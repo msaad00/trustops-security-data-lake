@@ -203,6 +203,28 @@
       "default_route": "local",
       "freshness_slo_minutes": 1440,
       "production_status": "starter_path"
+    },
+    {
+      "connector_id": "google-workspace-identity",
+      "name": "Google Workspace Identity",
+      "category": "identity",
+      "collection_mode": "direct_api_read",
+      "access_boundary": "scoped_token",
+      "credential_type": "google_oauth_token",
+      "minimum_permissions": [
+        "directory.users.readonly",
+        "directory.groups.readonly",
+        "directory.user.security.readonly"
+      ],
+      "evidence_types": [
+        "identity",
+        "mfa",
+        "group"
+      ],
+      "default_route": "dual",
+      "freshness_slo_minutes": 240,
+      "is_implemented": true,
+      "production_status": "supported_path"
     }
   ]
 }

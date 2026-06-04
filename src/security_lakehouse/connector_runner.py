@@ -22,6 +22,11 @@ from security_lakehouse.connectors_aws import (
     AWSFixtureClient,
     collect_aws_evidence,
 )
+from security_lakehouse.connectors_google_workspace import (
+    GoogleWorkspaceClient,
+    GoogleWorkspaceFixtureClient,
+    collect_google_workspace_evidence,
+)
 from security_lakehouse.connectors_okta import (
     OktaClient,
     OktaFixtureClient,
@@ -43,6 +48,11 @@ OKTA_ORG_URL_ENV = "OKTA_ORG_URL"
 # (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_SESSION_TOKEN / profiles).
 AWS_ACCOUNT_ID_ENV = "AWS_ACCOUNT_ID"
 AWS_REGION_ENV = "AWS_REGION"
+
+# Environment variable carrying the Google Workspace customer id for live
+# collection. The OAuth bearer token is read from ``token_env`` (defaults to
+# GOOGLE_WORKSPACE_ACCESS_TOKEN for this runner).
+GOOGLE_WORKSPACE_CUSTOMER_ID_ENV = "GOOGLE_WORKSPACE_CUSTOMER_ID"
 
 
 @dataclass(frozen=True)
@@ -177,10 +187,19 @@ def _build_aws(inputs: SyncInputs) -> list[dict[str, Any]]:
     return _collect_aws(fixture_dir=inputs.fixture_dir, env=inputs.env)
 
 
+def _build_google_workspace(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_google_workspace(
+        fixture_dir=inputs.fixture_dir,
+        token_env=inputs.token_env,
+        env=inputs.env,
+    )
+
+
 REGISTRY: dict[str, ConnectorBuilder] = {
     "github-security": _build_github,
     "okta-identity": _build_okta,
     "aws-posture": _build_aws,
+    "google-workspace-identity": _build_google_workspace,
 }
 
 
@@ -253,6 +272,30 @@ def _collect_aws(
         )
     client = AWSClient(region_name=env.get(AWS_REGION_ENV))
     return collect_aws_evidence(client, account_id=account_id)
+
+
+def _collect_google_workspace(
+    *,
+    fixture_dir: str | Path | None,
+    token_env: str,
+    env: dict[str, str],
+) -> list[dict[str, Any]]:
+    client: GoogleWorkspaceClient | GoogleWorkspaceFixtureClient
+    if fixture_dir:
+        client = GoogleWorkspaceFixtureClient(fixture_dir)
+    else:
+        customer_id = env.get(GOOGLE_WORKSPACE_CUSTOMER_ID_ENV)
+        # The CLI default token_env is GITHUB_TOKEN; fall back to the Workspace
+        # var when the caller did not override it for this connector.
+        access_token = env.get(token_env) or env.get("GOOGLE_WORKSPACE_ACCESS_TOKEN")
+        if not customer_id or not access_token:
+            raise ValueError(
+                "google-workspace-identity sync requires --fixture-dir, or "
+                f"{GOOGLE_WORKSPACE_CUSTOMER_ID_ENV} plus a read-only OAuth token "
+                "(GOOGLE_WORKSPACE_ACCESS_TOKEN or --token-env)"
+            )
+        client = GoogleWorkspaceClient(customer_id, access_token=access_token)
+    return collect_google_workspace_evidence(client)
 
 
 def _upsert_raw_events(raw_path: Path, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
