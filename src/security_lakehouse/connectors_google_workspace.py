@@ -180,7 +180,7 @@ def _user_event(
     user_id = str(user["id"])
     suspended = bool(user.get("suspended"))
     archived = bool(user.get("archived"))
-    active = not (suspended or archived)
+    active = not suspended and not archived
     primary_email = user.get("primaryEmail")
     evidence_ref = f"{DIRECTORY_API_BASE}/users/{user_id}"
     return _event(
@@ -221,7 +221,7 @@ def _mfa_event(
     enforced = bool(user.get("isEnforcedIn2Sv"))
     suspended = bool(user.get("suspended"))
     archived = bool(user.get("archived"))
-    active = not (suspended or archived)
+    active = not suspended and not archived
     # An active account without 2-step verification is the finding to raise.
     needs_mfa = active and not enrolled
     evidence_ref = f"{DIRECTORY_API_BASE}/users/{user_id}"
