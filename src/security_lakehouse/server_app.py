@@ -1085,6 +1085,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     ) -> JSONResponse:
         raw_limit = (_params(request).get("limit") or [None])[0]
         limit = int(raw_limit) if raw_limit and raw_limit.isdigit() else 90
+        limit = min(max(limit, 1), 1000)
         points = metrics_db.list_metric_points(session, tenant_id=identity.tenant_id, limit=limit)
         rows = [metrics_db.metric_point_to_dict(p) for p in points]
         return JSONResponse(
@@ -1113,7 +1114,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
 
     @app.get("/api/v1/frameworks/{framework_id}/detail", tags=["data"])
     def v1_framework_detail(framework_id: str, identity: Identity = Depends(_require_read)) -> JSONResponse:
-        _status, body = api_v1.handle_get(f"/api/v1/frameworks/{framework_id}/detail", {}, lake)
+        _status, body = api_v1.handle_get(f"/api/v1/frameworks/{framework_id}/detail", {}, lake_for(identity))
         return JSONResponse(_redact_payload(body, identity), status_code=int(_status))
 
     # --- versioned data surface (authenticated) ---
