@@ -203,6 +203,27 @@
       "default_route": "local",
       "freshness_slo_minutes": 1440,
       "production_status": "starter_path"
+    },
+    {
+      "connector_id": "jira-ticketing",
+      "name": "Jira Ticketing",
+      "category": "workflow",
+      "collection_mode": "direct_api_read",
+      "access_boundary": "scoped_token",
+      "credential_type": "jira_api_token",
+      "minimum_permissions": [
+        "read:jira-work",
+        "read:jira-user",
+        "read:project:jira"
+      ],
+      "evidence_types": [
+        "workflow",
+        "ticket"
+      ],
+      "default_route": "dual",
+      "freshness_slo_minutes": 240,
+      "is_implemented": true,
+      "production_status": "supported_path"
     }
   ]
 }

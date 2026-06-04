@@ -3,7 +3,7 @@
 The registry in ``connector_runner.REGISTRY`` is the single dispatch table for
 connector sync collection, and the single source of truth for which connectors
 report a real adapter. These tests pin that contract: the registry holds exactly
-the three real adapters, ``has_adapter`` agrees with the registry, an unknown
+the real adapters, ``has_adapter`` agrees with the registry, an unknown
 connector still raises the documented ValueError, and a fixture sync for each
 real connector still flows through the registry path.
 """
@@ -19,11 +19,11 @@ from security_lakehouse.connectors import load_connector_catalog
 from security_lakehouse.io import read_jsonl
 from security_lakehouse.validation import validate_raw_events
 
-REAL_ADAPTERS = {"github-security", "okta-identity", "aws-posture"}
+REAL_ADAPTERS = {"github-security", "okta-identity", "aws-posture", "jira-ticketing"}
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
-def test_registry_contains_exactly_the_three_real_adapters() -> None:
+def test_registry_contains_exactly_the_real_adapters() -> None:
     assert set(connector_runner.REGISTRY) == REAL_ADAPTERS
     assert connector_runner.registered_connector_ids() == frozenset(REAL_ADAPTERS)
 
@@ -67,6 +67,7 @@ def test_unknown_connector_id_raises_no_runner_registered(tmp_path: Path) -> Non
         ("github-security", "github-governance", {"repo": "acme/model-service"}),
         ("okta-identity", "okta", {}),
         ("aws-posture", "aws", {}),
+        ("jira-ticketing", "jira", {}),
     ],
 )
 def test_fixture_sync_flows_through_registry(

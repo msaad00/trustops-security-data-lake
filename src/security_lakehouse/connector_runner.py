@@ -22,6 +22,11 @@ from security_lakehouse.connectors_aws import (
     AWSFixtureClient,
     collect_aws_evidence,
 )
+from security_lakehouse.connectors_jira import (
+    JiraClient,
+    JiraFixtureClient,
+    collect_jira_evidence,
+)
 from security_lakehouse.connectors_okta import (
     OktaClient,
     OktaFixtureClient,
@@ -43,6 +48,12 @@ OKTA_ORG_URL_ENV = "OKTA_ORG_URL"
 # (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_SESSION_TOKEN / profiles).
 AWS_ACCOUNT_ID_ENV = "AWS_ACCOUNT_ID"
 AWS_REGION_ENV = "AWS_REGION"
+
+# Environment variables carrying the Jira Cloud site base URL and the account
+# email used for HTTP Basic read auth. The read-only API token is read from
+# ``token_env`` (defaults to JIRA_API_TOKEN for this runner).
+JIRA_BASE_URL_ENV = "JIRA_BASE_URL"
+JIRA_EMAIL_ENV = "JIRA_EMAIL"
 
 
 @dataclass(frozen=True)
@@ -177,10 +188,15 @@ def _build_aws(inputs: SyncInputs) -> list[dict[str, Any]]:
     return _collect_aws(fixture_dir=inputs.fixture_dir, env=inputs.env)
 
 
+def _build_jira(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_jira(fixture_dir=inputs.fixture_dir, token_env=inputs.token_env, env=inputs.env)
+
+
 REGISTRY: dict[str, ConnectorBuilder] = {
     "github-security": _build_github,
     "okta-identity": _build_okta,
     "aws-posture": _build_aws,
+    "jira-ticketing": _build_jira,
 }
 
 
@@ -253,6 +269,31 @@ def _collect_aws(
         )
     client = AWSClient(region_name=env.get(AWS_REGION_ENV))
     return collect_aws_evidence(client, account_id=account_id)
+
+
+def _collect_jira(
+    *,
+    fixture_dir: str | Path | None,
+    token_env: str,
+    env: dict[str, str],
+) -> list[dict[str, Any]]:
+    client: JiraClient | JiraFixtureClient
+    if fixture_dir:
+        client = JiraFixtureClient(fixture_dir)
+    else:
+        base_url = env.get(JIRA_BASE_URL_ENV)
+        email = env.get(JIRA_EMAIL_ENV)
+        # The CLI default token_env is GITHUB_TOKEN; fall back to the Jira var
+        # when the caller did not override it for this connector.
+        token = env.get(token_env) or env.get("JIRA_API_TOKEN")
+        if not base_url or not email or not token:
+            raise ValueError(
+                "jira-ticketing sync requires --fixture-dir, or "
+                f"{JIRA_BASE_URL_ENV} plus {JIRA_EMAIL_ENV} and a read-only API token "
+                "(JIRA_API_TOKEN or --token-env)"
+            )
+        client = JiraClient(base_url, email=email, token=token)
+    return collect_jira_evidence(client)
 
 
 def _upsert_raw_events(raw_path: Path, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
