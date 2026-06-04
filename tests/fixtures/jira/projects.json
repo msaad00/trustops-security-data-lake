@@ -1,0 +1,16 @@
+[
+  {
+    "key": "SEC",
+    "name": "Security Remediation",
+    "projectTypeKey": "software",
+    "archived": false,
+    "lead": { "displayName": "Ada Lovelace" }
+  },
+  {
+    "key": "GOV",
+    "name": "Governance Exceptions",
+    "projectTypeKey": "business",
+    "archived": true,
+    "lead": { "displayName": "Alan Turing" }
+  }
+]

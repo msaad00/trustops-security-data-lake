@@ -19,7 +19,15 @@ from security_lakehouse.connectors import load_connector_catalog
 from security_lakehouse.io import read_jsonl
 from security_lakehouse.validation import validate_raw_events
 
-REAL_ADAPTERS = {"github-security", "okta-identity", "aws-posture", "google-workspace-identity"}
+REAL_ADAPTERS = {
+    "github-security",
+    "okta-identity",
+    "aws-posture",
+    "google-workspace-identity",
+    "gcp-posture",
+    "azure-posture",
+    "jira-ticketing",
+}
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
@@ -68,6 +76,9 @@ def test_unknown_connector_id_raises_no_runner_registered(tmp_path: Path) -> Non
         ("okta-identity", "okta", {}),
         ("aws-posture", "aws", {}),
         ("google-workspace-identity", "google_workspace", {}),
+        ("gcp-posture", "gcp", {}),
+        ("azure-posture", "azure", {}),
+        ("jira-ticketing", "jira", {}),
     ],
 )
 def test_fixture_sync_flows_through_registry(

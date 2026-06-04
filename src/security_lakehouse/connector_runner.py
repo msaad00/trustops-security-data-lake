@@ -22,10 +22,25 @@ from security_lakehouse.connectors_aws import (
     AWSFixtureClient,
     collect_aws_evidence,
 )
+from security_lakehouse.connectors_azure import (
+    AzureClient,
+    AzureFixtureClient,
+    collect_azure_evidence,
+)
+from security_lakehouse.connectors_gcp import (
+    GCPClient,
+    GCPFixtureClient,
+    collect_gcp_evidence,
+)
 from security_lakehouse.connectors_google_workspace import (
     GoogleWorkspaceClient,
     GoogleWorkspaceFixtureClient,
     collect_google_workspace_evidence,
+)
+from security_lakehouse.connectors_jira import (
+    JiraClient,
+    JiraFixtureClient,
+    collect_jira_evidence,
 )
 from security_lakehouse.connectors_okta import (
     OktaClient,
@@ -53,6 +68,22 @@ AWS_REGION_ENV = "AWS_REGION"
 # collection. The OAuth bearer token is read from ``token_env`` (defaults to
 # GOOGLE_WORKSPACE_ACCESS_TOKEN for this runner).
 GOOGLE_WORKSPACE_CUSTOMER_ID_ENV = "GOOGLE_WORKSPACE_CUSTOMER_ID"
+
+# Environment variable carrying the GCP project id for live collection.
+# Credentials resolve through Google's Application Default Credentials chain
+# (GOOGLE_APPLICATION_CREDENTIALS / workload identity / metadata server).
+GCP_PROJECT_ID_ENV = "GCP_PROJECT_ID"
+
+# Environment variable carrying the Azure subscription id for live collection.
+# Credentials resolve through DefaultAzureCredential (service-principal env vars
+# AZURE_CLIENT_ID/AZURE_TENANT_ID/AZURE_CLIENT_SECRET, managed identity, CLI).
+AZURE_SUBSCRIPTION_ID_ENV = "AZURE_SUBSCRIPTION_ID"
+
+# Environment variables carrying the Jira Cloud site base URL and the account
+# email used for HTTP Basic read auth. The read-only API token is read from
+# ``token_env`` (defaults to JIRA_API_TOKEN for this runner).
+JIRA_BASE_URL_ENV = "JIRA_BASE_URL"
+JIRA_EMAIL_ENV = "JIRA_EMAIL"
 
 
 @dataclass(frozen=True)
@@ -195,11 +226,26 @@ def _build_google_workspace(inputs: SyncInputs) -> list[dict[str, Any]]:
     )
 
 
+def _build_gcp(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_gcp(fixture_dir=inputs.fixture_dir, env=inputs.env)
+
+
+def _build_azure(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_azure(fixture_dir=inputs.fixture_dir, env=inputs.env)
+
+
+def _build_jira(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_jira(fixture_dir=inputs.fixture_dir, token_env=inputs.token_env, env=inputs.env)
+
+
 REGISTRY: dict[str, ConnectorBuilder] = {
     "github-security": _build_github,
     "okta-identity": _build_okta,
     "aws-posture": _build_aws,
     "google-workspace-identity": _build_google_workspace,
+    "gcp-posture": _build_gcp,
+    "azure-posture": _build_azure,
+    "jira-ticketing": _build_jira,
 }
 
 
@@ -296,6 +342,69 @@ def _collect_google_workspace(
             )
         client = GoogleWorkspaceClient(customer_id, access_token=access_token)
     return collect_google_workspace_evidence(client)
+
+
+def _collect_gcp(
+    *,
+    fixture_dir: str | Path | None,
+    env: dict[str, str],
+) -> list[dict[str, Any]]:
+    if fixture_dir:
+        fixture_project = env.get(GCP_PROJECT_ID_ENV) or "fixture-project"
+        return collect_gcp_evidence(GCPFixtureClient(fixture_dir, project_id=fixture_project))
+    project_id = env.get(GCP_PROJECT_ID_ENV)
+    if not project_id:
+        raise ValueError(
+            "gcp-posture sync requires --fixture-dir, or "
+            f"{GCP_PROJECT_ID_ENV} plus read-only GCP credentials "
+            "(GOOGLE_APPLICATION_CREDENTIALS / workload identity via Application Default Credentials)"
+        )
+    client = GCPClient(project_id)
+    return collect_gcp_evidence(client, project_id=project_id)
+
+
+def _collect_azure(
+    *,
+    fixture_dir: str | Path | None,
+    env: dict[str, str],
+) -> list[dict[str, Any]]:
+    if fixture_dir:
+        subscription_id = env.get(AZURE_SUBSCRIPTION_ID_ENV) or "00000000-0000-0000-0000-000000000000"
+        return collect_azure_evidence(AzureFixtureClient(fixture_dir, subscription_id=subscription_id))
+    subscription_id = env.get(AZURE_SUBSCRIPTION_ID_ENV)
+    if not subscription_id:
+        raise ValueError(
+            "azure-posture sync requires --fixture-dir, or "
+            f"{AZURE_SUBSCRIPTION_ID_ENV} plus read-only Azure credentials "
+            "(DefaultAzureCredential: service-principal env vars / managed identity / az login)"
+        )
+    client = AzureClient(subscription_id)
+    return collect_azure_evidence(client)
+
+
+def _collect_jira(
+    *,
+    fixture_dir: str | Path | None,
+    token_env: str,
+    env: dict[str, str],
+) -> list[dict[str, Any]]:
+    client: JiraClient | JiraFixtureClient
+    if fixture_dir:
+        client = JiraFixtureClient(fixture_dir)
+    else:
+        base_url = env.get(JIRA_BASE_URL_ENV)
+        email = env.get(JIRA_EMAIL_ENV)
+        # The CLI default token_env is GITHUB_TOKEN; fall back to the Jira var
+        # when the caller did not override it for this connector.
+        token = env.get(token_env) or env.get("JIRA_API_TOKEN")
+        if not base_url or not email or not token:
+            raise ValueError(
+                "jira-ticketing sync requires --fixture-dir, or "
+                f"{JIRA_BASE_URL_ENV} plus {JIRA_EMAIL_ENV} and a read-only API token "
+                "(JIRA_API_TOKEN or --token-env)"
+            )
+        client = JiraClient(base_url, email=email, token=token)
+    return collect_jira_evidence(client)
 
 
 def _upsert_raw_events(raw_path: Path, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:

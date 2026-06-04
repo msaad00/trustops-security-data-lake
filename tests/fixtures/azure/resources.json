@@ -1,0 +1,14 @@
+[
+  {
+    "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/rg-app/providers/Microsoft.Storage/storageAccounts/evidencelake01",
+    "name": "evidencelake01",
+    "type": "Microsoft.Storage/storageAccounts",
+    "location": "eastus"
+  },
+  {
+    "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/rg-app/providers/Microsoft.KeyVault/vaults/kv-trustops",
+    "name": "kv-trustops",
+    "type": "Microsoft.KeyVault/vaults",
+    "location": "eastus"
+  }
+]

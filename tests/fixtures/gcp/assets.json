@@ -1,0 +1,12 @@
+{
+  "assets": [
+    {
+      "name": "//storage.googleapis.com/fixture-project-evidence-bucket",
+      "asset_type": "storage.googleapis.com/Bucket"
+    },
+    {
+      "name": "//compute.googleapis.com/projects/fixture-project/zones/us-central1-a/instances/posture-runner",
+      "asset_type": "compute.googleapis.com/Instance"
+    }
+  ]
+}
