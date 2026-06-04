@@ -21,6 +21,7 @@
       ],
       "default_route": "Snowflake",
       "freshness_slo_minutes": 60,
+      "is_implemented": true,
       "production_status": "hero_path"
     },
     {

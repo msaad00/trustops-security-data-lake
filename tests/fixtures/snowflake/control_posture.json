@@ -1,0 +1,19 @@
+[
+  {
+    "control_id": "SOC2-CC6.1",
+    "framework_id": "soc2",
+    "status": "pass",
+    "risk_score": 0,
+    "confidence": 98,
+    "evidence_ref": "snowflake://TRUSTOPS.EVIDENCE.CONTROL_POSTURE/SOC2-CC6.1"
+  },
+  {
+    "control_id": "ISO27001-A.8.16",
+    "framework_id": "iso27001",
+    "status": "fail",
+    "risk_score": 88,
+    "confidence": 74,
+    "severity": "high",
+    "evidence_ref": "snowflake://TRUSTOPS.EVIDENCE.CONTROL_POSTURE/ISO27001-A.8.16"
+  }
+]

@@ -2,10 +2,10 @@
 
 The registry in ``connector_runner.REGISTRY`` is the single dispatch table for
 connector sync collection, and the single source of truth for which connectors
-report a real adapter. These tests pin that contract: the registry holds exactly
-the three real adapters, ``has_adapter`` agrees with the registry, an unknown
-connector still raises the documented ValueError, and a fixture sync for each
-real connector still flows through the registry path.
+report a real adapter. These tests pin that contract: the registry holds the
+real adapters, ``has_adapter`` agrees with the registry, an unknown connector
+still raises the documented ValueError, and a fixture sync for each real
+connector still flows through the registry path.
 """
 
 from __future__ import annotations
@@ -20,6 +20,7 @@ from security_lakehouse.io import read_jsonl
 from security_lakehouse.validation import validate_raw_events
 
 REAL_ADAPTERS = {
+    "snowflake-evidence-lake",
     "github-security",
     "okta-identity",
     "aws-posture",
@@ -51,7 +52,7 @@ def test_has_adapter_agrees_with_registry() -> None:
     for connector_id in REAL_ADAPTERS:
         assert connector_state.has_adapter(connector_id) is True
     # A catalog connector without a registered builder is contract-only.
-    assert connector_state.has_adapter("snowflake-evidence-lake") is False
+    assert connector_state.has_adapter("clickhouse-telemetry-lake") is False
     assert connector_state.has_adapter("not-a-real-connector") is False
 
 
@@ -60,12 +61,12 @@ def test_unknown_connector_id_raises_no_runner_registered(tmp_path: Path) -> Non
     # still raise the exact "no sync runner registered" message via the runner.
     connector_state.append_config_event(
         tmp_path,
-        connector_id="snowflake-evidence-lake",
+        connector_id="clickhouse-telemetry-lake",
         state="enabled",
         actor="alice",
     )
     with pytest.raises(connector_runner.ConnectorSyncError, match="no sync runner registered") as exc:
-        connector_runner.run_connector_sync(tmp_path, connector_id="snowflake-evidence-lake")
+        connector_runner.run_connector_sync(tmp_path, connector_id="clickhouse-telemetry-lake")
     assert exc.value.run["result"] == "error"
 
 
@@ -73,6 +74,7 @@ def test_unknown_connector_id_raises_no_runner_registered(tmp_path: Path) -> Non
     ("connector_id", "fixture", "extra"),
     [
         ("github-security", "github-governance", {"repo": "acme/model-service"}),
+        ("snowflake-evidence-lake", "snowflake", {}),
         ("okta-identity", "okta", {}),
         ("aws-posture", "aws", {}),
         ("google-workspace-identity", "google_workspace", {}),
