@@ -54,6 +54,14 @@ jobs:
         run: uv sync --frozen --all-extras
       - name: Check patch whitespace
         run: git diff --check
+      - name: Reject Finder-duplicate files
+        # Block accidental " 2.py"/" 3.py" copies (Finder/editor duplicates)
+        # from entering the package tree.
+        run: |
+          dupes=$(git ls-files | grep -E ' [0-9]+\.(py|tsx?|json)$' || true)
+          if [ -n "$dupes" ]; then
+            echo "Finder-duplicate files committed:"; echo "$dupes"; exit 1
+          fi
       - name: Compile Python
         run: uv run python -m compileall -q src tests tools
       - name: Lint Python

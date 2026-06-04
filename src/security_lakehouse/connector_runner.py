@@ -54,6 +54,27 @@ from security_lakehouse.validation import validate_raw_events
 
 CONNECTOR_RAW_FILE = "raw/connector_events.jsonl"
 
+# Default ``token_env`` for the CLI sync entrypoint. It is the GitHub PAT var
+# because repo-governance is the default connector; every other connector must
+# NOT silently read this var, or an unset provider token would ship the GitHub
+# PAT as an auth header to a third-party host (Okta/Jira/Workspace).
+DEFAULT_TOKEN_ENV = "GITHUB_TOKEN"
+
+
+def _resolve_provider_token(token_env: str, provider_env: str, env: dict[str, str]) -> str | None:
+    """Resolve a third-party token without leaking the default GitHub PAT.
+
+    An explicit ``--token-env`` override (anything other than the GitHub
+    default) wins; otherwise the provider-specific variable is used. The
+    GitHub default is never read for a non-GitHub connector.
+    """
+    if token_env != DEFAULT_TOKEN_ENV:
+        explicit = env.get(token_env)
+        if explicit:
+            return explicit
+    return env.get(provider_env)
+
+
 # Environment variable carrying the Okta org base URL for live collection. The
 # token is read from ``token_env`` (defaults to OKTA_API_TOKEN for this runner).
 OKTA_ORG_URL_ENV = "OKTA_ORG_URL"
@@ -105,7 +126,7 @@ def run_connector_sync(
     actor: str = "system",
     repo: str | None = None,
     fixture_dir: str | Path | None = None,
-    token_env: str = "GITHUB_TOKEN",
+    token_env: str = DEFAULT_TOKEN_ENV,
     materialize: bool = True,
 ) -> ConnectorSyncResult:
     """Run one configured connector and persist its evidence + run event."""
@@ -289,9 +310,7 @@ def _collect_okta(
         client = OktaFixtureClient(fixture_dir)
     else:
         org_url = env.get(OKTA_ORG_URL_ENV)
-        # The CLI default token_env is GITHUB_TOKEN; fall back to the Okta var
-        # when the caller did not override it for this connector.
-        token = env.get(token_env) or env.get("OKTA_API_TOKEN")
+        token = _resolve_provider_token(token_env, "OKTA_API_TOKEN", env)
         if not org_url or not token:
             raise ValueError(
                 "okta-identity sync requires --fixture-dir, or "
@@ -331,9 +350,7 @@ def _collect_google_workspace(
         client = GoogleWorkspaceFixtureClient(fixture_dir)
     else:
         customer_id = env.get(GOOGLE_WORKSPACE_CUSTOMER_ID_ENV)
-        # The CLI default token_env is GITHUB_TOKEN; fall back to the Workspace
-        # var when the caller did not override it for this connector.
-        access_token = env.get(token_env) or env.get("GOOGLE_WORKSPACE_ACCESS_TOKEN")
+        access_token = _resolve_provider_token(token_env, "GOOGLE_WORKSPACE_ACCESS_TOKEN", env)
         if not customer_id or not access_token:
             raise ValueError(
                 "google-workspace-identity sync requires --fixture-dir, or "
@@ -394,9 +411,7 @@ def _collect_jira(
     else:
         base_url = env.get(JIRA_BASE_URL_ENV)
         email = env.get(JIRA_EMAIL_ENV)
-        # The CLI default token_env is GITHUB_TOKEN; fall back to the Jira var
-        # when the caller did not override it for this connector.
-        token = env.get(token_env) or env.get("JIRA_API_TOKEN")
+        token = _resolve_provider_token(token_env, "JIRA_API_TOKEN", env)
         if not base_url or not email or not token:
             raise ValueError(
                 "jira-ticketing sync requires --fixture-dir, or "
