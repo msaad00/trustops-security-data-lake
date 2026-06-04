@@ -14,7 +14,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-from security_lakehouse.catalog import _data_root
+from security_lakehouse.catalog import _data_root, load_control_catalog
 
 ROOT = _data_root()
 DEFAULT_MAPPINGS = ROOT / "mappings" / "control_articles.json"
@@ -58,22 +58,37 @@ def validate_control_article_mappings(
 
 def build_reviewed_crosswalk(
     mappings_path: str | Path | None = None,
+    catalog_path: str | Path | None = None,
 ) -> dict[str, Any]:
-    """Compute a reviewed framework × framework crosswalk via shared articles.
+    """Compute a reviewed framework × framework crosswalk.
 
     The matrix cells list:
+      * ``shared_domains``: ``risk_domain`` values both frameworks cover. This
+        is the load-bearing cross-framework signal — article_id and control_id
+        are framework-unique, so they only ever match on the diagonal, whereas
+        ``risk_domain`` is the shared semantic axis that makes "answer once,
+        satisfy many" visible (e.g. access-control coverage in SOC 2 and ISO).
       * ``shared_articles``: same article_id appearing in both frameworks'
         mapping tables (rare across frameworks, but supported).
       * ``shared_controls``: same control_id touching both frameworks
         (this matters if a control maps into multiple framework versions).
-      * ``mappings_per_framework`` totals on the row header.
+      * ``mapping_count`` / ``article_count`` / ``domain_count`` totals on the
+        row header.
     """
     mappings = load_control_article_mappings(mappings_path)
+    catalog = load_control_catalog(catalog_path)
     by_framework: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
     for cid, mapping in mappings.items():
         framework_id = str(mapping.get("framework_id") or "")
         if framework_id:
             by_framework[framework_id][cid] = mapping
+
+    def domains_for(framework: str) -> set[str]:
+        return {
+            str(catalog[cid].get("risk_domain") or "")
+            for cid in by_framework[framework]
+            if cid in catalog and str(catalog[cid].get("risk_domain") or "")
+        }
 
     frameworks = sorted(by_framework)
     matrix: list[dict[str, Any]] = []
@@ -84,10 +99,12 @@ def build_reviewed_crosswalk(
             for article in (mapping.get("articles") or [])
         }
         left_controls = set(by_framework[left])
+        left_domains = domains_for(left)
         row: dict[str, Any] = {
             "framework_id": left,
             "mapping_count": len(by_framework[left]),
             "article_count": len(left_articles),
+            "domain_count": len(left_domains),
             "cells": [],
         }
         for right in frameworks:
@@ -97,10 +114,12 @@ def build_reviewed_crosswalk(
                 for article in (mapping.get("articles") or [])
             }
             right_controls = set(by_framework[right])
+            right_domains = domains_for(right)
             row["cells"].append(
                 {
                     "framework_id": right,
                     "is_self": left == right,
+                    "shared_domains": sorted(left_domains & right_domains),
                     "shared_articles": sorted(left_articles & right_articles),
                     "shared_controls": sorted(left_controls & right_controls),
                 }

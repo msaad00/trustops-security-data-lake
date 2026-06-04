@@ -483,6 +483,7 @@ export interface ControlArticleMapping {
 export interface ReviewedCrosswalkCell {
   framework_id: string;
   is_self: boolean;
+  shared_domains: string[];
   shared_articles: string[];
   shared_controls: string[];
 }
@@ -491,6 +492,7 @@ export interface ReviewedCrosswalkRow {
   framework_id: string;
   mapping_count: number;
   article_count: number;
+  domain_count: number;
   cells: ReviewedCrosswalkCell[];
 }
 
