@@ -1,0 +1,12 @@
+[
+  {
+    "name": "projects/fixture-project/policies/constraints/iam.disableServiceAccountKeyCreation",
+    "constraint": "constraints/iam.disableServiceAccountKeyCreation",
+    "enforced": false
+  },
+  {
+    "name": "projects/fixture-project/policies/constraints/compute.requireOsLogin",
+    "constraint": "constraints/compute.requireOsLogin",
+    "enforced": true
+  }
+]
