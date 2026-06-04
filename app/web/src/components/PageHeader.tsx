@@ -9,16 +9,22 @@ interface Props {
 
 export function PageHeader({ eyebrow, title, description, actions }: Props) {
   return (
-    <div className="flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <div className="text-[12px] font-black uppercase tracking-wider text-brand">
+    <div className="grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end">
+      <div className="min-w-0">
+        <div className="text-[10px] font-black uppercase tracking-[0.14em] text-brand">
           {eyebrow}
         </div>
-        <h1 className="mt-1 text-3xl font-black text-ink">{title}</h1>
-        <p className="mt-2 max-w-[780px] text-sm text-muted">{description}</p>
+        <h1 className="mt-0.5 max-w-full text-[26px] font-black leading-tight text-ink">
+          {title}
+        </h1>
+        <p className="mt-1 max-w-[min(820px,100%)] text-sm leading-5 text-muted">
+          {description}
+        </p>
       </div>
       {actions && (
-        <div className="flex flex-wrap items-center gap-2">{actions}</div>
+        <div className="flex min-w-0 max-w-full flex-wrap items-center justify-start gap-2 xl:justify-end">
+          {actions}
+        </div>
       )}
     </div>
   );

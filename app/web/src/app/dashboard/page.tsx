@@ -19,12 +19,12 @@ function Stat({
   tone?: string;
 }) {
   return (
-    <Card className="p-4">
-      <div className="text-[11px] font-black uppercase tracking-wider text-muted">
+    <Card className="flex min-h-[86px] flex-col justify-between p-3">
+      <div className="text-[10px] font-black uppercase tracking-[0.12em] text-muted">
         {label}
       </div>
       <div
-        className="mt-1.5 text-3xl font-black leading-none tabular-nums"
+        className="mt-1.5 text-[24px] font-black leading-none tabular-nums"
         style={tone ? { color: tone } : undefined}
       >
         {value}
@@ -41,14 +41,16 @@ export default function DashboardPage() {
   const p = data?.posture;
 
   return (
-    <div className="grid gap-6 px-7 py-7">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
+    <div className="grid gap-5 px-4 py-5 sm:px-5 lg:px-7">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="min-w-0">
           <div className="text-[12px] font-black uppercase tracking-wider text-brand">
             Trust
           </div>
-          <h1 className="mt-1 text-3xl font-black text-ink">Trust Home</h1>
-          <p className="mt-2 max-w-[760px] text-sm text-muted">
+          <h1 className="mt-1 text-[28px] font-black leading-tight text-ink">
+            Trust Home
+          </h1>
+          <p className="mt-1.5 max-w-[760px] text-sm leading-6 text-muted">
             Continuous posture computed from normalized evidence,
             controls-as-code rules, source freshness, and hashed snapshots.
           </p>
@@ -70,14 +72,15 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)]">
-        <Card className="flex items-center justify-center p-4">
+      <div className="grid gap-3 xl:grid-cols-[156px_minmax(0,1fr)]">
+        <Card className="flex min-h-[136px] items-center justify-center p-2">
           <PostureRing
             score={p?.score ?? 0}
             state={p?.state ?? "attention_required"}
+            size="compact"
           />
         </Card>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-5">
+        <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-3">
           <Stat label="Frameworks" value={p?.framework_count ?? 0} />
           <Stat label="Controls" value={p?.control_count ?? 0} />
           <Stat

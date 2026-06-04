@@ -95,7 +95,7 @@ export default function ControlsPage() {
   };
 
   return (
-    <div className="grid gap-5 px-7 py-7">
+    <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
       <PageHeader
         eyebrow="Controls"
         title="Control workbench"

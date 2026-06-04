@@ -85,8 +85,8 @@ export default function EvidencePage() {
     helper.accessor("asset_id", {
       header: "Asset",
       cell: (info) => (
-        <div>
-          <code className="text-xs text-ink">{info.getValue()}</code>
+        <div className="min-w-[220px] max-w-[360px]">
+          <code className="break-all text-xs text-ink">{info.getValue()}</code>
           <div className="text-xs text-muted">
             {info.row.original.asset_owner}
           </div>
@@ -112,7 +112,11 @@ export default function EvidencePage() {
     }),
     helper.accessor("evidence_ref", {
       header: "Evidence ref",
-      cell: (info) => <code className="text-xs">{info.getValue()}</code>,
+      cell: (info) => (
+        <code className="block min-w-[260px] max-w-[520px] break-all text-xs">
+          {info.getValue()}
+        </code>
+      ),
     }),
   ];
 
@@ -126,7 +130,7 @@ export default function EvidencePage() {
   });
 
   return (
-    <div className="grid gap-5 px-7 py-7">
+    <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
       <PageHeader
         eyebrow="Evidence room"
         title="Normalized evidence facts"
@@ -152,8 +156,8 @@ export default function EvidencePage() {
             evidence.
           </CardDescription>
         </CardHeader>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+        <div className="max-w-full overflow-x-auto">
+          <table className="min-w-[980px] w-full text-sm">
             <thead>
               {table.getHeaderGroups().map((hg) => (
                 <tr key={hg.id} className="border-y border-line bg-slate-50/60">

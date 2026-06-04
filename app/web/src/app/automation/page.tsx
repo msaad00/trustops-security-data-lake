@@ -271,13 +271,13 @@ export default function AutomationPage() {
   }, [lastRun, selectedNode]);
 
   return (
-    <div className="grid gap-5 px-7 py-7">
+    <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
       <PageHeader
         eyebrow="Workflows"
         title="Workflow canvas"
         description="Drag actions from the library, connect them, then save and run. Every action publishes its input/output schema; downstream params can reference upstream output with `{{nodeId.output.field}}`. Conditional edges (passed / failed) gate next steps on check results."
         actions={
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
             <select
               value={activeId}
               onChange={(e) => {
@@ -287,7 +287,7 @@ export default function AutomationPage() {
                 setSelectedNode(null);
                 setLastRun(null);
               }}
-              className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand"
+              className="max-w-full rounded-lg border border-line bg-white px-3 py-2 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand sm:max-w-[260px]"
             >
               <option value={NEW_WORKFLOW_ID}>+ New workflow</option>
               {(workflows.data ?? []).map((w) => (
@@ -358,7 +358,7 @@ export default function AutomationPage() {
         </div>
       </Card>
 
-      <div className="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)_auto]">
+      <div className="grid min-w-0 gap-4 xl:grid-cols-[240px_minmax(0,1fr)] 2xl:grid-cols-[240px_minmax(0,1fr)_340px]">
         <ActionPalette catalog={catalog.data ?? []} onAdd={addNode} />
         <WorkflowCanvas
           nodes={nodesWithRunState}

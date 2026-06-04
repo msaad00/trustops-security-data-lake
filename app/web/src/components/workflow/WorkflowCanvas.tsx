@@ -438,7 +438,7 @@ export function WorkflowCanvas({
 
   return (
     <div
-      className="relative h-[580px] overflow-hidden rounded-2xl border border-line bg-white"
+      className="relative h-[min(660px,calc(100dvh-315px))] min-h-[500px] overflow-hidden rounded-2xl border border-line bg-white"
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >

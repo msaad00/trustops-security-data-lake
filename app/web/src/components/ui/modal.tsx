@@ -12,6 +12,7 @@ interface ModalProps {
   description?: string;
   children: ReactNode;
   footer?: ReactNode;
+  size?: "md" | "lg";
 }
 
 export function Modal({
@@ -21,7 +22,13 @@ export function Modal({
   description,
   children,
   footer,
+  size = "md",
 }: ModalProps) {
+  const widthClass =
+    size === "lg"
+      ? "w-[min(760px,calc(100vw-32px))]"
+      : "w-[min(560px,calc(100vw-32px))]";
+
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <AnimatePresence>
@@ -40,7 +47,7 @@ export function Modal({
                 initial={{ opacity: 0, scale: 0.96, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96, y: 12 }}
-                className="fixed left-1/2 top-1/2 z-50 grid w-[min(560px,calc(100vw-32px))] -translate-x-1/2 -translate-y-1/2 grid-rows-[auto_1fr_auto] overflow-hidden rounded-2xl bg-white shadow-hero"
+                className={`${widthClass} fixed left-1/2 top-1/2 z-50 grid max-h-[calc(100dvh-40px)] -translate-x-1/2 -translate-y-1/2 grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-2xl bg-white shadow-hero`}
               >
                 <header className="flex items-start justify-between gap-4 border-b border-line p-5">
                   <div>
