@@ -160,7 +160,7 @@ export default function CrosswalkPage() {
                     </span>
                     <div className="text-[10px] font-normal text-muted">
                       {row.mapping_count} mappings · {row.article_count}{" "}
-                      articles
+                      articles · {row.domain_count} domains
                     </div>
                   </th>
                   {row.cells.map((cell) => (
@@ -175,6 +175,24 @@ export default function CrosswalkPage() {
                         <span className="text-muted">— self —</span>
                       ) : (
                         <div className="grid gap-2">
+                          <div>
+                            <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+                              shared domains
+                            </div>
+                            {cell.shared_domains.length === 0 ? (
+                              <span className="text-muted">
+                                no shared domains
+                              </span>
+                            ) : (
+                              <div className="flex flex-wrap gap-1">
+                                {cell.shared_domains.map((d) => (
+                                  <Badge tone="info" key={d}>
+                                    {d}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
+                          </div>
                           <div>
                             <div className="text-[10px] font-black uppercase tracking-wide text-muted">
                               articles
