@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from pathlib import Path
+from urllib.parse import urlparse
 
 import pytest
 
@@ -79,7 +80,7 @@ def test_collect_gcp_evidence_is_schema_valid_and_mapped() -> None:
     # Asset events are cloud resources scoped to the project and read-only refs.
     sample = next(iter(asset.values()))
     assert sample["entity"]["asset_type"] == "cloud_resource"
-    assert sample["evidence"]["evidence_ref"].startswith("//cloudasset.googleapis.com/")
+    assert urlparse(sample["evidence"]["evidence_ref"]).netloc == "cloudasset.googleapis.com"
     assert owner["evidence"]["evidence_ref"].endswith(":getIamPolicy")
 
 

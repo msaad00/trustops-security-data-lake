@@ -180,7 +180,7 @@ def _user_event(
     user_id = str(user["id"])
     suspended = bool(user.get("suspended"))
     archived = bool(user.get("archived"))
-    can_authenticate = not (suspended or archived)
+    active = not (suspended or archived)
     primary_email = user.get("primaryEmail")
     evidence_ref = f"{DIRECTORY_API_BASE}/users/{user_id}"
     return _event(
@@ -193,15 +193,15 @@ def _user_event(
         asset_type="identity_account",
         controls=IDENTITY_CONTROLS,
         # Accounts that cannot authenticate are the noteworthy ones.
-        status="observed" if can_authenticate else "open",
-        severity="info" if can_authenticate else "low",
+        status="observed" if active else "open",
+        severity="info" if active else "low",
         evidence_ref=evidence_ref,
         attributes={
             "user_id": user_id,
             "primary_email": primary_email,
             "suspended": suspended,
             "archived": archived,
-            "can_authenticate": can_authenticate,
+            "can_authenticate": active,
             "is_admin": bool(user.get("isAdmin")),
             "creation_time": user.get("creationTime"),
             "last_login_time": user.get("lastLoginTime"),
@@ -221,9 +221,9 @@ def _mfa_event(
     enforced = bool(user.get("isEnforcedIn2Sv"))
     suspended = bool(user.get("suspended"))
     archived = bool(user.get("archived"))
-    can_authenticate = not (suspended or archived)
+    active = not (suspended or archived)
     # An active account without 2-step verification is the finding to raise.
-    needs_mfa = can_authenticate and not enrolled
+    needs_mfa = active and not enrolled
     evidence_ref = f"{DIRECTORY_API_BASE}/users/{user_id}"
     return _event(
         org=org,
@@ -241,7 +241,7 @@ def _mfa_event(
             "user_id": user_id,
             "mfa_enrolled": enrolled,
             "mfa_enforced": enforced,
-            "can_authenticate": can_authenticate,
+            "can_authenticate": active,
             "needs_mfa": needs_mfa,
         },
     )
