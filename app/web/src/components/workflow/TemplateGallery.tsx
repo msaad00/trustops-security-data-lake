@@ -92,6 +92,7 @@ export function TemplateGallery({ open, onClose, onPick }: Props) {
       onOpenChange={(o) => !o && onClose()}
       title="Workflow templates"
       description="Start from a vetted story instead of an empty canvas. Each template is fully editable after loading."
+      size="lg"
       footer={
         <div className="flex items-center justify-end gap-2">
           <Button variant="default" onClick={onClose}>
@@ -112,9 +113,12 @@ export function TemplateGallery({ open, onClose, onPick }: Props) {
         </div>
       }
     >
-      <div className="grid grid-cols-[200px_minmax(0,1fr)] gap-3">
+      <div className="grid min-w-0 gap-3 md:grid-cols-[200px_minmax(0,1fr)]">
         {/* Sidebar list */}
-        <nav aria-label="Template list" className="grid gap-1.5">
+        <nav
+          aria-label="Template list"
+          className="grid max-h-[220px] gap-1.5 overflow-auto md:max-h-none"
+        >
           {WORKFLOW_TEMPLATES.map((template) => (
             <button
               key={template.id}
@@ -134,7 +138,7 @@ export function TemplateGallery({ open, onClose, onPick }: Props) {
 
         {/* Detail panel */}
         {active && (
-          <div className="grid gap-4 rounded-xl border border-line bg-slate-50/60 p-4 text-sm">
+          <div className="grid min-w-0 gap-4 rounded-xl border border-line bg-slate-50/60 p-4 text-sm">
             <div>
               <div className="text-xs font-black uppercase tracking-wide text-muted">
                 Name
@@ -170,7 +174,7 @@ export function TemplateGallery({ open, onClose, onPick }: Props) {
               <div className="mb-1.5 text-xs font-black uppercase tracking-wide text-muted">
                 Composition
               </div>
-              <div className="grid gap-1 font-mono text-[11px] text-ink">
+              <div className="grid max-h-[220px] gap-1 overflow-auto font-mono text-[11px] text-ink">
                 {active.nodes.map((node) => (
                   <div
                     key={node.id}

@@ -4,19 +4,22 @@ This page is the product review index for the public repo.
 
 ## Product Experience
 
-| Artifact                       | Path                                         |
-| ------------------------------ | -------------------------------------------- |
-| Next.js TrustOps workbench     | `app/web/src/app/`                           |
-| Local console/API server       | `src/security_lakehouse/server.py`           |
-| FastAPI server mode            | `src/security_lakehouse/server_app.py`       |
-| Continuous assessment engine   | `src/security_lakehouse/assessment.py`       |
-| CLI entry point                | `src/security_lakehouse/cli.py`              |
-| Vendor diligence use case      | `docs/USE_CASE_VENDOR_DILIGENCE.md`          |
-| Trust Home screenshot          | `docs/images/trustops-demo-dashboard.png`    |
-| Workflow canvas screenshot     | `docs/images/trustops-demo-workflows.png`    |
-| Framework workbench screenshot | `docs/images/trustops-demo-frameworks.png`   |
-| Connector workbench screenshot | `docs/images/trustops-demo-connectors.png`   |
-| Trust center screenshot        | `docs/images/trustops-demo-trust-center.png` |
+| Artifact                       | Path                                           |
+| ------------------------------ | ---------------------------------------------- |
+| Next.js TrustOps workbench     | `app/web/src/app/`                             |
+| Local console/API server       | `src/security_lakehouse/server.py`             |
+| FastAPI server mode            | `src/security_lakehouse/server_app.py`         |
+| Continuous assessment engine   | `src/security_lakehouse/assessment.py`         |
+| CLI entry point                | `src/security_lakehouse/cli.py`                |
+| Vendor diligence use case      | `docs/USE_CASE_VENDOR_DILIGENCE.md`            |
+| Trust Home screenshot          | `docs/images/trustops-demo-dashboard.png`      |
+| Workflow canvas screenshot     | `docs/images/trustops-demo-workflows.png`      |
+| Graph workbench screenshot     | `docs/images/trustops-demo-graph.png`          |
+| Framework workbench screenshot | `docs/images/trustops-demo-frameworks.png`     |
+| Control drawer screenshot      | `docs/images/trustops-demo-control-drawer.png` |
+| Evidence room screenshot       | `docs/images/trustops-demo-evidence.png`       |
+| Connector workbench screenshot | `docs/images/trustops-demo-connectors.png`     |
+| Trust center screenshot        | `docs/images/trustops-demo-trust-center.png`   |
 
 Run locally:
 

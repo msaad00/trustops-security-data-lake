@@ -138,13 +138,16 @@ lake role, scoped source API token, or managed evidence object.
 Fresh demo screenshots are captured from the server-mode workbench using the
 synthetic `fintech` fixture.
 
-| Asset                             | Path                                         |
-| --------------------------------- | -------------------------------------------- |
-| Trust Home / dashboard            | `docs/images/trustops-demo-dashboard.png`    |
-| Workflow canvas                   | `docs/images/trustops-demo-workflows.png`    |
-| Framework coverage and provenance | `docs/images/trustops-demo-frameworks.png`   |
-| Connector workbench               | `docs/images/trustops-demo-connectors.png`   |
-| Trust center reviewer shares      | `docs/images/trustops-demo-trust-center.png` |
+| Asset                             | Path                                           |
+| --------------------------------- | ---------------------------------------------- |
+| Trust Home / dashboard            | `docs/images/trustops-demo-dashboard.png`      |
+| Workflow canvas                   | `docs/images/trustops-demo-workflows.png`      |
+| Graph workbench                   | `docs/images/trustops-demo-graph.png`          |
+| Framework coverage and provenance | `docs/images/trustops-demo-frameworks.png`     |
+| Control drawer                    | `docs/images/trustops-demo-control-drawer.png` |
+| Evidence room                     | `docs/images/trustops-demo-evidence.png`       |
+| Connector workbench               | `docs/images/trustops-demo-connectors.png`     |
+| Trust center reviewer shares      | `docs/images/trustops-demo-trust-center.png`   |
 
 ## Buyer-Readable Boundary
 

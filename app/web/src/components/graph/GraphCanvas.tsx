@@ -426,14 +426,14 @@ function InnerGraphCanvas({
 
   if (!hydrated) {
     return (
-      <div className="h-[640px] rounded-2xl border border-line bg-white" />
+      <div className="h-[min(680px,calc(100dvh-300px))] min-h-[520px] rounded-2xl border border-line bg-white" />
     );
   }
 
   return (
     <div
       ref={wrapperRef}
-      className="h-[640px] overflow-hidden rounded-2xl border border-line bg-white"
+      className="h-[min(680px,calc(100dvh-300px))] min-h-[520px] overflow-hidden rounded-2xl border border-line bg-white"
     >
       <ReactFlow
         nodes={rfNodes}
@@ -442,7 +442,9 @@ function InnerGraphCanvas({
         nodesDraggable
         nodesConnectable={false}
         edgesReconnectable={false}
-        fitView
+        defaultViewport={{ x: 96, y: 96, zoom: 0.82 }}
+        minZoom={0.25}
+        maxZoom={1.6}
         proOptions={{ hideAttribution: true }}
         onSelectionChange={handleSelectionChange}
       >

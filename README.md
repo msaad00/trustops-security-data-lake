@@ -28,7 +28,7 @@ while keeping evidence inside the customer's cloud, data lake, or local boundary
 
 <p align="center">
   <img src="docs/images/trustops-demo-workflows.png" alt="TrustOps workflow canvas with action library and workflow test run" width="49%">
-  <img src="docs/images/trustops-demo-frameworks.png" alt="TrustOps framework coverage and source provenance workbench" width="49%">
+  <img src="docs/images/trustops-demo-graph.png" alt="TrustOps compliance and repository graph workbench with searchable nodes and path tracing" width="49%">
 </p>
 
 ## Why It Exists
@@ -49,23 +49,27 @@ flowchart LR
   API --> Agents[CI, MCP tools, coding agents, GRC agents]
 ```
 
-The default demo is intentionally small and self-contained. The production shape
-is self-hosted server mode with API keys, OIDC/SAML, RBAC, tenant-scoped lake
-paths, request audit events, scheduled connector syncs, and customer-owned
-evidence storage.
+The default demo is intentionally small and self-contained. Production mode is
+self-hosted with API keys, OIDC/SAML, RBAC, tenant-scoped lake paths, request
+audit events, scheduled connector syncs, and customer-owned evidence storage.
 
-## Shipped Surfaces
+## What Ships
 
-| Surface             | What is live in the repo                                                                                                                                                                                 |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Trust workbench     | Next.js console with Trust Home, controls, evidence, violations, remediation, risk register, workflows, graph, insights, connectors, frameworks, crosswalk, audit log, trust center, and agent API views |
-| Server mode         | FastAPI behind `.[server]`, API keys, OIDC, SAML, RBAC, request audit events, tenant/user spine, tenant-scoped lake resolution, and protected `/api/v1/*` plus `/api/*`                                  |
-| Evidence pipeline   | Bronze raw replay records, silver normalized facts, gold posture/tests/assets/freshness, snapshots, SQLite local mart, optional DuckDB analytics                                                         |
-| Continuous inputs   | 15 connector contracts; executable GitHub, AWS, Okta, Google Workspace, GCP, Azure, and Jira runners; scheduled syncs; repo audit/governance sync                                                        |
-| Policy logic        | Controls-as-code rule engine with lintable rules, rule reasons, stale-evidence handling, and posture output annotations                                                                                  |
-| Remediation         | Owner tasks, evidence requests, SLA dates, exceptions, risk register, and workflow actions                                                                                                               |
-| Workflow automation | Workflow canvas plus dry-run preview, expression routing, snapshot, assignment, trust-share, webhook, Slack, and Jira actions on a guarded egress path                                                   |
-| Agent/headless      | Versioned `/api/v1/*` envelopes, OpenAPI export, Python async SDK, MCP read/write tools, and the same auth/RBAC boundary as the UI                                                                       |
+- **Trust workbench** — Trust Home, controls, evidence, violations,
+  remediation, risk register, workflows, graph, insights, connectors,
+  frameworks, crosswalk, audit log, trust center, and agent API views.
+- **Server mode** — FastAPI behind `.[server]`, API keys, OIDC, SAML, RBAC,
+  request audit events, tenant/user spine, and protected `/api/v1/*` plus
+  `/api/*`.
+- **Evidence pipeline** — bronze raw replay records, silver normalized facts,
+  gold posture/tests/assets/freshness, snapshots, SQLite local mart, and
+  optional DuckDB analytics.
+- **Continuous inputs** — 15 connector contracts; executable GitHub, AWS,
+  Okta, Google Workspace, GCP, Azure, and Jira runners; scheduled syncs; repo
+  audit/governance sync.
+- **Automation and agents** — controls-as-code rules, remediation tasks,
+  evidence requests, guarded workflow actions, OpenAPI, Python SDK, and MCP
+  read/write tools.
 
 ## Run The Demo
 
@@ -129,36 +133,36 @@ See [Connector And Access Model](docs/CONNECTORS.md).
 ## Product Screens
 
 <p align="center">
+  <img src="docs/images/trustops-demo-frameworks.png" alt="TrustOps framework coverage and source provenance workbench" width="49%">
+  <img src="docs/images/trustops-demo-control-drawer.png" alt="TrustOps control drawer with evidence, violations, and remediation actions" width="49%">
+</p>
+
+<p align="center">
+  <img src="docs/images/trustops-demo-evidence.png" alt="TrustOps evidence room with searchable normalized evidence facts and hash verification drawer" width="49%">
   <img src="docs/images/trustops-demo-connectors.png" alt="TrustOps connector workbench with lake contracts and executable source runners" width="49%">
-  <img src="docs/images/trustops-demo-trust-center.png" alt="TrustOps trust center share portal with expiring reviewer tokens" width="49%">
+</p>
+
+<p align="center">
+  <img src="docs/images/trustops-demo-trust-center.png" alt="TrustOps trust center share portal with expiring reviewer tokens" width="100%">
 </p>
 
 | View            | What it proves                                                                                   |
 | --------------- | ------------------------------------------------------------------------------------------------ |
 | Trust Home      | Current posture, confidence, freshness, failing controls, remediation queue, and live API status |
 | Workflow canvas | Reusable remediation and evidence workflows with guarded outbound actions                        |
+| Graph           | Framework, control, evidence, asset, repository, and governance topology with path tracing       |
 | Frameworks      | Source-linked framework scope, readiness gates, coverage, and provenance                         |
+| Controls        | Click-through control details, linked evidence, violations, and remediation actions              |
+| Evidence room   | Searchable normalized evidence facts with control links and SHA-256 verification                 |
 | Connectors      | Read-only-first integration strategy, connector state, and sync boundaries                       |
 | Trust center    | Expiring reviewer shares with token hashing and auditor redaction                                |
 
 ## Framework Coverage
 
 TrustOps currently ships **34 source-linked controls** across **8 framework
-families**, with reviewed mappings for every seeded control.
-
-| Framework family    | Seeded controls | Reviewed mappings |
-| ------------------- | --------------: | ----------------: |
-| NIST AI RMF         |               6 |                 6 |
-| HIPAA Security Rule |               6 |                 6 |
-| GDPR                |               6 |                 6 |
-| EU AI Act           |               6 |                 6 |
-| ISO/IEC 27001       |               3 |                 3 |
-| PCI DSS             |               3 |                 3 |
-| SOC 2 TSC           |               2 |                 2 |
-| ISO/IEC 42001       |               2 |                 2 |
-
-Coverage details, source URLs, readiness gates, and roadmap percentages live in
-the [Framework Coverage Matrix](docs/FRAMEWORK_COVERAGE.md).
+families**, with reviewed mappings for every seeded control. Coverage details,
+source URLs, readiness gates, and roadmap percentages live in the
+[Framework Coverage Matrix](docs/FRAMEWORK_COVERAGE.md).
 
 Framework names are rendered as neutral text labels in product and docs. TrustOps
 does **not** ship made-up logos, lookalike seals, regulator marks, or
@@ -168,27 +172,16 @@ attribution, owner, and review date are recorded in the
 
 ## Human And Agent API
 
-`/api/v1/*` is the stable headless contract for agents and external clients. It
-returns `{data, meta, errors}` envelopes and supports filtering and pagination on
-list resources.
-
-| Route                                     | Purpose                                         |
-| ----------------------------------------- | ----------------------------------------------- |
-| `GET /api/v1/healthz`                     | service status                                  |
-| `GET /api/v1/posture/current`             | current posture, scores, confidence, violations |
-| `GET /api/v1/control-tests`               | control tests, owners, confidence, next action  |
-| `GET /api/v1/violations`                  | open control and asset violations               |
-| `GET /api/v1/evidence`                    | normalized evidence facts                       |
-| `GET /api/v1/assets`                      | asset risk queue                                |
-| `GET /api/v1/insights/timeseries`         | captured posture and trend points               |
-| `GET /api/v1/public/trust-shares/{token}` | auditor-scoped public posture                   |
-| `POST /api/v1/snapshots`                  | point-in-time assessment snapshot               |
+`/api/v1/*` is the stable headless contract for agents and external clients.
+Routes return `{data, meta, errors}` envelopes with filtering and pagination on
+list resources. The main resources are posture, control tests, violations,
+evidence, assets, insight time series, trust shares, and snapshots.
 
 Server mode requires auth for non-health routes. API keys, OIDC, and SAML all
 resolve to the same tenant, user, role, and audit boundary. See
 [Server Auth](docs/SERVER_AUTH.md) and [Agent API](docs/api/AGENT_API.md).
 
-## Core Commands
+## Useful Commands
 
 ```bash
 security-lakehouse validate --raw data/raw/security_events.jsonl
@@ -234,34 +227,11 @@ security-lakehouse workflow run --lake build/lakehouse --id <workflow_id>
 
 ## Data Model
 
-```text
-raw evidence
-  -> bronze/raw_events.jsonl          immutable replay + SHA-256
-  -> silver/normalized_events.jsonl   canonical security facts
-  -> gold/control_posture.jsonl       framework and control posture
-  -> gold/control_tests.jsonl         program tests, owners, SLAs, confidence
-  -> gold/remediation_tasks.jsonl     owner tasks, evidence requests, exceptions
-  -> gold/asset_risk.jsonl            owner remediation queue
-  -> gold/current_posture.json        live posture contract
-  -> gold/snapshots/*.json            point-in-time assessment evidence
-  -> mart/security_lakehouse.sqlite   local SQL smoke/demo surface
-  -> mart/security_data_lake.duckdb   optional local analytical mart
-```
-
-## Storage Strategy
-
-TrustOps separates product logic from storage.
-
-| Store                         | Role                                                                          | Status                      |
-| ----------------------------- | ----------------------------------------------------------------------------- | --------------------------- |
-| Snowflake / Iceberg / Polaris | governed customer evidence, audit views, retention, RBAC, executive reporting | target production path      |
-| ClickHouse                    | high-volume runtime telemetry, prompt/tool events, trend analytics            | target hot telemetry path   |
-| DuckDB                        | local analytical file for larger local datasets                               | optional via `.[analytics]` |
-| SQLite                        | zero-dependency local mart and app-state demo database                        | default local path          |
-
-SQLite is not the strategic data lake. It is the smallest local artifact that
-makes the product runnable without cloud credentials. Production deployments use
-customer-controlled storage and server-mode auth boundaries.
+Raw evidence flows through bronze replay records, silver normalized security
+facts, gold posture/control/remediation outputs, point-in-time snapshots, and a
+local mart. SQLite is the default local artifact; Snowflake/Iceberg/Polaris and
+ClickHouse are the production evidence and telemetry paths. See
+[Data Model](docs/DATA_MODEL.md) and [Architecture](docs/ARCHITECTURE.md).
 
 ## Verification
 

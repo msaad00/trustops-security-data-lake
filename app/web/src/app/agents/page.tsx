@@ -281,7 +281,7 @@ export default function AgentsPage() {
   };
 
   return (
-    <div className="grid gap-5 px-7 py-7">
+    <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
       <PageHeader
         eyebrow="Agent API"
         title="Live try-it console"

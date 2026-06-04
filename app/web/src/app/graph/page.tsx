@@ -276,7 +276,7 @@ export default function GraphPage() {
   }, [pathMode]);
 
   return (
-    <div className="grid gap-5 px-7 py-7">
+    <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
       <PageHeader
         eyebrow="Graph"
         title={
@@ -391,8 +391,8 @@ export default function GraphPage() {
         </div>
       </Card>
 
-      <div className="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)]">
-        <Card className="overflow-hidden">
+      <div className="grid min-w-0 gap-4 xl:grid-cols-[240px_minmax(0,1fr)]">
+        <Card className="max-h-[min(680px,calc(100dvh-300px))] min-h-[520px] overflow-auto">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <Filter className="h-4 w-4 text-muted" /> Layers + facets
@@ -401,12 +401,12 @@ export default function GraphPage() {
               Persistent filters drive every other view.
             </CardDescription>
           </CardHeader>
-          <div className="grid gap-4 p-4 pt-0">
+          <div className="grid gap-3 p-4 pt-0">
             <section>
               <div className="mb-2 text-[11px] font-black uppercase tracking-wide text-muted">
                 Layers
               </div>
-              <div className="grid gap-1.5">
+              <div className="grid gap-1">
                 {activeKinds.map((kind) => {
                   const on = visible.has(kind);
                   return (
@@ -415,7 +415,7 @@ export default function GraphPage() {
                       type="button"
                       onClick={() => toggle(kind)}
                       className={[
-                        "grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border px-2.5 py-1.5 text-left text-xs font-extrabold",
+                        "grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border px-2.5 py-1.5 text-left text-[11px] font-extrabold",
                         on
                           ? "border-ink bg-white text-ink"
                           : "border-line bg-slate-50 text-muted hover:border-brand",
@@ -516,12 +516,13 @@ export default function GraphPage() {
           </div>
         </Card>
 
-        <div className="grid gap-3">
+        <div className="grid min-w-0 gap-3">
           {pathFrom && pathTo && (
-            <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
-              <b>Path trace:</b> <code className="text-ink">{pathFrom}</code> →{" "}
-              <code className="text-ink">{pathTo}</code>. Dimmed nodes/edges are
-              outside the shortest path.{" "}
+            <div className="min-w-0 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+              <b>Path trace:</b>{" "}
+              <code className="break-all text-ink">{pathFrom}</code> →{" "}
+              <code className="break-all text-ink">{pathTo}</code>. Dimmed
+              nodes/edges are outside the shortest path.{" "}
               <button
                 type="button"
                 className="ml-1 underline"
@@ -569,15 +570,19 @@ export default function GraphPage() {
                 <Badge tone={KIND_TONE[selected.kind]}>
                   {selected.kind.replace("_", " ")}
                 </Badge>
-                <code className="text-xs text-ink">{selected.id}</code>
+                <code className="break-all text-xs text-ink">
+                  {selected.id}
+                </code>
               </div>
-              <dl className="grid grid-cols-[140px_1fr] gap-x-3 gap-y-1.5">
+              <dl className="grid min-w-0 grid-cols-[110px_minmax(0,1fr)] gap-x-3 gap-y-1.5 sm:grid-cols-[140px_minmax(0,1fr)]">
                 <dt className="text-muted">Label</dt>
-                <dd className="font-extrabold">{selected.label}</dd>
+                <dd className="min-w-0 break-words font-extrabold">
+                  {selected.label}
+                </dd>
                 {selected.subtitle && (
                   <>
                     <dt className="text-muted">Subtitle</dt>
-                    <dd>{selected.subtitle}</dd>
+                    <dd className="min-w-0 break-words">{selected.subtitle}</dd>
                   </>
                 )}
                 {selected.framework_id && (

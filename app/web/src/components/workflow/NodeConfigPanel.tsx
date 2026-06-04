@@ -65,7 +65,7 @@ export function NodeConfigPanel({
 
   if (!node || !spec) {
     return (
-      <aside className="grid w-[340px] place-items-center border-l border-line bg-white text-xs text-muted">
+      <aside className="grid min-h-[160px] w-full place-items-center rounded-2xl border border-line bg-white text-xs text-muted 2xl:min-h-[500px] 2xl:w-[340px] 2xl:rounded-none 2xl:border-y-0 2xl:border-r-0">
         <div className="px-6 text-center">
           <ChevronRight className="mx-auto mb-2 h-4 w-4 text-muted" />
           Select a node in the canvas to inspect and edit it here.
@@ -93,7 +93,7 @@ export function NodeConfigPanel({
   };
 
   return (
-    <aside className="grid w-[380px] grid-rows-[auto_1fr_auto] border-l border-line bg-white">
+    <aside className="grid max-h-[min(660px,calc(100dvh-315px))] min-h-[420px] w-full grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-2xl border border-line bg-white 2xl:min-h-[500px] 2xl:w-[340px] 2xl:rounded-none 2xl:border-y-0 2xl:border-r-0">
       <header className="flex items-start justify-between gap-3 border-b border-line p-4">
         <div className="min-w-0">
           <div className="flex items-center gap-2">

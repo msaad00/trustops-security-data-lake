@@ -188,7 +188,7 @@ export default function ViolationsPage() {
   }
 
   return (
-    <div className="grid gap-5 px-7 py-7">
+    <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
       <PageHeader
         eyebrow="Violations"
         title="Violation queue"
@@ -311,7 +311,7 @@ export default function ViolationsPage() {
           </CardDescription>
         </CardHeader>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="min-w-[820px] w-full text-sm">
             <thead>
               {table.getHeaderGroups().map((hg) => (
                 <tr key={hg.id} className="border-y border-line bg-slate-50/60">

@@ -27,8 +27,8 @@ const SEVERITIES: Array<Severity | "all"> = [
 
 export function Toolbar({ filters, frameworks, onChange, placeholder }: Props) {
   return (
-    <div className="card flex flex-wrap items-center gap-3 p-3">
-      <div className="relative min-w-[260px] flex-1">
+    <div className="card grid min-w-0 gap-2 p-3 md:grid-cols-[minmax(220px,1fr)_auto_auto]">
+      <div className="relative min-w-0">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
         <input
           value={filters.query}
@@ -40,7 +40,7 @@ export function Toolbar({ filters, frameworks, onChange, placeholder }: Props) {
       <select
         value={filters.framework}
         onChange={(e) => onChange({ ...filters, framework: e.target.value })}
-        className="rounded-lg border border-line bg-white px-3 py-2.5 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand"
+        className="min-w-0 rounded-lg border border-line bg-white px-3 py-2.5 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand"
       >
         <option value="all">All frameworks</option>
         {frameworks.map((f) => (
@@ -57,7 +57,7 @@ export function Toolbar({ filters, frameworks, onChange, placeholder }: Props) {
             severity: e.target.value as ToolbarFilters["severity"],
           })
         }
-        className="rounded-lg border border-line bg-white px-3 py-2.5 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand"
+        className="min-w-0 rounded-lg border border-line bg-white px-3 py-2.5 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand"
       >
         {SEVERITIES.map((s) => (
           <option key={s} value={s}>

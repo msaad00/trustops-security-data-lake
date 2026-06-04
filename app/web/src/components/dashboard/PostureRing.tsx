@@ -22,14 +22,23 @@ const LABEL: Record<string, string> = {
 export function PostureRing({
   score,
   state,
+  size = "default",
 }: {
   score: number;
   state: string;
+  size?: "compact" | "default";
 }) {
   const value = Math.round(score);
   const color = TONE[state] ?? "#f79009";
+  const isCompact = size === "compact";
   return (
-    <div className="relative h-[208px] w-[208px]">
+    <div
+      className={
+        isCompact
+          ? "relative h-[108px] w-[108px]"
+          : "relative h-[208px] w-[208px]"
+      }
+    >
       <ResponsiveContainer width="100%" height="100%">
         <RadialBarChart
           innerRadius="76%"
@@ -53,11 +62,21 @@ export function PostureRing({
         </RadialBarChart>
       </ResponsiveContainer>
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-[52px] font-black leading-none text-ink">
+        <span
+          className={
+            isCompact
+              ? "text-[28px] font-black leading-none text-ink"
+              : "text-[52px] font-black leading-none text-ink"
+          }
+        >
           {value}
         </span>
         <span
-          className="mt-1 rounded-full px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wide"
+          className={
+            isCompact
+              ? "mt-1 rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-wide"
+              : "mt-1 rounded-full px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wide"
+          }
           style={{ color, background: `${color}1a` }}
         >
           {LABEL[state] ?? state}

@@ -98,7 +98,7 @@ export function ControlTestTable({ rows }: { rows: ControlTest[] }) {
         </CardDescription>
       </CardHeader>
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="min-w-[820px] w-full text-sm">
           <thead>
             {table.getHeaderGroups().map((hg) => (
               <tr key={hg.id} className="border-y border-line bg-slate-50/60">
