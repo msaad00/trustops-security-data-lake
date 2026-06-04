@@ -42,8 +42,29 @@ security-lakehouse connectors list
 
 ## Connector Runner
 
-The first executable runner is `github-security`. It uses the authenticated
-repository governance collector and writes valid raw evidence into:
+TrustOps currently has 15 connector contracts. Seven are executable source
+runners; the remaining entries describe read-only lake contracts or managed
+evidence boundaries.
+
+| Connector ID                | Source                  | Runner status              |
+| --------------------------- | ----------------------- | -------------------------- |
+| `github-security`           | GitHub repo security    | executable                 |
+| `aws-posture`               | AWS IAM/posture         | executable                 |
+| `okta-identity`             | Okta identity/MFA       | executable                 |
+| `google-workspace-identity` | Google Workspace users  | executable                 |
+| `gcp-posture`               | GCP IAM/posture         | executable                 |
+| `azure-posture`             | Azure IAM/posture       | executable                 |
+| `jira-ticketing`            | Jira tickets/workflows  | executable                 |
+| `snowflake-evidence-lake`   | governed evidence lake  | read-only lake contract    |
+| `clickhouse-telemetry-lake` | telemetry analytics     | read-only lake contract    |
+| `object-storage-evidence`   | object evidence store   | read-only lake contract    |
+| `siem-alerts`               | SIEM/detection exports  | read-only lake contract    |
+| `runtime-gateway`           | runtime policy events   | read-only lake contract    |
+| `identity-provider`         | generic identity source | contract, no direct runner |
+| `ticketing`                 | generic ticketing       | contract, no direct runner |
+| `managed-local-evidence`    | local starter evidence  | managed evidence object    |
+
+Every executable runner writes valid raw evidence into:
 
 ```text
 <lake>/raw/connector_events.jsonl
