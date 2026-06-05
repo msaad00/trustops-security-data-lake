@@ -112,6 +112,17 @@ def test_create_snapshot_round_trips(tmp_path: Path) -> None:
     assert any(row["reason"] == "sdk-test" for row in snapshots)
 
 
+def test_posture_as_of_round_trips(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    with _client(create_app(tmp_path, require_auth=False)) as client:
+        client.create_snapshot(reason="sdk-as-of")
+        found = client.posture_as_of("2030-01-01")
+        empty = client.posture_as_of("2000-01-01")
+    assert found["found"] is True
+    assert found["assessment_hash"]
+    assert empty["found"] is False
+
+
 def test_create_risk_then_list_round_trips(tmp_path: Path) -> None:
     _seed_lake(tmp_path)
     app = create_app(tmp_path)

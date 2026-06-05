@@ -23,6 +23,7 @@ from security_lakehouse import mcp_server  # noqa: E402
 
 EXPECTED_TOOLS = {
     "get_posture",
+    "posture_as_of",
     "list_controls",
     "list_control_tests",
     "list_evidence",
@@ -78,6 +79,14 @@ def test_get_posture_has_score(tmp_path):
     posture = call_tool(server, "get_posture")
     assert "posture" in posture
     assert isinstance(posture["posture"]["score"], (int, float))
+
+
+def test_posture_as_of_after_snapshot(tmp_path):
+    server = _seeded_server(tmp_path)
+    call_tool(server, "create_snapshot", reason="mcp-as-of")
+    result = call_tool(server, "posture_as_of", as_of="2030-01-01")
+    assert result["found"] is True
+    assert result["assessment_hash"]
 
 
 def test_list_controls_returns_seeded_ids(tmp_path):

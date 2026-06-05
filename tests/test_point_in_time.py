@@ -112,6 +112,26 @@ def test_handle_get_posture_as_of_invalid_param_is_400(tmp_path: Path) -> None:
     assert body["errors"][0]["code"] == "bad_request"
 
 
+def test_cli_posture_as_of(tmp_path: Path, capsys) -> None:
+    from security_lakehouse.cli import main
+
+    _seed_three(tmp_path)
+    rc = main(["assessment", "posture-as-of", "--lake", str(tmp_path), "--as-of", "2026-04-15"])
+    assert rc == 0
+    out = json.loads(capsys.readouterr().out)
+    assert out["found"] is True
+    assert out["evaluated_at"] == "2026-03-01T00:00:00Z"
+
+
+def test_cli_posture_as_of_before_first_is_exit_1(tmp_path: Path, capsys) -> None:
+    from security_lakehouse.cli import main
+
+    _seed_three(tmp_path)
+    rc = main(["assessment", "posture-as-of", "--lake", str(tmp_path), "--as-of", "2020-01-01"])
+    assert rc == 1
+    assert json.loads(capsys.readouterr().out)["found"] is False
+
+
 def test_posture_as_of_listed_in_catalog() -> None:
     catalog = api_v1.resource_catalog()
     row = next((r for r in catalog if r["path"] == "/api/v1/posture/as-of"), None)
