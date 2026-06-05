@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
+import { notify } from "@/lib/toast";
 import { Toolbar, matchesQuery } from "@/components/Toolbar";
 import { ControlDrawer } from "@/components/drawers/ControlDrawer";
 import { ViolationDrawer } from "@/components/drawers/ViolationDrawer";
@@ -71,7 +72,6 @@ export default function ControlsPage() {
   const { filters, setFilters } = useToolbar();
   const [selected, setSelected] = useState<ControlPosture | null>(null);
   const [violation, setViolation] = useState<Violation | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
 
   const frameworks = useMemo(
     () => Array.from(new Set((controls.data ?? []).map((c) => c.framework))),
@@ -147,13 +147,8 @@ export default function ControlsPage() {
       <ViolationDrawer
         violation={violation}
         onClose={() => setViolation(null)}
-        onToast={setToast}
+        onToast={notify.success}
       />
-      {toast && (
-        <div className="fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-lg bg-ink px-3.5 py-3 text-sm text-white shadow-hero">
-          {toast}
-        </div>
-      )}
     </div>
   );
 }

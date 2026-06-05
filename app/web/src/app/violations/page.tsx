@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
+import { notify } from "@/lib/toast";
 import { Toolbar, matchesQuery } from "@/components/Toolbar";
 import { TagChip } from "@/components/TagChip";
 import { ViolationDrawer } from "@/components/drawers/ViolationDrawer";
@@ -59,7 +60,6 @@ export default function ViolationsPage() {
     { id: "severity_score", desc: true },
   ]);
   const [selected, setSelected] = useState<Violation | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
   const [activeTagId, setActiveTagId] = useState<string | null>(null);
   const [saveViewName, setSaveViewName] = useState("");
   const [showSavePanel, setShowSavePanel] = useState(false);
@@ -181,8 +181,7 @@ export default function ViolationsPage() {
         onSuccess: () => {
           setSaveViewName("");
           setShowSavePanel(false);
-          setToast("View saved");
-          setTimeout(() => setToast(null), 2500);
+          notify.success("View saved");
         },
       },
     );
@@ -255,8 +254,7 @@ export default function ViolationsPage() {
                     { viewId: view.id, surface: SURFACE },
                     {
                       onSuccess: () => {
-                        setToast("View deleted");
-                        setTimeout(() => setToast(null), 2000);
+                        notify.success("View deleted");
                       },
                     },
                   )
@@ -372,13 +370,8 @@ export default function ViolationsPage() {
       <ViolationDrawer
         violation={selected}
         onClose={() => setSelected(null)}
-        onToast={setToast}
+        onToast={notify.success}
       />
-      {toast && (
-        <div className="fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-lg bg-ink px-3.5 py-3 text-sm text-white shadow-hero">
-          {toast}
-        </div>
-      )}
     </div>
   );
 }

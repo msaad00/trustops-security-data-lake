@@ -24,6 +24,7 @@ import {
   useTrustShares,
 } from "@/lib/api/hooks";
 import { useAuditorMode } from "@/lib/state/auditor";
+import { notify } from "@/lib/toast";
 import type { TrustShare } from "@/lib/api/types";
 
 const HOURS_OPTIONS = [1, 4, 24, 24 * 7, 24 * 30];
@@ -36,12 +37,8 @@ export default function TrustCenterPage() {
   const posture = usePosture();
   const [expiresInHours, setExpiresInHours] = useState(24);
   const [createdToken, setCreatedToken] = useState<TrustShare | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
 
-  const flash = (msg: string) => {
-    setToast(msg);
-    window.setTimeout(() => setToast(null), 4200);
-  };
+  const flash = (msg: string) => notify.success(msg);
 
   const issue = async () => {
     try {
@@ -204,12 +201,6 @@ export default function TrustCenterPage() {
           ))}
         </div>
       </Card>
-
-      {toast && (
-        <div className="fixed bottom-6 left-1/2 z-[70] -translate-x-1/2 rounded-lg bg-ink px-3.5 py-3 text-sm text-white shadow-hero">
-          {toast}
-        </div>
-      )}
     </div>
   );
 }

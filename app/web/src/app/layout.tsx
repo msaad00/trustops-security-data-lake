@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ReactNode } from "react";
+import { Toaster } from "sonner";
 import { Providers } from "./providers";
 import { Shell } from "@/components/shell/Shell";
 import "./globals.css";
@@ -31,6 +32,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Providers>
           <Shell>{children}</Shell>
         </Providers>
+        <Toaster
+          position="bottom-center"
+          richColors
+          closeButton
+          toastOptions={{ duration: 4200 }}
+        />
         <script
           id="app-data"
           type="application/json"
