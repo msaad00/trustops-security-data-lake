@@ -44,8 +44,8 @@ def next_delay(
 def retry(
     fn: Callable[[], T],
     *,
-    is_retryable: Callable[[BaseException], bool],
-    retry_after: Callable[[BaseException], float | None] = lambda _exc: None,
+    is_retryable: Callable[[Exception], bool],
+    retry_after: Callable[[Exception], float | None] = lambda _exc: None,
     max_retries: int = 4,
     base: float = 0.5,
     cap: float = 30.0,
@@ -61,7 +61,7 @@ def retry(
     while True:
         try:
             return fn()
-        except BaseException as exc:  # noqa: BLE001 - re-raised unless retryable
+        except Exception as exc:
             if attempt >= max_retries or not is_retryable(exc):
                 raise
             sleep(next_delay(attempt, base=base, cap=cap, retry_after=retry_after(exc)))
