@@ -22,10 +22,15 @@ from security_lakehouse.evidence_freshness import (
     stale_control_ids,
     summarize_source_freshness,
 )
-from security_lakehouse.io import read_jsonl, write_json
+from security_lakehouse.io import append_jsonl, read_jsonl, write_json
 from security_lakehouse.models import utc_iso
 
 VIOLATION_STATUSES = {"open", "failed", "blocked", "noncompliant"}
+
+# Append-only ledger that chains every snapshot to its predecessor. Each line
+# records (prev_hash -> assessment_hash); because assessment_hash covers
+# prev_hash, mutating or dropping any historical snapshot breaks the chain.
+SNAPSHOT_LEDGER = ("gold", "snapshots", "_ledger.jsonl")
 
 
 def build_current_posture(
@@ -93,6 +98,20 @@ def write_current_posture(lake_dir: str | Path, *, freshness_days: int = 7) -> P
     return output
 
 
+def _ledger_path(lake_dir: str | Path) -> Path:
+    return Path(lake_dir).joinpath(*SNAPSHOT_LEDGER)
+
+
+def _chain_tip(lake_dir: str | Path) -> str | None:
+    """Return the assessment_hash of the most recent ledgered snapshot.
+
+    The ledger — not file mtime or ``evaluated_at`` — is the chain's source of
+    truth, so two snapshots sharing a timestamp still chain deterministically.
+    """
+    entries = read_jsonl(_ledger_path(lake_dir), missing_ok=True)
+    return entries[-1].get("assessment_hash") if entries else None
+
+
 def write_assessment_snapshot(
     lake_dir: str | Path,
     *,
@@ -100,19 +119,80 @@ def write_assessment_snapshot(
     freshness_days: int = 7,
     reason: str = "manual",
 ) -> Path:
-    """Write a point-in-time assessment snapshot for audit/JIT review."""
+    """Write a point-in-time assessment snapshot for audit/JIT review.
+
+    Each snapshot is linked to its predecessor via ``prev_hash`` and recorded
+    in an append-only ledger, so a snapshot that is later mutated or deleted is
+    detectable by :func:`verify_snapshot_chain`.
+    """
     lake = Path(lake_dir)
+    prev_hash = _chain_tip(lake)
     assessment = build_current_posture(lake, freshness_days=freshness_days)
     assessment["assessment_type"] = "point_in_time_snapshot"
     assessment["snapshot_reason"] = reason
+    assessment["prev_hash"] = prev_hash
+    # assessment_hash covers prev_hash, so the chain is tamper-evident.
     assessment["assessment_hash"] = _assessment_hash(assessment)
     if output is None:
         ts = assessment["evaluated_at"].replace(":", "").replace("-", "")
-        output_path = lake / "gold" / "snapshots" / f"assessment-{ts}.json"
+        # Suffix with the content hash so same-timestamp freezes never collide
+        # and an existing immutable snapshot is never silently overwritten.
+        short = assessment["assessment_hash"][:12]
+        output_path = lake / "gold" / "snapshots" / f"assessment-{ts}-{short}.json"
+        if output_path.exists():
+            raise FileExistsError(f"snapshot already exists, refusing to overwrite: {output_path}")
     else:
         output_path = Path(output)
     write_json(output_path, assessment)
+    append_jsonl(
+        _ledger_path(lake),
+        {
+            "evaluated_at": assessment["evaluated_at"],
+            "snapshot": output_path.name,
+            "prev_hash": prev_hash,
+            "assessment_hash": assessment["assessment_hash"],
+            "snapshot_reason": reason,
+            "recorded_at": utc_iso(datetime.now(UTC)),
+        },
+    )
     return output_path
+
+
+def verify_snapshot_chain(lake_dir: str | Path) -> dict[str, Any]:
+    """Verify the snapshot hash-chain against the append-only ledger.
+
+    Walks the ledger oldest-first and, for each entry, confirms the referenced
+    snapshot file exists, recomputes its ``assessment_hash`` from content, and
+    checks that the recorded hash, the file's stored hash, and the ``prev_hash``
+    linkage all agree. Returns ``{"ok", "length", "issues"}`` — ``ok`` is True
+    only when the chain is intact and unbroken.
+    """
+    lake = Path(lake_dir)
+    entries = read_jsonl(_ledger_path(lake), missing_ok=True)
+    snapshots_dir = lake / "gold" / "snapshots"
+    issues: list[str] = []
+    expected_prev: str | None = None
+    for index, entry in enumerate(entries):
+        name = entry.get("snapshot")
+        recorded_hash = entry.get("assessment_hash")
+        if entry.get("prev_hash") != expected_prev:
+            issues.append(f"entry {index} ({name}): prev_hash breaks the chain")
+        path = snapshots_dir / name if isinstance(name, str) else None
+        if path is None or not path.exists():
+            issues.append(f"entry {index} ({name}): snapshot file is missing")
+            expected_prev = recorded_hash
+            continue
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            issues.append(f"entry {index} ({name}): snapshot file is unreadable")
+            expected_prev = recorded_hash
+            continue
+        recomputed = _assessment_hash(payload)
+        if recomputed != recorded_hash or payload.get("assessment_hash") != recorded_hash:
+            issues.append(f"entry {index} ({name}): content hash does not match the ledger")
+        expected_prev = recorded_hash
+    return {"ok": not issues, "length": len(entries), "issues": issues}
 
 
 def _parse_iso(value: str | datetime) -> datetime:

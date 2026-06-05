@@ -22,6 +22,7 @@ from typing import Any
 from security_lakehouse.assessment import (
     build_current_posture,
     posture_as_of,
+    verify_snapshot_chain,
     write_assessment_snapshot,
 )
 from security_lakehouse.framework_detail import build_framework_detail
@@ -275,6 +276,14 @@ def resource_catalog() -> list[JsonObject]:
             "query": ["as_of"],
         }
     )
+    catalog.append(
+        {
+            "resource": "snapshots.integrity",
+            "path": "/api/v1/snapshots/integrity",
+            "kind": "singleton",
+            "methods": ["GET"],
+        }
+    )
     for path, (name, _loader) in SINGLETON_LOADERS.items():
         catalog.append({"resource": name, "path": path, "kind": "singleton", "methods": ["GET"]})
     for path, (name, _loader) in COLLECTION_LOADERS.items():
@@ -440,6 +449,8 @@ def handle_get(path: str, params: Params, lake_dir: str | Path) -> tuple[HTTPSta
         if detail is None:
             return HTTPStatus.NOT_FOUND, error_envelope("not_found", "unknown framework", resource="framework.detail")
         return HTTPStatus.OK, envelope("framework.detail", detail)
+    if path == "/api/v1/snapshots/integrity":
+        return HTTPStatus.OK, envelope("snapshots.integrity", verify_snapshot_chain(lake))
     if path == "/api/v1/posture/as-of":
         as_of_values = params.get("as_of") or []
         as_of = as_of_values[0] if as_of_values else ""
