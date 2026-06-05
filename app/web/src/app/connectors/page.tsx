@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { QueryState } from "@/components/QueryState";
 import { ConnectorDrawer } from "@/components/drawers/ConnectorDrawer";
 import { useConnectors } from "@/lib/api/hooks";
 import type { ConnectorView } from "@/lib/api/types";
@@ -154,6 +155,7 @@ export default function ConnectorsPage() {
         </select>
       </div>
 
+      <QueryState queries={connectors} label="connectors">
       <Card className="overflow-hidden">
         <CardHeader>
           <CardTitle>{filtered.length} connectors</CardTitle>
@@ -178,6 +180,7 @@ export default function ConnectorsPage() {
           ))}
         </div>
       </Card>
+      </QueryState>
 
       <ConnectorDrawer
         connector={selectedLive}

@@ -7,6 +7,7 @@ import { FixNext } from "@/components/dashboard/FixNext";
 import { EvidenceTrend } from "@/components/dashboard/EvidenceTrend";
 import { ControlTestTable } from "@/components/dashboard/ControlTestTable";
 import { Card } from "@/components/ui/card";
+import { QueryState } from "@/components/QueryState";
 import { shortDate } from "@/lib/utils";
 
 function Stat({
@@ -72,6 +73,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      <QueryState queries={[posture]} label="posture">
       <div className="grid items-start gap-3 xl:grid-cols-[124px_minmax(0,1fr)]">
         <Card className="flex min-h-[108px] items-center justify-center p-2">
           <PostureRing
@@ -111,6 +113,7 @@ export default function DashboardPage() {
       </div>
 
       <ControlTestTable rows={tests.data ?? []} />
+      </QueryState>
     </div>
   );
 }

@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { QueryState } from "@/components/QueryState";
 import { useAuditLog } from "@/lib/api/hooks";
 import type { AuditLogEntry } from "@/lib/api/types";
 
@@ -121,6 +122,7 @@ export default function AuditLogPage() {
         </div>
       </Card>
 
+      <QueryState queries={log} label="audit log">
       <Card className="overflow-hidden">
         <CardHeader>
           <CardTitle>{entries.length} events</CardTitle>
@@ -143,6 +145,7 @@ export default function AuditLogPage() {
           ))}
         </div>
       </Card>
+      </QueryState>
     </div>
   );
 }

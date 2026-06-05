@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { QueryState } from "@/components/QueryState";
 import { Toolbar, matchesQuery } from "@/components/Toolbar";
 import { ControlDrawer } from "@/components/drawers/ControlDrawer";
 import { ViolationDrawer } from "@/components/drawers/ViolationDrawer";
@@ -107,6 +108,7 @@ export default function ControlsPage() {
         onChange={setFilters}
         placeholder="Search by control id, title, framework, owner…"
       />
+      <QueryState queries={controls} label="controls">
       <Card className="overflow-hidden">
         <CardHeader>
           <CardTitle>{filtered.length} controls</CardTitle>
@@ -136,6 +138,7 @@ export default function ControlsPage() {
           })}
         </div>
       </Card>
+      </QueryState>
       <ControlDrawer
         control={selected}
         onClose={() => setSelected(null)}
