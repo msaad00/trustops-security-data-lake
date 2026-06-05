@@ -40,7 +40,7 @@ flowchart LR
 
 ## Hosting Notes
 
-- Local mode is dependency-light and interview-friendly.
+- Local mode is dependency-light and runs anywhere with no managed services.
 - Production mode can run from CI, Airflow, Dagster, Prefect, or a Kubernetes CronJob.
 - Snowflake credentials should use key-pair or workload identity where possible.
 - ClickHouse should use TLS, named users, least-privilege grants, and retention policies.
