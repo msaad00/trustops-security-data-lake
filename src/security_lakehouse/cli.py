@@ -138,6 +138,9 @@ def _parser() -> argparse.ArgumentParser:
     snapshot.add_argument("--freshness-days", type=int, default=7, help="evidence freshness window")
     snapshot.add_argument("--reason", default="manual", help="snapshot reason")
     snapshot.set_defaults(func=_assessment_snapshot)
+    verify_snapshots = assessment_sub.add_parser("verify-snapshots", help="verify the append-only snapshot hash-chain")
+    verify_snapshots.add_argument("--lake", required=True, help="security data lake output directory")
+    verify_snapshots.set_defaults(func=_assessment_verify_snapshots)
     violations = assessment_sub.add_parser("violations", help="list open framework/control violations")
     violations.add_argument("--lake", required=True, help="security data lake output directory")
     violations.add_argument("--framework", default=None, help="optional framework filter")
@@ -705,6 +708,14 @@ def _assessment_snapshot(args: argparse.Namespace) -> int:
     path = write_assessment_snapshot(args.lake, output=args.out, freshness_days=args.freshness_days, reason=args.reason)
     print(f"wrote assessment snapshot: {path}")
     return 0
+
+
+def _assessment_verify_snapshots(args: argparse.Namespace) -> int:
+    from security_lakehouse.assessment import verify_snapshot_chain
+
+    result = verify_snapshot_chain(args.lake)
+    print(json.dumps(result, indent=2, sort_keys=True))
+    return 0 if result["ok"] else 1
 
 
 def _assessment_violations(args: argparse.Namespace) -> int:

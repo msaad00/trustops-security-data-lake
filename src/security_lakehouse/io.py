@@ -65,6 +65,22 @@ def write_jsonl(path: str | Path, rows: Iterable[dict[str, Any]]) -> None:
     )
 
 
+def append_jsonl(path: str | Path, row: dict[str, Any]) -> None:
+    """Append one JSON object as a line, durably.
+
+    Used for append-only ledgers: the line is flushed and fsync'd before the
+    call returns so a crash cannot lose an acknowledged record. Unlike
+    :func:`write_jsonl` this never rewrites existing content.
+    """
+    output = Path(path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    line = json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n"
+    with output.open("a", encoding="utf-8") as handle:
+        handle.write(line)
+        handle.flush()
+        os.fsync(handle.fileno())
+
+
 def write_json(path: str | Path, payload: Any) -> None:
     output = Path(path)
     _atomic_write(output, [json.dumps(payload, indent=2, sort_keys=True) + "\n"])
