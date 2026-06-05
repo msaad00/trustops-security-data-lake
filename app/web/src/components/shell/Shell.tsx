@@ -60,11 +60,12 @@ export function Shell({ children }: { children: ReactNode }) {
         <Sidebar />
         <div className="grid min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden">
           <Breadcrumbs />
-          <main className="min-h-0 min-w-0 max-w-full overflow-y-auto overflow-x-hidden bg-panel">
+          <main className="min-h-0 min-w-0 max-w-full overflow-auto bg-panel">
             <ApiHealthBanner />
             <AnimatePresence mode="wait">
               <motion.div
                 key={normalizedPathname}
+                className="min-w-0"
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}

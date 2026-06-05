@@ -111,15 +111,15 @@
         <rect width="392" height="210" rx="16" class="card"/>
         <text x="22" y="36" class="title">DAG workflow</text>
         <text x="22" y="58" class="sub">Trigger, route, act, and record.</text>
-        <g transform="translate(36 96)">
-          <rect width="92" height="38" rx="12" fill="#eff6ff" stroke="#bfdbfe"/>
-          <text x="46" y="24" text-anchor="middle" fill="#1d4ed8" font-size="12" font-weight="950">evidence</text>
-          <path d="M132 19h48" stroke="#94a3b8" stroke-width="3"/>
-          <rect x="184" width="92" height="38" rx="12" fill="#ecfdf5" stroke="#bbf7d0"/>
-          <text x="230" y="24" text-anchor="middle" fill="#047857" font-size="12" font-weight="950">triage</text>
-          <path d="M280 19h48" stroke="#94a3b8" stroke-width="3"/>
-          <rect x="332" width="92" height="38" rx="12" fill="#fef3c7" stroke="#fde68a"/>
-          <text x="378" y="24" text-anchor="middle" fill="#92400e" font-size="12" font-weight="950">ticket</text>
+        <g transform="translate(24 96)">
+          <rect width="74" height="38" rx="12" fill="#eff6ff" stroke="#bfdbfe"/>
+          <text x="37" y="24" text-anchor="middle" fill="#1d4ed8" font-size="10.5" font-weight="950">evidence</text>
+          <path d="M88 19h38" stroke="#94a3b8" stroke-width="3"/>
+          <rect x="136" width="74" height="38" rx="12" fill="#ecfdf5" stroke="#bbf7d0"/>
+          <text x="173" y="24" text-anchor="middle" fill="#047857" font-size="10.5" font-weight="950">triage</text>
+          <path d="M224 19h38" stroke="#94a3b8" stroke-width="3"/>
+          <rect x="272" width="74" height="38" rx="12" fill="#fef3c7" stroke="#fde68a"/>
+          <text x="309" y="24" text-anchor="middle" fill="#92400e" font-size="10.5" font-weight="950">ticket</text>
         </g>
       </g>
     </g>

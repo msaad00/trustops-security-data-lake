@@ -40,7 +40,7 @@ export function EvidenceTrend() {
         </CardDescription>
       </CardHeader>
       {data.length < 2 ? (
-        <CardContent className="flex h-[230px] items-center justify-center text-center text-sm text-muted">
+        <CardContent className="flex h-[180px] items-center justify-center text-center text-sm text-muted">
           {timeseries.isLoading
             ? "Loading trend..."
             : timeseries.isError
@@ -48,7 +48,7 @@ export function EvidenceTrend() {
               : "Posture trend appears once daily snapshots accumulate. Capture one from Insights or schedule POST /api/v1/insights/capture."}
         </CardContent>
       ) : (
-        <div className="h-[230px] w-full px-2 pb-4">
+        <div className="h-[180px] w-full px-2 pb-3">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={data}

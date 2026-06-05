@@ -131,44 +131,45 @@ path is read-only access to an existing security data lake or customer-owned
 object store. Direct source tokens are used only when the source system is the
 authority for that evidence.
 
-### Snowflake Evidence Lake
+### Snowflake Security Data Lake
 
-Snowflake is the governed evidence path: TrustOps reads customer-owned evidence
-views with a least-privilege role, materializes bronze/silver/gold posture, and
-serves the same current state to the console, snapshots, and agent APIs.
-
-<p align="center">
-  <img src="docs/images/trustops-snowflake-evidence-lake.svg" alt="TrustOps Snowflake evidence lake architecture with customer views, read-only collection, materialized posture, and assessment loop" width="100%">
-</p>
-
-The live Snowflake runner is intentionally read-only. It expects TrustOps-shaped
-views such as `TRUSTOPS_AUDIT_EVENTS`, `TRUSTOPS_CONTROL_POSTURE`,
-`TRUSTOPS_ASSET_RISK`, and `TRUSTOPS_EVIDENCE_BUNDLES`, then rebuilds the
-local lake and current posture from the collected evidence.
-
-See [Connector And Access Model](docs/CONNECTORS.md).
-
-## Product Screens
+Snowflake is the governed evidence path for organizations that already operate
+their enterprise lake there. TrustOps can read customer-owned evidence views with
+a least-privilege role, ingest row streams or staged files into evidence tables,
+derive posture with dynamic-table style rollups, and keep governed outputs
+available to the console, snapshots, trust shares, and agent APIs.
 
 <p align="center">
-  <img src="docs/images/trustops-demo-workflows.png" alt="TrustOps workflow canvas with action library, templates, run testing, and guarded outbound actions" width="49%">
-  <img src="docs/images/trustops-demo-graph.png" alt="TrustOps graph workbench showing framework, control, evidence, and asset relationships with filters and path tracing" width="49%">
+  <img src="docs/images/trustops-snowflake-evidence-lake.svg" alt="TrustOps Snowflake security data lake architecture with streaming ingestion, governed evidence tables, Iceberg interoperability, and assessment workflow" width="100%">
 </p>
+
+Use streaming row ingestion for high-frequency runtime, identity, and detection
+events; use staged-file ingestion for scanner exports, evidence bundles, and
+periodic audit packets; use read-only views when the customer already has
+Snowflake as the system of record. The default live runner remains read-only and
+does not require DDL privileges.
+
+See [Connector And Access Model](docs/CONNECTORS.md) and
+[Hero Security Data Lakes](docs/HERO_DATA_LAKES.md).
+
+## Product Walkthrough
+
+TrustOps is organized around five surfaces, not a static report:
+
+| Surface              | What it proves                                                                  |
+| -------------------- | ------------------------------------------------------------------------------- |
+| Trust command center | current posture, freshness, failing controls, owner queues, snapshots           |
+| Control workbench    | evidence requirements, rule reasons, confidence, violations, remediation        |
+| DAG workflow canvas  | route evidence changes, assign owners, run guarded webhooks/tickets             |
+| Mapping graph        | framework -> control -> evidence -> asset lineage with filters and path tracing |
+| Agent API            | the same posture, evidence, and actions through audited JSON contracts          |
 
 <p align="center">
-  <img src="docs/images/trustops-demo-dashboard.png" alt="TrustOps Trust Home showing posture, failing controls, evidence freshness, remediation queue, and live API status" width="49%">
-  <img src="docs/images/trustops-demo-control-drawer.png" alt="TrustOps control drawer with evidence, violations, confidence, owner, and remediation actions" width="49%">
+  <img src="docs/images/trustops-product-mosaic.svg" alt="TrustOps product walkthrough showing command center, workflows, graph, connectors, and trust outputs" width="100%">
 </p>
 
-<p align="center">
-  <img src="docs/images/trustops-demo-evidence.png" alt="TrustOps evidence room with searchable normalized evidence facts and hash verification drawer" width="49%">
-  <img src="docs/images/trustops-demo-connectors.png" alt="TrustOps connector workbench with lake contracts and executable source runners" width="49%">
-</p>
-
-**What the walkthrough proves:** current posture and freshness, click-through
-control evidence, violation triage, remediation SLAs, guarded workflow actions,
-source connector sync boundaries, graph path tracing, expiring trust shares, and
-agent-readable API contracts.
+Detailed screenshots live in [Product Walkthrough](docs/PRODUCT_WALKTHROUGH.md)
+so the README stays readable.
 
 ## Framework Coverage
 
@@ -189,6 +190,10 @@ attribution, owner, and review date are recorded in the
 Routes return `{data, meta, errors}` envelopes with filtering and pagination on
 list resources. The main resources are posture, control tests, violations,
 evidence, assets, insight time series, trust shares, and snapshots.
+
+<p align="center">
+  <img src="docs/images/trustops-agent-api-flow.svg" alt="TrustOps human and agent API flow showing callers, RBAC, audit, and composable skills" width="100%">
+</p>
 
 Server mode requires auth for non-health routes. API keys, OIDC, and SAML all
 resolve to the same tenant, user, role, and audit boundary. See

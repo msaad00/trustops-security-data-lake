@@ -424,7 +424,7 @@ export default function GraphPage() {
   }, [pathMode]);
 
   return (
-    <div className="grid min-w-0 gap-3 px-3 py-3 sm:px-4 lg:px-4">
+    <div className="mx-auto grid w-full max-w-[1560px] min-w-0 gap-3 px-3 py-3 sm:px-4 lg:px-4">
       <PageHeader
         eyebrow="Graph"
         title={
@@ -592,8 +592,8 @@ export default function GraphPage() {
         </Card>
       </div>
 
-      <div className="grid min-w-0 gap-3 xl:grid-cols-[204px_minmax(0,1fr)]">
-        <Card className="max-h-[min(520px,calc(100dvh-250px))] min-h-[340px] overflow-auto sm:min-h-[380px]">
+      <div className="grid min-w-0 gap-3 xl:grid-cols-[220px_minmax(0,1fr)]">
+        <Card className="max-h-[clamp(380px,calc(100dvh-260px),620px)] min-h-[340px] overflow-auto">
           <CardHeader className="p-3 pb-2">
             <CardTitle className="flex items-center gap-2 text-base">
               <Filter className="h-4 w-4 text-muted" /> Layers + facets
@@ -730,7 +730,7 @@ export default function GraphPage() {
           </div>
         </Card>
 
-        <div className="grid min-w-0 gap-3">
+        <div className="grid min-w-0 gap-3 overflow-hidden">
           {pathFrom && pathTo && (
             <div className="min-w-0 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
               <b>Path trace:</b>{" "}
