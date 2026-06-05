@@ -48,6 +48,21 @@ ENROLLED_FACTOR_STATUSES = {"ACTIVE"}
 
 DEFAULT_TIMEOUT = 20
 USER_PAGE_LIMIT = 200
+# Safety cap so a misbehaving Link chain can't loop forever (200 rows/page).
+MAX_PAGES = 1000
+
+
+def _next_link(link_header: str) -> str | None:
+    """Extract the ``rel="next"`` URL from an Okta ``Link`` response header."""
+    for part in link_header.split(","):
+        segments = part.split(";")
+        if len(segments) < 2:
+            continue
+        url = segments[0].strip().lstrip("<").rstrip(">").strip()
+        rels = "".join(segments[1:]).replace(" ", "").replace('"', "")
+        if "rel=next" in rels and url:
+            return url
+    return None
 
 
 class OktaClient:
@@ -70,19 +85,30 @@ class OktaClient:
         return self._json_list(f"{self.org_url}/api/v1/policies?type=MFA_ENROLL")
 
     def _json_list(self, url: str) -> list[dict[str, Any]]:
-        request = urllib.request.Request(
-            url,
-            headers={
-                "accept": "application/json",
-                "authorization": f"SSWS {self.token}",
-                "user-agent": "trustops-security-data-lake",
-            },
-        )
-        with urllib.request.urlopen(request, timeout=self.timeout) as resp:  # noqa: S310
-            payload = json.loads(resp.read().decode("utf-8"))
-        if isinstance(payload, list):
-            return [item for item in payload if isinstance(item, dict)]
-        raise ValueError(f"Okta returned non-list JSON for {url}")
+        # Okta cursor-paginates list endpoints via the Link header; follow
+        # rel="next" to the end so large orgs collect complete evidence rather
+        # than a silently-truncated first page.
+        items: list[dict[str, Any]] = []
+        next_url: str | None = url
+        for _ in range(MAX_PAGES):
+            if not next_url:
+                break
+            request = urllib.request.Request(
+                next_url,
+                headers={
+                    "accept": "application/json",
+                    "authorization": f"SSWS {self.token}",
+                    "user-agent": "trustops-security-data-lake",
+                },
+            )
+            with urllib.request.urlopen(request, timeout=self.timeout) as resp:  # noqa: S310
+                payload = json.loads(resp.read().decode("utf-8"))
+                link_header = resp.headers.get("Link", "")
+            if not isinstance(payload, list):
+                raise ValueError(f"Okta returned non-list JSON for {next_url}")
+            items.extend(item for item in payload if isinstance(item, dict))
+            next_url = _next_link(link_header)
+        return items
 
 
 class OktaFixtureClient:

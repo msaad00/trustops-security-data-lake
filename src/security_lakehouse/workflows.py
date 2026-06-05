@@ -51,11 +51,9 @@ from __future__ import annotations
 
 import base64
 import hashlib
-import ipaddress
 import json
 import os
 import re
-import socket
 import time
 import urllib.error
 import urllib.request
@@ -64,6 +62,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
+from security_lakehouse import netguard
 from security_lakehouse.assessment import write_assessment_snapshot
 from security_lakehouse.io import read_jsonl
 from security_lakehouse.tracking import append_event as append_triage_event
@@ -202,38 +201,8 @@ def _host_is_allowlisted(host: str, port: int, allowlist: set[str]) -> bool:
 
 
 def _assert_resolved_ip_is_public(host: str) -> list[str]:
-    """Resolve ``host`` and reject any address in a non-public range (SSRF guard).
-
-    The private/loopback/link-local/reserved/multicast check runs on the
-    *resolved* address(es), not just the hostname string, so a public-looking
-    name that resolves to ``127.0.0.1`` (DNS rebinding / internal split-horizon)
-    is still blocked. Returns the resolved addresses on success.
-    """
-    if host.lower() == "localhost":
-        raise ValueError("webhook target 'localhost' is not allowed")
-    try:
-        infos = socket.getaddrinfo(host, None, proto=socket.IPPROTO_TCP)
-    except OSError as exc:
-        raise ValueError(f"webhook target host {host!r} did not resolve: {exc}") from exc
-    addresses: list[str] = []
-    for info in infos:
-        sockaddr = info[4]
-        addresses.append(str(sockaddr[0]))
-    if not addresses:
-        raise ValueError(f"webhook target host {host!r} did not resolve to any address")
-    for raw_ip in addresses:
-        # Strip any IPv6 scope id (e.g. fe80::1%eth0) before parsing.
-        ip = ipaddress.ip_address(raw_ip.split("%", 1)[0])
-        if (
-            ip.is_private
-            or ip.is_loopback
-            or ip.is_link_local
-            or ip.is_reserved
-            or ip.is_multicast
-            or ip.is_unspecified
-        ):
-            raise ValueError(f"webhook target resolves to non-public address {raw_ip} (SSRF blocked)")
-    return addresses
+    """SSRF guard for webhook egress; delegates to the shared :mod:`netguard`."""
+    return netguard.assert_resolved_ip_is_public(host, label="webhook target")
 
 
 def _resolve_secrets(value: Any) -> Any:

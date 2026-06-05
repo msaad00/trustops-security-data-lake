@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse import netguard
 from security_lakehouse.connector_state import append_run_event, latest_config
 from security_lakehouse.connectors import load_connector_catalog
 from security_lakehouse.connectors_aws import (
@@ -339,6 +340,7 @@ def _collect_okta(
                 "okta-identity sync requires --fixture-dir, or "
                 f"{OKTA_ORG_URL_ENV} plus a read-only API token (OKTA_API_TOKEN or --token-env)"
             )
+        netguard.assert_url_is_public(org_url, label="okta org url")
         client = OktaClient(org_url, token=token)
     return collect_okta_evidence(client)
 
@@ -441,6 +443,7 @@ def _collect_jira(
                 f"{JIRA_BASE_URL_ENV} plus {JIRA_EMAIL_ENV} and a read-only API token "
                 "(JIRA_API_TOKEN or --token-env)"
             )
+        netguard.assert_url_is_public(base_url, label="jira base url")
         client = JiraClient(base_url, email=email, token=token)
     return collect_jira_evidence(client)
 
