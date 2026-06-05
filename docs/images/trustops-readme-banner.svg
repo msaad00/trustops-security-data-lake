@@ -1,58 +1,106 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-labelledby="title desc">
-  <title id="title">TrustOps continuous compliance workflow</title>
-  <desc id="desc">A visual workflow showing evidence connectors flowing into lake objects, an assessment engine, posture confidence, and human and agent outputs.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="520" viewBox="0 0 1280 520" role="img" aria-labelledby="title desc">
+  <title id="title">TrustOps continuous trust control plane</title>
+  <desc id="desc">A compact product hero showing TrustOps evidence ingestion, compliance assessment, workflow automation, graph mapping, and trust outputs.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0b1218"/>
-      <stop offset=".55" stop-color="#101826"/>
-      <stop offset="1" stop-color="#123d44"/>
+      <stop offset="0" stop-color="#08111c"/>
+      <stop offset=".58" stop-color="#0e1728"/>
+      <stop offset="1" stop-color="#0b3d44"/>
     </linearGradient>
     <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0" stop-color="#4f7cff"/>
-      <stop offset="1" stop-color="#30c7d2"/>
+      <stop offset="1" stop-color="#29d3d3"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#064e3b"/>
+      <stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#312e81"/>
+      <stop offset="1" stop-color="#581c87"/>
     </linearGradient>
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#020617" flood-opacity=".32"/>
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#020617" flood-opacity=".32"/>
     </filter>
+    <style>
+      .font { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; }
+      .mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+      .eyebrow { fill: #7dd3fc; font-size: 17px; font-weight: 900; letter-spacing: 4px; }
+      .headline { fill: #fff; font-size: 50px; font-weight: 950; letter-spacing: -1.4px; }
+      .sub { fill: #cbd5e1; font-size: 19px; font-weight: 650; }
+      .label { fill: #64748b; font-size: 12px; font-weight: 900; letter-spacing: 2px; }
+      .title { fill: #f8fafc; font-size: 17px; font-weight: 900; }
+      .body { fill: #cbd5e1; font-size: 13px; font-weight: 650; }
+      .tiny { fill: #94a3b8; font-size: 11px; font-weight: 750; }
+      .dark { fill: #0f172a; stroke: #2d4058; stroke-width: 1.4; }
+      .panel { fill: #101b2b; stroke: #2d4058; stroke-width: 1.3; }
+      .light { fill: #f8fafc; stroke: #dbeafe; stroke-width: 1.2; }
+    </style>
   </defs>
-  <rect width="1280" height="420" rx="28" fill="url(#bg)"/>
-  <circle cx="1120" cy="90" r="190" fill="none" stroke="#315dff" stroke-opacity=".22" stroke-width="2"/>
-  <circle cx="1050" cy="350" r="120" fill="none" stroke="#30c7d2" stroke-opacity=".20" stroke-width="2"/>
-  <text x="52" y="72" fill="#7dd3fc" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800" letter-spacing="3">CONTINUOUS TRUST OPERATIONS</text>
-  <text x="52" y="128" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="48" font-weight="900">TrustOps Assessment</text>
-  <text x="52" y="168" fill="#c7d2e1" font-family="Inter, Arial, sans-serif" font-size="23">Current posture with confidence from evidence, controls, snapshots, and agents.</text>
 
-  <g filter="url(#shadow)">
-    <rect x="52" y="224" width="250" height="112" rx="16" fill="#132033" stroke="#2c4058"/>
-    <text x="76" y="258" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800">Evidence Connectors</text>
-    <text x="76" y="290" fill="#a9b8c9" font-family="Inter, Arial, sans-serif" font-size="15">GitHub · AWS · Okta · GCP</text>
-    <text x="76" y="316" fill="#a9b8c9" font-family="Inter, Arial, sans-serif" font-size="15">Azure · Google · Jira · lake</text>
+  <rect width="1280" height="520" rx="30" fill="url(#bg)"/>
+  <circle cx="1086" cy="118" r="190" fill="none" stroke="#315dff" stroke-opacity=".2" stroke-width="2"/>
+  <circle cx="1030" cy="402" r="135" fill="none" stroke="#30c7d2" stroke-opacity=".2" stroke-width="2"/>
 
-    <rect x="374" y="224" width="250" height="112" rx="16" fill="#132033" stroke="#2c4058"/>
-    <text x="398" y="258" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800">Lake Objects</text>
-    <text x="398" y="290" fill="#a9b8c9" font-family="Inter, Arial, sans-serif" font-size="15">Snowflake governed evidence</text>
-    <text x="398" y="316" fill="#a9b8c9" font-family="Inter, Arial, sans-serif" font-size="15">ClickHouse telemetry analytics</text>
+  <g class="font">
+    <text x="52" y="72" class="eyebrow">CONTINUOUS TRUST OPERATIONS</text>
+    <text x="52" y="132" class="headline">TrustOps control plane</text>
+    <text x="52" y="171" class="sub">Live compliance posture from evidence lakes, controls-as-code,</text>
+    <text x="52" y="198" class="sub">remediation workflows, graph lineage, snapshots, and agent APIs.</text>
 
-    <rect x="696" y="224" width="250" height="112" rx="16" fill="#132033" stroke="#2c4058"/>
-    <text x="720" y="258" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800">Assessment Engine</text>
-    <text x="720" y="290" fill="#a9b8c9" font-family="Inter, Arial, sans-serif" font-size="15">Controls · violations · owners</text>
-    <text x="720" y="316" fill="#a9b8c9" font-family="Inter, Arial, sans-serif" font-size="15">freshness · confidence · snapshots</text>
+    <g filter="url(#shadow)">
+      <rect x="52" y="244" width="256" height="128" rx="18" class="panel"/>
+      <text x="76" y="284" class="title">Evidence intake</text>
+      <text x="76" y="313" class="body">cloud - identity - repos</text>
+      <text x="76" y="339" class="body">tickets - Snowflake - lake</text>
+      <rect x="76" y="354" width="168" height="10" rx="5" fill="#1e293b"/>
+      <rect x="76" y="354" width="132" height="10" rx="5" fill="url(#accent)"/>
 
-    <rect x="1018" y="224" width="210" height="112" rx="16" fill="#ffffff" stroke="#dbe5f0"/>
-    <text x="1042" y="258" fill="#111827" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="900">Outputs</text>
-    <text x="1042" y="290" fill="#526278" font-family="Inter, Arial, sans-serif" font-size="15">Console · API · skills</text>
-    <text x="1042" y="316" fill="#526278" font-family="Inter, Arial, sans-serif" font-size="15">audit snapshots · trust center</text>
-  </g>
+      <rect x="342" y="244" width="256" height="128" rx="18" class="panel"/>
+      <text x="366" y="284" class="title">Assessment engine</text>
+      <text x="366" y="313" class="body">rules, freshness, owners,</text>
+      <text x="366" y="339" class="body">violations, confidence</text>
+      <g transform="translate(366 354)">
+        <rect width="48" height="16" rx="8" fill="#dcfce7"/>
+        <text x="24" y="12" text-anchor="middle" fill="#047857" font-size="10" font-weight="900">PASS</text>
+        <rect x="58" width="48" height="16" rx="8" fill="#fee2e2"/>
+        <text x="82" y="12" text-anchor="middle" fill="#b91c1c" font-size="10" font-weight="900">FAIL</text>
+      </g>
 
-  <path d="M310 280h52" stroke="url(#accent)" stroke-width="5" stroke-linecap="round"/>
-  <path d="M632 280h52" stroke="url(#accent)" stroke-width="5" stroke-linecap="round"/>
-  <path d="M954 280h52" stroke="url(#accent)" stroke-width="5" stroke-linecap="round"/>
+      <rect x="632" y="244" width="256" height="128" rx="18" fill="url(#purple)" stroke="#a78bfa" stroke-width="1.3"/>
+      <text x="656" y="284" class="title">Workflow automation</text>
+      <text x="656" y="313" class="body">assign owners, request evidence,</text>
+      <text x="656" y="339" class="body">run guarded ticket/webhook actions</text>
 
-  <g transform="translate(1018 56)">
-    <rect width="210" height="92" rx="18" fill="#ffffff" opacity=".96"/>
-    <text x="22" y="36" fill="#111827" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="900">Posture confidence</text>
-    <rect x="22" y="58" width="166" height="10" rx="5" fill="#e6ebf2"/>
-    <rect x="22" y="58" width="148" height="10" rx="5" fill="url(#accent)"/>
-    <text x="22" y="84" fill="#526278" font-family="Inter, Arial, sans-serif" font-size="13">freshness + coverage + source health</text>
+      <rect x="922" y="244" width="256" height="128" rx="18" class="light"/>
+      <text x="946" y="284" fill="#111827" font-size="17" font-weight="950">Trust outputs</text>
+      <text x="946" y="313" fill="#475569" font-size="13" font-weight="750">console - shares</text>
+      <text x="946" y="339" fill="#475569" font-size="13" font-weight="750">OpenAPI - MCP - SDKs</text>
+    </g>
+
+    <path d="M318 308h26" stroke="url(#accent)" stroke-width="5" stroke-linecap="round"/>
+    <path d="M608 308h26" stroke="url(#accent)" stroke-width="5" stroke-linecap="round"/>
+    <path d="M898 308h26" stroke="url(#accent)" stroke-width="5" stroke-linecap="round"/>
+
+    <g transform="translate(52 414)" filter="url(#shadow)">
+      <rect width="262" height="62" rx="16" fill="#082f49" stroke="#38bdf8"/>
+      <text x="22" y="27" class="label">GOVERNED LAKE</text>
+      <text x="22" y="47" class="tiny">Snowflake + ClickHouse paths</text>
+    </g>
+    <g transform="translate(342 414)" filter="url(#shadow)">
+      <rect width="262" height="62" rx="16" fill="url(#green)" stroke="#34d399"/>
+      <text x="22" y="27" class="label" fill="#a7f3d0">CURRENT POSTURE</text>
+      <text x="22" y="47" class="tiny">confidence-scored checks</text>
+    </g>
+    <g transform="translate(632 414)" filter="url(#shadow)">
+      <rect width="262" height="62" rx="16" fill="#451a03" stroke="#f59e0b"/>
+      <text x="22" y="27" class="label" fill="#fed7aa">AUDIT SNAPSHOTS</text>
+      <text x="22" y="47" class="tiny">hash-chained, point-in-time posture</text>
+    </g>
+    <g transform="translate(922 414)" filter="url(#shadow)">
+      <rect width="256" height="62" rx="16" class="panel"/>
+      <text x="22" y="27" class="label">HEADLESS AGENTS</text>
+      <text x="22" y="47" class="tiny">same facts via API and MCP</text>
+    </g>
   </g>
 </svg>

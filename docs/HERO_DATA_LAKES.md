@@ -27,9 +27,18 @@ Use Snowflake when the question is:
 - "Can business leaders slice risk by owner, product, and environment?"
 - "Can we share controlled evidence with internal stakeholders?"
 
+![TrustOps Snowflake evidence lake architecture](images/trustops-snowflake-evidence-lake.svg)
+
+The live Snowflake connector is a read-existing-lake path. It reads
+TrustOps-shaped evidence views with a least-privilege role, writes collected
+rows into managed raw connector evidence, and lets the same pipeline rebuild
+bronze, silver, gold, snapshots, and current posture. The connector does not
+create Snowflake objects, mutate warehouse state, or require DDL privileges.
+
 Primary artifacts:
 
 - [Snowflake schema](../deploy/snowflake/schema.sql)
+- [Snowflake connector model](CONNECTORS.md#connector-runner)
 - [Dual-lakehouse diagram](diagrams/dual-lakehouse.md)
 
 ## ClickHouse Story
