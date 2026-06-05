@@ -7,6 +7,7 @@ import { FixNext } from "@/components/dashboard/FixNext";
 import { EvidenceTrend } from "@/components/dashboard/EvidenceTrend";
 import { ControlTestTable } from "@/components/dashboard/ControlTestTable";
 import { Card } from "@/components/ui/card";
+import { QueryState } from "@/components/QueryState";
 import { shortDate } from "@/lib/utils";
 
 function Stat({
@@ -72,45 +73,47 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid items-start gap-3 xl:grid-cols-[124px_minmax(0,1fr)]">
-        <Card className="flex min-h-[108px] items-center justify-center p-2">
-          <PostureRing
-            score={p?.score ?? 0}
-            state={p?.state ?? "attention_required"}
-            size="compact"
-          />
-        </Card>
-        <div className="grid min-w-0 auto-rows-[68px] content-start grid-cols-[repeat(auto-fit,minmax(118px,1fr))] gap-2.5">
-          <Stat label="Frameworks" value={p?.framework_count ?? 0} />
-          <Stat label="Controls" value={p?.control_count ?? 0} />
-          <Stat
-            label="Open violations"
-            value={p?.open_violation_count ?? 0}
-            tone={(p?.open_violation_count ?? 0) > 0 ? "#b54708" : undefined}
-          />
-          <Stat
-            label="Critical"
-            value={p?.critical_violation_count ?? 0}
-            tone={
-              (p?.critical_violation_count ?? 0) > 0 ? "#d92d20" : undefined
-            }
-          />
-          <Stat
-            label="Stale controls"
-            value={p?.stale_control_count ?? 0}
-            tone={(p?.stale_control_count ?? 0) > 0 ? "#b54708" : undefined}
-          />
+      <QueryState queries={[posture]} label="posture">
+        <div className="grid items-start gap-3 xl:grid-cols-[124px_minmax(0,1fr)]">
+          <Card className="flex min-h-[108px] items-center justify-center p-2">
+            <PostureRing
+              score={p?.score ?? 0}
+              state={p?.state ?? "attention_required"}
+              size="compact"
+            />
+          </Card>
+          <div className="grid min-w-0 auto-rows-[68px] content-start grid-cols-[repeat(auto-fit,minmax(118px,1fr))] gap-2.5">
+            <Stat label="Frameworks" value={p?.framework_count ?? 0} />
+            <Stat label="Controls" value={p?.control_count ?? 0} />
+            <Stat
+              label="Open violations"
+              value={p?.open_violation_count ?? 0}
+              tone={(p?.open_violation_count ?? 0) > 0 ? "#b54708" : undefined}
+            />
+            <Stat
+              label="Critical"
+              value={p?.critical_violation_count ?? 0}
+              tone={
+                (p?.critical_violation_count ?? 0) > 0 ? "#d92d20" : undefined
+              }
+            />
+            <Stat
+              label="Stale controls"
+              value={p?.stale_control_count ?? 0}
+              tone={(p?.stale_control_count ?? 0) > 0 ? "#b54708" : undefined}
+            />
+          </div>
         </div>
-      </div>
 
-      <ReadinessGrid frameworks={data?.frameworks ?? []} />
+        <ReadinessGrid frameworks={data?.frameworks ?? []} />
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <FixNext violations={data?.violations ?? []} />
-        <EvidenceTrend />
-      </div>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <FixNext violations={data?.violations ?? []} />
+          <EvidenceTrend />
+        </div>
 
-      <ControlTestTable rows={tests.data ?? []} />
+        <ControlTestTable rows={tests.data ?? []} />
+      </QueryState>
     </div>
   );
 }

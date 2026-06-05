@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { QueryState } from "@/components/QueryState";
 import { Toolbar, matchesQuery } from "@/components/Toolbar";
 import { ControlDrawer } from "@/components/drawers/ControlDrawer";
 import { ViolationDrawer } from "@/components/drawers/ViolationDrawer";
@@ -107,35 +108,37 @@ export default function ControlsPage() {
         onChange={setFilters}
         placeholder="Search by control id, title, framework, owner…"
       />
-      <Card className="overflow-hidden">
-        <CardHeader>
-          <CardTitle>{filtered.length} controls</CardTitle>
-          <CardDescription>
-            Click a control to inspect evidence, violations, owner, and API-safe
-            facts.
-          </CardDescription>
-        </CardHeader>
-        <div className="grid gap-2 p-5 pt-0 lg:grid-cols-2">
-          {filtered.length === 0 && (
-            <div className="col-span-full rounded-lg border border-dashed border-line p-4 text-sm text-muted">
-              No controls match the current filters.
-            </div>
-          )}
-          {filtered.map((c) => {
-            const t = (tests.data ?? []).find(
-              (x) => x.control_id === c.control_id,
-            );
-            return (
-              <ControlRow
-                key={c.control_id}
-                control={c}
-                onSelect={() => setSelected(c)}
-                confidence={t?.confidence_score}
-              />
-            );
-          })}
-        </div>
-      </Card>
+      <QueryState queries={controls} label="controls">
+        <Card className="overflow-hidden">
+          <CardHeader>
+            <CardTitle>{filtered.length} controls</CardTitle>
+            <CardDescription>
+              Click a control to inspect evidence, violations, owner, and
+              API-safe facts.
+            </CardDescription>
+          </CardHeader>
+          <div className="grid gap-2 p-5 pt-0 lg:grid-cols-2">
+            {filtered.length === 0 && (
+              <div className="col-span-full rounded-lg border border-dashed border-line p-4 text-sm text-muted">
+                No controls match the current filters.
+              </div>
+            )}
+            {filtered.map((c) => {
+              const t = (tests.data ?? []).find(
+                (x) => x.control_id === c.control_id,
+              );
+              return (
+                <ControlRow
+                  key={c.control_id}
+                  control={c}
+                  onSelect={() => setSelected(c)}
+                  confidence={t?.confidence_score}
+                />
+              );
+            })}
+          </div>
+        </Card>
+      </QueryState>
       <ControlDrawer
         control={selected}
         onClose={() => setSelected(null)}

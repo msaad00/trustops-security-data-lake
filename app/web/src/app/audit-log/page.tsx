@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { QueryState } from "@/components/QueryState";
 import { useAuditLog } from "@/lib/api/hooks";
 import type { AuditLogEntry } from "@/lib/api/types";
 
@@ -121,28 +122,30 @@ export default function AuditLogPage() {
         </div>
       </Card>
 
-      <Card className="overflow-hidden">
-        <CardHeader>
-          <CardTitle>{entries.length} events</CardTitle>
-          <CardDescription>
-            Newest first. Click any row to expand its raw payload.
-          </CardDescription>
-        </CardHeader>
-        <div className="grid gap-2 p-5 pt-0">
-          {entries.length === 0 && (
-            <div className="rounded-lg border border-dashed border-line p-4 text-sm text-muted">
-              No events match this category yet. Configure a connector, triage a
-              violation, or run a workflow.
-            </div>
-          )}
-          {entries.map((entry) => (
-            <Row
-              key={entry.occurred_at + entry.subject + entry.category}
-              entry={entry}
-            />
-          ))}
-        </div>
-      </Card>
+      <QueryState queries={log} label="audit log">
+        <Card className="overflow-hidden">
+          <CardHeader>
+            <CardTitle>{entries.length} events</CardTitle>
+            <CardDescription>
+              Newest first. Click any row to expand its raw payload.
+            </CardDescription>
+          </CardHeader>
+          <div className="grid gap-2 p-5 pt-0">
+            {entries.length === 0 && (
+              <div className="rounded-lg border border-dashed border-line p-4 text-sm text-muted">
+                No events match this category yet. Configure a connector, triage
+                a violation, or run a workflow.
+              </div>
+            )}
+            {entries.map((entry) => (
+              <Row
+                key={entry.occurred_at + entry.subject + entry.category}
+                entry={entry}
+              />
+            ))}
+          </div>
+        </Card>
+      </QueryState>
     </div>
   );
 }
