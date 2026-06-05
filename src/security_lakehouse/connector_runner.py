@@ -56,6 +56,7 @@ from security_lakehouse.connectors_snowflake import (
     SnowflakeFixtureClient,
     collect_snowflake_evidence,
 )
+from security_lakehouse.ingestion.merge import dedupe_by_key
 from security_lakehouse.io import read_jsonl, write_jsonl
 from security_lakehouse.pipeline import run_pipeline
 from security_lakehouse.repo_governance import sync_repo_governance
@@ -485,14 +486,16 @@ def _collect_snowflake(
 
 def _upsert_raw_events(raw_path: Path, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     existing = read_jsonl(raw_path) if raw_path.exists() else []
-    by_id: dict[str, dict[str, Any]] = {str(row["event_id"]): row for row in existing}
-    order = [str(row["event_id"]) for row in existing]
-    for row in rows:
-        event_id = str(row["event_id"])
-        if event_id not in by_id:
-            order.append(event_id)
-        by_id[event_id] = row
-    merged = [by_id[event_id] for event_id in order]
+    # Idempotent upsert: dedup existing + incoming on event_id, last write wins,
+    # so re-running a sync over overlapping data never double-counts. Natural-key
+    # order (existing first, new ids appended) is preserved via the position key.
+    indexed = list(enumerate(existing + rows))
+    deduped = dedupe_by_key(
+        indexed,
+        key=lambda pair: str(pair[1]["event_id"]),
+        recency=lambda pair: pair[0],
+    )
+    merged = [row for _position, row in deduped]
     errors = validate_raw_events(merged)
     if errors:
         raise ValueError("connector raw evidence validation failed:\n" + "\n".join(errors))
