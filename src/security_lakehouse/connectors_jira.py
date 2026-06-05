@@ -55,6 +55,8 @@ DEFAULT_JQL = 'labels in ("security", "governance", "remediation") ORDER BY upda
 
 DEFAULT_TIMEOUT = 20
 SEARCH_PAGE_LIMIT = 100
+# Safety cap on pages so a bad total/isLast response can't loop forever.
+MAX_PAGES = 1000
 
 
 class JiraClient:
@@ -81,25 +83,48 @@ class JiraClient:
         self.timeout = timeout
 
     def issues(self) -> list[dict[str, Any]]:
-        query = urllib.parse.urlencode(
-            {
-                "jql": self.jql,
-                "maxResults": SEARCH_PAGE_LIMIT,
-                "fields": "summary,status,assignee,duedate,labels,priority,project,updated,created",
-            }
-        )
-        payload = self._json(f"{self.base_url}/rest/api/3/search?{query}")
-        issues = payload.get("issues") if isinstance(payload, dict) else None
-        if isinstance(issues, list):
-            return [item for item in issues if isinstance(item, dict)]
-        raise ValueError("Jira returned no issues array for the search query")
+        # Jira search is startAt/total paginated; loop to the end so large
+        # backlogs collect complete evidence instead of a truncated first page.
+        out: list[dict[str, Any]] = []
+        start = 0
+        for _ in range(MAX_PAGES):
+            query = urllib.parse.urlencode(
+                {
+                    "jql": self.jql,
+                    "startAt": start,
+                    "maxResults": SEARCH_PAGE_LIMIT,
+                    "fields": "summary,status,assignee,duedate,labels,priority,project,updated,created",
+                }
+            )
+            payload = self._json(f"{self.base_url}/rest/api/3/search?{query}")
+            issues = payload.get("issues")
+            if not isinstance(issues, list):
+                raise ValueError("Jira returned no issues array for the search query")
+            out.extend(item for item in issues if isinstance(item, dict))
+            total = payload.get("total")
+            start += len(issues)
+            if not issues or not isinstance(total, int) or start >= total:
+                break
+        return out
 
     def projects(self) -> list[dict[str, Any]]:
-        payload = self._json(f"{self.base_url}/rest/api/3/project/search?maxResults={SEARCH_PAGE_LIMIT}")
-        values = payload.get("values") if isinstance(payload, dict) else None
-        if isinstance(values, list):
-            return [item for item in values if isinstance(item, dict)]
-        raise ValueError("Jira returned no project values for the project search")
+        out: list[dict[str, Any]] = []
+        start = 0
+        for _ in range(MAX_PAGES):
+            payload = self._json(
+                f"{self.base_url}/rest/api/3/project/search?startAt={start}&maxResults={SEARCH_PAGE_LIMIT}"
+            )
+            values = payload.get("values")
+            if not isinstance(values, list):
+                raise ValueError("Jira returned no project values for the project search")
+            out.extend(item for item in values if isinstance(item, dict))
+            start += len(values)
+            if not values or payload.get("isLast") is True:
+                break
+            total = payload.get("total")
+            if isinstance(total, int) and start >= total:
+                break
+        return out
 
     def _json(self, url: str) -> dict[str, Any]:
         basic = base64.b64encode(f"{self.email}:{self.token}".encode()).decode("ascii")

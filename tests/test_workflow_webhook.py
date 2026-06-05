@@ -15,6 +15,7 @@ from pathlib import Path
 import pytest
 
 import security_lakehouse.workflows as wf
+from security_lakehouse import netguard
 
 ALLOWLIST_ENV = "TRUSTOPS_WORKFLOW_EGRESS_ALLOWLIST"
 
@@ -57,7 +58,7 @@ def _public_dns(monkeypatch: pytest.MonkeyPatch) -> None:
     def _getaddrinfo(host, port, *args, **kwargs):  # noqa: ANN001, ARG001
         return [(2, 1, 6, "", ("93.184.216.34", 0))]
 
-    monkeypatch.setattr(wf.socket, "getaddrinfo", _getaddrinfo)
+    monkeypatch.setattr(netguard.socket, "getaddrinfo", _getaddrinfo)
 
 
 def _allow(monkeypatch: pytest.MonkeyPatch, value: str = "hooks.example.com") -> None:
@@ -138,7 +139,7 @@ def test_ssrf_private_resolution_rejected(monkeypatch: pytest.MonkeyPatch, tmp_p
     _allow(monkeypatch)
     family = 10 if ":" in resolved_ip else 2
     monkeypatch.setattr(
-        wf.socket,
+        netguard.socket,
         "getaddrinfo",
         lambda *a, **k: [(family, 1, 6, "", (resolved_ip, 0))],
     )
