@@ -18,6 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { QueryState } from "@/components/QueryState";
 import { Toolbar, matchesQuery } from "@/components/Toolbar";
 import { EvidenceDrawer } from "@/components/drawers/EvidenceDrawer";
 import { useControls, useEvidence } from "@/lib/api/hooks";
@@ -148,62 +149,70 @@ export default function EvidencePage() {
         onChange={setFilters}
         placeholder="Search by source, asset, evidence ref, control…"
       />
-      <Card className="overflow-hidden">
-        <CardHeader>
-          <CardTitle>{filtered.length} matching records</CardTitle>
-          <CardDescription>
-            All rows are append-only silver facts written from immutable bronze
-            evidence.
-          </CardDescription>
-        </CardHeader>
-        <div className="max-w-full overflow-x-auto">
-          <table className="w-full min-w-[820px] text-sm">
-            <thead>
-              {table.getHeaderGroups().map((hg) => (
-                <tr key={hg.id} className="border-y border-line bg-slate-50/60">
-                  {hg.headers.map((h) => (
-                    <th
-                      key={h.id}
-                      onClick={h.column.getToggleSortingHandler()}
-                      className="cursor-pointer px-3 py-2.5 text-left text-[10px] font-black uppercase tracking-wide text-muted"
-                    >
-                      <span className="inline-flex items-center gap-1">
-                        {flexRender(h.column.columnDef.header, h.getContext())}
-                        <ArrowUpDown className="h-3 w-3 opacity-40" />
-                      </span>
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map((r) => (
-                <tr
-                  key={r.id}
-                  onClick={() => setSelected(r.original)}
-                  className="cursor-pointer border-b border-line last:border-0 hover:bg-blue-50/40"
-                >
-                  {r.getVisibleCells().map((c) => (
-                    <td key={c.id} className="px-3 py-2.5 align-top">
-                      {flexRender(c.column.columnDef.cell, c.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={columns.length}
-                    className="px-3 py-7 text-center text-sm text-muted"
+      <QueryState queries={evidence} label="evidence">
+        <Card className="overflow-hidden">
+          <CardHeader>
+            <CardTitle>{filtered.length} matching records</CardTitle>
+            <CardDescription>
+              All rows are append-only silver facts written from immutable
+              bronze evidence.
+            </CardDescription>
+          </CardHeader>
+          <div className="max-w-full overflow-x-auto">
+            <table className="w-full min-w-[820px] text-sm">
+              <thead>
+                {table.getHeaderGroups().map((hg) => (
+                  <tr
+                    key={hg.id}
+                    className="border-y border-line bg-slate-50/60"
                   >
-                    No evidence records match the current filters.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+                    {hg.headers.map((h) => (
+                      <th
+                        key={h.id}
+                        onClick={h.column.getToggleSortingHandler()}
+                        className="cursor-pointer px-3 py-2.5 text-left text-[10px] font-black uppercase tracking-wide text-muted"
+                      >
+                        <span className="inline-flex items-center gap-1">
+                          {flexRender(
+                            h.column.columnDef.header,
+                            h.getContext(),
+                          )}
+                          <ArrowUpDown className="h-3 w-3 opacity-40" />
+                        </span>
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {table.getRowModel().rows.map((r) => (
+                  <tr
+                    key={r.id}
+                    onClick={() => setSelected(r.original)}
+                    className="cursor-pointer border-b border-line last:border-0 hover:bg-blue-50/40"
+                  >
+                    {r.getVisibleCells().map((c) => (
+                      <td key={c.id} className="px-3 py-2.5 align-top">
+                        {flexRender(c.column.columnDef.cell, c.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+                {filtered.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={columns.length}
+                      className="px-3 py-7 text-center text-sm text-muted"
+                    >
+                      No evidence records match the current filters.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </QueryState>
       <EvidenceDrawer evidence={selected} onClose={() => setSelected(null)} />
     </div>
   );

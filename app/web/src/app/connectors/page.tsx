@@ -156,30 +156,30 @@ export default function ConnectorsPage() {
       </div>
 
       <QueryState queries={connectors} label="connectors">
-      <Card className="overflow-hidden">
-        <CardHeader>
-          <CardTitle>{filtered.length} connectors</CardTitle>
-          <CardDescription>
-            Click a row to configure credentials, run a probe, or disable the
-            connector. {totals.hero} live as hero paths (Snowflake / ClickHouse
-            / object storage).
-          </CardDescription>
-        </CardHeader>
-        <div className="grid gap-2 p-5 pt-0">
-          {filtered.length === 0 && (
-            <div className="rounded-lg border border-dashed border-line p-4 text-sm text-muted">
-              No connectors match the current filter.
-            </div>
-          )}
-          {filtered.map((c) => (
-            <ConnectorRow
-              key={c.connector_id}
-              connector={c}
-              onSelect={() => setSelected(c)}
-            />
-          ))}
-        </div>
-      </Card>
+        <Card className="overflow-hidden">
+          <CardHeader>
+            <CardTitle>{filtered.length} connectors</CardTitle>
+            <CardDescription>
+              Click a row to configure credentials, run a probe, or disable the
+              connector. {totals.hero} live as hero paths (Snowflake /
+              ClickHouse / object storage).
+            </CardDescription>
+          </CardHeader>
+          <div className="grid gap-2 p-5 pt-0">
+            {filtered.length === 0 && (
+              <div className="rounded-lg border border-dashed border-line p-4 text-sm text-muted">
+                No connectors match the current filter.
+              </div>
+            )}
+            {filtered.map((c) => (
+              <ConnectorRow
+                key={c.connector_id}
+                connector={c}
+                onSelect={() => setSelected(c)}
+              />
+            ))}
+          </div>
+        </Card>
       </QueryState>
 
       <ConnectorDrawer

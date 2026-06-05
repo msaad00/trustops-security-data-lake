@@ -27,7 +27,8 @@ function ErrorState({
     >
       <span className="flex items-center gap-2">
         <AlertTriangle className="h-4 w-4 flex-none" />
-        Couldn&rsquo;t load {label}. The API is unavailable or returned an error.
+        Couldn&rsquo;t load {label}. The API is unavailable or returned an
+        error.
       </span>
       <button
         type="button"

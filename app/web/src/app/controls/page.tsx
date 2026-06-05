@@ -109,35 +109,35 @@ export default function ControlsPage() {
         placeholder="Search by control id, title, framework, owner…"
       />
       <QueryState queries={controls} label="controls">
-      <Card className="overflow-hidden">
-        <CardHeader>
-          <CardTitle>{filtered.length} controls</CardTitle>
-          <CardDescription>
-            Click a control to inspect evidence, violations, owner, and API-safe
-            facts.
-          </CardDescription>
-        </CardHeader>
-        <div className="grid gap-2 p-5 pt-0 lg:grid-cols-2">
-          {filtered.length === 0 && (
-            <div className="col-span-full rounded-lg border border-dashed border-line p-4 text-sm text-muted">
-              No controls match the current filters.
-            </div>
-          )}
-          {filtered.map((c) => {
-            const t = (tests.data ?? []).find(
-              (x) => x.control_id === c.control_id,
-            );
-            return (
-              <ControlRow
-                key={c.control_id}
-                control={c}
-                onSelect={() => setSelected(c)}
-                confidence={t?.confidence_score}
-              />
-            );
-          })}
-        </div>
-      </Card>
+        <Card className="overflow-hidden">
+          <CardHeader>
+            <CardTitle>{filtered.length} controls</CardTitle>
+            <CardDescription>
+              Click a control to inspect evidence, violations, owner, and
+              API-safe facts.
+            </CardDescription>
+          </CardHeader>
+          <div className="grid gap-2 p-5 pt-0 lg:grid-cols-2">
+            {filtered.length === 0 && (
+              <div className="col-span-full rounded-lg border border-dashed border-line p-4 text-sm text-muted">
+                No controls match the current filters.
+              </div>
+            )}
+            {filtered.map((c) => {
+              const t = (tests.data ?? []).find(
+                (x) => x.control_id === c.control_id,
+              );
+              return (
+                <ControlRow
+                  key={c.control_id}
+                  control={c}
+                  onSelect={() => setSelected(c)}
+                  confidence={t?.confidence_score}
+                />
+              );
+            })}
+          </div>
+        </Card>
       </QueryState>
       <ControlDrawer
         control={selected}

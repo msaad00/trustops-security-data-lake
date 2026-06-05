@@ -24,6 +24,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { QueryState } from "@/components/QueryState";
 import { Toolbar, matchesQuery } from "@/components/Toolbar";
 import { TagChip } from "@/components/TagChip";
 import { ViolationDrawer } from "@/components/drawers/ViolationDrawer";
@@ -302,64 +303,72 @@ export default function ViolationsPage() {
         onChange={setFilters}
         placeholder="Search by violation, asset, source, owner…"
       />
-      <Card className="overflow-hidden">
-        <CardHeader>
-          <CardTitle>{filtered.length} open violations</CardTitle>
-          <CardDescription>
-            Click any column to re-sort. Click any row to open the triage
-            drawer.
-          </CardDescription>
-        </CardHeader>
-        <div className="overflow-x-auto">
-          <table className="min-w-[820px] w-full text-sm">
-            <thead>
-              {table.getHeaderGroups().map((hg) => (
-                <tr key={hg.id} className="border-y border-line bg-slate-50/60">
-                  {hg.headers.map((h) => (
-                    <th
-                      key={h.id}
-                      onClick={h.column.getToggleSortingHandler()}
-                      className="cursor-pointer px-4 py-3 text-left text-[11px] font-black uppercase tracking-wide text-muted"
-                    >
-                      <span className="inline-flex items-center gap-1">
-                        {flexRender(h.column.columnDef.header, h.getContext())}
-                        {h.column.getCanSort() && (
-                          <ArrowUpDown className="h-3 w-3 opacity-40" />
-                        )}
-                      </span>
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map((r) => (
-                <tr
-                  key={r.id}
-                  onClick={() => setSelected(r.original)}
-                  className="cursor-pointer border-b border-line last:border-0 hover:bg-blue-50/40"
-                >
-                  {r.getVisibleCells().map((c) => (
-                    <td key={c.id} className="px-4 py-3 align-top">
-                      {flexRender(c.column.columnDef.cell, c.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr>
-                  <td
-                    className="px-4 py-8 text-center text-sm text-muted"
-                    colSpan={columns.length}
+      <QueryState queries={violations} label="violations">
+        <Card className="overflow-hidden">
+          <CardHeader>
+            <CardTitle>{filtered.length} open violations</CardTitle>
+            <CardDescription>
+              Click any column to re-sort. Click any row to open the triage
+              drawer.
+            </CardDescription>
+          </CardHeader>
+          <div className="overflow-x-auto">
+            <table className="min-w-[820px] w-full text-sm">
+              <thead>
+                {table.getHeaderGroups().map((hg) => (
+                  <tr
+                    key={hg.id}
+                    className="border-y border-line bg-slate-50/60"
                   >
-                    No violations match the current filters.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+                    {hg.headers.map((h) => (
+                      <th
+                        key={h.id}
+                        onClick={h.column.getToggleSortingHandler()}
+                        className="cursor-pointer px-4 py-3 text-left text-[11px] font-black uppercase tracking-wide text-muted"
+                      >
+                        <span className="inline-flex items-center gap-1">
+                          {flexRender(
+                            h.column.columnDef.header,
+                            h.getContext(),
+                          )}
+                          {h.column.getCanSort() && (
+                            <ArrowUpDown className="h-3 w-3 opacity-40" />
+                          )}
+                        </span>
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {table.getRowModel().rows.map((r) => (
+                  <tr
+                    key={r.id}
+                    onClick={() => setSelected(r.original)}
+                    className="cursor-pointer border-b border-line last:border-0 hover:bg-blue-50/40"
+                  >
+                    {r.getVisibleCells().map((c) => (
+                      <td key={c.id} className="px-4 py-3 align-top">
+                        {flexRender(c.column.columnDef.cell, c.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+                {filtered.length === 0 && (
+                  <tr>
+                    <td
+                      className="px-4 py-8 text-center text-sm text-muted"
+                      colSpan={columns.length}
+                    >
+                      No violations match the current filters.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </QueryState>
       <ViolationDrawer
         violation={selected}
         onClose={() => setSelected(null)}
