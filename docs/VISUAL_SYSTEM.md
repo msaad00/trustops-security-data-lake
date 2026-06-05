@@ -33,3 +33,5 @@ snapshots understandable for both humans and agents.
 - [Evaluation Lifecycle](diagrams/evaluation-lifecycle.md)
 - [Hosting](diagrams/hosting.md)
 - [SVG Architecture](images/trustops-assessment-architecture.svg)
+- [README Product Mosaic](images/trustops-product-mosaic.svg)
+- [Snowflake Evidence Lake](images/trustops-snowflake-evidence-lake.svg)
