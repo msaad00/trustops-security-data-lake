@@ -99,6 +99,14 @@ def _parser() -> argparse.ArgumentParser:
     )
     connectors_sync.set_defaults(func=_connectors_sync)
 
+    ingestion = sub.add_parser("ingestion", help="ingestion strategy commands")
+    ingestion_sub = ingestion.add_subparsers(dest="ingestion_command", required=True)
+    ingestion_plan = ingestion_sub.add_parser("plan", help="resolve per-source ingestion method + cost rationale")
+    ingestion_plan.add_argument("--lake", default=None, help="optional lake directory (unused; catalog is global)")
+    ingestion_plan.add_argument("--catalog", default=None, help="optional connector catalog JSON")
+    ingestion_plan.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+    ingestion_plan.set_defaults(func=_ingestion_plan)
+
     dashboard = sub.add_parser("dashboard", help="render static dashboard HTML")
     dashboard.add_argument("--lake", required=True, help="security data lake output directory")
     dashboard.add_argument("--out", required=True, help="dashboard HTML output path")
@@ -411,6 +419,23 @@ def _connectors_sync(args: argparse.Namespace) -> int:
         materialize=not args.no_materialize,
     )
     print(json.dumps(result.__dict__, indent=2, sort_keys=True))
+    return 0
+
+
+def _ingestion_plan(args: argparse.Namespace) -> int:
+    from dataclasses import asdict
+
+    from security_lakehouse.ingestion.strategy import plan_catalog
+
+    plans = plan_catalog(args.catalog)
+    if args.json:
+        print(json.dumps([asdict(p) for p in plans], indent=2, sort_keys=True))
+        return 0
+    print(f"{'connector':28} {'velocity':18} {'method':32} {'slo':>6}")
+    print("-" * 88)
+    for p in plans:
+        print(f"{p.connector_id:28} {p.velocity:18} {p.method:32} {p.freshness_slo:>6}")
+        print(f"{'':28} └ {p.cost_note}")
     return 0
 
 
