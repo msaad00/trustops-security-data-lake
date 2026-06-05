@@ -1,9 +1,10 @@
 # TrustOps
 
-Self-hosted trust operations for AI-era security teams.
+Open-source AI and cloud security trust control plane.
 
-TrustOps turns security evidence into live compliance posture, remediation
-workflows, audit snapshots, repository governance graphs, and agent-readable APIs
+TrustOps turns cloud, identity, repository, runtime, and AI security evidence
+into continuous posture evaluation, compliance mapping, tagged findings,
+remediation workflows, audit snapshots, graph lineage, and agent-readable APIs
 while keeping evidence inside the customer's cloud, data lake, or local boundary.
 
 <p align="center">
@@ -23,20 +24,22 @@ while keeping evidence inside the customer's cloud, data lake, or local boundary
 </p>
 
 <p align="center">
-  <img src="docs/images/trustops-demo-dashboard.png" alt="TrustOps Trust Home showing posture, failing controls, evidence freshness, and remediation queue" width="100%">
+  <img src="docs/images/trustops-product-mosaic.svg" alt="TrustOps product mosaic showing live posture, remediation queue, workflow automation, evidence lake routing, graph mapping, and trust center surfaces" width="100%">
 </p>
 
 <p align="center">
-  <img src="docs/images/trustops-demo-workflows.png" alt="TrustOps workflow canvas with action library and workflow test run" width="49%">
-  <img src="docs/images/trustops-demo-graph.png" alt="TrustOps compliance and repository graph workbench with searchable nodes and path tracing" width="49%">
+  <strong>Trust Command Center</strong> for current posture · <strong>Control Workbench</strong> for evidence-backed tests ·
+  <strong>DAG Workflow Canvas</strong> for closed-loop remediation · <strong>Graph</strong> for framework-to-asset mapping ·
+  <strong>Headless API</strong> for agents and CI
 </p>
 
 ## Why It Exists
 
-Security and compliance teams need current posture, not stale spreadsheets.
-TrustOps is built for companies that want to evaluate evidence where it already
-lives, operate the control plane themselves, and expose the same facts to humans,
-auditors, CI, and agents.
+Security, compliance, platform, and AI teams need current posture, not stale
+spreadsheets. TrustOps is built for companies that want to evaluate evidence
+where it already lives, operate the trust control plane themselves, continuously
+monitor violations and freshness, tag findings to controls and owners, and
+expose the same facts to humans, auditors, CI, and agents.
 
 ```mermaid
 flowchart LR
@@ -55,7 +58,7 @@ audit events, scheduled connector syncs, and customer-owned evidence storage.
 
 ## What Ships
 
-- **Trust workbench** — Trust Home, controls, evidence, violations,
+- **Trust workbench** — Trust Command Center, controls, evidence, violations,
   remediation, risk register, workflows, graph, insights, connectors,
   frameworks, crosswalk, audit log, trust center, and agent API views.
 - **Server mode** — FastAPI behind `.[server]`, API keys, OIDC, SAML, RBAC,
@@ -67,9 +70,9 @@ audit events, scheduled connector syncs, and customer-owned evidence storage.
 - **Continuous inputs** — 15 connector contracts; executable GitHub, AWS,
   Okta, Google Workspace, GCP, Azure, and Jira runners; scheduled syncs; repo
   audit/governance sync.
-- **Automation and agents** — controls-as-code rules, remediation tasks,
-  evidence requests, guarded workflow actions, OpenAPI, Python SDK, and MCP
-  read/write tools.
+- **Automation and agents** — controls-as-code rules, tags, remediation tasks,
+  evidence requests, DAG workflows, guarded actions, OpenAPI, Python SDK, and
+  MCP read/write tools.
 
 ## Run The Demo
 
@@ -128,13 +131,33 @@ path is read-only access to an existing security data lake or customer-owned
 object store. Direct source tokens are used only when the source system is the
 authority for that evidence.
 
+### Snowflake Evidence Lake
+
+Snowflake is the governed evidence path: TrustOps reads customer-owned evidence
+views with a least-privilege role, materializes bronze/silver/gold posture, and
+serves the same current state to the console, snapshots, and agent APIs.
+
+<p align="center">
+  <img src="docs/images/trustops-snowflake-evidence-lake.svg" alt="TrustOps Snowflake evidence lake architecture with customer views, read-only collection, materialized posture, and assessment loop" width="100%">
+</p>
+
+The live Snowflake runner is intentionally read-only. It expects TrustOps-shaped
+views such as `TRUSTOPS_AUDIT_EVENTS`, `TRUSTOPS_CONTROL_POSTURE`,
+`TRUSTOPS_ASSET_RISK`, and `TRUSTOPS_EVIDENCE_BUNDLES`, then rebuilds the
+local lake and current posture from the collected evidence.
+
 See [Connector And Access Model](docs/CONNECTORS.md).
 
 ## Product Screens
 
 <p align="center">
-  <img src="docs/images/trustops-demo-frameworks.png" alt="TrustOps framework coverage and source provenance workbench" width="49%">
-  <img src="docs/images/trustops-demo-control-drawer.png" alt="TrustOps control drawer with evidence, violations, and remediation actions" width="49%">
+  <img src="docs/images/trustops-demo-workflows.png" alt="TrustOps workflow canvas with action library, templates, run testing, and guarded outbound actions" width="49%">
+  <img src="docs/images/trustops-demo-graph.png" alt="TrustOps graph workbench showing framework, control, evidence, and asset relationships with filters and path tracing" width="49%">
+</p>
+
+<p align="center">
+  <img src="docs/images/trustops-demo-dashboard.png" alt="TrustOps Trust Home showing posture, failing controls, evidence freshness, remediation queue, and live API status" width="49%">
+  <img src="docs/images/trustops-demo-control-drawer.png" alt="TrustOps control drawer with evidence, violations, confidence, owner, and remediation actions" width="49%">
 </p>
 
 <p align="center">
@@ -142,20 +165,10 @@ See [Connector And Access Model](docs/CONNECTORS.md).
   <img src="docs/images/trustops-demo-connectors.png" alt="TrustOps connector workbench with lake contracts and executable source runners" width="49%">
 </p>
 
-<p align="center">
-  <img src="docs/images/trustops-demo-trust-center.png" alt="TrustOps trust center share portal with expiring reviewer tokens" width="100%">
-</p>
-
-| View            | What it proves                                                                                   |
-| --------------- | ------------------------------------------------------------------------------------------------ |
-| Trust Home      | Current posture, confidence, freshness, failing controls, remediation queue, and live API status |
-| Workflow canvas | Reusable remediation and evidence workflows with guarded outbound actions                        |
-| Graph           | Framework, control, evidence, asset, repository, and governance topology with path tracing       |
-| Frameworks      | Source-linked framework scope, readiness gates, coverage, and provenance                         |
-| Controls        | Click-through control details, linked evidence, violations, and remediation actions              |
-| Evidence room   | Searchable normalized evidence facts with control links and SHA-256 verification                 |
-| Connectors      | Read-only-first integration strategy, connector state, and sync boundaries                       |
-| Trust center    | Expiring reviewer shares with token hashing and auditor redaction                                |
+**What the walkthrough proves:** current posture and freshness, click-through
+control evidence, violation triage, remediation SLAs, guarded workflow actions,
+source connector sync boundaries, graph path tracing, expiring trust shares, and
+agent-readable API contracts.
 
 ## Framework Coverage
 

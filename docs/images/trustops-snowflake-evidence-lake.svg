@@ -1,0 +1,213 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="900" viewBox="0 0 1500 900" role="img" aria-labelledby="title desc">
+  <title id="title">TrustOps Snowflake evidence lake architecture</title>
+  <desc id="desc">A lane-based architecture diagram showing Snowflake evidence views, read-only collection, TrustOps assessment layers, and human and agent outputs.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="0.58" stop-color="#0b1830"/>
+      <stop offset="1" stop-color="#0f3d46"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0e7490"/>
+      <stop offset="1" stop-color="#115e59"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1e3a8a"/>
+      <stop offset="1" stop-color="#172554"/>
+    </linearGradient>
+    <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#312e81"/>
+      <stop offset="1" stop-color="#581c87"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#064e3b"/>
+      <stop offset="1" stop-color="#052e2b"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0v40" fill="none" stroke="#17304b" stroke-width="1" opacity="0.34"/>
+    </pattern>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#020617" flood-opacity="0.36"/>
+    </filter>
+    <marker id="arrowCyan" markerWidth="13" markerHeight="13" refX="11" refY="6.5" orient="auto">
+      <path d="M0 0 13 6.5 0 13z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrowGold" markerWidth="13" markerHeight="13" refX="11" refY="6.5" orient="auto">
+      <path d="M0 0 13 6.5 0 13z" fill="#fbbf24"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="13" markerHeight="13" refX="11" refY="6.5" orient="auto">
+      <path d="M0 0 13 6.5 0 13z" fill="#34d399"/>
+    </marker>
+    <style>
+      .sans { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; }
+      .mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+      .title { fill: #f8fafc; font-size: 36px; font-weight: 900; letter-spacing: -0.02em; }
+      .subtitle { fill: #cbd5e1; font-size: 15px; font-weight: 650; }
+      .lane { fill: #67e8f9; font-size: 11px; font-weight: 900; letter-spacing: 0.18em; }
+      .lane2 { fill: #c4b5fd; font-size: 11px; font-weight: 900; letter-spacing: 0.18em; }
+      .cardTitle { fill: #ffffff; font-size: 18px; font-weight: 900; }
+      .cardText { fill: #cbd5e1; font-size: 13px; font-weight: 650; }
+      .muted { fill: #94a3b8; font-size: 11px; font-weight: 700; }
+      .tiny { fill: #94a3b8; font-size: 10px; font-weight: 700; }
+      .code { fill: #e0f2fe; font-size: 12px; font-weight: 850; }
+      .box { fill: #0f172a; stroke: #334155; stroke-width: 1.4; }
+      .chip { fill: #10243a; stroke: #334155; stroke-width: 1.2; }
+      .view { fill: rgba(15, 23, 42, 0.76); stroke: #38bdf8; stroke-width: 1.35; }
+      .gold { fill: rgba(120, 53, 15, 0.58); stroke: #fbbf24; stroke-width: 1.3; }
+      .greenBox { fill: rgba(6, 78, 59, 0.82); stroke: #34d399; stroke-width: 1.35; }
+    </style>
+  </defs>
+
+  <rect width="1500" height="900" fill="url(#bg)"/>
+  <rect width="1500" height="900" fill="url(#grid)" opacity="0.95"/>
+  <circle cx="1240" cy="184" r="210" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.17"/>
+  <circle cx="1276" cy="660" r="182" fill="none" stroke="#14b8a6" stroke-width="2" opacity="0.18"/>
+
+  <g class="sans">
+    <text x="70" y="72" class="title">TrustOps Snowflake Evidence Lake</text>
+    <text x="70" y="102" class="subtitle">Read-only governed evidence, warehouse retention, and continuous compliance posture without moving sensitive payloads.</text>
+
+    <g transform="translate(1168 42)">
+      <rect width="280" height="70" rx="16" class="box"/>
+      <g transform="translate(24 20)" fill="none" stroke="#38bdf8" stroke-width="3">
+        <path d="M18 0v30M0 15h36M5 5l26 20M31 5 5 25"/>
+      </g>
+      <text x="76" y="31" class="cardTitle" font-size="16">Snowflake connector</text>
+      <text x="76" y="52" class="tiny">SELECT-only role - fixture-testable - no DDL</text>
+    </g>
+
+    <g transform="translate(70 148)">
+      <rect width="184" height="31" rx="15.5" fill="#0e7490" stroke="#22d3ee"/>
+      <text x="92" y="21" text-anchor="middle" class="lane">CUSTOMER LAKE</text>
+    </g>
+
+    <g transform="translate(70 206)" filter="url(#shadow)">
+      <rect width="390" height="294" rx="22" fill="url(#blue)" stroke="#38bdf8" stroke-width="2"/>
+      <g transform="translate(28 26)" fill="none" stroke="#38bdf8" stroke-width="3">
+        <path d="M20 0v34M0 17h40M6 6l28 22M34 6 6 28"/>
+      </g>
+      <text x="88" y="54" class="cardTitle" font-size="22">Snowflake governed views</text>
+      <text x="88" y="78" class="cardText">Evidence stays in the customer account.</text>
+
+      <g transform="translate(30 116)">
+        <rect width="150" height="58" rx="10" class="view"/>
+        <text x="18" y="28" class="code">audit_events</text>
+        <text x="18" y="44" class="tiny">tool + user activity</text>
+      </g>
+      <g transform="translate(210 116)">
+        <rect width="150" height="58" rx="10" class="view"/>
+        <text x="18" y="28" class="code">control_posture</text>
+        <text x="18" y="44" class="tiny">control state</text>
+      </g>
+      <g transform="translate(30 194)">
+        <rect width="150" height="58" rx="10" class="view"/>
+        <text x="18" y="28" class="code">asset_risk</text>
+        <text x="18" y="44" class="tiny">risk by asset</text>
+      </g>
+      <g transform="translate(210 194)">
+        <rect width="150" height="58" rx="10" class="view"/>
+        <text x="18" y="28" class="code">evidence_bundles</text>
+        <text x="18" y="44" class="tiny">audit packets</text>
+      </g>
+      <rect x="30" y="266" width="330" height="1" fill="#38bdf8" opacity="0.35"/>
+      <text x="30" y="284" class="tiny">least-privilege role: warehouse USAGE, schema USAGE, view SELECT</text>
+    </g>
+
+    <g transform="translate(548 234)" filter="url(#shadow)">
+      <rect width="240" height="226" rx="18" fill="url(#cyan)" stroke="#22d3ee" stroke-width="1.7"/>
+      <text x="30" y="46" class="cardTitle">Collect</text>
+      <text x="30" y="70" class="cardText">snowflake-evidence-lake</text>
+      <rect x="30" y="102" width="180" height="36" rx="9" fill="#0f3a4a" stroke="#67e8f9"/>
+      <text x="120" y="125" text-anchor="middle" class="code">safe SELECT *</text>
+      <rect x="30" y="150" width="180" height="36" rx="9" fill="#0f3a4a" stroke="#67e8f9"/>
+      <text x="120" y="173" text-anchor="middle" class="code">validated view names</text>
+      <text x="30" y="206" class="tiny">fixtures mirror the live view contract</text>
+    </g>
+
+    <g transform="translate(874 214)" filter="url(#shadow)">
+      <rect width="286" height="266" rx="20" fill="#111827" stroke="#818cf8" stroke-width="1.7"/>
+      <text x="30" y="46" class="cardTitle">TrustOps materialization</text>
+      <text x="30" y="70" class="cardText">Raw connector rows become posture.</text>
+      <g transform="translate(30 102)">
+        <rect width="226" height="32" rx="9" class="chip"/>
+        <text x="18" y="21" class="code">bronze/raw_connector_events</text>
+      </g>
+      <g transform="translate(30 146)">
+        <rect width="226" height="32" rx="9" class="chip"/>
+        <text x="18" y="21" class="code">silver/normalized_events</text>
+      </g>
+      <g transform="translate(30 190)">
+        <rect width="226" height="32" rx="9" class="chip"/>
+        <text x="18" y="21" class="code">gold/control_tests</text>
+      </g>
+      <text x="30" y="240" class="tiny">hashes, freshness, and controls-as-code</text>
+      <text x="30" y="256" class="tiny">owner context preserved</text>
+    </g>
+
+    <g transform="translate(1228 226)" filter="url(#shadow)">
+      <rect width="220" height="236" rx="20" fill="url(#green)" stroke="#34d399" stroke-width="1.7"/>
+      <text x="28" y="44" class="cardTitle">Live posture</text>
+      <text x="28" y="68" class="cardText">Human + agent surfaces.</text>
+      <rect x="28" y="96" width="164" height="34" rx="9" class="greenBox"/>
+      <text x="110" y="118" text-anchor="middle" class="code">Trust Home</text>
+      <rect x="28" y="140" width="164" height="34" rx="9" class="greenBox"/>
+      <text x="110" y="162" text-anchor="middle" class="code">/api/v1 posture</text>
+      <rect x="28" y="184" width="164" height="34" rx="9" class="greenBox"/>
+      <text x="110" y="206" text-anchor="middle" class="code">trust shares</text>
+    </g>
+
+    <line x1="460" y1="352" x2="532" y2="352" stroke="#22d3ee" stroke-width="4" marker-end="url(#arrowCyan)"/>
+    <line x1="788" y1="352" x2="858" y2="352" stroke="#22d3ee" stroke-width="4" marker-end="url(#arrowCyan)"/>
+    <line x1="1160" y1="352" x2="1212" y2="352" stroke="#34d399" stroke-width="4" marker-end="url(#arrowGreen)"/>
+
+    <g transform="translate(70 575)">
+      <rect width="186" height="31" rx="15.5" fill="#3b0764" stroke="#a78bfa"/>
+      <text x="93" y="21" text-anchor="middle" class="lane2">ASSESSMENT LOOP</text>
+    </g>
+
+    <g transform="translate(70 632)" filter="url(#shadow)">
+      <rect width="260" height="132" rx="18" fill="#052e2b" stroke="#34d399" stroke-width="1.5"/>
+      <text x="26" y="40" class="cardTitle">Controls-as-code</text>
+      <text x="26" y="66" class="cardText">rules evaluate evidence</text>
+      <text x="26" y="90" class="cardText">freshness affects confidence</text>
+      <text x="26" y="114" class="cardText">failures create actions</text>
+    </g>
+
+    <g transform="translate(416 632)" filter="url(#shadow)">
+      <rect width="260" height="132" rx="18" fill="url(#purple)" stroke="#a78bfa" stroke-width="1.5"/>
+      <text x="26" y="40" class="cardTitle">Remediation loop</text>
+      <text x="26" y="66" class="cardText">owner, SLA, evidence request</text>
+      <text x="26" y="90" class="cardText">workflow action dry-runs</text>
+      <text x="26" y="114" class="cardText">ticket/webhook handoff</text>
+    </g>
+
+    <g transform="translate(762 632)" filter="url(#shadow)">
+      <rect width="260" height="132" rx="18" class="gold"/>
+      <text x="26" y="40" class="cardTitle">Snapshot ledger</text>
+      <text x="26" y="66" class="cardText">point-in-time posture hash</text>
+      <text x="26" y="90" class="cardText">reviewer-safe evidence</text>
+      <text x="26" y="114" class="cardText">audit and vendor packets</text>
+    </g>
+
+    <g transform="translate(1108 632)" filter="url(#shadow)">
+      <rect width="340" height="132" rx="18" fill="#111827" stroke="#64748b" stroke-width="1.5"/>
+      <text x="26" y="40" class="cardTitle">Customer-owned boundary</text>
+      <text x="26" y="66" class="cardText">Snowflake account, keys, roles,</text>
+      <text x="26" y="90" class="cardText">retention, network, and audit logs</text>
+      <text x="26" y="114" class="cardText">stay under operator control.</text>
+    </g>
+
+    <line x1="330" y1="698" x2="402" y2="698" stroke="#34d399" stroke-width="4" marker-end="url(#arrowGreen)"/>
+    <line x1="676" y1="698" x2="748" y2="698" stroke="#fbbf24" stroke-width="4" marker-end="url(#arrowGold)"/>
+    <line x1="1022" y1="698" x2="1094" y2="698" stroke="#fbbf24" stroke-width="4" marker-end="url(#arrowGold)"/>
+    <path d="M1238 632V500" fill="none" stroke="#34d399" stroke-width="3" stroke-dasharray="8 8" marker-end="url(#arrowGreen)"/>
+    <path d="M892 632V500" fill="none" stroke="#fbbf24" stroke-width="3" stroke-dasharray="8 8" marker-end="url(#arrowGold)"/>
+
+    <g transform="translate(70 838)">
+      <circle cx="0" cy="0" r="5" fill="#22d3ee"/><text x="16" y="4" class="tiny">read/collect</text>
+      <circle cx="116" cy="0" r="5" fill="#34d399"/><text x="132" y="4" class="tiny">assessment</text>
+      <circle cx="230" cy="0" r="5" fill="#fbbf24"/><text x="246" y="4" class="tiny">snapshot/audit</text>
+      <text x="420" y="4" class="tiny">No Snowflake DDL from the connector. Live collection uses a least-privilege reader role.</text>
+    </g>
+  </g>
+</svg>
