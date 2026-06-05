@@ -30,8 +30,24 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse.ingestion import backoff
 from security_lakehouse.io import read_json
 from security_lakehouse.models import utc_iso
+
+
+def _is_retryable_http(exc: BaseException) -> bool:
+    """A 429 or transient 5xx from Okta is worth retrying with backoff."""
+    return isinstance(exc, urllib.error.HTTPError) and exc.code in backoff.RETRYABLE_STATUS
+
+
+def _http_retry_after(exc: BaseException) -> float | None:
+    """Read a server ``Retry-After`` (seconds) from a 429 response, if present."""
+    if isinstance(exc, urllib.error.HTTPError) and exc.headers:
+        raw = exc.headers.get("Retry-After")
+        if raw and str(raw).strip().isdigit():
+            return float(str(raw).strip())
+    return None
+
 
 # Identity controls that exist in controls/catalog.json. Verified before wiring.
 IDENTITY_CONTROLS = ["SOC2-CC6.1", "ISO27001-A.5.15", "HIPAA-164.308(a)(4)"]
@@ -101,9 +117,18 @@ class OktaClient:
                     "user-agent": "trustops-security-data-lake",
                 },
             )
-            with urllib.request.urlopen(request, timeout=self.timeout) as resp:  # noqa: S310
-                payload = json.loads(resp.read().decode("utf-8"))
-                link_header = resp.headers.get("Link", "")
+
+            def _fetch_page(req: urllib.request.Request = request) -> tuple[Any, str]:
+                with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310
+                    return json.loads(resp.read().decode("utf-8")), resp.headers.get("Link", "")
+
+            # Okta rate-limits with HTTP 429 + a Retry-After header; back off and
+            # retry transient 429/5xx rather than failing the whole collection.
+            payload, link_header = backoff.retry(
+                _fetch_page,
+                is_retryable=_is_retryable_http,
+                retry_after=_http_retry_after,
+            )
             if not isinstance(payload, list):
                 raise ValueError(f"Okta returned non-list JSON for {next_url}")
             items.extend(item for item in payload if isinstance(item, dict))
