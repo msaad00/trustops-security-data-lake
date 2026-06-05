@@ -181,3 +181,33 @@ The validator rejects:
 - managed evidence mode without a dedicated schema/boundary
 - secret-like field names or token-shaped values in the catalog
 - broad permission words such as admin, delete, drop, modify, owner, or root
+
+## Ingestion strategy (velocity + cost)
+
+A compliance data layer that claims _real-time control health_ must justify
+**how** each source is ingested, because streaming is not free. Every connector
+declares three attributes that drive an auditable ingestion decision (encoded in
+`src/security_lakehouse/ingestion/strategy.py`, not prose):
+
+- `velocity`: `high_event_stream` · `medium_api` · `low_current_state`
+- `native_connector`: whether a managed/native ingestion connector exists for the source
+- `data_shape`: `event_log` · `current_state`
+
+| Velocity            | Native? | Method                                       | Why                                                                                                                                                                                                       |
+| ------------------- | ------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `high_event_stream` | any     | **Snowpipe Streaming**                       | Seconds-fresh, serverless, no warehouse COPY; ~50% cheaper than file Snowpipe at high throughput (unified ~0.0037 credits/GB). INSERT-only — upserts handled downstream via Streams/Tasks/Dynamic Tables. |
+| `medium_api`        | true    | **Managed/native connector** (e.g. Openflow) | Managed runtime, less code, vendor-managed auth, built-in observability.                                                                                                                                  |
+| `medium_api`        | false   | **Committed custom pull**                    | No native connector: watermark + cursor pagination + 429 backoff + idempotent merge.                                                                                                                      |
+| `low_current_state` | any     | **Scheduled pull** (hourly/daily)            | Slow churn; streaming would add producer cost + ops for zero freshness benefit the control needs.                                                                                                         |
+
+**Cost discipline:** streaming bills per client-runtime-hour + per-GB and you own
+the producer. The strategy makes `high_event_stream` the _only_ path to streaming,
+so it is chosen only when a control's `freshness_slo` actually requires sub-minute
+data — never claimed where a native connector does not exist.
+
+Inspect the resolved plan per source (a live demo command):
+
+```bash
+security-lakehouse ingestion plan        # table: velocity → method → SLO + cost note
+security-lakehouse ingestion plan --json  # machine-readable
+```

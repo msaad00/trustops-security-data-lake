@@ -22,7 +22,10 @@
       "default_route": "Snowflake",
       "freshness_slo_minutes": 60,
       "is_implemented": true,
-      "production_status": "hero_path"
+      "production_status": "hero_path",
+      "velocity": "low_current_state",
+      "native_connector": true,
+      "data_shape": "current_state"
     },
     {
       "connector_id": "clickhouse-telemetry-lake",
@@ -44,7 +47,10 @@
       ],
       "default_route": "ClickHouse",
       "freshness_slo_minutes": 15,
-      "production_status": "hero_path"
+      "production_status": "hero_path",
+      "velocity": "high_event_stream",
+      "native_connector": true,
+      "data_shape": "event_log"
     },
     {
       "connector_id": "object-storage-evidence",
@@ -57,7 +63,10 @@
       "evidence_types": ["sarif", "json", "attestation", "audit_export"],
       "default_route": "Snowflake",
       "freshness_slo_minutes": 120,
-      "production_status": "supported_path"
+      "production_status": "supported_path",
+      "velocity": "low_current_state",
+      "native_connector": true,
+      "data_shape": "current_state"
     },
     {
       "connector_id": "github-security",
@@ -81,7 +90,10 @@
       "default_route": "dual",
       "freshness_slo_minutes": 60,
       "is_implemented": true,
-      "production_status": "supported_path"
+      "production_status": "supported_path",
+      "velocity": "medium_api",
+      "native_connector": false,
+      "data_shape": "event_log"
     },
     {
       "connector_id": "okta-identity",
@@ -99,7 +111,10 @@
       "default_route": "dual",
       "freshness_slo_minutes": 240,
       "is_implemented": true,
-      "production_status": "supported_path"
+      "production_status": "supported_path",
+      "velocity": "medium_api",
+      "native_connector": false,
+      "data_shape": "current_state"
     },
     {
       "connector_id": "aws-posture",
@@ -118,7 +133,10 @@
       "default_route": "dual",
       "freshness_slo_minutes": 360,
       "is_implemented": true,
-      "production_status": "supported_path"
+      "production_status": "supported_path",
+      "velocity": "low_current_state",
+      "native_connector": false,
+      "data_shape": "current_state"
     },
     {
       "connector_id": "identity-provider",
@@ -136,7 +154,10 @@
       "evidence_types": ["user", "group", "assignment", "access_review"],
       "default_route": "Snowflake",
       "freshness_slo_minutes": 240,
-      "production_status": "supported_path"
+      "production_status": "supported_path",
+      "velocity": "medium_api",
+      "native_connector": false,
+      "data_shape": "current_state"
     },
     {
       "connector_id": "ticketing",
@@ -153,7 +174,10 @@
       "evidence_types": ["remediation_ticket", "owner_sla", "exception"],
       "default_route": "Snowflake",
       "freshness_slo_minutes": 60,
-      "production_status": "supported_path"
+      "production_status": "supported_path",
+      "velocity": "medium_api",
+      "native_connector": false,
+      "data_shape": "current_state"
     },
     {
       "connector_id": "siem-alerts",
@@ -166,7 +190,10 @@
       "evidence_types": ["alert", "detection", "incident_signal"],
       "default_route": "ClickHouse",
       "freshness_slo_minutes": 10,
-      "production_status": "supported_path"
+      "production_status": "supported_path",
+      "velocity": "high_event_stream",
+      "native_connector": false,
+      "data_shape": "event_log"
     },
     {
       "connector_id": "runtime-gateway",
@@ -182,7 +209,10 @@
       "evidence_types": ["tool_call", "policy_decision", "runtime_block"],
       "default_route": "ClickHouse",
       "freshness_slo_minutes": 5,
-      "production_status": "supported_path"
+      "production_status": "supported_path",
+      "velocity": "high_event_stream",
+      "native_connector": false,
+      "data_shape": "event_log"
     },
     {
       "connector_id": "managed-local-evidence",
@@ -203,7 +233,10 @@
       ],
       "default_route": "local",
       "freshness_slo_minutes": 1440,
-      "production_status": "starter_path"
+      "production_status": "starter_path",
+      "velocity": "low_current_state",
+      "native_connector": true,
+      "data_shape": "current_state"
     },
     {
       "connector_id": "google-workspace-identity",
@@ -221,7 +254,10 @@
       "default_route": "dual",
       "freshness_slo_minutes": 240,
       "is_implemented": true,
-      "production_status": "supported_path"
+      "production_status": "supported_path",
+      "velocity": "medium_api",
+      "native_connector": false,
+      "data_shape": "current_state"
     },
     {
       "connector_id": "gcp-posture",
@@ -239,7 +275,10 @@
       "default_route": "dual",
       "freshness_slo_minutes": 240,
       "is_implemented": true,
-      "production_status": "supported_path"
+      "production_status": "supported_path",
+      "velocity": "low_current_state",
+      "native_connector": false,
+      "data_shape": "current_state"
     },
     {
       "connector_id": "azure-posture",
@@ -257,7 +296,10 @@
       "default_route": "dual",
       "freshness_slo_minutes": 240,
       "is_implemented": true,
-      "production_status": "supported_path"
+      "production_status": "supported_path",
+      "velocity": "low_current_state",
+      "native_connector": false,
+      "data_shape": "current_state"
     },
     {
       "connector_id": "jira-ticketing",
@@ -275,7 +317,10 @@
       "default_route": "dual",
       "freshness_slo_minutes": 240,
       "is_implemented": true,
-      "production_status": "supported_path"
+      "production_status": "supported_path",
+      "velocity": "medium_api",
+      "native_connector": false,
+      "data_shape": "current_state"
     }
   ]
 }
