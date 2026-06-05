@@ -80,6 +80,20 @@ def test_async_get_posture_has_score(tmp_path: Path) -> None:
     assert isinstance(posture["posture"]["score"], int | float)
 
 
+def test_async_posture_as_of_round_trips(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    with _server(create_app(tmp_path, require_auth=False)) as base_url:
+
+        async def run() -> tuple[dict, dict]:
+            async with AsyncTrustOpsClient(base_url, timeout=10.0) as client:
+                await client.create_snapshot(reason="async-as-of")
+                return await client.posture_as_of("2030-01-01"), await client.posture_as_of("2000-01-01")
+
+        found, empty = asyncio.run(run())
+    assert found["found"] is True
+    assert empty["found"] is False
+
+
 def test_async_list_controls_returns_seeded_ids(tmp_path: Path) -> None:
     _seed_lake(tmp_path)
     with _server(create_app(tmp_path, require_auth=False)) as base_url:

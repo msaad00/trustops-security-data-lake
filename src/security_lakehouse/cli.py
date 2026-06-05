@@ -141,6 +141,12 @@ def _parser() -> argparse.ArgumentParser:
     verify_snapshots = assessment_sub.add_parser("verify-snapshots", help="verify the append-only snapshot hash-chain")
     verify_snapshots.add_argument("--lake", required=True, help="security data lake output directory")
     verify_snapshots.set_defaults(func=_assessment_verify_snapshots)
+    posture_as_of = assessment_sub.add_parser(
+        "posture-as-of", help="posture as of a point in time (newest snapshot at-or-before --as-of)"
+    )
+    posture_as_of.add_argument("--lake", required=True, help="security data lake output directory")
+    posture_as_of.add_argument("--as-of", required=True, help="ISO date or datetime, e.g. 2026-04-15")
+    posture_as_of.set_defaults(func=_assessment_posture_as_of)
     violations = assessment_sub.add_parser("violations", help="list open framework/control violations")
     violations.add_argument("--lake", required=True, help="security data lake output directory")
     violations.add_argument("--framework", default=None, help="optional framework filter")
@@ -716,6 +722,18 @@ def _assessment_verify_snapshots(args: argparse.Namespace) -> int:
     result = verify_snapshot_chain(args.lake)
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0 if result["ok"] else 1
+
+
+def _assessment_posture_as_of(args: argparse.Namespace) -> int:
+    from security_lakehouse.assessment import posture_as_of
+
+    try:
+        result = posture_as_of(args.lake, as_of=args.as_of)
+    except ValueError as exc:
+        print(f"error: invalid --as-of value: {exc}", file=sys.stderr)
+        return 1
+    print(json.dumps(result, indent=2, sort_keys=True))
+    return 0 if result["found"] else 1
 
 
 def _assessment_violations(args: argparse.Namespace) -> int:

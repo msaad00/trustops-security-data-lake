@@ -184,6 +184,15 @@ class TrustOpsClient:
         """Return the current compliance posture (score, frameworks, violations)."""
         return self._get("/api/v1/posture/current")
 
+    def posture_as_of(self, as_of: str) -> JsonObject:
+        """Return the posture as of a point in time.
+
+        Selects the newest snapshot whose ``evaluated_at`` is at or before
+        ``as_of`` (an ISO date or datetime). The result echoes ``found``,
+        ``evaluated_at``, ``assessment_hash``, and ``requested_as_of``.
+        """
+        return self._get("/api/v1/posture/as-of", params={"as_of": as_of})
+
     # --- lake-backed read collections --------------------------------------
     def list_controls(
         self,
@@ -395,6 +404,15 @@ class AsyncTrustOpsClient:
     async def get_posture(self) -> JsonObject:
         """Return the current compliance posture (score, frameworks, violations)."""
         return await self._get("/api/v1/posture/current")
+
+    async def posture_as_of(self, as_of: str) -> JsonObject:
+        """Return the posture as of a point in time.
+
+        Selects the newest snapshot whose ``evaluated_at`` is at or before
+        ``as_of`` (an ISO date or datetime). The result echoes ``found``,
+        ``evaluated_at``, ``assessment_hash``, and ``requested_as_of``.
+        """
+        return await self._get("/api/v1/posture/as-of", params={"as_of": as_of})
 
     # --- lake-backed read collections --------------------------------------
     async def list_controls(

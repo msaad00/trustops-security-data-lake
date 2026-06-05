@@ -75,6 +75,17 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         return _get("/api/v1/posture/current", lake)
 
     @mcp.tool()
+    def posture_as_of(as_of: str) -> JsonObject:
+        """Return the compliance posture as of a point in time.
+
+        Selects the newest snapshot whose ``evaluated_at`` is at or before
+        ``as_of`` (an ISO date or datetime, e.g. ``2026-04-15``). Use this to
+        answer "were we compliant on date X?" against immutable snapshots
+        rather than the live posture.
+        """
+        return _get("/api/v1/posture/as-of", lake, as_of=as_of)
+
+    @mcp.tool()
     def list_controls(limit: int = 100, offset: int = 0) -> list[JsonObject]:
         """List control posture rows (one per framework control, with pass/fail status)."""
         return _get("/api/v1/controls", lake, limit=str(limit), offset=str(offset))
