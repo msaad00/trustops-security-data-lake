@@ -8,11 +8,13 @@ import {
   AlertOctagon,
   Bot,
   BookOpen,
+  Camera,
   FileSearch,
   LayoutDashboard,
   Layers,
   Network,
   Plug,
+  RefreshCw,
   Search,
   ShieldAlert,
   ShieldCheck,
@@ -30,10 +32,17 @@ import type {
 
 interface PaletteItem {
   id: string;
-  group: "Routes" | "Controls" | "Violations" | "Evidence" | "Workflows";
+  group:
+    | "Actions"
+    | "Routes"
+    | "Controls"
+    | "Violations"
+    | "Evidence"
+    | "Workflows";
   label: string;
   subtitle?: string;
-  href: string;
+  href?: string;
+  run?: () => void;
   Icon: typeof LayoutDashboard;
 }
 
@@ -134,9 +143,16 @@ const ROUTE_ITEMS: PaletteItem[] = [
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSnapshot?: () => void;
+  onRefresh?: () => void;
 }
 
-export function CommandPalette({ open, onOpenChange }: Props) {
+export function CommandPalette({
+  open,
+  onOpenChange,
+  onSnapshot,
+  onRefresh,
+}: Props) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [controls, setControls] = useState<ControlPosture[]>([]);
@@ -168,6 +184,27 @@ export function CommandPalette({ open, onOpenChange }: Props) {
   }, [open]);
 
   const items = useMemo<PaletteItem[]>(() => {
+    const actions: PaletteItem[] = [];
+    if (onSnapshot) {
+      actions.push({
+        id: "a:snapshot",
+        group: "Actions",
+        label: "Create assessment snapshot",
+        subtitle: "Freeze current posture for audit / JIT review",
+        run: onSnapshot,
+        Icon: Camera,
+      });
+    }
+    if (onRefresh) {
+      actions.push({
+        id: "a:refresh",
+        group: "Actions",
+        label: "Refresh data",
+        subtitle: "Re-read posture from the assessment lake",
+        run: onRefresh,
+        Icon: RefreshCw,
+      });
+    }
     const dynamic: PaletteItem[] = [
       ...controls.map<PaletteItem>((c) => ({
         id: `c:${c.control_id}`,
@@ -202,7 +239,7 @@ export function CommandPalette({ open, onOpenChange }: Props) {
         Icon: Workflow,
       })),
     ];
-    const all = [...ROUTE_ITEMS, ...dynamic];
+    const all = [...actions, ...ROUTE_ITEMS, ...dynamic];
     if (!query) return all.slice(0, 60);
     const lower = query.toLowerCase();
     return all
@@ -212,7 +249,7 @@ export function CommandPalette({ open, onOpenChange }: Props) {
           .includes(lower),
       )
       .slice(0, 60);
-  }, [controls, violations, evidence, workflows, query]);
+  }, [controls, violations, evidence, workflows, query, onSnapshot, onRefresh]);
 
   // Reset active index when filter changes.
   useEffect(() => {
@@ -231,7 +268,11 @@ export function CommandPalette({ open, onOpenChange }: Props) {
 
   const go = (item: PaletteItem) => {
     onOpenChange(false);
-    router.push(item.href);
+    if (item.run) {
+      item.run();
+    } else if (item.href) {
+      router.push(item.href);
+    }
   };
 
   return (

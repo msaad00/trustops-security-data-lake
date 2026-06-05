@@ -12,6 +12,7 @@ import { ApiHealthBanner } from "@/components/ApiHealthBanner";
 import { AuditorBanner } from "@/components/AuditorBanner";
 import { SnapshotModal } from "@/components/modals/SnapshotModal";
 import { api } from "@/lib/api/client";
+import { notify } from "@/lib/toast";
 
 export function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -23,14 +24,10 @@ export function Shell({ children }: { children: ReactNode }) {
   // API-health probes) entirely, the same way /login does.
   const isPublicTrustRoute = /(^|\/)trust\/[^/]+$/.test(normalizedPathname);
   const qc = useQueryClient();
-  const [toast, setToast] = useState<string | null>(null);
   const [snapshotOpen, setSnapshotOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
 
-  const flash = useCallback((msg: string) => {
-    setToast(msg);
-    window.setTimeout(() => setToast(null), 4200);
-  }, []);
+  const flash = useCallback((msg: string) => notify.success(msg), []);
 
   const onRefresh = useCallback(async () => {
     await qc.invalidateQueries();
@@ -65,28 +62,31 @@ export function Shell({ children }: { children: ReactNode }) {
           <Breadcrumbs />
           <main className="min-h-0 min-w-0 max-w-full overflow-y-auto overflow-x-hidden bg-panel">
             <ApiHealthBanner />
-            {children}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={normalizedPathname}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.16, ease: "easeOut" }}
+              >
+                {children}
+              </motion.div>
+            </AnimatePresence>
           </main>
         </div>
       </div>
-      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+      <CommandPalette
+        open={paletteOpen}
+        onOpenChange={setPaletteOpen}
+        onSnapshot={onSnapshot}
+        onRefresh={onRefresh}
+      />
       <SnapshotModal
         open={snapshotOpen}
         onClose={() => setSnapshotOpen(false)}
         onToast={flash}
       />
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 12 }}
-            className="fixed bottom-6 left-1/2 z-[60] max-w-[520px] -translate-x-1/2 rounded-lg bg-[#111827] px-3.5 py-3 text-sm text-white shadow-hero"
-          >
-            {toast}
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

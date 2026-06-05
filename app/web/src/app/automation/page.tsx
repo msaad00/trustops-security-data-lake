@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { notify } from "@/lib/toast";
 import { ActionPalette } from "@/components/workflow/ActionPalette";
 import { NodeConfigPanel } from "@/components/workflow/NodeConfigPanel";
 import { TemplateGallery } from "@/components/workflow/TemplateGallery";
@@ -126,15 +127,11 @@ export default function AutomationPage() {
   const [activeId, setActiveId] = useState<string>(NEW_WORKFLOW_ID);
   const [editor, setEditor] = useState<Editor>(emptyEditor);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
   const [templatesOpen, setTemplatesOpen] = useState(false);
   const [lastRun, setLastRun] = useState<WorkflowRun | null>(null);
   const runs = useWorkflowRuns(editor.workflow_id);
 
-  const flash = useCallback((msg: string) => {
-    setToast(msg);
-    window.setTimeout(() => setToast(null), 4200);
-  }, []);
+  const flash = useCallback((msg: string) => notify.success(msg), []);
 
   // Sync the editor whenever the user selects a different workflow.
   useEffect(() => {
@@ -430,12 +427,6 @@ export default function AutomationPage() {
         onClose={() => setTemplatesOpen(false)}
         onPick={loadTemplate}
       />
-
-      {toast && (
-        <div className="fixed bottom-6 left-1/2 z-[70] -translate-x-1/2 rounded-lg bg-ink px-3.5 py-3 text-sm text-white shadow-hero">
-          {toast}
-        </div>
-      )}
     </div>
   );
 }

@@ -12,6 +12,7 @@ import {
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { ConnectorDrawer } from "@/components/drawers/ConnectorDrawer";
+import { notify } from "@/lib/toast";
 import { useConnectors } from "@/lib/api/hooks";
 import type { ConnectorView } from "@/lib/api/types";
 
@@ -90,7 +91,6 @@ export default function ConnectorsPage() {
     "all" | "enabled" | "disabled"
   >("all");
   const [selected, setSelected] = useState<ConnectorView | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
 
   const data = connectors.data ?? [];
 
@@ -185,13 +185,8 @@ export default function ConnectorsPage() {
       <ConnectorDrawer
         connector={selectedLive}
         onClose={() => setSelected(null)}
-        onToast={setToast}
+        onToast={notify.success}
       />
-      {toast && (
-        <div className="fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-lg bg-ink px-3.5 py-3 text-sm text-white shadow-hero">
-          {toast}
-        </div>
-      )}
     </div>
   );
 }

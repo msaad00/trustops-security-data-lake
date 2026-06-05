@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Bot, ClipboardCopy, Loader2, Play } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { notify } from "@/lib/toast";
 import {
   Card,
   CardDescription,
@@ -215,12 +216,8 @@ export default function AgentsPage() {
   const [response, setResponse] = useState<string | null>(null);
   const [status, setStatus] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
 
-  const flash = (msg: string) => {
-    setToast(msg);
-    window.setTimeout(() => setToast(null), 3200);
-  };
+  const flash = (msg: string) => notify.message(msg);
 
   const path = useMemo(
     () => expandPath(selected, pathParams),
@@ -432,12 +429,6 @@ export default function AgentsPage() {
           </Card>
         </div>
       </div>
-
-      {toast && (
-        <div className="fixed bottom-6 left-1/2 z-[70] -translate-x-1/2 rounded-lg bg-ink px-3.5 py-3 text-sm text-white shadow-hero">
-          {toast}
-        </div>
-      )}
     </div>
   );
 }
