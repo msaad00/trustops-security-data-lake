@@ -76,7 +76,22 @@ def validate_catalog(
                 errors.append(f"control {control_id} missing {required}")
         if control.get("official_source_ref") != framework_id:
             errors.append(f"control {control_id} official_source_ref must match framework_id")
+        asset_types = control.get("asset_types")
+        if not isinstance(asset_types, list) or not asset_types:
+            errors.append(f"control {control_id} must declare a non-empty asset_types list")
     return errors
+
+
+def controls_for_asset_type(asset_type: str, catalog_path: str | Path | None = None) -> list[str]:
+    """Return the control ids that apply to ``asset_type``, sorted.
+
+    Answers "which controls apply to this asset?" from the catalog's declared
+    applicability, independent of whether evidence exists yet.
+    """
+    catalog = load_control_catalog(catalog_path)
+    return sorted(
+        control_id for control_id, control in catalog.items() if asset_type in (control.get("asset_types") or [])
+    )
 
 
 # Source-provenance every control must carry so mappings are auditable, not

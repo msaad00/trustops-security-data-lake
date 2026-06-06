@@ -113,6 +113,10 @@ def _parser() -> argparse.ArgumentParser:
     controls_provenance.add_argument("--lake", default=None, help="optional lake directory (unused; catalog is global)")
     controls_provenance.add_argument("--catalog", default=None, help="optional control catalog JSON")
     controls_provenance.set_defaults(func=_controls_provenance)
+    controls_applies = controls_sub.add_parser("applies-to", help="list controls that apply to an asset type")
+    controls_applies.add_argument("--asset-type", required=True, help="asset type, e.g. iam_role, ai_model")
+    controls_applies.add_argument("--catalog", default=None, help="optional control catalog JSON")
+    controls_applies.set_defaults(func=_controls_applies_to)
 
     dashboard = sub.add_parser("dashboard", help="render static dashboard HTML")
     dashboard.add_argument("--lake", required=True, help="security data lake output directory")
@@ -457,6 +461,19 @@ def _controls_provenance(args: argparse.Namespace) -> int:
     for control_id, missing in sorted(gaps.items()):
         print(f"  {control_id}: {', '.join(missing)}")
     return 1
+
+
+def _controls_applies_to(args: argparse.Namespace) -> int:
+    from security_lakehouse.catalog import controls_for_asset_type
+
+    control_ids = controls_for_asset_type(args.asset_type, args.catalog)
+    if not control_ids:
+        print(f"No controls apply to asset type {args.asset_type!r}.")
+        return 0
+    print(f"{len(control_ids)} control(s) apply to {args.asset_type}:")
+    for control_id in control_ids:
+        print(f"  {control_id}")
+    return 0
 
 
 def _dashboard(args: argparse.Namespace) -> int:
