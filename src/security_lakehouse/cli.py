@@ -107,6 +107,13 @@ def _parser() -> argparse.ArgumentParser:
     ingestion_plan.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     ingestion_plan.set_defaults(func=_ingestion_plan)
 
+    controls = sub.add_parser("controls", help="control catalog commands")
+    controls_sub = controls.add_subparsers(dest="controls_command", required=True)
+    controls_provenance = controls_sub.add_parser("provenance", help="list controls missing source provenance")
+    controls_provenance.add_argument("--lake", default=None, help="optional lake directory (unused; catalog is global)")
+    controls_provenance.add_argument("--catalog", default=None, help="optional control catalog JSON")
+    controls_provenance.set_defaults(func=_controls_provenance)
+
     dashboard = sub.add_parser("dashboard", help="render static dashboard HTML")
     dashboard.add_argument("--lake", required=True, help="security data lake output directory")
     dashboard.add_argument("--out", required=True, help="dashboard HTML output path")
@@ -437,6 +444,19 @@ def _ingestion_plan(args: argparse.Namespace) -> int:
         print(f"{p.connector_id:28} {p.velocity:18} {p.method:32} {p.freshness_slo:>6}")
         print(f"{'':28} └ {p.cost_note}")
     return 0
+
+
+def _controls_provenance(args: argparse.Namespace) -> int:
+    from security_lakehouse.catalog import PROVENANCE_FIELDS, controls_missing_provenance
+
+    gaps = controls_missing_provenance(args.catalog)
+    if not gaps:
+        print(f"All controls carry source provenance ({', '.join(PROVENANCE_FIELDS)}).")
+        return 0
+    print(f"{len(gaps)} control(s) missing provenance:")
+    for control_id, missing in sorted(gaps.items()):
+        print(f"  {control_id}: {', '.join(missing)}")
+    return 1
 
 
 def _dashboard(args: argparse.Namespace) -> int:
