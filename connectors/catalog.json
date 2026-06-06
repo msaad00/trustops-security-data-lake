@@ -109,12 +109,28 @@
       ],
       "evidence_types": ["identity", "mfa", "policy"],
       "default_route": "dual",
-      "freshness_slo_minutes": 240,
+      "freshness_slo_minutes": 60,
       "is_implemented": true,
+      "production_status": "supported_path",
+      "velocity": "low_current_state",
+      "native_connector": false,
+      "data_shape": "current_state"
+    },
+    {
+      "connector_id": "okta-system-log",
+      "name": "Okta System Log",
+      "category": "identity",
+      "collection_mode": "direct_api_read",
+      "access_boundary": "scoped_token",
+      "credential_type": "okta_api_token",
+      "minimum_permissions": ["okta.logs.read"],
+      "evidence_types": ["auth_event", "failed_login", "session_event"],
+      "default_route": "dual",
+      "freshness_slo_minutes": 15,
       "production_status": "supported_path",
       "velocity": "medium_api",
       "native_connector": false,
-      "data_shape": "current_state"
+      "data_shape": "event_log"
     },
     {
       "connector_id": "aws-posture",

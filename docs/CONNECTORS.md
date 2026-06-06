@@ -211,3 +211,22 @@ Inspect the resolved plan per source (a live demo command):
 security-lakehouse ingestion plan        # table: velocity → method → SLO + cost note
 security-lakehouse ingestion plan --json  # machine-readable
 ```
+
+## Okta: two velocities, not one
+
+A common misread is "Okta is high-volume, so stream it." Okta actually exposes
+**two sources at very different velocities**, and most access _controls_ read the
+slow one:
+
+| Source            | data_shape      | velocity            | freshness | ingestion                                                         | feeds                                              |
+| ----------------- | --------------- | ------------------- | --------- | ----------------------------------------------------------------- | -------------------------------------------------- |
+| `okta-identity`   | `current_state` | `low_current_state` | 1h        | scheduled pull                                                    | MFA-coverage, orphaned/terminated-account controls |
+| `okta-system-log` | `event_log`     | `medium_api`        | 15m       | watermarked custom pull (cursor + 429 backoff + idempotent merge) | failed-login / auth-anomaly controls (e.g. AC-7)   |
+
+The current-state source (users, factors, policies) changes slowly, so an hourly
+scheduled pull is correct and cheapest. The System Log is event-shaped and needs
+~15-minute freshness for failed-login controls; it is pulled incrementally with a
+high-water cursor (`gold/watermarks.jsonl`) rather than streamed, because the
+Okta System Log is a polled API. Modeling them separately keeps each control on
+the right freshness/cost path instead of over-provisioning the whole connector to
+the strictest SLO.
