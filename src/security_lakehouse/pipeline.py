@@ -220,6 +220,16 @@ def _build_control_rows(
             evidence_status="stale" if control_id in stale else "fresh",
         )
         result = evaluate_control(context, control.get("evaluation_rule"))
+        # `stale` is a first-class status: a control with no fresh evidence inside
+        # its freshness SLO is stale (not silently passing), but an open violation
+        # always dominates. Precedence: fail (violation) > stale > rule result.
+        is_stale = control_id in stale or len(evidence_rows) == 0
+        if len(failing_rows) > 0:
+            status = "fail"
+        elif is_stale:
+            status = "stale"
+        else:
+            status = result.status
         coverage = round(len(evidence_rows) / len(rows), 4) if rows else 0
         control_rows.append(
             {
@@ -228,7 +238,7 @@ def _build_control_rows(
                 "title": str(control.get("title", "")),
                 "risk_domain": str(control.get("risk_domain", "unknown")),
                 "owner": str(control.get("owner", "security")),
-                "status": result.status,
+                "status": status,
                 "evaluation_rule": result.rule,
                 "rule_reasons": result.reasons,
                 "risk_score": max_score,
