@@ -140,7 +140,7 @@ function GraphNodeCard({ data, selected }: NodeProps<FlowGraphNode>) {
             background: tone.bg,
             borderWidth: selected ? 2 : 1.5,
           }}
-          className={`min-w-[132px] max-w-[156px] rounded-lg px-2 py-1.5 transition-all ${emphasisClass(data.emphasis)}`}
+          className={`w-[144px] max-w-[144px] rounded-lg px-2 py-1.5 transition-all ${emphasisClass(data.emphasis)}`}
         >
           <div className="flex items-center justify-between gap-2">
             <span
@@ -219,9 +219,9 @@ function layoutGraph(
 ): { nodes: FlowGraphNode[]; edges: Edge[] } {
   const g = new dagre.graphlib.Graph();
   g.setDefaultEdgeLabel(() => ({}));
-  g.setGraph({ rankdir, nodesep: 14, ranksep: 34, marginx: 10, marginy: 10 });
+  g.setGraph({ rankdir, nodesep: 10, ranksep: 26, marginx: 8, marginy: 8 });
 
-  rfNodes.forEach((node) => g.setNode(node.id, { width: 146, height: 58 }));
+  rfNodes.forEach((node) => g.setNode(node.id, { width: 144, height: 58 }));
   rfEdges.forEach((edge) => g.setEdge(edge.source, edge.target));
   dagre.layout(g);
 
@@ -229,7 +229,7 @@ function layoutGraph(
     const pos = g.node(node.id);
     return {
       ...node,
-      position: { x: pos.x - 73, y: pos.y - 29 },
+      position: { x: pos.x - 72, y: pos.y - 29 },
     };
   });
   return { nodes: laidOut, edges: rfEdges };
@@ -448,7 +448,7 @@ function InnerGraphCanvas({
   useEffect(() => {
     if (rfNodes.length === 0) return;
     const frame = window.requestAnimationFrame(() => {
-      fitView({ maxZoom: 0.92, padding: 0.14, duration: 180 });
+      fitView({ maxZoom: 0.78, padding: 0.22, duration: 180 });
     });
     return () => window.cancelAnimationFrame(frame);
   }, [
@@ -468,7 +468,7 @@ function InnerGraphCanvas({
     const match = rfNodes.find((n) => matchSet.has(n.id));
     if (!match) return;
     setCenter(match.position.x + 73, match.position.y + 29, {
-      zoom: 1,
+      zoom: 0.9,
       duration: 300,
     });
   }, [matchSet, rfNodes, setCenter]);
@@ -505,14 +505,14 @@ function InnerGraphCanvas({
 
   if (!hydrated) {
     return (
-      <div className="h-[min(520px,calc(100dvh-250px))] min-h-[340px] rounded-xl border border-line bg-white sm:min-h-[380px]" />
+      <div className="h-[clamp(400px,calc(100dvh-300px),650px)] min-h-[400px] rounded-xl border border-line bg-white" />
     );
   }
 
   return (
     <div
       ref={wrapperRef}
-      className="h-[min(520px,calc(100dvh-250px))] min-h-[340px] overflow-hidden rounded-xl border border-line bg-white sm:min-h-[380px]"
+      className="h-[clamp(400px,calc(100dvh-300px),650px)] min-h-[400px] overflow-hidden rounded-xl border border-line bg-white"
     >
       <ReactFlow
         nodes={rfNodes}
@@ -522,7 +522,7 @@ function InnerGraphCanvas({
         nodesConnectable={false}
         edgesReconnectable={false}
         fitView
-        fitViewOptions={{ maxZoom: 0.92, padding: 0.14 }}
+        fitViewOptions={{ maxZoom: 0.78, padding: 0.22 }}
         minZoom={0.16}
         maxZoom={1.6}
         proOptions={{ hideAttribution: true }}

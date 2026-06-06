@@ -28,14 +28,14 @@ export function ReadinessGrid({
           Weighted score per framework — control pass rate minus stale penalty.
         </CardDescription>
       </CardHeader>
-      <div className="grid gap-2.5 p-4 pt-0 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-2.5 p-3 pt-0 sm:grid-cols-2 xl:grid-cols-3">
         {sorted.map((f) => {
           const score = Math.round(f.score);
           const color = barColor(f.score);
           return (
             <div
               key={f.framework}
-              className="rounded-lg border border-line bg-white p-3 transition-shadow hover:shadow-card"
+              className="rounded-lg border border-line bg-white p-2.5 transition-shadow hover:shadow-card"
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="truncate text-sm font-black text-ink">

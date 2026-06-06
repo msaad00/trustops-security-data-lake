@@ -14,26 +14,54 @@ production-grade backends.
 
 ## Snowflake Story
 
-Snowflake is the executive and audit-facing evidence lake:
+Snowflake is the governed enterprise evidence lake:
 
-- stores normalized evidence, control posture, and asset risk
-- supports role-based access for security, audit, GRC, and leadership
-- makes compliance exports straightforward through SQL views
-- can retain immutable evidence pointers without copying sensitive payloads
+- lands low-latency evidence through row streaming or staged files
+- supports governed read roles, row policies, masking policies, and query history
+- derives posture with warehouse-native rollups instead of pulling every record
+  into the app
+- can expose the same tables through an Iceberg/Open Catalog path when the
+  customer wants open-format interoperability
+- keeps evidence, retention, audit history, and role boundaries in the operator
+  account
 
 Use Snowflake when the question is:
 
 - "Can audit and GRC trust this evidence?"
 - "Can business leaders slice risk by owner, product, and environment?"
 - "Can we share controlled evidence with internal stakeholders?"
+- "Can the trust tool evaluate posture where our lake already lives?"
 
 ![TrustOps Snowflake evidence lake architecture](images/trustops-snowflake-evidence-lake.svg)
 
-The live Snowflake connector is a read-existing-lake path. It reads
-TrustOps-shaped evidence views with a least-privilege role, writes collected
-rows into managed raw connector evidence, and lets the same pipeline rebuild
-bronze, silver, gold, snapshots, and current posture. The connector does not
-create Snowflake objects, mutate warehouse state, or require DDL privileges.
+### Which Snowflake Ingestion Lane To Use
+
+| Lane                 | Best fit                                                               | TrustOps behavior                                                     |
+| -------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Row streaming        | runtime AI events, identity changes, detections, policy events         | append rows into evidence/event tables with stable IDs                |
+| Staged files         | scanner exports, access review bundles, SARIF, vendor evidence packets | load batch files, preserve raw hash, then normalize                   |
+| Read-only views      | customer already has a governed Snowflake security lake                | query least-privilege views and rebuild current posture               |
+| Iceberg/Open Catalog | customer wants open table access across engines                        | keep tables interoperable for Spark, Trino, DuckDB, and other readers |
+
+The live Snowflake runner is intentionally read-only by default. It expects
+TrustOps-shaped evidence views with a least-privilege role, writes collected rows
+into managed raw connector evidence, and lets the same pipeline rebuild bronze,
+silver, gold, snapshots, and current posture. The runner does not create
+Snowflake objects, mutate warehouse state, or require DDL privileges.
+
+Official Snowflake references:
+
+- [Snowpipe Streaming](https://docs.snowflake.com/en/user-guide/snowpipe-streaming/data-load-snowpipe-streaming-overview)
+  for low-latency row ingestion and Kafka/application event streams.
+- [Dynamic tables](https://docs.snowflake.com/en/user-guide/dynamic-tables/overview)
+  for declarative rollups from fresh evidence into posture-ready views.
+- [Streams](https://docs.snowflake.com/en/user-guide/streams-intro) and tasks
+  for change tracking and scheduled SQL-native workflows.
+- [Row access policies](https://docs.snowflake.com/en/user-guide/security-row-intro)
+  and masking policies for tenant, role, and sensitive-field controls.
+- [Snowflake Open Catalog with Apache Iceberg](https://docs.snowflake.com/en/user-guide/tables-iceberg-open-catalog)
+  for open-table interoperability where the operator wants external engines to
+  read the same governed table path.
 
 Primary artifacts:
 

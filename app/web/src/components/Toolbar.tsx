@@ -27,7 +27,7 @@ const SEVERITIES: Array<Severity | "all"> = [
 
 export function Toolbar({ filters, frameworks, onChange, placeholder }: Props) {
   return (
-    <div className="card grid min-w-0 gap-2 p-2.5 md:grid-cols-[minmax(180px,1fr)_minmax(140px,180px)_minmax(130px,170px)]">
+    <div className="grid min-w-0 gap-2 rounded-xl border border-line bg-white p-2.5 shadow-card md:grid-cols-[minmax(180px,1fr)_minmax(140px,180px)_minmax(130px,170px)]">
       <div className="relative min-w-0">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
         <input

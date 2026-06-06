@@ -131,7 +131,7 @@ export default function EvidencePage() {
   });
 
   return (
-    <div className="grid min-w-0 gap-4 px-3 py-4 sm:px-4 lg:px-5">
+    <div className="mx-auto grid w-full max-w-[1500px] min-w-0 gap-3 px-3 py-3 sm:px-4 lg:px-5">
       <PageHeader
         eyebrow="Evidence room"
         title="Normalized evidence facts"
@@ -159,7 +159,7 @@ export default function EvidencePage() {
             </CardDescription>
           </CardHeader>
           <div className="max-w-full overflow-x-auto">
-            <table className="w-full min-w-[820px] text-sm">
+            <table className="w-full min-w-[760px] text-sm">
               <thead>
                 {table.getHeaderGroups().map((hg) => (
                   <tr
