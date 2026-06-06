@@ -19,6 +19,8 @@ this repo**. It does not mean full framework, audit, or certification coverage.
 Frameworks: 8
 Seeded controls: 34
 Reviewed mappings: 34
+Asset types modeled: 13
+Control-to-asset applicability links: 92
 Seeded mapping coverage: 100.0%
 
 | Framework                                                  | Official source                                                                                                                                                                            | Seeded controls | Reviewed mappings | Seeded mapping coverage | Source state | Source policy                 |
@@ -31,6 +33,35 @@ Seeded mapping coverage: 100.0%
 | NIST AI Risk Management Framework                          | [NIST Artificial Intelligence Risk Management Framework (AI RMF 1.0)](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10)                       |               6 |                 6 |                  100.0% | never pulled | public-source citation        |
 | PCI DSS v4.0 Payment Card Industry Data Security Standard  | [PCI Security Standards Council - PCI DSS v4.0](https://www.pcisecuritystandards.org/document_library/?category=pcidss)                                                                    |               3 |                 3 |                  100.0% | never pulled | source-linked identifier only |
 | SOC 2 Trust Services Criteria                              | [AICPA & CIMA 2017 Trust Services Criteria (With Revised Points of Focus - 2022)](https://www.aicpa.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022) |               2 |                 2 |                  100.0% | never pulled | source-linked identifier only |
+
+## Control-To-Asset Applicability
+
+Every seeded control declares the asset types it can apply to. The pipeline uses
+that catalog join to add `applicable_control_ids` to gold asset rows, so humans
+and agents can ask "which controls apply to this asset?" without inferring from
+labels or screenshots.
+
+```bash
+security-lakehouse controls applies-to --asset-type iam_role
+```
+
+Current seeded applicability:
+
+| Asset type        | Applicable controls |
+| ----------------- | ------------------: |
+| `ai_agent`        |                  14 |
+| `ai_model`        |                  14 |
+| `service`         |                  11 |
+| `data_store`      |                   9 |
+| `host`            |                   7 |
+| `audit_log`       |                   6 |
+| `container_image` |                   6 |
+| `s3_bucket`       |                   5 |
+| `iam_role`        |                   4 |
+| `identity_group`  |                   4 |
+| `identity_user`   |                   4 |
+| `okta_user`       |                   4 |
+| `repo`            |                   4 |
 
 ## Readiness Gates
 
