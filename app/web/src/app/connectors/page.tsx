@@ -115,7 +115,7 @@ export default function ConnectorsPage() {
     : null;
 
   return (
-    <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
+    <div className="mx-auto grid w-full max-w-[1500px] min-w-0 gap-3 px-3 py-3 sm:px-4 lg:px-5">
       <PageHeader
         eyebrow="Connectors"
         title="Connector registry"
@@ -134,7 +134,7 @@ export default function ConnectorsPage() {
         }
       />
 
-      <div className="card flex flex-wrap items-center gap-3 p-3">
+      <div className="flex min-w-0 flex-wrap items-center gap-2 rounded-xl border border-line bg-white p-2.5 shadow-card">
         <div className="relative min-w-[260px] flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
@@ -147,7 +147,7 @@ export default function ConnectorsPage() {
         <select
           value={stateFilter}
           onChange={(e) => setStateFilter(e.target.value as typeof stateFilter)}
-          className="rounded-lg border border-line bg-white px-3 py-2.5 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand"
+          className="min-w-[140px] rounded-lg border border-line bg-white px-3 py-2.5 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand"
         >
           <option value="all">All states</option>
           <option value="enabled">Enabled</option>
@@ -165,7 +165,7 @@ export default function ConnectorsPage() {
               ClickHouse / object storage).
             </CardDescription>
           </CardHeader>
-          <div className="grid gap-2 p-5 pt-0">
+          <div className="grid gap-2 p-4 pt-0">
             {filtered.length === 0 && (
               <div className="rounded-lg border border-dashed border-line p-4 text-sm text-muted">
                 No connectors match the current filter.

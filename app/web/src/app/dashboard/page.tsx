@@ -20,12 +20,12 @@ function Stat({
   tone?: string;
 }) {
   return (
-    <Card className="flex h-[68px] min-w-0 flex-col justify-center p-3">
+    <Card className="flex h-[58px] min-w-0 flex-col justify-center p-2.5">
       <div className="text-[9px] font-black uppercase tracking-[0.11em] text-muted">
         {label}
       </div>
       <div
-        className="mt-1 text-[21px] font-black leading-none tabular-nums"
+        className="mt-0.5 text-[20px] font-black leading-none tabular-nums"
         style={tone ? { color: tone } : undefined}
       >
         {value}
@@ -42,14 +42,15 @@ export default function DashboardPage() {
   const p = data?.posture;
 
   return (
-    <div className="grid gap-4 px-3 py-4 sm:px-4 lg:px-5">
+    <div className="mx-auto grid w-full max-w-[1500px] gap-3 px-3 py-3 sm:px-4 lg:px-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0">
           <div className="text-[12px] font-black uppercase tracking-wider text-brand">
-            Trust
+            Trust Command Center
           </div>
-          <h1 className="mt-1 text-[26px] font-black leading-tight text-ink">
-            Trust Home
+          <span className="sr-only">Trust Home</span>
+          <h1 className="mt-1 text-[clamp(24px,2.5vw,32px)] font-black leading-tight text-ink">
+            Continuous trust control plane
           </h1>
           <p className="mt-1 max-w-[720px] text-sm leading-5 text-muted">
             Continuous posture computed from normalized evidence,
@@ -74,15 +75,15 @@ export default function DashboardPage() {
       </div>
 
       <QueryState queries={[posture]} label="posture">
-        <div className="grid items-start gap-3 xl:grid-cols-[124px_minmax(0,1fr)]">
-          <Card className="flex min-h-[108px] items-center justify-center p-2">
+        <div className="grid items-start gap-2.5 xl:grid-cols-[108px_minmax(0,1fr)]">
+          <Card className="flex min-h-[92px] items-center justify-center p-1.5">
             <PostureRing
               score={p?.score ?? 0}
               state={p?.state ?? "attention_required"}
               size="compact"
             />
           </Card>
-          <div className="grid min-w-0 auto-rows-[68px] content-start grid-cols-[repeat(auto-fit,minmax(118px,1fr))] gap-2.5">
+          <div className="grid min-w-0 auto-rows-[58px] content-start grid-cols-[repeat(auto-fit,minmax(124px,1fr))] gap-2">
             <Stat label="Frameworks" value={p?.framework_count ?? 0} />
             <Stat label="Controls" value={p?.control_count ?? 0} />
             <Stat

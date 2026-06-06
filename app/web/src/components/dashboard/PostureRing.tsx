@@ -35,7 +35,7 @@ export function PostureRing({
     <div
       className={
         isCompact
-          ? "relative h-[88px] w-[88px]"
+          ? "relative h-[78px] w-[78px]"
           : "relative h-[208px] w-[208px]"
       }
     >
@@ -65,7 +65,7 @@ export function PostureRing({
         <span
           className={
             isCompact
-              ? "text-[24px] font-black leading-none text-ink"
+              ? "text-[22px] font-black leading-none text-ink"
               : "text-[52px] font-black leading-none text-ink"
           }
         >
