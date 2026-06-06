@@ -79,7 +79,7 @@
         <path d="M18 0v34M0 17h36M6 6l24 22M30 6 6 28"/>
       </g>
       <text x="78" y="31" class="cardTitle" font-size="16">Snowflake pack</text>
-      <text x="78" y="52" class="tiny">streaming · dynamic tables · policies · Iceberg</text>
+      <text x="78" y="52" class="tiny">streaming · rollups · policies · Iceberg</text>
     </g>
 
     <g transform="translate(64 148)">
@@ -180,8 +180,8 @@
       <text x="99" y="175" text-anchor="middle" class="code">Open Catalog</text>
       <rect x="24" y="204" width="150" height="40" rx="10" class="purpleBox"/>
       <text x="99" y="229" text-anchor="middle" class="code">Spark / Trino</text>
-      <text x="24" y="272" class="tiny">same tables, REST catalog,</text>
-      <text x="24" y="288" class="tiny">no TrustOps lock-in.</text>
+      <text x="24" y="270" class="tiny">same tables</text>
+      <text x="24" y="286" class="tiny">REST catalog</text>
     </g>
 
     <line x1="368" y1="350" x2="414" y2="350" stroke="#22d3ee" stroke-width="4" marker-end="url(#arrowCyan)"/>
