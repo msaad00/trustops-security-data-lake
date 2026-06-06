@@ -1,16 +1,17 @@
 # Hero Security Data Lakes
 
-This project tells a two-backend security analytics story:
+This project tells a customer-owned security data lake story:
 
-| Backend    | Best fit                             | Security value                                                              |
-| ---------- | ------------------------------------ | --------------------------------------------------------------------------- |
-| Snowflake  | governed enterprise evidence lake    | auditor sharing, retention, RBAC, data clean rooms, cross-team reporting    |
-| ClickHouse | high-volume telemetry analytics lake | fast runtime/security event analytics, detections, dashboards, aggregations |
+| Backend    | Best fit                             | Security value                                                             | Status                        |
+| ---------- | ------------------------------------ | -------------------------------------------------------------------------- | ----------------------------- |
+| Snowflake  | governed enterprise evidence lake    | audit shares, retention, RBAC, rollups, query history, Iceberg option      | executable read-only runner   |
+| ClickHouse | high-volume telemetry analytics lake | runtime event windows, fast detection analytics, TTL, materialized rollups | schema and telemetry contract |
+| Databricks | governed lakehouse / AI estates      | Delta/Unity-Catalog-style governance and lineage for future adapters       | coming soon                   |
 
 The local pipeline remains the source of truth for the demo. It writes replayable
 bronze/silver/gold artifacts and a SQLite mart so the project can run anywhere.
 Snowflake and ClickHouse artifacts show how the same normalized model maps to
-production-grade backends.
+production-grade backends without moving customer evidence into a vendor silo.
 
 ## Snowflake Story
 
@@ -74,21 +75,68 @@ Primary artifacts:
 ClickHouse is the high-throughput security telemetry lake:
 
 - stores normalized events and runtime security telemetry
-- optimizes time-window, severity, source, and asset aggregations
-- powers low-latency dashboards and investigation queries
-- keeps high-cardinality runtime/event data cheap to query
+- optimizes time-window, severity, source, and asset aggregations with hot
+  columnar tables
+- powers low-latency dashboards, detection replay, and investigation queries
+- uses materialized views for fresh rollups instead of recomputing every query
+- keeps high-cardinality runtime/event data cost-controlled with retention and
+  TTL policy
+- supports read-only SQL replay paths for agents and analysts
 
 Use ClickHouse when the question is:
 
 - "What happened in the last 15 minutes?"
 - "Which runtime policies are blocking risky agent behavior?"
 - "Which assets and controls are trending worse at event scale?"
+- "Which owners, controls, and environments are producing the most event-driven
+  remediation work?"
+
+![TrustOps ClickHouse telemetry lake architecture](images/trustops-clickhouse-telemetry-lake.svg)
+
+### Which ClickHouse Lane To Use
+
+| Lane                 | Best fit                                                 | TrustOps behavior                                               |
+| -------------------- | -------------------------------------------------------- | --------------------------------------------------------------- |
+| Hot event write      | runtime AI, detections, cloud activity, identity changes | append rows through stable IDs into pre-provisioned sink tables |
+| Materialized rollups | posture widgets, severity windows, owner workload        | refresh incremental aggregates for dashboards and alerts        |
+| Read-only replay     | analysts and agents asking historical control questions  | run allowlisted `SELECT` queries over event/evidence slices     |
+| Audit write-back     | workflow decisions, owner actions, remediation artifacts | append action records with stable IDs for duplicate-safe replay |
+
+Official ClickHouse references:
+
+- [MergeTree](https://clickhouse.com/docs/engines/table-engines/mergetree-family/mergetree)
+  for ordered, high-volume event tables.
+- [Incremental materialized views](https://clickhouse.com/docs/materialized-view/incremental-materialized-view)
+  for query-speeding rollups.
+- [TTL](https://clickhouse.com/docs/guides/developer/ttl) for retention and
+  lifecycle control.
+- [Iceberg table engine](https://clickhouse.com/docs/engines/table-engines/integrations/iceberg)
+  for open-table interoperability where customers use Iceberg-backed storage.
 
 Primary artifacts:
 
 - [ClickHouse schema](../deploy/clickhouse/schema.sql)
 - [Local ClickHouse compose file](../deploy/clickhouse/docker-compose.yml)
 - [Dual-lakehouse diagram](diagrams/dual-lakehouse.md)
+
+## Databricks Story (Coming Soon)
+
+Databricks is the planned lakehouse path for teams that already govern data and
+AI assets there. TrustOps should eventually read governed evidence tables,
+lineage, model/runtime facts, and audit streams through a least-privilege
+workspace boundary, then evaluate the same controls-as-code model without
+copying evidence out of the customer environment.
+
+The current repo does not ship a Databricks adapter. Databricks stays marked
+coming soon until there is a connector contract, schema artifact, tests, and a
+verified demo path.
+
+Official Databricks references:
+
+- [Delta Lake](https://docs.databricks.com/aws/en/delta/) for lakehouse table
+  storage.
+- [Unity Catalog](https://docs.databricks.com/aws/en/data-governance/unity-catalog/)
+  for governance, lineage, permissions, and audit-oriented controls.
 
 ## Portfolio Positioning
 
@@ -111,4 +159,5 @@ raw JSONL evidence
   -> gold control_posture + asset_risk + metrics
   -> Snowflake governed evidence lake
   -> ClickHouse high-volume telemetry lake
+  -> Databricks governed lakehouse adapter (planned)
 ```
