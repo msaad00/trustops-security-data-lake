@@ -19,7 +19,13 @@
       "mapping_rationale": "Direct mapping: control identifier matches the AICPA SOC 2 TSC CC6.1 criterion verbatim.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-23",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": [
+        "iam_role",
+        "identity_group",
+        "identity_user",
+        "okta_user"
+      ]
     },
     {
       "control_id": "SOC2-CC7.2",
@@ -38,7 +44,8 @@
       "mapping_rationale": "Direct mapping: control identifier matches the AICPA SOC 2 TSC CC7.2 criterion verbatim.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-23",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-1.5",
@@ -57,7 +64,8 @@
       "mapping_rationale": "AI RMF 1.0 MAP function, category 1, subcategory 5: organizational risk tolerance documented.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-23",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.7",
@@ -76,7 +84,8 @@
       "mapping_rationale": "AI RMF 1.0 MEASURE function, category 2, subcategory 7: security and resilience of the AI system are evaluated and documented.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-23",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-1.1",
@@ -95,7 +104,8 @@
       "mapping_rationale": "Reviewed mapping to NIST AI RMF 1.0 GOVERN-1.1 for documenting applicable legal, regulatory, and policy context for AI risk management.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-1.6",
@@ -114,7 +124,8 @@
       "mapping_rationale": "Reviewed mapping to NIST AI RMF 1.0 GOVERN-1.6 for maintaining AI system inventory context and risk prioritization evidence.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.4",
@@ -133,7 +144,8 @@
       "mapping_rationale": "Reviewed mapping to NIST AI RMF 1.0 MEASURE-2.4 for ongoing measurement and monitoring evidence over AI system behavior.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-4.3",
@@ -152,7 +164,8 @@
       "mapping_rationale": "Reviewed mapping to NIST AI RMF 1.0 MANAGE-4.3 for tracking AI incidents, errors, risk responses, and communication evidence.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "ISO27001-A.5.15",
@@ -171,7 +184,13 @@
       "mapping_rationale": "Annex A control A.5.15 (Access control). ISO 27001:2022 reorganised the prior A.9 controls into the consolidated A.5.15.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": [
+        "iam_role",
+        "identity_group",
+        "identity_user",
+        "okta_user"
+      ]
     },
     {
       "control_id": "ISO27001-A.8.16",
@@ -190,7 +209,8 @@
       "mapping_rationale": "Annex A control A.8.16 (Monitoring activities) — continuous detection of anomalous behaviour.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "ISO27001-A.5.30",
@@ -209,7 +229,8 @@
       "mapping_rationale": "Annex A control A.5.30 — ICT continuity is planned, implemented, maintained, and tested.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "HIPAA-164.308(a)(4)",
@@ -228,7 +249,13 @@
       "mapping_rationale": "45 CFR §164.308(a)(4) — Information access management standard.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": [
+        "iam_role",
+        "identity_group",
+        "identity_user",
+        "okta_user"
+      ]
     },
     {
       "control_id": "HIPAA-164.312(b)",
@@ -247,7 +274,8 @@
       "mapping_rationale": "45 CFR §164.312(b) — Implement hardware, software, or procedural mechanisms that record and examine activity.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "HIPAA-164.312(e)",
@@ -266,7 +294,8 @@
       "mapping_rationale": "45 CFR §164.312(e) — Guard against unauthorized access to ePHI transmitted over an electronic communications network.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "HIPAA-164.308(a)(1)(ii)(A)",
@@ -285,7 +314,8 @@
       "mapping_rationale": "45 CFR §164.308(a)(1)(ii)(A) is mapped for risk-analysis evidence over electronic-PHI systems.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["service", "repo", "data_store"]
     },
     {
       "control_id": "HIPAA-164.308(a)(1)(ii)(B)",
@@ -304,7 +334,8 @@
       "mapping_rationale": "45 CFR §164.308(a)(1)(ii)(B) is mapped for remediation and risk-reduction evidence after ePHI risks are identified.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["service", "repo", "data_store"]
     },
     {
       "control_id": "HIPAA-164.312(a)(2)(iv)",
@@ -323,7 +354,8 @@
       "mapping_rationale": "45 CFR §164.312(a)(2)(iv) is mapped for encryption and decryption evidence over electronic-PHI systems.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "PCI-DSS-7",
@@ -342,7 +374,13 @@
       "mapping_rationale": "PCI DSS v4.0 Requirement 7 — Restrict access by business need to know (sub-requirements 7.1–7.3).",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": [
+        "iam_role",
+        "identity_group",
+        "identity_user",
+        "okta_user"
+      ]
     },
     {
       "control_id": "PCI-DSS-10",
@@ -361,7 +399,8 @@
       "mapping_rationale": "PCI DSS v4.0 Requirement 10 — Log and monitor all access (sub-requirements 10.1–10.7).",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "PCI-DSS-11",
@@ -380,7 +419,8 @@
       "mapping_rationale": "PCI DSS v4.0 Requirement 11 — Regular testing (sub-requirements 11.1–11.6, vulnerability scans + pen tests).",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["container_image", "host", "service"]
     },
     {
       "control_id": "GDPR-Art.32",
@@ -399,7 +439,8 @@
       "mapping_rationale": "GDPR Art. 32 — Controllers and processors implement appropriate technical and organisational measures.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "GDPR-Art.30",
@@ -418,7 +459,8 @@
       "mapping_rationale": "GDPR Art. 30 — Each controller maintains a record of processing activities under its responsibility.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["service", "repo", "data_store"]
     },
     {
       "control_id": "GDPR-Art.33",
@@ -437,7 +479,8 @@
       "mapping_rationale": "GDPR Art. 33 — Notification within 72 hours of becoming aware of a personal data breach.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "GDPR-Art.25",
@@ -456,7 +499,8 @@
       "mapping_rationale": "GDPR Article 25 is mapped for evidence that privacy controls and default settings are designed into personal-data systems.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "GDPR-Art.28",
@@ -475,7 +519,8 @@
       "mapping_rationale": "GDPR Article 28 is mapped for processor inventory, agreement, and vendor-review evidence for personal-data processing.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["service", "repo", "data_store"]
     },
     {
       "control_id": "GDPR-Art.35",
@@ -494,7 +539,8 @@
       "mapping_rationale": "GDPR Article 35 is mapped for DPIA evidence over high-risk processing activities and related remediation findings.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "EU-AI-ACT-Art.9",
@@ -513,7 +559,8 @@
       "mapping_rationale": "EU AI Act Art. 9 — Risk management system for high-risk AI systems must be established, implemented, documented and maintained.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.10",
@@ -532,7 +579,8 @@
       "mapping_rationale": "EU AI Act Art. 10 — Training, validation and testing data sets shall be subject to data governance and management practices.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.12",
@@ -551,7 +599,8 @@
       "mapping_rationale": "EU AI Act Art. 12 — High-risk AI systems shall technically allow automatic recording of events (logs) over the lifetime of the system.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.13",
@@ -570,7 +619,8 @@
       "mapping_rationale": "EU AI Act Article 13 is mapped for instructions, intended-use, limitation, and transparency evidence for high-risk AI systems.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.14",
@@ -589,7 +639,8 @@
       "mapping_rationale": "EU AI Act Article 14 is mapped for human oversight, escalation, and operator-review evidence for high-risk AI systems.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.15",
@@ -608,7 +659,8 @@
       "mapping_rationale": "EU AI Act Article 15 is mapped for model evaluation, robustness, cybersecurity, and runtime-monitoring evidence.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "ISO42001-6.1.3",
@@ -627,7 +679,8 @@
       "mapping_rationale": "ISO/IEC 42001:2023 clause 6.1.3 — define and apply an AI risk treatment process with options, controls, and a Statement of Applicability.",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "ISO42001-8.1",
@@ -646,7 +699,8 @@
       "mapping_rationale": "ISO/IEC 42001:2023 clause 8.1 — the organization plans, implements, and controls the operational AI processes and retains evidence of their operation (clause 8.2 is AI risk assessment, 8.4 is AI system impact assessment).",
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
-      "signal_source": "silver/normalized_events.jsonl"
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["ai_model", "ai_agent"]
     }
   ]
 }
