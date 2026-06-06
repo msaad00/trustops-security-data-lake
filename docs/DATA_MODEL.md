@@ -112,3 +112,26 @@ into another's.
 - [Normalized event](../data/schemas/normalized-event.schema.json)
 - [Current posture](../data/schemas/current-posture.schema.json)
 - [Violation](../data/schemas/violation.schema.json)
+
+## Control source provenance (auditable, not "vibes")
+
+Every control in `controls/catalog.json` carries source-provenance so a mapping
+can be traced to its origin and review:
+
+| Field                           | Meaning                                                          |
+| ------------------------------- | ---------------------------------------------------------------- |
+| `framework_ref`                 | The framework + clause the control answers (e.g. `SOC 2 CC6.1`). |
+| `source_url`                    | The authoritative source the control text/intent came from.      |
+| `mapping_rationale`             | Why the chosen signal satisfies this control.                    |
+| `reviewed_by` / `reviewed_date` | The review gate — who attested the mapping and when.             |
+| `signal_source`                 | The silver table / connector feed the control test reads.        |
+
+The catalog validator **requires** all six, and CI fails a control merged
+without them. Inspect gaps any time:
+
+```bash
+security-lakehouse controls provenance   # exit 1 if any control lacks provenance
+```
+
+This is the answer to "how do you get the controls right?": every mapping is
+source-linked, has a rationale, names its signal, and passes a provenance gate.
