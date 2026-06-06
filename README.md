@@ -178,24 +178,14 @@ queries.
 See [Connector And Access Model](docs/CONNECTORS.md) and
 [Hero Security Data Lakes](docs/HERO_DATA_LAKES.md).
 
-## Product Walkthrough
-
-TrustOps is organized around five working surfaces: command center, control
-workbench, workflow canvas, mapping graph, and headless API. The product
-walkthrough keeps screenshots and view-by-view detail out of the README.
-
-<p align="center">
-  <img src="docs/images/trustops-product-mosaic.svg" alt="TrustOps product walkthrough showing command center, workflows, graph, connectors, and trust outputs" width="100%">
-</p>
-
-Detailed screenshots live in [Product Walkthrough](docs/PRODUCT_WALKTHROUGH.md)
-so the README stays readable.
-
 ## Framework Coverage
 
 TrustOps currently ships **34 source-linked controls** across **8 framework
-families**, with reviewed mappings for every seeded control. Coverage details,
-source URLs, readiness gates, and roadmap percentages live in the
+families**, with reviewed mappings for every seeded control. The catalog also
+models **13 asset types** and **92 control-to-asset applicability links**, so
+the graph, asset risk queue, and API can answer which controls apply to a repo,
+identity, model, data store, host, or runtime asset. Coverage details, source
+URLs, readiness gates, applicability, and roadmap percentages live in the
 [Framework Coverage Matrix](docs/FRAMEWORK_COVERAGE.md).
 
 Framework names are rendered as neutral text labels in product and docs. TrustOps
