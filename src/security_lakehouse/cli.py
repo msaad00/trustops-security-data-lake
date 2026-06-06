@@ -900,18 +900,24 @@ def _frameworks_readiness(_args: argparse.Namespace) -> int:
 
 def _frameworks_coverage(args: argparse.Namespace) -> int:
     from security_lakehouse.framework_coverage import (
+        build_control_asset_applicability,
         build_framework_coverage,
         framework_coverage_summary,
         render_framework_coverage_markdown,
     )
 
     rows = build_framework_coverage()
+    applicability = build_control_asset_applicability()
     if args.format == "markdown":
-        print(render_framework_coverage_markdown(rows))
+        print(render_framework_coverage_markdown(rows, applicability))
     else:
         print(
             json.dumps(
-                {"summary": framework_coverage_summary(rows), "frameworks": rows},
+                {
+                    "summary": framework_coverage_summary(rows, applicability),
+                    "frameworks": rows,
+                    "applicability": applicability,
+                },
                 indent=2,
                 sort_keys=True,
             )

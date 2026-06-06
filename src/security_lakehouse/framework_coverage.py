@@ -8,7 +8,7 @@ licensed or certification framework.
 
 from __future__ import annotations
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
@@ -96,27 +96,52 @@ def build_framework_coverage(
     return sorted(rows, key=lambda row: str(row["framework_id"]))
 
 
-def framework_coverage_summary(rows: list[JsonObject]) -> JsonObject:
+def framework_coverage_summary(
+    rows: list[JsonObject],
+    applicability_rows: list[JsonObject] | None = None,
+) -> JsonObject:
     seeded = sum(int(row["seeded_control_count"]) for row in rows)
     mapped = sum(int(row["reviewed_mapping_count"]) for row in rows)
     missing = sum(int(row["missing_mapping_count"]) for row in rows)
+    applicability = applicability_rows if applicability_rows is not None else build_control_asset_applicability()
     return {
         "framework_count": len(rows),
         "seeded_control_count": seeded,
         "reviewed_mapping_count": mapped,
         "missing_mapping_count": missing,
         "seeded_mapping_coverage_pct": round(mapped / seeded * 100, 1) if seeded else 0.0,
+        "asset_type_count": len(applicability),
+        "control_asset_applicability_link_count": sum(int(row["applicable_control_count"]) for row in applicability),
         "official_logo_count": 0,
         "certification_seal_count": 0,
     }
+
+
+def build_control_asset_applicability(
+    controls_path: str | Path | None = None,
+) -> list[JsonObject]:
+    """Return seeded control applicability counts by asset type."""
+    controls = load_control_catalog(controls_path or DEFAULT_CONTROL_CATALOG)
+    counts: Counter[str] = Counter()
+    for control in controls.values():
+        for asset_type in control.get("asset_types") or []:
+            counts[str(asset_type)] += 1
+    return [
+        {"asset_type": asset_type, "applicable_control_count": count}
+        for asset_type, count in sorted(counts.items(), key=lambda item: (-item[1], item[0]))
+    ]
 
 
 def _markdown_text(value: object) -> str:
     return str(value).replace("|", "\\|").replace("—", "-").replace("–", "-").replace("≥", ">=")
 
 
-def render_framework_coverage_markdown(rows: list[JsonObject]) -> str:
-    summary = framework_coverage_summary(rows)
+def render_framework_coverage_markdown(
+    rows: list[JsonObject],
+    applicability_rows: list[JsonObject] | None = None,
+) -> str:
+    applicability = applicability_rows if applicability_rows is not None else build_control_asset_applicability()
+    summary = framework_coverage_summary(rows, applicability)
     lines = [
         "| Framework | Official source | Seeded controls | Reviewed mappings | Seeded mapping coverage | Source state | Source policy |",
         "| --- | --- | ---: | ---: | ---: | --- | --- |",
@@ -134,13 +159,27 @@ def render_framework_coverage_markdown(rows: list[JsonObject]) -> str:
                 policy=row["source_policy"],
             )
         )
+    applicability_lines = [
+        "| Asset type | Applicable controls |",
+        "| --- | ---: |",
+    ]
+    for row in applicability:
+        applicability_lines.append(f"| `{_markdown_text(row['asset_type'])}` | {row['applicable_control_count']} |")
     return "\n".join(
         [
             f"Frameworks: {summary['framework_count']}",
             f"Seeded controls: {summary['seeded_control_count']}",
             f"Reviewed mappings: {summary['reviewed_mapping_count']}",
+            f"Asset types modeled: {summary['asset_type_count']}",
+            f"Control-to-asset applicability links: {summary['control_asset_applicability_link_count']}",
             f"Seeded mapping coverage: {summary['seeded_mapping_coverage_pct']}%",
             "",
             *lines,
+            "",
+            "## Control-To-Asset Applicability",
+            "",
+            "Every seeded control declares the asset types it applies to. The pipeline joins those declarations into gold asset rows as `applicable_control_ids`.",
+            "",
+            *applicability_lines,
         ]
     )
