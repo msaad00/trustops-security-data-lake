@@ -122,7 +122,7 @@ flowchart LR
   Gold --> Snapshots[Snapshots + posture-as-of]
   Gold --> Mart[SQLite or DuckDB mart]
 
-  Snow[(Snowflake / Iceberg / Polaris)] -. production governed evidence .-> Silver
+  Snow[(Snowflake / Iceberg)] -. governed evidence lake .-> Silver
   Click[(ClickHouse)] -. runtime telemetry analytics .-> Silver
 ```
 
@@ -131,38 +131,58 @@ path is read-only access to an existing security data lake or customer-owned
 object store. Direct source tokens are used only when the source system is the
 authority for that evidence.
 
-### Snowflake Security Data Lake
+## Security Data Lake Backends
 
-Snowflake is the governed evidence path for organizations that already operate
-their enterprise lake there. TrustOps can read customer-owned evidence views with
-a least-privilege role, ingest row streams or staged files into evidence tables,
-derive posture with dynamic-table style rollups, and keep governed outputs
-available to the console, snapshots, trust shares, and agent APIs.
+TrustOps is not a vendor-hosted evidence silo. It can evaluate posture from the
+customer's lake, then write only the minimum assessment state needed for
+dashboards, snapshots, workflows, and agent APIs.
+
+| Backend        | Role in TrustOps                                                                                          | Current status                                          |
+| -------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| **Snowflake**  | governed evidence lake for audit, RBAC, retention, dynamic rollups, and optional Iceberg interoperability | executable read-only evidence runner + schema artifacts |
+| **ClickHouse** | hot telemetry lake for runtime, detection, identity, repo, and scanner events with fast aggregates        | schema artifacts + telemetry contract                   |
+| **Databricks** | lakehouse and AI-governance path for Delta/Unity-Catalog-style estates                                    | coming soon; not claimed as shipped                     |
+
+### Snowflake Governed Evidence Lake
+
+Use Snowflake when the primary question is evidence governance: auditability,
+retention, least-privilege roles, row/masking policies, query history, and
+warehouse-native posture rollups. TrustOps can read customer-owned evidence
+views, ingest row streams or staged files into evidence tables, and keep
+governed outputs available to the console, snapshots, trust shares, and agent
+APIs.
 
 <p align="center">
   <img src="docs/images/trustops-snowflake-evidence-lake.svg" alt="TrustOps Snowflake security data lake architecture with streaming ingestion, governed evidence tables, Iceberg interoperability, and assessment workflow" width="100%">
 </p>
 
 Use streaming row ingestion for high-frequency runtime, identity, and detection
-events; use staged-file ingestion for scanner exports, evidence bundles, and
-periodic audit packets; use read-only views when the customer already has
-Snowflake as the system of record. The default live runner remains read-only and
-does not require DDL privileges.
+events; staged-file ingestion for scanner exports, SARIF, evidence bundles, and
+periodic audit packets; and read-only views when Snowflake is already the system
+of record. The live runner remains read-only by default and does not require DDL
+privileges.
+
+### ClickHouse Telemetry Lake
+
+Use ClickHouse when the primary question is operational speed: what changed in
+the last few minutes, which runtime policies are firing, which assets are
+getting worse, and which control families are creating the most remediation
+load. TrustOps keeps the same normalized evidence model, but uses ClickHouse for
+hot-path event windows, materialized rollups, retention policies, and dashboard
+queries.
+
+<p align="center">
+  <img src="docs/images/trustops-clickhouse-telemetry-lake.svg" alt="TrustOps ClickHouse telemetry lake architecture with hot-path event ingestion, materialized views, TTL retention, and workflow audit write-back" width="100%">
+</p>
 
 See [Connector And Access Model](docs/CONNECTORS.md) and
 [Hero Security Data Lakes](docs/HERO_DATA_LAKES.md).
 
 ## Product Walkthrough
 
-TrustOps is organized around five surfaces, not a static report:
-
-| Surface              | What it proves                                                                  |
-| -------------------- | ------------------------------------------------------------------------------- |
-| Trust command center | current posture, freshness, failing controls, owner queues, snapshots           |
-| Control workbench    | evidence requirements, rule reasons, confidence, violations, remediation        |
-| DAG workflow canvas  | route evidence changes, assign owners, run guarded webhooks/tickets             |
-| Mapping graph        | framework -> control -> evidence -> asset lineage with filters and path tracing |
-| Agent API            | the same posture, evidence, and actions through audited JSON contracts          |
+TrustOps is organized around five working surfaces: command center, control
+workbench, workflow canvas, mapping graph, and headless API. The product
+walkthrough keeps screenshots and view-by-view detail out of the README.
 
 <p align="center">
   <img src="docs/images/trustops-product-mosaic.svg" alt="TrustOps product walkthrough showing command center, workflows, graph, connectors, and trust outputs" width="100%">
