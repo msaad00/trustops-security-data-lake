@@ -100,6 +100,49 @@ def _seed_lake(lake: Path) -> None:
         ],
     )
     _write_jsonl(
+        lake / "gold" / "evidence_freshness.jsonl",
+        [
+            {
+                "event_id": "evt-001",
+                "evidence_id": "evidence-001",
+                "evidence_ref": "s3://evidence/evt-001.json",
+                "source": "okta",
+                "connector_id": "okta",
+                "event_type": "identity.access_review",
+                "asset_id": "aws:iam:role/admin",
+                "control_ids": ["SOC2-CC6.1"],
+                "evidence_collected_at": "2026-05-20T13:01:00Z",
+                "evaluated_at": "2026-05-22T13:01:00Z",
+                "freshness_slo_minutes": 1440,
+                "status": "expired",
+                "score": 0,
+                "age_minutes": 2880,
+                "expires_at": "2026-05-21T13:01:00Z",
+                "reason": "evidence is outside the freshness SLO",
+                "next_action": "request updated access review evidence",
+            },
+            {
+                "event_id": "evt-002",
+                "evidence_id": "evidence-002",
+                "evidence_ref": "s3://evidence/evt-002.json",
+                "source": "model-registry",
+                "connector_id": "model-registry",
+                "event_type": "model.inventory",
+                "asset_id": "model:reranker",
+                "control_ids": ["NIST-AI-RMF-MAP-1.5"],
+                "evidence_collected_at": "2026-05-20T14:00:00Z",
+                "evaluated_at": "2026-05-20T15:00:00Z",
+                "freshness_slo_minutes": 1440,
+                "status": "fresh",
+                "score": 100,
+                "age_minutes": 60,
+                "expires_at": "2026-05-21T14:00:00Z",
+                "reason": "evidence is within the freshness SLO",
+                "next_action": "no action required",
+            },
+        ],
+    )
+    _write_jsonl(
         lake / "gold" / "asset_risk.jsonl",
         [
             {
@@ -179,6 +222,7 @@ def test_v1_all_read_routes_use_envelope(tmp_path: Path) -> None:
             ("/api/v1/controls", "controls"),
             ("/api/v1/control-tests", "control-tests"),
             ("/api/v1/evidence", "evidence"),
+            ("/api/v1/evidence/freshness", "evidence.freshness"),
             ("/api/v1/assets", "assets"),
             ("/api/v1/violations", "violations"),
             ("/api/v1/snapshots", "snapshots"),
@@ -205,6 +249,23 @@ def test_v1_filters_list_fields_and_scalar_fields(tmp_path: Path) -> None:
         assert status == HTTPStatus.OK
         assert body["meta"]["count"] == 1
         assert body["data"][0]["control_id"] == "NIST-AI-RMF-MAP-1.5"
+    finally:
+        server.shutdown()
+
+
+def test_v1_evidence_freshness_lists_stale_evidence_for_agents(tmp_path: Path) -> None:
+    server = _spin(tmp_path)
+    try:
+        status, body = _request(
+            server, "GET", "/api/v1/evidence/freshness?status=stale,expired,missing&sort=-age_minutes"
+        )
+        assert status == HTTPStatus.OK
+        assert body["meta"]["resource"] == "evidence.freshness"
+        assert body["meta"]["count"] == 1
+        assert body["meta"]["filters"] == {"status": ["stale", "expired", "missing"]}
+        assert body["data"][0]["event_id"] == "evt-001"
+        assert body["data"][0]["status"] == "expired"
+        assert body["data"][0]["next_action"] == "request updated access review evidence"
     finally:
         server.shutdown()
 

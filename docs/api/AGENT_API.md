@@ -74,18 +74,19 @@ agent action should be rendered back to humans with the same audit trail.
 
 ## Routes
 
-| Method | Path                      | Purpose                                                                       |
-| ------ | ------------------------- | ----------------------------------------------------------------------------- |
-| `GET`  | `/api/v1/healthz`         | service health                                                                |
-| `GET`  | `/api/v1/posture/current` | continuously evaluated posture                                                |
-| `GET`  | `/api/v1/posture/as-of`   | posture at a point in time                                                    |
-| `GET`  | `/api/v1/control-tests`   | control tests with owners, evidence requirements, confidence, and next action |
-| `GET`  | `/api/v1/violations`      | open control and asset violations                                             |
-| `GET`  | `/api/v1/controls`        | control workbench data                                                        |
-| `GET`  | `/api/v1/evidence`        | normalized evidence facts, filterable by any top-level field                  |
-| `GET`  | `/api/v1/assets`          | asset risk queue                                                              |
-| `GET`  | `/api/v1/snapshots`       | list point-in-time assessment snapshots                                       |
-| `POST` | `/api/v1/snapshots`       | create a point-in-time assessment snapshot                                    |
+| Method | Path                         | Purpose                                                                       |
+| ------ | ---------------------------- | ----------------------------------------------------------------------------- |
+| `GET`  | `/api/v1/healthz`            | service health                                                                |
+| `GET`  | `/api/v1/posture/current`    | continuously evaluated posture                                                |
+| `GET`  | `/api/v1/posture/as-of`      | posture at a point in time                                                    |
+| `GET`  | `/api/v1/control-tests`      | control tests with owners, evidence requirements, confidence, and next action |
+| `GET`  | `/api/v1/violations`         | open control and asset violations                                             |
+| `GET`  | `/api/v1/controls`           | control workbench data                                                        |
+| `GET`  | `/api/v1/evidence`           | normalized evidence facts, filterable by any top-level field                  |
+| `GET`  | `/api/v1/evidence/freshness` | evidence freshness rows with SLO status, age, reason, and next action         |
+| `GET`  | `/api/v1/assets`             | asset risk queue                                                              |
+| `GET`  | `/api/v1/snapshots`          | list point-in-time assessment snapshots                                       |
+| `POST` | `/api/v1/snapshots`          | create a point-in-time assessment snapshot                                    |
 
 The unversioned `/api/*` routes remain for the bundled console and local
 compatibility. Server mode serves the same unversioned surface behind the same
@@ -99,8 +100,10 @@ Agents should:
 2. Inspect `/api/v1/control-tests` for evidence requirements, confidence inputs,
    and next action.
 3. Inspect `/api/v1/violations` for owner/action detail.
-4. Query `/api/v1/controls` for framework context.
-5. Create `/api/v1/snapshots` only when the user asks for an audit, vendor,
+4. Query `/api/v1/evidence/freshness?status=stale,expired,missing&sort=-age_minutes`
+   before claiming that evidence is current.
+5. Query `/api/v1/controls` for framework context.
+6. Create `/api/v1/snapshots` only when the user asks for an audit, vendor,
    board, incident, or release-gate snapshot.
 
 Agents should not infer compliance status from visual text. The API is the
@@ -175,6 +178,7 @@ security-lakehouse serve --lake build/lakehouse --port 8787
 curl -s http://127.0.0.1:8787/api/v1/posture/current | jq .
 curl -s 'http://127.0.0.1:8787/api/v1/control-tests?result=fail&sort=-confidence_score&limit=10' | jq .
 curl -s 'http://127.0.0.1:8787/api/v1/violations?severity=critical,high' | jq .
+curl -s 'http://127.0.0.1:8787/api/v1/evidence/freshness?status=stale,expired,missing&sort=-age_minutes' | jq .
 curl -s -X POST http://127.0.0.1:8787/api/v1/snapshots \
   -H 'content-type: application/json' \
   --data '{"reason":"vendor_due_diligence"}' | jq .

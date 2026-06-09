@@ -9,7 +9,7 @@ import {
   useReactTable,
   type SortingState,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ShieldCheck } from "lucide-react";
+import { AlertTriangle, ArrowUpDown, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -21,11 +21,17 @@ import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { Toolbar, matchesQuery } from "@/components/Toolbar";
 import { EvidenceDrawer } from "@/components/drawers/EvidenceDrawer";
-import { useControls, useEvidence } from "@/lib/api/hooks";
+import {
+  useControls,
+  useEvidence,
+  useEvidenceFreshness,
+} from "@/lib/api/hooks";
 import { useToolbar } from "@/lib/state/filters";
-import type { NormalizedEvent } from "@/lib/api/types";
+import type { EvidenceFreshness, NormalizedEvent } from "@/lib/api/types";
 
-const helper = createColumnHelper<NormalizedEvent>();
+type EvidenceRow = NormalizedEvent & { freshness?: EvidenceFreshness };
+
+const helper = createColumnHelper<EvidenceRow>();
 
 const toneForStatus = (status: string) =>
   status === "passed"
@@ -34,14 +40,24 @@ const toneForStatus = (status: string) =>
       ? "critical"
       : "attention";
 
+const toneForFreshness = (status?: string) =>
+  status === "fresh"
+    ? "ready"
+    : status === "stale"
+      ? "attention"
+      : status === "expired" || status === "missing"
+        ? "critical"
+        : "default";
+
 export default function EvidencePage() {
   const evidence = useEvidence();
+  const freshness = useEvidenceFreshness();
   const controls = useControls();
   const { filters, setFilters } = useToolbar();
   const [sorting, setSorting] = useState<SortingState>([
     { id: "event_time", desc: true },
   ]);
-  const [selected, setSelected] = useState<NormalizedEvent | null>(null);
+  const [selected, setSelected] = useState<EvidenceRow | null>(null);
 
   const frameworks = useMemo(
     () => Array.from(new Set((controls.data ?? []).map((c) => c.framework))),
@@ -54,21 +70,45 @@ export default function EvidencePage() {
     return map;
   }, [controls.data]);
 
-  const filtered = useMemo(
+  const freshnessByEvent = useMemo(() => {
+    const map = new Map<string, EvidenceFreshness>();
+    (freshness.data ?? []).forEach((row) => map.set(row.event_id, row));
+    return map;
+  }, [freshness.data]);
+
+  const rows = useMemo(
     () =>
-      (evidence.data ?? []).filter((e) => {
-        if (filters.framework !== "all") {
-          const hit = e.control_ids.some(
-            (cid) => controlFramework.get(cid) === filters.framework,
-          );
-          if (!hit) return false;
-        }
-        if (filters.severity !== "all" && e.severity !== filters.severity)
-          return false;
-        return matchesQuery(e, filters.query);
-      }),
-    [evidence.data, filters, controlFramework],
+      (evidence.data ?? []).map((row) => ({
+        ...row,
+        freshness: freshnessByEvent.get(row.event_id),
+      })),
+    [evidence.data, freshnessByEvent],
   );
+
+  const staleCount = useMemo(
+    () =>
+      (freshness.data ?? []).filter((row) =>
+        ["stale", "expired", "missing"].includes(row.status),
+      ).length,
+    [freshness.data],
+  );
+
+  const filtered = useMemo(() => {
+    const freshnessFilter = filters.freshness ?? "all";
+    return rows.filter((e) => {
+      if (filters.framework !== "all") {
+        const hit = e.control_ids.some(
+          (cid) => controlFramework.get(cid) === filters.framework,
+        );
+        if (!hit) return false;
+      }
+      if (filters.severity !== "all" && e.severity !== filters.severity)
+        return false;
+      if (freshnessFilter !== "all" && e.freshness?.status !== freshnessFilter)
+        return false;
+      return matchesQuery(e, filters.query);
+    });
+  }, [rows, filters, controlFramework]);
 
   const columns = [
     helper.accessor("event_time", {
@@ -111,6 +151,28 @@ export default function EvidencePage() {
         return <Badge tone={toneForStatus(v)}>{v}</Badge>;
       },
     }),
+    helper.accessor((row) => row.freshness, {
+      id: "freshness",
+      header: "Freshness",
+      cell: (info) => {
+        const row = info.getValue();
+        if (!row) return <Badge>not scored</Badge>;
+        const age =
+          row.age_minutes === null
+            ? "no age"
+            : row.age_minutes >= 1440
+              ? `${Math.round(row.age_minutes / 1440)}d old`
+              : `${Math.round(row.age_minutes)}m old`;
+        return (
+          <div className="max-w-[180px] space-y-1">
+            <Badge tone={toneForFreshness(row.status)}>{row.status}</Badge>
+            <div className="text-xs text-muted">
+              {age} · SLO {row.freshness_slo_minutes}m
+            </div>
+          </div>
+        );
+      },
+    }),
     helper.accessor("evidence_ref", {
       header: "Evidence ref",
       cell: (info) => (
@@ -138,8 +200,14 @@ export default function EvidencePage() {
         description="Click any row to open the evidence drawer and verify the SHA-256 hash against the immutable bronze record server-side."
         actions={
           <span className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-black text-slate-600">
-            <ShieldCheck className="mr-1 inline h-3 w-3 text-emerald-600" />
-            {(evidence.data ?? []).length} normalized
+            {staleCount > 0 ? (
+              <AlertTriangle className="mr-1 inline h-3 w-3 text-amber-600" />
+            ) : (
+              <ShieldCheck className="mr-1 inline h-3 w-3 text-emerald-600" />
+            )}
+            {staleCount > 0
+              ? `${staleCount} freshness issues`
+              : `${(evidence.data ?? []).length} normalized`}
           </span>
         }
       />
@@ -148,14 +216,16 @@ export default function EvidencePage() {
         frameworks={frameworks}
         onChange={setFilters}
         placeholder="Search by source, asset, evidence ref, control…"
+        showFreshness
       />
-      <QueryState queries={evidence} label="evidence">
+      <QueryState queries={[evidence, freshness]} label="evidence freshness">
         <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle>{filtered.length} matching records</CardTitle>
             <CardDescription>
               All rows are append-only silver facts written from immutable
-              bronze evidence.
+              bronze evidence. Freshness comes from the gold freshness SLA
+              artifact agents can query directly.
             </CardDescription>
           </CardHeader>
           <div className="max-w-full overflow-x-auto">

@@ -1,12 +1,13 @@
 "use client";
 
 import { Search } from "lucide-react";
-import type { Severity } from "@/lib/api/types";
+import type { EvidenceFreshnessStatus, Severity } from "@/lib/api/types";
 
 export interface ToolbarFilters {
   query: string;
   framework: string;
   severity: Severity | "all";
+  freshness?: EvidenceFreshnessStatus | "all";
 }
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
   frameworks: string[];
   onChange: (next: ToolbarFilters) => void;
   placeholder?: string;
+  showFreshness?: boolean;
 }
 
 const SEVERITIES: Array<Severity | "all"> = [
@@ -25,9 +27,29 @@ const SEVERITIES: Array<Severity | "all"> = [
   "info",
 ];
 
-export function Toolbar({ filters, frameworks, onChange, placeholder }: Props) {
+const FRESHNESS: Array<EvidenceFreshnessStatus | "all"> = [
+  "all",
+  "fresh",
+  "stale",
+  "expired",
+  "missing",
+];
+
+export function Toolbar({
+  filters,
+  frameworks,
+  onChange,
+  placeholder,
+  showFreshness = false,
+}: Props) {
   return (
-    <div className="grid min-w-0 gap-2 rounded-xl border border-line bg-white p-2.5 shadow-card md:grid-cols-[minmax(180px,1fr)_minmax(140px,180px)_minmax(130px,170px)]">
+    <div
+      className={
+        showFreshness
+          ? "grid min-w-0 gap-2 rounded-xl border border-line bg-white p-2.5 shadow-card md:grid-cols-[minmax(180px,1fr)_minmax(130px,170px)_minmax(120px,150px)_minmax(120px,150px)]"
+          : "grid min-w-0 gap-2 rounded-xl border border-line bg-white p-2.5 shadow-card md:grid-cols-[minmax(180px,1fr)_minmax(140px,180px)_minmax(130px,170px)]"
+      }
+    >
       <div className="relative min-w-0">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
         <input
@@ -65,6 +87,24 @@ export function Toolbar({ filters, frameworks, onChange, placeholder }: Props) {
           </option>
         ))}
       </select>
+      {showFreshness ? (
+        <select
+          value={filters.freshness ?? "all"}
+          onChange={(e) =>
+            onChange({
+              ...filters,
+              freshness: e.target.value as ToolbarFilters["freshness"],
+            })
+          }
+          className="min-w-0 rounded-lg border border-line bg-white px-3 py-2 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand"
+        >
+          {FRESHNESS.map((s) => (
+            <option key={s} value={s}>
+              {s === "all" ? "All freshness" : s}
+            </option>
+          ))}
+        </select>
+      ) : null}
     </div>
   );
 }
