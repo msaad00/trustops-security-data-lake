@@ -19,6 +19,7 @@ import type {
   ControlTest,
   ControlArticleMapping,
   Crosswalk,
+  EvidenceFreshness,
   EntityTag,
   FrameworkReadiness,
   FrameworkDetail,
@@ -186,6 +187,10 @@ export const api = {
     get<{ count: number; violations: Violation[] }>("/violations"),
   evidence: () =>
     get<{ count: number; evidence: NormalizedEvent[] }>("/evidence"),
+  evidenceFreshness: (query = "") =>
+    get<{ data: EvidenceFreshness[] }>(`/v1/evidence/freshness${query}`).then(
+      (b) => b.data,
+    ),
   assets: () => get<{ assets: AssetRisk[] }>("/assets"),
   createSnapshot: (reason: string) =>
     post<SnapshotResponse>("/snapshots", { reason }),

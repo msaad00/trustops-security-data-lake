@@ -97,6 +97,10 @@ COLLECTION_LOADERS: dict[str, tuple[str, Callable[[Path], list[JsonObject]]]] = 
         "evidence",
         lambda lake: read_jsonl(lake / "silver" / "normalized_events.jsonl", missing_ok=True),
     ),
+    "/api/v1/evidence/freshness": (
+        "evidence.freshness",
+        lambda lake: read_jsonl(lake / "gold" / "evidence_freshness.jsonl", missing_ok=True),
+    ),
     "/api/v1/assets": ("assets", lambda lake: read_jsonl(lake / "gold" / "asset_risk.jsonl", missing_ok=True)),
     "/api/v1/violations": ("violations", lambda lake: build_current_posture(lake)["violations"]),
     "/api/v1/snapshots": ("snapshots", list_snapshots),

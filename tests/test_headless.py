@@ -26,6 +26,7 @@ def test_resource_catalog_lists_core_resources() -> None:
     assert {
         "/api/v1/posture/current",
         "/api/v1/controls",
+        "/api/v1/evidence/freshness",
         "/api/v1/snapshots",
         "/api/v1/frameworks/{framework_id}/detail",
     } <= paths

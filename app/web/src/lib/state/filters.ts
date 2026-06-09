@@ -7,6 +7,7 @@ const initial: ToolbarFilters = {
   query: "",
   framework: "all",
   severity: "all",
+  freshness: "all",
 };
 
 export function useToolbar() {

@@ -18,6 +18,7 @@ import type {
   ControlPosture,
   ControlTest,
   Crosswalk,
+  EvidenceFreshness,
   EntityTag,
   FrameworkView,
   FrameworkDetail,
@@ -110,6 +111,17 @@ export function useEvidence(opts?: Opts<NormalizedEvent[]>) {
     queryKey: ["evidence"],
     queryFn: async () => (await api.evidence()).evidence ?? [],
     staleTime: STALE,
+    ...opts,
+  });
+}
+
+export function useEvidenceFreshness(opts?: Opts<EvidenceFreshness[]>) {
+  return useQuery({
+    queryKey: ["evidence", "freshness"],
+    queryFn: () => api.evidenceFreshness(),
+    staleTime: STALE,
+    refetchInterval: LIVE,
+    refetchOnWindowFocus: true,
     ...opts,
   });
 }

@@ -103,6 +103,28 @@ export interface NormalizedEvent {
   evidence_collected_at: string;
 }
 
+export type EvidenceFreshnessStatus = "fresh" | "stale" | "expired" | "missing";
+
+export interface EvidenceFreshness {
+  event_id: string;
+  evidence_id: string;
+  evidence_ref: string;
+  source: string;
+  connector_id: string;
+  event_type: string;
+  asset_id: string;
+  control_ids: string[];
+  evidence_collected_at: string | null;
+  evaluated_at: string;
+  freshness_slo_minutes: number;
+  status: EvidenceFreshnessStatus | string;
+  score: number;
+  age_minutes: number | null;
+  expires_at: string | null;
+  reason: string;
+  next_action: string;
+}
+
 export interface Health {
   ok: boolean;
   service: string;
