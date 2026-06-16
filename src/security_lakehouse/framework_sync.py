@@ -26,6 +26,7 @@ from pathlib import Path
 from typing import Any
 
 from security_lakehouse.catalog import DEFAULT_FRAMEWORK_REGISTRY
+from security_lakehouse.io import append_jsonl
 
 USER_AGENT = "trustops-framework-sync/1.0"
 DEFAULT_TIMEOUT_SECONDS = 30
@@ -56,6 +57,8 @@ def sync_frameworks(
     *,
     allow_network: bool = False,
     fetcher: Any | None = None,
+    history_path: str | Path | None = None,
+    refresh_bundle_lock: bool = True,
 ) -> list[SyncResult]:
     """Sync every framework in the registry. Returns one SyncResult per framework.
 
@@ -120,6 +123,21 @@ def sync_frameworks(
         state = "unchanged" if new_sha == old_sha else "updated"
         if state == "updated":
             dirty = True
+            # Append-only record of the source drift so the history of *what the
+            # upstream said when* survives even before a human assigns a new
+            # version label in the registry. History sits next to the registry
+            # being synced so a tmp registry never writes to the repo's ledger.
+            append_jsonl(
+                Path(history_path) if history_path else path.parent / "history.jsonl",
+                {
+                    "framework_id": framework_id,
+                    "version": framework.get("version"),
+                    "old_source_sha256": old_sha,
+                    "new_source_sha256": new_sha,
+                    "official_source_url": url,
+                    "pulled_at": pulled_at,
+                },
+            )
         results.append(
             SyncResult(
                 framework_id=framework_id,
@@ -134,5 +152,15 @@ def sync_frameworks(
     # Always rewrite (atomic) so even unchanged-but-touched pulled_at lands.
     if any(r.state in {"updated", "unchanged"} for r in results):
         path.write_text(json.dumps(payload, indent=2, sort_keys=False) + "\n", encoding="utf-8")
-    _ = dirty  # dirty is informational; callers (GitHub Action) inspect file diff
+    # Re-lock the catalog bundle so source drift is reflected in the audit pin.
+    # Only for the real default registry — the bundle spans repo-global controls
+    # + crosswalk, so re-locking on a caller-supplied (e.g. tmp) registry would
+    # mix paths and clobber the committed lockfile.
+    if dirty and refresh_bundle_lock and registry_path is None:
+        try:
+            from security_lakehouse.catalog_versions import write_bundle_lock
+
+            write_bundle_lock()
+        except (OSError, ValueError):
+            pass
     return results

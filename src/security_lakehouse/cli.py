@@ -117,6 +117,23 @@ def _parser() -> argparse.ArgumentParser:
     controls_applies.add_argument("--asset-type", required=True, help="asset type, e.g. iam_role, ai_model")
     controls_applies.add_argument("--catalog", default=None, help="optional control catalog JSON")
     controls_applies.set_defaults(func=_controls_applies_to)
+    controls_history = controls_sub.add_parser("history", help="show every version of a control (active + retired)")
+    controls_history.add_argument("--control-id", required=True, help="control id, e.g. SOC2-CC6.1")
+    controls_history.set_defaults(func=_controls_history)
+    controls_as_of = controls_sub.add_parser("as-of", help="control versions in force on a given date")
+    controls_as_of.add_argument("--date", required=True, help="ISO date, e.g. 2026-03-15")
+    controls_as_of.set_defaults(func=_controls_as_of)
+
+    catalog_cmd = sub.add_parser("catalog", help="versioned catalog bundle commands")
+    catalog_sub = catalog_cmd.add_subparsers(dest="catalog_command", required=True)
+    catalog_bundle = catalog_sub.add_parser("bundle", help="print the content-addressed catalog bundle")
+    catalog_bundle.add_argument("--as-of", default=None, help="bundle the control set in force on this ISO date")
+    catalog_bundle.add_argument("--full", action="store_true", help="include per-control/per-framework version rows")
+    catalog_bundle.set_defaults(func=_catalog_bundle)
+    catalog_lock = catalog_sub.add_parser("lock", help="(re)write the bundle lockfile from the active catalog")
+    catalog_lock.set_defaults(func=_catalog_lock)
+    catalog_verify = catalog_sub.add_parser("verify", help="verify the active catalog matches the committed lockfile")
+    catalog_verify.set_defaults(func=_catalog_verify)
 
     dashboard = sub.add_parser("dashboard", help="render static dashboard HTML")
     dashboard.add_argument("--lake", required=True, help="security data lake output directory")
@@ -474,6 +491,81 @@ def _controls_applies_to(args: argparse.Namespace) -> int:
     for control_id in control_ids:
         print(f"  {control_id}")
     return 0
+
+
+def _controls_history(args: argparse.Namespace) -> int:
+    from security_lakehouse.catalog_versions import control_history
+
+    versions = control_history(args.control_id)
+    if not versions:
+        print(f"No versions found for control {args.control_id!r}.")
+        return 1
+    rows = [
+        {
+            "version": v.get("version"),
+            "valid_from": v.get("valid_from"),
+            "valid_to": v.get("valid_to"),
+            "lifecycle_status": v.get("lifecycle_status"),
+            "supersedes": v.get("supersedes"),
+            "superseded_by": v.get("superseded_by"),
+            "change_reason": v.get("change_reason"),
+        }
+        for v in versions
+    ]
+    print(json.dumps({"control_id": args.control_id, "versions": rows}, indent=2))
+    return 0
+
+
+def _controls_as_of(args: argparse.Namespace) -> int:
+    from security_lakehouse.catalog_versions import controls_as_of
+
+    try:
+        controls = controls_as_of(args.date)
+    except ValueError as exc:
+        print(f"error: {exc}")
+        return 2
+    rows = sorted(
+        (
+            {"control_id": cid, "version": c.get("version"), "framework_id": c.get("framework_id")}
+            for cid, c in controls.items()
+        ),
+        key=lambda r: r["control_id"],
+    )
+    print(json.dumps({"as_of": args.date, "control_count": len(rows), "controls": rows}, indent=2))
+    return 0
+
+
+def _catalog_bundle(args: argparse.Namespace) -> int:
+    from security_lakehouse.catalog_versions import bundle_summary, compute_bundle
+
+    bundle = compute_bundle(as_of=args.as_of) if args.full else bundle_summary(as_of=args.as_of)
+    print(json.dumps(bundle, indent=2))
+    return 0
+
+
+def _catalog_lock(args: argparse.Namespace) -> int:
+    from security_lakehouse.catalog_versions import write_bundle_lock
+
+    bundle = write_bundle_lock()
+    print(
+        f"Wrote bundle lock: {bundle['bundle_sha256']} "
+        f"({bundle['framework_count']} frameworks, {bundle['control_count']} controls)"
+    )
+    return 0
+
+
+def _catalog_verify(args: argparse.Namespace) -> int:
+    from security_lakehouse.catalog_versions import verify_bundle_lock
+
+    result = verify_bundle_lock()
+    if result["ok"]:
+        print(f"Catalog bundle matches lockfile: {result['actual']}")
+        return 0
+    print("Catalog bundle DRIFTED from lockfile.")
+    print(f"  expected: {result['expected']}")
+    print(f"  actual:   {result['actual']}")
+    print(f"  drifted:  {', '.join(result['drifted_components']) or '(hash mismatch)'}")
+    return 1
 
 
 def _dashboard(args: argparse.Namespace) -> int:

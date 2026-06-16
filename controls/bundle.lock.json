@@ -1,0 +1,311 @@
+{
+  "schema_version": "trustops.catalog_bundle.v1",
+  "as_of": null,
+  "framework_count": 8,
+  "control_count": 34,
+  "crosswalk_count": 34,
+  "components": {
+    "frameworks": "41052f3c9f297ab54f402fb2a5f7d1e901f0e1954daa8e93fbe02599ae893838",
+    "controls": "0d8ba3c5113c94fcec36a2c6cdbfdd74ab201ecec77639d7c0af81299a65416a",
+    "crosswalk": "c49e8e6ece24b59dbed7fc166b8348697a2d157d9d56e82ad7508fb59a000000"
+  },
+  "framework_versions": [
+    {
+      "framework_id": "eu-ai-act-2024-1689",
+      "version": "Regulation (EU) 2024/1689",
+      "effective_date": "2024-08-01",
+      "superseded_by": null,
+      "source_sha256": null
+    },
+    {
+      "framework_id": "gdpr-2016-679",
+      "version": "Regulation (EU) 2016/679",
+      "effective_date": "2018-05-25",
+      "superseded_by": null,
+      "source_sha256": null
+    },
+    {
+      "framework_id": "hipaa-security-rule",
+      "version": "2013 Omnibus updates, current through 2024",
+      "effective_date": "2013-03-26",
+      "superseded_by": null,
+      "source_sha256": null
+    },
+    {
+      "framework_id": "iso-27001-2022",
+      "version": "2022 edition (Annex A revised)",
+      "effective_date": "2022-10-25",
+      "superseded_by": null,
+      "source_sha256": null
+    },
+    {
+      "framework_id": "iso-42001-2023",
+      "version": "2023 edition",
+      "effective_date": "2023-12-18",
+      "superseded_by": null,
+      "source_sha256": null
+    },
+    {
+      "framework_id": "nist-ai-rmf",
+      "version": "AI RMF 1.0, NIST AI 100-1",
+      "effective_date": "2023-01-26",
+      "superseded_by": null,
+      "source_sha256": null
+    },
+    {
+      "framework_id": "pci-dss-v4",
+      "version": "v4.0",
+      "effective_date": "2022-03-31",
+      "superseded_by": null,
+      "source_sha256": null
+    },
+    {
+      "framework_id": "soc2",
+      "version": "2017 TSC with revised points of focus 2022",
+      "effective_date": "2022-12-15",
+      "superseded_by": null,
+      "source_sha256": null
+    }
+  ],
+  "control_versions": [
+    {
+      "control_id": "EU-AI-ACT-Art.10",
+      "framework_id": "eu-ai-act-2024-1689",
+      "version": "1.0.0",
+      "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.12",
+      "framework_id": "eu-ai-act-2024-1689",
+      "version": "1.0.0",
+      "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.13",
+      "framework_id": "eu-ai-act-2024-1689",
+      "version": "1.0.0",
+      "valid_from": "2026-05-26",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.14",
+      "framework_id": "eu-ai-act-2024-1689",
+      "version": "1.0.0",
+      "valid_from": "2026-05-26",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.15",
+      "framework_id": "eu-ai-act-2024-1689",
+      "version": "1.0.0",
+      "valid_from": "2026-05-26",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.9",
+      "framework_id": "eu-ai-act-2024-1689",
+      "version": "1.0.0",
+      "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.25",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-05-26",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.28",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-05-26",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.30",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.32",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.33",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.35",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-05-26",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(1)(ii)(A)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-05-26",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(1)(ii)(B)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-05-26",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(4)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "HIPAA-164.312(a)(2)(iv)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-05-26",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "HIPAA-164.312(b)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "HIPAA-164.312(e)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.15",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.30",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.16",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-6.1.3",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-8.1",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-1.1",
+      "framework_id": "nist-ai-rmf",
+      "version": "1.0.0",
+      "valid_from": "2026-05-26",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-1.6",
+      "framework_id": "nist-ai-rmf",
+      "version": "1.0.0",
+      "valid_from": "2026-05-26",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-4.3",
+      "framework_id": "nist-ai-rmf",
+      "version": "1.0.0",
+      "valid_from": "2026-05-26",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-1.5",
+      "framework_id": "nist-ai-rmf",
+      "version": "1.0.0",
+      "valid_from": "2026-05-23",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.4",
+      "framework_id": "nist-ai-rmf",
+      "version": "1.0.0",
+      "valid_from": "2026-05-26",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.7",
+      "framework_id": "nist-ai-rmf",
+      "version": "1.0.0",
+      "valid_from": "2026-05-23",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "PCI-DSS-10",
+      "framework_id": "pci-dss-v4",
+      "version": "1.0.0",
+      "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "PCI-DSS-11",
+      "framework_id": "pci-dss-v4",
+      "version": "1.0.0",
+      "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "PCI-DSS-7",
+      "framework_id": "pci-dss-v4",
+      "version": "1.0.0",
+      "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-CC6.1",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-05-23",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-CC7.2",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-05-23",
+      "lifecycle_status": "active"
+    }
+  ],
+  "bundle_sha256": "12801c8c6b7ffd3f2296ac6cae2ecbd91626ee7dd962fcf297b42e2904d2076e"
+}
