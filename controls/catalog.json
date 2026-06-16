@@ -60,11 +60,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-23",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-1.5",
@@ -91,10 +87,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-23",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.7",
@@ -121,10 +114,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-23",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-1.1",
@@ -151,10 +141,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-1.6",
@@ -181,10 +168,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.4",
@@ -211,10 +195,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-4.3",
@@ -241,10 +222,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "ISO27001-A.5.15",
@@ -303,11 +281,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "ISO27001-A.5.30",
@@ -334,11 +308,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "HIPAA-164.308(a)(4)",
@@ -397,11 +367,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "HIPAA-164.312(e)",
@@ -428,11 +394,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "s3_bucket",
-        "container_image"
-      ]
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "HIPAA-164.308(a)(1)(ii)(A)",
@@ -459,11 +421,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "repo",
-        "data_store"
-      ]
+      "asset_types": ["service", "repo", "data_store"]
     },
     {
       "control_id": "HIPAA-164.308(a)(1)(ii)(B)",
@@ -490,11 +448,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "repo",
-        "data_store"
-      ]
+      "asset_types": ["service", "repo", "data_store"]
     },
     {
       "control_id": "HIPAA-164.312(a)(2)(iv)",
@@ -521,11 +475,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "s3_bucket",
-        "container_image"
-      ]
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "PCI-DSS-7",
@@ -584,11 +534,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "PCI-DSS-11",
@@ -615,11 +561,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "container_image",
-        "host",
-        "service"
-      ]
+      "asset_types": ["container_image", "host", "service"]
     },
     {
       "control_id": "GDPR-Art.32",
@@ -646,11 +588,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "s3_bucket",
-        "container_image"
-      ]
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "GDPR-Art.30",
@@ -677,11 +615,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "repo",
-        "data_store"
-      ]
+      "asset_types": ["service", "repo", "data_store"]
     },
     {
       "control_id": "GDPR-Art.33",
@@ -708,11 +642,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "GDPR-Art.25",
@@ -739,11 +669,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "s3_bucket",
-        "container_image"
-      ]
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "GDPR-Art.28",
@@ -770,11 +696,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "repo",
-        "data_store"
-      ]
+      "asset_types": ["service", "repo", "data_store"]
     },
     {
       "control_id": "GDPR-Art.35",
@@ -801,11 +723,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "s3_bucket",
-        "container_image"
-      ]
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "EU-AI-ACT-Art.9",
@@ -832,10 +750,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.10",
@@ -862,10 +777,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.12",
@@ -892,10 +804,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.13",
@@ -922,10 +831,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.14",
@@ -952,10 +858,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.15",
@@ -982,10 +885,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "ISO42001-6.1.3",
@@ -1012,10 +912,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "ISO42001-8.1",
@@ -1042,10 +939,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     }
   ]
 }
