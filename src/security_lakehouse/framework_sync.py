@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
@@ -161,6 +162,6 @@ def sync_frameworks(
             from security_lakehouse.catalog_versions import write_bundle_lock
 
             write_bundle_lock()
-        except (OSError, ValueError):
-            pass
+        except (OSError, ValueError) as exc:
+            print(f"warning: catalog bundle lock was not refreshed: {exc}", file=sys.stderr)
     return results
