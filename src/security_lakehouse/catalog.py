@@ -79,6 +79,50 @@ def validate_catalog(
         asset_types = control.get("asset_types")
         if not isinstance(asset_types, list) or not asset_types:
             errors.append(f"control {control_id} must declare a non-empty asset_types list")
+        errors.extend(_validate_version_fields(control_id, control))
+    return errors
+
+
+_LIFECYCLE_STATES = {"active", "draft", "retired"}
+
+
+def _coerce_date(value: Any) -> Any:
+    """Return a date for an ISO date/datetime string, or None if unparseable."""
+    if not value:
+        return None
+    from datetime import date, datetime
+
+    text = str(value).strip().replace("Z", "+00:00")
+    try:
+        return datetime.fromisoformat(text).date() if ("T" in text or "+" in text) else date.fromisoformat(text)
+    except ValueError:
+        return None
+
+
+def _validate_version_fields(control_id: str, control: dict[str, Any]) -> list[str]:
+    """Validate the temporal/version fields on a v2 control (additive).
+
+    A control with no version fields is a valid pre-v2 row (defaults apply), so
+    only validate fields that are actually present.
+    """
+    errors: list[str] = []
+    if "version" in control and not str(control.get("version", "")).strip():
+        errors.append(f"control {control_id} version must not be empty when present")
+    lifecycle = control.get("lifecycle_status")
+    if lifecycle is not None and lifecycle not in _LIFECYCLE_STATES:
+        errors.append(f"control {control_id} lifecycle_status {lifecycle!r} not in {sorted(_LIFECYCLE_STATES)}")
+    valid_from_raw = control.get("valid_from")
+    valid_to_raw = control.get("valid_to")
+    valid_from = _coerce_date(valid_from_raw)
+    valid_to = _coerce_date(valid_to_raw)
+    if valid_from_raw and valid_from is None:
+        errors.append(f"control {control_id} has unparseable valid_from {valid_from_raw!r}")
+    if valid_to_raw and valid_to is None:
+        errors.append(f"control {control_id} has unparseable valid_to {valid_to_raw!r}")
+    if valid_from and valid_to and valid_to < valid_from:
+        errors.append(f"control {control_id} valid_to precedes valid_from")
+    if valid_to_raw and lifecycle == "active":
+        errors.append(f"control {control_id} is active but has valid_to set (should be retired)")
     return errors
 
 

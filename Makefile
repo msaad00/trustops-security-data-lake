@@ -19,6 +19,7 @@ validate:
 	PYTHONPATH=src python -m security_lakehouse.cli validate --raw data/raw/security_events.jsonl
 	PYTHONPATH=src python -m security_lakehouse.cli connectors validate
 	PYTHONPATH=src python -c "from security_lakehouse.catalog import validate_catalog; from security_lakehouse.programs import validate_program_catalog; errors = validate_catalog() + validate_program_catalog(); assert not errors, errors"
+	PYTHONPATH=src python -m security_lakehouse.cli catalog verify
 
 validate-json:
 	PYTHONPATH=src python tools/validate_ci_artifacts.py

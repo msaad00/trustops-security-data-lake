@@ -98,6 +98,20 @@ def write_current_posture(lake_dir: str | Path, *, freshness_days: int = 7) -> P
     return output
 
 
+def _catalog_bundle_for_snapshot() -> dict[str, Any] | None:
+    """Return the active catalog bundle, or None if no catalog is reachable.
+
+    Snapshots taken in bare test lakes without a control catalog still succeed;
+    they just record a null bundle rather than failing the freeze.
+    """
+    try:
+        from security_lakehouse.catalog_versions import bundle_summary
+
+        return bundle_summary()
+    except (OSError, ValueError, KeyError):
+        return None
+
+
 def _ledger_path(lake_dir: str | Path) -> Path:
     return Path(lake_dir).joinpath(*SNAPSHOT_LEDGER)
 
@@ -130,6 +144,10 @@ def write_assessment_snapshot(
     assessment = build_current_posture(lake, freshness_days=freshness_days)
     assessment["assessment_type"] = "point_in_time_snapshot"
     assessment["snapshot_reason"] = reason
+    # Pin the catalog bundle (framework + control versions in force) so this
+    # audit reproduces against the exact controls it was evaluated with. The
+    # bundle is covered by assessment_hash below, so it is tamper-evident too.
+    assessment["catalog_bundle"] = _catalog_bundle_for_snapshot()
     assessment["prev_hash"] = prev_hash
     # assessment_hash covers prev_hash, so the chain is tamper-evident.
     assessment["assessment_hash"] = _assessment_hash(assessment)

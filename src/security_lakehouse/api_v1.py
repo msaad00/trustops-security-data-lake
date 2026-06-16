@@ -288,6 +288,33 @@ def resource_catalog() -> list[JsonObject]:
             "methods": ["GET"],
         }
     )
+    catalog.append(
+        {
+            "resource": "catalog.bundle",
+            "path": "/api/v1/catalog/bundle",
+            "kind": "singleton",
+            "methods": ["GET"],
+            "query": ["as_of", "full"],
+        }
+    )
+    catalog.append(
+        {
+            "resource": "controls.as_of",
+            "path": "/api/v1/controls/as-of",
+            "kind": "singleton",
+            "methods": ["GET"],
+            "query": ["as_of"],
+        }
+    )
+    catalog.append(
+        {
+            "resource": "control.history",
+            "path": "/api/v1/controls/{control_id}/history",
+            "kind": "singleton",
+            "methods": ["GET"],
+            "path_params": ["control_id"],
+        }
+    )
     for path, (name, _loader) in SINGLETON_LOADERS.items():
         catalog.append({"resource": name, "path": path, "kind": "singleton", "methods": ["GET"]})
     for path, (name, _loader) in COLLECTION_LOADERS.items():
@@ -455,6 +482,47 @@ def handle_get(path: str, params: Params, lake_dir: str | Path) -> tuple[HTTPSta
         return HTTPStatus.OK, envelope("framework.detail", detail)
     if path == "/api/v1/snapshots/integrity":
         return HTTPStatus.OK, envelope("snapshots.integrity", verify_snapshot_chain(lake))
+    if path == "/api/v1/catalog/bundle":
+        from security_lakehouse.catalog_versions import bundle_summary, compute_bundle
+
+        as_of_values = params.get("as_of") or []
+        as_of = as_of_values[0] if as_of_values else None
+        full = (params.get("full") or [""])[0] in ("1", "true", "yes")
+        try:
+            data = compute_bundle(as_of=as_of) if full else bundle_summary(as_of=as_of)
+        except ValueError:
+            return HTTPStatus.BAD_REQUEST, error_envelope(
+                "bad_request", f"invalid 'as_of' value: {as_of!r}", resource="catalog.bundle"
+            )
+        return HTTPStatus.OK, envelope("catalog.bundle", data)
+    if path == "/api/v1/controls/as-of":
+        from security_lakehouse.catalog_versions import controls_as_of
+
+        as_of_values = params.get("as_of") or []
+        as_of = as_of_values[0] if as_of_values else ""
+        if not as_of:
+            return HTTPStatus.BAD_REQUEST, error_envelope(
+                "bad_request", "query parameter 'as_of' is required", resource="controls.as_of"
+            )
+        try:
+            controls = controls_as_of(as_of)
+        except ValueError:
+            return HTTPStatus.BAD_REQUEST, error_envelope(
+                "bad_request", f"invalid 'as_of' value: {as_of!r}", resource="controls.as_of"
+            )
+        return HTTPStatus.OK, envelope(
+            "controls.as_of", {"as_of": as_of, "control_count": len(controls), "controls": list(controls.values())}
+        )
+    if path.startswith("/api/v1/controls/") and path.endswith("/history"):
+        from security_lakehouse.catalog_versions import control_history
+
+        control_id = path[len("/api/v1/controls/") : -len("/history")]
+        versions = control_history(control_id)
+        if not versions:
+            return HTTPStatus.NOT_FOUND, error_envelope(
+                "not_found", f"unknown control {control_id}", resource="control.history"
+            )
+        return HTTPStatus.OK, envelope("control.history", {"control_id": control_id, "versions": versions})
     if path == "/api/v1/posture/as-of":
         as_of_values = params.get("as_of") or []
         as_of = as_of_values[0] if as_of_values else ""
