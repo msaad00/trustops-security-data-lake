@@ -75,6 +75,8 @@ _require_snapshot = require_scope("snapshot")
 _require_admin = require_scope("auth_admin")
 _require_evidence_request = require_scope("evidence_request")
 _require_control_manage = require_scope("control_manage")
+
+
 class _StrictModel(BaseModel):
     """Base for request bodies: reject unknown fields.
 

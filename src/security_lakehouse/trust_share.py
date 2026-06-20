@@ -102,7 +102,9 @@ def create_share(
 
 def _share_by_idempotency_key(lake_dir: str | Path, idempotency_key: str) -> dict[str, Any] | None:
     """Return the latest share created with ``idempotency_key``, if any."""
-    matches = [row for row in list_shares(lake_dir, include_revoked=True) if row.get("idempotency_key") == idempotency_key]
+    matches = [
+        row for row in list_shares(lake_dir, include_revoked=True) if row.get("idempotency_key") == idempotency_key
+    ]
     return matches[0] if matches else None
 
 

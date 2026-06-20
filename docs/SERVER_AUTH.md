@@ -98,13 +98,13 @@ Supported labels are `public`, `internal`, `confidential`, `restricted`, and
 
 Recommended default ceilings:
 
-| Principal        | Maximum visibility | Notes                                                   |
-| ---------------- | ------------------ | ------------------------------------------------------- |
-| `admin`          | `restricted`       | Can operate the platform; raw secrets still should not be persisted |
-| `security_admin` | `restricted`       | Can operate evidence sources, workflows, snapshots, and controls |
-| `contributor`    | `confidential`     | Can triage and request evidence without broad admin access |
-| `read_only`      | `confidential`     | Internal read-only posture and evidence view            |
-| `auditor`        | `internal`         | Read-only with owner, actor, assignee, note, and credential fields redacted |
+| Principal        | Maximum visibility | Notes                                                                              |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------------- |
+| `admin`          | `restricted`       | Can operate the platform; raw secrets still should not be persisted                |
+| `security_admin` | `restricted`       | Can operate evidence sources, workflows, snapshots, and controls                   |
+| `contributor`    | `confidential`     | Can triage and request evidence without broad admin access                         |
+| `read_only`      | `confidential`     | Internal read-only posture and evidence view                                       |
+| `auditor`        | `internal`         | Read-only with owner, actor, assignee, note, and credential fields redacted        |
 | trust share      | `public`           | External reviewer summary only; no raw evidence, owners, notes, or asset internals |
 
 Trust-share records include a `sensitivity_ceiling` and default to `public`.

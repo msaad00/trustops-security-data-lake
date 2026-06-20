@@ -32,12 +32,12 @@ No model is required. If no provider is configured, the harness runs in
 
 Environment knobs:
 
-| Variable | Purpose |
-| --- | --- |
-| `TRUSTOPS_AGENT_PROVIDER` | `rules_only`, `ollama`, `openai`, `anthropic`, or a future adapter |
-| `TRUSTOPS_AGENT_MODEL` | Provider model name |
-| `TRUSTOPS_AGENT_BASE_URL` | Local provider URL, defaulting to Ollama at `http://127.0.0.1:11434` when provider is `ollama` |
-| `TRUSTOPS_AGENT_API_KEY_ENV` | Name of the environment variable holding the provider API key |
+| Variable                     | Purpose                                                                                        |
+| ---------------------------- | ---------------------------------------------------------------------------------------------- |
+| `TRUSTOPS_AGENT_PROVIDER`    | `rules_only`, `ollama`, `openai`, `anthropic`, or a future adapter                             |
+| `TRUSTOPS_AGENT_MODEL`       | Provider model name                                                                            |
+| `TRUSTOPS_AGENT_BASE_URL`    | Local provider URL, defaulting to Ollama at `http://127.0.0.1:11434` when provider is `ollama` |
+| `TRUSTOPS_AGENT_API_KEY_ENV` | Name of the environment variable holding the provider API key                                  |
 
 ## First workflow
 
