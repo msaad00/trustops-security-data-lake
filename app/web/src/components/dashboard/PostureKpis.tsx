@@ -41,6 +41,7 @@ export function PostureKpis({ posture, evidenceCount }: Props) {
   const score = Math.round(p?.score ?? 0);
   const open = p?.open_violation_count ?? 0;
   const critical = p?.critical_violation_count ?? 0;
+  const failingTests = p?.failed_control_test_count ?? 0;
   const stale = p?.stale_control_count ?? 0;
   const evidenceCoverage = posture?.frameworks
     ? Math.round(
@@ -74,13 +75,17 @@ export function PostureKpis({ posture, evidenceCount }: Props) {
       <Stat
         label="Open violations"
         value={open}
-        sub={critical ? `${critical} critical` : "no critical"}
+        sub={
+          critical
+            ? `${critical} critical violations`
+            : "no critical violations"
+        }
         delay={0.1}
       />
       <Stat
-        label="Evidence facts"
-        value={evidenceCount}
-        sub="normalized + hashed"
+        label="Failing tests"
+        value={failingTests}
+        sub="live control test failures"
         delay={0.15}
       />
       <Stat
@@ -90,7 +95,8 @@ export function PostureKpis({ posture, evidenceCount }: Props) {
         delay={0.2}
       />
       <div className="col-span-2 hidden text-xs text-muted lg:col-span-5 lg:block">
-        Last evidence: {shortDate(posture?.evaluated_at)} · hash{" "}
+        Evidence facts: {evidenceCount} · Last evidence:{" "}
+        {shortDate(posture?.evaluated_at)} · hash{" "}
         <code className="text-ink">
           {posture?.assessment_hash?.slice(0, 16) ?? "—"}…
         </code>

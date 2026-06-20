@@ -181,6 +181,7 @@ def test_assessment_engine_builds_current_and_point_in_time_posture(tmp_path: Pa
     assert posture["assessment_type"] == "current_posture"
     assert posture["posture"]["state"] == "critical"
     assert posture["posture"]["critical_violation_count"] >= 1
+    assert posture["posture"]["failed_control_test_count"] >= 1
     assert posture["frameworks"][0]["score"] <= 100
     assert any(item["control_id"] == "SOC2-CC6.1" for item in posture["violations"])
     assert len(posture["assessment_hash"]) == 64

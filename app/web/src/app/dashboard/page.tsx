@@ -92,10 +92,17 @@ export default function DashboardPage() {
               tone={(p?.open_violation_count ?? 0) > 0 ? "#b54708" : undefined}
             />
             <Stat
-              label="Critical"
+              label="Critical violations"
               value={p?.critical_violation_count ?? 0}
               tone={
                 (p?.critical_violation_count ?? 0) > 0 ? "#d92d20" : undefined
+              }
+            />
+            <Stat
+              label="Failing tests"
+              value={p?.failed_control_test_count ?? 0}
+              tone={
+                (p?.failed_control_test_count ?? 0) > 0 ? "#d92d20" : undefined
               }
             />
             <Stat
