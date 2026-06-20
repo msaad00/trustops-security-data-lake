@@ -31,7 +31,7 @@ interface RailItem {
   label: string;
   Icon: typeof LayoutDashboard;
   badge?: string;
-  group: "Operate" | "Configure";
+  group: "Posture" | "Operate" | "Configure" | "Advanced";
 }
 
 const ITEMS: RailItem[] = [
@@ -40,12 +40,24 @@ const ITEMS: RailItem[] = [
     label: "Dashboard",
     Icon: LayoutDashboard,
     badge: "live",
-    group: "Operate",
+    group: "Posture",
   },
-  { href: "/controls", label: "Controls", Icon: ShieldCheck, group: "Operate" },
+  {
+    href: "/trust-center",
+    label: "Trust center",
+    Icon: Sparkles,
+    group: "Posture",
+  },
+  {
+    href: "/controls",
+    label: "Controls",
+    Icon: ShieldCheck,
+    group: "Posture",
+  },
+  { href: "/evidence", label: "Evidence", Icon: FileSearch, group: "Posture" },
   {
     href: "/violations",
-    label: "Violations",
+    label: "Findings",
     Icon: AlertOctagon,
     group: "Operate",
   },
@@ -55,17 +67,7 @@ const ITEMS: RailItem[] = [
     Icon: ListChecks,
     group: "Operate",
   },
-  {
-    href: "/risks",
-    label: "Risk register",
-    Icon: ShieldAlert,
-    group: "Operate",
-  },
-  { href: "/evidence", label: "Evidence", Icon: FileSearch, group: "Operate" },
   { href: "/automation", label: "Workflows", Icon: Zap, group: "Operate" },
-  { href: "/graph", label: "Graph", Icon: Network, group: "Operate" },
-  { href: "/insights", label: "Insights", Icon: LineChart, group: "Operate" },
-  { href: "/audit-log", label: "Audit log", Icon: Activity, group: "Operate" },
   { href: "/connectors", label: "Connectors", Icon: Plug, group: "Configure" },
   {
     href: "/frameworks",
@@ -73,23 +75,41 @@ const ITEMS: RailItem[] = [
     Icon: BookOpen,
     group: "Configure",
   },
-  { href: "/crosswalk", label: "Crosswalk", Icon: Layers, group: "Configure" },
   {
-    href: "/trust-center",
-    label: "Trust center",
-    Icon: Sparkles,
-    group: "Configure",
+    href: "/risks",
+    label: "Risk register",
+    Icon: ShieldAlert,
+    group: "Advanced",
   },
+  { href: "/graph", label: "Graph", Icon: Network, group: "Advanced" },
+  { href: "/insights", label: "Insights", Icon: LineChart, group: "Advanced" },
+  { href: "/audit-log", label: "Audit log", Icon: Activity, group: "Advanced" },
+  { href: "/crosswalk", label: "Crosswalk", Icon: Layers, group: "Advanced" },
   {
     href: "/agents",
     label: "Agent API",
     Icon: Bot,
     badge: "JSON",
-    group: "Configure",
+    group: "Advanced",
   },
 ];
 
-const GROUPS: RailItem["group"][] = ["Operate", "Configure"];
+const GROUPS: RailItem["group"][] = [
+  "Posture",
+  "Operate",
+  "Configure",
+  "Advanced",
+];
+
+function isGroupClosed(
+  group: RailItem["group"],
+  closedGroups: Record<string, boolean>,
+) {
+  if (group === "Advanced") {
+    return closedGroups[group] !== false;
+  }
+  return Boolean(closedGroups[group]);
+}
 
 export function Sidebar() {
   const pathname = usePathname() ?? "/dashboard";
@@ -111,8 +131,11 @@ export function Sidebar() {
     return () => query.removeEventListener("change", update);
   }, []);
 
-  const toggleGroup = (group: string) => {
-    setClosedGroups({ ...closedGroups, [group]: !closedGroups[group] });
+  const toggleGroup = (group: RailItem["group"]) => {
+    setClosedGroups({
+      ...closedGroups,
+      [group]: !isGroupClosed(group, closedGroups),
+    });
   };
 
   return (
@@ -152,7 +175,8 @@ export function Sidebar() {
 
       <div className="overflow-y-auto p-2.5">
         {GROUPS.map((group) => {
-          const isClosed = Boolean(closedGroups[group]) && !effectiveCollapsed;
+          const isClosed =
+            isGroupClosed(group, closedGroups) && !effectiveCollapsed;
           const groupItems = ITEMS.filter((i) => i.group === group);
           return (
             <div key={group} className="mb-3">
