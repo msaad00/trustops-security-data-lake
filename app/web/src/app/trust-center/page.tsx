@@ -29,6 +29,29 @@ import type { TrustShare } from "@/lib/api/types";
 
 const HOURS_OPTIONS = [1, 4, 24, 24 * 7, 24 * 30];
 
+const ACCESS_DEFAULTS = [
+  {
+    label: "Admin",
+    detail: "Users, keys, connectors, workflows, snapshots, and controls.",
+  },
+  {
+    label: "Security admin",
+    detail: "Operate evidence sources, workflows, snapshots, and controls.",
+  },
+  {
+    label: "Contributor",
+    detail: "Triage, evidence requests, and approved workflow runs.",
+  },
+  {
+    label: "Read only",
+    detail: "Internal posture and evidence visibility without mutation.",
+  },
+  {
+    label: "Auditor share",
+    detail: "External read-only review with owners and notes redacted.",
+  },
+];
+
 export default function TrustCenterPage() {
   const auditor = useAuditorMode();
   const shares = useTrustShares();
@@ -45,6 +68,7 @@ export default function TrustCenterPage() {
       const { share } = await createShare.mutateAsync({
         role: "auditor",
         scope: "posture_full",
+        sensitivity_ceiling: "public",
         expires_in_hours: expiresInHours,
       });
       setCreatedToken(share);
@@ -84,7 +108,8 @@ export default function TrustCenterPage() {
           <CardTitle>Issue a new share</CardTitle>
           <CardDescription>
             Auditor role · scope <code>posture_full</code>. Token expires
-            automatically; you can also revoke it below at any time.
+            automatically; shared data is capped at public summary by default
+            and can be revoked below at any time.
           </CardDescription>
         </CardHeader>
         <div className="grid min-w-0 gap-3 p-4 pt-0 sm:grid-cols-[180px_auto_minmax(0,1fr)]">
@@ -146,6 +171,32 @@ export default function TrustCenterPage() {
 
       <Card className="overflow-hidden">
         <CardHeader>
+          <CardTitle>Access and data boundaries</CardTitle>
+          <CardDescription>
+            Recommended default: require auth in server mode, resolve every
+            request to one tenant, gate actions by role, and share externally
+            through expiring auditor tokens.
+          </CardDescription>
+        </CardHeader>
+        <div className="grid gap-2 p-4 pt-0 md:grid-cols-5">
+          {ACCESS_DEFAULTS.map((item) => (
+            <div
+              key={item.label}
+              className="rounded-xl border border-line bg-white p-3"
+            >
+              <div className="text-xs font-black uppercase tracking-wide text-muted">
+                {item.label}
+              </div>
+              <div className="mt-1 text-xs leading-relaxed text-slate-600">
+                {item.detail}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Card className="overflow-hidden">
+        <CardHeader>
           <CardTitle>{(shares.data ?? []).length} active shares</CardTitle>
           <CardDescription>
             Revoking a share appends a revocation record; future probes with
@@ -170,6 +221,9 @@ export default function TrustCenterPage() {
                     {share.expired ? "expired" : "active"}
                   </Badge>
                   <Badge>{share.scope}</Badge>
+                  <Badge tone="info">
+                    sensitivity {share.sensitivity_ceiling ?? "public"}
+                  </Badge>
                 </div>
                 <div className="mt-1 text-xs text-muted">
                   created by <b className="text-ink">{share.created_by}</b> at{" "}

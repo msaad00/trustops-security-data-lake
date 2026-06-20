@@ -24,8 +24,11 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse.data_policy import SENSITIVITY_LEVELS, normalize_sensitivity
+
 ALLOWED_ROLES = {"auditor"}
 ALLOWED_SCOPES = {"posture_full", "posture_framework"}
+ALLOWED_SENSITIVITY_CEILINGS = set(SENSITIVITY_LEVELS)
 
 SHARES_FILE = "trust_shares.jsonl"
 
@@ -54,14 +57,24 @@ def create_share(
     expires_in_hours: int = 24,
     created_by: str = "console",
     framework_id: str | None = None,
+    sensitivity_ceiling: str = "public",
+    idempotency_key: str | None = None,
 ) -> dict[str, Any]:
     """Issue a new share. Returns the raw token (only once) and the record."""
     if role not in ALLOWED_ROLES:
         raise ValueError(f"role must be one of {sorted(ALLOWED_ROLES)}")
     if scope not in ALLOWED_SCOPES:
         raise ValueError(f"scope must be one of {sorted(ALLOWED_SCOPES)}")
+    sensitivity_ceiling = normalize_sensitivity(sensitivity_ceiling, default="")
+    if sensitivity_ceiling not in ALLOWED_SENSITIVITY_CEILINGS:
+        raise ValueError(f"sensitivity_ceiling must be one of {sorted(ALLOWED_SENSITIVITY_CEILINGS)}")
     if expires_in_hours <= 0 or expires_in_hours > 24 * 90:
         raise ValueError("expires_in_hours must be between 1 and 2160 (90 days)")
+    idempotency_key = str(idempotency_key or "").strip() or None
+    if idempotency_key:
+        existing = _share_by_idempotency_key(lake_dir, idempotency_key)
+        if existing is not None:
+            return {**existing, "idempotent_replay": True}
     now = _utc_now()
     expires_at = now + timedelta(hours=expires_in_hours)
     token = "trust_" + secrets.token_urlsafe(24)
@@ -71,17 +84,28 @@ def create_share(
         "role": role,
         "scope": scope,
         "framework_id": framework_id,
+        "sensitivity_ceiling": sensitivity_ceiling,
         "expires_at": _iso(expires_at),
         "created_by": created_by,
         "created_at": _iso(now),
         "revoked_at": None,
         "token_sha256": _hash_token(token),
     }
+    if idempotency_key:
+        record["idempotency_key"] = idempotency_key
     gold = _gold(lake_dir)
     gold.mkdir(parents=True, exist_ok=True)
     with (gold / SHARES_FILE).open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(record, separators=(",", ":")) + "\n")
     return {**record, "token": token}
+
+
+def _share_by_idempotency_key(lake_dir: str | Path, idempotency_key: str) -> dict[str, Any] | None:
+    """Return the latest share created with ``idempotency_key``, if any."""
+    matches = [
+        row for row in list_shares(lake_dir, include_revoked=True) if row.get("idempotency_key") == idempotency_key
+    ]
+    return matches[0] if matches else None
 
 
 def list_shares(lake_dir: str | Path, *, include_revoked: bool = False) -> list[dict[str, Any]]:

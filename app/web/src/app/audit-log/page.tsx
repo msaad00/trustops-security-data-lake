@@ -32,6 +32,7 @@ const CATEGORY_TONE: Record<
   snapshot: "ready",
   workflow: "ready",
   trust_share: "critical",
+  request: "default",
 };
 
 function Row({ entry }: { entry: AuditLogEntry }) {

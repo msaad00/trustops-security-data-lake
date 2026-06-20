@@ -14,6 +14,7 @@ DEFAULT_CONNECTOR_CATALOG = ROOT / "connectors" / "catalog.json"
 VALID_COLLECTION_MODES = {"existing_lake_read", "direct_api_read", "managed_evidence_object"}
 VALID_ACCESS_BOUNDARIES = {"read_only_role", "scoped_token", "dedicated_schema"}
 VALID_ROUTES = {"Snowflake", "ClickHouse", "dual", "local"}
+VALID_PRODUCTION_STATUSES = {"primary_lake", "supported_connector", "local_demo"}
 DENIED_PERMISSION_WORDS = {"admin", "delete", "drop", "modify", "owner", "write all", "root"}
 SENSITIVE_FIELD_NAMES = {"password", "secret", "token", "private_key", "client_secret", "api_key"}
 
@@ -48,6 +49,7 @@ def validate_connector_catalog(path: str | Path | None = None) -> list[str]:
         mode = str(connector.get("collection_mode", ""))
         boundary = str(connector.get("access_boundary", ""))
         route = str(connector.get("default_route", ""))
+        production_status = str(connector.get("production_status", ""))
         permissions = [str(item).lower() for item in connector.get("minimum_permissions", [])]
 
         if mode not in VALID_COLLECTION_MODES:
@@ -56,6 +58,8 @@ def validate_connector_catalog(path: str | Path | None = None) -> list[str]:
             errors.append(f"connector {connector_id} has invalid access_boundary {boundary}")
         if route not in VALID_ROUTES:
             errors.append(f"connector {connector_id} has invalid default_route {route}")
+        if production_status not in VALID_PRODUCTION_STATUSES:
+            errors.append(f"connector {connector_id} has invalid production_status {production_status}")
         if int(connector.get("freshness_slo_minutes") or 0) <= 0:
             errors.append(f"connector {connector_id} freshness_slo_minutes must be positive")
 

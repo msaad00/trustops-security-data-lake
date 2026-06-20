@@ -346,6 +346,26 @@ def _parser() -> argparse.ArgumentParser:
     workflow_run.add_argument("--actor", default="api", choices=["api", "console", "scheduler"], help="run actor")
     workflow_run.set_defaults(func=_workflow_run)
 
+    agents = sub.add_parser("agents", help="optional human/headless agent harness")
+    agents_sub = agents.add_subparsers(dest="agents_command", required=True)
+    agents_review = agents_sub.add_parser(
+        "posture-review",
+        help="run the rules-only posture review harness and propose approval-gated actions",
+    )
+    agents_review.add_argument("--lake", required=True, help="security data lake output directory")
+    agents_review.add_argument(
+        "--role",
+        default="read_only",
+        choices=["admin", "security_admin", "contributor", "auditor", "read_only"],
+        help="role lens used for redaction",
+    )
+    agents_review.add_argument(
+        "--objective",
+        default="Review posture and propose evidence-gap actions.",
+        help="agent objective recorded in the run state",
+    )
+    agents_review.set_defaults(func=_agents_posture_review)
+
     policy = sub.add_parser("policy", help="controls-as-code policy engine")
     policy_sub = policy.add_subparsers(dest="policy_command", required=True)
     policy_lint = policy_sub.add_parser("lint", help="validate every control's evaluation_rule in the catalog")
@@ -1054,6 +1074,24 @@ def _assessment_stale_evidence(args: argparse.Namespace) -> int:
     else:
         rows = [row for row in rows if row["status"] in {"stale", "expired", "missing"}]
     print(json.dumps({"count": len(rows), "evidence": rows}, indent=2, sort_keys=True))
+    return 0
+
+
+def _agents_posture_review(args: argparse.Namespace) -> int:
+    from dataclasses import asdict, is_dataclass
+
+    from security_lakehouse.agents import run_posture_review
+
+    state = dict(
+        run_posture_review(
+            args.lake,
+            role=args.role,
+            objective=args.objective,
+        )
+    )
+    decisions = state.get("decisions") or []
+    state["decisions"] = [asdict(item) if is_dataclass(item) else item for item in decisions]
+    print(json.dumps(state, indent=2, sort_keys=True))
     return 0
 
 

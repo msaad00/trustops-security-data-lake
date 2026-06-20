@@ -206,7 +206,11 @@ export interface ConnectorView {
   evidence_types: string[];
   default_route: string;
   freshness_slo_minutes: number;
-  production_status: "hero_path" | "supported_path" | "starter_path" | string;
+  production_status:
+    | "primary_lake"
+    | "supported_connector"
+    | "local_demo"
+    | string;
   state: ConnectorState;
   configured_at: string | null;
   credential_fingerprint: string | null;
@@ -393,6 +397,7 @@ export interface TrustShare {
   role: "auditor";
   scope: "posture_full" | "posture_framework";
   framework_id: string | null;
+  sensitivity_ceiling: string;
   expires_at: string;
   created_at: string;
   created_by: string;
@@ -405,7 +410,13 @@ export interface TrustShare {
 // --- Audit log --------------------------------------------------------------
 
 export interface AuditLogEntry {
-  category: "triage" | "connector" | "snapshot" | "workflow" | "trust_share";
+  category:
+    | "triage"
+    | "connector"
+    | "snapshot"
+    | "workflow"
+    | "trust_share"
+    | "request";
   actor: string;
   occurred_at: string;
   summary: string;

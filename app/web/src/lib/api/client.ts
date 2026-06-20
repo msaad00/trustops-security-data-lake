@@ -258,6 +258,7 @@ export const api = {
     role: "auditor";
     scope?: "posture_full" | "posture_framework";
     framework_id?: string | null;
+    sensitivity_ceiling?: string;
     expires_in_hours: number;
   }) => post<{ share: TrustShare }>("/trust-shares", payload),
   revokeTrustShare: (share_id: string) =>
@@ -274,11 +275,18 @@ export const api = {
   mappings: () =>
     get<{ count: number; mappings: ControlArticleMapping[] }>("/mappings"),
   auditLog: (
-    opts: { category?: string; actor?: string; limit?: number } = {},
+    opts: {
+      category?: string;
+      actor?: string;
+      include_requests?: boolean;
+      limit?: number;
+    } = {},
   ): Promise<{ count: number; entries: AuditLogEntry[] }> => {
     const qs = new URLSearchParams();
     if (opts.category) qs.set("category", opts.category);
     if (opts.actor) qs.set("actor", opts.actor);
+    if (opts.include_requests !== undefined)
+      qs.set("include_requests", String(opts.include_requests));
     if (opts.limit !== undefined) qs.set("limit", String(opts.limit));
     const tail = qs.toString();
     return get<{ count: number; entries: AuditLogEntry[] }>(

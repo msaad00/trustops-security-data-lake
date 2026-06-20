@@ -46,6 +46,15 @@ const toneForResult = (r: string | undefined) =>
         ? "attention"
         : "default";
 
+const labelForStatus = (status: string) =>
+  status === "primary_lake"
+    ? "Primary lake"
+    : status === "supported_connector"
+      ? "Supported"
+      : status === "local_demo"
+        ? "Local demo"
+        : status.replace(/_/g, " ");
+
 export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
   const auditor = useAuditorMode();
   const configure = useConfigureMutation();
@@ -169,7 +178,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
           <Badge tone={isEnabled ? "ready" : "default"}>
             {connector.state}
           </Badge>
-          <Badge>{connector.production_status.replace("_", " ")}</Badge>
+          <Badge>{labelForStatus(connector.production_status)}</Badge>
           <Badge tone="info">
             {connector.access_boundary.replace("_", " ")}
           </Badge>

@@ -50,6 +50,7 @@ from security_lakehouse.auth.saml import (
 )
 from security_lakehouse.auth.sessions import SESSION_COOKIE
 from security_lakehouse.dashboard import render_dashboard
+from security_lakehouse.data_policy import redact_payload
 from security_lakehouse.db import metrics as metrics_db
 from security_lakehouse.db import migrate, remediation, repository
 from security_lakehouse.db import tags as tags_db
@@ -74,7 +75,6 @@ _require_snapshot = require_scope("snapshot")
 _require_admin = require_scope("auth_admin")
 _require_evidence_request = require_scope("evidence_request")
 _require_control_manage = require_scope("control_manage")
-_REDACTED_FIELDS = {"owner", "asset_owner", "actor", "assignee", "note", "credentials"}
 
 
 class _StrictModel(BaseModel):
@@ -201,16 +201,7 @@ def _insecure_requested() -> bool:
 
 
 def _redact_payload(payload: object, identity: Identity) -> object:
-    if identity.role != "auditor":
-        return payload
-    if isinstance(payload, dict):
-        return {
-            key: ("[redacted]" if key in _REDACTED_FIELDS else _redact_payload(value, identity))
-            for key, value in payload.items()
-        }
-    if isinstance(payload, list):
-        return [_redact_payload(item, identity) for item in payload]
-    return payload
+    return redact_payload(payload, role=identity.role)
 
 
 def _public_trust_summary(lake: Path, share: dict[str, object]) -> dict[str, object]:
@@ -253,10 +244,14 @@ def _public_trust_summary(lake: Path, share: dict[str, object]) -> dict[str, obj
             )
     return {
         "schema_version": "trustops.public_trust.v1",
+        "sensitivity": "public",
+        "visibility": "external_reviewer",
+        "redaction_policy": "trustops.public_summary.v1",
         "data_residency": "evidence never leaves this lake; only this summary is shared",
         "issued_by": share.get("created_by"),
         "scope": share.get("scope"),
         "role": share.get("role"),
+        "sensitivity_ceiling": share.get("sensitivity_ceiling", "public"),
         "expires_at": share.get("expires_at"),
         "evaluated_at": redacted.get("evaluated_at"),
         "posture": {
@@ -1154,6 +1149,8 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"requires scope: {required_scope}",
             )
+        if request.headers.get("Idempotency-Key") and "idempotency_key" not in body:
+            body = {**body, "idempotency_key": request.headers["Idempotency-Key"]}
         # Legacy POSTs run workflows, connector syncs (full pipeline + network),
         # and scheduler ticks; offload so they do not block the event loop.
         return await run_in_threadpool(_legacy_post_response, legacy_path, body, lake_for(identity), identity)

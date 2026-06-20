@@ -11,6 +11,10 @@ Aggregates posture-changing events from every append-only log in
     workflow       workflow runs (gold/workflow_runs.jsonl)
     trust_share    trust portal share create / revoke (gold/trust_shares.jsonl)
 
+Request authorization decisions are also available with ``category="request"``
+for security debugging, but are excluded from the default activity stream so
+routine page loads do not drown out trust-center events.
+
 Every entry has the same shape so the UI table is a single render path.
 """
 
@@ -212,6 +216,7 @@ def build_audit_log(
     category: str | None = None,
     actor: str | None = None,
     limit: int = 200,
+    include_requests: bool = False,
 ) -> list[dict[str, Any]]:
     lake = Path(lake_dir)
     entries = (
@@ -220,8 +225,9 @@ def build_audit_log(
         + _snapshot_entries(lake)
         + _workflow_entries(lake)
         + _trust_share_entries(lake)
-        + _request_entries(lake)
     )
+    if include_requests or category == "request":
+        entries += _request_entries(lake)
     if category:
         entries = [e for e in entries if e["category"] == category]
     if actor:

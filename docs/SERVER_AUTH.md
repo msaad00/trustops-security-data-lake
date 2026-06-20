@@ -90,6 +90,60 @@ All non-health `/api/v1/*` and `/api/*` requests are authenticated in server
 mode. Request audit events include a correlation ID, actor, tenant, route,
 method, decision, status, and timestamp.
 
+## Data sensitivity defaults
+
+TrustOps treats visibility as a server-side policy, not a UI convention.
+Supported labels are `public`, `internal`, `confidential`, `restricted`, and
+`secret`.
+
+Recommended default ceilings:
+
+| Principal        | Maximum visibility | Notes                                                                              |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------------- |
+| `admin`          | `restricted`       | Can operate the platform; raw secrets still should not be persisted                |
+| `security_admin` | `restricted`       | Can operate evidence sources, workflows, snapshots, and controls                   |
+| `contributor`    | `confidential`     | Can triage and request evidence without broad admin access                         |
+| `read_only`      | `confidential`     | Internal read-only posture and evidence view                                       |
+| `auditor`        | `internal`         | Read-only with owner, actor, assignee, note, and credential fields redacted        |
+| trust share      | `public`           | External reviewer summary only; no raw evidence, owners, notes, or asset internals |
+
+Trust-share records include a `sensitivity_ceiling` and default to `public`.
+The public trust endpoint returns a curated posture summary tagged
+`sensitivity=public`, `visibility=external_reviewer`, and
+`redaction_policy=trustops.public_summary.v1`.
+
+## Integrity, idempotency, and API errors
+
+Integrity defaults:
+
+- JSON writes are atomic: readers see the old complete file or the new complete
+  file, never a partial write.
+- Append-only ledgers are flushed and fsync'd before an acknowledged record
+  returns.
+- Raw evidence rows carry SHA-256 hashes, and assessment snapshots are chained
+  through `prev_hash` and `assessment_hash`.
+- Raw event validation rejects duplicate `event_id` values before evaluation.
+
+Idempotency defaults:
+
+- Connector ingestion merges by stable source IDs so retries and overlapping
+  watermarks do not duplicate evidence.
+- Workflow webhooks send an `Idempotency-Key` derived from the action payload.
+- Trust-share creation accepts `Idempotency-Key`; a retry with the same key
+  returns the existing share metadata and does **not** mint a second external
+  link. Because raw share tokens are never stored, replays do not re-expose the
+  token.
+
+API error defaults:
+
+- `/api/v1/*` responses use `{data, meta, errors}` envelopes.
+- Validation failures return `422` with `code=unprocessable_entity` and field
+  detail suitable for headless agents.
+- Legacy `/api/*` errors are sanitized so internal exception text is not
+  returned to browsers or agents.
+- Every secured request receives an `X-Correlation-ID` and an authorization
+  audit event.
+
 ## Tenant data isolation
 
 Server mode binds to a lake _root_. Each tenant's bronze/silver/gold evidence
