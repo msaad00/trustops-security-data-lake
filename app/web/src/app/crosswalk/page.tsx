@@ -1,9 +1,11 @@
 "use client";
 
-import { ExternalLink, FileCheck2, Layers } from "lucide-react";
+import { useMemo, useState } from "react";
+import { ExternalLink, FileCheck2, Layers, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -20,18 +22,59 @@ export default function CrosswalkPage() {
   const heuristic = useCrosswalk();
   const reviewed = useReviewedCrosswalk();
   const mappings = useMappings();
+  const [query, setQuery] = useState("");
+  const [framework, setFramework] = useState("all");
 
   const heuristicFrameworks = heuristic.data?.frameworks ?? [];
   const heuristicMatrix = heuristic.data?.matrix ?? [];
   const reviewedFrameworks = reviewed.data?.frameworks ?? [];
   const reviewedMatrix = reviewed.data?.matrix ?? [];
+  const mappingRows = useMemo(
+    () =>
+      (mappings.data ?? []).flatMap((mapping) =>
+        mapping.articles.map((article) => ({
+          ...article,
+          control_id: mapping.control_id,
+          framework_id: mapping.framework_id,
+        })),
+      ),
+    [mappings.data],
+  );
+  const frameworkOptions = useMemo(
+    () =>
+      Array.from(new Set(mappingRows.map((row) => row.framework_id))).sort(),
+    [mappingRows],
+  );
+  const filteredRows = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    return mappingRows.filter((row) => {
+      if (framework !== "all" && row.framework_id !== framework) return false;
+      if (!needle) return true;
+      return [
+        row.framework_id,
+        row.control_id,
+        row.article_id,
+        row.title,
+        row.rationale,
+        row.reviewed_by,
+      ]
+        .join(" ")
+        .toLowerCase()
+        .includes(needle);
+    });
+  }, [mappingRows, framework, query]);
+  const reviewedControlCount = new Set(mappingRows.map((row) => row.control_id))
+    .size;
+  const reviewedArticleCount = new Set(
+    mappingRows.map((row) => `${row.framework_id}:${row.article_id}`),
+  ).size;
 
   return (
     <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
       <PageHeader
         eyebrow="Crosswalk"
-        title="Framework cross-mapping"
-        description="Reviewed control_id ↔ source-article mappings live above. The heuristic shared-domain matrices below are the safety net when reviewed mappings are missing — every framework should aim for reviewed coverage."
+        title="Control mapping coverage"
+        description="Reviewed mappings from TrustOps controls to framework source articles, with fallback framework-to-framework diagnostics kept separate."
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone="ready">
@@ -48,82 +91,123 @@ export default function CrosswalkPage() {
 
       <Card className="overflow-hidden">
         <CardHeader>
-          <CardTitle>Reviewed control → article mappings</CardTitle>
+          <CardTitle>Reviewed mappings</CardTitle>
           <CardDescription>
-            Auditor-signed mappings from local <code>control_id</code> to the
-            framework's official-source article. Click the source link to verify
-            the article text at the regulator.
+            Signed control-to-article links that support framework overlap,
+            evidence requests, and trust-center exports.
           </CardDescription>
         </CardHeader>
-        <div className="grid gap-2 p-5 pt-0">
-          {(mappings.data ?? []).length === 0 && (
-            <div className="rounded-lg border border-dashed border-line p-3 text-xs text-muted">
-              No reviewed mappings yet. Add records to{" "}
+        <CardContent className="grid gap-4">
+          <div className="grid gap-3 rounded-lg border border-line bg-slate-50 p-3 lg:grid-cols-[minmax(240px,1fr)_220px_auto] lg:items-center">
+            <label className="flex min-w-0 items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm">
+              <Search className="h-4 w-4 text-muted" />
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search control, article, rationale, reviewer"
+                className="min-w-0 flex-1 bg-transparent text-ink outline-none placeholder:text-muted"
+              />
+            </label>
+            <select
+              value={framework}
+              onChange={(event) => setFramework(event.target.value)}
+              className="h-10 rounded-lg border border-line bg-white px-3 text-sm font-bold text-ink outline-none"
+            >
+              <option value="all">All frameworks</option>
+              {frameworkOptions.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+            <div className="flex flex-wrap gap-2 lg:justify-end">
+              <Badge tone="ready">{reviewedControlCount} controls</Badge>
+              <Badge tone="info">{reviewedArticleCount} articles</Badge>
+              <Badge>{filteredRows.length} rows</Badge>
+            </div>
+          </div>
+
+          {mappingRows.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-line p-4 text-sm text-muted">
+              No reviewed mappings found in{" "}
               <code>mappings/control_articles.json</code>.
             </div>
+          ) : filteredRows.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-line p-4 text-sm text-muted">
+              No mappings match the current filters.
+            </div>
+          ) : (
+            <div className="overflow-x-auto rounded-lg border border-line">
+              <table className="w-full min-w-[960px] border-collapse text-sm">
+                <thead>
+                  <tr className="border-b border-line bg-slate-50 text-left text-[11px] font-black uppercase tracking-wide text-muted">
+                    <th className="px-3 py-2">Framework</th>
+                    <th className="px-3 py-2">Control</th>
+                    <th className="px-3 py-2">Source article</th>
+                    <th className="px-3 py-2">Why it maps</th>
+                    <th className="px-3 py-2">Review</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredRows.map((row) => (
+                    <tr
+                      key={`${row.framework_id}-${row.control_id}-${row.article_id}`}
+                      className="border-b border-line last:border-0"
+                    >
+                      <td className="px-3 py-3 align-top">
+                        <FrameworkBadge
+                          frameworkId={row.framework_id}
+                          fallbackLabel={row.framework_id}
+                          size={30}
+                        />
+                      </td>
+                      <td className="px-3 py-3 align-top">
+                        <code className="font-black text-ink">
+                          {row.control_id}
+                        </code>
+                      </td>
+                      <td className="max-w-[280px] px-3 py-3 align-top">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <code className="font-black text-ink">
+                            {row.article_id}
+                          </code>
+                          <Badge tone="ready">reviewed</Badge>
+                        </div>
+                        <div className="mt-1 text-xs leading-5 text-muted">
+                          {row.title}
+                        </div>
+                        <a
+                          href={row.official_source_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-1 inline-flex items-center gap-1 text-[11px] font-bold text-brand hover:underline"
+                        >
+                          official source <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </td>
+                      <td className="max-w-[360px] px-3 py-3 align-top text-xs leading-5 text-muted">
+                        {row.rationale}
+                      </td>
+                      <td className="px-3 py-3 align-top text-xs text-muted">
+                        <b className="block text-ink">{row.reviewed_by}</b>
+                        {row.reviewed_at}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
-          {(mappings.data ?? []).map((mapping) =>
-            mapping.articles.map((article) => (
-              <div
-                key={`${mapping.control_id}-${article.article_id}`}
-                className="grid grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)] items-start gap-4 rounded-xl border border-line bg-white p-3 text-sm"
-              >
-                <FrameworkBadge
-                  frameworkId={mapping.framework_id}
-                  fallbackLabel={mapping.framework_id}
-                  size={36}
-                />
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <code className="font-black text-ink">
-                      {mapping.control_id}
-                    </code>
-                    <Badge>{mapping.framework_id}</Badge>
-                  </div>
-                  <div className="mt-1 text-xs text-muted">
-                    {article.rationale}
-                  </div>
-                  <div className="mt-1 text-[10px] text-muted">
-                    reviewed by{" "}
-                    <b className="text-ink">{article.reviewed_by}</b> at{" "}
-                    {article.reviewed_at}
-                  </div>
-                </div>
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <code className="font-black text-ink">
-                      {article.article_id}
-                    </code>
-                    <Badge tone="ready">reviewed</Badge>
-                  </div>
-                  <div className="mt-1 truncate text-xs text-muted">
-                    {article.title}
-                  </div>
-                  <a
-                    href={article.official_source_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-1 inline-flex items-center gap-1 text-[11px] text-brand hover:underline"
-                  >
-                    official source <ExternalLink className="h-3 w-3" />
-                  </a>
-                </div>
-              </div>
-            )),
-          )}
-        </div>
+        </CardContent>
       </Card>
 
-      <Card className="overflow-hidden">
-        <CardHeader>
-          <CardTitle>Reviewed framework × framework</CardTitle>
-          <CardDescription>
-            Cells list articles + controls shared between mapping tables.
-            Diagonal is self.
-          </CardDescription>
-        </CardHeader>
-        <div className="overflow-x-auto">
-          <table className="min-w-[720px] w-full border-collapse text-sm">
+      <details className="overflow-hidden rounded-xl border border-line bg-white shadow-card">
+        <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-black text-ink">
+          Reviewed framework overlap matrix
+          <Badge tone="info">{reviewedFrameworks.length} frameworks</Badge>
+        </summary>
+        <div className="overflow-x-auto border-t border-line">
+          <table className="w-full min-w-[720px] border-collapse text-sm">
             <thead>
               <tr>
                 <th className="bg-slate-50 px-3 py-2 text-left text-[11px] font-black uppercase tracking-wide text-muted">
@@ -172,60 +256,28 @@ export default function CrosswalkPage() {
                       ].join(" ")}
                     >
                       {cell.is_self ? (
-                        <span className="text-muted">— self —</span>
+                        <span className="text-muted">self</span>
                       ) : (
                         <div className="grid gap-2">
-                          <div>
-                            <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-                              shared domains
-                            </div>
-                            {cell.shared_domains.length === 0 ? (
-                              <span className="text-muted">
-                                no shared domains
-                              </span>
-                            ) : (
-                              <div className="flex flex-wrap gap-1">
-                                {cell.shared_domains.map((d) => (
-                                  <Badge tone="info" key={d}>
-                                    {d}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                          <div>
-                            <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-                              articles
-                            </div>
-                            {cell.shared_articles.length === 0 ? (
-                              <span className="text-muted">
-                                no shared articles
-                              </span>
-                            ) : (
-                              <div className="flex flex-wrap gap-1">
-                                {cell.shared_articles.map((a) => (
-                                  <Badge key={a}>{a}</Badge>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                          <div>
-                            <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-                              controls
-                            </div>
-                            {cell.shared_controls.length === 0 ? (
-                              <span className="text-muted">
-                                no shared controls
-                              </span>
-                            ) : (
-                              <div className="flex flex-wrap gap-1">
-                                {cell.shared_controls.map((c) => (
-                                  <Badge tone="ready" key={c}>
-                                    {c}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
+                          <div className="flex flex-wrap gap-1">
+                            {cell.shared_domains.map((d) => (
+                              <Badge tone="info" key={d}>
+                                {d}
+                              </Badge>
+                            ))}
+                            {cell.shared_articles.map((a) => (
+                              <Badge key={a}>{a}</Badge>
+                            ))}
+                            {cell.shared_controls.map((c) => (
+                              <Badge tone="ready" key={c}>
+                                {c}
+                              </Badge>
+                            ))}
+                            {cell.shared_domains.length === 0 &&
+                              cell.shared_articles.length === 0 &&
+                              cell.shared_controls.length === 0 && (
+                                <span className="text-muted">none</span>
+                              )}
                           </div>
                         </div>
                       )}
@@ -236,19 +288,15 @@ export default function CrosswalkPage() {
             </tbody>
           </table>
         </div>
-      </Card>
+      </details>
 
-      <Card className="overflow-hidden">
-        <CardHeader>
-          <CardTitle>Heuristic safety net · shared risk domains</CardTitle>
-          <CardDescription>
-            Computed from the local control catalog (<code>risk_domain</code> +{" "}
-            <code>owner</code>) when reviewed mappings are absent. Useful for
-            sketching new framework support before reviewers sign off.
-          </CardDescription>
-        </CardHeader>
-        <div className="overflow-x-auto">
-          <table className="min-w-[720px] w-full border-collapse text-sm">
+      <details className="overflow-hidden rounded-xl border border-line bg-white shadow-card">
+        <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-black text-ink">
+          Heuristic domain overlap matrix
+          <Badge>{heuristicFrameworks.length} frameworks</Badge>
+        </summary>
+        <div className="overflow-x-auto border-t border-line">
+          <table className="w-full min-w-[720px] border-collapse text-sm">
             <thead>
               <tr>
                 <th className="bg-slate-50 px-3 py-2 text-left text-[11px] font-black uppercase tracking-wide text-muted">
@@ -312,7 +360,7 @@ export default function CrosswalkPage() {
             </tbody>
           </table>
         </div>
-      </Card>
+      </details>
     </div>
   );
 }

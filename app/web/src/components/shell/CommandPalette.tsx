@@ -64,7 +64,7 @@ const ROUTE_ITEMS: PaletteItem[] = [
   {
     id: "r:violations",
     group: "Routes",
-    label: "Violations",
+    label: "Findings",
     href: "/violations",
     Icon: AlertOctagon,
   },
@@ -120,7 +120,7 @@ const ROUTE_ITEMS: PaletteItem[] = [
   {
     id: "r:crosswalk",
     group: "Routes",
-    label: "Crosswalk",
+    label: "Crosswalk diagnostics",
     href: "/crosswalk",
     Icon: Layers,
   },
