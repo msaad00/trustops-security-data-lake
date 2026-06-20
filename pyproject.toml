@@ -55,6 +55,11 @@ mcp = [
 sdk = [
     "httpx>=0.27",
 ]
+# Optional human/headless agent orchestration harness. The core assessment
+# engine must not depend on LangGraph or an LLM.
+agents = [
+    "langgraph>=0.2.0",
+]
 
 # Conventional commits — used by the pre-commit `commitizen` hook to
 # validate every commit message format.

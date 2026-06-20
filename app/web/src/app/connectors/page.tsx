@@ -17,11 +17,20 @@ import { useConnectors } from "@/lib/api/hooks";
 import type { ConnectorView } from "@/lib/api/types";
 
 const toneForStatus = (status: string) =>
-  status === "hero_path"
+  status === "primary_lake"
     ? "ready"
-    : status === "supported_path"
+    : status === "supported_connector"
       ? "info"
       : "attention";
+
+const labelForStatus = (status: string) =>
+  status === "primary_lake"
+    ? "Primary lake"
+    : status === "supported_connector"
+      ? "Supported"
+      : status === "local_demo"
+        ? "Local demo"
+        : status.replace(/_/g, " ");
 
 const toneForState = (state: string) =>
   state === "enabled" ? "ready" : "default";
@@ -57,7 +66,7 @@ function ConnectorRow({
           <span className="truncate font-black text-ink">{connector.name}</span>
           <Badge tone={toneForState(connector.state)}>{connector.state}</Badge>
           <Badge tone={toneForStatus(connector.production_status)}>
-            {connector.production_status.replace("_", " ")}
+            {labelForStatus(connector.production_status)}
           </Badge>
         </span>
         <span className="mt-1 block truncate text-xs text-muted">
@@ -77,7 +86,7 @@ function ConnectorRow({
             </span>
           </>
         ) : (
-          <Badge tone="default">no probe yet</Badge>
+          <Badge tone="default">connection not tested</Badge>
         )}
       </span>
     </button>
@@ -107,7 +116,7 @@ export default function ConnectorsPage() {
   const totals = {
     total: data.length,
     enabled: data.filter((c) => c.state === "enabled").length,
-    hero: data.filter((c) => c.production_status === "hero_path").length,
+    primary: data.filter((c) => c.production_status === "primary_lake").length,
   };
 
   const selectedLive = selected
@@ -161,8 +170,8 @@ export default function ConnectorsPage() {
             <CardTitle>{filtered.length} connectors</CardTitle>
             <CardDescription>
               Click a row to configure credentials, run a probe, or disable the
-              connector. {totals.hero} live as hero paths (Snowflake /
-              ClickHouse / object storage).
+              connector. {totals.primary} primary evidence lake sources are
+              modeled for governed warehouse and telemetry lake deployments.
             </CardDescription>
           </CardHeader>
           <div className="grid gap-2 p-4 pt-0">

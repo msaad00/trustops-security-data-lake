@@ -33,6 +33,11 @@ DEFAULT_FRESHNESS_SLO_MINUTES = 1440
 VALID_STATES = {"enabled", "disabled"}
 VALID_RUN_KINDS = {"probe", "sync"}
 VALID_RUN_RESULTS = {"ok", "error", "skipped"}
+PRODUCTION_STATUS_ORDER = {
+    "primary_lake": 0,
+    "supported_connector": 1,
+    "local_demo": 2,
+}
 
 
 def _gold(lake_dir: str | Path) -> Path:
@@ -247,7 +252,12 @@ def build_catalog_view(lake_dir: str | Path) -> list[dict[str, Any]]:
                 **_evaluate_freshness(base, sync),
             }
         )
-    out.sort(key=lambda c: (c.get("production_status", "z"), c.get("connector_id", "")))
+    out.sort(
+        key=lambda c: (
+            PRODUCTION_STATUS_ORDER.get(str(c.get("production_status") or ""), 99),
+            c.get("connector_id", ""),
+        )
+    )
     return out
 
 

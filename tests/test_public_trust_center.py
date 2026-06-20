@@ -58,6 +58,10 @@ def test_public_trust_returns_redacted_posture(tmp_path: Path) -> None:
     # Residency promise is present and explicit.
     assert body["data_residency"] == "evidence never leaves this lake; only this summary is shared"
     assert body["schema_version"] == "trustops.public_trust.v1"
+    assert body["sensitivity"] == "public"
+    assert body["sensitivity_ceiling"] == "public"
+    assert body["visibility"] == "external_reviewer"
+    assert body["redaction_policy"] == "trustops.public_summary.v1"
 
     # Trimmed public posture: score/state + per-framework readiness.
     assert isinstance(body["posture"]["score"], (int, float))
@@ -133,3 +137,61 @@ def test_resolve_share_validates_hash_and_lifecycle(tmp_path: Path) -> None:
 
     assert trust_share.resolve_share(tmp_path, "wrong-token") is None
     assert trust_share.resolve_share(tmp_path, "") is None
+
+
+def test_share_records_default_public_sensitivity_ceiling(tmp_path: Path) -> None:
+    share = trust_share.create_share(tmp_path, role="auditor", expires_in_hours=24)
+    assert share["sensitivity_ceiling"] == "public"
+
+
+def test_share_rejects_unknown_sensitivity_ceiling(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="sensitivity_ceiling"):
+        trust_share.create_share(
+            tmp_path,
+            role="auditor",
+            expires_in_hours=24,
+            sensitivity_ceiling="customer_secret",
+        )
+
+
+def test_create_share_idempotency_key_does_not_mint_duplicate(tmp_path: Path) -> None:
+    first = trust_share.create_share(
+        tmp_path,
+        role="auditor",
+        expires_in_hours=24,
+        idempotency_key="review-123",
+    )
+    replay = trust_share.create_share(
+        tmp_path,
+        role="auditor",
+        expires_in_hours=24,
+        idempotency_key="review-123",
+    )
+
+    assert replay["share_id"] == first["share_id"]
+    assert replay["idempotent_replay"] is True
+    assert "token" not in replay
+    assert len(trust_share.list_shares(tmp_path)) == 1
+
+
+def test_trust_share_api_honors_idempotency_header(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    client = TestClient(create_app(tmp_path, require_auth=False))
+    headers = {"Idempotency-Key": "customer-review-42"}
+
+    first = client.post(
+        "/api/trust-shares",
+        headers=headers,
+        json={"role": "auditor", "expires_in_hours": 24},
+    )
+    replay = client.post(
+        "/api/trust-shares",
+        headers=headers,
+        json={"role": "auditor", "expires_in_hours": 24},
+    )
+
+    assert first.status_code == 201
+    assert replay.status_code == 201
+    assert replay.json()["share"]["share_id"] == first.json()["share"]["share_id"]
+    assert replay.json()["share"]["idempotent_replay"] is True
+    assert "token" not in replay.json()["share"]

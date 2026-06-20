@@ -134,3 +134,11 @@ def test_request_audit_records_decisions(tmp_path: Path, env) -> None:
     entries = build_audit_log(tmp_path, category="request")
     decisions = {entry["result"] for entry in entries}
     assert {"allow", "deny"} <= decisions
+
+
+def test_request_audit_is_explicit_not_default_activity(tmp_path: Path, env) -> None:
+    client, tokens = env
+    client.get("/api/v1/controls", headers=_bearer(tokens["admin"]))
+
+    assert all(entry["category"] != "request" for entry in build_audit_log(tmp_path))
+    assert build_audit_log(tmp_path, category="request")

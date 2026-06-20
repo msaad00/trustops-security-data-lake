@@ -11,10 +11,10 @@ from urllib.parse import parse_qs, urlparse
 
 from security_lakehouse import api_legacy, api_v1
 from security_lakehouse.dashboard import render_dashboard
+from security_lakehouse.data_policy import redact_payload
 from security_lakehouse.web import web_dist_dir, web_dist_index
 
 AUDITOR_ROLE = "auditor"
-REDACTED_FIELDS = {"asset_owner", "actor", "assignee", "note", "credentials"}
 
 
 def serve(lake_dir: str | Path, *, host: str = "127.0.0.1", port: int = 8787) -> None:
@@ -76,7 +76,10 @@ class _Handler(BaseHTTPRequestHandler):
                 return
             self._handle_v1_post(parsed.path)
             return
-        status, body = api_legacy.handle_post(parsed.path, self._read_json_body(), self.lake_dir, role=self._role())
+        request_body = self._read_json_body()
+        if self.headers.get("Idempotency-Key") and "idempotency_key" not in request_body:
+            request_body = {**request_body, "idempotency_key": self.headers["Idempotency-Key"]}
+        status, body = api_legacy.handle_post(parsed.path, request_body, self.lake_dir, role=self._role())
         self._send_json(body, status=status)
 
     def _handle_v1_get(self, path: str, query: dict[str, list[str]]) -> None:
@@ -99,13 +102,7 @@ class _Handler(BaseHTTPRequestHandler):
         return (self.headers.get("X-Trust-Role") or "").strip().lower()
 
     def _redact(self, payload: object) -> object:
-        if self._role() != AUDITOR_ROLE:
-            return payload
-        if isinstance(payload, dict):
-            return {k: ("[redacted]" if k in REDACTED_FIELDS else self._redact(v)) for k, v in payload.items()}
-        if isinstance(payload, list):
-            return [self._redact(item) for item in payload]
-        return payload
+        return redact_payload(payload, role=self._role() or "admin")
 
     def log_message(self, fmt: str, *args: object) -> None:
         return

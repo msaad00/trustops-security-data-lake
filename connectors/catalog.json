@@ -22,7 +22,7 @@
       "default_route": "Snowflake",
       "freshness_slo_minutes": 60,
       "is_implemented": true,
-      "production_status": "hero_path",
+      "production_status": "primary_lake",
       "velocity": "low_current_state",
       "native_connector": true,
       "data_shape": "current_state"
@@ -47,7 +47,7 @@
       ],
       "default_route": "ClickHouse",
       "freshness_slo_minutes": 15,
-      "production_status": "hero_path",
+      "production_status": "primary_lake",
       "velocity": "high_event_stream",
       "native_connector": true,
       "data_shape": "event_log"
@@ -63,7 +63,7 @@
       "evidence_types": ["sarif", "json", "attestation", "audit_export"],
       "default_route": "Snowflake",
       "freshness_slo_minutes": 120,
-      "production_status": "supported_path",
+      "production_status": "supported_connector",
       "velocity": "low_current_state",
       "native_connector": true,
       "data_shape": "current_state"
@@ -90,7 +90,7 @@
       "default_route": "dual",
       "freshness_slo_minutes": 60,
       "is_implemented": true,
-      "production_status": "supported_path",
+      "production_status": "supported_connector",
       "velocity": "medium_api",
       "native_connector": false,
       "data_shape": "event_log"
@@ -111,7 +111,7 @@
       "default_route": "dual",
       "freshness_slo_minutes": 60,
       "is_implemented": true,
-      "production_status": "supported_path",
+      "production_status": "supported_connector",
       "velocity": "low_current_state",
       "native_connector": false,
       "data_shape": "current_state"
@@ -127,7 +127,7 @@
       "evidence_types": ["auth_event", "failed_login", "session_event"],
       "default_route": "dual",
       "freshness_slo_minutes": 15,
-      "production_status": "supported_path",
+      "production_status": "supported_connector",
       "velocity": "medium_api",
       "native_connector": false,
       "data_shape": "event_log"
@@ -149,7 +149,7 @@
       "default_route": "dual",
       "freshness_slo_minutes": 360,
       "is_implemented": true,
-      "production_status": "supported_path",
+      "production_status": "supported_connector",
       "velocity": "low_current_state",
       "native_connector": false,
       "data_shape": "current_state"
@@ -170,7 +170,7 @@
       "evidence_types": ["user", "group", "assignment", "access_review"],
       "default_route": "Snowflake",
       "freshness_slo_minutes": 240,
-      "production_status": "supported_path",
+      "production_status": "supported_connector",
       "velocity": "medium_api",
       "native_connector": false,
       "data_shape": "current_state"
@@ -190,7 +190,7 @@
       "evidence_types": ["remediation_ticket", "owner_sla", "exception"],
       "default_route": "Snowflake",
       "freshness_slo_minutes": 60,
-      "production_status": "supported_path",
+      "production_status": "supported_connector",
       "velocity": "medium_api",
       "native_connector": false,
       "data_shape": "current_state"
@@ -206,7 +206,7 @@
       "evidence_types": ["alert", "detection", "incident_signal"],
       "default_route": "ClickHouse",
       "freshness_slo_minutes": 10,
-      "production_status": "supported_path",
+      "production_status": "supported_connector",
       "velocity": "high_event_stream",
       "native_connector": false,
       "data_shape": "event_log"
@@ -225,7 +225,7 @@
       "evidence_types": ["tool_call", "policy_decision", "runtime_block"],
       "default_route": "ClickHouse",
       "freshness_slo_minutes": 5,
-      "production_status": "supported_path",
+      "production_status": "supported_connector",
       "velocity": "high_event_stream",
       "native_connector": false,
       "data_shape": "event_log"
@@ -249,7 +249,7 @@
       ],
       "default_route": "local",
       "freshness_slo_minutes": 1440,
-      "production_status": "starter_path",
+      "production_status": "local_demo",
       "velocity": "low_current_state",
       "native_connector": true,
       "data_shape": "current_state"
@@ -270,7 +270,7 @@
       "default_route": "dual",
       "freshness_slo_minutes": 240,
       "is_implemented": true,
-      "production_status": "supported_path",
+      "production_status": "supported_connector",
       "velocity": "medium_api",
       "native_connector": false,
       "data_shape": "current_state"
@@ -291,7 +291,7 @@
       "default_route": "dual",
       "freshness_slo_minutes": 240,
       "is_implemented": true,
-      "production_status": "supported_path",
+      "production_status": "supported_connector",
       "velocity": "low_current_state",
       "native_connector": false,
       "data_shape": "current_state"
@@ -312,7 +312,7 @@
       "default_route": "dual",
       "freshness_slo_minutes": 240,
       "is_implemented": true,
-      "production_status": "supported_path",
+      "production_status": "supported_connector",
       "velocity": "low_current_state",
       "native_connector": false,
       "data_shape": "current_state"
@@ -333,7 +333,7 @@
       "default_route": "dual",
       "freshness_slo_minutes": 240,
       "is_implemented": true,
-      "production_status": "supported_path",
+      "production_status": "supported_connector",
       "velocity": "medium_api",
       "native_connector": false,
       "data_shape": "current_state"

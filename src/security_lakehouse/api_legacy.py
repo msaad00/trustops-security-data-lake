@@ -186,8 +186,13 @@ def handle_get(path: str, query: Query, lake_dir: str | Path) -> tuple[HTTPStatu
         return HTTPStatus.OK, {"count": len(shares), "shares": shares}
     if path == "/api/audit-log":
         limit = int(_first(query, "limit") or "200")
+        include_requests = (_first(query, "include_requests") or "false").lower() in {"1", "true", "yes"}
         entries = build_audit_log(
-            lake, category=_first(query, "category"), actor=_first(query, "actor"), limit=max(1, min(limit, 1000))
+            lake,
+            category=_first(query, "category"),
+            actor=_first(query, "actor"),
+            limit=max(1, min(limit, 1000)),
+            include_requests=include_requests,
         )
         return HTTPStatus.OK, {"count": len(entries), "entries": entries}
     connector_runs = _suffix_match(path, "/api/connectors/", "/runs")
@@ -292,6 +297,8 @@ def handle_post(path: str, body: Body, lake_dir: str | Path, *, role: str = "") 
                 expires_in_hours=int(body.get("expires_in_hours") or 24),
                 created_by=str(body.get("created_by") or "console"),
                 framework_id=body.get("framework_id"),
+                sensitivity_ceiling=str(body.get("sensitivity_ceiling") or "public"),
+                idempotency_key=body.get("idempotency_key"),
             )
         except ValueError:
             return HTTPStatus.BAD_REQUEST, {"error": "bad_request", "reason": "invalid request"}
