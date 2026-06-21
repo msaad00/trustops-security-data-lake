@@ -7,6 +7,7 @@ import {
   LayoutTemplate,
   Loader2,
   Play,
+  Plus,
   Save,
   ServerCog,
   Shuffle,
@@ -389,6 +390,15 @@ export default function AutomationPage() {
     flash(`Loaded "${template.name}" — save to persist.`);
   };
 
+  const startNewWorkflow = () => {
+    setActiveId(NEW_WORKFLOW_ID);
+    setEditor(emptyEditor());
+    setStarterLoaded(true);
+    setLastRun(null);
+    setSelectedNode(null);
+    flash("New blank workflow opened.");
+  };
+
   const persist = async () => {
     if (!editor.name.trim()) {
       flash("Workflow needs a name");
@@ -444,25 +454,25 @@ export default function AutomationPage() {
     <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
       <PageHeader
         eyebrow="Workflows"
-        title="Workflow canvas"
-        description="Design closed-loop trust operations: start from a trigger, check posture or evidence, branch on the result, then route the right action to owners, tickets, snapshots, notifications, or external systems."
+        title="Workflow builder"
+        description="Design, save, and run closed-loop trust operations from one canvas."
         actions={
           <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <Button variant="primary" onClick={startNewWorkflow}>
+              <Plus className="h-4 w-4" /> New
+            </Button>
             <select
-              value={activeId}
+              value={activeId === NEW_WORKFLOW_ID ? "" : activeId}
               onChange={(e) => {
                 const next = e.target.value;
+                if (!next) return;
                 setActiveId(next);
-                if (next === NEW_WORKFLOW_ID) {
-                  setEditor(emptyEditor());
-                  setStarterLoaded(true);
-                }
                 setSelectedNode(null);
                 setLastRun(null);
               }}
               className="max-w-full rounded-lg border border-line bg-white px-3 py-2 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand sm:max-w-[260px]"
             >
-              <option value={NEW_WORKFLOW_ID}>+ New workflow</option>
+              <option value="">Saved workflows</option>
               {(workflows.data ?? []).map((w) => (
                 <option key={w.workflow_id} value={w.workflow_id}>
                   {w.name} · v{w.version}
@@ -514,8 +524,8 @@ export default function AutomationPage() {
         }
       />
 
-      <Card className="overflow-hidden">
-        <div className="grid gap-3 p-4 sm:grid-cols-[1fr_2fr]">
+      <Card className="overflow-hidden border-brand/20">
+        <div className="grid gap-3 p-3 sm:grid-cols-[minmax(220px,0.75fr)_minmax(260px,1.25fr)]">
           <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
             Name
             <input
@@ -540,6 +550,31 @@ export default function AutomationPage() {
           </label>
         </div>
       </Card>
+
+      <div className="grid min-w-0 gap-4 xl:grid-cols-[240px_minmax(0,1fr)] 2xl:grid-cols-[240px_minmax(0,1fr)_340px]">
+        <ActionPalette catalog={catalog.data ?? []} onAdd={addNode} />
+        <WorkflowCanvas
+          nodes={nodesWithRunState}
+          edges={editor.edges}
+          catalog={catalog.data ?? []}
+          onNodesChange={(n) => setEditor((e) => ({ ...e, nodes: n }))}
+          onEdgesChange={(es) => setEditor((e) => ({ ...e, edges: es }))}
+          onSelectNode={setSelectedNode}
+          onDropAction={addNode}
+          fitTrigger={fitTrigger}
+          lastRun={lastRun}
+          onDismissRun={() => setLastRun(null)}
+          onOpenTemplates={() => setTemplatesOpen(true)}
+        />
+        <NodeConfigPanel
+          node={selected}
+          spec={selectedSpec}
+          lastResult={selectedRunResult}
+          onClose={() => setSelectedNode(null)}
+          onUpdateParams={updateNodeParams}
+          onDelete={deleteNode}
+        />
+      </div>
 
       <WorkflowSpine nodes={editor.nodes} edges={editor.edges} />
 
@@ -584,31 +619,6 @@ export default function AutomationPage() {
           </div>
         </div>
       </Card>
-
-      <div className="grid min-w-0 gap-4 xl:grid-cols-[240px_minmax(0,1fr)] 2xl:grid-cols-[240px_minmax(0,1fr)_340px]">
-        <ActionPalette catalog={catalog.data ?? []} onAdd={addNode} />
-        <WorkflowCanvas
-          nodes={nodesWithRunState}
-          edges={editor.edges}
-          catalog={catalog.data ?? []}
-          onNodesChange={(n) => setEditor((e) => ({ ...e, nodes: n }))}
-          onEdgesChange={(es) => setEditor((e) => ({ ...e, edges: es }))}
-          onSelectNode={setSelectedNode}
-          onDropAction={addNode}
-          fitTrigger={fitTrigger}
-          lastRun={lastRun}
-          onDismissRun={() => setLastRun(null)}
-          onOpenTemplates={() => setTemplatesOpen(true)}
-        />
-        <NodeConfigPanel
-          node={selected}
-          spec={selectedSpec}
-          lastResult={selectedRunResult}
-          onClose={() => setSelectedNode(null)}
-          onUpdateParams={updateNodeParams}
-          onDelete={deleteNode}
-        />
-      </div>
 
       <Card className="overflow-hidden">
         <CardHeader>

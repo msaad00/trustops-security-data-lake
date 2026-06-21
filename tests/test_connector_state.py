@@ -252,7 +252,23 @@ def test_connector_configure_unknown_id_returns_400(tmp_path: Path) -> None:
             body={"state": "enabled"},
         )
         assert status == HTTPStatus.BAD_REQUEST
-        assert body["reason"] == "invalid request"
+        assert "unknown connector_id" in body["reason"]
+    finally:
+        server.shutdown()
+
+
+def test_connector_configure_rejects_empty_enable(tmp_path: Path) -> None:
+    server = _spin_handler(tmp_path)
+    try:
+        status, body = _request(
+            server,
+            "POST",
+            "/api/connectors/clickhouse-telemetry-lake/configure",
+            body={"state": "enabled", "credentials": {}, "options": {}},
+        )
+        assert status == HTTPStatus.BAD_REQUEST
+        assert "missing required connector configuration" in body["reason"]
+        assert "ClickHouse" not in body["reason"]
     finally:
         server.shutdown()
 
