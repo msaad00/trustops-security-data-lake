@@ -52,6 +52,27 @@ const ACCESS_DEFAULTS = [
   },
 ];
 
+const TRUST_PACKAGES = [
+  {
+    label: "Internal command",
+    audience: "Security, GRC, platform, and AI owners",
+    visibility: "Private evidence, owners, remediation notes, workflows.",
+    defaultScope: "tenant_internal",
+  },
+  {
+    label: "Auditor review",
+    audience: "External auditors and assessors",
+    visibility: "Read-only posture, evidence summaries, hashes, snapshots.",
+    defaultScope: "posture_full",
+  },
+  {
+    label: "Customer trust",
+    audience: "Prospects, customers, and partner reviewers",
+    visibility: "Public summary, readiness status, approved artifacts.",
+    defaultScope: "public_summary",
+  },
+];
+
 export default function TrustCenterPage() {
   const auditor = useAuditorMode();
   const shares = useTrustShares();
@@ -91,8 +112,8 @@ export default function TrustCenterPage() {
     <div className="grid min-w-0 gap-4 px-3 py-4 sm:px-4 lg:px-5">
       <PageHeader
         eyebrow="Trust center"
-        title="Auditor share portal"
-        description="Issue scoped, expiring, revocable share tokens for external reviewers. The server stores only the hash — the raw token shows once, here, and never again. Token holders see the workbench through the auditor lens (read-only, owners and remediation notes redacted)."
+        title="Trust assurance center"
+        description="Package the same evaluated posture for internal operators, auditors, and customer reviewers without leaking private evidence by default. Shares are scoped, expiring, revocable, and backed by hashed assessment state."
         actions={
           <Badge tone="info" className="max-w-[180px]">
             <ShieldCheck className="mr-1 h-3 w-3" />{" "}
@@ -102,6 +123,21 @@ export default function TrustCenterPage() {
           </Badge>
         }
       />
+
+      <section className="grid gap-2 md:grid-cols-3">
+        {TRUST_PACKAGES.map((item) => (
+          <Card key={item.label} className="p-4">
+            <div className="text-[10px] font-black uppercase tracking-wide text-brand">
+              {item.defaultScope}
+            </div>
+            <h2 className="mt-1 text-base font-black text-ink">{item.label}</h2>
+            <p className="mt-1 text-sm leading-5 text-muted">{item.audience}</p>
+            <div className="mt-3 rounded-lg border border-line bg-panel p-3 text-xs leading-5 text-slate-600">
+              {item.visibility}
+            </div>
+          </Card>
+        ))}
+      </section>
 
       <Card className="overflow-hidden">
         <CardHeader>

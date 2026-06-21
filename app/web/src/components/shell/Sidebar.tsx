@@ -31,7 +31,7 @@ interface RailItem {
   label: string;
   Icon: typeof LayoutDashboard;
   badge?: string;
-  group: "Posture" | "Operate" | "Configure" | "Advanced";
+  group: "Trust" | "Workflows" | "Sources" | "Review";
 }
 
 const ITEMS: RailItem[] = [
@@ -40,72 +40,72 @@ const ITEMS: RailItem[] = [
     label: "Dashboard",
     Icon: LayoutDashboard,
     badge: "live",
-    group: "Posture",
+    group: "Trust",
   },
   {
     href: "/trust-center",
     label: "Trust center",
     Icon: Sparkles,
-    group: "Posture",
+    group: "Trust",
   },
   {
     href: "/controls",
     label: "Controls",
     Icon: ShieldCheck,
-    group: "Posture",
+    group: "Trust",
   },
-  { href: "/evidence", label: "Evidence", Icon: FileSearch, group: "Posture" },
+  { href: "/evidence", label: "Evidence", Icon: FileSearch, group: "Trust" },
   {
     href: "/violations",
     label: "Findings",
     Icon: AlertOctagon,
-    group: "Operate",
+    group: "Trust",
   },
   {
     href: "/remediation",
     label: "Remediation",
     Icon: ListChecks,
-    group: "Operate",
+    group: "Workflows",
   },
-  { href: "/automation", label: "Workflows", Icon: Zap, group: "Operate" },
-  { href: "/connectors", label: "Connectors", Icon: Plug, group: "Configure" },
+  { href: "/automation", label: "Workflows", Icon: Zap, group: "Workflows" },
+  { href: "/connectors", label: "Connectors", Icon: Plug, group: "Sources" },
   {
     href: "/frameworks",
     label: "Frameworks",
     Icon: BookOpen,
-    group: "Configure",
+    group: "Sources",
+  },
+  {
+    href: "/crosswalk",
+    label: "Crosswalk",
+    Icon: Layers,
+    group: "Sources",
   },
   {
     href: "/risks",
     label: "Risk register",
     Icon: ShieldAlert,
-    group: "Advanced",
+    group: "Review",
   },
-  { href: "/graph", label: "Graph", Icon: Network, group: "Advanced" },
-  { href: "/insights", label: "Insights", Icon: LineChart, group: "Advanced" },
-  { href: "/audit-log", label: "Audit log", Icon: Activity, group: "Advanced" },
-  { href: "/crosswalk", label: "Crosswalk", Icon: Layers, group: "Advanced" },
+  { href: "/graph", label: "Graph", Icon: Network, group: "Review" },
+  { href: "/insights", label: "Insights", Icon: LineChart, group: "Review" },
+  { href: "/audit-log", label: "Audit log", Icon: Activity, group: "Review" },
   {
     href: "/agents",
     label: "Agent API",
     Icon: Bot,
     badge: "JSON",
-    group: "Advanced",
+    group: "Review",
   },
 ];
 
-const GROUPS: RailItem["group"][] = [
-  "Posture",
-  "Operate",
-  "Configure",
-  "Advanced",
-];
+const GROUPS: RailItem["group"][] = ["Trust", "Workflows", "Sources", "Review"];
 
 function isGroupClosed(
   group: RailItem["group"],
   closedGroups: Record<string, boolean>,
 ) {
-  if (group === "Advanced") {
+  if (group === "Review") {
     return closedGroups[group] !== false;
   }
   return Boolean(closedGroups[group]);

@@ -58,21 +58,23 @@ audit events, scheduled connector syncs, and customer-owned evidence storage.
 
 ## What Ships
 
-- **Trust workbench** — Trust Command Center, controls, evidence, violations,
-  remediation, risk register, workflows, graph, insights, connectors,
-  frameworks, crosswalk, audit log, trust center, and agent API views.
-- **Server mode** — FastAPI behind `.[server]`, API keys, OIDC, SAML, RBAC,
-  request audit events, tenant/user spine, and protected `/api/v1/*` plus
-  `/api/*`.
-- **Evidence pipeline** — bronze raw replay records, silver normalized facts,
-  gold posture/tests/assets/freshness, snapshots, SQLite local mart, and
-  optional DuckDB analytics.
-- **Continuous inputs** — 15 connector contracts; executable GitHub, AWS,
-  Okta, Google Workspace, GCP, Azure, and Jira runners; scheduled syncs; repo
-  audit/governance sync.
-- **Automation and agents** — controls-as-code rules, tags, remediation tasks,
-  evidence requests, DAG workflows, guarded actions, OpenAPI, Python SDK, and
-  MCP read/write tools.
+TrustOps is organized around one operating loop instead of disconnected GRC
+tabs: collect source evidence, evaluate controls, route risk, automate follow-up,
+and share the right proof with the right audience.
+
+| Surface                     | What it does                                                                                        | Primary users                          |
+| --------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| **Posture**                 | Live score, framework readiness, failing tests, stale controls, and open violations.                | Security, GRC, platform                |
+| **Controls and frameworks** | Versioned controls-as-code, reviewed source mappings, provenance, and cross-framework overlap.      | GRC, auditors, control owners          |
+| **Evidence**                | Normalized facts, freshness SLAs, source hashes, and replayable bronze/silver/gold lake artifacts.  | Security engineering, audit ops        |
+| **Risk and remediation**    | Findings, severity, owners, due dates, task state, and remediation workflow history.                | Control owners, engineering managers   |
+| **Automation**              | DAG workflows for evidence requests, triage, notifications, snapshots, and guarded actions.         | Security operations, platform          |
+| **Trust center**            | Scoped internal, auditor, and customer views with expiring share tokens and data-boundary defaults. | Sales engineering, auditors, customers |
+| **Headless agents**         | Stable `/api/v1/*` envelopes, OpenAPI, Python SDK, MCP tools, and optional LangGraph harness.       | CI, agents, internal tools             |
+
+The UI mirrors these lanes: **Trust** for live posture and proof, **Workflows**
+for remediation and automation, **Sources** for connectors/framework mappings,
+and **Review** for graph, insights, audit, risk, and agent-facing APIs.
 
 ## Run The Demo
 
