@@ -5,6 +5,7 @@ import {
   Background,
   Controls,
   Handle,
+  MarkerType,
   MiniMap,
   Position,
   ReactFlow,
@@ -228,7 +229,8 @@ function EmptyCanvas({ onOpenTemplates }: { onOpenTemplates?: () => void }) {
       <div>
         <div className="text-sm font-black text-ink">Canvas is empty</div>
         <div className="mt-0.5 text-xs text-muted">
-          Drag actions from the library on the left, or start from a template.
+          Start from a template or add the first trigger, then connect checks
+          and actions into a runnable path.
         </div>
       </div>
       {onOpenTemplates && (
@@ -405,7 +407,18 @@ export function WorkflowCanvas({
 
   const handleConnect = useCallback(
     (params: Connection) => {
-      onEdgesChange(addEdge({ ...params, animated: true }, edges));
+      onEdgesChange(
+        addEdge(
+          {
+            ...params,
+            animated: true,
+            data: { condition: "always" },
+            markerEnd: { type: MarkerType.ArrowClosed, color: "#64748b" },
+            style: { stroke: "#64748b", strokeWidth: 2 },
+          },
+          edges,
+        ),
+      );
     },
     [edges, onEdgesChange],
   );
@@ -457,7 +470,8 @@ export function WorkflowCanvas({
         proOptions={{ hideAttribution: true }}
         defaultEdgeOptions={{
           animated: true,
-          style: { stroke: "#d9e1ec", strokeWidth: 2 },
+          markerEnd: { type: MarkerType.ArrowClosed, color: "#64748b" },
+          style: { stroke: "#64748b", strokeWidth: 2 },
         }}
       >
         <Background gap={24} color="#e2e8f0" />

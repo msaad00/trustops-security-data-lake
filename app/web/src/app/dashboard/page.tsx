@@ -7,33 +7,10 @@ import { FixNext } from "@/components/dashboard/FixNext";
 import { EvidenceTrend } from "@/components/dashboard/EvidenceTrend";
 import { ControlTestTable } from "@/components/dashboard/ControlTestTable";
 import { TrustLifecycle } from "@/components/dashboard/TrustLifecycle";
+import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { QueryState } from "@/components/QueryState";
 import { shortDate } from "@/lib/utils";
-
-function Stat({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: number | string;
-  tone?: string;
-}) {
-  return (
-    <Card className="flex h-[58px] min-w-0 flex-col justify-center p-2.5">
-      <div className="text-[9px] font-black uppercase tracking-[0.11em] text-muted">
-        {label}
-      </div>
-      <div
-        className="mt-0.5 text-[20px] font-black leading-none tabular-nums"
-        style={tone ? { color: tone } : undefined}
-      >
-        {value}
-      </div>
-    </Card>
-  );
-}
 
 export default function DashboardPage() {
   const posture = usePosture();
@@ -76,43 +53,47 @@ export default function DashboardPage() {
       </div>
 
       <QueryState queries={[posture]} label="posture">
-        <div className="grid items-start gap-2.5 xl:grid-cols-[108px_minmax(0,1fr)]">
-          <Card className="flex min-h-[92px] items-center justify-center p-1.5">
+        <Card className="grid gap-4 p-4 lg:grid-cols-[112px_minmax(0,1fr)_auto] lg:items-center">
+          <div className="flex justify-start lg:justify-center">
             <PostureRing
               score={p?.score ?? 0}
               state={p?.state ?? "attention_required"}
               size="compact"
             />
-          </Card>
-          <div className="grid min-w-0 auto-rows-[58px] content-start grid-cols-[repeat(auto-fit,minmax(124px,1fr))] gap-2">
-            <Stat label="Frameworks" value={p?.framework_count ?? 0} />
-            <Stat label="Controls" value={p?.control_count ?? 0} />
-            <Stat
-              label="Open violations"
-              value={p?.open_violation_count ?? 0}
-              tone={(p?.open_violation_count ?? 0) > 0 ? "#b54708" : undefined}
-            />
-            <Stat
-              label="Critical violations"
-              value={p?.critical_violation_count ?? 0}
-              tone={
-                (p?.critical_violation_count ?? 0) > 0 ? "#d92d20" : undefined
-              }
-            />
-            <Stat
-              label="Failing tests"
-              value={p?.failed_control_test_count ?? 0}
-              tone={
-                (p?.failed_control_test_count ?? 0) > 0 ? "#d92d20" : undefined
-              }
-            />
-            <Stat
-              label="Stale controls"
-              value={p?.stale_control_count ?? 0}
-              tone={(p?.stale_control_count ?? 0) > 0 ? "#b54708" : undefined}
-            />
           </div>
-        </div>
+          <div className="min-w-0">
+            <div className="text-xs font-black uppercase tracking-wide text-muted">
+              Current assessment
+            </div>
+            <h2 className="mt-1 text-xl font-black leading-tight text-ink">
+              {p?.state === "critical"
+                ? "Immediate control work required"
+                : p?.state === "ready"
+                  ? "Posture is ready"
+                  : "Posture needs review"}
+            </h2>
+            <p className="mt-1 max-w-[720px] text-sm leading-5 text-muted">
+              Score is a rollup of framework readiness, failed control tests,
+              stale evidence, and open violations. The map below shows which
+              system surface owns each step.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 lg:max-w-[340px] lg:justify-end">
+            <Badge
+              tone={(p?.failed_control_test_count ?? 0) ? "critical" : "ready"}
+            >
+              {p?.failed_control_test_count ?? 0} failing tests
+            </Badge>
+            <Badge
+              tone={(p?.critical_violation_count ?? 0) ? "critical" : "ready"}
+            >
+              {p?.critical_violation_count ?? 0} critical violations
+            </Badge>
+            <Badge tone={(p?.stale_control_count ?? 0) ? "attention" : "ready"}>
+              {p?.stale_control_count ?? 0} stale controls
+            </Badge>
+          </div>
+        </Card>
 
         <TrustLifecycle posture={p} assessmentHash={data?.assessment_hash} />
 
