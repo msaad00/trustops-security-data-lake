@@ -40,7 +40,10 @@ export interface PostureBlock {
   open_violation_count: number;
   critical_violation_count: number;
   high_violation_count: number;
+  failed_control_test_count: number;
+  warning_control_test_count: number;
   stale_control_count: number;
+  stale_evidence_count: number;
 }
 
 export interface AssetRisk {

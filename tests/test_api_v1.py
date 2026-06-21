@@ -237,6 +237,20 @@ def test_v1_all_read_routes_use_envelope(tmp_path: Path) -> None:
         server.shutdown()
 
 
+def test_v1_posture_separates_violation_and_test_counts(tmp_path: Path) -> None:
+    server = _spin(tmp_path)
+    try:
+        status, body = _request(server, "GET", "/api/v1/posture/current")
+        assert status == HTTPStatus.OK
+        posture = body["data"]["posture"]
+        assert posture["critical_violation_count"] == 0
+        assert posture["high_violation_count"] == 1
+        assert posture["failed_control_test_count"] == 1
+        assert posture["warning_control_test_count"] == 0
+    finally:
+        server.shutdown()
+
+
 def test_v1_filters_list_fields_and_scalar_fields(tmp_path: Path) -> None:
     server = _spin(tmp_path)
     try:

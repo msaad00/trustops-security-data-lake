@@ -44,6 +44,7 @@ def build_current_posture(
     evaluated_at = now or datetime.now(UTC)
     events = read_jsonl(lake / "silver" / "normalized_events.jsonl", missing_ok=True)
     controls = read_jsonl(lake / "gold" / "control_posture.jsonl", missing_ok=True)
+    control_tests = read_jsonl(lake / "gold" / "control_tests.jsonl", missing_ok=True)
     assets = read_jsonl(lake / "gold" / "asset_risk.jsonl", missing_ok=True)
     violations = _build_violations(events)
     evidence_freshness = build_evidence_freshness(
@@ -57,6 +58,8 @@ def build_current_posture(
     open_violations = [item for item in violations if item["state"] == "open"]
     critical_violations = [item for item in open_violations if item["severity"] == "critical"]
     high_violations = [item for item in open_violations if item["severity"] == "high"]
+    failed_control_tests = [item for item in control_tests if str(item.get("result", "")).lower() == "fail"]
+    warning_control_tests = [item for item in control_tests if str(item.get("result", "")).lower() == "warn"]
     posture_score = _weighted_posture_score(framework_scores)
     assessment = {
         "schema_version": "trustops.assessment.v1",
@@ -72,6 +75,8 @@ def build_current_posture(
             "open_violation_count": len(open_violations),
             "critical_violation_count": len(critical_violations),
             "high_violation_count": len(high_violations),
+            "failed_control_test_count": len(failed_control_tests),
+            "warning_control_test_count": len(warning_control_tests),
             "stale_control_count": len(stale_controls),
             "stale_evidence_count": len(stale_evidence),
         },
