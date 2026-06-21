@@ -1,8 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import type { Edge } from "@xyflow/react";
-import { LayoutTemplate, Loader2, Play, Save } from "lucide-react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { MarkerType, type Edge } from "@xyflow/react";
+import {
+  ArrowRight,
+  LayoutTemplate,
+  Loader2,
+  Play,
+  Save,
+  ServerCog,
+  Shuffle,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +44,7 @@ import type {
 } from "@/lib/api/types";
 import { useAuditorMode } from "@/lib/state/auditor";
 import type { WorkflowTemplate } from "@/lib/workflow/templates";
+import { WORKFLOW_TEMPLATES } from "@/lib/workflow/templates";
 
 const NEW_WORKFLOW_ID = "__new__";
 
@@ -50,6 +59,8 @@ interface Editor {
   edges: Edge[];
 }
 
+type WorkflowCondition = "always" | "passed" | "failed";
+
 function emptyEditor(): Editor {
   return {
     workflow_id: null,
@@ -60,22 +71,100 @@ function emptyEditor(): Editor {
   };
 }
 
+function edgeTone(condition: WorkflowCondition) {
+  if (condition === "passed") return "#16b364";
+  if (condition === "failed") return "#d92d20";
+  return "#64748b";
+}
+
+function toFlowEdge(
+  source: string,
+  target: string,
+  condition: WorkflowCondition = "always",
+  index = 0,
+): Edge {
+  const tone = edgeTone(condition);
+  return {
+    id: `${source}-${target}-${index}`,
+    source,
+    target,
+    animated: true,
+    label: condition === "always" ? undefined : condition,
+    data: { condition },
+    markerEnd: { type: MarkerType.ArrowClosed, color: tone },
+    style: { stroke: tone, strokeWidth: 2 },
+  };
+}
+
+function arrangeNodes(nodes: FlowNode[], edges: Edge[]): FlowNode[] {
+  if (nodes.length === 0) return nodes;
+  const inbound = new Map(nodes.map((n) => [n.id, 0]));
+  const outgoing = new Map(nodes.map((n) => [n.id, [] as string[]]));
+  for (const edge of edges) {
+    inbound.set(
+      String(edge.target),
+      (inbound.get(String(edge.target)) ?? 0) + 1,
+    );
+    outgoing.get(String(edge.source))?.push(String(edge.target));
+  }
+
+  const depth = new Map<string, number>();
+  const queue = nodes
+    .filter((n) => (inbound.get(n.id) ?? 0) === 0)
+    .map((n) => n.id);
+  for (const id of queue) depth.set(id, 0);
+
+  while (queue.length > 0) {
+    const id = queue.shift()!;
+    const nextDepth = (depth.get(id) ?? 0) + 1;
+    for (const target of outgoing.get(id) ?? []) {
+      if ((depth.get(target) ?? -1) < nextDepth) {
+        depth.set(target, nextDepth);
+        queue.push(target);
+      }
+    }
+  }
+
+  const byDepth = new Map<number, FlowNode[]>();
+  for (const node of nodes) {
+    const fallback =
+      node.data.kind === "trigger" ? 0 : node.data.kind === "check" ? 1 : 2;
+    const d = depth.get(node.id) ?? fallback;
+    byDepth.set(d, [...(byDepth.get(d) ?? []), node]);
+  }
+
+  return nodes.map((node) => {
+    const fallback =
+      node.data.kind === "trigger" ? 0 : node.data.kind === "check" ? 1 : 2;
+    const d = depth.get(node.id) ?? fallback;
+    const column = byDepth.get(d) ?? [node];
+    const row = column.findIndex((n) => n.id === node.id);
+    const offset = ((column.length - 1) * 78) / 2;
+    return {
+      ...node,
+      position: {
+        x: 110 + d * 270,
+        y: 170 + row * 156 - offset,
+      },
+    };
+  });
+}
+
+function arrangeEditor(editor: Editor): Editor {
+  return { ...editor, nodes: arrangeNodes(editor.nodes, editor.edges) };
+}
+
 function fromWorkflow(w: Workflow, catalog: ActionSpec[]): Editor {
   const byType = new Map(catalog.map((a) => [a.node_type, a]));
-  return {
+  return arrangeEditor({
     workflow_id: w.workflow_id,
     name: w.name,
     description: w.description,
     nodes: w.nodes.map((n) => toFlowNode(n, byType.get(n.node_type))),
-    edges: w.edges.map((e) => ({
-      id: `${e.source}-${e.target}`,
-      source: e.source,
-      target: e.target,
-      animated: true,
-      label: e.condition && e.condition !== "always" ? e.condition : undefined,
-      data: { condition: e.condition ?? "always" },
-    })),
-  };
+    edges: w.edges.map((e, idx) =>
+      toFlowEdge(e.source, e.target, e.condition ?? "always", idx),
+    ),
+  });
 }
 
 function fromTemplate(
@@ -83,20 +172,15 @@ function fromTemplate(
   catalog: ActionSpec[],
 ): Editor {
   const byType = new Map(catalog.map((a) => [a.node_type, a]));
-  return {
+  return arrangeEditor({
     workflow_id: null,
     name: template.name,
     description: template.description,
     nodes: template.nodes.map((n) => toFlowNode(n, byType.get(n.node_type))),
-    edges: template.edges.map((e, idx) => ({
-      id: `${e.source}-${e.target}-${idx}`,
-      source: e.source,
-      target: e.target,
-      animated: true,
-      label: e.condition && e.condition !== "always" ? e.condition : undefined,
-      data: { condition: e.condition ?? "always" },
-    })),
-  };
+    edges: template.edges.map((e, idx) =>
+      toFlowEdge(e.source, e.target, e.condition ?? "always", idx),
+    ),
+  });
 }
 
 function toApiNodes(nodes: FlowNode[]): WorkflowNode[] {
@@ -118,6 +202,77 @@ function toApiEdges(edges: Edge[]) {
   }));
 }
 
+function WorkflowSpine({ nodes, edges }: { nodes: FlowNode[]; edges: Edge[] }) {
+  const counts = {
+    triggers: nodes.filter((n) => n.data.kind === "trigger").length,
+    checks: nodes.filter((n) => n.data.kind === "check").length,
+    actions: nodes.filter((n) => n.data.kind === "action").length,
+    edges: edges.length,
+  };
+  const connected = counts.edges > 0 || nodes.length <= 1;
+  const stages = [
+    {
+      label: "Trigger",
+      value: counts.triggers,
+      detail: "evidence changed, cron, or webhook",
+    },
+    {
+      label: "Check",
+      value: counts.checks,
+      detail: "control pass, evidence exists, branch conditions",
+    },
+    {
+      label: "Action",
+      value: counts.actions,
+      detail: "assign owner, create ticket, freeze snapshot, notify",
+    },
+  ];
+
+  return (
+    <section className="grid gap-2 rounded-xl border border-line bg-white p-3 shadow-card">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h2 className="text-sm font-black text-ink">
+            Workflow connection map
+          </h2>
+          <p className="mt-0.5 text-xs leading-5 text-muted">
+            A workflow is a directed graph: trigger inputs, check branches, and
+            actions write back to remediation, snapshots, audit, or external
+            systems.
+          </p>
+        </div>
+        <Badge tone={connected ? "ready" : "attention"}>
+          {connected ? `${counts.edges} connected edges` : "connect nodes"}
+        </Badge>
+      </div>
+      <div className="grid gap-2 lg:grid-cols-[1fr_auto_1fr_auto_1fr] lg:items-stretch">
+        {stages.map((stage, idx) => (
+          <Fragment key={stage.label}>
+            <div className="rounded-lg border border-line bg-panel p-3">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] font-black uppercase tracking-wide text-muted">
+                  {stage.label}
+                </span>
+                <span className="text-lg font-black tabular-nums text-ink">
+                  {stage.value}
+                </span>
+              </div>
+              <p className="mt-1 text-xs leading-5 text-slate-600">
+                {stage.detail}
+              </p>
+            </div>
+            {idx < stages.length - 1 && (
+              <div className="hidden items-center justify-center text-muted lg:flex">
+                <ArrowRight className="h-5 w-5" />
+              </div>
+            )}
+          </Fragment>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function AutomationPage() {
   const auditor = useAuditorMode();
   const workflows = useWorkflows();
@@ -129,6 +284,8 @@ export default function AutomationPage() {
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [templatesOpen, setTemplatesOpen] = useState(false);
   const [lastRun, setLastRun] = useState<WorkflowRun | null>(null);
+  const [starterLoaded, setStarterLoaded] = useState(false);
+  const [fitTrigger, setFitTrigger] = useState(0);
   const runs = useWorkflowRuns(editor.workflow_id);
 
   const flash = useCallback((msg: string) => notify.success(msg), []);
@@ -142,6 +299,21 @@ export default function AutomationPage() {
       setLastRun(null);
     }
   }, [activeId, workflows.data, catalog.data]);
+
+  useEffect(() => {
+    if (starterLoaded || (catalog.data ?? []).length === 0) return;
+    const firstWorkflow = (workflows.data ?? [])[0];
+    if (firstWorkflow) {
+      setActiveId(firstWorkflow.workflow_id);
+      setStarterLoaded(true);
+      return;
+    }
+    const starter = WORKFLOW_TEMPLATES[0];
+    if (starter) {
+      setEditor(fromTemplate(starter, catalog.data ?? []));
+      setStarterLoaded(true);
+    }
+  }, [catalog.data, workflows.data, starterLoaded]);
 
   const specByType = useMemo(
     () => new Map((catalog.data ?? []).map((a) => [a.node_type, a])),
@@ -211,6 +383,7 @@ export default function AutomationPage() {
   const loadTemplate = (template: WorkflowTemplate) => {
     setEditor(fromTemplate(template, catalog.data ?? []));
     setActiveId(NEW_WORKFLOW_ID);
+    setStarterLoaded(true);
     setLastRun(null);
     setSelectedNode(null);
     flash(`Loaded "${template.name}" — save to persist.`);
@@ -272,7 +445,7 @@ export default function AutomationPage() {
       <PageHeader
         eyebrow="Workflows"
         title="Workflow canvas"
-        description="Drag actions from the library, connect them, then save and run. Every action publishes its input/output schema; downstream params can reference upstream output with `{{nodeId.output.field}}`. Conditional edges (passed / failed) gate next steps on check results."
+        description="Design closed-loop trust operations: start from a trigger, check posture or evidence, branch on the result, then route the right action to owners, tickets, snapshots, notifications, or external systems."
         actions={
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <select
@@ -280,7 +453,10 @@ export default function AutomationPage() {
               onChange={(e) => {
                 const next = e.target.value;
                 setActiveId(next);
-                if (next === NEW_WORKFLOW_ID) setEditor(emptyEditor());
+                if (next === NEW_WORKFLOW_ID) {
+                  setEditor(emptyEditor());
+                  setStarterLoaded(true);
+                }
                 setSelectedNode(null);
                 setLastRun(null);
               }}
@@ -295,6 +471,16 @@ export default function AutomationPage() {
             </select>
             <Button variant="default" onClick={() => setTemplatesOpen(true)}>
               <LayoutTemplate className="h-4 w-4" /> Templates
+            </Button>
+            <Button
+              variant="default"
+              onClick={() => {
+                setEditor((current) => arrangeEditor(current));
+                setFitTrigger((value) => value + 1);
+                flash("Canvas arranged.");
+              }}
+            >
+              <Shuffle className="h-4 w-4" /> Arrange
             </Button>
             {!auditor && (
               <>
@@ -355,6 +541,50 @@ export default function AutomationPage() {
         </div>
       </Card>
 
+      <WorkflowSpine nodes={editor.nodes} edges={editor.edges} />
+
+      <Card className="grid gap-3 p-4 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start">
+        <span className="grid h-10 w-10 place-items-center rounded-lg bg-panel text-brand ring-1 ring-line">
+          <ServerCog className="h-5 w-5" />
+        </span>
+        <div className="min-w-0">
+          <div className="text-sm font-black text-ink">
+            One runner for UI, API, scheduler, CLI, and agents
+          </div>
+          <p className="mt-1 text-sm leading-5 text-muted">
+            Save writes an append-only workflow version to{" "}
+            <code>gold/workflows.jsonl</code>. Run executes the same DAG through
+            the backend workflow engine, enforces RBAC and egress guards, writes
+            results to <code>gold/workflow_runs.jsonl</code>, and exposes the
+            run through the console, REST API, CLI, scheduler, and MCP tools.
+          </p>
+          <div className="mt-3 grid gap-2 text-xs md:grid-cols-4">
+            <div className="rounded-lg border border-line bg-panel p-2">
+              <b className="text-ink">Human</b>
+              <div className="mt-1 text-muted">
+                Design, approve, run, inspect.
+              </div>
+            </div>
+            <div className="rounded-lg border border-line bg-panel p-2">
+              <b className="text-ink">Headless</b>
+              <div className="mt-1 text-muted">REST/CLI run saved DAGs.</div>
+            </div>
+            <div className="rounded-lg border border-line bg-panel p-2">
+              <b className="text-ink">Scheduler</b>
+              <div className="mt-1 text-muted">
+                Cron triggers fire due flows.
+              </div>
+            </div>
+            <div className="rounded-lg border border-line bg-panel p-2">
+              <b className="text-ink">Agents</b>
+              <div className="mt-1 text-muted">
+                MCP lists and runs workflows.
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
+
       <div className="grid min-w-0 gap-4 xl:grid-cols-[240px_minmax(0,1fr)] 2xl:grid-cols-[240px_minmax(0,1fr)_340px]">
         <ActionPalette catalog={catalog.data ?? []} onAdd={addNode} />
         <WorkflowCanvas
@@ -365,6 +595,7 @@ export default function AutomationPage() {
           onEdgesChange={(es) => setEditor((e) => ({ ...e, edges: es }))}
           onSelectNode={setSelectedNode}
           onDropAction={addNode}
+          fitTrigger={fitTrigger}
           lastRun={lastRun}
           onDismissRun={() => setLastRun(null)}
           onOpenTemplates={() => setTemplatesOpen(true)}

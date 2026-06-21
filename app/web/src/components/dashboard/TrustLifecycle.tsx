@@ -31,47 +31,51 @@ export function TrustLifecycle({ posture, assessmentHash }: Props) {
   const criticalViolations = posture?.critical_violation_count ?? 0;
   const staleControls = posture?.stale_control_count ?? 0;
   const score = Math.round(posture?.score ?? 0);
+  const status =
+    stateLabel[posture?.state ?? ""] ?? posture?.state ?? "not evaluated";
+
+  const statusTone =
+    criticalViolations > 0
+      ? "critical"
+      : failedTests > 0 || staleControls > 0
+        ? "attention"
+        : "ready";
 
   const lanes = [
     {
-      label: "Live posture",
-      href: "/dashboard",
-      Icon: ShieldCheck,
-      metric: `${score}`,
-      detail: `${stateLabel[posture?.state ?? ""] ?? posture?.state ?? "not evaluated"} score`,
-      tone:
-        criticalViolations > 0
-          ? "critical"
-          : failedTests > 0 || staleControls > 0
-            ? "attention"
-            : "ready",
-    },
-    {
-      label: "Control tests",
-      href: "/controls",
-      Icon: ListChecks,
-      metric: `${failedTests}`,
-      detail: failedTests === 1 ? "failing test" : "failing tests",
-      tone: failedTests > 0 ? "critical" : "ready",
+      label: "Sources",
+      href: "/connectors",
+      Icon: Database,
+      detail: "Connectors and governed lake reads feed normalized facts.",
+      state:
+        staleEvidence > 0 ? `${staleEvidence} stale evidence` : "fresh enough",
+      tone: staleEvidence > 0 ? "attention" : "ready",
     },
     {
       label: "Evidence",
       href: "/evidence",
       Icon: FileSearch,
-      metric: `${staleEvidence}`,
-      detail:
-        staleEvidence === 1 ? "stale evidence item" : "stale evidence items",
+      detail: "Bronze replay, silver facts, hashes, freshness, and owners.",
+      state: `${staleEvidence} stale`,
       tone: staleEvidence > 0 ? "attention" : "ready",
+    },
+    {
+      label: "Controls",
+      href: "/controls",
+      Icon: ShieldCheck,
+      detail: "Rules evaluate evidence against framework-mapped controls.",
+      state: `${failedTests} failing`,
+      tone: failedTests > 0 ? "critical" : "ready",
     },
     {
       label: "Risk queue",
       href: "/violations",
-      Icon: Database,
-      metric: `${openViolations}`,
-      detail:
+      Icon: ListChecks,
+      detail: "Failed controls become owned findings and remediation work.",
+      state:
         criticalViolations > 0
           ? `${criticalViolations} critical`
-          : "no critical violations",
+          : `${openViolations} open`,
       tone:
         criticalViolations > 0
           ? "critical"
@@ -80,19 +84,19 @@ export function TrustLifecycle({ posture, assessmentHash }: Props) {
             : "ready",
     },
     {
-      label: "Automation",
+      label: "Workflow",
       href: "/automation",
       Icon: GitBranch,
-      metric: "DAG",
-      detail: "route remediation and evidence requests",
+      detail: "DAG runs route evidence requests, tickets, snapshots, alerts.",
+      state: "designer",
       tone: "info",
     },
     {
       label: "Trust share",
       href: "/trust-center",
       Icon: Share2,
-      metric: assessmentHash ? assessmentHash.slice(0, 8) : "not cut",
-      detail: "scoped, expiring auditor/customer views",
+      detail: "Scoped internal, auditor, and customer views reuse the hash.",
+      state: assessmentHash ? assessmentHash.slice(0, 8) : "not cut",
       tone: assessmentHash ? "ready" : "default",
     },
   ] as const;
@@ -101,23 +105,28 @@ export function TrustLifecycle({ posture, assessmentHash }: Props) {
     <section className="grid gap-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h2 className="text-sm font-black text-ink">Trust operating loop</h2>
+          <h2 className="text-sm font-black text-ink">How trust flows</h2>
           <p className="mt-0.5 text-xs leading-5 text-muted">
-            One path from source evidence to evaluated controls, remediation,
-            and external assurance.
+            Evidence becomes control results, results become work, and the same
+            signed state becomes shareable assurance.
           </p>
         </div>
-        <Badge tone="info">continuous</Badge>
+        <Badge tone={statusTone}>
+          {score} posture · {status}
+        </Badge>
       </div>
       <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-6">
-        {lanes.map(({ label, href, Icon, metric, detail, tone }) => (
+        {lanes.map(({ label, href, Icon, detail, state, tone }, idx) => (
           <Link
             key={label}
             href={href}
-            className="group grid min-h-[116px] grid-rows-[auto_1fr_auto] rounded-lg border border-line bg-panel p-3 transition-colors hover:border-brand hover:bg-white"
+            className="group relative grid min-h-[138px] grid-rows-[auto_1fr_auto] rounded-lg border border-line bg-white p-3 transition-colors hover:border-brand"
           >
+            {idx < lanes.length - 1 && (
+              <span className="pointer-events-none absolute -right-2 top-1/2 z-10 hidden h-px w-4 bg-line xl:block" />
+            )}
             <span className="flex items-center justify-between gap-2">
-              <span className="grid h-8 w-8 place-items-center rounded-lg bg-white text-brand ring-1 ring-line">
+              <span className="grid h-8 w-8 place-items-center rounded-lg bg-panel text-brand ring-1 ring-line">
                 <Icon className="h-4 w-4" />
               </span>
               <ArrowRight className="h-4 w-4 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-brand" />
@@ -126,12 +135,12 @@ export function TrustLifecycle({ posture, assessmentHash }: Props) {
               <span className="block text-[11px] font-black uppercase tracking-wide text-muted">
                 {label}
               </span>
-              <span className="mt-1 block truncate text-2xl font-black leading-none text-ink">
-                {metric}
+              <span className="mt-1 block text-xs leading-5 text-slate-600">
+                {detail}
               </span>
             </span>
             <Badge tone={tone} className="mt-2 justify-self-start">
-              {detail}
+              {state}
             </Badge>
           </Link>
         ))}

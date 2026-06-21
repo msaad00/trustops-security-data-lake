@@ -14,9 +14,9 @@ const TONE: Record<string, string> = {
 };
 
 const LABEL: Record<string, string> = {
-  ready: "Ready",
-  attention_required: "Attention",
-  critical: "Critical",
+  ready: "score",
+  attention_required: "score",
+  critical: "score",
 };
 
 export function PostureRing({
