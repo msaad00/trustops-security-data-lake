@@ -135,7 +135,12 @@ const SCOPE_FIELDS: Record<string, FieldDef[]> = {
 const fallbackFieldsFor = (credentialType: string): FieldDef[] => {
   if (credentialType.includes("oauth"))
     return [
-      { name: "client_id", label: "Client ID", placeholder: "client id", required: true },
+      {
+        name: "client_id",
+        label: "Client ID",
+        placeholder: "client id",
+        required: true,
+      },
       {
         name: "client_secret",
         label: "Client secret",
@@ -153,8 +158,18 @@ const fallbackFieldsFor = (credentialType: string): FieldDef[] => {
     ];
   if (credentialType.includes("key_pair"))
     return [
-      { name: "account", label: "Account", placeholder: "account", required: true },
-      { name: "user", label: "User", placeholder: "read-only user", required: true },
+      {
+        name: "account",
+        label: "Account",
+        placeholder: "account",
+        required: true,
+      },
+      {
+        name: "user",
+        label: "User",
+        placeholder: "read-only user",
+        required: true,
+      },
       {
         name: "private_key",
         label: "Private key",
@@ -175,8 +190,18 @@ const fallbackFieldsFor = (credentialType: string): FieldDef[] => {
     ];
   if (credentialType.includes("scoped_user"))
     return [
-      { name: "host", label: "Host", placeholder: "https://...", required: true },
-      { name: "user", label: "User", placeholder: "read-only user", required: true },
+      {
+        name: "host",
+        label: "Host",
+        placeholder: "https://...",
+        required: true,
+      },
+      {
+        name: "user",
+        label: "User",
+        placeholder: "read-only user",
+        required: true,
+      },
       {
         name: "password",
         label: "Password",

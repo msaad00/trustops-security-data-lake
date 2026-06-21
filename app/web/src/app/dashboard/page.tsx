@@ -88,8 +88,8 @@ export default function DashboardPage() {
             Executive trust overview
           </h1>
           <p className="mt-1 max-w-[720px] text-sm leading-5 text-muted">
-            Current proof, gaps, owners, and readiness across audits,
-            customers, cloud, identity, runtime, and AI systems.
+            Current proof, gaps, owners, and readiness across audits, customers,
+            cloud, identity, runtime, and AI systems.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -158,7 +158,8 @@ export default function DashboardPage() {
                   value={`${readyFrameworks}/${frameworks.length}`}
                   detail={`${frameworkAvg} average readiness`}
                   tone={
-                    frameworks.length > 0 && readyFrameworks === frameworks.length
+                    frameworks.length > 0 &&
+                    readyFrameworks === frameworks.length
                       ? "ready"
                       : "attention"
                   }

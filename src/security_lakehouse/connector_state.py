@@ -121,7 +121,9 @@ def validate_configure_payload(
 
     creds = credentials or {}
     opts = {k: v for k, v in (options or {}).items() if k != "raw"}
-    missing = _missing_required_config(connector_id, str(catalog[connector_id].get("credential_type") or ""), creds, opts)
+    missing = _missing_required_config(
+        connector_id, str(catalog[connector_id].get("credential_type") or ""), creds, opts
+    )
     if missing:
         raise ValueError("missing required connector configuration: " + ", ".join(missing))
 
@@ -153,9 +155,7 @@ def _missing_required_config(
         if not (_has_value(credentials, "private_key") or _has_value(credentials, "oauth_token")):
             missing.append("private_key or oauth_token")
         missing.extend(
-            field
-            for field in ("warehouse", "database", "schema", "evidence_view")
-            if not _has_value(options, field)
+            field for field in ("warehouse", "database", "schema", "evidence_view") if not _has_value(options, field)
         )
         return missing
 
