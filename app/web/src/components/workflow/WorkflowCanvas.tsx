@@ -446,7 +446,11 @@ export function WorkflowCanvas({
   }, [nodes, catalog]);
 
   useEffect(() => {
-    void fitTrigger;
+    if (fitTrigger) {
+      window.requestAnimationFrame(() => {
+        instanceRef.current?.fitView({ padding: 0.22, duration: 320 });
+      });
+    }
   }, [fitTrigger]);
 
   return (

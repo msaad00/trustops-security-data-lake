@@ -8,6 +8,7 @@ import {
   Loader2,
   Play,
   Save,
+  ServerCog,
   Shuffle,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -284,6 +285,7 @@ export default function AutomationPage() {
   const [templatesOpen, setTemplatesOpen] = useState(false);
   const [lastRun, setLastRun] = useState<WorkflowRun | null>(null);
   const [starterLoaded, setStarterLoaded] = useState(false);
+  const [fitTrigger, setFitTrigger] = useState(0);
   const runs = useWorkflowRuns(editor.workflow_id);
 
   const flash = useCallback((msg: string) => notify.success(msg), []);
@@ -472,7 +474,11 @@ export default function AutomationPage() {
             </Button>
             <Button
               variant="default"
-              onClick={() => setEditor((current) => arrangeEditor(current))}
+              onClick={() => {
+                setEditor((current) => arrangeEditor(current));
+                setFitTrigger((value) => value + 1);
+                flash("Canvas arranged.");
+              }}
             >
               <Shuffle className="h-4 w-4" /> Arrange
             </Button>
@@ -537,6 +543,48 @@ export default function AutomationPage() {
 
       <WorkflowSpine nodes={editor.nodes} edges={editor.edges} />
 
+      <Card className="grid gap-3 p-4 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start">
+        <span className="grid h-10 w-10 place-items-center rounded-lg bg-panel text-brand ring-1 ring-line">
+          <ServerCog className="h-5 w-5" />
+        </span>
+        <div className="min-w-0">
+          <div className="text-sm font-black text-ink">
+            One runner for UI, API, scheduler, CLI, and agents
+          </div>
+          <p className="mt-1 text-sm leading-5 text-muted">
+            Save writes an append-only workflow version to{" "}
+            <code>gold/workflows.jsonl</code>. Run executes the same DAG through
+            the backend workflow engine, enforces RBAC and egress guards, writes
+            results to <code>gold/workflow_runs.jsonl</code>, and exposes the
+            run through the console, REST API, CLI, scheduler, and MCP tools.
+          </p>
+          <div className="mt-3 grid gap-2 text-xs md:grid-cols-4">
+            <div className="rounded-lg border border-line bg-panel p-2">
+              <b className="text-ink">Human</b>
+              <div className="mt-1 text-muted">
+                Design, approve, run, inspect.
+              </div>
+            </div>
+            <div className="rounded-lg border border-line bg-panel p-2">
+              <b className="text-ink">Headless</b>
+              <div className="mt-1 text-muted">REST/CLI run saved DAGs.</div>
+            </div>
+            <div className="rounded-lg border border-line bg-panel p-2">
+              <b className="text-ink">Scheduler</b>
+              <div className="mt-1 text-muted">
+                Cron triggers fire due flows.
+              </div>
+            </div>
+            <div className="rounded-lg border border-line bg-panel p-2">
+              <b className="text-ink">Agents</b>
+              <div className="mt-1 text-muted">
+                MCP lists and runs workflows.
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
+
       <div className="grid min-w-0 gap-4 xl:grid-cols-[240px_minmax(0,1fr)] 2xl:grid-cols-[240px_minmax(0,1fr)_340px]">
         <ActionPalette catalog={catalog.data ?? []} onAdd={addNode} />
         <WorkflowCanvas
@@ -547,6 +595,7 @@ export default function AutomationPage() {
           onEdgesChange={(es) => setEditor((e) => ({ ...e, edges: es }))}
           onSelectNode={setSelectedNode}
           onDropAction={addNode}
+          fitTrigger={fitTrigger}
           lastRun={lastRun}
           onDismissRun={() => setLastRun(null)}
           onOpenTemplates={() => setTemplatesOpen(true)}
