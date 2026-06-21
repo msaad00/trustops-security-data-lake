@@ -18,28 +18,11 @@ interface Props {
   assessmentHash?: string;
 }
 
-const stateLabel: Record<string, string> = {
-  healthy: "healthy",
-  attention_required: "needs review",
-  critical: "critical",
-};
-
 export function TrustLifecycle({ posture, assessmentHash }: Props) {
   const failedTests = posture?.failed_control_test_count ?? 0;
   const staleEvidence = posture?.stale_evidence_count ?? 0;
   const openViolations = posture?.open_violation_count ?? 0;
   const criticalViolations = posture?.critical_violation_count ?? 0;
-  const staleControls = posture?.stale_control_count ?? 0;
-  const score = Math.round(posture?.score ?? 0);
-  const status =
-    stateLabel[posture?.state ?? ""] ?? posture?.state ?? "not evaluated";
-
-  const statusTone =
-    criticalViolations > 0
-      ? "critical"
-      : failedTests > 0 || staleControls > 0
-        ? "attention"
-        : "ready";
 
   const lanes = [
     {
@@ -111,9 +94,7 @@ export function TrustLifecycle({ posture, assessmentHash }: Props) {
             signed state becomes shareable assurance.
           </p>
         </div>
-        <Badge tone={statusTone}>
-          {score} posture · {status}
-        </Badge>
+        <Badge tone="info">operating map</Badge>
       </div>
       <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-6">
         {lanes.map(({ label, href, Icon, detail, state, tone }, idx) => (

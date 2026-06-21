@@ -211,6 +211,19 @@ Server mode requires auth for non-health routes. API keys, OIDC, and SAML all
 resolve to the same tenant, user, role, and audit boundary. See
 [Server Auth](docs/SERVER_AUTH.md) and [Agent API](docs/api/AGENT_API.md).
 
+### Optional Agent Harness
+
+TrustOps does not require an LLM for connectors, evidence normalization,
+controls-as-code evaluation, framework mapping, scoring, snapshots, trust
+shares, or audit logs. Those stay deterministic and testable.
+
+The optional harness in `security_lakehouse.agents` can run in `rules_only`
+mode or compile a LangGraph posture-review flow when the `agents` extra is
+installed. Teams can point it at Ollama for a local proof of concept or at a
+model provider they configure themselves; model output proposes actions, while
+TrustOps APIs still enforce tenant, role, redaction, approval, idempotency, and
+audit boundaries. See [Agent Harness](docs/AGENT_HARNESS.md).
+
 ## Useful Commands
 
 ```bash

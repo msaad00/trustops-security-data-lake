@@ -53,6 +53,22 @@ This is intentionally deterministic. LangGraph can orchestrate the same nodes,
 and later model-backed nodes can summarize or prioritize, but they must consume
 the already-redacted state and act only through TrustOps APIs.
 
+## Self-hosted run modes
+
+Teams can run the harness without changing the compliance engine:
+
+| Mode | How it runs | Use when |
+| --- | --- | --- |
+| CLI | `security-lakehouse agents posture-review --lake <lake>` | local audits, CI checks, demos |
+| Scheduler | cron, Kubernetes `CronJob`, or the TrustOps scheduler | recurring evidence-gap review |
+| Service worker | internal worker calls `/api/v1/*` and writes proposed actions back through TrustOps APIs | production agent operations |
+| UI/API trigger | console button or headless API starts a saved workflow | human-in-the-loop review |
+
+Self-hosted deployments keep the same boundaries: tenant-scoped lake path,
+server-side RBAC, redacted reads, append-only audit events, and approval before
+agent-proposed writes. LangGraph is useful for branching, retries, multi-agent
+review, and long-running state, but it is not the source of compliance truth.
+
 ## Non-negotiables
 
 Agents do not own:

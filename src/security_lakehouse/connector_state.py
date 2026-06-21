@@ -100,6 +100,76 @@ def append_config_event(
     return record
 
 
+def validate_configure_payload(
+    *,
+    connector_id: str,
+    state: str,
+    credentials: dict[str, Any] | None,
+    options: dict[str, Any] | None,
+) -> None:
+    """Validate public connector configuration before it can be enabled.
+
+    ``append_config_event`` is intentionally a low-level append helper used by
+    tests and offline fixture setup. Public API/console callers must pass
+    through this validator so an empty form cannot create an enabled connector.
+    """
+    if state != "enabled":
+        return
+    catalog = load_connector_catalog()
+    if connector_id not in catalog:
+        raise ValueError(f"unknown connector_id {connector_id!r}")
+
+    creds = credentials or {}
+    opts = {k: v for k, v in (options or {}).items() if k != "raw"}
+    missing = _missing_required_config(connector_id, str(catalog[connector_id].get("credential_type") or ""), creds, opts)
+    if missing:
+        raise ValueError("missing required connector configuration: " + ", ".join(missing))
+
+
+def _has_value(payload: dict[str, Any], key: str) -> bool:
+    value = payload.get(key)
+    return value is not None and str(value).strip() != ""
+
+
+def _missing_required_config(
+    connector_id: str,
+    credential_type: str,
+    credentials: dict[str, Any],
+    options: dict[str, Any],
+) -> list[str]:
+    if connector_id == "clickhouse-telemetry-lake":
+        missing = [field for field in ("host",) if not _has_value(credentials, field)]
+        if not (_has_value(credentials, "token") or _has_value(credentials, "password")):
+            missing.append("token or password")
+        missing.extend(
+            field
+            for field in ("database", "events_table", "metrics_table", "detections_table")
+            if not _has_value(options, field)
+        )
+        return missing
+
+    if connector_id == "snowflake-evidence-lake":
+        missing = [field for field in ("account", "user") if not _has_value(credentials, field)]
+        if not (_has_value(credentials, "private_key") or _has_value(credentials, "oauth_token")):
+            missing.append("private_key or oauth_token")
+        missing.extend(
+            field
+            for field in ("warehouse", "database", "schema", "evidence_view")
+            if not _has_value(options, field)
+        )
+        return missing
+
+    if "token" in credential_type:
+        return ["token"] if not _has_value(credentials, "token") else []
+    if "scoped_user" in credential_type:
+        return [field for field in ("host", "user", "password") if not _has_value(credentials, field)]
+    if "key_pair" in credential_type:
+        return [field for field in ("account", "user", "private_key") if not _has_value(credentials, field)]
+    if "local" in credential_type:
+        return ["lake_path"] if not _has_value(credentials, "lake_path") else []
+    return ["api_key"] if not _has_value(credentials, "api_key") else []
+
+
 def append_run_event(
     lake_dir: str | Path,
     *,

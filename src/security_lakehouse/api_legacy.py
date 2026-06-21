@@ -19,7 +19,13 @@ from typing import Any
 from security_lakehouse import api_v1
 from security_lakehouse.assessment import build_current_posture, write_assessment_snapshot
 from security_lakehouse.audit_log import build_audit_log
-from security_lakehouse.connector_state import append_config_event, build_catalog_view, list_runs, run_probe
+from security_lakehouse.connector_state import (
+    append_config_event,
+    build_catalog_view,
+    list_runs,
+    run_probe,
+    validate_configure_payload,
+)
 from security_lakehouse.framework_detail import build_framework_detail
 from security_lakehouse.framework_provenance import build_framework_view
 from security_lakehouse.graph import build_compliance_graph, build_framework_crosswalk, build_repository_graph
@@ -243,16 +249,25 @@ def handle_post(path: str, body: Body, lake_dir: str | Path, *, role: str = "") 
     configure = _suffix_match(path, "/api/connectors/", "/configure")
     if configure is not None:
         try:
+            state = str(body.get("state") or "enabled").lower()
+            credentials = body.get("credentials") or {}
+            options = body.get("options") or {}
+            validate_configure_payload(
+                connector_id=configure,
+                state=state,
+                credentials=credentials,
+                options=options,
+            )
             record = append_config_event(
                 lake,
                 connector_id=configure,
-                state=str(body.get("state") or "enabled").lower(),
+                state=state,
                 actor=str(body.get("actor") or "console"),
-                credentials=body.get("credentials") or {},
-                options=body.get("options") or {},
+                credentials=credentials,
+                options=options,
             )
-        except ValueError:
-            return HTTPStatus.BAD_REQUEST, {"error": "bad_request", "reason": "invalid request"}
+        except ValueError as exc:
+            return HTTPStatus.BAD_REQUEST, {"error": "bad_request", "reason": str(exc)}
         return HTTPStatus.CREATED, {"event": record}
     probe = _suffix_match(path, "/api/connectors/", "/probe")
     if probe is not None:

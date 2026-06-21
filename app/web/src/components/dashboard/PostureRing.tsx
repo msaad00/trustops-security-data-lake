@@ -77,7 +77,7 @@ export function PostureRing({
               ? "mt-1 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide"
               : "mt-1 rounded-full px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wide"
           }
-          style={{ color, background: `${color}1a` }}
+          style={{ color: "#475467", background: "#f1f5f9" }}
         >
           {LABEL[state] ?? state}
         </span>
