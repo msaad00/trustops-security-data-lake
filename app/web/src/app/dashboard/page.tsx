@@ -6,6 +6,7 @@ import { ReadinessGrid } from "@/components/dashboard/ReadinessGrid";
 import { FixNext } from "@/components/dashboard/FixNext";
 import { EvidenceTrend } from "@/components/dashboard/EvidenceTrend";
 import { ControlTestTable } from "@/components/dashboard/ControlTestTable";
+import { TrustLifecycle } from "@/components/dashboard/TrustLifecycle";
 import { Card } from "@/components/ui/card";
 import { QueryState } from "@/components/QueryState";
 import { shortDate } from "@/lib/utils";
@@ -112,6 +113,8 @@ export default function DashboardPage() {
             />
           </div>
         </div>
+
+        <TrustLifecycle posture={p} assessmentHash={data?.assessment_hash} />
 
         <ReadinessGrid frameworks={data?.frameworks ?? []} />
 
