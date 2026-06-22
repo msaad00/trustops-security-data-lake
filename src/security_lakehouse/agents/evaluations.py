@@ -77,7 +77,13 @@ def evaluate_soc_triage(state: dict[str, Any]) -> dict[str, Any]:
     }
     covered = set()
     for item in _decision_items(state):
-        payload = getattr(item, "payload", None) if hasattr(item, "payload") else item.get("payload") if isinstance(item, dict) else {}
+        payload = (
+            getattr(item, "payload", None)
+            if hasattr(item, "payload")
+            else item.get("payload")
+            if isinstance(item, dict)
+            else {}
+        )
         if isinstance(payload, dict):
             covered.add(str(payload.get("event_id") or ""))
     missing = sorted(event_id for event_id in high_priority if event_id and event_id not in covered)

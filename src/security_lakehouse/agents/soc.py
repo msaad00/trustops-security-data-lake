@@ -60,7 +60,9 @@ def load_soc_alerts(lake_dir: str | Path, *, role: str, limit: int = 25) -> list
         redacted = redact_payload(alert, role=role)
         if isinstance(redacted, dict):
             alerts.append(redacted)
-    alerts.sort(key=lambda item: (int(item.get("severity_score") or 0), str(item.get("event_time") or "")), reverse=True)
+    alerts.sort(
+        key=lambda item: (int(item.get("severity_score") or 0), str(item.get("event_time") or "")), reverse=True
+    )
     return alerts[:limit]
 
 
