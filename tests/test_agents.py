@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from security_lakehouse.agents import build_posture_review_graph, run_posture_review
+from security_lakehouse.agents import build_posture_review_graph, run_posture_review, run_soc_triage
 from security_lakehouse.agents.model_client import ModelClientError
 from security_lakehouse.agents.model_contract import validate_model_output
 from security_lakehouse.agents.providers import ModelProviderConfig, provider_from_env
@@ -32,6 +32,80 @@ def _seed_gap(lake: Path) -> None:
         }
     ]
     (lake / "gold" / "control_tests.jsonl").write_text(
+        "\n".join(json.dumps(row, sort_keys=True) for row in rows) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _seed_soc_alerts(lake: Path) -> None:
+    _seed_lake(lake)
+    rows = [
+        {
+            "event_id": "det-001",
+            "event_time": "2026-06-01T10:00:00Z",
+            "event_type": "detection.alert",
+            "source": "siem",
+            "asset_id": "host:api-1",
+            "asset_type": "host",
+            "asset_owner": "secops",
+            "environment": "prod",
+            "status": "open",
+            "severity": "critical",
+            "severity_score": 100,
+            "control_ids": ["SOC2-CC7.2"],
+            "evidence_ref": "s3://evidence/det-001.json",
+            "raw_sha256": "aaa",
+        },
+        {
+            "event_id": "vuln-001",
+            "event_time": "2026-06-01T09:00:00Z",
+            "event_type": "vulnerability.finding",
+            "source": "scanner",
+            "asset_id": "container:web",
+            "asset_type": "container",
+            "asset_owner": "appsec",
+            "environment": "prod",
+            "status": "open",
+            "severity": "high",
+            "severity_score": 80,
+            "control_ids": ["SOC2-CC7.2"],
+            "evidence_ref": "s3://evidence/vuln-001.json",
+            "raw_sha256": "bbb",
+        },
+        {
+            "event_id": "runtime-001",
+            "event_time": "2026-06-01T08:00:00Z",
+            "event_type": "runtime.policy_decision",
+            "source": "gateway",
+            "asset_id": "agent:helpdesk",
+            "asset_type": "agent",
+            "asset_owner": "it",
+            "environment": "prod",
+            "status": "open",
+            "severity": "medium",
+            "severity_score": 50,
+            "control_ids": ["NIST-AI-RMF-MEASURE-2.7"],
+            "evidence_ref": "s3://evidence/runtime-001.json",
+            "raw_sha256": "ccc",
+        },
+        {
+            "event_id": "closed-001",
+            "event_time": "2026-06-01T07:00:00Z",
+            "event_type": "detection.alert",
+            "source": "siem",
+            "asset_id": "host:old",
+            "asset_type": "host",
+            "asset_owner": "secops",
+            "environment": "prod",
+            "status": "resolved",
+            "severity": "critical",
+            "severity_score": 100,
+            "control_ids": ["SOC2-CC7.2"],
+            "evidence_ref": "s3://evidence/closed-001.json",
+            "raw_sha256": "ddd",
+        },
+    ]
+    (lake / "silver" / "normalized_events.jsonl").write_text(
         "\n".join(json.dumps(row, sort_keys=True) for row in rows) + "\n",
         encoding="utf-8",
     )
@@ -114,6 +188,78 @@ def test_model_assisted_run_validates_model_output(tmp_path: Path) -> None:
     assert state["model_output"]["rejected_tool_calls"] == ["mark_control_passed"]
     assert state["decisions"][0].requires_approval is True
     assert state["decisions"][0].status == "proposed"
+
+
+def test_posture_model_rejects_soc_only_tools(tmp_path: Path) -> None:
+    _seed_gap(tmp_path)
+    provider = ModelProviderConfig(
+        provider="ollama",
+        model="llama3.1",
+        base_url="http://127.0.0.1:11434",
+        use_model=True,
+    )
+
+    def fake_model(_context: dict, _configured: ModelProviderConfig) -> dict:
+        return {"proposed_tool_calls": [{"name": "create_soc_case", "arguments": {"event_id": "det-001"}}]}
+
+    state = run_posture_review(tmp_path, role="read_only", provider=provider, model_client=fake_model)
+
+    assert state["model_output"]["proposed_tool_calls"] == []
+    assert state["model_output"]["rejected_tool_calls"] == ["create_soc_case"]
+
+
+def test_soc_triage_harness_is_deterministic_and_evaluated(tmp_path: Path) -> None:
+    _seed_soc_alerts(tmp_path)
+
+    state = run_soc_triage(tmp_path, role="read_only")
+
+    assert state["mode"] == "rules_only"
+    assert [alert["event_id"] for alert in state["alerts"]] == ["det-001", "vuln-001", "runtime-001"]
+    assert state["evaluation"]["ok"] is True
+    assert {decision.action for decision in state["decisions"]} >= {"create_soc_case", "assign_owner", "enrich_alert"}
+    assert all(decision.requires_approval for decision in state["decisions"])
+    covered = {decision.payload["event_id"] for decision in state["decisions"]}
+    assert {"det-001", "vuln-001"}.issubset(covered)
+
+
+def test_soc_triage_uses_role_redaction(tmp_path: Path) -> None:
+    _seed_soc_alerts(tmp_path)
+
+    state = run_soc_triage(tmp_path, role="auditor")
+
+    assert state["alerts"][0]["asset_owner"] == "[redacted]"
+    owner_decisions = [decision for decision in state["decisions"] if decision.action == "assign_owner"]
+    assert owner_decisions[0].payload["owner"] == "[redacted]"
+
+
+def test_soc_model_output_is_limited_to_soc_tools(tmp_path: Path) -> None:
+    _seed_soc_alerts(tmp_path)
+    provider = ModelProviderConfig(
+        provider="ollama",
+        model="llama3.1",
+        base_url="http://127.0.0.1:11434",
+        use_model=True,
+    )
+
+    def fake_model(context: dict, configured: ModelProviderConfig) -> dict:
+        assert configured.provider == "ollama"
+        assert context["use_case"] == "soc_triage"
+        assert context["facts"]["alerts"][0]["event_id"] == "det-001"
+        return {
+            "summary": "Critical alert should be opened as a SOC case.",
+            "proposed_tool_calls": [
+                {"name": "create_soc_case", "arguments": {"event_id": "det-001", "reason": "critical"}},
+                {"name": "delete_evidence", "arguments": {"event_id": "det-001"}},
+            ],
+        }
+
+    state = run_soc_triage(tmp_path, role="read_only", provider=provider, model_client=fake_model)
+
+    assert state["mode"] == "model_assisted"
+    assert state["model_output"]["proposed_tool_calls"][0]["name"] == "create_soc_case"
+    assert state["model_output"]["proposed_tool_calls"][0]["requires_approval"] is True
+    assert state["model_output"]["rejected_tool_calls"] == ["delete_evidence"]
+    assert state["evaluation"]["ok"] is True
 
 
 def test_model_client_error_is_non_fatal(tmp_path: Path) -> None:
@@ -202,3 +348,15 @@ def test_posture_review_cli_can_build_model_context_without_call(tmp_path: Path,
     assert out["mode"] == "rules_only"
     assert out["model_provider"]["configured"] is True
     assert out["model_context"]["tool_manifest"][0]["name"] == "load_redacted_posture"
+
+
+def test_soc_triage_cli_outputs_evaluated_run(tmp_path: Path, capsys) -> None:
+    _seed_soc_alerts(tmp_path)
+
+    assert main(["agents", "soc-triage", "--lake", str(tmp_path), "--role", "auditor"]) == 0
+    out = json.loads(capsys.readouterr().out)
+
+    assert out["mode"] == "rules_only"
+    assert out["evaluation"]["ok"] is True
+    assert out["alerts"][0]["asset_owner"] == "[redacted]"
+    assert out["decisions"][0]["requires_approval"] is True

@@ -12,12 +12,21 @@ from typing import Any
 
 from security_lakehouse.agents.providers import ModelProviderConfig
 
-ALLOWED_MODEL_TOOL_CALLS = {"create_evidence_request", "create_remediation_task", "freeze_snapshot"}
+POSTURE_REVIEW_TOOL_CALLS = {"create_evidence_request", "create_remediation_task", "freeze_snapshot"}
+SOC_TRIAGE_TOOL_CALLS = {
+    "create_soc_case",
+    "create_remediation_task",
+    "assign_owner",
+    "enrich_alert",
+    "notify_channel",
+    "freeze_snapshot",
+}
+ALLOWED_MODEL_TOOL_CALLS = POSTURE_REVIEW_TOOL_CALLS | SOC_TRIAGE_TOOL_CALLS
 
 
-def tool_manifest() -> list[dict[str, Any]]:
+def tool_manifest(*, use_case: str = "posture_review") -> list[dict[str, Any]]:
     """Return deterministic tools the optional model is allowed to reason about."""
-    return [
+    shared = [
         {
             "name": "load_redacted_posture",
             "mode": "read",
@@ -54,12 +63,58 @@ def tool_manifest() -> list[dict[str, Any]]:
             "outputs": {"proposal": "object"},
         },
     ]
+    if use_case != "soc_triage":
+        return shared
+    return [
+        *shared,
+        {
+            "name": "load_soc_alerts",
+            "mode": "read",
+            "description": "Lists open detection, vulnerability, runtime, cloud, and identity alerts after redaction.",
+            "inputs": {"lake_dir": "string", "role": "string"},
+            "outputs": {"alerts": "array"},
+        },
+        {
+            "name": "create_soc_case",
+            "mode": "propose_only",
+            "description": "Proposes a SOC case for an alert. TrustOps APIs execute it later.",
+            "inputs": {"event_id": "string", "severity": "string", "reason": "string"},
+            "outputs": {"proposal": "object"},
+        },
+        {
+            "name": "assign_owner",
+            "mode": "propose_only",
+            "description": "Proposes assigning an owner to an alert or case.",
+            "inputs": {"event_id": "string", "owner": "string", "reason": "string"},
+            "outputs": {"proposal": "object"},
+        },
+        {
+            "name": "enrich_alert",
+            "mode": "propose_only",
+            "description": "Proposes deterministic enrichment for an alert from approved sources.",
+            "inputs": {"event_id": "string", "sources": "array"},
+            "outputs": {"proposal": "object"},
+        },
+        {
+            "name": "notify_channel",
+            "mode": "propose_only",
+            "description": "Proposes notifying an approved channel. TrustOps egress policy gates execution.",
+            "inputs": {"event_id": "string", "channel": "string", "reason": "string"},
+            "outputs": {"proposal": "object"},
+        },
+    ]
 
 
-def build_model_context(state: dict[str, Any], provider: ModelProviderConfig) -> dict[str, Any]:
+def build_model_context(
+    state: dict[str, Any],
+    provider: ModelProviderConfig,
+    *,
+    use_case: str = "posture_review",
+) -> dict[str, Any]:
     """Build a redacted, bounded model context from deterministic harness state."""
     return {
         "contract": "trustops.agent_context.v1",
+        "use_case": use_case,
         "objective": state.get("objective", ""),
         "role": state.get("role", "read_only"),
         "provider": provider.public_dict(),
@@ -75,10 +130,11 @@ def build_model_context(state: dict[str, Any], provider: ModelProviderConfig) ->
             ],
             "writes": "approval_required_and_executed_only_by_trustops_core",
         },
-        "tool_manifest": tool_manifest(),
+        "tool_manifest": tool_manifest(use_case=use_case),
         "facts": {
             "posture": state.get("posture", {}),
             "evidence_gaps": state.get("evidence_gaps", []),
+            "alerts": state.get("alerts", []),
             "deterministic_decisions": [
                 {
                     "action": item.action,
@@ -118,7 +174,11 @@ def model_messages(context: dict[str, Any]) -> list[dict[str, str]]:
     ]
 
 
-def validate_model_output(payload: Any) -> dict[str, Any]:
+def validate_model_output(
+    payload: Any,
+    *,
+    allowed_tool_calls: set[str] | None = None,
+) -> dict[str, Any]:
     """Validate and normalize model JSON without executing any proposed action."""
     if not isinstance(payload, dict):
         return {"summary": "", "priorities": [], "proposed_tool_calls": [], "rejected_tool_calls": ["non_object"]}
@@ -142,12 +202,13 @@ def validate_model_output(payload: Any) -> dict[str, Any]:
     proposed = payload.get("proposed_tool_calls") if isinstance(payload.get("proposed_tool_calls"), list) else []
     accepted: list[dict[str, Any]] = []
     rejected: list[str] = []
+    allowed = allowed_tool_calls or ALLOWED_MODEL_TOOL_CALLS
     for item in proposed[:10]:
         if not isinstance(item, dict):
             rejected.append("non_object_tool_call")
             continue
         name = str(item.get("name") or "").strip()
-        if name not in ALLOWED_MODEL_TOOL_CALLS:
+        if name not in allowed:
             rejected.append(name or "missing_name")
             continue
         arguments = item.get("arguments") if isinstance(item.get("arguments"), dict) else {}

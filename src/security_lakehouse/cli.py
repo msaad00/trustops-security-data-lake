@@ -380,6 +380,32 @@ def _parser() -> argparse.ArgumentParser:
         help="call the configured model provider; default is deterministic rules-only",
     )
     agents_review.set_defaults(func=_agents_posture_review)
+    agents_soc = agents_sub.add_parser(
+        "soc-triage",
+        help="run the deterministic SOC triage harness and propose approval-gated actions",
+    )
+    agents_soc.add_argument("--lake", required=True, help="security data lake output directory")
+    agents_soc.add_argument(
+        "--role",
+        default="read_only",
+        choices=["admin", "security_admin", "contributor", "auditor", "read_only"],
+        help="role lens used for redaction",
+    )
+    agents_soc.add_argument(
+        "--objective",
+        default="Triage open SOC alerts and propose guarded actions.",
+        help="agent objective recorded in the run state",
+    )
+    agents_soc.add_argument("--provider", default=None, help="override TRUSTOPS_AGENT_PROVIDER")
+    agents_soc.add_argument("--model", default=None, help="override TRUSTOPS_AGENT_MODEL")
+    agents_soc.add_argument("--base-url", default=None, help="override TRUSTOPS_AGENT_BASE_URL")
+    agents_soc.add_argument("--api-key-env", default=None, help="override TRUSTOPS_AGENT_API_KEY_ENV")
+    agents_soc.add_argument(
+        "--use-model",
+        action="store_true",
+        help="call the configured model provider; default is deterministic rules-only",
+    )
+    agents_soc.set_defaults(func=_agents_soc_triage)
 
     policy = sub.add_parser("policy", help="controls-as-code policy engine")
     policy_sub = policy.add_subparsers(dest="policy_command", required=True)
@@ -1104,10 +1130,26 @@ def _agents_posture_review(args: argparse.Namespace) -> int:
     from dataclasses import asdict, is_dataclass
 
     from security_lakehouse.agents import run_posture_review
+
+    state = dict(
+        run_posture_review(
+            args.lake,
+            role=args.role,
+            objective=args.objective,
+            provider=_agent_provider_from_args(args),
+        )
+    )
+    decisions = state.get("decisions") or []
+    state["decisions"] = [asdict(item) if is_dataclass(item) else item for item in decisions]
+    print(json.dumps(state, indent=2, sort_keys=True))
+    return 0
+
+
+def _agent_provider_from_args(args: argparse.Namespace):
     from security_lakehouse.agents.providers import ModelProviderConfig, normalize_provider, provider_from_env
 
     base_provider = provider_from_env()
-    provider = ModelProviderConfig(
+    return ModelProviderConfig(
         provider=normalize_provider(args.provider or base_provider.provider),
         model=args.model if args.model is not None else base_provider.model,
         base_url=args.base_url if args.base_url is not None else base_provider.base_url,
@@ -1116,18 +1158,24 @@ def _agents_posture_review(args: argparse.Namespace) -> int:
         timeout_seconds=base_provider.timeout_seconds,
     )
 
+
+def _agents_soc_triage(args: argparse.Namespace) -> int:
+    from dataclasses import asdict, is_dataclass
+
+    from security_lakehouse.agents import run_soc_triage
+
     state = dict(
-        run_posture_review(
+        run_soc_triage(
             args.lake,
             role=args.role,
             objective=args.objective,
-            provider=provider,
+            provider=_agent_provider_from_args(args),
         )
     )
     decisions = state.get("decisions") or []
     state["decisions"] = [asdict(item) if is_dataclass(item) else item for item in decisions]
     print(json.dumps(state, indent=2, sort_keys=True))
-    return 0
+    return 0 if state.get("evaluation", {}).get("ok", False) else 1
 
 
 def _policy_lint(args: argparse.Namespace) -> int:

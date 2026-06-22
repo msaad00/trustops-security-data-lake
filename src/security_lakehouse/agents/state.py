@@ -28,9 +28,11 @@ class AgentRunState(TypedDict, total=False):
     objective: str
     posture: dict[str, Any]
     evidence_gaps: list[dict[str, Any]]
+    alerts: list[dict[str, Any]]
     decisions: list[AgentDecision]
     model_provider: dict[str, Any]
     model_context: dict[str, Any]
     model_output: dict[str, Any]
+    evaluation: dict[str, Any]
     approved: bool
     errors: list[str]
