@@ -1,6 +1,11 @@
 "use client";
 
-import { useControlTests, usePosture, usePostureStream } from "@/lib/api/hooks";
+import {
+  useControlTests,
+  useFrameworks,
+  usePosture,
+  usePostureStream,
+} from "@/lib/api/hooks";
 import { PostureRing } from "@/components/dashboard/PostureRing";
 import { ReadinessGrid } from "@/components/dashboard/ReadinessGrid";
 import { FixNext } from "@/components/dashboard/FixNext";
@@ -63,10 +68,13 @@ function ExecutiveMetric({
 export default function DashboardPage() {
   const posture = usePosture();
   const tests = useControlTests();
+  const registeredFrameworks = useFrameworks();
   const { connected } = usePostureStream();
   const data = posture.data;
   const p = data?.posture;
   const frameworks = data?.frameworks ?? [];
+  const registeredCount =
+    registeredFrameworks.data?.length ?? frameworks.length;
   const readyFrameworks = frameworks.filter((f) => f.score >= 85).length;
   const frameworkAvg =
     frameworks.length > 0
@@ -77,7 +85,7 @@ export default function DashboardPage() {
       : 0;
   const frameworkDetail =
     frameworks.length > 0
-      ? `${frameworks.length} monitored programs · ${frameworkAvg} avg readiness`
+      ? `${frameworkAvg}% avg · ${frameworks.length} monitored / ${registeredCount} registered`
       : "No framework posture yet";
 
   return (
@@ -158,7 +166,7 @@ export default function DashboardPage() {
               </div>
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <ExecutiveMetric
-                  label="Framework programs"
+                  label="Framework readiness"
                   value={`${readyFrameworks} ready`}
                   detail={frameworkDetail}
                   tone={
@@ -169,7 +177,7 @@ export default function DashboardPage() {
                   }
                 />
                 <ExecutiveMetric
-                  label="Controls monitored"
+                  label="Control tests"
                   value={p?.control_count ?? 0}
                   detail={`${p?.failed_control_test_count ?? 0} failing tests require work`}
                   tone={
@@ -181,7 +189,7 @@ export default function DashboardPage() {
                 <ExecutiveMetric
                   label="Open risk"
                   value={`${p?.critical_violation_count ?? 0} critical`}
-                  detail={`${p?.open_violation_count ?? 0} open findings total`}
+                  detail={`${p?.open_violation_count ?? 0} open findings need owners`}
                   tone={
                     (p?.critical_violation_count ?? 0) > 0
                       ? "critical"
@@ -206,7 +214,10 @@ export default function DashboardPage() {
           </div>
         </Card>
 
-        <ReadinessGrid frameworks={frameworks} />
+        <ReadinessGrid
+          frameworks={frameworks}
+          catalog={registeredFrameworks.data ?? []}
+        />
 
         <div className="grid gap-4 lg:grid-cols-2">
           <FixNext violations={data?.violations ?? []} />
