@@ -311,6 +311,23 @@ def test_provider_env_requires_explicit_model_use(monkeypatch: pytest.MonkeyPatc
     assert provider.should_call_model is False
 
 
+def test_provider_public_metadata_does_not_expose_key_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("TRUSTOPS_AGENT_PROVIDER", "openai")
+    monkeypatch.setenv("TRUSTOPS_AGENT_MODEL", "gpt-test")
+    monkeypatch.setenv("TRUSTOPS_AGENT_API_KEY_ENV", "TRUSTOPS_TEST_OPENAI_KEY")
+    monkeypatch.setenv("TRUSTOPS_TEST_OPENAI_KEY", "secret-test-value")
+
+    provider = provider_from_env()
+    metadata = provider.public_dict()
+
+    assert metadata["configured"] is True
+    assert metadata["credential_env_configured"] is True
+    assert metadata["credential_present"] is True
+    assert "api_key_env" not in metadata
+    assert "TRUSTOPS_TEST_OPENAI_KEY" not in json.dumps(metadata)
+    assert "secret-test-value" not in json.dumps(metadata)
+
+
 def test_posture_review_cli_outputs_json(tmp_path: Path, capsys) -> None:
     _seed_gap(tmp_path)
 
@@ -360,3 +377,37 @@ def test_soc_triage_cli_outputs_evaluated_run(tmp_path: Path, capsys) -> None:
     assert out["evaluation"]["ok"] is True
     assert out["alerts"][0]["asset_owner"] == "[redacted]"
     assert out["decisions"][0]["requires_approval"] is True
+
+
+def test_posture_review_cli_does_not_print_model_key_env(
+    tmp_path: Path, capsys, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _seed_gap(tmp_path)
+    monkeypatch.setenv("TRUSTOPS_TEST_OPENAI_KEY", "secret-test-value")
+
+    assert (
+        main(
+            [
+                "agents",
+                "posture-review",
+                "--lake",
+                str(tmp_path),
+                "--provider",
+                "openai",
+                "--model",
+                "gpt-test",
+                "--api-key-env",
+                "TRUSTOPS_TEST_OPENAI_KEY",
+            ]
+        )
+        == 0
+    )
+    output = capsys.readouterr().out
+    out = json.loads(output)
+
+    assert out["model_provider"]["configured"] is True
+    assert out["model_provider"]["credential_present"] is True
+    assert out["model_context"]["provider"]["credential_env_configured"] is True
+    assert "api_key_env" not in output
+    assert "TRUSTOPS_TEST_OPENAI_KEY" not in output
+    assert "secret-test-value" not in output

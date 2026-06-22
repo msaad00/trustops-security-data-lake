@@ -58,8 +58,9 @@ class ModelProviderConfig:
             "provider": self.provider,
             "model": self.model,
             "base_url": self.base_url,
-            "api_key_env": self.api_key_env,
             "configured": self.enabled,
+            "credential_env_configured": bool(self.api_key_env),
+            "credential_present": bool(self.api_key_env and os.environ.get(self.api_key_env)),
             "use_model": self.use_model,
             "timeout_seconds": self.timeout_seconds,
         }
