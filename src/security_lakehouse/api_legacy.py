@@ -22,9 +22,9 @@ from security_lakehouse.audit_log import build_audit_log
 from security_lakehouse.connector_state import (
     append_config_event,
     build_catalog_view,
+    configure_payload_error,
     list_runs,
     run_probe,
-    validate_configure_payload,
 )
 from security_lakehouse.framework_detail import build_framework_detail
 from security_lakehouse.framework_provenance import build_framework_view
@@ -249,26 +249,25 @@ def handle_post(path: str, body: Body, lake_dir: str | Path, *, role: str = "") 
         return HTTPStatus.OK, verify_event(lake, verify)
     configure = _suffix_match(path, "/api/connectors/", "/configure")
     if configure is not None:
-        try:
-            state = str(body.get("state") or "enabled").lower()
-            credentials = body.get("credentials") or {}
-            options = body.get("options") or {}
-            validate_configure_payload(
-                connector_id=configure,
-                state=state,
-                credentials=credentials,
-                options=options,
-            )
-            record = append_config_event(
-                lake,
-                connector_id=configure,
-                state=state,
-                actor=str(body.get("actor") or "console"),
-                credentials=credentials,
-                options=options,
-            )
-        except ValueError as exc:
-            return HTTPStatus.BAD_REQUEST, {"error": "bad_request", "reason": str(exc)}
+        state = str(body.get("state") or "enabled").lower()
+        credentials = body.get("credentials") or {}
+        options = body.get("options") or {}
+        error = configure_payload_error(
+            connector_id=configure,
+            state=state,
+            credentials=credentials,
+            options=options,
+        )
+        if error:
+            return HTTPStatus.BAD_REQUEST, {"error": "bad_request", "reason": error}
+        record = append_config_event(
+            lake,
+            connector_id=configure,
+            state=state,
+            actor=str(body.get("actor") or "console"),
+            credentials=credentials,
+            options=options,
+        )
         return HTTPStatus.CREATED, {"event": record}
     probe = _suffix_match(path, "/api/connectors/", "/probe")
     if probe is not None:
