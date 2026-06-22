@@ -35,9 +35,9 @@
       "access_boundary": "read_only_role",
       "credential_type": "scoped_user_or_cloud_token",
       "minimum_permissions": [
-        "SELECT on normalized_events",
-        "SELECT on runtime_policy_metrics",
-        "SELECT on detection summaries"
+        "Read metadata for allowed databases",
+        "SELECT on discovered evidence tables or views",
+        "SELECT-only grants for selected evidence surfaces"
       ],
       "evidence_types": [
         "runtime_event",

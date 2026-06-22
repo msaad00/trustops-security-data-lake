@@ -48,7 +48,7 @@ const CREDENTIAL_FIELDS: Record<string, FieldDef[]> = {
     },
     {
       name: "token",
-      label: "Password or cloud token",
+      label: "Scoped access token",
       placeholder: "paste scoped token...",
       secret: true,
       required: true,
@@ -78,32 +78,6 @@ const CREDENTIAL_FIELDS: Record<string, FieldDef[]> = {
 };
 
 const SCOPE_FIELDS: Record<string, FieldDef[]> = {
-  "clickhouse-telemetry-lake": [
-    {
-      name: "database",
-      label: "Database",
-      placeholder: "trustops",
-      required: true,
-    },
-    {
-      name: "events_table",
-      label: "Events table",
-      placeholder: "normalized_events",
-      required: true,
-    },
-    {
-      name: "metrics_table",
-      label: "Metrics table",
-      placeholder: "runtime_policy_metrics",
-      required: true,
-    },
-    {
-      name: "detections_table",
-      label: "Detections table",
-      placeholder: "detection_summaries",
-      required: true,
-    },
-  ],
   "snowflake-evidence-lake": [
     {
       name: "warehouse",
@@ -280,6 +254,8 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
     CREDENTIAL_FIELDS[connector.connector_id] ??
     fallbackFieldsFor(connector.credential_type);
   const scopeFields = SCOPE_FIELDS[connector.connector_id] ?? [];
+  const usesDiscoveredReadScope =
+    connector.connector_id === "clickhouse-telemetry-lake";
   const isEnabled = connector.state === "enabled";
   const missingCredentials = credentialFields
     .filter((field) => field.required && !(creds[field.name] ?? "").trim())
@@ -481,6 +457,29 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                       </label>
                     ))}
                   </div>
+                </div>
+              )}
+              {usesDiscoveredReadScope && (
+                <div className="mt-2 rounded-lg border border-line bg-slate-50 p-3">
+                  <div className="text-xs font-black uppercase tracking-wide text-muted">
+                    Read scope
+                  </div>
+                  <div className="mt-1 text-xs font-semibold text-muted">
+                    After enable, Test connection discovers the databases and
+                    tables visible to this token. Select evidence tables from
+                    that discovered list instead of typing table names here.
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    <Badge tone="info">discovered tables</Badge>
+                    <Badge tone="info">least privilege</Badge>
+                    <Badge tone="info">no typed scope</Badge>
+                  </div>
+                  {!isEnabled && (
+                    <div className="mt-2 text-xs text-muted">
+                      Enable with a scoped read token first; raw secrets are not
+                      persisted.
+                    </div>
+                  )}
                 </div>
               )}
             </div>
