@@ -12,8 +12,9 @@ from pathlib import Path
 
 import pytest
 
+from security_lakehouse import api_v1
 from security_lakehouse.server import _Handler
-from security_lakehouse.tracking import append_event, latest_state, list_events, tracking_path
+from security_lakehouse.tracking import append_event, latest_state, list_events, tracking_path, verify_tracking_chain
 from security_lakehouse.verification import verify_event
 
 # --- pure-Python tracking module ------------------------------------------------
@@ -31,6 +32,8 @@ def test_append_and_list_round_trip(tmp_path: Path) -> None:
     )
     assert rec["violation_id"] == "SOC2-CC6.1:evt-001"
     assert rec["state"] == "triaged"
+    assert rec["prev_hash"] is None
+    assert len(rec["record_hash"]) == 64
     assert tracking_path(tmp_path).is_file()
 
     events = list_events(tmp_path)
@@ -59,6 +62,72 @@ def test_append_rejects_unknown_state(tmp_path: Path) -> None:
 def test_append_requires_violation_id(tmp_path: Path) -> None:
     with pytest.raises(ValueError):
         append_event(tmp_path, violation_id="", actor="a", state="triaged")
+
+
+def test_tracking_events_are_hash_chained(tmp_path: Path) -> None:
+    first = append_event(tmp_path, violation_id="v1", actor="a", state="triaged")
+    second = append_event(tmp_path, violation_id="v1", actor="a", state="resolved")
+
+    assert first["prev_hash"] is None
+    assert second["prev_hash"] == first["record_hash"]
+    assert verify_tracking_chain(tmp_path) == {
+        "ok": True,
+        "length": 2,
+        "tip_hash": second["record_hash"],
+        "issues": [],
+    }
+
+
+def test_tracking_idempotency_key_returns_existing_event(tmp_path: Path) -> None:
+    first = append_event(
+        tmp_path,
+        violation_id="v1",
+        actor="a",
+        state="triaged",
+        note="first attempt",
+        idempotency_key="triage-v1",
+    )
+    replay = append_event(
+        tmp_path,
+        violation_id="v1",
+        actor="a",
+        state="resolved",
+        note="retry with different body",
+        idempotency_key="triage-v1",
+    )
+
+    assert replay["idempotent_replay"] is True
+    assert replay["tracking_id"] == first["tracking_id"]
+    assert replay["state"] == "triaged"
+    assert len(list_events(tmp_path)) == 1
+
+
+def test_tracking_chain_detects_tamper(tmp_path: Path) -> None:
+    append_event(tmp_path, violation_id="v1", actor="a", state="triaged")
+    path = tracking_path(tmp_path)
+    rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+    rows[0]["state"] = "resolved"
+    path.write_text("\n".join(json.dumps(row, sort_keys=True) for row in rows) + "\n", encoding="utf-8")
+
+    result = verify_tracking_chain(tmp_path)
+    assert result["ok"] is False
+    assert any("record_hash" in issue for issue in result["issues"])
+
+
+def test_tracking_integrity_route_and_catalog(tmp_path: Path) -> None:
+    append_event(tmp_path, violation_id="v1", actor="a", state="triaged")
+
+    status, body = api_v1.handle_get("/api/v1/tracking/integrity", {}, tmp_path)
+    assert status == HTTPStatus.OK
+    assert body["meta"]["resource"] == "tracking.integrity"
+    assert body["errors"] == []
+    assert body["data"]["ok"] is True
+
+    catalog = api_v1.resource_catalog()
+    row = next((r for r in catalog if r["path"] == "/api/v1/tracking/integrity"), None)
+    assert row is not None
+    assert row["resource"] == "tracking.integrity"
+    assert row["methods"] == ["GET"]
 
 
 # --- verification module --------------------------------------------------------
@@ -163,6 +232,29 @@ def test_triage_round_trip_via_http(tmp_path: Path) -> None:
         assert status == HTTPStatus.OK
         assert body["current_state"] == "triaged"
         assert len(body["events"]) == 1
+    finally:
+        server.shutdown()
+
+
+def test_triage_idempotency_key_via_http(tmp_path: Path) -> None:
+    server = _spin_handler(tmp_path)
+    try:
+        host, port = server.server_address
+        url = f"http://{host}:{port}/api/violations/v1/triage"
+        payload = {"state": "triaged", "actor": "carol"}
+        headers = {"Content-Type": "application/json", "Idempotency-Key": "triage-v1"}
+        for _ in range(2):
+            req = urllib.request.Request(  # noqa: S310 (local test url)
+                url,
+                data=json.dumps(payload).encode("utf-8"),
+                method="POST",
+                headers=headers,
+            )
+            with urllib.request.urlopen(req) as resp:
+                assert int(resp.status) == HTTPStatus.CREATED
+
+        assert len(list_events(tmp_path)) == 1
+        assert verify_tracking_chain(tmp_path)["ok"] is True
     finally:
         server.shutdown()
 

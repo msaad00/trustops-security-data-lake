@@ -241,6 +241,7 @@ def handle_post(path: str, body: Body, lake_dir: str | Path, *, role: str = "") 
             assignee=body.get("assignee"),
             due_at=body.get("due_at"),
             note=body.get("note"),
+            idempotency_key=body.get("idempotency_key"),
         )
         return HTTPStatus.CREATED, {"event": record}
     verify = _suffix_match(path, "/api/evidence/", "/verify")

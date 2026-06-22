@@ -28,6 +28,7 @@ from security_lakehouse.assessment import (
 from security_lakehouse.framework_detail import build_framework_detail
 from security_lakehouse.graph import analyze_coverage
 from security_lakehouse.io import read_jsonl
+from security_lakehouse.tracking import verify_tracking_chain
 
 API_VERSION = "v1"
 
@@ -290,6 +291,14 @@ def resource_catalog() -> list[JsonObject]:
     )
     catalog.append(
         {
+            "resource": "tracking.integrity",
+            "path": "/api/v1/tracking/integrity",
+            "kind": "singleton",
+            "methods": ["GET"],
+        }
+    )
+    catalog.append(
+        {
             "resource": "catalog.bundle",
             "path": "/api/v1/catalog/bundle",
             "kind": "singleton",
@@ -482,6 +491,8 @@ def handle_get(path: str, params: Params, lake_dir: str | Path) -> tuple[HTTPSta
         return HTTPStatus.OK, envelope("framework.detail", detail)
     if path == "/api/v1/snapshots/integrity":
         return HTTPStatus.OK, envelope("snapshots.integrity", verify_snapshot_chain(lake))
+    if path == "/api/v1/tracking/integrity":
+        return HTTPStatus.OK, envelope("tracking.integrity", verify_tracking_chain(lake))
     if path == "/api/v1/catalog/bundle":
         from security_lakehouse.catalog_versions import bundle_summary, compute_bundle
 
