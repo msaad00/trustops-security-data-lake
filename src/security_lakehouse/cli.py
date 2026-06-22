@@ -45,6 +45,12 @@ def _parser() -> argparse.ArgumentParser:
     run.add_argument("--out", required=True, help="security data lake output directory")
     run.add_argument("--mapping", default=None, help="optional control mapping JSON")
     run.set_defaults(func=_run_pipeline)
+    verify_integrity = pipeline_sub.add_parser(
+        "verify-integrity",
+        help="verify evidence hashes, idempotency signals, and artifact integrity",
+    )
+    verify_integrity.add_argument("--lake", required=True, help="security data lake output directory")
+    verify_integrity.set_defaults(func=_verify_pipeline_integrity)
 
     connectors = sub.add_parser("connectors", help="connector catalog commands")
     connectors_sub = connectors.add_subparsers(dest="connectors_command", required=True)
@@ -396,6 +402,14 @@ def _run_pipeline(args: argparse.Namespace) -> int:
     result = run_pipeline(args.raw, args.out, mapping_path=args.mapping)
     print(json.dumps(result.__dict__, indent=2, sort_keys=True))
     return 0
+
+
+def _verify_pipeline_integrity(args: argparse.Namespace) -> int:
+    from security_lakehouse.verification import verify_lake_integrity
+
+    result = verify_lake_integrity(args.lake)
+    print(json.dumps(result, indent=2, sort_keys=True))
+    return 0 if result["ok"] else 1
 
 
 def _connectors_validate(args: argparse.Namespace) -> int:
