@@ -6,6 +6,7 @@ evaluation.
 """
 
 from security_lakehouse.agents.graphs import build_posture_review_graph, run_posture_review
+from security_lakehouse.agents.soc import run_soc_triage
 from security_lakehouse.agents.state import AgentDecision, AgentRunState
 
-__all__ = ["AgentDecision", "AgentRunState", "build_posture_review_graph", "run_posture_review"]
+__all__ = ["AgentDecision", "AgentRunState", "build_posture_review_graph", "run_posture_review", "run_soc_triage"]
