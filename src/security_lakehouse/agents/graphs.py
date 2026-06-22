@@ -7,7 +7,11 @@ from pathlib import Path
 from typing import Any
 
 from security_lakehouse.agents.model_client import ModelClientError, call_model_json
-from security_lakehouse.agents.model_contract import build_model_context, validate_model_output
+from security_lakehouse.agents.model_contract import (
+    POSTURE_REVIEW_TOOL_CALLS,
+    build_model_context,
+    validate_model_output,
+)
 from security_lakehouse.agents.providers import ModelProviderConfig, provider_from_env
 from security_lakehouse.agents.state import AgentDecision, AgentRunState
 from security_lakehouse.agents.tools import load_evidence_gaps, load_redacted_posture, propose_evidence_gap_actions
@@ -71,7 +75,7 @@ def run_posture_review(
             client = model_client or call_model_json
             try:
                 raw_output = client(context, provider)
-                state["model_output"] = validate_model_output(raw_output)
+                state["model_output"] = validate_model_output(raw_output, allowed_tool_calls=POSTURE_REVIEW_TOOL_CALLS)
                 state["mode"] = "model_assisted"
             except ModelClientError as exc:
                 state["errors"] = [*state.get("errors", []), f"model_error: {exc}"]

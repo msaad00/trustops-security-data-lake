@@ -77,6 +77,33 @@ TrustOps validates tool names and keeps every write as `requires_approval`.
 The model cannot mark a control passing, mutate evidence, bypass RBAC, or
 execute writes.
 
+## Use-case harnesses
+
+The harness pattern is use-case oriented. Each harness must run without a
+model, expose only approved tool proposals, and carry deterministic evaluation
+results.
+
+| Harness        | Deterministic inputs                                               | Model role                                                 | Guardrail evaluation                                                                |
+| -------------- | ------------------------------------------------------------------ | ---------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Posture review | current posture, evidence gaps, role redaction                     | summarize and rank evidence requests                       | proposed writes require approval and stay in the allowed tool set                   |
+| SOC triage     | open detection, vulnerability, runtime, cloud, and identity alerts | summarize, rank, and propose case/enrichment/owner actions | high/critical open alerts must have proposed actions; all writes are approval-gated |
+
+Run the SOC harness locally:
+
+```bash
+security-lakehouse agents soc-triage --lake ./lake --role read_only
+```
+
+Configuring a provider still does not call a model unless `--use-model` or
+`TRUSTOPS_AGENT_USE_MODEL=1` is set:
+
+```bash
+security-lakehouse agents soc-triage \
+  --lake ./lake \
+  --provider ollama \
+  --model llama3.1
+```
+
 ## Self-hosted run modes
 
 Teams can run the harness without changing the compliance engine:
