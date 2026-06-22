@@ -6,6 +6,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse.agents.budgets import AgentBudgetPolicy
 from security_lakehouse.agents.model_client import ModelClientError, call_model_json
 from security_lakehouse.agents.model_contract import (
     POSTURE_REVIEW_TOOL_CALLS,
@@ -53,25 +54,30 @@ def run_posture_review(
     role: str = "read_only",
     objective: str = "Review posture and propose evidence-gap actions.",
     provider: ModelProviderConfig | None = None,
+    budget: AgentBudgetPolicy | None = None,
     model_client: ModelClient | None = None,
 ) -> AgentRunState:
     """Run the posture-review harness without requiring LangGraph or an LLM."""
     provider = provider or provider_from_env()
+    budget = budget or AgentBudgetPolicy.from_env()
     state: AgentRunState = {
         "lake_dir": str(lake_dir),
         "role": role,
         "objective": objective,
         "mode": "rules_only",
         "model_provider": provider.public_dict(),
+        "agent_budget": budget.public_dict(),
         "errors": [],
     }
     state = _load_posture_node(state)
     state = _load_gaps_node(state)
     state = _propose_actions_node(state)
     if provider.enabled:
-        context = build_model_context(dict(state), provider)
+        context = build_model_context(dict(state), provider, budget=budget)
         state["model_context"] = context
-        if provider.should_call_model:
+        if context.get("budget", {}).get("status") == "over_budget":
+            state["errors"] = [*state.get("errors", []), "model_skipped: context_budget_exceeded"]
+        elif provider.should_call_model:
             client = model_client or call_model_json
             try:
                 raw_output = client(context, provider)

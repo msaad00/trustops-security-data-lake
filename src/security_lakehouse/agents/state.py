@@ -30,6 +30,7 @@ class AgentRunState(TypedDict, total=False):
     evidence_gaps: list[dict[str, Any]]
     alerts: list[dict[str, Any]]
     decisions: list[AgentDecision]
+    agent_budget: dict[str, Any]
     model_provider: dict[str, Any]
     model_context: dict[str, Any]
     model_output: dict[str, Any]

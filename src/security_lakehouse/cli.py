@@ -382,6 +382,24 @@ def _parser() -> argparse.ArgumentParser:
         action="store_true",
         help="call the configured model provider; default is deterministic rules-only",
     )
+    agents_review.add_argument(
+        "--max-context-chars",
+        type=int,
+        default=None,
+        help="maximum serialized model context size before the model call is skipped",
+    )
+    agents_review.add_argument(
+        "--max-fact-items",
+        type=int,
+        default=None,
+        help="maximum evidence/alert/decision items included in model context",
+    )
+    agents_review.add_argument(
+        "--max-output-tokens",
+        type=int,
+        default=None,
+        help="maximum model output tokens requested from the provider",
+    )
     agents_review.set_defaults(func=_agents_posture_review)
     agents_soc = agents_sub.add_parser(
         "soc-triage",
@@ -407,6 +425,24 @@ def _parser() -> argparse.ArgumentParser:
         "--use-model",
         action="store_true",
         help="call the configured model provider; default is deterministic rules-only",
+    )
+    agents_soc.add_argument(
+        "--max-context-chars",
+        type=int,
+        default=None,
+        help="maximum serialized model context size before the model call is skipped",
+    )
+    agents_soc.add_argument(
+        "--max-fact-items",
+        type=int,
+        default=None,
+        help="maximum evidence/alert/decision items included in model context",
+    )
+    agents_soc.add_argument(
+        "--max-output-tokens",
+        type=int,
+        default=None,
+        help="maximum model output tokens requested from the provider",
     )
     agents_soc.set_defaults(func=_agents_soc_triage)
 
@@ -1148,6 +1184,7 @@ def _agents_posture_review(args: argparse.Namespace) -> int:
             role=args.role,
             objective=args.objective,
             provider=_agent_provider_from_args(args),
+            budget=_agent_budget_from_args(args),
         )
     )
     decisions = state.get("decisions") or []
@@ -1170,6 +1207,22 @@ def _agent_provider_from_args(args: argparse.Namespace):
     )
 
 
+def _agent_budget_from_args(args: argparse.Namespace):
+    from security_lakehouse.agents.budgets import AgentBudgetPolicy
+
+    base_budget = AgentBudgetPolicy.from_env()
+    return AgentBudgetPolicy(
+        max_context_chars=args.max_context_chars
+        if args.max_context_chars is not None
+        else base_budget.max_context_chars,
+        max_fact_items=args.max_fact_items if args.max_fact_items is not None else base_budget.max_fact_items,
+        max_output_tokens=args.max_output_tokens
+        if args.max_output_tokens is not None
+        else base_budget.max_output_tokens,
+        max_string_chars=base_budget.max_string_chars,
+    )
+
+
 def _agents_soc_triage(args: argparse.Namespace) -> int:
     from dataclasses import asdict, is_dataclass
 
@@ -1181,6 +1234,7 @@ def _agents_soc_triage(args: argparse.Namespace) -> int:
             role=args.role,
             objective=args.objective,
             provider=_agent_provider_from_args(args),
+            budget=_agent_budget_from_args(args),
         )
     )
     decisions = state.get("decisions") or []

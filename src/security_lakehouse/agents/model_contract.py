@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from security_lakehouse.agents.budgets import AgentBudgetPolicy, apply_budget
 from security_lakehouse.agents.providers import ModelProviderConfig
 
 POSTURE_REVIEW_TOOL_CALLS = {"create_evidence_request", "create_remediation_task", "freeze_snapshot"}
@@ -110,9 +111,11 @@ def build_model_context(
     provider: ModelProviderConfig,
     *,
     use_case: str = "posture_review",
+    budget: AgentBudgetPolicy | None = None,
 ) -> dict[str, Any]:
     """Build a redacted, bounded model context from deterministic harness state."""
-    return {
+    policy = budget or AgentBudgetPolicy.from_env()
+    context = {
         "contract": "trustops.agent_context.v1",
         "use_case": use_case,
         "objective": state.get("objective", ""),
@@ -152,6 +155,7 @@ def build_model_context(
             "proposed_tool_calls": [{"name": "string", "arguments": "object", "requires_approval": True}],
         },
     }
+    return apply_budget(context, policy)
 
 
 def model_messages(context: dict[str, Any]) -> list[dict[str, str]]:
