@@ -98,6 +98,22 @@ def run_pipeline(
     write_jsonl(gold_dir / "asset_risk.jsonl", asset_rows)
     write_json(gold_dir / "metrics.json", metrics)
     write_json(gold_dir / "dashboard_data.json", dashboard_data)
+    integrity = build_evidence_integrity(
+        raw_rows=raw_rows,
+        bronze_rows=bronze_rows,
+        silver_rows=silver_rows,
+        artifact_paths={
+            "bronze_raw_events": bronze_dir / "raw_events.jsonl",
+            "silver_normalized_events": silver_dir / "normalized_events.jsonl",
+            "gold_control_posture": gold_dir / "control_posture.jsonl",
+            "gold_control_tests": gold_dir / "control_tests.jsonl",
+            "gold_evidence_freshness": gold_dir / "evidence_freshness.jsonl",
+            "gold_asset_risk": gold_dir / "asset_risk.jsonl",
+            "gold_metrics": gold_dir / "metrics.json",
+            "gold_dashboard_data": gold_dir / "dashboard_data.json",
+        },
+    )
+    write_json(gold_dir / "evidence_integrity.json", integrity)
     sqlite_mart_path = mart_dir / "security_lakehouse.sqlite"
     duckdb_mart_path = mart_dir / "security_data_lake.duckdb"
     wrote_duckdb = _write_duckdb_mart_if_available(
@@ -123,6 +139,7 @@ def run_pipeline(
                 "gold_control_tests": str(gold_dir / "control_tests.jsonl"),
                 "gold_evidence_freshness": str(gold_dir / "evidence_freshness.jsonl"),
                 "gold_asset_risk": str(gold_dir / "asset_risk.jsonl"),
+                "gold_evidence_integrity": str(gold_dir / "evidence_integrity.json"),
             },
             "marts": {
                 "sqlite": str(sqlite_mart_path),
@@ -161,6 +178,75 @@ def run_pipeline(
         dashboard_data_path=str(gold_dir / "dashboard_data.json"),
         duckdb_mart_path=str(duckdb_mart_path) if wrote_duckdb else None,
     )
+
+
+def _canonical_sha256(payload: Any) -> str:
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def _file_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def build_evidence_integrity(
+    *,
+    raw_rows: list[dict[str, Any]],
+    bronze_rows: list[dict[str, Any]],
+    silver_rows: list[dict[str, Any]],
+    artifact_paths: dict[str, Path],
+) -> dict[str, Any]:
+    """Build deterministic integrity metadata for evidence and derived artifacts.
+
+    The manifest separates two concerns:
+
+    * ``idempotency.evidence_set_sha256`` is stable for the same logical input
+      evidence even when a pipeline run has a new ingestion timestamp.
+    * ``artifacts.*.sha256`` hashes the exact files written by this run so an
+      auditor or agent can detect post-run drift in bronze/silver/gold outputs.
+    """
+    raw_hashes = [_canonical_sha256(row) for row in raw_rows]
+    bronze_hashes = [str(row.get("raw_sha256") or "") for row in bronze_rows]
+    silver_hashes = [str(row.get("raw_sha256") or "") for row in silver_rows]
+    event_ids = [str(row.get("event_id") or "") for row in silver_rows]
+    duplicate_event_ids = sorted(event_id for event_id, count in Counter(event_ids).items() if event_id and count > 1)
+    evidence_items = sorted(
+        (
+            {"event_id": str(row.get("event_id") or ""), "raw_sha256": str(row.get("raw_sha256") or "")}
+            for row in silver_rows
+        ),
+        key=lambda item: (item["event_id"], item["raw_sha256"]),
+    )
+    artifacts: dict[str, dict[str, Any]] = {}
+    for name, path in sorted(artifact_paths.items()):
+        artifacts[name] = {
+            "path": str(path),
+            "sha256": _file_sha256(path),
+            "bytes": path.stat().st_size,
+        }
+    payload = {
+        "schema_version": "trustops.evidence_integrity.v1",
+        "generated_at": utc_iso(datetime.now(UTC)),
+        "counts": {
+            "raw": len(raw_rows),
+            "bronze": len(bronze_rows),
+            "silver": len(silver_rows),
+            "unique_event_ids": len(set(event_ids)),
+        },
+        "hash_linkage": {
+            "raw_matches_bronze": raw_hashes == bronze_hashes,
+            "silver_hashes_subset_of_bronze": set(silver_hashes).issubset(set(bronze_hashes)),
+            "missing_silver_hashes": sorted(set(silver_hashes) - set(bronze_hashes)),
+        },
+        "idempotency": {
+            "event_ids_unique": len(duplicate_event_ids) == 0,
+            "duplicate_event_ids": duplicate_event_ids,
+            "evidence_set_sha256": _canonical_sha256(evidence_items),
+        },
+        "artifacts": artifacts,
+    }
+    payload["manifest_sha256"] = _canonical_sha256({k: v for k, v in payload.items() if k != "manifest_sha256"})
+    return payload
 
 
 def _bronze_row(row: dict[str, Any]) -> dict[str, Any]:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
@@ -17,6 +18,7 @@ from security_lakehouse.io import read_json, read_jsonl
 from security_lakehouse.pipeline import run_pipeline
 from security_lakehouse.programs import validate_program_catalog
 from security_lakehouse.validation import validate_raw_events
+from security_lakehouse.verification import verify_lake_integrity
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw" / "security_events.jsonl"
@@ -95,6 +97,7 @@ def test_pipeline_writes_bronze_silver_gold_and_mart(tmp_path: Path) -> None:
     dashboard_data = read_json(result.dashboard_data_path)
     current_posture = read_json(tmp_path / "lake" / "gold" / "current_posture.json")
     control_tests = read_jsonl(tmp_path / "lake" / "gold" / "control_tests.jsonl")
+    integrity = read_json(tmp_path / "lake" / "gold" / "evidence_integrity.json")
     manifest = read_json(tmp_path / "lake" / "manifest.json")
 
     assert len(bronze[0]["raw_sha256"]) == 64
@@ -114,7 +117,17 @@ def test_pipeline_writes_bronze_silver_gold_and_mart(tmp_path: Path) -> None:
     assert current_posture["posture"]["open_violation_count"] > 0
     assert manifest["marts"]["sqlite"].endswith("security_lakehouse.sqlite")
     assert manifest["zones"]["gold_control_tests"].endswith("control_tests.jsonl")
+    assert manifest["zones"]["gold_evidence_integrity"].endswith("evidence_integrity.json")
     assert manifest["storage_roles"]["duckdb"] == "optional local analytical mart for columnar datasets"
+    assert integrity["schema_version"] == "trustops.evidence_integrity.v1"
+    assert integrity["counts"]["raw"] == result.raw_count
+    assert integrity["counts"]["silver"] == result.silver_count
+    assert integrity["hash_linkage"]["raw_matches_bronze"] is True
+    assert integrity["hash_linkage"]["silver_hashes_subset_of_bronze"] is True
+    assert integrity["idempotency"]["event_ids_unique"] is True
+    assert len(integrity["idempotency"]["evidence_set_sha256"]) == 64
+    assert len(integrity["manifest_sha256"]) == 64
+    assert verify_lake_integrity(tmp_path / "lake")["ok"] is True
     if result.duckdb_mart_path is not None:
         assert Path(result.duckdb_mart_path).exists()
     else:
@@ -128,6 +141,32 @@ def test_pipeline_writes_bronze_silver_gold_and_mart(tmp_path: Path) -> None:
     assert failing >= 1
     assert failing_tests >= 1
     assert top_asset == "container:rag-api@sha256:91ab"
+
+
+def test_pipeline_integrity_evidence_set_hash_is_idempotent(tmp_path: Path) -> None:
+    run_pipeline(RAW, tmp_path / "lake-a")
+    run_pipeline(RAW, tmp_path / "lake-b")
+
+    a = read_json(tmp_path / "lake-a" / "gold" / "evidence_integrity.json")
+    b = read_json(tmp_path / "lake-b" / "gold" / "evidence_integrity.json")
+
+    assert a["idempotency"]["evidence_set_sha256"] == b["idempotency"]["evidence_set_sha256"]
+
+
+def test_lake_integrity_detects_tampered_silver_hash(tmp_path: Path) -> None:
+    run_pipeline(RAW, tmp_path / "lake")
+    silver_path = tmp_path / "lake" / "silver" / "normalized_events.jsonl"
+    rows = read_jsonl(silver_path)
+    rows[0]["raw_sha256"] = "0" * 64
+    silver_path.write_text(
+        "".join(json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n" for row in rows),
+        encoding="utf-8",
+    )
+
+    result = verify_lake_integrity(tmp_path / "lake")
+
+    assert result["ok"] is False
+    assert any("silver_normalized_events" in issue or "evidence_set_sha256" in issue for issue in result["issues"])
 
 
 def test_dashboard_render_tolerates_empty_lake(tmp_path: Path) -> None:

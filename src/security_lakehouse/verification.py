@@ -10,10 +10,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from security_lakehouse.io import read_jsonl
+from security_lakehouse.io import read_json, read_jsonl
+from security_lakehouse.pipeline import _canonical_sha256
 
 
 def _bronze_paths(lake_dir: str | Path) -> list[Path]:
@@ -88,4 +90,80 @@ def verify_event(lake_dir: str | Path, event_id: str) -> dict[str, Any]:
         "computed_sha256": computed,
         "source_layer": "bronze",
         "reason": None if verified else "computed hash does not match stored raw_sha256",
+    }
+
+
+def verify_lake_integrity(lake_dir: str | Path) -> dict[str, Any]:
+    """Verify the generated evidence integrity manifest against lake files."""
+    lake = Path(lake_dir)
+    manifest_path = lake / "gold" / "evidence_integrity.json"
+    issues: list[str] = []
+    if not manifest_path.is_file():
+        return {
+            "ok": False,
+            "issues": ["gold/evidence_integrity.json is missing"],
+            "manifest_sha256": None,
+            "evidence_set_sha256": None,
+        }
+    manifest = read_json(manifest_path)
+    manifest_hash = manifest.get("manifest_sha256")
+    recomputed_manifest_hash = _canonical_sha256({k: v for k, v in manifest.items() if k != "manifest_sha256"})
+    if manifest_hash != recomputed_manifest_hash:
+        issues.append("evidence_integrity manifest hash does not match content")
+
+    for name, artifact in (manifest.get("artifacts") or {}).items():
+        path = Path(str(artifact.get("path") or ""))
+        if not path.is_absolute() and not path.is_file():
+            path = lake / path
+        if not path.is_file():
+            issues.append(f"artifact {name}: file is missing")
+            continue
+        expected_sha = str(artifact.get("sha256") or "")
+        actual_sha = hashlib.sha256(path.read_bytes()).hexdigest()
+        if expected_sha != actual_sha:
+            issues.append(f"artifact {name}: sha256 mismatch")
+
+    bronze_rows = read_jsonl(lake / "bronze" / "raw_events.jsonl", missing_ok=True)
+    silver_rows = read_jsonl(lake / "silver" / "normalized_events.jsonl", missing_ok=True)
+    raw_hashes = []
+    for index, row in enumerate(bronze_rows):
+        raw = row.get("raw")
+        if not isinstance(raw, dict):
+            issues.append(f"bronze row {index}: raw payload is missing")
+            continue
+        computed = _canonical_sha256(raw)
+        raw_hashes.append(computed)
+        if row.get("raw_sha256") != computed:
+            issues.append(f"bronze row {index}: raw_sha256 mismatch")
+
+    bronze_hashes = {str(row.get("raw_sha256") or "") for row in bronze_rows}
+    missing = sorted({str(row.get("raw_sha256") or "") for row in silver_rows} - bronze_hashes)
+    if missing:
+        issues.append(f"silver rows reference missing bronze hashes: {', '.join(missing[:5])}")
+
+    event_ids = [str(row.get("event_id") or "") for row in silver_rows]
+    duplicate_event_ids = sorted(event_id for event_id, count in Counter(event_ids).items() if event_id and count > 1)
+    if duplicate_event_ids:
+        issues.append(f"duplicate event_ids: {', '.join(duplicate_event_ids[:10])}")
+
+    evidence_items = sorted(
+        (
+            {"event_id": str(row.get("event_id") or ""), "raw_sha256": str(row.get("raw_sha256") or "")}
+            for row in silver_rows
+        ),
+        key=lambda item: (item["event_id"], item["raw_sha256"]),
+    )
+    expected_evidence_set = str((manifest.get("idempotency") or {}).get("evidence_set_sha256") or "")
+    actual_evidence_set = _canonical_sha256(evidence_items)
+    if expected_evidence_set != actual_evidence_set:
+        issues.append("idempotency evidence_set_sha256 mismatch")
+
+    return {
+        "ok": not issues,
+        "issues": issues,
+        "manifest_sha256": manifest_hash,
+        "evidence_set_sha256": expected_evidence_set,
+        "recomputed_evidence_set_sha256": actual_evidence_set,
+        "bronze_count": len(bronze_rows),
+        "silver_count": len(silver_rows),
     }
