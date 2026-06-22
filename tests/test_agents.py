@@ -10,9 +10,11 @@ import pytest
 
 from security_lakehouse.agents import AgentBudgetPolicy, build_posture_review_graph, run_posture_review, run_soc_triage
 from security_lakehouse.agents import model_client as agent_model_client
+from security_lakehouse.agents.evaluations import evaluate_agent_run
 from security_lakehouse.agents.model_client import ModelClientError
 from security_lakehouse.agents.model_contract import build_model_context, validate_model_output
 from security_lakehouse.agents.providers import ModelProviderConfig, provider_from_env
+from security_lakehouse.agents.state import AgentDecision
 from security_lakehouse.cli import main
 from test_api_v1 import _seed_lake
 
@@ -123,6 +125,10 @@ def test_posture_review_runs_without_langgraph_or_llm(tmp_path: Path) -> None:
     assert state["decisions"][0].action == "create_evidence_request"
     assert state["decisions"][0].requires_approval is True
     assert state["decisions"][0].status == "proposed"
+    assert state["evaluation"]["ok"] is True
+    assert state["evaluation"]["confidence"] == "high"
+    assert state["evaluation"]["score"] == 100
+    assert state["evaluation"]["coverage"]["evidence_gap_coverage"] == 1.0
 
 
 def test_posture_review_uses_role_redaction(tmp_path: Path) -> None:
@@ -170,6 +176,7 @@ def test_model_assisted_run_validates_model_output(tmp_path: Path) -> None:
         assert context["facts"]["evidence_gaps"][0]["control_id"] == "SOC2-CC6.1"
         return {
             "summary": "Evidence is missing for access review.",
+            "confidence": 0.99,
             "priorities": [{"control_id": "SOC2-CC6.1", "reason": "expired MFA status", "rank": 1}],
             "proposed_tool_calls": [
                 {
@@ -184,6 +191,9 @@ def test_model_assisted_run_validates_model_output(tmp_path: Path) -> None:
 
     assert state["mode"] == "model_assisted"
     assert state["model_output"]["summary"] == "Evidence is missing for access review."
+    assert "confidence" not in state["model_output"]
+    assert state["evaluation"]["confidence"] == "medium"
+    assert state["evaluation"]["coverage"]["model_rejected_tool_calls"] == 1
     assert state["model_output"]["priorities"][0]["control_id"] == "SOC2-CC6.1"
     assert state["model_output"]["proposed_tool_calls"][0]["requires_approval"] is True
     assert state["model_output"]["rejected_tool_calls"] == ["mark_control_passed"]
@@ -262,6 +272,8 @@ def test_model_call_is_skipped_when_context_exceeds_budget(tmp_path: Path) -> No
     assert state["model_context"]["budget"]["status"] == "over_budget"
     assert state["errors"] == ["model_skipped: context_budget_exceeded"]
     assert "model_output" not in state
+    assert state["evaluation"]["ok"] is True
+    assert state["evaluation"]["coverage"]["model_budget_status"] == "over_budget"
 
 
 def test_posture_model_rejects_soc_only_tools(tmp_path: Path) -> None:
@@ -280,6 +292,31 @@ def test_posture_model_rejects_soc_only_tools(tmp_path: Path) -> None:
 
     assert state["model_output"]["proposed_tool_calls"] == []
     assert state["model_output"]["rejected_tool_calls"] == ["create_soc_case"]
+    assert state["evaluation"]["confidence"] == "medium"
+
+
+def test_agent_evaluation_flags_unsafe_write_actions() -> None:
+    result = evaluate_agent_run(
+        {
+            "mode": "rules_only",
+            "decisions": [
+                AgentDecision(
+                    action="freeze_snapshot",
+                    reason="unsafe test",
+                    requires_approval=False,
+                    payload={"reason": "unsafe test"},
+                    status="executed",
+                )
+            ],
+            "errors": [],
+        },
+        use_case="posture_review",
+    )
+
+    assert result["ok"] is False
+    assert result["confidence"] == "low"
+    assert result["risk_level"] == "critical"
+    assert result["failures"][0]["check"] == "writes_are_approval_gated"
 
 
 def test_soc_triage_harness_is_deterministic_and_evaluated(tmp_path: Path) -> None:
@@ -290,6 +327,9 @@ def test_soc_triage_harness_is_deterministic_and_evaluated(tmp_path: Path) -> No
     assert state["mode"] == "rules_only"
     assert [alert["event_id"] for alert in state["alerts"]] == ["det-001", "vuln-001", "runtime-001"]
     assert state["evaluation"]["ok"] is True
+    assert state["evaluation"]["confidence"] == "high"
+    assert state["evaluation"]["score"] == 100
+    assert state["evaluation"]["coverage"]["high_priority_coverage"] == 1.0
     assert {decision.action for decision in state["decisions"]} >= {"create_soc_case", "assign_owner", "enrich_alert"}
     assert all(decision.requires_approval for decision in state["decisions"])
     covered = {decision.payload["event_id"] for decision in state["decisions"]}
@@ -334,6 +374,7 @@ def test_soc_model_output_is_limited_to_soc_tools(tmp_path: Path) -> None:
     assert state["model_output"]["proposed_tool_calls"][0]["requires_approval"] is True
     assert state["model_output"]["rejected_tool_calls"] == ["delete_evidence"]
     assert state["evaluation"]["ok"] is True
+    assert state["evaluation"]["confidence"] == "medium"
 
 
 def test_model_client_error_is_non_fatal(tmp_path: Path) -> None:
@@ -410,6 +451,7 @@ def test_posture_review_cli_outputs_json(tmp_path: Path, capsys) -> None:
 
     assert out["mode"] == "rules_only"
     assert out["role"] == "auditor"
+    assert out["evaluation"]["confidence"] == "high"
     assert out["evidence_gaps"][0]["owner"] == "[redacted]"
     assert out["decisions"][0]["requires_approval"] is True
 

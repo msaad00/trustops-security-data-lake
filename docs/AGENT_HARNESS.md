@@ -32,6 +32,8 @@ The first harness lives under `security_lakehouse.agents`:
   model-proposed tool calls.
 - `model_client.py` contains dependency-free optional provider clients for
   Ollama, OpenAI-compatible APIs, and Anthropic.
+- `evaluations.py` computes deterministic harness checks, failures, coverage,
+  score, confidence, and risk level from TrustOps state.
 - `graphs.py` runs the first posture-review flow and can compile a LangGraph
   graph when `trustops-security-data-lake[agents]` is installed.
 
@@ -84,6 +86,32 @@ estimated tokens, applied item limits, omitted counts, and `status`. If context
 still exceeds budget after deterministic compaction, the harness records
 `model_skipped: context_budget_exceeded`, stays in `rules_only` mode, and does
 not call the provider.
+
+## Evaluation and confidence
+
+Every harness run returns an `evaluation` object:
+
+```json
+{
+  "ok": true,
+  "score": 100,
+  "confidence": "high",
+  "risk_level": "low",
+  "checks": [],
+  "failures": [],
+  "coverage": {}
+}
+```
+
+Confidence is computed by TrustOps, not by the model. The harness scores
+allowed actions, approval gating, rejected tool-call tracking, context-budget
+enforcement, and use-case coverage such as evidence-gap or high-priority alert
+coverage. If a model returns its own confidence field, TrustOps ignores it.
+
+Rejected model tool calls are treated as useful safety telemetry. They do not
+execute and do not make the run unsafe by themselves, but they lower deterministic
+confidence to `medium` because the model attempted something outside the
+approved contract.
 
 ## First workflow
 
