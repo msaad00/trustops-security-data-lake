@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse.agents.budgets import AgentBudgetPolicy
 from security_lakehouse.agents.evaluations import evaluate_soc_triage
 from security_lakehouse.agents.graphs import ModelClient
 from security_lakehouse.agents.model_client import ModelClientError, call_model_json
@@ -112,10 +113,12 @@ def run_soc_triage(
     role: str = "read_only",
     objective: str = "Triage open SOC alerts and propose guarded actions.",
     provider: ModelProviderConfig | None = None,
+    budget: AgentBudgetPolicy | None = None,
     model_client: ModelClient | None = None,
 ) -> AgentRunState:
     """Run a deterministic SOC triage harness with optional model assistance."""
     provider = provider or provider_from_env()
+    budget = budget or AgentBudgetPolicy.from_env()
     alerts = load_soc_alerts(lake_dir, role=role)
     decisions = propose_soc_actions(alerts)
     state: AgentRunState = {
@@ -124,14 +127,17 @@ def run_soc_triage(
         "objective": objective,
         "mode": "rules_only",
         "model_provider": provider.public_dict(),
+        "agent_budget": budget.public_dict(),
         "alerts": alerts,
         "decisions": decisions,
         "errors": [],
     }
     if provider.enabled:
-        context = build_model_context(dict(state), provider, use_case="soc_triage")
+        context = build_model_context(dict(state), provider, use_case="soc_triage", budget=budget)
         state["model_context"] = context
-        if provider.should_call_model:
+        if context.get("budget", {}).get("status") == "over_budget":
+            state["errors"] = [*state.get("errors", []), "model_skipped: context_budget_exceeded"]
+        elif provider.should_call_model:
             client = model_client or call_model_json
             try:
                 raw_output = client(context, provider)

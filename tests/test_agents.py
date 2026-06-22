@@ -8,9 +8,10 @@ from pathlib import Path
 
 import pytest
 
-from security_lakehouse.agents import build_posture_review_graph, run_posture_review, run_soc_triage
+from security_lakehouse.agents import AgentBudgetPolicy, build_posture_review_graph, run_posture_review, run_soc_triage
+from security_lakehouse.agents import model_client as agent_model_client
 from security_lakehouse.agents.model_client import ModelClientError
-from security_lakehouse.agents.model_contract import validate_model_output
+from security_lakehouse.agents.model_contract import build_model_context, validate_model_output
 from security_lakehouse.agents.providers import ModelProviderConfig, provider_from_env
 from security_lakehouse.cli import main
 from test_api_v1 import _seed_lake
@@ -188,6 +189,79 @@ def test_model_assisted_run_validates_model_output(tmp_path: Path) -> None:
     assert state["model_output"]["rejected_tool_calls"] == ["mark_control_passed"]
     assert state["decisions"][0].requires_approval is True
     assert state["decisions"][0].status == "proposed"
+
+
+def test_model_context_budget_compacts_fact_lists() -> None:
+    provider = ModelProviderConfig(provider="ollama", model="llama3.1", base_url="http://127.0.0.1:11434")
+    state = {
+        "objective": "triage",
+        "role": "read_only",
+        "alerts": [
+            {
+                "event_id": f"det-{index:03d}",
+                "severity": "critical",
+                "detail": "x" * 500,
+            }
+            for index in range(12)
+        ],
+        "decisions": [],
+    }
+
+    context = build_model_context(
+        state,
+        provider,
+        use_case="soc_triage",
+        budget=AgentBudgetPolicy(max_context_chars=6_000, max_fact_items=2, max_output_tokens=128),
+    )
+
+    assert len(context["facts"]["alerts"]) == 2
+    assert context["budget"]["status"] == "within_budget"
+    assert context["budget"]["max_output_tokens"] == 128
+    assert context["budget"]["omitted"]["facts.alerts"] == 10
+
+
+def test_model_client_receives_output_token_budget(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: dict[str, object] = {}
+
+    def fake_post_json(url: str, payload: dict, *, headers: dict[str, str], timeout: float) -> dict:
+        captured["url"] = url
+        captured["payload"] = payload
+        return {"message": {"content": "{}"}}
+
+    monkeypatch.setattr(agent_model_client, "_post_json", fake_post_json)
+    provider = ModelProviderConfig(provider="ollama", model="llama3.1", base_url="http://127.0.0.1:11434")
+
+    assert agent_model_client.call_model_json({"budget": {"max_output_tokens": 128}}, provider) == {}
+
+    payload = captured["payload"]
+    assert isinstance(payload, dict)
+    assert payload["options"] == {"num_predict": 128}
+
+
+def test_model_call_is_skipped_when_context_exceeds_budget(tmp_path: Path) -> None:
+    _seed_gap(tmp_path)
+    provider = ModelProviderConfig(
+        provider="ollama",
+        model="llama3.1",
+        base_url="http://127.0.0.1:11434",
+        use_model=True,
+    )
+
+    def unexpected_model(_context: dict, _configured: ModelProviderConfig) -> dict:
+        raise AssertionError("model should not be called when context is over budget")
+
+    state = run_posture_review(
+        tmp_path,
+        role="read_only",
+        provider=provider,
+        budget=AgentBudgetPolicy(max_context_chars=256, max_fact_items=1, max_output_tokens=64),
+        model_client=unexpected_model,
+    )
+
+    assert state["mode"] == "rules_only"
+    assert state["model_context"]["budget"]["status"] == "over_budget"
+    assert state["errors"] == ["model_skipped: context_budget_exceeded"]
+    assert "model_output" not in state
 
 
 def test_posture_model_rejects_soc_only_tools(tmp_path: Path) -> None:
@@ -411,3 +485,34 @@ def test_posture_review_cli_does_not_print_model_key_env(
     assert "api_key_env" not in output
     assert "TRUSTOPS_TEST_OPENAI_KEY" not in output
     assert "secret-test-value" not in output
+
+
+def test_soc_triage_cli_applies_budget_flags(tmp_path: Path, capsys) -> None:
+    _seed_soc_alerts(tmp_path)
+
+    assert (
+        main(
+            [
+                "agents",
+                "soc-triage",
+                "--lake",
+                str(tmp_path),
+                "--provider",
+                "ollama",
+                "--model",
+                "llama3.1",
+                "--base-url",
+                "http://127.0.0.1:11434",
+                "--max-fact-items",
+                "1",
+                "--max-output-tokens",
+                "128",
+            ]
+        )
+        == 0
+    )
+    out = json.loads(capsys.readouterr().out)
+
+    assert out["agent_budget"]["max_fact_items"] == 1
+    assert out["model_context"]["budget"]["max_output_tokens"] == 128
+    assert out["model_context"]["budget"]["omitted"]["facts.alerts"] == 2
