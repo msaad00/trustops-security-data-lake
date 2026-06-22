@@ -23,6 +23,7 @@ import type {
   FrameworkView,
   FrameworkDetail,
   NormalizedEvent,
+  ProbePayload,
   SavedView,
   Tag,
   TrackingEvent,
@@ -225,8 +226,14 @@ export function useConfigureMutation() {
 export function useProbeMutation() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => api.probeConnector(id),
-    onSuccess: (_data, id) => {
+    mutationFn: ({
+      id,
+      payload = {},
+    }: {
+      id: string;
+      payload?: ProbePayload;
+    }) => api.probeConnector(id, payload),
+    onSuccess: (_data, { id }) => {
       qc.invalidateQueries({ queryKey: ["connectors"] });
       qc.invalidateQueries({ queryKey: ["connector-runs", id] });
     },

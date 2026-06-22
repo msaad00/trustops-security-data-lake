@@ -271,7 +271,13 @@ def handle_post(path: str, body: Body, lake_dir: str | Path, *, role: str = "") 
         return HTTPStatus.CREATED, {"event": record}
     probe = _suffix_match(path, "/api/connectors/", "/probe")
     if probe is not None:
-        record = run_probe(lake, connector_id=probe, actor=str(body.get("actor") or "console"))
+        record = run_probe(
+            lake,
+            connector_id=probe,
+            actor=str(body.get("actor") or "console"),
+            credentials=body.get("credentials") if "credentials" in body else None,
+            options=body.get("options") if "options" in body else None,
+        )
         return HTTPStatus.CREATED, {"run": record}
     if path == "/api/workflows":
         try:

@@ -76,6 +76,35 @@ def test_probe_without_adapter_is_skipped_not_fabricated(tmp_path: Path) -> None
     assert "no collection adapter" in rec["error"]
 
 
+def test_probe_validates_staged_payload_without_enabling(tmp_path: Path) -> None:
+    rec = run_probe(
+        tmp_path,
+        connector_id="clickhouse-telemetry-lake",
+        credentials={
+            "host": "https://cluster.example.clickhouse.cloud:8443",
+            "token": "scoped-read-token",
+        },
+        options={},
+    )
+    assert rec["result"] == "skipped"
+    assert rec["evidence_count"] is None
+    assert "no collection adapter" in rec["error"]
+    assert latest_config(tmp_path, "clickhouse-telemetry-lake") is None
+
+
+def test_probe_rejects_incomplete_staged_payload(tmp_path: Path) -> None:
+    rec = run_probe(
+        tmp_path,
+        connector_id="clickhouse-telemetry-lake",
+        credentials={"host": "https://cluster.example.clickhouse.cloud:8443"},
+        options={},
+    )
+    assert rec["result"] == "error"
+    assert "missing required connector configuration" in rec["error"]
+    assert "token" in rec["error"]
+    assert latest_config(tmp_path, "clickhouse-telemetry-lake") is None
+
+
 def test_probe_unknown_connector_returns_error(tmp_path: Path) -> None:
     rec = run_probe(tmp_path, connector_id="not-a-real-connector")
     assert rec["result"] == "error"
@@ -300,6 +329,34 @@ def test_clickhouse_enable_uses_discovered_scope_after_scoped_token(tmp_path: Pa
         assert body["event"]["options"] == {}
         assert body["event"]["credentials"]["token"].startswith("***")
         assert "password" not in body["event"]["credentials"]
+    finally:
+        server.shutdown()
+
+
+def test_connector_probe_accepts_staged_payload_without_enable(tmp_path: Path) -> None:
+    server = _spin_handler(tmp_path)
+    try:
+        status, body = _request(
+            server,
+            "POST",
+            "/api/connectors/clickhouse-telemetry-lake/probe",
+            body={
+                "credentials": {
+                    "host": "https://cluster.example.clickhouse.cloud:8443",
+                    "token": "scoped-read-token",
+                },
+                "options": {},
+            },
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["run"]["result"] == "skipped"
+        assert "no collection adapter" in body["run"]["error"]
+
+        status, body = _request(server, "GET", "/api/connectors")
+        assert status == HTTPStatus.OK
+        by_id = {item["connector_id"]: item for item in body["connectors"]}
+        assert by_id["clickhouse-telemetry-lake"]["state"] == "disabled"
+        assert by_id["clickhouse-telemetry-lake"]["credential_fingerprint"] is None
     finally:
         server.shutdown()
 

@@ -229,6 +229,12 @@ export interface ConfigurePayload {
   options?: Record<string, unknown>;
 }
 
+export interface ProbePayload {
+  actor?: string;
+  credentials?: Record<string, string>;
+  options?: Record<string, unknown>;
+}
+
 export type FrameworkFreshness = "fresh" | "stale" | "expired" | "never_pulled";
 
 export interface FrameworkView {
