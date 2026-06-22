@@ -370,6 +370,15 @@ def _parser() -> argparse.ArgumentParser:
         default="Review posture and propose evidence-gap actions.",
         help="agent objective recorded in the run state",
     )
+    agents_review.add_argument("--provider", default=None, help="override TRUSTOPS_AGENT_PROVIDER")
+    agents_review.add_argument("--model", default=None, help="override TRUSTOPS_AGENT_MODEL")
+    agents_review.add_argument("--base-url", default=None, help="override TRUSTOPS_AGENT_BASE_URL")
+    agents_review.add_argument("--api-key-env", default=None, help="override TRUSTOPS_AGENT_API_KEY_ENV")
+    agents_review.add_argument(
+        "--use-model",
+        action="store_true",
+        help="call the configured model provider; default is deterministic rules-only",
+    )
     agents_review.set_defaults(func=_agents_posture_review)
 
     policy = sub.add_parser("policy", help="controls-as-code policy engine")
@@ -1095,12 +1104,24 @@ def _agents_posture_review(args: argparse.Namespace) -> int:
     from dataclasses import asdict, is_dataclass
 
     from security_lakehouse.agents import run_posture_review
+    from security_lakehouse.agents.providers import ModelProviderConfig, normalize_provider, provider_from_env
+
+    base_provider = provider_from_env()
+    provider = ModelProviderConfig(
+        provider=normalize_provider(args.provider or base_provider.provider),
+        model=args.model if args.model is not None else base_provider.model,
+        base_url=args.base_url if args.base_url is not None else base_provider.base_url,
+        api_key_env=args.api_key_env if args.api_key_env is not None else base_provider.api_key_env,
+        use_model=bool(args.use_model or base_provider.use_model),
+        timeout_seconds=base_provider.timeout_seconds,
+    )
 
     state = dict(
         run_posture_review(
             args.lake,
             role=args.role,
             objective=args.objective,
+            provider=provider,
         )
     )
     decisions = state.get("decisions") or []

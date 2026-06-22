@@ -2,12 +2,17 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse.agents.model_client import ModelClientError, call_model_json
+from security_lakehouse.agents.model_contract import build_model_context, validate_model_output
 from security_lakehouse.agents.providers import ModelProviderConfig, provider_from_env
 from security_lakehouse.agents.state import AgentDecision, AgentRunState
 from security_lakehouse.agents.tools import load_evidence_gaps, load_redacted_posture, propose_evidence_gap_actions
+
+ModelClient = Callable[[dict[str, Any], ModelProviderConfig], dict[str, Any]]
 
 
 def _load_posture_node(state: AgentRunState) -> AgentRunState:
@@ -44,6 +49,7 @@ def run_posture_review(
     role: str = "read_only",
     objective: str = "Review posture and propose evidence-gap actions.",
     provider: ModelProviderConfig | None = None,
+    model_client: ModelClient | None = None,
 ) -> AgentRunState:
     """Run the posture-review harness without requiring LangGraph or an LLM."""
     provider = provider or provider_from_env()
@@ -52,15 +58,23 @@ def run_posture_review(
         "role": role,
         "objective": objective,
         "mode": "rules_only",
+        "model_provider": provider.public_dict(),
         "errors": [],
     }
-    # The first shipped path is deliberately deterministic. Model-backed nodes
-    # can enrich summaries later, but they must consume this redacted state.
-    if provider.enabled:
-        state["errors"] = [f"model provider {provider.provider!r} configured; model-backed nodes not enabled yet"]
     state = _load_posture_node(state)
     state = _load_gaps_node(state)
     state = _propose_actions_node(state)
+    if provider.enabled:
+        context = build_model_context(dict(state), provider)
+        state["model_context"] = context
+        if provider.should_call_model:
+            client = model_client or call_model_json
+            try:
+                raw_output = client(context, provider)
+                state["model_output"] = validate_model_output(raw_output)
+                state["mode"] = "model_assisted"
+            except ModelClientError as exc:
+                state["errors"] = [*state.get("errors", []), f"model_error: {exc}"]
     return state
 
 

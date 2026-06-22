@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Literal, TypedDict
 
-AgentMode = Literal["rules_only", "langgraph"]
+AgentMode = Literal["rules_only", "model_assisted", "langgraph"]
 
 
 @dataclass(frozen=True)
@@ -29,5 +29,8 @@ class AgentRunState(TypedDict, total=False):
     posture: dict[str, Any]
     evidence_gaps: list[dict[str, Any]]
     decisions: list[AgentDecision]
+    model_provider: dict[str, Any]
+    model_context: dict[str, Any]
+    model_output: dict[str, Any]
     approved: bool
     errors: list[str]
