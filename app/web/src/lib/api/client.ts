@@ -7,6 +7,7 @@ import type {
   ControlExceptionItem,
   EvidenceRequestItem,
   PostureMetricPoint,
+  ProbePayload,
   RemediationInsights,
   RemediationTask,
   Risk,
@@ -216,10 +217,10 @@ export const api = {
       `/connectors/${encodeURIComponent(id)}/configure`,
       payload,
     ),
-  probeConnector: (id: string) =>
+  probeConnector: (id: string, payload: ProbePayload = {}) =>
     post<{ run: ConnectorRun }>(
       `/connectors/${encodeURIComponent(id)}/probe`,
-      {},
+      payload,
     ),
   connectorRuns: (id: string) =>
     get<{ connector_id: string; runs: ConnectorRun[] }>(

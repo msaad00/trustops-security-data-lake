@@ -356,13 +356,17 @@ def run_probe(
     *,
     connector_id: str,
     actor: str = "console",
+    credentials: dict[str, Any] | None = None,
+    options: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Validate a connector's configuration and persist the probe result.
 
-    The probe checks that the connector is registered, enabled, and declares
-    required permissions. It does not collect evidence, so it never reports an
-    evidence count. Connectors without an implemented collection adapter report
-    ``skipped`` (contract validated only) rather than implying live collection.
+    The probe checks that the connector is registered and has either an enabled
+    saved configuration or a staged credential payload supplied by the caller.
+    Staged payloads are validated but never persisted. The probe does not
+    collect evidence, so it never reports an evidence count. Connectors without
+    an implemented collection adapter report ``skipped`` (contract validated
+    only) rather than implying live collection.
     """
     catalog = load_connector_catalog()
     if connector_id not in catalog:
@@ -376,17 +380,36 @@ def run_probe(
         )
         return record
     base = catalog[connector_id]
-    config = latest_config(lake_dir, connector_id)
-    if not config or config.get("state") != "enabled":
-        record = append_run_event(
-            lake_dir,
-            connector_id=connector_id,
-            kind="probe",
-            result="skipped",
-            actor=actor,
-            error="connector is not enabled — configure credentials first",
-        )
-        return record
+    has_staged_payload = credentials is not None or options is not None
+    if has_staged_payload:
+        try:
+            validate_configure_payload(
+                connector_id=connector_id,
+                state="enabled",
+                credentials=credentials or {},
+                options=options or {},
+            )
+        except ValueError as exc:
+            return append_run_event(
+                lake_dir,
+                connector_id=connector_id,
+                kind="probe",
+                result="error",
+                actor=actor,
+                error=str(exc),
+            )
+    else:
+        config = latest_config(lake_dir, connector_id)
+        if not config or config.get("state") != "enabled":
+            record = append_run_event(
+                lake_dir,
+                connector_id=connector_id,
+                kind="probe",
+                result="skipped",
+                actor=actor,
+                error="connector is not enabled — configure credentials first",
+            )
+            return record
     permissions = base.get("minimum_permissions") or []
     if not permissions:
         record = append_run_event(

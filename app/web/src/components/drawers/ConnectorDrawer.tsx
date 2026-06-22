@@ -17,7 +17,11 @@ import {
   useProbeMutation,
 } from "@/lib/api/hooks";
 import { useAuditorMode } from "@/lib/state/auditor";
-import type { ConfigurePayload, ConnectorView } from "@/lib/api/types";
+import type {
+  ConfigurePayload,
+  ConnectorView,
+  ProbePayload,
+} from "@/lib/api/types";
 
 interface Props {
   connector: ConnectorView | null;
@@ -229,9 +233,11 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
   const runs = useConnectorRuns(connector?.connector_id ?? null);
   const [creds, setCreds] = useState<Record<string, string>>({});
   const [options, setOptions] = useState<Record<string, string>>({});
+  const [accessValidated, setAccessValidated] = useState(false);
 
   useEffect(() => {
     setCreds({});
+    setAccessValidated(false);
     const configured = connector?.configured_options ?? {};
     setOptions(
       Object.fromEntries(
@@ -265,21 +271,28 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
     .map((field) => field.label);
   const missingRequired = [...missingCredentials, ...missingScope];
   const canEnable = missingRequired.length === 0;
+  const stagedCredentials = Object.fromEntries(
+    Object.entries(creds).filter(([, value]) => value.trim() !== ""),
+  );
+  const stagedOptions = Object.fromEntries(
+    Object.entries(options).filter(([, value]) => value.trim() !== ""),
+  );
+  const canTestAccess = isEnabled || canEnable;
 
   const enable = async () => {
     if (!canEnable) {
       onToast(`Required before enabling: ${missingRequired.join(", ")}.`);
       return;
     }
+    if (!isEnabled && !accessValidated) {
+      onToast("Test connection before enabling this connector.");
+      return;
+    }
     const payload: ConfigurePayload = {
       state: "enabled",
       actor: "console",
-      credentials: Object.fromEntries(
-        Object.entries(creds).filter(([, value]) => value.trim() !== ""),
-      ),
-      options: Object.fromEntries(
-        Object.entries(options).filter(([, value]) => value.trim() !== ""),
-      ),
+      credentials: stagedCredentials,
+      options: stagedOptions,
     };
     try {
       await configure.mutateAsync({ id: connector.connector_id, payload });
@@ -303,13 +316,28 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
 
   const runProbe = async () => {
     try {
-      const { run } = await probe.mutateAsync(connector.connector_id);
+      const payload: ProbePayload = { actor: "console" };
+      if (!isEnabled) {
+        payload.credentials = stagedCredentials;
+        payload.options = stagedOptions;
+      }
+      const { run } = await probe.mutateAsync({
+        id: connector.connector_id,
+        payload,
+      });
+      const validated = run.result !== "error";
+      setAccessValidated(validated);
       onToast(
         run.result === "ok"
-          ? `Probe ok — ${run.evidence_count ?? 0} evidence types reachable.`
-          : `Probe ${run.result}: ${run.error ?? "see history"}`,
+          ? isEnabled
+            ? "Probe ok."
+            : "Access test passed. You can enable this connector."
+          : run.result === "skipped"
+            ? `Access contract validated: ${run.error ?? "probe skipped"}`
+            : `Probe error: ${run.error ?? "see history"}`,
       );
     } catch (err) {
+      setAccessValidated(false);
       onToast(`Probe failed: ${(err as Error).message}`);
     }
   };
@@ -332,7 +360,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
               <Button
                 variant="default"
                 onClick={runProbe}
-                disabled={probe.isPending || !isEnabled}
+                disabled={probe.isPending || !canTestAccess}
               >
                 {probe.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -420,12 +448,13 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                   <input
                     type={field.secret ? "password" : "text"}
                     value={creds[field.name] ?? ""}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      setAccessValidated(false);
                       setCreds((c) => ({
                         ...c,
                         [field.name]: e.target.value,
-                      }))
-                    }
+                      }));
+                    }}
                     className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
                     placeholder={field.placeholder}
                   />
@@ -445,12 +474,13 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                         {field.label}
                         <input
                           value={options[field.name] ?? ""}
-                          onChange={(e) =>
+                          onChange={(e) => {
+                            setAccessValidated(false);
                             setOptions((current) => ({
                               ...current,
                               [field.name]: e.target.value,
-                            }))
-                          }
+                            }));
+                          }}
                           placeholder={field.placeholder}
                           className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
                         />
@@ -465,9 +495,10 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                     Read scope
                   </div>
                   <div className="mt-1 text-xs font-semibold text-muted">
-                    After enable, Test connection discovers the databases and
-                    tables visible to this token. Select evidence tables from
-                    that discovered list instead of typing table names here.
+                    Test connection validates the token and discovers only the
+                    databases and tables visible to that read scope. Select
+                    evidence tables from the discovered list instead of typing
+                    table names here.
                   </div>
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     <Badge tone="info">discovered tables</Badge>
@@ -476,8 +507,8 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                   </div>
                   {!isEnabled && (
                     <div className="mt-2 text-xs text-muted">
-                      Enable with a scoped read token first; raw secrets are not
-                      persisted.
+                      Enter the host and scoped token, test access, then enable.
+                      Raw secrets are not persisted.
                     </div>
                   )}
                 </div>
@@ -486,6 +517,17 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
             {!canEnable && !isEnabled && (
               <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-900">
                 Required before enabling: {missingRequired.join(", ")}.
+              </div>
+            )}
+            {canEnable && !isEnabled && !accessValidated && (
+              <div className="mt-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-900">
+                Test connection before enabling. The probe validates required
+                fields without persisting raw credentials.
+              </div>
+            )}
+            {canEnable && !isEnabled && accessValidated && (
+              <div className="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-900">
+                Access checked. Enable writes the redacted configuration event.
               </div>
             )}
             {isEnabled && connector.credential_fingerprint ? (
