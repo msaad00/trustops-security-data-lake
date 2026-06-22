@@ -268,7 +268,38 @@ def test_connector_configure_rejects_empty_enable(tmp_path: Path) -> None:
         )
         assert status == HTTPStatus.BAD_REQUEST
         assert "missing required connector configuration" in body["reason"]
+        assert "host" in body["reason"]
+        assert "token" in body["reason"]
+        assert "password" not in body["reason"]
+        assert "database" not in body["reason"]
+        assert "events_table" not in body["reason"]
         assert "ClickHouse" not in body["reason"]
+    finally:
+        server.shutdown()
+
+
+def test_clickhouse_enable_uses_discovered_scope_after_scoped_token(tmp_path: Path) -> None:
+    server = _spin_handler(tmp_path)
+    try:
+        status, body = _request(
+            server,
+            "POST",
+            "/api/connectors/clickhouse-telemetry-lake/configure",
+            body={
+                "state": "enabled",
+                "credentials": {
+                    "host": "https://cluster.example.clickhouse.cloud:8443",
+                    "token": "scoped-read-token",
+                },
+                "options": {},
+            },
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["event"]["state"] == "enabled"
+        assert body["event"]["credential_fingerprint"]
+        assert body["event"]["options"] == {}
+        assert body["event"]["credentials"]["token"].startswith("***")
+        assert "password" not in body["event"]["credentials"]
     finally:
         server.shutdown()
 

@@ -20,12 +20,12 @@ function stateHeadline(state?: string) {
 
 function stateCopy(state?: string) {
   if (state === "ready") {
-    return "Current proof is ready for internal review, audit prep, and customer assurance.";
+    return "Evidence, controls, and framework readiness are clean enough to share.";
   }
   if (state === "critical") {
-    return "Critical gaps need owners before this posture is shared externally.";
+    return "Assign owners to critical findings, refresh stale evidence, then rerun controls.";
   }
-  return "Review gaps and owner queues before the next trust share.";
+  return "Review open gaps and owner queues before the next trust share.";
 }
 
 function ExecutiveMetric({
@@ -48,14 +48,14 @@ function ExecutiveMetric({
           ? "text-emerald-700"
           : "text-ink";
   return (
-    <div className="min-w-0 border-t border-line py-3 sm:border-l sm:border-t-0 sm:pl-4">
+    <div className="min-w-0 rounded-lg border border-line bg-white p-3">
       <div className="text-[10px] font-black uppercase tracking-wide text-muted">
         {label}
       </div>
       <div className={`mt-1 text-2xl font-black leading-none ${toneClass}`}>
         {value}
       </div>
-      <div className="mt-1 truncate text-xs text-muted">{detail}</div>
+      <div className="mt-1 text-xs leading-4 text-muted">{detail}</div>
     </div>
   );
 }
@@ -75,6 +75,10 @@ export default function DashboardPage() {
             frameworks.length,
         )
       : 0;
+  const frameworkDetail =
+    frameworks.length > 0
+      ? `${frameworks.length} monitored programs · ${frameworkAvg} avg readiness`
+      : "No framework posture yet";
 
   return (
     <div className="mx-auto grid w-full max-w-[1500px] gap-3 px-3 py-3 sm:px-4 lg:px-5">
@@ -88,8 +92,8 @@ export default function DashboardPage() {
             Executive trust overview
           </h1>
           <p className="mt-1 max-w-[720px] text-sm leading-5 text-muted">
-            Current proof, gaps, owners, and readiness across audits, customers,
-            cloud, identity, runtime, and AI systems.
+            Readiness, open risk, stale evidence, and owner action across audit,
+            customer, cloud, identity, runtime, and AI surfaces.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -152,11 +156,11 @@ export default function DashboardPage() {
                   {p?.state === "ready" ? "shareable" : "internal review"}
                 </Badge>
               </div>
-              <div className="grid gap-0 sm:grid-cols-4">
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <ExecutiveMetric
-                  label="Frameworks"
-                  value={`${readyFrameworks}/${frameworks.length}`}
-                  detail={`${frameworkAvg} average readiness`}
+                  label="Framework programs"
+                  value={`${readyFrameworks} ready`}
+                  detail={frameworkDetail}
                   tone={
                     frameworks.length > 0 &&
                     readyFrameworks === frameworks.length
@@ -165,9 +169,9 @@ export default function DashboardPage() {
                   }
                 />
                 <ExecutiveMetric
-                  label="Control tests"
-                  value={p?.failed_control_test_count ?? 0}
-                  detail={`${p?.control_count ?? 0} controls monitored`}
+                  label="Controls monitored"
+                  value={p?.control_count ?? 0}
+                  detail={`${p?.failed_control_test_count ?? 0} failing tests require work`}
                   tone={
                     (p?.failed_control_test_count ?? 0) > 0
                       ? "critical"
@@ -176,8 +180,8 @@ export default function DashboardPage() {
                 />
                 <ExecutiveMetric
                   label="Open risk"
-                  value={p?.critical_violation_count ?? 0}
-                  detail={`${p?.open_violation_count ?? 0} total violations`}
+                  value={`${p?.critical_violation_count ?? 0} critical`}
+                  detail={`${p?.open_violation_count ?? 0} open findings total`}
                   tone={
                     (p?.critical_violation_count ?? 0) > 0
                       ? "critical"
@@ -187,9 +191,9 @@ export default function DashboardPage() {
                   }
                 />
                 <ExecutiveMetric
-                  label="Evidence"
-                  value={p?.stale_evidence_count ?? 0}
-                  detail={`${p?.stale_control_count ?? 0} stale controls`}
+                  label="Evidence freshness"
+                  value={`${p?.stale_evidence_count ?? 0} stale`}
+                  detail={`${p?.stale_control_count ?? 0} controls need refreshed proof`}
                   tone={
                     (p?.stale_evidence_count ?? 0) > 0 ||
                     (p?.stale_control_count ?? 0) > 0

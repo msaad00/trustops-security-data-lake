@@ -104,7 +104,7 @@ def _inline_react_dashboard(app_data: dict[str, Any]) -> str:
     payload = html.escape(json.dumps(app_data, sort_keys=True, default=str), quote=False)
     replacement = f'<script id="app-data" type="application/json">{payload}</script>'
     if _INLINE_DATA_RE.search(html_text):
-        html_text = _INLINE_DATA_RE.sub(replacement, html_text)
+        html_text = _INLINE_DATA_RE.sub(lambda _match: replacement, html_text)
     else:
         html_text = html_text.replace("</body>", f"{replacement}</body>")
     return html_text

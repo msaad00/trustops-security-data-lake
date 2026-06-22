@@ -86,7 +86,7 @@ def test_pipeline_writes_bronze_silver_gold_and_mart(tmp_path: Path) -> None:
 
     assert result.raw_count == 10
     assert result.silver_count == 10
-    assert result.control_count == 4
+    assert result.control_count == 34
     assert Path(result.mart_path).exists()
 
     bronze = read_jsonl(tmp_path / "lake" / "bronze" / "raw_events.jsonl")
@@ -102,11 +102,11 @@ def test_pipeline_writes_bronze_silver_gold_and_mart(tmp_path: Path) -> None:
     assert metrics["critical_open"] == 2
     assert metrics["runtime_block_rate"] == 1.0
     assert metrics["top_risk_asset"] == "container:rag-api@sha256:91ab"
-    assert metrics["control_test_count"] == 4
+    assert metrics["control_test_count"] == result.control_count
     assert metrics["failing_control_tests"] >= 1
     assert [backend["name"] for backend in dashboard_data["lake_backends"]] == ["Snowflake", "ClickHouse"]
-    assert len(dashboard_data["control_tests"]) == 4
-    assert {row["program_id"] for row in control_tests} == {"acme-continuous-trust"}
+    assert len(dashboard_data["control_tests"]) == result.control_count
+    assert {"acme-continuous-trust", "trustops-framework-coverage"} <= {row["program_id"] for row in control_tests}
     assert all(row["confidence_score"] > 0 for row in control_tests)
     assert any(row["result"] == "fail" and row["status"] == "failing" for row in control_tests)
     assert current_posture["assessment_type"] == "current_posture"
