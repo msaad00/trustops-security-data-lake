@@ -18,23 +18,60 @@ interface FrameworkBadgeProps {
   className?: string;
 }
 
-const LABELS: Record<string, string> = {
-  soc2: "SOC 2",
-  "nist-ai-rmf": "NIST AI",
-  "iso-27001-2022": "ISO 27001",
-  "iso-42001-2023": "ISO 42001",
-  "hipaa-security-rule": "HIPAA",
-  "pci-dss-v4": "PCI DSS",
-  "gdpr-2016-679": "GDPR",
-  "eu-ai-act-2024-1689": "EU AI Act",
+const FRAMEWORKS: Record<
+  string,
+  { label: string; mark: string; accent: string; bg: string }
+> = {
+  soc2: { label: "SOC 2", mark: "SOC", accent: "#2563eb", bg: "#eff6ff" },
+  "nist-ai-rmf": {
+    label: "NIST AI",
+    mark: "AI",
+    accent: "#7c3aed",
+    bg: "#f5f3ff",
+  },
+  "iso-27001-2022": {
+    label: "ISO 27001",
+    mark: "ISO",
+    accent: "#0891b2",
+    bg: "#ecfeff",
+  },
+  "iso-42001-2023": {
+    label: "ISO 42001",
+    mark: "AIMS",
+    accent: "#0f766e",
+    bg: "#f0fdfa",
+  },
+  "hipaa-security-rule": {
+    label: "HIPAA",
+    mark: "HHS",
+    accent: "#059669",
+    bg: "#ecfdf5",
+  },
+  "pci-dss-v4": {
+    label: "PCI DSS",
+    mark: "PCI",
+    accent: "#d97706",
+    bg: "#fffbeb",
+  },
+  "gdpr-2016-679": {
+    label: "GDPR",
+    mark: "EU",
+    accent: "#4338ca",
+    bg: "#eef2ff",
+  },
+  "eu-ai-act-2024-1689": {
+    label: "EU AI Act",
+    mark: "EU AI",
+    accent: "#be123c",
+    bg: "#fff1f2",
+  },
 };
 
 const styleFor = (size: number): CSSProperties => ({
-  width: Math.max(size * 2.8, 86),
+  minWidth: Math.max(size * 3.1, 98),
   minHeight: size,
   display: "inline-flex",
   alignItems: "center",
-  justifyContent: "center",
   flexShrink: 0,
 });
 
@@ -44,13 +81,17 @@ export function FrameworkBadge({
   size = 32,
   className,
 }: FrameworkBadgeProps) {
-  const label = LABELS[frameworkId] ?? fallbackLabel ?? frameworkId;
+  const framework = FRAMEWORKS[frameworkId];
+  const label = framework?.label ?? fallbackLabel ?? frameworkId;
+  const mark = framework?.mark ?? label.slice(0, 4).toUpperCase();
+  const accent = framework?.accent ?? "#2563eb";
+  const bg = framework?.bg ?? "#eff6ff";
 
   return (
     <span
       style={styleFor(size)}
       className={[
-        "rounded-md border border-line bg-panel px-2 text-center text-[11px] font-semibold leading-tight text-ink",
+        "gap-2 rounded-md border border-line bg-white px-2 py-1 text-left text-[11px] font-semibold leading-tight text-ink",
         className,
       ]
         .filter(Boolean)
@@ -59,7 +100,13 @@ export function FrameworkBadge({
       aria-label={`${label} framework label; not an official logo or certification seal`}
       title={`${label} framework label; not an official logo or certification seal`}
     >
-      {label}
+      <span
+        className="inline-flex h-7 min-w-7 items-center justify-center rounded text-[9px] font-black tracking-wide"
+        style={{ color: accent, background: bg }}
+      >
+        {mark}
+      </span>
+      <span className="min-w-0 truncate">{label}</span>
     </span>
   );
 }
