@@ -15,10 +15,16 @@ The optional agent harness wraps that core:
 redacted TrustOps facts -> deterministic tools -> optional model context -> proposed actions -> approval -> TrustOps API write -> audit event
 ```
 
+This document is not the harness. It is the operator contract. The executable
+harness lives in `src/security_lakehouse/agents/`, and the behavior is locked
+by `tests/test_agents.py`.
+
 ## Package shape
 
 The first harness lives under `security_lakehouse.agents`:
 
+- `budgets.py` enforces context size, fact count, and output-token budgets
+  before any optional provider call.
 - `providers.py` reads optional model configuration from environment.
 - `state.py` defines the shared agent run state and action proposal record.
 - `tools.py` exposes typed, redaction-aware TrustOps fact readers.
@@ -48,6 +54,36 @@ Environment knobs:
 `openai_compatible` is supported for local or customer-chosen providers that
 serve `/chat/completions`. The harness records provider metadata but never
 prints raw API keys.
+
+## Budget policy
+
+Model use is budgeted by the harness, not by prompt wording. Defaults are small
+enough for local models and CI:
+
+| Variable                           | Default | Purpose                                                               |
+| ---------------------------------- | ------- | --------------------------------------------------------------------- |
+| `TRUSTOPS_AGENT_MAX_CONTEXT_CHARS` | 12000   | Maximum serialized context sent to a model after compaction           |
+| `TRUSTOPS_AGENT_MAX_FACT_ITEMS`    | 20      | Maximum evidence gaps, alerts, and deterministic decisions in context |
+| `TRUSTOPS_AGENT_MAX_OUTPUT_TOKENS` | 600     | Maximum provider output tokens requested                              |
+| `TRUSTOPS_AGENT_MAX_STRING_CHARS`  | 1000    | Maximum individual string length before deterministic truncation      |
+
+The CLI also accepts per-run overrides:
+
+```bash
+security-lakehouse agents soc-triage \
+  --lake ./lake \
+  --provider ollama \
+  --model llama3.1 \
+  --max-fact-items 10 \
+  --max-context-chars 8000 \
+  --max-output-tokens 300
+```
+
+Every model context includes a `budget` object with estimated context size,
+estimated tokens, applied item limits, omitted counts, and `status`. If context
+still exceeds budget after deterministic compaction, the harness records
+`model_skipped: context_budget_exceeded`, stays in `rules_only` mode, and does
+not call the provider.
 
 ## First workflow
 

@@ -31,6 +31,15 @@ def call_model_json(context: dict[str, Any], provider: ModelProviderConfig) -> d
     raise ModelClientError(f"unsupported model provider: {provider.provider}")
 
 
+def _max_output_tokens(context: dict[str, Any], default: int = 600) -> int:
+    budget = context.get("budget") if isinstance(context.get("budget"), dict) else {}
+    value = budget.get("max_output_tokens") if isinstance(budget, dict) else None
+    try:
+        return max(64, min(int(value or default), 8_000))
+    except (TypeError, ValueError):
+        return default
+
+
 def _post_json(url: str, payload: dict[str, Any], *, headers: dict[str, str], timeout: float) -> dict[str, Any]:
     body = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(url, data=body, method="POST", headers=headers)  # noqa: S310
@@ -59,6 +68,7 @@ def _call_ollama(context: dict[str, Any], provider: ModelProviderConfig) -> dict
         "model": provider.model,
         "messages": model_messages(context),
         "format": "json",
+        "options": {"num_predict": _max_output_tokens(context)},
         "stream": False,
     }
     response = _post_json(url, payload, headers={"Content-Type": "application/json"}, timeout=provider.timeout_seconds)
@@ -77,6 +87,7 @@ def _call_openai_compatible(context: dict[str, Any], provider: ModelProviderConf
         "model": provider.model,
         "messages": model_messages(context),
         "response_format": {"type": "json_object"},
+        "max_tokens": _max_output_tokens(context),
     }
     response = _post_json(
         base_url + "/chat/completions",
@@ -98,7 +109,7 @@ def _call_anthropic(context: dict[str, Any], provider: ModelProviderConfig) -> d
     messages = model_messages(context)
     payload = {
         "model": provider.model,
-        "max_tokens": 1200,
+        "max_tokens": _max_output_tokens(context),
         "system": messages[0]["content"],
         "messages": [{"role": "user", "content": messages[1]["content"]}],
     }
