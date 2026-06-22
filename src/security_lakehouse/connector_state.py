@@ -113,11 +113,29 @@ def validate_configure_payload(
     tests and offline fixture setup. Public API/console callers must pass
     through this validator so an empty form cannot create an enabled connector.
     """
+    error = configure_payload_error(
+        connector_id=connector_id,
+        state=state,
+        credentials=credentials,
+        options=options,
+    )
+    if error:
+        raise ValueError(error)
+
+
+def configure_payload_error(
+    *,
+    connector_id: str,
+    state: str,
+    credentials: dict[str, Any] | None,
+    options: dict[str, Any] | None,
+) -> str | None:
+    """Return a public, deterministic connector configuration validation error."""
     if state != "enabled":
-        return
+        return None
     catalog = load_connector_catalog()
     if connector_id not in catalog:
-        raise ValueError(f"unknown connector_id {connector_id!r}")
+        return f"unknown connector_id {connector_id!r}"
 
     creds = credentials or {}
     opts = {k: v for k, v in (options or {}).items() if k != "raw"}
@@ -125,7 +143,8 @@ def validate_configure_payload(
         connector_id, str(catalog[connector_id].get("credential_type") or ""), creds, opts
     )
     if missing:
-        raise ValueError("missing required connector configuration: " + ", ".join(missing))
+        return "missing required connector configuration: " + ", ".join(missing)
+    return None
 
 
 def _has_value(payload: dict[str, Any], key: str) -> bool:
@@ -382,21 +401,20 @@ def run_probe(
     base = catalog[connector_id]
     has_staged_payload = credentials is not None or options is not None
     if has_staged_payload:
-        try:
-            validate_configure_payload(
-                connector_id=connector_id,
-                state="enabled",
-                credentials=credentials or {},
-                options=options or {},
-            )
-        except ValueError as exc:
+        error = configure_payload_error(
+            connector_id=connector_id,
+            state="enabled",
+            credentials=credentials or {},
+            options=options or {},
+        )
+        if error:
             return append_run_event(
                 lake_dir,
                 connector_id=connector_id,
                 kind="probe",
                 result="error",
                 actor=actor,
-                error=str(exc),
+                error=error,
             )
     else:
         config = latest_config(lake_dir, connector_id)
