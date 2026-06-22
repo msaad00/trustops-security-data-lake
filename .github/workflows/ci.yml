@@ -81,7 +81,14 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "22"
-      - uses: pre-commit/action@v3.0.1
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+          enable-cache: true
+      - name: Install (frozen)
+        run: uv sync --frozen --all-extras
+      - name: Run pre-commit
+        run: uv run pre-commit run --all-files
 
   security:
     runs-on: ubuntu-latest
