@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from security_lakehouse.agents.budgets import AgentBudgetPolicy
+from security_lakehouse.agents.evaluations import evaluate_posture_review
 from security_lakehouse.agents.model_client import ModelClientError, call_model_json
 from security_lakehouse.agents.model_contract import (
     POSTURE_REVIEW_TOOL_CALLS,
@@ -85,6 +86,7 @@ def run_posture_review(
                 state["mode"] = "model_assisted"
             except ModelClientError as exc:
                 state["errors"] = [*state.get("errors", []), f"model_error: {exc}"]
+    state["evaluation"] = evaluate_posture_review(dict(state))
     return state
 
 
