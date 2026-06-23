@@ -324,7 +324,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
         id: connector.connector_id,
         payload,
       });
-      const validated = run.result !== "error";
+      const validated = run.result === "ok";
       setAccessValidated(validated);
       onToast(
         run.result === "ok"
@@ -332,7 +332,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
             ? "Probe ok."
             : "Access test passed. You can enable this connector."
           : run.result === "skipped"
-            ? `Access contract validated: ${run.error ?? "probe skipped"}`
+            ? `No live probe yet: ${run.error ?? "probe skipped"}`
             : `Probe error: ${run.error ?? "see history"}`,
       );
     } catch (err) {
@@ -380,7 +380,11 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                 <Button
                   variant="primary"
                   onClick={enable}
-                  disabled={configure.isPending || !canEnable}
+                  disabled={
+                    configure.isPending ||
+                    !canEnable ||
+                    (!isEnabled && !accessValidated)
+                  }
                 >
                   {configure.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -494,10 +498,9 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                     Read scope
                   </div>
                   <div className="mt-1 text-xs font-semibold text-muted">
-                    Test connection validates the token and discovers only the
-                    databases and tables visible to that read scope. Select
-                    evidence tables from the discovered list instead of typing
-                    table names here.
+                    A live probe must validate the token and discover only the
+                    databases and tables visible to that read scope before this
+                    connector can be enabled.
                   </div>
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     <Badge tone="info">discovered tables</Badge>

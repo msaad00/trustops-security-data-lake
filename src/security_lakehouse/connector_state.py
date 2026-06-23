@@ -60,6 +60,15 @@ def _redact_credentials(payload: dict[str, Any] | None) -> dict[str, Any]:
     return out
 
 
+def _access_fingerprint(credentials: dict[str, Any] | None, options: dict[str, Any] | None) -> str:
+    """Hash the exact scoped-access payload a probe or enable request used."""
+    payload = {
+        "credentials": credentials or {},
+        "options": {k: v for k, v in (options or {}).items() if k != "raw"},
+    }
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()[:16]
+
+
 def _utc_now_iso() -> str:
     return datetime.now(UTC).isoformat().replace("+00:00", "Z")
 
@@ -147,6 +156,37 @@ def configure_payload_error(
     return None
 
 
+def enablement_probe_error(
+    lake_dir: str | Path,
+    *,
+    connector_id: str,
+    state: str,
+    credentials: dict[str, Any] | None,
+    options: dict[str, Any] | None,
+) -> str | None:
+    """Return an enablement error when the latest probe is not usable.
+
+    Public API/console enablement is stricter than low-level fixture writes:
+    operators must prove the exact staged access payload before it can be
+    persisted as enabled. ``skipped`` probes are diagnostic only and never
+    authorize enablement.
+    """
+    if state != "enabled":
+        return None
+    catalog = load_connector_catalog()
+    if connector_id not in catalog:
+        return None
+    if not has_adapter(connector_id):
+        return "connector has no live probe adapter; keep it disabled until collection support is implemented"
+    probe = latest_run(lake_dir, connector_id, kind="probe")
+    if not probe or probe.get("result") != "ok":
+        return "run Test connection before enabling; latest probe must be ok"
+    expected = _access_fingerprint(credentials, options)
+    if probe.get("access_fingerprint") != expected:
+        return "rerun Test connection for these exact credentials and read scope before enabling"
+    return None
+
+
 def _has_value(payload: dict[str, Any], key: str) -> bool:
     value = payload.get(key)
     return value is not None and str(value).strip() != ""
@@ -191,6 +231,7 @@ def append_run_event(
     duration_ms: int | None = None,
     evidence_count: int | None = None,
     error: str | None = None,
+    access_fingerprint: str | None = None,
 ) -> dict[str, Any]:
     """Persist a probe or sync run result."""
     if kind not in VALID_RUN_KINDS:
@@ -205,6 +246,7 @@ def append_run_event(
         "duration_ms": duration_ms,
         "evidence_count": evidence_count,
         "error": error,
+        "access_fingerprint": access_fingerprint,
         "occurred_at": _utc_now_iso(),
     }
     gold = _gold(lake_dir)
@@ -400,6 +442,7 @@ def run_probe(
         return record
     base = catalog[connector_id]
     has_staged_payload = credentials is not None or options is not None
+    staged_access_fingerprint = _access_fingerprint(credentials, options) if has_staged_payload else None
     if has_staged_payload:
         error = configure_payload_error(
             connector_id=connector_id,
@@ -415,6 +458,7 @@ def run_probe(
                 result="error",
                 actor=actor,
                 error=error,
+                access_fingerprint=staged_access_fingerprint,
             )
     else:
         config = latest_config(lake_dir, connector_id)
@@ -447,6 +491,7 @@ def run_probe(
             result="skipped",
             actor=actor,
             error="access contract validated; no collection adapter is implemented for this connector yet",
+            access_fingerprint=staged_access_fingerprint,
         )
     # Adapter available and the access contract is valid. The probe validates
     # configuration only — collecting evidence (and counting it) is the sync's
@@ -458,4 +503,5 @@ def run_probe(
         result="ok",
         actor=actor,
         duration_ms=12,
+        access_fingerprint=staged_access_fingerprint,
     )

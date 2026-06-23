@@ -195,6 +195,7 @@ export interface ConnectorRun {
   duration_ms: number | null;
   evidence_count: number | null;
   error: string | null;
+  access_fingerprint: string | null;
   occurred_at: string;
 }
 
