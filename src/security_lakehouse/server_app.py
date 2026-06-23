@@ -58,6 +58,7 @@ from security_lakehouse.db import migrate, remediation, repository
 from security_lakehouse.db import tags as tags_db
 from security_lakehouse.db.base import create_engine_for, session_factory
 from security_lakehouse.db.models import REMEDIATION_PRIORITIES
+from security_lakehouse.io import resolve_path
 from security_lakehouse.services import NotFound, ValidationError
 from security_lakehouse.services import grc as grc_services
 from security_lakehouse.web import web_dist_dir, web_dist_index
@@ -481,7 +482,7 @@ async def posture_event_stream(lake: Path, request: Request, *, interval: float 
 
 def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     """Build the server-mode ASGI app bound to a security data lake directory."""
-    lake = Path(lake_dir)
+    lake = resolve_path(lake_dir)
     dashboard = lake / "console.html"
     render_dashboard(lake, dashboard)
     web_dist = web_dist_dir() if web_dist_index() else None
