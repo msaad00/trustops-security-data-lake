@@ -196,10 +196,10 @@ curl -s -X POST "$TRUSTOPS_URL/api/v1/agent-runs" \
 ```
 
 The response includes the run mode, deterministic evaluation, proposed actions,
-budget/provider metadata, and the sanitized run state. The raw lake path is not
-persisted in the state payload. Supplying the same tenant-scoped
-`idempotency_key` returns the previous run instead of rerunning the harness,
-which makes scheduler and agent retries safe.
+budget/provider metadata, data-readiness preflight, and the sanitized run state.
+The raw lake path is not persisted in the state payload. Supplying the same
+tenant-scoped `idempotency_key` returns the previous run instead of rerunning
+the harness, which makes scheduler and agent retries safe.
 
 Supported harness values:
 
@@ -211,6 +211,14 @@ unless a more restrictive role is requested. API requests cannot provide raw
 model keys; optional model use reads only the server's configured provider
 environment and still records proposed actions for approval instead of
 executing writes.
+
+Every run starts by deciding whether the account already has usable lake data:
+
+- `lake_ready`: use existing normalized/security lake facts
+- `partial_lake`: run targeted ingestion or control evaluation first
+- `needs_ingestion`: configure read-only connectors or load existing exports
+
+This is a deterministic preflight, not an LLM decision.
 
 ## Non-negotiables
 

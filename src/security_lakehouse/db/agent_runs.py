@@ -6,6 +6,7 @@ import hashlib
 import json
 from dataclasses import asdict
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 from sqlalchemy import select
@@ -87,7 +88,7 @@ def run_and_persist_agent(
     session: Session,
     *,
     tenant_id: str,
-    lake_dir: str,
+    lake_dir: Path,
     harness: str,
     objective: str,
     role: str,
@@ -119,12 +120,17 @@ def run_and_persist_agent(
         "provider": provider.public_dict(),
         "budget": budget.public_dict(),
     }
+    safe_lake = lake_dir.resolve()
+    if not safe_lake.exists() or not safe_lake.is_dir():
+        raise ValueError("agent run lake path must be an existing directory")
     status = "completed"
     try:
         if harness == "posture_review":
-            state = dict(run_posture_review(lake_dir, role=role, objective=objective, provider=provider, budget=budget))
+            state = dict(
+                run_posture_review(safe_lake, role=role, objective=objective, provider=provider, budget=budget)
+            )
         else:
-            state = dict(run_soc_triage(lake_dir, role=role, objective=objective, provider=provider, budget=budget))
+            state = dict(run_soc_triage(safe_lake, role=role, objective=objective, provider=provider, budget=budget))
     except Exception as exc:  # noqa: BLE001 - persisted failure must be generic and inspectable
         status = "failed"
         state = {
@@ -133,6 +139,7 @@ def run_and_persist_agent(
             "objective": objective,
             "model_provider": provider.public_dict(),
             "agent_budget": budget.public_dict(),
+            "data_readiness": {"status": "unknown", "next_action": "inspect_harness_error"},
             "decisions": [],
             "errors": [f"harness_error: {type(exc).__name__}"],
             "evaluation": {

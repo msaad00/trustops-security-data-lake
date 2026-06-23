@@ -222,6 +222,20 @@ def _role_allowed_for_actor(requested_role: str, identity: Identity) -> bool:
     return visibility_rank.get(requested_role, 99) <= visibility_rank.get(identity.role, -1)
 
 
+def _safe_agent_lake_path(root_lake: Path, tenant_lake: Path) -> Path:
+    """Resolve the tenant/account lake and ensure it stays under the server root."""
+    root = root_lake.resolve()
+    target = tenant_lake.resolve()
+    try:
+        target.relative_to(root)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="tenant lake is outside server root") from exc
+    target.mkdir(parents=True, exist_ok=True)
+    if not target.is_dir():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="tenant lake is not a directory")
+    return target
+
+
 def _public_trust_summary(lake: Path, share: dict[str, object]) -> dict[str, object]:
     """Build the redacted, read-only posture an external token holder may see.
 
@@ -764,7 +778,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             row, created = agent_runs_db.run_and_persist_agent(
                 session,
                 tenant_id=identity.tenant_id,
-                lake_dir=str(lake_for(identity)),
+                lake_dir=_safe_agent_lake_path(lake, lake_for(identity)),
                 harness=body.harness,
                 objective=body.objective or f"Run {body.harness} harness.",
                 role=role,

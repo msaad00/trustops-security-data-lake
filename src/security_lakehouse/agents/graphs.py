@@ -16,7 +16,12 @@ from security_lakehouse.agents.model_contract import (
 )
 from security_lakehouse.agents.providers import ModelProviderConfig, provider_from_env
 from security_lakehouse.agents.state import AgentDecision, AgentRunState
-from security_lakehouse.agents.tools import load_evidence_gaps, load_redacted_posture, propose_evidence_gap_actions
+from security_lakehouse.agents.tools import (
+    assess_data_readiness,
+    load_evidence_gaps,
+    load_redacted_posture,
+    propose_evidence_gap_actions,
+)
 
 ModelClient = Callable[[dict[str, Any], ModelProviderConfig], dict[str, Any]]
 
@@ -68,6 +73,7 @@ def run_posture_review(
         "mode": "rules_only",
         "model_provider": provider.public_dict(),
         "agent_budget": budget.public_dict(),
+        "data_readiness": assess_data_readiness(lake_dir, role=role, harness="posture_review"),
         "errors": [],
     }
     state = _load_posture_node(state)

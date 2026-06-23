@@ -10,6 +10,48 @@ from security_lakehouse.data_policy import redact_payload
 from security_lakehouse.io import read_jsonl
 
 
+def assess_data_readiness(lake_dir: str | Path, *, role: str, harness: str) -> dict[str, Any]:
+    """Decide whether the tenant/account lake already has enough facts.
+
+    The harness should not blindly call a model or propose work when the lake is
+    empty. This deterministic preflight tells humans and headless callers
+    whether to use existing normalized data or run ingestion/connectors first.
+    """
+    lake = Path(lake_dir)
+    artifacts = {
+        "silver.normalized_events": lake / "silver" / "normalized_events.jsonl",
+        "gold.control_tests": lake / "gold" / "control_tests.jsonl",
+        "gold.control_posture": lake / "gold" / "control_posture.jsonl",
+        "gold.evidence_freshness": lake / "gold" / "evidence_freshness.jsonl",
+    }
+    counts = {name: len(read_jsonl(path, missing_ok=True)) for name, path in artifacts.items()}
+    if harness == "soc_triage":
+        required = ("silver.normalized_events",)
+    else:
+        required = ("gold.control_tests", "silver.normalized_events")
+    missing = [name for name in required if counts.get(name, 0) == 0]
+    if not missing:
+        status = "lake_ready"
+        next_action = "use_existing_security_data_lake"
+    elif any(counts.values()):
+        status = "partial_lake"
+        next_action = "run_targeted_ingestion_or_control_evaluation"
+    else:
+        status = "needs_ingestion"
+        next_action = "configure_read_only_connectors_or_load_existing_lake_exports"
+    payload = {
+        "account_scope": "tenant_lake",
+        "data_source_mode": "existing_lake",
+        "harness": harness,
+        "status": status,
+        "artifact_counts": counts,
+        "missing_required_artifacts": missing,
+        "next_action": next_action,
+    }
+    redacted = redact_payload(payload, role=role)
+    return redacted if isinstance(redacted, dict) else payload
+
+
 def load_redacted_posture(lake_dir: str | Path, *, role: str) -> dict[str, Any]:
     """Read current posture through the same role redaction used by the API."""
     posture = build_current_posture(Path(lake_dir))
