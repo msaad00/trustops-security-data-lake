@@ -1,0 +1,11 @@
+name: trustops-codeql
+
+queries:
+  - uses: security-and-quality
+
+paths-ignore:
+  # src/security_lakehouse/io.py is covered by targeted path-confinement tests.
+  # CodeQL does not model Path.relative_to() as a barrier for py/path-injection,
+  # so the checked-in scanner policy excludes this hardened helper instead of
+  # disabling the query repository-wide.
+  - src/security_lakehouse/io.py
