@@ -24,6 +24,7 @@ from collections.abc import AsyncIterator
 from datetime import UTC, datetime, timedelta
 from http import HTTPStatus
 from pathlib import Path
+from typing import Any
 
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.concurrency import run_in_threadpool
@@ -35,7 +36,7 @@ from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from security_lakehouse import api_legacy, api_v1, tenancy, trust_share
-from security_lakehouse.assessment import build_current_posture
+from security_lakehouse.assessment import build_current_posture, write_assessment_snapshot
 from security_lakehouse.auth.dependencies import get_session, require_scope
 from security_lakehouse.auth.oidc import OIDCLoginError, build_oauth, complete_oidc_login, load_oidc_config
 from security_lakehouse.auth.rbac import Identity, scopes_for_role
@@ -56,6 +57,7 @@ from security_lakehouse.db import metrics as metrics_db
 from security_lakehouse.db import migrate, remediation, repository
 from security_lakehouse.db import tags as tags_db
 from security_lakehouse.db.base import create_engine_for, session_factory
+from security_lakehouse.db.models import REMEDIATION_PRIORITIES
 from security_lakehouse.services import NotFound, ValidationError
 from security_lakehouse.services import grc as grc_services
 from security_lakehouse.web import web_dist_dir, web_dist_index
@@ -191,6 +193,10 @@ class CreateAgentRunRequest(_StrictModel):
     max_output_tokens: int | None = None
 
 
+class ApproveAgentDecisionRequest(_StrictModel):
+    note: str = ""
+
+
 def _parse_dt(value: str | None) -> datetime | None:
     if value is None or value == "":
         return None
@@ -234,6 +240,131 @@ def _safe_agent_lake_path(root_lake: Path, tenant_lake: Path) -> Path:
     if not target.is_dir():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="tenant lake is not a directory")
     return target
+
+
+def _decision_payload(decision: dict[str, Any]) -> dict[str, Any]:
+    payload = decision.get("payload")
+    return payload if isinstance(payload, dict) else {}
+
+
+def _payload_text(payload: dict[str, Any], key: str, default: str = "") -> str:
+    value = payload.get(key)
+    return str(value).strip() if value is not None else default
+
+
+def _decision_reason(decision: dict[str, Any], *, note: str = "") -> str:
+    reason = str(decision.get("reason") or "").strip()
+    extra = note.strip()
+    if reason and extra:
+        return f"{reason}\n\nApproval note: {extra}"
+    return reason or extra or "Approved agent harness proposal."
+
+
+def _decision_priority(payload: dict[str, Any], default: str = "medium") -> str:
+    value = str(payload.get("priority") or payload.get("severity") or default).lower()
+    return value if value in REMEDIATION_PRIORITIES else default
+
+
+def _execute_agent_decision(
+    session: Session,
+    *,
+    lake: Path,
+    identity: Identity,
+    decision: dict[str, Any],
+    note: str = "",
+) -> dict[str, Any]:
+    """Execute an allowlisted agent decision through TrustOps-native writes only."""
+    action = str(decision.get("action") or "")
+    payload = _decision_payload(decision)
+    reason = _decision_reason(decision, note=note)
+
+    if action == "create_evidence_request":
+        control_id = _payload_text(payload, "control_id")
+        requested_from = _payload_text(payload, "requested_from") or _payload_text(payload, "owner")
+        try:
+            req = remediation.create_evidence_request(
+                session,
+                tenant_id=identity.tenant_id,
+                control_id=control_id,
+                requested_from=requested_from,
+                note=reason,
+                created_by=identity.email,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        return {
+            "type": "evidence_request",
+            "id": req.id,
+            "control_id": req.control_id,
+            "status": req.status,
+        }
+
+    if action == "create_remediation_task":
+        control_id: str | None = _payload_text(payload, "control_id") or None
+        title = _payload_text(payload, "title") or f"Remediate {control_id or 'agent finding'}"
+        try:
+            task = remediation.create_task(
+                session,
+                tenant_id=identity.tenant_id,
+                title=title,
+                description=reason,
+                control_id=control_id,
+                violation_id=_payload_text(payload, "violation_id") or None,
+                owner=_payload_text(payload, "owner"),
+                priority=_decision_priority(payload),
+                created_by=identity.email,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        return {"type": "remediation_task", "id": task.id, "control_id": task.control_id, "status": task.status}
+
+    if action == "create_soc_case":
+        event_id = _payload_text(payload, "event_id") or _payload_text(payload, "alert_id") or "unknown-event"
+        severity = _decision_priority(payload, default="high")
+        try:
+            task = remediation.create_task(
+                session,
+                tenant_id=identity.tenant_id,
+                title=f"SOC case: {event_id}",
+                description=reason,
+                violation_id=event_id,
+                owner=_payload_text(payload, "owner"),
+                priority=severity,
+                created_by=identity.email,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        return {"type": "remediation_task", "id": task.id, "violation_id": task.violation_id, "status": task.status}
+
+    if action == "assign_owner":
+        event_id = _payload_text(payload, "event_id") or _payload_text(payload, "control_id") or "agent finding"
+        owner = _payload_text(payload, "owner")
+        try:
+            task = remediation.create_task(
+                session,
+                tenant_id=identity.tenant_id,
+                title=f"Assign owner: {event_id}",
+                description=reason,
+                control_id=_payload_text(payload, "control_id") or None,
+                violation_id=_payload_text(payload, "violation_id") or _payload_text(payload, "event_id") or None,
+                owner=owner,
+                priority=_decision_priority(payload),
+                created_by=identity.email,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        return {"type": "remediation_task", "id": task.id, "owner": task.owner, "status": task.status}
+
+    if action == "freeze_snapshot":
+        if not identity.has_scope("snapshot"):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="snapshot scope required")
+        snapshot_path = write_assessment_snapshot(lake, reason=reason)
+        return {"type": "snapshot", "snapshot_path": str(snapshot_path)}
+
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=f"agent decision action is not executable: {action or 'missing'}",
+    )
 
 
 def _public_trust_summary(lake: Path, share: dict[str, object]) -> dict[str, object]:
@@ -810,6 +941,55 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         return JSONResponse(
             api_v1.envelope(
                 "agent-runs", _redact_payload(agent_runs_db.agent_run_to_dict(row, include_state=True), identity)
+            )
+        )
+
+    @app.post("/api/v1/agent-runs/{run_id}/decisions/{decision_index}/approve", tags=["agents"])
+    def approve_agent_decision(
+        run_id: str,
+        decision_index: int,
+        body: ApproveAgentDecisionRequest | None = None,
+        identity: Identity = Depends(_require_write),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        row = agent_runs_db.get_agent_run(session, tenant_id=identity.tenant_id, run_id=run_id)
+        if row is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="agent run not found")
+        if row.status != "completed":
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="agent run is not executable")
+        decisions = agent_runs_db.agent_run_decisions(row)
+        if decision_index < 0 or decision_index >= len(decisions):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="agent decision not found")
+        decision = decisions[decision_index]
+        existing_result = decision.get("execution_result")
+        if decision.get("status") == "executed" and isinstance(existing_result, dict):
+            return JSONResponse(
+                api_v1.envelope(
+                    "agent-runs.decisions",
+                    _redact_payload(agent_runs_db.agent_run_to_dict(row, include_state=True), identity),
+                    meta={"executed": False, "decision_index": decision_index, "execution_result": existing_result},
+                )
+            )
+
+        result = _execute_agent_decision(
+            session,
+            lake=_safe_agent_lake_path(lake, lake_for(identity)),
+            identity=identity,
+            decision=decision,
+            note=body.note if body is not None else "",
+        )
+        agent_runs_db.mark_decision_executed(
+            row,
+            decision_index=decision_index,
+            approved_by=identity.email,
+            execution_result=result,
+        )
+        session.commit()
+        return JSONResponse(
+            api_v1.envelope(
+                "agent-runs.decisions",
+                _redact_payload(agent_runs_db.agent_run_to_dict(row, include_state=True), identity),
+                meta={"executed": True, "decision_index": decision_index, "execution_result": result},
             )
         )
 

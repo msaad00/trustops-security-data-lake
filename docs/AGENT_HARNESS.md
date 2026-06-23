@@ -201,6 +201,32 @@ The raw lake path is not persisted in the state payload. Supplying the same
 tenant-scoped `idempotency_key` returns the previous run instead of rerunning
 the harness, which makes scheduler and agent retries safe.
 
+Approve one stored proposal through the API when a human, scheduler policy, or
+authorized headless client decides it should write:
+
+```bash
+curl -s -X POST "$TRUSTOPS_URL/api/v1/agent-runs/$RUN_ID/decisions/0/approve" \
+  -H "authorization: Bearer $TRUSTOPS_API_KEY" \
+  -H "content-type: application/json" \
+  --data '{"note":"approved for audit prep"}' | jq .
+```
+
+Approval is idempotent. Retrying an already executed decision returns the stored
+execution result instead of creating another task, evidence request, or
+snapshot.
+
+Currently executable proposal actions:
+
+- `create_evidence_request`
+- `create_remediation_task`
+- `create_soc_case` as an internal remediation task
+- `assign_owner` as an internal remediation task
+- `freeze_snapshot` when the caller also has `snapshot` scope
+
+External actions such as webhook, Slack, ticketing, and enrichment calls are not
+executed by agent approval. They must go through the workflow engine and egress
+guardrails.
+
 Supported harness values:
 
 - `posture_review`
