@@ -127,7 +127,7 @@ def test_jira_connector_sync_without_fixture_or_creds_errors(tmp_path: Path, mon
     monkeypatch.delenv("JIRA_BASE_URL", raising=False)
     monkeypatch.delenv("JIRA_EMAIL", raising=False)
     monkeypatch.delenv("JIRA_API_TOKEN", raising=False)
-    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    monkeypatch.delenv("__provider_default__", raising=False)
     append_config_event(tmp_path, connector_id="jira-ticketing", state="enabled", actor="a")
     with pytest.raises(ConnectorSyncError, match="requires --fixture-dir"):
         run_connector_sync(tmp_path, connector_id="jira-ticketing")

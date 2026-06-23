@@ -30,6 +30,7 @@ REAL_ADAPTERS = {
     "jira-ticketing",
 }
 FIXTURES = Path(__file__).parent / "fixtures"
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_registry_contains_exactly_the_real_adapters() -> None:
@@ -46,6 +47,26 @@ def test_implemented_adapters_catalog_flags_agree_with_registry() -> None:
     }
     assert connector_runner.registered_connector_ids() == frozenset(implemented_from_catalog)
     assert frozenset(REAL_ADAPTERS) == connector_state.IMPLEMENTED_ADAPTERS
+
+
+def test_source_connector_guidance_avoids_password_and_pat_paths() -> None:
+    checked_paths = [
+        REPO_ROOT / "README.md",
+        REPO_ROOT / "docs" / "CONNECTORS.md",
+        REPO_ROOT / "docs" / "REPO_AUDIT.md",
+        REPO_ROOT / "docs" / "REPO_GOVERNANCE_CONNECTOR.md",
+        REPO_ROOT / "app" / "web" / "src" / "components" / "drawers" / "ConnectorDrawer.tsx",
+    ]
+    forbidden = (
+        "GITHUB_TOKEN",
+        "SNOWFLAKE_PASSWORD",
+        "personal access token",
+        'name: "password"',
+    )
+    for path in checked_paths:
+        body = path.read_text(encoding="utf-8")
+        for needle in forbidden:
+            assert needle not in body, f"{needle!r} should not be recommended in {path}"
 
 
 def test_has_adapter_agrees_with_registry() -> None:

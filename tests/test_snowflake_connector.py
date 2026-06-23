@@ -72,7 +72,7 @@ def test_snowflake_live_requires_read_only_connection_details(tmp_path: Path, mo
         state="enabled",
         actor="alice",
     )
-    for name in ("SNOWFLAKE_ACCOUNT", "SNOWFLAKE_USER", "SNOWFLAKE_PASSWORD"):
+    for name in ("SNOWFLAKE_ACCOUNT", "SNOWFLAKE_USER", "SNOWFLAKE_OAUTH_TOKEN"):
         monkeypatch.delenv(name, raising=False)
 
     with pytest.raises(connector_runner.ConnectorSyncError, match="SNOWFLAKE_ACCOUNT"):

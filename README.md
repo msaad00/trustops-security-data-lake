@@ -236,7 +236,7 @@ security-lakehouse assessment snapshot --lake build/lakehouse --reason vendor_du
 curl -s 'http://127.0.0.1:8787/api/v1/posture/as-of?as_of=2026-05-20T17:00:00Z' | jq .
 security-lakehouse query --lake build/lakehouse "select * from control_posture order by risk_score desc"
 security-lakehouse repo audit https://github.com/OWNER/REPO --out build/repo-audit.jsonl
-GITHUB_TOKEN=... security-lakehouse repo governance-sync OWNER/REPO --out build/repo-governance.jsonl
+TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN=... security-lakehouse repo governance-sync OWNER/REPO --out build/repo-governance.jsonl
 ```
 
 Connector examples:

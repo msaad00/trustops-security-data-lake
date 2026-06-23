@@ -83,11 +83,11 @@ def test_governance_sync_redacts_secret_like_fields(tmp_path: Path) -> None:
     rows = sync_repo_governance(
         "acme/private-agent-api",
         fixture_dir=_fixture(tmp_path),
-        token="ghp_live_token_value",
+        token="github_app_installation_token_value",
         collected_at=datetime(2026, 5, 24, 12, 0, tzinfo=UTC),
     )
     body = json.dumps(rows, sort_keys=True)
-    assert "ghp_live_token_value" not in body
+    assert "github_app_installation_token_value" not in body
     assert "do-not-emit" not in body
     assert "sha256:" in body
     collaborators = next(row for row in rows if row["event_type"] == "repository.governance.collaborators")
@@ -95,7 +95,7 @@ def test_governance_sync_redacts_secret_like_fields(tmp_path: Path) -> None:
 
 
 def test_governance_sync_requires_fixture_or_token(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    monkeypatch.delenv("TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN", raising=False)
     with pytest.raises(ValueError, match="requires --fixture-dir"):
         sync_repo_governance("acme/private-agent-api")
 

@@ -1,8 +1,8 @@
 """Authenticated repository governance evidence collector.
 
 The public repo audit records what can be seen without credentials. This module
-collects private/org-only governance signals when a scoped token or fixture is
-available and emits the same raw evidence shape.
+collects private/org-only governance signals when a GitHub App installation
+token or fixture is available and emits the same raw evidence shape.
 """
 
 from __future__ import annotations
@@ -116,7 +116,7 @@ def sync_repo_governance(
     out: str | Path | None = None,
     fixture_dir: str | Path | None = None,
     token: str | None = None,
-    token_env: str = "GITHUB_TOKEN",
+    token_env: str = "TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN",
     collected_at: datetime | None = None,
 ) -> list[dict[str, Any]]:
     spec = parse_repo_spec(repo)
@@ -126,7 +126,7 @@ def sync_repo_governance(
     elif secret:
         client = GitHubGovernanceClient(spec.owner, spec.repo, token=secret)
     else:
-        raise ValueError("repo governance sync requires --fixture-dir or a read-only GitHub token")
+        raise ValueError("repo governance sync requires --fixture-dir or a GitHub App installation token")
 
     repo_data = client.repo()
     now = collected_at or datetime.now(UTC)
@@ -153,7 +153,7 @@ def _build_events(
     branch = str(repo.get("default_branch") or "main")
     source_health = {
         "credential_fingerprint": credential_fingerprint,
-        "credential_boundary": "read_only_token_or_fixture",
+        "credential_boundary": "github_app_installation_token_or_fixture",
         "minimum_scopes": READ_ONLY_SCOPES,
         "collected_at": utc_iso(collected_at),
     }

@@ -12,6 +12,7 @@ from http.server import ThreadingHTTPServer
 from pathlib import Path
 
 from security_lakehouse.connector_state import (
+    _missing_required_config,
     append_config_event,
     build_catalog_view,
     latest_config,
@@ -31,7 +32,7 @@ def test_configure_records_state_and_redacts_credentials(tmp_path: Path) -> None
         connector_id="github-security",
         state="enabled",
         actor="alice",
-        credentials={"token": "ghp_supersecret", "username": "alice"},
+        credentials={"token": "source_connector_secret", "username": "alice"},
         options={"org": "acme"},
     )
     assert record["state"] == "enabled"
@@ -44,7 +45,7 @@ def test_configure_records_state_and_redacts_credentials(tmp_path: Path) -> None
         connector_id="github-security",
         state="enabled",
         actor="alice",
-        credentials={"token": "ghp_supersecret", "username": "alice"},
+        credentials={"token": "source_connector_secret", "username": "alice"},
     )
     assert again["credential_fingerprint"] == record["credential_fingerprint"]
 
@@ -305,6 +306,17 @@ def test_connector_configure_rejects_empty_enable(tmp_path: Path) -> None:
         assert "ClickHouse" not in body["reason"]
     finally:
         server.shutdown()
+
+
+def test_scoped_user_contract_requires_token_not_password() -> None:
+    # Pins the public fallback used for future scoped-user catalog entries.
+    missing = _missing_required_config(  # noqa: SLF001
+        "future-scoped-source",
+        "scoped_user",
+        {},
+        {},
+    )
+    assert missing == ["host", "token"]
 
 
 def test_clickhouse_enable_uses_discovered_scope_after_scoped_token(tmp_path: Path) -> None:

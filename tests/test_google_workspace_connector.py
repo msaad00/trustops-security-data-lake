@@ -136,7 +136,7 @@ def test_google_workspace_connector_sync_without_fixture_or_creds_errors(
 ) -> None:
     monkeypatch.delenv("GOOGLE_WORKSPACE_CUSTOMER_ID", raising=False)
     monkeypatch.delenv("GOOGLE_WORKSPACE_ACCESS_TOKEN", raising=False)
-    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    monkeypatch.delenv("__provider_default__", raising=False)
     append_config_event(tmp_path, connector_id=CONNECTOR_ID, state="enabled", actor="a")
     with pytest.raises(ConnectorSyncError, match="requires --fixture-dir"):
         run_connector_sync(tmp_path, connector_id=CONNECTOR_ID)

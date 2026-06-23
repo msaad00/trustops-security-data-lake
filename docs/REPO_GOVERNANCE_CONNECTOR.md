@@ -6,7 +6,7 @@ The connector emits raw JSONL evidence that can be validated and routed into
 the security data lake.
 
 ```bash
-GITHUB_TOKEN=... security-lakehouse repo governance-sync OWNER/REPO --out build/repo-governance.jsonl
+TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN=... security-lakehouse repo governance-sync OWNER/REPO --out build/repo-governance.jsonl
 security-lakehouse validate --raw build/repo-governance.jsonl
 ```
 
@@ -20,9 +20,9 @@ security-lakehouse repo governance-sync OWNER/REPO \
 
 ## Access Boundary
 
-Use a read-only fine-grained GitHub token or GitHub App installation token.
-The connector does not need write, delete, admin, secret value, or package
-publish permissions.
+Use a GitHub App installation token with read-only repository permissions. The
+connector does not need write, delete, admin, secret value, or package publish
+permissions.
 
 | Scope or permission    | Unlocks                                                            |
 | ---------------------- | ------------------------------------------------------------------ |
@@ -32,9 +32,9 @@ publish permissions.
 | `security_events:read` | security setting and alert availability summaries where allowed    |
 | fixture bundle         | deterministic local evidence with `credential_fingerprint=fixture` |
 
-Token values are never emitted. TrustOps stores only a short SHA-256 credential
-fingerprint so operators can tell which credential boundary produced evidence
-without exposing the credential itself.
+Installation token values are never emitted. TrustOps stores only a short
+SHA-256 credential fingerprint so operators can tell which credential boundary
+produced evidence without exposing the credential itself.
 
 ## Evidence Signals
 

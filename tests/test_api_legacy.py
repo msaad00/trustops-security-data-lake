@@ -160,7 +160,7 @@ def test_legacy_post_enforces_route_specific_scopes(tmp_path: Path) -> None:
     assert (
         client.post(
             "/api/connectors/github-security/configure",
-            json={"state": "enabled", "credentials": {"token": "ghp_readonly"}},
+            json={"state": "enabled", "credentials": {"token": "source_connector_secret"}},
             headers=_bearer(tokens["security_admin"]),
         ).status_code
         == HTTPStatus.CREATED

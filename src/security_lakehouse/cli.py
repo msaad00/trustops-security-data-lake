@@ -96,7 +96,11 @@ def _parser() -> argparse.ArgumentParser:
     connectors_sync.add_argument(
         "--fixture-dir", default=None, help="local fixture directory for offline connector sync"
     )
-    connectors_sync.add_argument("--token-env", default="GITHUB_TOKEN", help="environment variable containing token")
+    connectors_sync.add_argument(
+        "--token-env",
+        default="__provider_default__",
+        help="override the provider-specific connector token environment variable",
+    )
     connectors_sync.add_argument("--actor", default="cli", help="actor recorded on the connector run")
     connectors_sync.add_argument(
         "--no-materialize",
@@ -234,7 +238,11 @@ def _parser() -> argparse.ArgumentParser:
     repo_governance.add_argument("repo", help="GitHub URL or OWNER/REPO")
     repo_governance.add_argument("--out", required=True, help="raw evidence JSONL output path")
     repo_governance.add_argument("--fixture-dir", default=None, help="local fixture directory for offline tests")
-    repo_governance.add_argument("--token-env", default="GITHUB_TOKEN", help="environment variable containing token")
+    repo_governance.add_argument(
+        "--token-env",
+        default="TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN",
+        help="environment variable containing the GitHub App installation token",
+    )
     repo_governance.set_defaults(func=_repo_governance_sync)
 
     frameworks = sub.add_parser("frameworks", help="framework registry commands")
