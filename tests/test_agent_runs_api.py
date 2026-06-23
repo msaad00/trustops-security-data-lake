@@ -337,4 +337,15 @@ def test_agent_run_persists_needs_ingestion_when_lake_is_empty(tmp_path: Path) -
     assert created.status_code == HTTPStatus.CREATED
     readiness = created.json()["data"]["state"]["data_readiness"]
     assert readiness["status"] == "needs_ingestion"
+    assert readiness["ready_for_harness"] is False
+    assert readiness["required_artifacts"] == ["silver.normalized_events"]
     assert readiness["missing_required_artifacts"] == ["silver.normalized_events"]
+    assert readiness["artifact_status"][0] == {
+        "artifact": "silver.normalized_events",
+        "relative_path": "silver/normalized_events.jsonl",
+        "rows": 0,
+        "required": True,
+        "present": False,
+    }
+    assert readiness["recommended_next_steps"][0]["action"] == "inspect_connectors"
+    assert str(tmp_path) not in json.dumps(readiness, sort_keys=True)

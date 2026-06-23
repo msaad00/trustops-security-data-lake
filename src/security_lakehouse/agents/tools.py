@@ -9,6 +9,79 @@ from security_lakehouse.assessment import build_current_posture
 from security_lakehouse.data_policy import redact_payload
 from security_lakehouse.io import read_jsonl
 
+ARTIFACT_RELATIVE_PATHS = {
+    "silver.normalized_events": "silver/normalized_events.jsonl",
+    "gold.control_tests": "gold/control_tests.jsonl",
+    "gold.control_posture": "gold/control_posture.jsonl",
+    "gold.evidence_freshness": "gold/evidence_freshness.jsonl",
+}
+
+REQUIRED_ARTIFACTS_BY_HARNESS = {
+    "soc_triage": ("silver.normalized_events",),
+    "posture_review": ("gold.control_tests", "silver.normalized_events"),
+}
+
+
+def _agent_cli_name(harness: str) -> str:
+    return harness.replace("_", "-")
+
+
+def _readiness_next_steps(*, status: str, missing: list[str], harness: str) -> list[dict[str, Any]]:
+    steps: list[dict[str, Any]] = []
+    if status == "lake_ready":
+        return [
+            {
+                "action": "run_harness",
+                "label": "Run the selected harness against the existing tenant lake.",
+                "command": f"security-lakehouse agents {_agent_cli_name(harness)} --lake <lake> --role read_only",
+            }
+        ]
+
+    if "silver.normalized_events" in missing:
+        steps.extend(
+            [
+                {
+                    "action": "inspect_connectors",
+                    "label": "List read-only connectors that can land normalized evidence.",
+                    "command": "security-lakehouse connectors list --lake <lake>",
+                },
+                {
+                    "action": "enable_connector",
+                    "label": "Enable a configured read-only connector for this lake.",
+                    "command": (
+                        "security-lakehouse connectors configure --lake <lake> "
+                        "--connector-id <connector_id> --state enabled"
+                    ),
+                },
+                {
+                    "action": "sync_connector",
+                    "label": "Sync the selected connector into bronze, silver, and gold artifacts.",
+                    "command": "security-lakehouse connectors sync --lake <lake> --connector-id <connector_id>",
+                },
+            ]
+        )
+
+    if any(name.startswith("gold.") for name in missing):
+        steps.append(
+            {
+                "action": "materialize_control_evidence",
+                "label": "Run the deterministic pipeline to materialize control artifacts from raw evidence.",
+                "command": "security-lakehouse pipeline run --raw <raw_events.jsonl> --out <lake>",
+            }
+        )
+
+    if status == "needs_ingestion":
+        steps.append(
+            {
+                "action": "load_demo_lake",
+                "label": "Load fixture data for demos only; do not use this as production evidence.",
+                "command": "security-lakehouse fixtures load --company fintech --out <lake>",
+                "demo_only": True,
+            }
+        )
+
+    return steps
+
 
 def assess_data_readiness(lake_dir: str | Path, *, role: str, harness: str) -> dict[str, Any]:
     """Decide whether the tenant/account lake already has enough facts.
@@ -18,17 +91,9 @@ def assess_data_readiness(lake_dir: str | Path, *, role: str, harness: str) -> d
     whether to use existing normalized data or run ingestion/connectors first.
     """
     lake = Path(lake_dir)
-    artifacts = {
-        "silver.normalized_events": lake / "silver" / "normalized_events.jsonl",
-        "gold.control_tests": lake / "gold" / "control_tests.jsonl",
-        "gold.control_posture": lake / "gold" / "control_posture.jsonl",
-        "gold.evidence_freshness": lake / "gold" / "evidence_freshness.jsonl",
-    }
+    artifacts = {name: lake / relative for name, relative in ARTIFACT_RELATIVE_PATHS.items()}
     counts = {name: len(read_jsonl(path, missing_ok=True)) for name, path in artifacts.items()}
-    if harness == "soc_triage":
-        required = ("silver.normalized_events",)
-    else:
-        required = ("gold.control_tests", "silver.normalized_events")
+    required = REQUIRED_ARTIFACTS_BY_HARNESS.get(harness, REQUIRED_ARTIFACTS_BY_HARNESS["posture_review"])
     missing = [name for name in required if counts.get(name, 0) == 0]
     if not missing:
         status = "lake_ready"
@@ -39,14 +104,28 @@ def assess_data_readiness(lake_dir: str | Path, *, role: str, harness: str) -> d
     else:
         status = "needs_ingestion"
         next_action = "configure_read_only_connectors_or_load_existing_lake_exports"
+    artifact_status = [
+        {
+            "artifact": name,
+            "relative_path": ARTIFACT_RELATIVE_PATHS[name],
+            "rows": counts[name],
+            "required": name in required,
+            "present": counts[name] > 0,
+        }
+        for name in ARTIFACT_RELATIVE_PATHS
+    ]
     payload = {
         "account_scope": "tenant_lake",
         "data_source_mode": "existing_lake",
         "harness": harness,
         "status": status,
+        "ready_for_harness": status == "lake_ready",
+        "required_artifacts": list(required),
+        "artifact_status": artifact_status,
         "artifact_counts": counts,
         "missing_required_artifacts": missing,
         "next_action": next_action,
+        "recommended_next_steps": _readiness_next_steps(status=status, missing=missing, harness=harness),
     }
     redacted = redact_payload(payload, role=role)
     return redacted if isinstance(redacted, dict) else payload

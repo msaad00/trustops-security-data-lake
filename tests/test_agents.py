@@ -15,6 +15,7 @@ from security_lakehouse.agents.model_client import ModelClientError
 from security_lakehouse.agents.model_contract import build_model_context, validate_model_output
 from security_lakehouse.agents.providers import ModelProviderConfig, provider_from_env
 from security_lakehouse.agents.state import AgentDecision
+from security_lakehouse.agents.tools import assess_data_readiness
 from security_lakehouse.cli import main
 from test_api_v1 import _seed_lake
 
@@ -137,6 +138,45 @@ def test_posture_review_uses_role_redaction(tmp_path: Path) -> None:
     state = run_posture_review(tmp_path, role="auditor")
 
     assert state["evidence_gaps"][0]["owner"] == "[redacted]"
+
+
+def test_data_readiness_reports_empty_lake_next_steps_without_path_leak(tmp_path: Path) -> None:
+    readiness = assess_data_readiness(tmp_path, role="read_only", harness="posture_review")
+
+    assert readiness["status"] == "needs_ingestion"
+    assert readiness["ready_for_harness"] is False
+    assert readiness["required_artifacts"] == ["gold.control_tests", "silver.normalized_events"]
+    assert readiness["missing_required_artifacts"] == ["gold.control_tests", "silver.normalized_events"]
+    silver_status = next(row for row in readiness["artifact_status"] if row["artifact"] == "silver.normalized_events")
+    assert silver_status == {
+        "artifact": "silver.normalized_events",
+        "relative_path": "silver/normalized_events.jsonl",
+        "rows": 0,
+        "required": True,
+        "present": False,
+    }
+    commands = [step["command"] for step in readiness["recommended_next_steps"]]
+    assert "security-lakehouse connectors list --lake <lake>" in commands
+    assert "security-lakehouse pipeline run --raw <raw_events.jsonl> --out <lake>" in commands
+    assert str(tmp_path) not in json.dumps(readiness, sort_keys=True)
+
+
+def test_data_readiness_reports_partial_lake_gold_gap(tmp_path: Path) -> None:
+    rows = [{"event_id": f"event-{index}", "severity": "medium"} for index in range(4)]
+    (tmp_path / "silver").mkdir(parents=True, exist_ok=True)
+    (tmp_path / "silver" / "normalized_events.jsonl").write_text(
+        "\n".join(json.dumps(row, sort_keys=True) for row in rows) + "\n",
+        encoding="utf-8",
+    )
+
+    readiness = assess_data_readiness(tmp_path, role="read_only", harness="posture_review")
+
+    assert readiness["status"] == "partial_lake"
+    assert readiness["ready_for_harness"] is False
+    assert readiness["missing_required_artifacts"] == ["gold.control_tests"]
+    assert readiness["artifact_counts"]["silver.normalized_events"] == 4
+    actions = [step["action"] for step in readiness["recommended_next_steps"]]
+    assert actions == ["materialize_control_evidence"]
 
 
 def test_langgraph_builder_is_optional() -> None:
