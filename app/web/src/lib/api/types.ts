@@ -133,6 +133,60 @@ export interface Health {
   service: string;
 }
 
+export type AgentHarness = "posture_review" | "soc_triage" | string;
+
+export interface AgentDecision {
+  action: string;
+  reason?: string;
+  payload?: Record<string, unknown>;
+  requires_approval?: boolean;
+  status?: "proposed" | "approved" | "executed" | "skipped" | string;
+  approved_by?: string;
+  approved_at?: string;
+  execution_result?: Record<string, unknown>;
+}
+
+export interface AgentEvaluation {
+  ok?: boolean;
+  score?: number;
+  confidence?: "high" | "medium" | "low" | string;
+  risk_level?: "low" | "medium" | "high" | "critical" | string;
+  checks?: unknown[];
+  failures?: unknown[];
+  coverage?: Record<string, unknown>;
+}
+
+export interface AgentRun {
+  id: string;
+  harness: AgentHarness;
+  objective: string;
+  role: string;
+  mode: string;
+  status: "completed" | "failed" | string;
+  idempotency_key: string | null;
+  input_hash: string;
+  provider: Record<string, unknown>;
+  budget: Record<string, unknown>;
+  evaluation: AgentEvaluation;
+  decisions: AgentDecision[];
+  errors: string[];
+  created_by: string;
+  created_at: string;
+  completed_at: string | null;
+  state?: Record<string, unknown>;
+}
+
+export interface CreateAgentRunPayload {
+  harness: AgentHarness;
+  objective?: string;
+  role?: string;
+  idempotency_key?: string;
+  use_model?: boolean;
+  max_context_chars?: number;
+  max_fact_items?: number;
+  max_output_tokens?: number;
+}
+
 export interface AuthMethod {
   id: "oidc" | "saml";
   label: string;

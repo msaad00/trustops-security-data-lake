@@ -1,6 +1,7 @@
 import { isAuditorMode } from "@/lib/state/auditor";
 import type {
   ActionSpec,
+  AgentRun,
   Assessment,
   AssetRisk,
   AuthMethods,
@@ -20,6 +21,7 @@ import type {
   ControlTest,
   ControlArticleMapping,
   Crosswalk,
+  CreateAgentRunPayload,
   EvidenceFreshness,
   EntityTag,
   FrameworkReadiness,
@@ -351,6 +353,15 @@ export const api = {
     post<{ data: PostureMetricPoint }>("/v1/insights/capture", {}).then(
       (b) => b.data,
     ),
+  agentRuns: (query = "") =>
+    get<{ data: AgentRun[] }>(`/v1/agent-runs${query}`).then((b) => b.data),
+  createAgentRun: (payload: CreateAgentRunPayload) =>
+    post<{ data: AgentRun }>("/v1/agent-runs", payload).then((b) => b.data),
+  approveAgentDecision: (runId: string, decisionIndex: number, note = "") =>
+    post<{ data: AgentRun }>(
+      `/v1/agent-runs/${encodeURIComponent(runId)}/decisions/${decisionIndex}/approve`,
+      { note },
+    ).then((b) => b.data),
 };
 
 export interface SnapshotSummary {
