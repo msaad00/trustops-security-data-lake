@@ -32,6 +32,10 @@ EXPECTED_TOOLS = {
     "list_snapshots",
     "list_frameworks",
     "describe_api",
+    "list_agent_runs",
+    "create_agent_run",
+    "get_agent_run",
+    "approve_agent_decision",
 }
 
 
@@ -67,6 +71,17 @@ def test_resolve_lake_dir_defaults(monkeypatch):
     assert mcp_server.resolve_lake_dir() == Path("./lake").expanduser().resolve()
     monkeypatch.setenv("TRUSTOPS_LAKE", "/tmp/some-lake")
     assert mcp_server.resolve_lake_dir() == Path("/tmp/some-lake").resolve()
+
+
+def test_resolve_api_base_url(monkeypatch):
+    monkeypatch.delenv("TRUSTOPS_API_URL", raising=False)
+    with pytest.raises(ValueError):
+        mcp_server.resolve_api_base_url()
+    monkeypatch.setenv("TRUSTOPS_API_URL", "file:///tmp/lake")
+    with pytest.raises(ValueError):
+        mcp_server.resolve_api_base_url()
+    monkeypatch.setenv("TRUSTOPS_API_URL", "https://trustops.example.test/")
+    assert mcp_server.resolve_api_base_url() == "https://trustops.example.test"
 
 
 def test_expected_tools_registered(tmp_path):
@@ -140,3 +155,52 @@ def test_describe_api_lists_resources(tmp_path):
     paths = {row["path"] for row in catalog}
     assert "/api/v1/posture/current" in paths
     assert "/api/v1/controls" in paths
+
+
+def test_mcp_agent_run_tools_call_authenticated_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+    calls = []
+
+    def fake_request(method, path, body=None, **params):
+        calls.append({"method": method, "path": path, "body": body, "params": params})
+        return {"data": {"ok": True}, "meta": {"resource": "agent-runs"}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+
+    listed = call_tool(server, "list_agent_runs", limit=7, harness="posture_review", status="completed")
+    assert listed["data"]["ok"] is True
+    created = call_tool(
+        server,
+        "create_agent_run",
+        harness="soc_triage",
+        objective="triage current alerts",
+        role="read_only",
+        idempotency_key="mcp-run-1",
+        use_model=False,
+        max_fact_items=5,
+    )
+    assert created["meta"]["resource"] == "agent-runs"
+    fetched = call_tool(server, "get_agent_run", run_id="run/id with space")
+    approved = call_tool(server, "approve_agent_decision", run_id="run/id with space", decision_index=2, note="ok")
+    assert fetched["data"]["ok"] is True
+    assert approved["data"]["ok"] is True
+
+    assert calls[0] == {
+        "method": "GET",
+        "path": "/api/v1/agent-runs",
+        "body": None,
+        "params": {"limit": 7, "harness": "posture_review", "status": "completed"},
+    }
+    assert calls[1]["method"] == "POST"
+    assert calls[1]["path"] == "/api/v1/agent-runs"
+    assert calls[1]["body"] == {
+        "harness": "soc_triage",
+        "objective": "triage current alerts",
+        "role": "read_only",
+        "idempotency_key": "mcp-run-1",
+        "use_model": False,
+        "max_fact_items": 5,
+    }
+    assert calls[2]["path"] == "/api/v1/agent-runs/run%2Fid%20with%20space"
+    assert calls[3]["path"] == "/api/v1/agent-runs/run%2Fid%20with%20space/decisions/2/approve"
+    assert calls[3]["body"] == {"note": "ok"}

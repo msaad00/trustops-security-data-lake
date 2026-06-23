@@ -121,6 +121,11 @@ Agents should:
 Agents should not infer compliance status from visual text. The API is the
 contract.
 
+MCP clients use the same contract. Local lake tools read posture, controls,
+evidence, snapshots, and workflows from `TRUSTOPS_LAKE`; persisted agent-run
+tools require `TRUSTOPS_API_URL` and `TRUSTOPS_API_KEY` so RBAC, tenant
+isolation, approvals, and audit events stay behind the server boundary.
+
 ## Skills And Guardrails
 
 TrustOps skills are small, auditable operating guides over this API and the lake
