@@ -51,6 +51,7 @@ from security_lakehouse.auth.saml import (
 from security_lakehouse.auth.sessions import SESSION_COOKIE
 from security_lakehouse.dashboard import render_dashboard
 from security_lakehouse.data_policy import redact_payload
+from security_lakehouse.db import agent_runs as agent_runs_db
 from security_lakehouse.db import metrics as metrics_db
 from security_lakehouse.db import migrate, remediation, repository
 from security_lakehouse.db import tags as tags_db
@@ -179,6 +180,17 @@ class CreateSavedViewRequest(_StrictModel):
     filters: dict = {}
 
 
+class CreateAgentRunRequest(_StrictModel):
+    harness: str
+    objective: str = ""
+    role: str | None = None
+    idempotency_key: str | None = None
+    use_model: bool = False
+    max_context_chars: int | None = None
+    max_fact_items: int | None = None
+    max_output_tokens: int | None = None
+
+
 def _parse_dt(value: str | None) -> datetime | None:
     if value is None or value == "":
         return None
@@ -202,6 +214,12 @@ def _insecure_requested() -> bool:
 
 def _redact_payload(payload: object, identity: Identity) -> object:
     return redact_payload(payload, role=identity.role)
+
+
+def _role_allowed_for_actor(requested_role: str, identity: Identity) -> bool:
+    """Allow same or narrower read visibility, never role escalation."""
+    visibility_rank = {"auditor": 0, "read_only": 1, "contributor": 1, "security_admin": 2, "admin": 2}
+    return visibility_rank.get(requested_role, 99) <= visibility_rank.get(identity.role, -1)
 
 
 def _public_trust_summary(lake: Path, share: dict[str, object]) -> dict[str, object]:
@@ -338,6 +356,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             {"name": "discovery", "description": "Self-describing index + health."},
             {"name": "auth", "description": "API keys, SSO (OIDC/SAML), sessions, RBAC."},
             {"name": "assessment", "description": "Posture, controls, evidence, violations, snapshots."},
+            {"name": "agents", "description": "Human/headless agent harness runs and evaluations."},
             {"name": "remediation", "description": "Tasks, evidence requests, control exceptions."},
             {"name": "insights", "description": "Posture time-series and remediation metrics."},
             {"name": "tags", "description": "Cross-entity tags and saved views."},
@@ -685,6 +704,100 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="key not found or already revoked")
         session.commit()
         return JSONResponse(api_v1.envelope("auth.keys", {"id": key_id, "revoked": True}))
+
+    # --- agent harness runs ---
+    @app.get("/api/v1/agent-runs", tags=["agents"])
+    def list_agent_runs(
+        request: Request, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        params = _params(request)
+        limit_raw = (params.get("limit") or ["100"])[0]
+        try:
+            limit = int(limit_raw)
+        except ValueError:
+            limit = 100
+        harness_filter = (params.get("harness") or [""])[0] or None
+        status_filter = (params.get("status") or [""])[0] or None
+        rows = agent_runs_db.list_agent_runs(
+            session,
+            tenant_id=identity.tenant_id,
+            harness=harness_filter,
+            status=status_filter,
+            limit=limit,
+        )
+        data = [agent_runs_db.agent_run_to_dict(row) for row in rows]
+        return JSONResponse(api_v1.envelope("agent-runs", _redact_payload(data, identity), meta={"count": len(data)}))
+
+    @app.post("/api/v1/agent-runs", status_code=status.HTTP_201_CREATED, tags=["agents"])
+    def create_agent_run(
+        body: CreateAgentRunRequest,
+        identity: Identity = Depends(_require_write),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        from security_lakehouse.agents import AgentBudgetPolicy
+        from security_lakehouse.agents.providers import ModelProviderConfig, provider_from_env
+
+        role = body.role or identity.role
+        if not _role_allowed_for_actor(role, identity):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="requested agent role exceeds caller")
+        provider_base = provider_from_env()
+        provider = ModelProviderConfig(
+            provider=provider_base.provider,
+            model=provider_base.model,
+            base_url=provider_base.base_url,
+            api_key_env=provider_base.api_key_env,
+            use_model=bool(body.use_model and provider_base.enabled),
+            timeout_seconds=provider_base.timeout_seconds,
+        )
+        budget_base = AgentBudgetPolicy.from_env()
+        budget = AgentBudgetPolicy(
+            max_context_chars=body.max_context_chars
+            if body.max_context_chars is not None
+            else budget_base.max_context_chars,
+            max_fact_items=body.max_fact_items if body.max_fact_items is not None else budget_base.max_fact_items,
+            max_output_tokens=body.max_output_tokens
+            if body.max_output_tokens is not None
+            else budget_base.max_output_tokens,
+            max_string_chars=budget_base.max_string_chars,
+        )
+        try:
+            row, created = agent_runs_db.run_and_persist_agent(
+                session,
+                tenant_id=identity.tenant_id,
+                lake_dir=str(lake_for(identity)),
+                harness=body.harness,
+                objective=body.objective or f"Run {body.harness} harness.",
+                role=role,
+                created_by=identity.email,
+                idempotency_key=body.idempotency_key,
+                provider=provider,
+                budget=budget,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        session.commit()
+        response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        return JSONResponse(
+            api_v1.envelope(
+                "agent-runs",
+                _redact_payload(agent_runs_db.agent_run_to_dict(row, include_state=True), identity),
+                meta={"created": created},
+            ),
+            status_code=response_status,
+        )
+
+    @app.get("/api/v1/agent-runs/{run_id}", tags=["agents"])
+    def get_agent_run(
+        run_id: str, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        row = agent_runs_db.get_agent_run(session, tenant_id=identity.tenant_id, run_id=run_id)
+        if row is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="agent run not found")
+        return JSONResponse(
+            api_v1.envelope(
+                "agent-runs", _redact_payload(agent_runs_db.agent_run_to_dict(row, include_state=True), identity)
+            )
+        )
 
     # --- remediation workflow (tasks, evidence requests, exceptions) ---
     @app.get("/api/v1/remediation/tasks")
