@@ -9,6 +9,7 @@ import pytest
 from security_lakehouse.io import (
     read_json,
     read_jsonl,
+    resolve_path,
     write_json,
     write_jsonl,
 )
@@ -82,3 +83,42 @@ def test_failed_write_leaves_no_file_when_none_existed(tmp_path: Path) -> None:
 
     assert not target.exists()
     assert _tmp_files(target.parent) == []
+
+
+def test_base_dir_allows_paths_inside_root(tmp_path: Path) -> None:
+    lake = tmp_path / "lake"
+    target = lake / "gold" / "events.jsonl"
+    rows = [{"event_id": "evt-1"}]
+
+    write_jsonl(target, rows, base_dir=lake)
+
+    assert read_jsonl(lake / "gold" / ".." / "gold" / "events.jsonl", base_dir=lake) == rows
+
+
+def test_base_dir_rejects_paths_outside_root(tmp_path: Path) -> None:
+    lake = tmp_path / "lake"
+    outside = tmp_path / "outside.jsonl"
+    outside.write_text('{"event_id":"evt-1"}\n', encoding="utf-8")
+
+    with pytest.raises(ValueError, match="outside allowed root"):
+        read_jsonl(outside, base_dir=lake)
+
+    with pytest.raises(ValueError, match="outside allowed root"):
+        read_jsonl(lake / ".." / "outside.jsonl", base_dir=lake)
+
+
+def test_base_dir_rejects_symlink_escape(tmp_path: Path) -> None:
+    lake = tmp_path / "lake"
+    lake.mkdir()
+    outside = tmp_path / "outside.jsonl"
+    outside.write_text('{"event_id":"evt-1"}\n', encoding="utf-8")
+    link = lake / "linked.jsonl"
+    link.symlink_to(outside)
+
+    with pytest.raises(ValueError, match="outside allowed root"):
+        read_jsonl(link, base_dir=lake)
+
+
+def test_resolve_path_rejects_nul_byte() -> None:
+    with pytest.raises(ValueError, match="NUL byte"):
+        resolve_path("lake/gold/events.jsonl\x00")

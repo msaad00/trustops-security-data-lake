@@ -12,6 +12,7 @@ from urllib.parse import parse_qs, urlparse
 from security_lakehouse import api_legacy, api_v1
 from security_lakehouse.dashboard import render_dashboard
 from security_lakehouse.data_policy import redact_payload
+from security_lakehouse.io import resolve_path
 from security_lakehouse.web import web_dist_dir, web_dist_index
 
 AUDITOR_ROLE = "auditor"
@@ -19,7 +20,7 @@ AUDITOR_ROLE = "auditor"
 
 def serve(lake_dir: str | Path, *, host: str = "127.0.0.1", port: int = 8787) -> None:
     """Serve the TrustOps console and JSON assessment API."""
-    lake = Path(lake_dir)
+    lake = resolve_path(lake_dir)
     dashboard = lake / "console.html"
     render_dashboard(lake, dashboard)
 

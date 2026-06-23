@@ -27,7 +27,7 @@ from security_lakehouse.assessment import (
 )
 from security_lakehouse.framework_detail import build_framework_detail
 from security_lakehouse.graph import analyze_coverage
-from security_lakehouse.io import read_jsonl
+from security_lakehouse.io import read_jsonl, resolve_path
 from security_lakehouse.tracking import verify_tracking_chain
 
 API_VERSION = "v1"
@@ -89,20 +89,26 @@ SINGLETON_LOADERS: dict[str, tuple[str, Callable[[Path], Any]]] = {
 
 # Route -> (resource name, loader) for endpoints returning a row collection.
 COLLECTION_LOADERS: dict[str, tuple[str, Callable[[Path], list[JsonObject]]]] = {
-    "/api/v1/controls": ("controls", lambda lake: read_jsonl(lake / "gold" / "control_posture.jsonl", missing_ok=True)),
+    "/api/v1/controls": (
+        "controls",
+        lambda lake: read_jsonl(lake / "gold" / "control_posture.jsonl", missing_ok=True, base_dir=lake),
+    ),
     "/api/v1/control-tests": (
         "control-tests",
-        lambda lake: read_jsonl(lake / "gold" / "control_tests.jsonl", missing_ok=True),
+        lambda lake: read_jsonl(lake / "gold" / "control_tests.jsonl", missing_ok=True, base_dir=lake),
     ),
     "/api/v1/evidence": (
         "evidence",
-        lambda lake: read_jsonl(lake / "silver" / "normalized_events.jsonl", missing_ok=True),
+        lambda lake: read_jsonl(lake / "silver" / "normalized_events.jsonl", missing_ok=True, base_dir=lake),
     ),
     "/api/v1/evidence/freshness": (
         "evidence.freshness",
-        lambda lake: read_jsonl(lake / "gold" / "evidence_freshness.jsonl", missing_ok=True),
+        lambda lake: read_jsonl(lake / "gold" / "evidence_freshness.jsonl", missing_ok=True, base_dir=lake),
     ),
-    "/api/v1/assets": ("assets", lambda lake: read_jsonl(lake / "gold" / "asset_risk.jsonl", missing_ok=True)),
+    "/api/v1/assets": (
+        "assets",
+        lambda lake: read_jsonl(lake / "gold" / "asset_risk.jsonl", missing_ok=True, base_dir=lake),
+    ),
     "/api/v1/violations": ("violations", lambda lake: build_current_posture(lake)["violations"]),
     "/api/v1/snapshots": ("snapshots", list_snapshots),
 }
@@ -506,7 +512,7 @@ def collection_response(resource: str, rows: list[JsonObject], params: Params) -
 
 def handle_get(path: str, params: Params, lake_dir: str | Path) -> tuple[HTTPStatus, JsonObject]:
     """Resolve a v1 GET into an ``(status, body)`` pair."""
-    lake = Path(lake_dir)
+    lake = resolve_path(lake_dir)
     if path.startswith("/api/v1/frameworks/") and path.endswith("/detail"):
         framework_id = path[len("/api/v1/frameworks/") : -len("/detail")]
         detail = build_framework_detail(framework_id, lake)
@@ -590,7 +596,7 @@ def handle_get(path: str, params: Params, lake_dir: str | Path) -> tuple[HTTPSta
 
 def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tuple[HTTPStatus, JsonObject]:
     """Resolve a v1 POST into an ``(status, body)`` pair."""
-    lake = Path(lake_dir)
+    lake = resolve_path(lake_dir)
     if path == "/api/v1/snapshots":
         reason = str((body or {}).get("reason") or "api_request")
         snapshot_path = write_assessment_snapshot(lake, reason=reason)

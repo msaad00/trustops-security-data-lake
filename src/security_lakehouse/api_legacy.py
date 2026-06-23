@@ -30,7 +30,7 @@ from security_lakehouse.connector_state import (
 from security_lakehouse.framework_detail import build_framework_detail
 from security_lakehouse.framework_provenance import build_framework_view
 from security_lakehouse.graph import build_compliance_graph, build_framework_crosswalk, build_repository_graph
-from security_lakehouse.io import read_jsonl
+from security_lakehouse.io import read_jsonl, resolve_path
 from security_lakehouse.mappings import build_reviewed_crosswalk, load_control_article_mappings
 from security_lakehouse.readiness import build_readiness_view
 from security_lakehouse.scheduler import tick as scheduler_tick
@@ -105,7 +105,7 @@ def required_post_scope(path: str) -> str:
 
 def handle_get(path: str, query: Query, lake_dir: str | Path) -> tuple[HTTPStatus, Body]:
     """Resolve a legacy GET into ``(status, body)``. Auditor redaction is applied by the transport."""
-    lake = Path(lake_dir)
+    lake = resolve_path(lake_dir)
     if path == "/api/posture/current":
         return HTTPStatus.OK, build_current_posture(lake)
     if path == "/api/violations":
@@ -115,7 +115,8 @@ def handle_get(path: str, query: Query, lake_dir: str | Path) -> tuple[HTTPStatu
         violations = posture["violations"]
         if framework:
             control_frameworks = {
-                row["control_id"]: row["framework"] for row in read_jsonl(lake / "gold" / "control_posture.jsonl")
+                row["control_id"]: row["framework"]
+                for row in read_jsonl(lake / "gold" / "control_posture.jsonl", base_dir=lake)
             }
             violations = [row for row in violations if control_frameworks.get(row["control_id"]) == framework]
         if control_id:
@@ -123,14 +124,14 @@ def handle_get(path: str, query: Query, lake_dir: str | Path) -> tuple[HTTPStatu
         return HTTPStatus.OK, {"count": len(violations), "violations": violations}
     if path == "/api/controls":
         control_id = _first(query, "control_id")
-        controls = read_jsonl(lake / "gold" / "control_posture.jsonl")
+        controls = read_jsonl(lake / "gold" / "control_posture.jsonl", base_dir=lake)
         if control_id:
             controls = [row for row in controls if row["control_id"] == control_id]
         return HTTPStatus.OK, {"controls": controls}
     if path == "/api/control-tests":
         result = _first(query, "result")
         control_id = _first(query, "control_id")
-        rows = read_jsonl(lake / "gold" / "control_tests.jsonl")
+        rows = read_jsonl(lake / "gold" / "control_tests.jsonl", base_dir=lake)
         if result:
             rows = [row for row in rows if row["result"] == result]
         if control_id:
@@ -138,12 +139,12 @@ def handle_get(path: str, query: Query, lake_dir: str | Path) -> tuple[HTTPStatu
         return HTTPStatus.OK, {"count": len(rows), "control_tests": rows}
     if path == "/api/evidence":
         control_id = _first(query, "control_id")
-        rows = read_jsonl(lake / "silver" / "normalized_events.jsonl")
+        rows = read_jsonl(lake / "silver" / "normalized_events.jsonl", base_dir=lake)
         if control_id:
             rows = [row for row in rows if control_id in row["control_ids"]]
         return HTTPStatus.OK, {"count": len(rows), "evidence": rows}
     if path == "/api/assets":
-        return HTTPStatus.OK, {"assets": read_jsonl(lake / "gold" / "asset_risk.jsonl")}
+        return HTTPStatus.OK, {"assets": read_jsonl(lake / "gold" / "asset_risk.jsonl", base_dir=lake)}
     if path == "/api/snapshots":
         snapshots = api_v1.list_snapshots(lake)
         return HTTPStatus.OK, {"count": len(snapshots), "snapshots": snapshots}
@@ -218,7 +219,7 @@ def handle_get(path: str, query: Query, lake_dir: str | Path) -> tuple[HTTPStatu
 
 def handle_post(path: str, body: Body, lake_dir: str | Path, *, role: str = "") -> tuple[HTTPStatus, Body]:
     """Resolve a legacy POST into ``(status, body)``."""
-    lake = Path(lake_dir)
+    lake = resolve_path(lake_dir)
     if role == AUDITOR_ROLE:
         return HTTPStatus.FORBIDDEN, {"error": "forbidden", "reason": "auditor role is read-only"}
     body = body or {}

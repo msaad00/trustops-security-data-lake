@@ -11,8 +11,42 @@ from pathlib import Path
 from typing import Any
 
 
-def read_jsonl(path: str | Path, *, missing_ok: bool = False) -> list[dict[str, Any]]:
-    target = Path(path)
+def resolve_path(path: str | Path, *, base_dir: str | Path | None = None) -> Path:
+    """Return a canonical local path, optionally confined under ``base_dir``.
+
+    Server-mode callers should pass the tenant/lake root as ``base_dir`` before
+    reading or writing lake artifacts. That makes the path policy explicit at
+    the shared IO boundary and prevents traversal through ``..`` components or
+    existing symlink parents. CLI callers can omit ``base_dir`` to keep normal
+    local file paths working.
+    """
+    raw = os.fspath(path)
+    if "\x00" in raw:
+        raise ValueError("path contains NUL byte")
+    # Canonicalization is the guard boundary: server callers pass ``base_dir``
+    # below, and the real target must stay under that trusted root before any
+    # read/write operation occurs.
+    target = Path(os.path.realpath(os.path.abspath(os.path.expanduser(raw))))
+    if base_dir is None:
+        return target
+    root_raw = os.fspath(base_dir)
+    if "\x00" in root_raw:
+        raise ValueError("base_dir contains NUL byte")
+    root = Path(os.path.realpath(os.path.abspath(os.path.expanduser(root_raw))))
+    try:
+        target.relative_to(root)
+    except ValueError as exc:
+        raise ValueError("path is outside allowed root") from exc
+    return target
+
+
+def read_jsonl(
+    path: str | Path,
+    *,
+    missing_ok: bool = False,
+    base_dir: str | Path | None = None,
+) -> list[dict[str, Any]]:
+    target = resolve_path(path, base_dir=base_dir)
     if missing_ok and not target.exists():
         return []
     rows: list[dict[str, Any]] = []
@@ -57,22 +91,32 @@ def _atomic_write(output: Path, text_chunks: Iterable[str]) -> None:
         raise
 
 
-def write_jsonl(path: str | Path, rows: Iterable[dict[str, Any]]) -> None:
-    output = Path(path)
+def write_jsonl(
+    path: str | Path,
+    rows: Iterable[dict[str, Any]],
+    *,
+    base_dir: str | Path | None = None,
+) -> None:
+    output = resolve_path(path, base_dir=base_dir)
     _atomic_write(
         output,
         (json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n" for row in rows),
     )
 
 
-def append_jsonl(path: str | Path, row: dict[str, Any]) -> None:
+def append_jsonl(
+    path: str | Path,
+    row: dict[str, Any],
+    *,
+    base_dir: str | Path | None = None,
+) -> None:
     """Append one JSON object as a line, durably.
 
     Used for append-only ledgers: the line is flushed and fsync'd before the
     call returns so a crash cannot lose an acknowledged record. Unlike
     :func:`write_jsonl` this never rewrites existing content.
     """
-    output = Path(path)
+    output = resolve_path(path, base_dir=base_dir)
     output.parent.mkdir(parents=True, exist_ok=True)
     line = json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n"
     with output.open("a", encoding="utf-8") as handle:
@@ -81,10 +125,10 @@ def append_jsonl(path: str | Path, row: dict[str, Any]) -> None:
         os.fsync(handle.fileno())
 
 
-def write_json(path: str | Path, payload: Any) -> None:
-    output = Path(path)
+def write_json(path: str | Path, payload: Any, *, base_dir: str | Path | None = None) -> None:
+    output = resolve_path(path, base_dir=base_dir)
     _atomic_write(output, [json.dumps(payload, indent=2, sort_keys=True) + "\n"])
 
 
-def read_json(path: str | Path) -> Any:
-    return json.loads(Path(path).read_text(encoding="utf-8"))
+def read_json(path: str | Path, *, base_dir: str | Path | None = None) -> Any:
+    return json.loads(resolve_path(path, base_dir=base_dir).read_text(encoding="utf-8"))
