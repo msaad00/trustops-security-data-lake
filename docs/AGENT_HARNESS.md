@@ -258,7 +258,12 @@ Every run starts by deciding whether the account already has usable lake data:
 - `partial_lake`: run targeted ingestion or control evaluation first
 - `needs_ingestion`: configure read-only connectors or load existing exports
 
-This is a deterministic preflight, not an LLM decision.
+This is a deterministic preflight, not an LLM decision. The persisted run
+includes required artifacts, per-artifact row counts, relative artifact paths,
+and recommended next-step commands using placeholders such as `<lake>` and
+`<connector_id>`. Absolute local lake paths are not persisted in the agent
+state, so UI, scheduler, MCP, and headless clients can show the guidance
+without exposing machine-specific paths.
 
 ## Non-negotiables
 
