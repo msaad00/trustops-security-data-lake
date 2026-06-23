@@ -23,6 +23,7 @@ from security_lakehouse.connector_state import (
     append_config_event,
     build_catalog_view,
     configure_payload_error,
+    enablement_probe_error,
     list_runs,
     run_probe,
 )
@@ -253,6 +254,15 @@ def handle_post(path: str, body: Body, lake_dir: str | Path, *, role: str = "") 
         credentials = body.get("credentials") or {}
         options = body.get("options") or {}
         error = configure_payload_error(
+            connector_id=configure,
+            state=state,
+            credentials=credentials,
+            options=options,
+        )
+        if error:
+            return HTTPStatus.BAD_REQUEST, {"error": "bad_request", "reason": error}
+        error = enablement_probe_error(
+            lake,
             connector_id=configure,
             state=state,
             credentials=credentials,

@@ -159,6 +159,14 @@ def test_legacy_post_enforces_route_specific_scopes(tmp_path: Path) -> None:
     # security_admin owns connector/workflow/snapshot operations.
     assert (
         client.post(
+            "/api/connectors/github-security/probe",
+            json={"credentials": {"token": "source_connector_secret"}},
+            headers=_bearer(tokens["security_admin"]),
+        ).status_code
+        == HTTPStatus.CREATED
+    )
+    assert (
+        client.post(
             "/api/connectors/github-security/configure",
             json={"state": "enabled", "credentials": {"token": "source_connector_secret"}},
             headers=_bearer(tokens["security_admin"]),

@@ -250,6 +250,16 @@ def test_connector_endpoints_round_trip(tmp_path: Path) -> None:
         status, body = _request(
             server,
             "POST",
+            "/api/connectors/github-security/probe",
+            body={"credentials": {"token": "abc"}, "options": {"org": "x"}},
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["run"]["result"] == "ok"
+        assert body["run"]["access_fingerprint"]
+
+        status, body = _request(
+            server,
+            "POST",
             "/api/connectors/github-security/configure",
             body={"state": "enabled", "credentials": {"token": "abc"}, "options": {"org": "x"}},
         )
@@ -263,7 +273,7 @@ def test_connector_endpoints_round_trip(tmp_path: Path) -> None:
 
         status, body = _request(server, "GET", "/api/connectors/github-security/runs")
         assert status == HTTPStatus.OK
-        assert len(body["runs"]) == 1
+        assert len(body["runs"]) == 2
 
         status, body = _request(server, "GET", "/api/frameworks")
         assert status == HTTPStatus.OK
@@ -308,6 +318,39 @@ def test_connector_configure_rejects_empty_enable(tmp_path: Path) -> None:
         server.shutdown()
 
 
+def test_connector_configure_requires_matching_ok_probe(tmp_path: Path) -> None:
+    server = _spin_handler(tmp_path)
+    try:
+        status, body = _request(
+            server,
+            "POST",
+            "/api/connectors/github-security/configure",
+            body={"state": "enabled", "credentials": {"token": "abc"}, "options": {"org": "x"}},
+        )
+        assert status == HTTPStatus.BAD_REQUEST
+        assert "Test connection" in body["reason"]
+
+        status, body = _request(
+            server,
+            "POST",
+            "/api/connectors/github-security/probe",
+            body={"credentials": {"token": "abc"}, "options": {"org": "x"}},
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["run"]["result"] == "ok"
+
+        status, body = _request(
+            server,
+            "POST",
+            "/api/connectors/github-security/configure",
+            body={"state": "enabled", "credentials": {"token": "different"}, "options": {"org": "x"}},
+        )
+        assert status == HTTPStatus.BAD_REQUEST
+        assert "exact credentials" in body["reason"]
+    finally:
+        server.shutdown()
+
+
 def test_scoped_user_contract_requires_token_not_password() -> None:
     # Pins the public fallback used for future scoped-user catalog entries.
     missing = _missing_required_config(  # noqa: SLF001
@@ -319,9 +362,25 @@ def test_scoped_user_contract_requires_token_not_password() -> None:
     assert missing == ["host", "token"]
 
 
-def test_clickhouse_enable_uses_discovered_scope_after_scoped_token(tmp_path: Path) -> None:
+def test_clickhouse_enable_rejects_contract_only_probe(tmp_path: Path) -> None:
     server = _spin_handler(tmp_path)
     try:
+        status, body = _request(
+            server,
+            "POST",
+            "/api/connectors/clickhouse-telemetry-lake/probe",
+            body={
+                "credentials": {
+                    "host": "https://cluster.example.clickhouse.cloud:8443",
+                    "token": "scoped-read-token",
+                },
+                "options": {},
+            },
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["run"]["result"] == "skipped"
+        assert body["run"]["access_fingerprint"]
+
         status, body = _request(
             server,
             "POST",
@@ -335,12 +394,8 @@ def test_clickhouse_enable_uses_discovered_scope_after_scoped_token(tmp_path: Pa
                 "options": {},
             },
         )
-        assert status == HTTPStatus.CREATED
-        assert body["event"]["state"] == "enabled"
-        assert body["event"]["credential_fingerprint"]
-        assert body["event"]["options"] == {}
-        assert body["event"]["credentials"]["token"].startswith("***")
-        assert "password" not in body["event"]["credentials"]
+        assert status == HTTPStatus.BAD_REQUEST
+        assert "no live probe adapter" in body["reason"]
     finally:
         server.shutdown()
 
