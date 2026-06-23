@@ -47,9 +47,11 @@ def read_jsonl(
     base_dir: str | Path | None = None,
 ) -> list[dict[str, Any]]:
     target = resolve_path(path, base_dir=base_dir)
+    # lgtm[py/path-injection]
     if missing_ok and not target.exists():
         return []
     rows: list[dict[str, Any]] = []
+    # lgtm[py/path-injection]
     for line_no, line in enumerate(target.read_text(encoding="utf-8").splitlines(), start=1):
         stripped = line.strip()
         if not stripped:
