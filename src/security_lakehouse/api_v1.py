@@ -140,6 +140,14 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "path_params": ["run_id"],
     },
     {
+        "resource": "agent-runs.decisions",
+        "path": "/api/v1/agent-runs/{run_id}/decisions/{decision_index}/approve",
+        "kind": "action",
+        "methods": ["POST"],
+        "scopes": ["write"],
+        "path_params": ["run_id", "decision_index"],
+    },
+    {
         "resource": "remediation.tasks",
         "path": "/api/v1/remediation/tasks",
         "kind": "collection",

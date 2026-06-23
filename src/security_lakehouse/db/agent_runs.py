@@ -84,6 +84,41 @@ def list_agent_runs(
     return list(session.scalars(stmt.order_by(AgentRun.created_at.desc()).limit(max(1, min(limit, 1000)))))
 
 
+def agent_run_decisions(row: AgentRun) -> list[dict[str, Any]]:
+    raw = _json_loads(row.decisions_json, [])
+    return [item for item in raw if isinstance(item, dict)] if isinstance(raw, list) else []
+
+
+def mark_decision_executed(
+    row: AgentRun,
+    *,
+    decision_index: int,
+    approved_by: str,
+    execution_result: dict[str, Any],
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    decisions = agent_run_decisions(row)
+    if decision_index < 0 or decision_index >= len(decisions):
+        raise IndexError("decision not found")
+    moment = _now(now)
+    decision = dict(decisions[decision_index])
+    decision.update(
+        {
+            "status": "executed",
+            "approved_by": approved_by,
+            "approved_at": moment.isoformat(),
+            "execution_result": execution_result,
+        }
+    )
+    decisions[decision_index] = decision
+    state = _json_loads(row.state_json, {})
+    if isinstance(state, dict):
+        state["decisions"] = decisions
+        row.state_json = _json_dumps(state)
+    row.decisions_json = _json_dumps(decisions)
+    return decision
+
+
 def run_and_persist_agent(
     session: Session,
     *,
@@ -205,8 +240,10 @@ def agent_run_to_dict(row: AgentRun, *, include_state: bool = False) -> dict[str
 
 __all__ = [
     "agent_run_to_dict",
+    "agent_run_decisions",
     "get_agent_run",
     "get_agent_run_by_idempotency_key",
     "list_agent_runs",
+    "mark_decision_executed",
     "run_and_persist_agent",
 ]

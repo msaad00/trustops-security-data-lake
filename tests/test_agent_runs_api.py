@@ -18,6 +18,7 @@ from sqlalchemy import inspect  # noqa: E402
 
 from security_lakehouse.db import agent_runs, migrate  # noqa: E402
 from security_lakehouse.db.base import create_engine_for, session_scope  # noqa: E402
+from security_lakehouse.db.models import AgentRun  # noqa: E402
 from security_lakehouse.db.repository import create_api_key, create_tenant, create_user  # noqa: E402
 from security_lakehouse.server_app import create_app  # noqa: E402
 from test_api_v1 import _seed_lake  # noqa: E402
@@ -159,6 +160,108 @@ def test_agent_run_api_create_list_get_and_idempotency(env) -> None:
     fetched = client.get(f"/api/v1/agent-runs/{run['id']}", headers=_bearer(tokens["contributor"]))
     assert fetched.status_code == HTTPStatus.OK
     assert fetched.json()["data"]["id"] == run["id"]
+
+
+def test_agent_run_approval_executes_evidence_request_once(env) -> None:
+    _app, client, tokens = env
+    created = client.post(
+        "/api/v1/agent-runs",
+        json={"harness": "posture_review", "objective": "review gaps"},
+        headers=_bearer(tokens["contributor"]),
+    )
+    assert created.status_code == HTTPStatus.CREATED
+    run_id = created.json()["data"]["id"]
+
+    denied = client.post(f"/api/v1/agent-runs/{run_id}/decisions/0/approve", headers=_bearer(tokens["read_only"]))
+    assert denied.status_code == HTTPStatus.FORBIDDEN
+
+    approved = client.post(
+        f"/api/v1/agent-runs/{run_id}/decisions/0/approve",
+        json={"note": "Need this before customer review."},
+        headers=_bearer(tokens["contributor"]),
+    )
+    assert approved.status_code == HTTPStatus.OK
+    body = approved.json()
+    assert body["meta"]["resource"] == "agent-runs.decisions"
+    assert body["meta"]["executed"] is True
+    decision = body["data"]["decisions"][0]
+    assert decision["status"] == "executed"
+    assert decision["approved_by"] == "contributor@acme.test"
+    assert decision["execution_result"]["type"] == "evidence_request"
+
+    requests = client.get("/api/v1/remediation/evidence-requests", headers=_bearer(tokens["contributor"]))
+    assert requests.status_code == HTTPStatus.OK
+    rows = requests.json()["data"]
+    assert len(rows) == 1
+    assert rows[0]["control_id"] == "SOC2-CC6.1"
+    assert "Approval note" in rows[0]["note"]
+
+    retry = client.post(f"/api/v1/agent-runs/{run_id}/decisions/0/approve", headers=_bearer(tokens["contributor"]))
+    assert retry.status_code == HTTPStatus.OK
+    assert retry.json()["meta"]["executed"] is False
+    again = client.get("/api/v1/remediation/evidence-requests", headers=_bearer(tokens["contributor"]))
+    assert len(again.json()["data"]) == 1
+
+
+def test_agent_run_approval_keeps_tenant_boundary(tmp_path: Path) -> None:
+    _seed_gap(tmp_path)
+    app = create_app(tmp_path)
+    client = TestClient(app)
+    tokens_a = _provision(app, "acme")
+    tokens_b = _provision(app, "globex")
+
+    created = client.post(
+        "/api/v1/agent-runs",
+        json={"harness": "posture_review"},
+        headers=_bearer(tokens_a["contributor"]),
+    )
+    assert created.status_code == HTTPStatus.CREATED
+    run_id = created.json()["data"]["id"]
+
+    b_approve = client.post(
+        f"/api/v1/agent-runs/{run_id}/decisions/0/approve",
+        headers=_bearer(tokens_b["contributor"]),
+    )
+    assert b_approve.status_code == HTTPStatus.NOT_FOUND
+
+
+def test_agent_run_snapshot_approval_requires_snapshot_scope(env) -> None:
+    app, client, tokens = env
+    created = client.post(
+        "/api/v1/agent-runs",
+        json={"harness": "posture_review"},
+        headers=_bearer(tokens["contributor"]),
+    )
+    assert created.status_code == HTTPStatus.CREATED
+    run_id = created.json()["data"]["id"]
+    decision = [
+        {
+            "action": "freeze_snapshot",
+            "reason": "Freeze current posture for audit.",
+            "payload": {},
+            "requires_approval": True,
+            "status": "proposed",
+        }
+    ]
+    with session_scope(app.state.sessionmaker) as session:
+        row = session.get(AgentRun, run_id)
+        assert row is not None
+        row.decisions_json = json.dumps(decision, sort_keys=True)
+        state = json.loads(row.state_json)
+        state["decisions"] = decision
+        row.state_json = json.dumps(state, sort_keys=True)
+
+    denied = client.post(f"/api/v1/agent-runs/{run_id}/decisions/0/approve", headers=_bearer(tokens["contributor"]))
+    assert denied.status_code == HTTPStatus.FORBIDDEN
+
+    approved = client.post(
+        f"/api/v1/agent-runs/{run_id}/decisions/0/approve",
+        headers=_bearer(tokens["security_admin"]),
+    )
+    assert approved.status_code == HTTPStatus.OK
+    result = approved.json()["meta"]["execution_result"]
+    assert result["type"] == "snapshot"
+    assert Path(result["snapshot_path"]).is_file()
 
 
 def test_agent_run_rejects_role_escalation(env) -> None:
