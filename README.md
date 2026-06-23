@@ -1,82 +1,111 @@
-# TrustOps
+# TrustOps Security Data Lake
 
-Open-source AI and cloud security trust control plane.
+Open-source, self-hosted trust operations for security, AI governance, and
+continuous compliance.
 
-TrustOps turns cloud, identity, repository, runtime, and AI security evidence
-into continuous posture evaluation, compliance mapping, tagged findings,
-remediation workflows, audit snapshots, graph lineage, and agent-readable APIs
-while keeping evidence inside the customer's cloud, data lake, or local boundary.
+TrustOps turns cloud, identity, repository, runtime, ticketing, and AI-system
+evidence into one evidence-backed control plane: live posture, framework
+readiness, findings, remediation, workflow automation, immutable snapshots,
+trust-center sharing, and headless agent APIs. Evidence stays in the customer's
+lake, cloud, or local boundary.
 
 <p align="center">
-  <img src="docs/images/trustops-readme-banner.svg" alt="TrustOps product workflow" width="100%">
+  <img src="docs/images/trustops-readme-banner.svg" alt="TrustOps trust operations workflow" width="100%">
 </p>
 
 <p align="center">
-  <a href="docs/PRODUCT_WALKTHROUGH.md"><strong>Product walkthrough</strong></a>
+  <a href="docs/PRODUCT_WALKTHROUGH.md"><strong>Product Walkthrough</strong></a>
   ·
-  <a href="docs/FRAMEWORK_COVERAGE.md"><strong>Framework coverage</strong></a>
+  <a href="docs/ARCHITECTURE.md"><strong>Architecture</strong></a>
   ·
   <a href="docs/CONNECTORS.md"><strong>Connectors</strong></a>
   ·
-  <a href="docs/SERVER_AUTH.md"><strong>Server auth</strong></a>
+  <a href="docs/FRAMEWORK_COVERAGE.md"><strong>Frameworks</strong></a>
   ·
   <a href="docs/api/AGENT_API.md"><strong>Agent API</strong></a>
+  ·
+  <a href="docs/SERVER_AUTH.md"><strong>Auth</strong></a>
 </p>
+
+## What You Get
+
+TrustOps is built around one operating loop: collect evidence, evaluate
+controls, route risk, automate follow-up, and share proof safely.
+
+| Capability                   | What ships today                                                                                                | Primary users                    |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| **Executive trust overview** | Live posture, framework readiness, failing tests, open risk, stale evidence, and fix-next queues.               | CISOs, GRC, security leads       |
+| **Controls and frameworks**  | Versioned controls-as-code, source-linked framework registry, reviewed mappings, and asset applicability.       | GRC, auditors, control owners    |
+| **Evidence lake**            | Bronze replay, silver normalized facts, gold posture outputs, hashes, freshness SLAs, and replayable artifacts. | Security engineering, audit ops  |
+| **Findings and remediation** | Violations, owners, priorities, due dates, evidence requests, exceptions, and remediation tasks.                | Engineering owners, security ops |
+| **Workflow automation**      | Directed workflows for checks, snapshots, evidence requests, owner routing, and guarded actions.                | Security operations, platform    |
+| **Trust center**             | Scoped internal, auditor, and customer-facing summaries with expiring shares and redaction policy.              | Sales engineering, auditors      |
+| **Headless agents**          | `/api/v1` envelopes, OpenAPI, Python SDK, MCP tools, persisted harness runs, approvals, and optional LangGraph. | CI, MCP clients, internal agents |
+
+Current catalog scope is explicit: **8 framework families**, **34 seeded
+controls**, **34 reviewed mappings**, **13 modeled asset types**, and **92
+control-to-asset applicability links**. Coverage means seeded repo coverage,
+not certification or full-framework audit coverage. See
+[Framework Coverage](docs/FRAMEWORK_COVERAGE.md).
+
+## Product Surfaces
 
 <p align="center">
-  <img src="docs/images/trustops-product-mosaic.svg" alt="TrustOps product mosaic showing live posture, remediation queue, workflow automation, evidence lake routing, graph mapping, and trust center surfaces" width="100%">
+  <img src="docs/images/trustops-product-mosaic.svg" alt="TrustOps product surfaces for posture, evidence, workflows, graph, and trust center" width="100%">
 </p>
+
+| Dashboard                                                                                                                                           | Trust Center                                                                                                                                    |
+| --------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| <img src="docs/images/trustops-demo-dashboard.png" alt="TrustOps dashboard with trust score, framework readiness, and fix-next queue" width="100%"> | <img src="docs/images/trustops-demo-trust-center.png" alt="TrustOps trust center with scoped sharing and public summary controls" width="100%"> |
+
+| Evidence                                                                                                                                  | Workflows                                                                                                                             |
+| ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| <img src="docs/images/trustops-demo-evidence.png" alt="TrustOps evidence table with hashes, freshness, sources, and owners" width="100%"> | <img src="docs/images/trustops-demo-workflows.png" alt="TrustOps workflow canvas with trigger, check, and action nodes" width="100%"> |
+
+| Connectors                                                                                                                             | Frameworks                                                                                                                                                       |
+| -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <img src="docs/images/trustops-demo-connectors.png" alt="TrustOps connector registry with least-privilege source access" width="100%"> | <img src="docs/images/trustops-demo-frameworks.png" alt="TrustOps framework portfolio with readiness, controls, failing tests, and stale evidence" width="100%"> |
+
+## Architecture
+
+TrustOps keeps compliance truth deterministic. Agents and models can summarize,
+prioritize, and propose actions, but the core assessment engine owns evidence
+normalization, control evaluation, RBAC, tenant isolation, approvals,
+idempotency, snapshots, hashes, and audit logs.
 
 <p align="center">
-  <strong>Trust Command Center</strong> for current posture · <strong>Control Workbench</strong> for evidence-backed tests ·
-  <strong>DAG Workflow Canvas</strong> for closed-loop remediation · <strong>Graph</strong> for framework-to-asset mapping ·
-  <strong>Headless API</strong> for agents and CI
+  <img src="docs/images/trustops-assessment-architecture.svg" alt="TrustOps assessment architecture with evidence sources, data lake, control evaluation, API, UI, workflows, snapshots, and trust shares" width="100%">
 </p>
-
-## Why It Exists
-
-Security, compliance, platform, and AI teams need current posture, not stale
-spreadsheets. TrustOps is built for companies that want to evaluate evidence
-where it already lives, operate the trust control plane themselves, continuously
-monitor violations and freshness, tag findings to controls and owners, and
-expose the same facts to humans, auditors, CI, and agents.
 
 ```mermaid
 flowchart LR
-  Sources[Cloud, identity, repo, runtime, scanner, SIEM evidence] --> Lake[Customer-controlled security data lake]
-  Lake --> Eval[Controls-as-code assessment engine]
-  Eval --> Workbench[TrustOps workbench]
-  Eval --> API[Agent API + OpenAPI]
-  Eval --> Snapshots[Hashed point-in-time snapshots]
-  Workbench --> Owners[Owners, SLAs, remediation, trust shares]
-  API --> Agents[CI, MCP tools, coding agents, GRC agents]
+  Sources[Cloud, identity, repo, runtime, scanner, ticketing, AI evidence] --> Lake[Customer-controlled lake or local evidence store]
+  Lake --> Evidence[Normalized evidence + hashes + freshness]
+  Evidence --> Rules[Controls-as-code evaluation]
+  Rules --> Posture[Posture, tests, violations, assets]
+  Posture --> UI[Human console]
+  Posture --> API[/api/v1 + SDK + MCP/]
+  Posture --> Snapshots[Immutable snapshots + posture-as-of]
+  Posture --> Share[Trust center shares]
+  API --> Harness[Optional agent harness]
+  Harness --> Approval[Approval-gated writes]
+  Approval --> Work[Tasks, evidence requests, snapshots]
 ```
 
-The default demo is intentionally small and self-contained. Production mode is
-self-hosted with API keys, OIDC/SAML, RBAC, tenant-scoped lake paths, request
-audit events, scheduled connector syncs, and customer-owned evidence storage.
+### Storage Modes
 
-## What Ships
+| Mode                       | Use when                                                                                        | Boundary                                 |
+| -------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| **Local files + SQLite**   | Demo, CI, local audit, small self-hosted deployment.                                            | Filesystem and local DB.                 |
+| **Existing evidence lake** | Security evidence already lives in Snowflake, object storage, SIEM exports, or similar systems. | Read-only views or scoped exports.       |
+| **Telemetry lake**         | Runtime, detection, identity, repo, and scanner events need fast operational windows.           | ClickHouse-style hot event store.        |
+| **Server mode**            | Teams need auth, tenants, API keys, OIDC/SAML, RBAC, request audit, and shared UI/API state.    | Customer-controlled server and database. |
 
-TrustOps is organized around one operating loop instead of disconnected GRC
-tabs: collect source evidence, evaluate controls, route risk, automate follow-up,
-and share the right proof with the right audience.
+TrustOps is not a hosted evidence silo. Production deployments should prefer
+read-only access to existing evidence stores where possible. Direct source
+tokens are for sources that are the authority for the evidence.
 
-| Surface                     | What it does                                                                                        | Primary users                          |
-| --------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| **Posture**                 | Live score, framework readiness, failing tests, stale controls, and open violations.                | Security, GRC, platform                |
-| **Controls and frameworks** | Versioned controls-as-code, reviewed source mappings, provenance, and cross-framework overlap.      | GRC, auditors, control owners          |
-| **Evidence**                | Normalized facts, freshness SLAs, source hashes, and replayable bronze/silver/gold lake artifacts.  | Security engineering, audit ops        |
-| **Risk and remediation**    | Findings, severity, owners, due dates, task state, and remediation workflow history.                | Control owners, engineering managers   |
-| **Automation**              | DAG workflows for evidence requests, triage, notifications, snapshots, and guarded actions.         | Security operations, platform          |
-| **Trust center**            | Scoped internal, auditor, and customer views with expiring share tokens and data-boundary defaults. | Sales engineering, auditors, customers |
-| **Headless agents**         | Stable `/api/v1/*` envelopes, OpenAPI, Python SDK, MCP tools, and optional LangGraph harness.       | CI, agents, internal tools             |
-
-The UI mirrors these lanes: **Trust** for live posture and proof, **Workflows**
-for remediation and automation, **Sources** for connectors/framework mappings,
-and **Review** for graph, insights, audit, risk, and agent-facing APIs.
-
-## Run The Demo
+## Run Locally
 
 ```bash
 python -m venv .venv
@@ -92,16 +121,16 @@ security-lakehouse serve \
   --port 8787
 ```
 
-Open:
+Open the console:
 
 ```text
 http://127.0.0.1:8787/console/dashboard/
 ```
 
-The fixture data is synthetic and intentionally contains failing controls so the
-workbench shows remediation queues, stale/freshness signals, evidence links, and
-snapshot actions. It is separate from production use. Production deployments
-read from customer-controlled evidence stores and connector runners.
+The fixture data is synthetic and intentionally includes failing controls,
+stale evidence, and open risk so the workbench has something real to evaluate.
+If the browser reports connection refused, the server process is not running or
+is on a different port.
 
 Quick API probes:
 
@@ -111,120 +140,9 @@ curl -s 'http://127.0.0.1:8787/api/v1/control-tests?result=fail&limit=10' | jq .
 security-lakehouse openapi --out build/openapi.json
 ```
 
-## Evidence Flow
+## Common Workflows
 
-```mermaid
-flowchart LR
-  Raw[Raw evidence JSONL] --> Bronze[Bronze: immutable replay + SHA-256]
-  Bronze --> Silver[Silver: normalized security facts]
-  Silver --> Rules[Controls-as-code rules]
-  Rules --> Gold[Gold: posture, tests, assets, freshness]
-  Gold --> Workbench[Workbench]
-  Gold --> V1[/api/v1 envelopes/]
-  Gold --> Snapshots[Snapshots + posture-as-of]
-  Gold --> Mart[SQLite or DuckDB mart]
-
-  Snow[(Snowflake / Iceberg)] -. governed evidence lake .-> Silver
-  Click[(ClickHouse)] -. runtime telemetry analytics .-> Silver
-```
-
-TrustOps can start with managed local evidence, but the preferred production
-path is read-only access to an existing security data lake or customer-owned
-object store. Direct source tokens are used only when the source system is the
-authority for that evidence.
-
-## Security Data Lake Backends
-
-TrustOps is not a vendor-hosted evidence silo. It can evaluate posture from the
-customer's lake, then write only the minimum assessment state needed for
-dashboards, snapshots, workflows, and agent APIs.
-
-| Backend        | Role in TrustOps                                                                                          | Current status                                          |
-| -------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| **Snowflake**  | governed evidence lake for audit, RBAC, retention, dynamic rollups, and optional Iceberg interoperability | executable read-only evidence runner + schema artifacts |
-| **ClickHouse** | hot telemetry lake for runtime, detection, identity, repo, and scanner events with fast aggregates        | schema artifacts + telemetry contract                   |
-| **Databricks** | lakehouse and AI-governance path for Delta/Unity-Catalog-style estates                                    | coming soon; not claimed as shipped                     |
-
-### Snowflake Governed Evidence Lake
-
-Use Snowflake when the primary question is evidence governance: auditability,
-retention, least-privilege roles, row/masking policies, query history, and
-warehouse-native posture rollups. TrustOps can read customer-owned evidence
-views, ingest row streams or staged files into evidence tables, and keep
-governed outputs available to the console, snapshots, trust shares, and agent
-APIs.
-
-<p align="center">
-  <img src="docs/images/trustops-snowflake-evidence-lake.svg" alt="TrustOps Snowflake security data lake architecture with streaming ingestion, governed evidence tables, Iceberg interoperability, and assessment workflow" width="100%">
-</p>
-
-Use streaming row ingestion for high-frequency runtime, identity, and detection
-events; staged-file ingestion for scanner exports, SARIF, evidence bundles, and
-periodic audit packets; and read-only views when Snowflake is already the system
-of record. The live runner remains read-only by default and does not require DDL
-privileges.
-
-### ClickHouse Telemetry Lake
-
-Use ClickHouse when the primary question is operational speed: what changed in
-the last few minutes, which runtime policies are firing, which assets are
-getting worse, and which control families are creating the most remediation
-load. TrustOps keeps the same normalized evidence model, but uses ClickHouse for
-hot-path event windows, materialized rollups, retention policies, and dashboard
-queries.
-
-<p align="center">
-  <img src="docs/images/trustops-clickhouse-telemetry-lake.svg" alt="TrustOps ClickHouse telemetry lake architecture with hot-path event ingestion, materialized views, TTL retention, and workflow audit write-back" width="100%">
-</p>
-
-See [Connector And Access Model](docs/CONNECTORS.md) and
-[Hero Security Data Lakes](docs/HERO_DATA_LAKES.md).
-
-## Framework Coverage
-
-TrustOps currently ships **34 source-linked controls** across **8 framework
-families**, with reviewed mappings for every seeded control. The catalog also
-models **13 asset types** and **92 control-to-asset applicability links**, so
-the graph, asset risk queue, and API can answer which controls apply to a repo,
-identity, model, data store, host, or runtime asset. Coverage details, source
-URLs, readiness gates, applicability, and roadmap percentages live in the
-[Framework Coverage Matrix](docs/FRAMEWORK_COVERAGE.md).
-
-Framework names are rendered as neutral text labels in product and docs. TrustOps
-does **not** ship made-up logos, lookalike seals, regulator marks, or
-certification badges. Official third-party logos are added only when usage terms,
-attribution, owner, and review date are recorded in the
-[Third-Party Asset Policy](docs/THIRD_PARTY_ASSETS.md).
-
-## Human And Agent API
-
-`/api/v1/*` is the stable headless contract for agents and external clients.
-Routes return `{data, meta, errors}` envelopes with filtering and pagination on
-list resources. The main resources are posture, control tests, violations,
-evidence, assets, insight time series, trust shares, and snapshots.
-
-<p align="center">
-  <img src="docs/images/trustops-agent-api-flow.svg" alt="TrustOps human and agent API flow showing callers, RBAC, audit, and composable skills" width="100%">
-</p>
-
-Server mode requires auth for non-health routes. API keys, OIDC, and SAML all
-resolve to the same tenant, user, role, and audit boundary. See
-[Server Auth](docs/SERVER_AUTH.md) and [Agent API](docs/api/AGENT_API.md).
-
-### Optional Agent Harness
-
-TrustOps does not require an LLM for connectors, evidence normalization,
-controls-as-code evaluation, framework mapping, scoring, snapshots, trust
-shares, or audit logs. Those stay deterministic and testable.
-
-The optional harness in `security_lakehouse.agents` can run in `rules_only`
-mode or compile a LangGraph posture-review flow when the `agents` extra is
-installed. Teams can point it at Ollama for a local proof of concept or at a
-model provider they configure themselves; model output proposes actions, while
-TrustOps APIs still enforce tenant, role, redaction, approval, idempotency, and
-audit boundaries. See [Agent Harness](docs/AGENT_HARNESS.md).
-
-## Useful Commands
+### Evaluate Evidence
 
 ```bash
 security-lakehouse validate --raw data/raw/security_events.jsonl
@@ -233,13 +151,9 @@ security-lakehouse assessment status --lake build/lakehouse
 security-lakehouse assessment tests --lake build/lakehouse
 security-lakehouse assessment violations --lake build/lakehouse
 security-lakehouse assessment snapshot --lake build/lakehouse --reason vendor_due_diligence
-curl -s 'http://127.0.0.1:8787/api/v1/posture/as-of?as_of=2026-05-20T17:00:00Z' | jq .
-security-lakehouse query --lake build/lakehouse "select * from control_posture order by risk_score desc"
-security-lakehouse repo audit https://github.com/OWNER/REPO --out build/repo-audit.jsonl
-TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN=... security-lakehouse repo governance-sync OWNER/REPO --out build/repo-governance.jsonl
 ```
 
-Connector examples:
+### Configure Connectors
 
 ```bash
 security-lakehouse connectors validate
@@ -255,44 +169,83 @@ security-lakehouse connectors sync \
   --fixture-dir tests/fixtures/github-governance
 ```
 
-Executable connector runners currently cover `github-security`,
-`aws-posture`, `okta-identity`, `google-workspace-identity`, `gcp-posture`,
-`azure-posture`, and `jira-ticketing`. Snowflake, ClickHouse, object storage,
-SIEM, and runtime-gateway entries are read-only lake contracts unless a direct
-runner is added.
+Executable connector runners currently cover GitHub security, AWS posture,
+Okta identity, Google Workspace identity, GCP posture, Azure posture, Jira
+ticketing, and Snowflake existing-lake reads. Other connector entries are
+read-only lake contracts or managed evidence boundaries. See
+[Connector And Access Model](docs/CONNECTORS.md).
 
-Workflow examples:
+### Run Workflow Automation
 
 ```bash
 security-lakehouse workflow list --lake build/lakehouse
 security-lakehouse workflow run --lake build/lakehouse --id <workflow_id>
 ```
 
-## Data Model
+Workflows are directed graphs: triggers, checks, and action nodes. Saved runs
+write audit-friendly results; external egress is guarded by allowlists and
+workflow policy.
 
-Raw evidence flows through bronze replay records, silver normalized security
-facts, gold posture/control/remediation outputs, point-in-time snapshots, and a
-local mart. SQLite is the default local artifact; Snowflake/Iceberg/Polaris and
-ClickHouse are the production evidence and telemetry paths. See
-[Data Model](docs/DATA_MODEL.md) and [Architecture](docs/ARCHITECTURE.md).
-
-## Verification
+### Use Headless Agents
 
 ```bash
-make smoke
-PYTHONPATH=src pytest -q
-npm --prefix app/web run typecheck
-npm --prefix app/web run build
+security-lakehouse agents posture-review --lake build/lakehouse --role read_only
+security-lakehouse agents soc-triage --lake build/lakehouse --role read_only
 ```
 
-The smoke target validates raw evidence, runs the pipeline, renders the console,
-and executes the regression suite.
+No LLM is required. The harness runs in `rules_only` mode by default. If a team
+configures a model provider, model output can propose actions, but TrustOps
+still enforces RBAC, redaction, approval, idempotency, and audit boundaries.
+
+For MCP clients pointed at a deployed server:
+
+```bash
+export TRUSTOPS_API_URL="https://trustops.example.com"
+export TRUSTOPS_API_KEY="..."
+trustops-mcp
+```
+
+MCP tools can list/create/get persisted agent runs and approve stored decisions
+through the authenticated `/api/v1/agent-runs` contract. See
+[Agent Harness](docs/AGENT_HARNESS.md).
+
+## Security And Trust Model
+
+TrustOps treats compliance evidence as sensitive operational data.
+
+| Control         | Default                                                                                                    |
+| --------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Auth**        | Server mode requires authentication for non-health routes. Local insecure mode is explicit for demos only. |
+| **Tenancy**     | Tenant-scoped lake paths and application-state rows; cross-tenant reads fail closed.                       |
+| **RBAC**        | API keys, OIDC, and SAML resolve to the same identity, role, and scopes.                                   |
+| **Secrets**     | Raw connector/API/model secrets are not stored in lake artifacts or returned through APIs.                 |
+| **Integrity**   | Raw evidence and snapshots carry hashes; snapshots are linked through an append-only ledger.               |
+| **Idempotency** | Connector sync, scheduler state, agent runs, and decision approvals are designed for safe retries.         |
+| **Sharing**     | Trust-center shares are scoped, redacted, expiring, and role-aware.                                        |
+| **Egress**      | External actions belong behind workflow policy and allowlists, not arbitrary agent output.                 |
+
+Docs:
+[Server Auth](docs/SERVER_AUTH.md),
+[Data Model](docs/DATA_MODEL.md),
+[Agent API](docs/api/AGENT_API.md),
+[Agent Harness](docs/AGENT_HARNESS.md).
+
+## Frameworks And Marks
+
+Framework names are rendered as neutral text labels. TrustOps does not bundle
+official certification marks, lookalike seals, regulator marks, or third-party
+product logos unless usage rights, attribution, owner, and review date are
+recorded in [Third-Party Asset Policy](docs/THIRD_PARTY_ASSETS.md).
+
+This avoids implying that TrustOps, a fixture company, or a demo environment is
+certified when it is not. See [Framework Coverage](docs/FRAMEWORK_COVERAGE.md)
+for source links, readiness gates, and roadmap.
 
 ## Repo Map
 
 ```text
-src/security_lakehouse/     CLI, pipeline, assessment engine, API, auth, server mode
-app/web/                    Next.js workbench
+src/security_lakehouse/     CLI, pipeline, assessment engine, API, auth, server, MCP
+app/web/                    Next.js TrustOps console
 data/                       sample evidence and JSON schemas
 connectors/                 source connector and access-boundary catalog
 controls/                   implemented control catalog and policy rules
@@ -303,3 +256,15 @@ docs/                       architecture, product walkthrough, coverage, API doc
 agent-skills/               guardrailed analyst skills for humans and agents
 tests/                      pipeline, API, auth, policy, connector, UI contract tests
 ```
+
+## Verification
+
+```bash
+make smoke
+PYTHONPATH=src pytest -q
+npm --prefix app/web run typecheck
+npm --prefix app/web run build
+```
+
+The smoke target validates raw evidence, runs the pipeline, renders the
+console, and executes the regression suite.
