@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-query";
 import { api, bootstrapAssessment, type SnapshotSummary } from "./client";
 import type {
+  AgentRun,
   Assessment,
   AssetRisk,
   ComplianceGraph,
@@ -33,6 +34,7 @@ import type {
   RemediationTask,
   EvidenceRequestItem,
   ControlExceptionItem,
+  CreateAgentRunPayload,
   Risk,
 } from "./types";
 
@@ -416,6 +418,46 @@ export function useAuditLog(opts?: {
 }
 
 export type { VerifyResult, TrackingEvent };
+
+export function useAgentRuns(opts?: Opts<AgentRun[]>) {
+  return useQuery({
+    queryKey: ["agent-runs"],
+    queryFn: () => api.agentRuns("?limit=25"),
+    staleTime: STALE,
+    refetchInterval: LIVE,
+    refetchOnWindowFocus: true,
+    ...opts,
+  });
+}
+
+export function useCreateAgentRunMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: CreateAgentRunPayload) => api.createAgentRun(payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["agent-runs"] }),
+  });
+}
+
+export function useApproveAgentDecisionMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      runId,
+      decisionIndex,
+      note = "",
+    }: {
+      runId: string;
+      decisionIndex: number;
+      note?: string;
+    }) => api.approveAgentDecision(runId, decisionIndex, note),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["agent-runs"] });
+      qc.invalidateQueries({ queryKey: ["remediation", "evidence-requests"] });
+      qc.invalidateQueries({ queryKey: ["remediation", "tasks"] });
+      qc.invalidateQueries({ queryKey: ["snapshots"] });
+    },
+  });
+}
 
 // --- remediation workflow ---
 
