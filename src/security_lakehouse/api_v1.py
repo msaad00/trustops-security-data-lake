@@ -124,6 +124,22 @@ _WRITABLE = {"/api/v1/snapshots": ["POST"]}
 # decorators and their ``Depends(_require_*)`` defaults in ``server_app``.
 EXTENDED_RESOURCES: list[JsonObject] = [
     {
+        "resource": "agent-runs",
+        "path": "/api/v1/agent-runs",
+        "kind": "collection",
+        "methods": ["GET", "POST"],
+        "scopes": ["read", "write"],
+        "query": ["limit", "harness", "status"],
+    },
+    {
+        "resource": "agent-runs",
+        "path": "/api/v1/agent-runs/{run_id}",
+        "kind": "singleton",
+        "methods": ["GET"],
+        "scopes": ["read"],
+        "path_params": ["run_id"],
+    },
+    {
         "resource": "remediation.tasks",
         "path": "/api/v1/remediation/tasks",
         "kind": "collection",

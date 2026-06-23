@@ -1,0 +1,217 @@
+"""Persisted agent harness run tests: DB, API, RBAC, and idempotency."""
+
+from __future__ import annotations
+
+import json
+from http import HTTPStatus
+from pathlib import Path
+
+import pytest
+
+pytest.importorskip("fastapi")
+pytest.importorskip("httpx")
+pytest.importorskip("sqlalchemy")
+pytest.importorskip("alembic")
+
+from fastapi.testclient import TestClient  # noqa: E402
+from sqlalchemy import inspect  # noqa: E402
+
+from security_lakehouse.db import agent_runs, migrate  # noqa: E402
+from security_lakehouse.db.base import create_engine_for, session_scope  # noqa: E402
+from security_lakehouse.db.repository import create_api_key, create_tenant, create_user  # noqa: E402
+from security_lakehouse.server_app import create_app  # noqa: E402
+from test_api_v1 import _seed_lake  # noqa: E402
+
+
+def _bearer(token: str) -> dict[str, str]:
+    return {"Authorization": f"Bearer {token}"}
+
+
+def _write_jsonl(path: Path, rows: list[dict[str, object]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(json.dumps(row, sort_keys=True) for row in rows) + "\n", encoding="utf-8")
+
+
+def _seed_gap(lake: Path) -> None:
+    _seed_lake(lake)
+    _write_jsonl(
+        lake / "gold" / "control_tests.jsonl",
+        [
+            {
+                "test_id": "test-soc2",
+                "control_id": "SOC2-CC6.1",
+                "framework": "SOC 2",
+                "owner": "security-platform",
+                "status": "needs_evidence",
+                "missing_evidence_types": ["identity.access_review"],
+                "stale_evidence_types": [],
+                "expired_evidence_types": ["mfa.status"],
+                "freshness_status": "expired",
+            }
+        ],
+    )
+
+
+def _provision(app, slug: str, roles: tuple[str, ...] = ("read_only", "contributor")) -> dict[str, str]:
+    tokens: dict[str, str] = {}
+    with session_scope(app.state.sessionmaker) as session:
+        tenant = create_tenant(session, slug=slug, name=slug.title())
+        for role in roles:
+            user = create_user(session, tenant_id=tenant.id, email=f"{role}@{slug}.test", role=role)
+            _key, token = create_api_key(session, tenant_id=tenant.id, user_id=user.id)
+            tokens[role] = token
+    return tokens
+
+
+@pytest.fixture
+def env(tmp_path: Path):
+    _seed_gap(tmp_path)
+    app = create_app(tmp_path)
+    client = TestClient(app)
+    tokens = _provision(app, "acme", roles=("read_only", "contributor", "security_admin"))
+    return app, client, tokens
+
+
+def test_migration_creates_agent_runs_table(tmp_path: Path) -> None:
+    migrate.upgrade(tmp_path)
+    engine = create_engine_for(tmp_path)
+    inspector = inspect(engine)
+    assert "agent_runs" in inspector.get_table_names()
+    columns = {col["name"] for col in inspector.get_columns("agent_runs")}
+    assert {"id", "tenant_id", "harness", "mode", "status", "input_hash", "evaluation_json"} <= columns
+    indexes = {ix["name"] for ix in inspector.get_indexes("agent_runs")}
+    assert "ix_agent_runs_tenant_harness_created" in indexes
+
+
+def test_agent_run_repository_round_trip(tmp_path: Path) -> None:
+    _seed_gap(tmp_path)
+    app = create_app(tmp_path)
+    with session_scope(app.state.sessionmaker) as session:
+        tenant = create_tenant(session, slug="acme", name="Acme")
+        row, created = agent_runs.run_and_persist_agent(
+            session,
+            tenant_id=tenant.id,
+            lake_dir=str(tmp_path),
+            harness="posture_review",
+            objective="review gaps",
+            role="read_only",
+            created_by="agent@acme.test",
+            idempotency_key="agent-run-1",
+        )
+        assert created is True
+        again, created_again = agent_runs.run_and_persist_agent(
+            session,
+            tenant_id=tenant.id,
+            lake_dir=str(tmp_path),
+            harness="posture_review",
+            objective="review gaps",
+            role="read_only",
+            created_by="agent@acme.test",
+            idempotency_key="agent-run-1",
+        )
+        assert created_again is False
+        assert again.id == row.id
+        data = agent_runs.agent_run_to_dict(row, include_state=True)
+        assert data["harness"] == "posture_review"
+        assert data["evaluation"]["ok"] is True
+        assert data["decisions"][0]["requires_approval"] is True
+        assert "lake_dir" not in data["state"]
+
+
+def test_agent_runs_require_auth(env) -> None:
+    _app, client, _tokens = env
+    assert client.get("/api/v1/agent-runs").status_code == HTTPStatus.UNAUTHORIZED
+
+
+def test_agent_run_api_create_list_get_and_idempotency(env) -> None:
+    _app, client, tokens = env
+    denied = client.post(
+        "/api/v1/agent-runs",
+        json={"harness": "posture_review"},
+        headers=_bearer(tokens["read_only"]),
+    )
+    assert denied.status_code == HTTPStatus.FORBIDDEN
+
+    body = {"harness": "posture_review", "objective": "review gaps", "idempotency_key": "retry-safe-1"}
+    created = client.post("/api/v1/agent-runs", json=body, headers=_bearer(tokens["contributor"]))
+    assert created.status_code == HTTPStatus.CREATED
+    run = created.json()["data"]
+    assert created.json()["meta"]["created"] is True
+    assert run["mode"] == "rules_only"
+    assert run["status"] == "completed"
+    assert run["evaluation"]["confidence"] == "high"
+    assert run["decisions"][0]["status"] == "proposed"
+    assert run["decisions"][0]["requires_approval"] is True
+    assert "lake_dir" not in run["state"]
+
+    retry = client.post("/api/v1/agent-runs", json=body, headers=_bearer(tokens["contributor"]))
+    assert retry.status_code == HTTPStatus.OK
+    assert retry.json()["meta"]["created"] is False
+    assert retry.json()["data"]["id"] == run["id"]
+
+    listed = client.get("/api/v1/agent-runs?harness=posture_review", headers=_bearer(tokens["contributor"]))
+    assert listed.status_code == HTTPStatus.OK
+    assert [row["id"] for row in listed.json()["data"]] == [run["id"]]
+
+    fetched = client.get(f"/api/v1/agent-runs/{run['id']}", headers=_bearer(tokens["contributor"]))
+    assert fetched.status_code == HTTPStatus.OK
+    assert fetched.json()["data"]["id"] == run["id"]
+
+
+def test_agent_run_rejects_role_escalation(env) -> None:
+    _app, client, tokens = env
+    response = client.post(
+        "/api/v1/agent-runs",
+        json={"harness": "posture_review", "role": "security_admin"},
+        headers=_bearer(tokens["contributor"]),
+    )
+    assert response.status_code == HTTPStatus.FORBIDDEN
+
+
+def test_agent_run_provider_metadata_does_not_expose_key_env(env, monkeypatch: pytest.MonkeyPatch) -> None:
+    _app, client, tokens = env
+    monkeypatch.setenv("TRUSTOPS_AGENT_PROVIDER", "openai")
+    monkeypatch.setenv("TRUSTOPS_AGENT_MODEL", "gpt-test")
+    monkeypatch.setenv("TRUSTOPS_AGENT_API_KEY_ENV", "TRUSTOPS_TEST_OPENAI_KEY")
+    monkeypatch.setenv("TRUSTOPS_TEST_OPENAI_KEY", "secret-test-value")
+
+    created = client.post(
+        "/api/v1/agent-runs",
+        json={"harness": "posture_review", "use_model": False},
+        headers=_bearer(tokens["contributor"]),
+    )
+
+    assert created.status_code == HTTPStatus.CREATED
+    text = json.dumps(created.json(), sort_keys=True)
+    assert "TRUSTOPS_TEST_OPENAI_KEY" not in text
+    assert "secret-test-value" not in text
+    assert created.json()["data"]["provider"]["configured"] is True
+
+
+def test_agent_run_tenant_isolation(tmp_path: Path) -> None:
+    _seed_gap(tmp_path)
+    app = create_app(tmp_path)
+    client = TestClient(app)
+    tokens_a = _provision(app, "acme")
+    tokens_b = _provision(app, "globex")
+
+    created = client.post(
+        "/api/v1/agent-runs",
+        json={"harness": "posture_review"},
+        headers=_bearer(tokens_a["contributor"]),
+    )
+    assert created.status_code == HTTPStatus.CREATED
+    run_id = created.json()["data"]["id"]
+
+    b_list = client.get("/api/v1/agent-runs", headers=_bearer(tokens_b["contributor"])).json()["data"]
+    assert b_list == []
+    b_get = client.get(f"/api/v1/agent-runs/{run_id}", headers=_bearer(tokens_b["contributor"]))
+    assert b_get.status_code == HTTPStatus.NOT_FOUND
+
+
+def test_agent_run_resource_is_discoverable(env) -> None:
+    _app, client, tokens = env
+    catalog = client.get("/api/v1", headers=_bearer(tokens["read_only"])).json()["data"]["resources"]
+    paths = {row["path"] for row in catalog}
+    assert "/api/v1/agent-runs" in paths
+    assert "/api/v1/agent-runs/{run_id}" in paths

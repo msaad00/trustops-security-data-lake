@@ -184,6 +184,34 @@ server-side RBAC, redacted reads, append-only audit events, and approval before
 agent-proposed writes. LangGraph is useful for branching, retries, multi-agent
 review, and long-running state, but it is not the source of compliance truth.
 
+## Persisted run contract
+
+Server mode persists harness runs in the application-state database:
+
+```bash
+curl -s -X POST "$TRUSTOPS_URL/api/v1/agent-runs" \
+  -H "authorization: Bearer $TRUSTOPS_API_KEY" \
+  -H "content-type: application/json" \
+  --data '{"harness":"posture_review","idempotency_key":"review-2026-06-22"}' | jq .
+```
+
+The response includes the run mode, deterministic evaluation, proposed actions,
+budget/provider metadata, and the sanitized run state. The raw lake path is not
+persisted in the state payload. Supplying the same tenant-scoped
+`idempotency_key` returns the previous run instead of rerunning the harness,
+which makes scheduler and agent retries safe.
+
+Supported harness values:
+
+- `posture_review`
+- `soc_triage`
+
+Creating a run requires write scope. The run reads with the caller's own role
+unless a more restrictive role is requested. API requests cannot provide raw
+model keys; optional model use reads only the server's configured provider
+environment and still records proposed actions for approval instead of
+executing writes.
+
 ## Non-negotiables
 
 Agents do not own:

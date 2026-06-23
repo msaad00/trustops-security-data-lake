@@ -31,6 +31,10 @@ EXCEPTION_STATUSES = ("active", "revoked", "expired")
 RISK_STATUSES = ("open", "mitigating", "accepted", "closed")
 RISK_LEVELS = ("low", "medium", "high", "critical")
 
+# Human/headless agent harness run records.
+AGENT_RUN_HARNESSES = ("posture_review", "soc_triage")
+AGENT_RUN_STATUSES = ("completed", "failed")
+
 
 def _uuid() -> str:
     return str(uuid.uuid4())
@@ -360,3 +364,43 @@ class PostureMetricPoint(Base):
     evidence_fresh_pct: Mapped[float] = mapped_column(nullable=False, default=0.0)
     remediation_open: Mapped[int] = mapped_column(nullable=False, default=0)
     remediation_overdue: Mapped[int] = mapped_column(nullable=False, default=0)
+
+
+class AgentRun(Base):
+    """A durable human/headless harness run.
+
+    The harness is intentionally operational state, not compliance truth. It
+    records the redacted inputs, proposed actions, deterministic evaluation,
+    and any non-fatal model errors so humans, schedulers, MCP tools, and the UI
+    can inspect the same run contract.
+    """
+
+    __tablename__ = "agent_runs"
+    __table_args__ = (
+        UniqueConstraint("tenant_id", "idempotency_key", name="uq_agent_runs_tenant_idempotency_key"),
+        Index("ix_agent_runs_tenant_harness_created", "tenant_id", "harness", "created_at"),
+        Index("ix_agent_runs_tenant_status", "tenant_id", "status"),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    harness: Mapped[str] = mapped_column(String(64), nullable=False)
+    objective: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    role: Mapped[str] = mapped_column(String(32), nullable=False)
+    mode: Mapped[str] = mapped_column(String(32), nullable=False, default="rules_only")
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="completed")
+    idempotency_key: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    input_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    provider_json: Mapped[str] = mapped_column(Text, nullable=False, default="{}")
+    budget_json: Mapped[str] = mapped_column(Text, nullable=False, default="{}")
+    evaluation_json: Mapped[str] = mapped_column(Text, nullable=False, default="{}")
+    decisions_json: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
+    state_json: Mapped[str] = mapped_column(Text, nullable=False, default="{}")
+    errors_json: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
+    created_by: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
