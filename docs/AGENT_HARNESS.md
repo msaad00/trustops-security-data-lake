@@ -215,6 +215,20 @@ Approval is idempotent. Retrying an already executed decision returns the stored
 execution result instead of creating another task, evidence request, or
 snapshot.
 
+MCP clients can call the same persisted-run contract when pointed at a deployed
+TrustOps API:
+
+```bash
+export TRUSTOPS_API_URL="https://trustops.example.com"
+export TRUSTOPS_API_KEY="..."
+trustops-mcp
+```
+
+The MCP tools `list_agent_runs`, `create_agent_run`, `get_agent_run`, and
+`approve_agent_decision` call `/api/v1/agent-runs*` over the authenticated API.
+They do not bypass RBAC, tenant isolation, data-readiness preflight,
+idempotency, approval state, or audit logging.
+
 Currently executable proposal actions:
 
 - `create_evidence_request`

@@ -18,7 +18,11 @@ SDK to be installed. Install it with ``pip install 'trustops[mcp]'`` and run the
 
 from __future__ import annotations
 
+import json
 import os
+import urllib.error
+import urllib.parse
+import urllib.request
 from http import HTTPStatus
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -38,6 +42,24 @@ def resolve_lake_dir() -> Path:
     return Path(os.environ.get("TRUSTOPS_LAKE", DEFAULT_LAKE)).expanduser().resolve()
 
 
+def resolve_api_base_url() -> str:
+    """Resolve the authenticated TrustOps API base URL for remote MCP tools."""
+    base_url = os.environ.get("TRUSTOPS_API_URL", "").strip().rstrip("/")
+    if not base_url:
+        raise ValueError("TRUSTOPS_API_URL is required for authenticated TrustOps MCP tools")
+    scheme = urllib.parse.urlparse(base_url).scheme
+    if scheme not in {"http", "https"}:
+        raise ValueError("TRUSTOPS_API_URL must use http or https")
+    return base_url
+
+
+def _api_key() -> str:
+    token = os.environ.get("TRUSTOPS_API_KEY", "").strip()
+    if not token:
+        raise ValueError("TRUSTOPS_API_KEY is required for authenticated TrustOps MCP tools")
+    return token
+
+
 def _get(path: str, lake: Path, **params: str) -> Any:
     """Run a v1 GET through the existing engine and unwrap the envelope ``data``.
 
@@ -51,6 +73,56 @@ def _get(path: str, lake: Path, **params: str) -> Any:
         errors = body.get("errors") or [{"detail": "request failed"}]
         raise ValueError(errors[0].get("detail", "request failed"))
     return body["data"]
+
+
+def _api_error_detail(payload: bytes) -> str:
+    try:
+        body = json.loads(payload.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return "request failed"
+    errors = body.get("errors") if isinstance(body, dict) else None
+    if isinstance(errors, list) and errors and isinstance(errors[0], dict):
+        return str(errors[0].get("detail") or errors[0].get("code") or "request failed")
+    detail = body.get("detail") if isinstance(body, dict) else None
+    return str(detail or "request failed")
+
+
+def _server_api_request(method: str, path: str, body: dict[str, Any] | None = None, **params: Any) -> JsonObject:
+    """Call the authenticated server API for DB-backed/headless MCP tools."""
+    query = {
+        key: str(value)
+        for key, value in params.items()
+        if value is not None and not (isinstance(value, str) and value == "")
+    }
+    url = f"{resolve_api_base_url()}{path}"
+    if query:
+        url = f"{url}?{urllib.parse.urlencode(query)}"
+    data = json.dumps(body or {}).encode("utf-8") if method.upper() != "GET" else None
+    request = urllib.request.Request(
+        url,
+        data=data,
+        method=method.upper(),
+        headers={
+            "accept": "application/json",
+            "authorization": f"Bearer {_api_key()}",
+            **({"content-type": "application/json"} if data is not None else {}),
+        },
+    )
+    timeout = float(os.environ.get("TRUSTOPS_API_TIMEOUT_SECONDS", "30"))
+    try:
+        with urllib.request.urlopen(request, timeout=max(1.0, min(timeout, 120.0))) as response:  # noqa: S310
+            payload = response.read()
+    except urllib.error.HTTPError as exc:
+        raise ValueError(f"TrustOps API request failed ({exc.code}): {_api_error_detail(exc.read())}") from exc
+    except urllib.error.URLError as exc:
+        raise ValueError("TrustOps API request failed: unreachable") from exc
+    try:
+        decoded = json.loads(payload.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("TrustOps API request failed: invalid JSON response") from exc
+    if not isinstance(decoded, dict):
+        raise ValueError("TrustOps API request failed: invalid response shape")
+    return decoded
 
 
 def build_server(lake_dir: Path | None = None) -> FastMCP:
@@ -141,6 +213,77 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         params) used by the HTTP API — the same contract these MCP tools wrap.
         """
         return api_v1.resource_catalog()
+
+    # ------------------------------------------------------------------
+    # Authenticated server tools — DB-backed harness operations.
+    #
+    # These call the deployed TrustOps server over HTTPS/HTTP using
+    # TRUSTOPS_API_URL and TRUSTOPS_API_KEY. They intentionally do not access
+    # the local lake directly, because persisted harness runs, approvals, RBAC,
+    # tenant isolation, and audit events live behind the server API boundary.
+    # ------------------------------------------------------------------
+
+    @mcp.tool()
+    def list_agent_runs(limit: int = 100, harness: str = "", status: str = "") -> JsonObject:
+        """List persisted human/headless agent harness runs through the authenticated API.
+
+        Requires ``TRUSTOPS_API_URL`` and ``TRUSTOPS_API_KEY``. Returns the full
+        v1 envelope so the caller can inspect `meta.count`, filters, and errors.
+        """
+        return _server_api_request("GET", "/api/v1/agent-runs", limit=limit, harness=harness, status=status)
+
+    @mcp.tool()
+    def create_agent_run(
+        harness: str = "posture_review",
+        objective: str = "",
+        role: str = "",
+        idempotency_key: str = "",
+        use_model: bool = False,
+        max_context_chars: int | None = None,
+        max_fact_items: int | None = None,
+        max_output_tokens: int | None = None,
+    ) -> JsonObject:
+        """Run and persist a governed agent harness through the authenticated API.
+
+        The server resolves the tenant/account lake, provider configuration, RBAC,
+        data-readiness preflight, and idempotency. Raw model keys are never sent
+        through this tool.
+        """
+        payload: dict[str, Any] = {
+            "harness": harness,
+            "objective": objective,
+            "use_model": use_model,
+        }
+        if role:
+            payload["role"] = role
+        if idempotency_key:
+            payload["idempotency_key"] = idempotency_key
+        if max_context_chars is not None:
+            payload["max_context_chars"] = max_context_chars
+        if max_fact_items is not None:
+            payload["max_fact_items"] = max_fact_items
+        if max_output_tokens is not None:
+            payload["max_output_tokens"] = max_output_tokens
+        return _server_api_request("POST", "/api/v1/agent-runs", payload)
+
+    @mcp.tool()
+    def get_agent_run(run_id: str) -> JsonObject:
+        """Inspect one persisted agent harness run through the authenticated API."""
+        return _server_api_request("GET", f"/api/v1/agent-runs/{urllib.parse.quote(run_id, safe='')}")
+
+    @mcp.tool()
+    def approve_agent_decision(run_id: str, decision_index: int, note: str = "") -> JsonObject:
+        """Approve one stored harness decision and execute its allowlisted TrustOps write.
+
+        Execution is idempotent server-side: retrying an already executed
+        decision returns the stored execution result instead of duplicating work.
+        """
+        encoded_run = urllib.parse.quote(run_id, safe="")
+        return _server_api_request(
+            "POST",
+            f"/api/v1/agent-runs/{encoded_run}/decisions/{decision_index}/approve",
+            {"note": note},
+        )
 
     # ------------------------------------------------------------------
     # Write tools — lake-backed actions an agent can take, not just read.
