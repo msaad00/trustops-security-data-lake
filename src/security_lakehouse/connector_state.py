@@ -173,7 +173,7 @@ def _missing_required_config(
     if "token" in credential_type:
         return ["token"] if not _has_value(credentials, "token") else []
     if "scoped_user" in credential_type:
-        return [field for field in ("host", "user", "password") if not _has_value(credentials, field)]
+        return [field for field in ("host", "token") if not _has_value(credentials, field)]
     if "key_pair" in credential_type:
         return [field for field in ("account", "user", "private_key") if not _has_value(credentials, field)]
     if "local" in credential_type:

@@ -45,7 +45,7 @@ repo inventory before requesting credentials.
 Run the authenticated governance connector when those gaps matter:
 
 ```bash
-GITHUB_TOKEN=... security-lakehouse repo governance-sync OWNER/REPO --out build/repo-governance.jsonl
+TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN=... security-lakehouse repo governance-sync OWNER/REPO --out build/repo-governance.jsonl
 security-lakehouse validate --raw build/repo-governance.jsonl
 ```
 

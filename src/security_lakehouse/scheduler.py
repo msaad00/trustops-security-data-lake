@@ -138,7 +138,7 @@ def _scheduled_from_connectors(lake_dir: str | Path) -> list[ScheduledConnector]
                 period=period,
                 repo=options.get("repo"),
                 fixture_dir=options.get("fixture_dir"),
-                token_env=str(options.get("token_env") or "GITHUB_TOKEN"),
+                token_env=str(options.get("token_env") or "__provider_default__"),
                 materialize=bool(options.get("materialize", True)),
             )
         )

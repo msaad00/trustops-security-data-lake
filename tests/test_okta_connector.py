@@ -117,7 +117,7 @@ def test_okta_connector_sync_requires_enabled_connector(tmp_path: Path) -> None:
 def test_okta_connector_sync_without_fixture_or_creds_errors(tmp_path: Path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
     monkeypatch.delenv("OKTA_ORG_URL", raising=False)
     monkeypatch.delenv("OKTA_API_TOKEN", raising=False)
-    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    monkeypatch.delenv("__provider_default__", raising=False)
     append_config_event(tmp_path, connector_id="okta-identity", state="enabled", actor="a")
     with pytest.raises(ConnectorSyncError, match="requires --fixture-dir"):
         run_connector_sync(tmp_path, connector_id="okta-identity")

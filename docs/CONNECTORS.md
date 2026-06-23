@@ -86,11 +86,11 @@ security-lakehouse connectors sync \
   --fixture-dir tests/fixtures/github-governance
 ```
 
-For live collection, omit `--fixture-dir` and provide a read-only token through
-the selected token environment variable:
+For live GitHub collection, omit `--fixture-dir` and provide a GitHub App
+installation token through the selected token environment variable:
 
 ```bash
-GITHUB_TOKEN=... security-lakehouse connectors sync \
+TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN=... security-lakehouse connectors sync \
   --lake build/lakehouse \
   --connector-id github-security \
   --repo OWNER/REPO
@@ -114,12 +114,13 @@ security-lakehouse connectors sync \
 
 For live Snowflake collection, install the Snowflake Python connector and use a
 least-privilege role with `USAGE` on warehouse/database/schema and `SELECT` on
-the evidence views. TrustOps only issues `SELECT * FROM <view>` reads:
+the evidence views. Use an OAuth token or an explicit `--token-env` provider
+secret; TrustOps only issues `SELECT * FROM <view>` reads:
 
 ```bash
 SNOWFLAKE_ACCOUNT=... \
 SNOWFLAKE_USER=trustops_reader \
-SNOWFLAKE_PASSWORD=... \
+SNOWFLAKE_OAUTH_TOKEN=... \
 SNOWFLAKE_WAREHOUSE=TRUSTOPS_READ_WH \
 SNOWFLAKE_DATABASE=TRUSTOPS \
 SNOWFLAKE_SCHEMA=EVIDENCE \
@@ -166,12 +167,12 @@ Repository evidence has two concrete collection paths:
 
 ```bash
 security-lakehouse repo audit https://github.com/OWNER/REPO --out build/repo-audit.jsonl
-GITHUB_TOKEN=... security-lakehouse repo governance-sync OWNER/REPO --out build/repo-governance.jsonl
+TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN=... security-lakehouse repo governance-sync OWNER/REPO --out build/repo-governance.jsonl
 ```
 
 The public audit path requires no credentials. The governance sync path uses a
-read-only token or fixture bundle for private branch rules, collaborators,
-teams, workflow permissions, and security-setting summaries.
+GitHub App installation token or fixture bundle for private branch rules,
+collaborators, teams, workflow permissions, and security-setting summaries.
 
 The validator rejects:
 

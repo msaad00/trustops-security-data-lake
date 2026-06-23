@@ -64,19 +64,19 @@ from security_lakehouse.validation import validate_raw_events
 
 CONNECTOR_RAW_FILE = "raw/connector_events.jsonl"
 
-# Default ``token_env`` for the CLI sync entrypoint. It is the GitHub PAT var
-# because repo-governance is the default connector; every other connector must
-# NOT silently read this var, or an unset provider token would ship the GitHub
-# PAT as an auth header to a third-party host (Okta/Jira/Workspace).
-DEFAULT_TOKEN_ENV = "GITHUB_TOKEN"
+# Default ``token_env`` for the CLI sync entrypoint. Provider-specific
+# installation or OAuth token environment variables are used unless an operator
+# explicitly passes ``--token-env``.
+DEFAULT_TOKEN_ENV = "__provider_default__"
+GITHUB_APP_INSTALLATION_TOKEN_ENV = "TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN"
 
 
 def _resolve_provider_token(token_env: str, provider_env: str, env: dict[str, str]) -> str | None:
-    """Resolve a third-party token without leaking the default GitHub PAT.
+    """Resolve a third-party source token without cross-provider reuse.
 
-    An explicit ``--token-env`` override (anything other than the GitHub
-    default) wins; otherwise the provider-specific variable is used. The
-    GitHub default is never read for a non-GitHub connector.
+    An explicit ``--token-env`` override wins; otherwise the provider-specific
+    variable is used. The generic default is never read for a connector, so one
+    source credential cannot silently become another source's auth header.
     """
     if token_env != DEFAULT_TOKEN_ENV:
         explicit = env.get(token_env)
@@ -117,10 +117,11 @@ JIRA_BASE_URL_ENV = "JIRA_BASE_URL"
 JIRA_EMAIL_ENV = "JIRA_EMAIL"
 
 # Environment variables carrying Snowflake connection metadata for read-only
-# evidence-lake collection. The credential resolves from SNOWFLAKE_PASSWORD by
-# default, or an explicit ``--token-env`` override.
+# evidence-lake collection. The credential resolves from SNOWFLAKE_OAUTH_TOKEN
+# by default, or an explicit ``--token-env`` override.
 SNOWFLAKE_ACCOUNT_ENV = "SNOWFLAKE_ACCOUNT"
 SNOWFLAKE_USER_ENV = "SNOWFLAKE_USER"
+SNOWFLAKE_OAUTH_TOKEN_ENV = "SNOWFLAKE_OAUTH_TOKEN"
 SNOWFLAKE_WAREHOUSE_ENV = "SNOWFLAKE_WAREHOUSE"
 SNOWFLAKE_DATABASE_ENV = "SNOWFLAKE_DATABASE"
 SNOWFLAKE_SCHEMA_ENV = "SNOWFLAKE_SCHEMA"
@@ -248,7 +249,8 @@ ConnectorBuilder = Callable[[SyncInputs], list[dict[str, Any]]]
 def _build_github(inputs: SyncInputs) -> list[dict[str, Any]]:
     if not inputs.repo:
         raise ValueError("github-security sync requires --repo")
-    return sync_repo_governance(inputs.repo, fixture_dir=inputs.fixture_dir, token_env=inputs.token_env)
+    token_env = GITHUB_APP_INSTALLATION_TOKEN_ENV if inputs.token_env == DEFAULT_TOKEN_ENV else inputs.token_env
+    return sync_repo_governance(inputs.repo, fixture_dir=inputs.fixture_dir, token_env=token_env)
 
 
 def _build_okta(inputs: SyncInputs) -> list[dict[str, Any]]:
@@ -461,17 +463,18 @@ def _collect_snowflake(
         client = SnowflakeFixtureClient(fixture_dir, account=account or "fixture-snowflake")
     else:
         user = env.get(SNOWFLAKE_USER_ENV)
-        credential = _resolve_provider_token(token_env, "SNOWFLAKE_PASSWORD", env)
+        credential = _resolve_provider_token(token_env, SNOWFLAKE_OAUTH_TOKEN_ENV, env)
         if not account or not user or not credential:
             raise ValueError(
                 "snowflake-evidence-lake sync requires --fixture-dir, or "
-                f"{SNOWFLAKE_ACCOUNT_ENV} plus {SNOWFLAKE_USER_ENV} and a read-only credential "
-                "(SNOWFLAKE_PASSWORD or --token-env)"
+                f"{SNOWFLAKE_ACCOUNT_ENV} plus {SNOWFLAKE_USER_ENV} and a read-only OAuth token "
+                f"({SNOWFLAKE_OAUTH_TOKEN_ENV} or --token-env)"
             )
         params = {
             "account": account,
             "user": user,
-            "password": credential,
+            "authenticator": "oauth",
+            "token": credential,
             "warehouse": env.get(SNOWFLAKE_WAREHOUSE_ENV),
             "database": env.get(SNOWFLAKE_DATABASE_ENV),
             "schema": env.get(SNOWFLAKE_SCHEMA_ENV),

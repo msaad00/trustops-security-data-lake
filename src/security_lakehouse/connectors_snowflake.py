@@ -46,8 +46,9 @@ class SnowflakeClient:
 
     The connector is imported lazily so TrustOps remains lightweight unless a
     user opts into live Snowflake collection. Authentication supports the
-    Snowflake Python connector's standard keyword arguments passed by the
-    runner (account, user, password/token, warehouse, database, schema, role).
+    Snowflake Python connector's standard OAuth keyword arguments passed by the
+    runner (account, user, authenticator, token, warehouse, database, schema,
+    role).
     """
 
     def __init__(self, *, query_params: dict[str, Any], views: dict[str, str] | None = None) -> None:

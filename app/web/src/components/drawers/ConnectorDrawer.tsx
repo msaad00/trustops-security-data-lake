@@ -176,14 +176,13 @@ const fallbackFieldsFor = (credentialType: string): FieldDef[] => {
       },
       {
         name: "user",
-        label: "User",
+        label: "Read-only user",
         placeholder: "read-only user",
-        required: true,
       },
       {
-        name: "password",
-        label: "Password",
-        placeholder: "paste password...",
+        name: "token",
+        label: "Scoped access token",
+        placeholder: "paste scoped token...",
         secret: true,
         required: true,
       },
@@ -353,7 +352,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
         !auditor && (
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-xs text-muted">
-              Credentials hashed to a fingerprint server-side; raw secret never
+              Access secret hashed to a fingerprint server-side; raw value never
               persisted.
             </span>
             <div className="flex flex-wrap gap-2">
@@ -436,7 +435,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
         {!auditor && (
           <section className="rounded-xl border border-line p-3">
             <div className="text-xs font-black uppercase tracking-wide text-muted">
-              Credentials · {connector.credential_type.replace(/_/g, " ")}
+              Scoped access · {connector.credential_type.replace(/_/g, " ")}
             </div>
             <div className="mt-2 grid gap-2">
               {credentialFields.map((field) => (
