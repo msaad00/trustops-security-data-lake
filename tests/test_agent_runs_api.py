@@ -91,7 +91,7 @@ def test_agent_run_repository_round_trip(tmp_path: Path) -> None:
         row, created = agent_runs.run_and_persist_agent(
             session,
             tenant_id=tenant.id,
-            lake_dir=str(tmp_path),
+            lake_dir=tmp_path,
             harness="posture_review",
             objective="review gaps",
             role="read_only",
@@ -102,7 +102,7 @@ def test_agent_run_repository_round_trip(tmp_path: Path) -> None:
         again, created_again = agent_runs.run_and_persist_agent(
             session,
             tenant_id=tenant.id,
-            lake_dir=str(tmp_path),
+            lake_dir=tmp_path,
             harness="posture_review",
             objective="review gaps",
             role="read_only",
@@ -114,6 +114,7 @@ def test_agent_run_repository_round_trip(tmp_path: Path) -> None:
         data = agent_runs.agent_run_to_dict(row, include_state=True)
         assert data["harness"] == "posture_review"
         assert data["evaluation"]["ok"] is True
+        assert data["state"]["data_readiness"]["status"] == "lake_ready"
         assert data["decisions"][0]["requires_approval"] is True
         assert "lake_dir" not in data["state"]
 
@@ -139,6 +140,8 @@ def test_agent_run_api_create_list_get_and_idempotency(env) -> None:
     assert created.json()["meta"]["created"] is True
     assert run["mode"] == "rules_only"
     assert run["status"] == "completed"
+    assert run["state"]["data_readiness"]["status"] == "lake_ready"
+    assert run["state"]["data_readiness"]["next_action"] == "use_existing_security_data_lake"
     assert run["evaluation"]["confidence"] == "high"
     assert run["decisions"][0]["status"] == "proposed"
     assert run["decisions"][0]["requires_approval"] is True
@@ -215,3 +218,20 @@ def test_agent_run_resource_is_discoverable(env) -> None:
     paths = {row["path"] for row in catalog}
     assert "/api/v1/agent-runs" in paths
     assert "/api/v1/agent-runs/{run_id}" in paths
+
+
+def test_agent_run_persists_needs_ingestion_when_lake_is_empty(tmp_path: Path) -> None:
+    app = create_app(tmp_path)
+    client = TestClient(app)
+    tokens = _provision(app, "acme")
+
+    created = client.post(
+        "/api/v1/agent-runs",
+        json={"harness": "soc_triage"},
+        headers=_bearer(tokens["contributor"]),
+    )
+
+    assert created.status_code == HTTPStatus.CREATED
+    readiness = created.json()["data"]["state"]["data_readiness"]
+    assert readiness["status"] == "needs_ingestion"
+    assert readiness["missing_required_artifacts"] == ["silver.normalized_events"]

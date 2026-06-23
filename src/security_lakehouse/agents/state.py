@@ -26,6 +26,7 @@ class AgentRunState(TypedDict, total=False):
     role: str
     mode: AgentMode
     objective: str
+    data_readiness: dict[str, Any]
     posture: dict[str, Any]
     evidence_gaps: list[dict[str, Any]]
     alerts: list[dict[str, Any]]

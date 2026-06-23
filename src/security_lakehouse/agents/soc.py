@@ -12,6 +12,7 @@ from security_lakehouse.agents.model_client import ModelClientError, call_model_
 from security_lakehouse.agents.model_contract import SOC_TRIAGE_TOOL_CALLS, build_model_context, validate_model_output
 from security_lakehouse.agents.providers import ModelProviderConfig, provider_from_env
 from security_lakehouse.agents.state import AgentDecision, AgentRunState
+from security_lakehouse.agents.tools import assess_data_readiness
 from security_lakehouse.data_policy import redact_payload
 from security_lakehouse.io import read_jsonl
 
@@ -128,6 +129,7 @@ def run_soc_triage(
         "mode": "rules_only",
         "model_provider": provider.public_dict(),
         "agent_budget": budget.public_dict(),
+        "data_readiness": assess_data_readiness(lake_dir, role=role, harness="soc_triage"),
         "alerts": alerts,
         "decisions": decisions,
         "errors": [],
