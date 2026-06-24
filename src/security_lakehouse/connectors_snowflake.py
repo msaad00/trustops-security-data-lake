@@ -16,6 +16,7 @@ Two clients sit behind one interface:
 
 from __future__ import annotations
 
+import os
 import re
 from collections.abc import Iterable
 from datetime import UTC, datetime
@@ -34,6 +35,7 @@ DEFAULT_VIEWS = {
     "asset_risk": "TRUSTOPS_ASSET_RISK",
     "evidence_bundles": "TRUSTOPS_EVIDENCE_BUNDLES",
 }
+VIEW_PURPOSES = tuple(DEFAULT_VIEWS)
 
 AUDIT_CONTROLS = ["SOC2-CC7.2", "ISO27001-A.8.16"]
 CONTROL_POSTURE_CONTROLS = ["SOC2-CC6.1", "SOC2-CC7.2"]
@@ -75,6 +77,25 @@ class SnowflakeClient:
 
     def evidence_bundles(self) -> list[dict[str, Any]]:
         return self._select_view("evidence_bundles")
+
+    def probe(self) -> dict[str, Any]:
+        """Run lightweight read checks for the configured Snowflake views."""
+        checks: list[dict[str, Any]] = []
+        context: dict[str, Any] = {}
+        with self._connector.connect(**self.query_params) as conn:  # pragma: no cover - live Snowflake only
+            cursor = conn.cursor()
+            try:
+                context = _connection_context(cursor)
+                for purpose in VIEW_PURPOSES:
+                    view = _safe_identifier(self.views[purpose])
+                    checks.append(_view_probe_check(cursor, purpose=purpose, view=view))
+            finally:
+                cursor.close()
+        return {
+            "ok": all(check["ok"] for check in checks),
+            "context": context,
+            "views": checks,
+        }
 
     def _select_view(self, key: str) -> list[dict[str, Any]]:
         view = _safe_identifier(self.views[key])
@@ -146,6 +167,82 @@ def collect_snowflake_evidence(
         if event:
             rows.append(event)
     return rows
+
+
+def probe_snowflake_access(
+    *,
+    credentials: dict[str, Any],
+    options: dict[str, Any],
+    env: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Validate Snowflake read scope without collecting evidence.
+
+    The probe uses either browser SSO (``credential_ref=externalbrowser``) or a
+    named OAuth token environment variable. It returns object names, row counts,
+    and sanitized diagnostics only; raw credential material is never returned.
+    """
+    environment = env or os.environ
+    query_params = _probe_query_params(credentials=credentials, options=options, env=environment)
+    views = {key: str(options.get(key) or default) for key, default in DEFAULT_VIEWS.items()}
+    try:
+        result = SnowflakeClient(query_params=query_params, views=views).probe()
+    except Exception as exc:  # pragma: no cover - exercised with the live driver
+        return {
+            "ok": False,
+            "context": {},
+            "views": [
+                {
+                    "purpose": key,
+                    "view": view,
+                    "ok": False,
+                    "row_count": None,
+                    "error": _snowflake_error_message(exc),
+                }
+                for key, view in views.items()
+            ],
+        }
+    return result
+
+
+def _probe_query_params(
+    *,
+    credentials: dict[str, Any],
+    options: dict[str, Any],
+    env: dict[str, str],
+) -> dict[str, Any]:
+    account = str(credentials.get("account") or "").strip()
+    user = str(credentials.get("user") or "").strip()
+    if not account or not user:
+        raise ValueError("Snowflake probe requires account and user")
+
+    credential_ref = str(
+        credentials.get("credential_ref") or credentials.get("oauth_token_ref") or credentials.get("token_env") or ""
+    ).strip()
+    oauth_token = str(credentials.get("oauth_token") or credentials.get("token") or "").strip() or None
+    authenticator = str(options.get("authenticator") or credentials.get("authenticator") or "").strip()
+
+    if credential_ref and credential_ref.lower() != "externalbrowser":
+        oauth_token = env.get(credential_ref)
+        if not oauth_token:
+            raise ValueError(f"Snowflake credential_ref environment variable {credential_ref!r} is not set")
+        authenticator = authenticator or "oauth"
+    elif credential_ref.lower() == "externalbrowser":
+        authenticator = authenticator or "externalbrowser"
+    elif oauth_token:
+        authenticator = authenticator or "oauth"
+    else:
+        authenticator = authenticator or "externalbrowser"
+
+    return {
+        "account": account,
+        "user": user,
+        "authenticator": authenticator,
+        "token": oauth_token,
+        "warehouse": str(options.get("warehouse") or "").strip() or None,
+        "database": str(options.get("database") or "").strip() or None,
+        "schema": str(options.get("schema") or "").strip() or None,
+        "role": str(options.get("role") or credentials.get("role") or "").strip() or None,
+    }
 
 
 def _audit_event(account: str, row: dict[str, Any], collected_at: datetime, tenant_id: str) -> dict[str, Any] | None:
@@ -399,6 +496,51 @@ def _slug(value: Any) -> str:
 def _stable_suffix(*, account: str, signal: str, asset_id: str, dedupe_key: str | None) -> str:
     seed = f"{account}:{signal}:{dedupe_key or asset_id}".lower()
     return re.sub(r"[^a-z0-9_.:-]+", "-", seed).strip("-")[:96] or "snowflake"
+
+
+def _connection_context(cursor: Any) -> dict[str, Any]:
+    cursor.execute("SELECT CURRENT_ROLE(), CURRENT_WAREHOUSE(), CURRENT_DATABASE(), CURRENT_SCHEMA()")
+    row = cursor.fetchone() or (None, None, None, None)
+    return {
+        "role": row[0],
+        "warehouse": row[1],
+        "database": row[2],
+        "schema": row[3],
+    }
+
+
+def _view_probe_check(cursor: Any, *, purpose: str, view: str) -> dict[str, Any]:
+    try:
+        cursor.execute(f"SELECT COUNT(*) FROM {view}")  # noqa: S608 - identifier is strictly validated above
+        row = cursor.fetchone() or (0,)
+        return {
+            "purpose": purpose,
+            "view": view,
+            "ok": True,
+            "row_count": int(row[0] or 0),
+            "error": None,
+        }
+    except Exception as exc:  # pragma: no cover - live Snowflake only
+        return {
+            "purpose": purpose,
+            "view": view,
+            "ok": False,
+            "row_count": None,
+            "error": _snowflake_error_message(exc),
+        }
+
+
+def _snowflake_error_message(exc: Exception) -> str:
+    text = str(exc).lower()
+    if "does not exist" in text or "not exist" in text:
+        return "object not found or not granted to the active role"
+    if "not authorized" in text or "insufficient privileges" in text or "privilege" in text:
+        return "active role is missing required read privileges"
+    if "warehouse" in text and ("suspended" in text or "does not exist" in text):
+        return "warehouse is unavailable or not granted to the active role"
+    if "timeout" in text or "timed out" in text:
+        return "Snowflake probe timed out"
+    return exc.__class__.__name__
 
 
 def _safe_identifier(value: str) -> str:
