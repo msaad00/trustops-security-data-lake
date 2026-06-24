@@ -72,6 +72,21 @@ function emptyEditor(): Editor {
   };
 }
 
+const STARTER_TEMPLATE =
+  WORKFLOW_TEMPLATES.find(
+    (template) => template.id === "evidence-missing-alert",
+  ) ?? WORKFLOW_TEMPLATES[0];
+
+function starterEditor(catalog: ActionSpec[] = []): Editor {
+  return STARTER_TEMPLATE
+    ? fromTemplate(STARTER_TEMPLATE, catalog)
+    : emptyEditor();
+}
+
+function firstNodeId(editor: Editor): string | null {
+  return editor.nodes[0]?.id ?? null;
+}
+
 function edgeTone(condition: WorkflowCondition) {
   if (condition === "passed") return "#16b364";
   if (condition === "failed") return "#d92d20";
@@ -281,8 +296,10 @@ export default function AutomationPage() {
   const save = useSaveWorkflow();
   const run = useRunWorkflow();
   const [activeId, setActiveId] = useState<string>(NEW_WORKFLOW_ID);
-  const [editor, setEditor] = useState<Editor>(emptyEditor);
-  const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const [editor, setEditor] = useState<Editor>(() => starterEditor());
+  const [selectedNode, setSelectedNode] = useState<string | null>(() =>
+    firstNodeId(starterEditor()),
+  );
   const [templatesOpen, setTemplatesOpen] = useState(false);
   const [lastRun, setLastRun] = useState<WorkflowRun | null>(null);
   const [starterLoaded, setStarterLoaded] = useState(false);
@@ -296,22 +313,25 @@ export default function AutomationPage() {
     if (activeId === NEW_WORKFLOW_ID) return;
     const w = (workflows.data ?? []).find((x) => x.workflow_id === activeId);
     if (w) {
-      setEditor(fromWorkflow(w, catalog.data ?? []));
+      const next = fromWorkflow(w, catalog.data ?? []);
+      setEditor(next);
+      setSelectedNode(firstNodeId(next));
       setLastRun(null);
     }
   }, [activeId, workflows.data, catalog.data]);
 
   useEffect(() => {
-    if (starterLoaded || (catalog.data ?? []).length === 0) return;
+    if (starterLoaded) return;
     const firstWorkflow = (workflows.data ?? [])[0];
     if (firstWorkflow) {
       setActiveId(firstWorkflow.workflow_id);
       setStarterLoaded(true);
       return;
     }
-    const starter = WORKFLOW_TEMPLATES[0];
-    if (starter) {
-      setEditor(fromTemplate(starter, catalog.data ?? []));
+    if (STARTER_TEMPLATE) {
+      const next = starterEditor(catalog.data ?? []);
+      setEditor(next);
+      setSelectedNode(firstNodeId(next));
       setStarterLoaded(true);
     }
   }, [catalog.data, workflows.data, starterLoaded]);
@@ -382,21 +402,23 @@ export default function AutomationPage() {
   }, []);
 
   const loadTemplate = (template: WorkflowTemplate) => {
-    setEditor(fromTemplate(template, catalog.data ?? []));
+    const next = fromTemplate(template, catalog.data ?? []);
+    setEditor(next);
     setActiveId(NEW_WORKFLOW_ID);
     setStarterLoaded(true);
     setLastRun(null);
-    setSelectedNode(null);
+    setSelectedNode(firstNodeId(next));
     flash(`Loaded "${template.name}" — save to persist.`);
   };
 
   const startNewWorkflow = () => {
+    const next = starterEditor(catalog.data ?? []);
     setActiveId(NEW_WORKFLOW_ID);
-    setEditor(emptyEditor());
+    setEditor(next);
     setStarterLoaded(true);
     setLastRun(null);
-    setSelectedNode(null);
-    flash("New blank workflow opened.");
+    setSelectedNode(firstNodeId(next));
+    flash("Starter workflow opened.");
   };
 
   const persist = async () => {
@@ -459,7 +481,7 @@ export default function AutomationPage() {
         actions={
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <Button variant="primary" onClick={startNewWorkflow}>
-              <Plus className="h-4 w-4" /> New
+              <Plus className="h-4 w-4" /> Starter
             </Button>
             <select
               value={activeId === NEW_WORKFLOW_ID ? "" : activeId}

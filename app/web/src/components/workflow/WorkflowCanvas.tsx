@@ -216,6 +216,20 @@ function NodeCard({ data, selected }: NodeProps<FlowNode>) {
 
 const nodeTypes: NodeTypes = { trustops: NodeCard };
 
+function inferKind(nodeType: string): NodeData["kind"] {
+  if (nodeType.startsWith("trigger.")) return "trigger";
+  if (nodeType.startsWith("check.")) return "check";
+  return "action";
+}
+
+function fallbackLabel(nodeType: string): string {
+  const [, name = nodeType] = nodeType.split(".");
+  return name
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 // ---------------------------------------------------------------------------
 // Empty / onboarding state overlay
 // ---------------------------------------------------------------------------
@@ -227,10 +241,12 @@ function EmptyCanvas({ onOpenTemplates }: { onOpenTemplates?: () => void }) {
         <Play className="h-6 w-6 text-muted" />
       </div>
       <div>
-        <div className="text-sm font-black text-ink">Canvas is empty</div>
+        <div className="text-sm font-black text-ink">
+          Start from a workflow template
+        </div>
         <div className="mt-0.5 text-xs text-muted">
-          Start from a template or add the first trigger, then connect checks
-          and actions into a runnable path.
+          Load a proven trigger, check, and action path before saving a new
+          automation.
         </div>
       </div>
       {onOpenTemplates && (
@@ -322,13 +338,14 @@ export function toFlowNode(
   node: WorkflowNode,
   action: ActionSpec | undefined,
 ): FlowNode {
+  const fallbackKind = inferKind(node.node_type);
   return {
     id: node.id,
     type: "trustops",
     position: node.position ?? { x: 0, y: 0 },
     data: {
-      label: action?.label ?? node.node_type,
-      kind: (action?.kind ?? "action") as NodeData["kind"],
+      label: action?.label ?? fallbackLabel(node.node_type),
+      kind: (action?.kind ?? fallbackKind) as NodeData["kind"],
       node_type: node.node_type,
       params: node.params ?? {},
     },
@@ -439,8 +456,14 @@ export function WorkflowCanvas({
       ...node,
       data: {
         ...node.data,
-        kind: byType.get(node.data.node_type)?.kind ?? node.data.kind,
-        label: byType.get(node.data.node_type)?.label ?? node.data.label,
+        kind:
+          byType.get(node.data.node_type)?.kind ??
+          node.data.kind ??
+          inferKind(node.data.node_type),
+        label:
+          byType.get(node.data.node_type)?.label ??
+          node.data.label ??
+          fallbackLabel(node.data.node_type),
       },
     }));
   }, [nodes, catalog]);
