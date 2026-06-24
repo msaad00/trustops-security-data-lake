@@ -23,7 +23,8 @@ Resources:
   TrustOpsPostureReadOnlyRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Ref RoleName
+      RoleName:
+        Ref: RoleName
       Description: Read-only role for TrustOps AWS IAM posture evidence collection.
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
@@ -31,11 +32,13 @@ Resources:
           - Sid: TrustOpsAssumeRole
             Effect: Allow
             Principal:
-              AWS: !Ref TrustedPrincipalArn
+              AWS:
+                Ref: TrustedPrincipalArn
             Action: sts:AssumeRole
             Condition:
               StringEquals:
-                sts:ExternalId: !Ref ExternalId
+                sts:ExternalId:
+                  Ref: ExternalId
       Policies:
         - PolicyName: TrustOpsPostureReadOnly
           PolicyDocument:
@@ -53,4 +56,7 @@ Resources:
 Outputs:
   RoleArn:
     Description: ARN to configure as the AWS posture connector's read-only role.
-    Value: !GetAtt TrustOpsPostureReadOnlyRole.Arn
+    Value:
+      Fn::GetAtt:
+        - TrustOpsPostureReadOnlyRole
+        - Arn
