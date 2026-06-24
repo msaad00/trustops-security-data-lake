@@ -2,11 +2,12 @@
 
 Three install surfaces — pick the one that fits your blast radius.
 
-| Surface             | When to use                                                 | Command                                                                                      |
-| ------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| **Python wheel**    | Local demos, single laptop, contributor onboarding          | `pip install trustops-security-data-lake && security-lakehouse serve --lake build/lakehouse` |
-| **Container image** | CI, Docker Compose, single-host servers                     | `docker run -p 8787:8787 -v $PWD/build/lakehouse:/lake ghcr.io/msaad00/trustops:latest`      |
-| **Helm + EKS**      | Production self-hosted, customer-data-residency requirement | See [Helm chart](helm/trustops/) + [EKS reference IaC](eks-terraform/) below                 |
+| Surface             | When to use                                                 | Command                                                                                        |
+| ------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Python wheel**    | Local demos, single laptop, contributor onboarding          | `pip install trustops-security-data-lake && security-lakehouse serve --lake build/lakehouse`   |
+| **Container image** | CI, Docker Compose, single-host servers                     | `docker run -p 8787:8787 -v $PWD/build/lakehouse:/lake ghcr.io/msaad00/trustops:latest`        |
+| **Helm + EKS**      | Production self-hosted, customer-data-residency requirement | See [Helm chart](helm/trustops/) + [EKS reference IaC](eks-terraform/) below                   |
+| **Snowflake POC**   | Governed evidence lake using customer-owned Snowflake views | Run [`snowflake/bootstrap_poc.sql`](snowflake/bootstrap_poc.sql), then connect the reader role |
 
 ## Container image
 
@@ -67,6 +68,21 @@ kubectl -n trustops get pods
 ```
 
 The IAM policy is intentionally tiny: `s3:ListBucket` + `s3:GetObject*` on the named evidence bucket. No write/delete actions, no other AWS resources. That's the customer-data-residency boundary: TrustOps reads where the data lives, and the principal it runs as can't move bytes anywhere else.
+
+## Snowflake POC bootstrap
+
+`deploy/snowflake/bootstrap_poc.sql` creates a minimal existing-lake proof:
+
+- `TRUSTOPS_SECURITY_LAKE.EVIDENCE` for curated evidence views
+- `TRUSTOPS_READ_WH` as an XSMALL auto-suspended read warehouse
+- `TRUSTOPS_READER` with imported privileges on `SNOWFLAKE` plus USAGE/SELECT
+- four secure views over `SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY`
+
+Run it from a Snowflake role allowed to create a database, warehouse, role, and
+grants. The script does not create users, stages, integrations, external
+network access, or credential material. After it returns counts for the four
+views, connect TrustOps with the `snowflake-evidence-lake` connector and browser
+SSO or OAuth.
 
 ## What's not in this PR
 
