@@ -175,6 +175,24 @@ ticketing, and Snowflake existing-lake reads. Other connector entries are
 read-only lake contracts or managed evidence boundaries. See
 [Connector And Access Model](docs/CONNECTORS.md).
 
+### Run A Proof Scenario
+
+```bash
+security-lakehouse scenario run live-cloud-posture \
+  --lake build/scenarios/live-cloud-posture \
+  --connector azure-posture \
+  --connector aws-posture \
+  --connector snowflake-evidence-lake \
+  --fixture azure-posture=tests/fixtures/azure \
+  --fixture aws-posture=tests/fixtures/aws \
+  --fixture snowflake-evidence-lake=tests/fixtures/snowflake
+```
+
+The scenario syncs connectors, rebuilds the lake, verifies integrity hashes,
+freezes snapshots, runs a workflow DAG, and writes a JSON proof report. See
+[TrustOps Scenarios](docs/SCENARIOS.md) for Azure, AWS, Snowflake, and full-live
+commands.
+
 ### Run Workflow Automation
 
 ```bash
