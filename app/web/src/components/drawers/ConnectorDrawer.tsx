@@ -116,13 +116,13 @@ const SCOPE_FIELDS: Record<string, FieldDef[]> = {
     {
       name: "database",
       label: "Database",
-      placeholder: "TRUSTOPS",
+      placeholder: "TRUSTOPS_SECURITY_LAKE",
       required: true,
     },
     {
       name: "schema",
       label: "Schema",
-      placeholder: "GOLD",
+      placeholder: "EVIDENCE",
       required: true,
     },
     {

@@ -63,6 +63,25 @@ def test_access_fingerprint_changes_with_secret_rotation() -> None:
     assert first != rotated
 
 
+def test_access_fingerprint_ignores_scheduler_options_but_not_scope() -> None:
+    first = _access_fingerprint({"token": "abc"}, {"org": "x", "repo": "acme/app"})
+    with_schedule = _access_fingerprint(
+        {"token": "abc"},
+        {
+            "org": "x",
+            "repo": "acme/app",
+            "sync_schedule": "every 15m",
+            "fixture_dir": "/tmp/fixture",
+            "token_env": "GH_READ_TOKEN",
+            "materialize": False,
+        },
+    )
+    different_scope = _access_fingerprint({"token": "abc"}, {"org": "x", "repo": "acme/other"})
+
+    assert first == with_schedule
+    assert first != different_scope
+
+
 def test_latest_config_returns_most_recent(tmp_path: Path) -> None:
     append_config_event(tmp_path, connector_id="github-security", state="disabled", actor="a")
     append_config_event(tmp_path, connector_id="github-security", state="enabled", actor="a")
@@ -130,8 +149,8 @@ def test_discovery_returns_selectable_snowflake_scope_without_enable(tmp_path: P
         },
         options={
             "warehouse": "TRUSTOPS_READ_WH",
-            "database": "TRUSTOPS",
-            "schema": "GOLD",
+            "database": "TRUSTOPS_SECURITY_LAKE",
+            "schema": "EVIDENCE",
         },
     )
 
@@ -139,10 +158,37 @@ def test_discovery_returns_selectable_snowflake_scope_without_enable(tmp_path: P
     assert rec["result"] == "ok"
     assert rec["evidence_count"] == 7
     assert rec["metadata"]["selection_mode"] == "curated_views"
+    assert rec["metadata"]["requires_selection"] == []
     selectors = rec["metadata"]["selectors"]
-    assert {"kind": "database", "name": "TRUSTOPS", "required": True, "selected": True} in selectors
+    assert {"kind": "database", "name": "TRUSTOPS_SECURITY_LAKE", "required": True, "selected": True} in selectors
     assert {"kind": "view", "name": "TRUSTOPS_AUDIT_EVENTS", "required": True, "purpose": "audit_events"} in selectors
     assert latest_config(tmp_path, "snowflake-evidence-lake") is None
+
+
+def test_discovery_recommends_concrete_snowflake_scope_without_placeholders(tmp_path: Path) -> None:
+    rec = run_discovery(
+        tmp_path,
+        connector_id="snowflake-evidence-lake",
+        credentials={
+            "account": "org-account",
+            "user": "trustops_reader",
+            "credential_ref": "TRUSTOPS_SNOWFLAKE_OAUTH",
+        },
+        options={},
+    )
+
+    assert rec["result"] == "ok"
+    assert rec["metadata"]["requires_selection"] == ["warehouse", "database", "schema"]
+    assert rec["metadata"]["recommended_options"] == {
+        "warehouse": "TRUSTOPS_READ_WH",
+        "database": "TRUSTOPS_SECURITY_LAKE",
+        "schema": "EVIDENCE",
+        "audit_events": "TRUSTOPS_AUDIT_EVENTS",
+        "control_posture": "TRUSTOPS_CONTROL_POSTURE",
+        "asset_risk": "TRUSTOPS_ASSET_RISK",
+        "evidence_bundles": "TRUSTOPS_EVIDENCE_BUNDLES",
+    }
+    assert "<" not in json.dumps(rec["metadata"]["recommended_options"])
 
 
 def test_discovery_validates_scope_credentials_without_password_terms(tmp_path: Path) -> None:
