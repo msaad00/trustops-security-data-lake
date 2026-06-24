@@ -10,7 +10,9 @@ import pytest
 from security_lakehouse import connector_runner, connector_state
 from security_lakehouse.connectors_snowflake import (
     SnowflakeFixtureClient,
+    _probe_query_params,
     collect_snowflake_evidence,
+    probe_snowflake_access,
 )
 from security_lakehouse.io import read_jsonl
 from security_lakehouse.validation import validate_raw_events
@@ -143,3 +145,48 @@ def test_snowflake_live_uses_oauth_when_token_env_is_present(tmp_path: Path, mon
     assert result.result == "ok"
     assert captured["query_params"]["authenticator"] == "oauth"
     assert captured["query_params"]["token"] == "read-only-oauth-token"
+
+
+def test_snowflake_probe_resolves_oauth_ref_from_environment() -> None:
+    params = _probe_query_params(
+        credentials={
+            "account": "acme-trustops",
+            "user": "trustops.reader@example.com",
+            "credential_ref": "SNOWFLAKE_OAUTH_TOKEN",
+        },
+        options={
+            "warehouse": "TRUSTOPS_READ_WH",
+            "database": "TRUSTOPS_SECURITY_LAKE",
+            "schema": "EVIDENCE",
+            "role": "TRUSTOPS_READER",
+        },
+        env={"SNOWFLAKE_OAUTH_TOKEN": "read-only-oauth-token"},
+    )
+
+    assert params == {
+        "account": "acme-trustops",
+        "user": "trustops.reader@example.com",
+        "authenticator": "oauth",
+        "token": "read-only-oauth-token",
+        "warehouse": "TRUSTOPS_READ_WH",
+        "database": "TRUSTOPS_SECURITY_LAKE",
+        "schema": "EVIDENCE",
+        "role": "TRUSTOPS_READER",
+    }
+
+
+def test_snowflake_probe_rejects_missing_oauth_ref_without_connection() -> None:
+    with pytest.raises(ValueError, match="SNOWFLAKE_OAUTH_TOKEN"):
+        probe_snowflake_access(
+            credentials={
+                "account": "acme-trustops",
+                "user": "trustops.reader@example.com",
+                "credential_ref": "SNOWFLAKE_OAUTH_TOKEN",
+            },
+            options={
+                "warehouse": "TRUSTOPS_READ_WH",
+                "database": "TRUSTOPS_SECURITY_LAKE",
+                "schema": "EVIDENCE",
+            },
+            env={},
+        )

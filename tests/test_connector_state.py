@@ -11,6 +11,8 @@ from http import HTTPStatus
 from http.server import ThreadingHTTPServer
 from pathlib import Path
 
+import pytest
+
 from security_lakehouse.connector_state import (
     _access_fingerprint,
     _missing_required_config,
@@ -136,6 +138,86 @@ def test_probe_rejects_incomplete_staged_payload(tmp_path: Path) -> None:
     assert "missing required connector configuration" in rec["error"]
     assert "credential_ref" in rec["error"]
     assert latest_config(tmp_path, "clickhouse-telemetry-lake") is None
+
+
+def test_snowflake_probe_reads_selected_scope_before_enable(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_probe_snowflake_access(*, credentials: dict, options: dict) -> dict:
+        assert credentials["account"] == "org-account"
+        assert options["database"] == "TRUSTOPS_SECURITY_LAKE"
+        return {
+            "ok": True,
+            "context": {"role": "TRUSTOPS_READER", "warehouse": "TRUSTOPS_READ_WH"},
+            "views": [
+                {"purpose": "audit_events", "view": "TRUSTOPS_AUDIT_EVENTS", "ok": True, "row_count": 2},
+                {"purpose": "control_posture", "view": "TRUSTOPS_CONTROL_POSTURE", "ok": True, "row_count": 1},
+                {"purpose": "asset_risk", "view": "TRUSTOPS_ASSET_RISK", "ok": True, "row_count": 1},
+                {"purpose": "evidence_bundles", "view": "TRUSTOPS_EVIDENCE_BUNDLES", "ok": True, "row_count": 2},
+            ],
+        }
+
+    monkeypatch.setattr("security_lakehouse.connector_state.probe_snowflake_access", fake_probe_snowflake_access)
+
+    rec = run_probe(
+        tmp_path,
+        connector_id="snowflake-evidence-lake",
+        credentials={"account": "org-account", "user": "trustops_reader", "credential_ref": "externalbrowser"},
+        options={
+            "warehouse": "TRUSTOPS_READ_WH",
+            "database": "TRUSTOPS_SECURITY_LAKE",
+            "schema": "EVIDENCE",
+            "audit_events": "TRUSTOPS_AUDIT_EVENTS",
+            "control_posture": "TRUSTOPS_CONTROL_POSTURE",
+            "asset_risk": "TRUSTOPS_ASSET_RISK",
+            "evidence_bundles": "TRUSTOPS_EVIDENCE_BUNDLES",
+        },
+    )
+
+    assert rec["result"] == "ok"
+    assert rec["evidence_count"] == 4
+    assert rec["metadata"]["context"]["role"] == "TRUSTOPS_READER"
+    assert rec["metadata"]["views"][0]["row_count"] == 2
+    assert rec["access_fingerprint"]
+    assert latest_config(tmp_path, "snowflake-evidence-lake") is None
+
+
+def test_snowflake_probe_blocks_missing_views(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_probe_snowflake_access(*, credentials: dict, options: dict) -> dict:
+        return {
+            "ok": False,
+            "context": {"role": "TRUSTOPS_READER", "warehouse": "TRUSTOPS_READ_WH"},
+            "views": [
+                {"purpose": "audit_events", "view": "TRUSTOPS_AUDIT_EVENTS", "ok": True, "row_count": 2},
+                {
+                    "purpose": "control_posture",
+                    "view": "TRUSTOPS_CONTROL_POSTURE",
+                    "ok": False,
+                    "row_count": None,
+                    "error": "object not found or not granted to the active role",
+                },
+            ],
+        }
+
+    monkeypatch.setattr("security_lakehouse.connector_state.probe_snowflake_access", fake_probe_snowflake_access)
+
+    rec = run_probe(
+        tmp_path,
+        connector_id="snowflake-evidence-lake",
+        credentials={"account": "org-account", "user": "trustops_reader", "credential_ref": "externalbrowser"},
+        options={
+            "warehouse": "TRUSTOPS_READ_WH",
+            "database": "TRUSTOPS_SECURITY_LAKE",
+            "schema": "EVIDENCE",
+            "audit_events": "TRUSTOPS_AUDIT_EVENTS",
+            "control_posture": "TRUSTOPS_CONTROL_POSTURE",
+            "asset_risk": "TRUSTOPS_ASSET_RISK",
+            "evidence_bundles": "TRUSTOPS_EVIDENCE_BUNDLES",
+        },
+    )
+
+    assert rec["result"] == "error"
+    assert "TRUSTOPS_CONTROL_POSTURE" in rec["error"]
+    assert rec["metadata"]["views"][1]["error"] == "object not found or not granted to the active role"
+    assert latest_config(tmp_path, "snowflake-evidence-lake") is None
 
 
 def test_discovery_returns_selectable_snowflake_scope_without_enable(tmp_path: Path) -> None:

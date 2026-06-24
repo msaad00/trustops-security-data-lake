@@ -121,6 +121,13 @@ SELECT COUNT(*) AS evidence_bundles
 FROM TRUSTOPS_EVIDENCE_BUNDLES;
 ```
 
+If any validation query returns `Object does not exist, or operation cannot be
+performed`, the bootstrap SQL did not run under a create-capable role, the
+active user was not granted `TRUSTOPS_READER`, or one of the view grants is
+missing. Rerun the bootstrap from `ACCOUNTADMIN` or an existing governed GRC
+admin role that can create the database, warehouse, role, secure views, and
+grants.
+
 For a human POC, use browser SSO. No Snowflake credential needs to be pasted
 into chat, Git, or TrustOps config:
 
@@ -130,7 +137,13 @@ security-lakehouse connectors probe \
   --connector-id snowflake-evidence-lake \
   --credentials-json '{"account":"'"$SNOWFLAKE_ACCOUNT"'","user":"'"$SNOWFLAKE_USER"'","credential_ref":"externalbrowser"}' \
   --options-json '{"warehouse":"TRUSTOPS_READ_WH","database":"TRUSTOPS_SECURITY_LAKE","schema":"EVIDENCE","audit_events":"TRUSTOPS_AUDIT_EVENTS","control_posture":"TRUSTOPS_CONTROL_POSTURE","asset_risk":"TRUSTOPS_ASSET_RISK","evidence_bundles":"TRUSTOPS_EVIDENCE_BUNDLES"}'
+```
 
+The probe performs lightweight `SELECT COUNT(*)` checks against every configured
+view and returns sanitized per-view diagnostics. Do not enable the connector
+until the probe result is `ok`.
+
+```bash
 security-lakehouse connectors configure \
   --lake build/lakehouse \
   --connector-id snowflake-evidence-lake \

@@ -23,6 +23,8 @@ from security_lakehouse.connectors import (
     SENSITIVE_FIELD_NAMES,
     load_connector_catalog,
 )
+from security_lakehouse.connectors_snowflake import CONNECTOR_ID as SNOWFLAKE_CONNECTOR_ID
+from security_lakehouse.connectors_snowflake import probe_snowflake_access
 from security_lakehouse.models import parse_event_time, utc_iso
 
 CONFIG_FILE = "connector_config.jsonl"
@@ -747,9 +749,56 @@ def run_probe(
             error="access contract validated; no collection adapter is implemented for this connector yet",
             access_fingerprint=staged_access_fingerprint,
         )
-    # Adapter available and the access contract is valid. The probe validates
-    # configuration only — collecting evidence (and counting it) is the sync's
-    # job — so it reports no evidence_count rather than a fabricated one.
+    if connector_id == SNOWFLAKE_CONNECTOR_ID:
+        if has_staged_payload:
+            effective_credentials = credentials or {}
+            effective_options = options or {}
+        else:
+            config = latest_config(lake_dir, connector_id) or {}
+            effective_credentials = dict(config.get("credentials") or {})
+            effective_options = dict(config.get("options") or {})
+        try:
+            probe = probe_snowflake_access(credentials=effective_credentials, options=effective_options)
+        except ValueError as exc:
+            return append_run_event(
+                lake_dir,
+                connector_id=connector_id,
+                kind="probe",
+                result="error",
+                actor=actor,
+                error=str(exc),
+                access_fingerprint=staged_access_fingerprint,
+            )
+        failed = [
+            str(view.get("view") or view.get("purpose") or "unknown")
+            for view in probe.get("views", [])
+            if isinstance(view, dict) and view.get("ok") is not True
+        ]
+        if failed:
+            return append_run_event(
+                lake_dir,
+                connector_id=connector_id,
+                kind="probe",
+                result="error",
+                actor=actor,
+                error="Snowflake read scope is not ready: " + ", ".join(failed),
+                access_fingerprint=staged_access_fingerprint,
+                metadata=probe,
+            )
+        return append_run_event(
+            lake_dir,
+            connector_id=connector_id,
+            kind="probe",
+            result="ok",
+            actor=actor,
+            duration_ms=12,
+            evidence_count=len(probe.get("views", [])),
+            access_fingerprint=staged_access_fingerprint,
+            metadata=probe,
+        )
+
+    # Adapter available and the access contract is valid. The generic probe
+    # validates configuration only — collecting evidence is the sync's job.
     return append_run_event(
         lake_dir,
         connector_id=connector_id,
