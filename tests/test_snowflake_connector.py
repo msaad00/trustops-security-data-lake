@@ -65,15 +65,81 @@ def test_snowflake_sync_writes_raw_evidence_and_materializes(tmp_path: Path) -> 
     assert run["evidence_count"] == 8
 
 
-def test_snowflake_live_requires_read_only_connection_details(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_snowflake_live_requires_account_and_user_for_sso_or_oauth(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     connector_state.append_config_event(
         tmp_path,
         connector_id="snowflake-evidence-lake",
         state="enabled",
         actor="alice",
     )
-    for name in ("SNOWFLAKE_ACCOUNT", "SNOWFLAKE_USER", "SNOWFLAKE_OAUTH_TOKEN"):
+    for name in ("SNOWFLAKE_ACCOUNT", "SNOWFLAKE_USER", "SNOWFLAKE_OAUTH_TOKEN", "SNOWFLAKE_AUTHENTICATOR"):
         monkeypatch.delenv(name, raising=False)
 
     with pytest.raises(connector_runner.ConnectorSyncError, match="SNOWFLAKE_ACCOUNT"):
         connector_runner.run_connector_sync(tmp_path, connector_id="snowflake-evidence-lake", materialize=False)
+
+
+def test_snowflake_live_defaults_to_externalbrowser_without_token(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    connector_state.append_config_event(
+        tmp_path,
+        connector_id="snowflake-evidence-lake",
+        state="enabled",
+        actor="alice",
+    )
+    captured: dict[str, object] = {}
+
+    class FakeSnowflakeClient:
+        def __init__(self, *, query_params: dict[str, object], views: dict[str, str]) -> None:
+            captured["query_params"] = query_params
+            captured["views"] = views
+
+    monkeypatch.setattr(connector_runner, "SnowflakeClient", FakeSnowflakeClient)
+    monkeypatch.setattr(connector_runner, "collect_snowflake_evidence", lambda client, account=None: [])
+    monkeypatch.setenv("SNOWFLAKE_ACCOUNT", "acme-trustops")
+    monkeypatch.setenv("SNOWFLAKE_USER", "trustops.reader@example.com")
+    monkeypatch.delenv("SNOWFLAKE_OAUTH_TOKEN", raising=False)
+    monkeypatch.delenv("SNOWFLAKE_AUTHENTICATOR", raising=False)
+
+    result = connector_runner.run_connector_sync(tmp_path, connector_id="snowflake-evidence-lake", materialize=False)
+
+    assert result.result == "ok"
+    assert captured["query_params"] == {
+        "account": "acme-trustops",
+        "user": "trustops.reader@example.com",
+        "authenticator": "externalbrowser",
+        "token": None,
+        "warehouse": None,
+        "database": None,
+        "schema": None,
+        "role": None,
+    }
+
+
+def test_snowflake_live_uses_oauth_when_token_env_is_present(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    connector_state.append_config_event(
+        tmp_path,
+        connector_id="snowflake-evidence-lake",
+        state="enabled",
+        actor="alice",
+    )
+    captured: dict[str, object] = {}
+
+    class FakeSnowflakeClient:
+        def __init__(self, *, query_params: dict[str, object], views: dict[str, str]) -> None:
+            captured["query_params"] = query_params
+
+    monkeypatch.setattr(connector_runner, "SnowflakeClient", FakeSnowflakeClient)
+    monkeypatch.setattr(connector_runner, "collect_snowflake_evidence", lambda client, account=None: [])
+    monkeypatch.setenv("SNOWFLAKE_ACCOUNT", "acme-trustops")
+    monkeypatch.setenv("SNOWFLAKE_USER", "trustops.reader@example.com")
+    monkeypatch.setenv("SNOWFLAKE_OAUTH_TOKEN", "read-only-oauth-token")
+
+    result = connector_runner.run_connector_sync(tmp_path, connector_id="snowflake-evidence-lake", materialize=False)
+
+    assert result.result == "ok"
+    assert captured["query_params"]["authenticator"] == "oauth"
+    assert captured["query_params"]["token"] == "read-only-oauth-token"

@@ -14,7 +14,7 @@ from security_lakehouse.connector_state import (
     latest_run,
     run_probe,
 )
-from security_lakehouse.connectors_azure import AzureFixtureClient, collect_azure_evidence
+from security_lakehouse.connectors_azure import AzureClient, AzureFixtureClient, collect_azure_evidence
 from security_lakehouse.io import read_jsonl
 from security_lakehouse.validation import validate_raw_events
 
@@ -143,6 +143,13 @@ def test_azure_connector_sync_without_fixture_or_creds_errors(tmp_path: Path, mo
     append_config_event(tmp_path, connector_id="azure-posture", state="enabled", actor="a")
     with pytest.raises(ConnectorSyncError, match="requires --fixture-dir"):
         run_connector_sync(tmp_path, connector_id="azure-posture")
+
+
+def test_azure_client_policy_assignments_degrade_when_policy_sdk_missing() -> None:
+    client = AzureClient.__new__(AzureClient)
+    client._policy = None
+
+    assert client.policy_assignments() == []
 
 
 def test_azure_adapter_is_registered_and_probe_reports_ok(tmp_path: Path) -> None:
