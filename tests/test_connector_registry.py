@@ -49,10 +49,25 @@ def test_implemented_adapters_catalog_flags_agree_with_registry() -> None:
     assert frozenset(REAL_ADAPTERS) == connector_state.IMPLEMENTED_ADAPTERS
 
 
+def test_cloud_connector_credentials_prefer_keyless_or_reference_auth() -> None:
+    catalog = load_connector_catalog()
+    assert catalog["aws-posture"]["credential_type"] == "aws_sso_or_read_only_role"
+    assert catalog["azure-posture"]["credential_type"] == "azure_default_credential_reader"
+    assert catalog["clickhouse-telemetry-lake"]["credential_type"] == "scoped_cloud_identity"
+
+    forbidden = ("password", "pat", "personal_access", "root_key", "access_key", "secret_key")
+    for connector_id, definition in catalog.items():
+        credential_type = str(definition.get("credential_type") or "").lower()
+        assert not any(term in credential_type for term in forbidden), (
+            f"{connector_id} credential_type should not advertise static secret auth: {credential_type}"
+        )
+
+
 def test_source_connector_guidance_avoids_password_and_pat_paths() -> None:
     checked_paths = [
         REPO_ROOT / "README.md",
         REPO_ROOT / "docs" / "CONNECTORS.md",
+        REPO_ROOT / "docs" / "LIVE_CLOUD_POC.md",
         REPO_ROOT / "docs" / "REPO_AUDIT.md",
         REPO_ROOT / "docs" / "REPO_GOVERNANCE_CONNECTOR.md",
         REPO_ROOT / "app" / "web" / "src" / "components" / "drawers" / "ConnectorDrawer.tsx",

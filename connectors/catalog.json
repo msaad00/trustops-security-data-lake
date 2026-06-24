@@ -33,7 +33,7 @@
       "category": "analytics_lake",
       "collection_mode": "existing_lake_read",
       "access_boundary": "read_only_role",
-      "credential_type": "scoped_user_or_cloud_token",
+      "credential_type": "scoped_cloud_identity",
       "minimum_permissions": [
         "Read metadata for allowed databases",
         "SELECT on discovered evidence tables or views",
@@ -138,7 +138,7 @@
       "category": "cloud",
       "collection_mode": "direct_api_read",
       "access_boundary": "scoped_token",
-      "credential_type": "aws_read_only_keys",
+      "credential_type": "aws_sso_or_read_only_role",
       "minimum_permissions": [
         "iam:ListUsers",
         "iam:ListMFADevices",
@@ -302,11 +302,12 @@
       "category": "cloud",
       "collection_mode": "direct_api_read",
       "access_boundary": "scoped_token",
-      "credential_type": "azure_service_principal_token",
+      "credential_type": "azure_default_credential_reader",
       "minimum_permissions": [
         "Microsoft.Authorization/roleAssignments/read",
         "Microsoft.Resources/subscriptions/read",
-        "Microsoft.PolicyInsights/policyStates/read"
+        "Microsoft.Authorization/policyAssignments/read",
+        "Microsoft.Resources/subscriptions/resources/read"
       ],
       "evidence_types": ["cloud", "iam", "posture"],
       "default_route": "dual",

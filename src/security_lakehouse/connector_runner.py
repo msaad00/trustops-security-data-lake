@@ -90,8 +90,8 @@ def _resolve_provider_token(token_env: str, provider_env: str, env: dict[str, st
 OKTA_ORG_URL_ENV = "OKTA_ORG_URL"
 
 # Environment variables carrying the AWS account id + region for live
-# collection. Credentials resolve through boto3's standard provider chain
-# (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_SESSION_TOKEN / profiles).
+# collection. Credentials resolve through boto3's standard provider chain,
+# preferably SSO, assumed roles, workload identity, or instance roles.
 AWS_ACCOUNT_ID_ENV = "AWS_ACCOUNT_ID"
 AWS_REGION_ENV = "AWS_REGION"
 
@@ -361,7 +361,7 @@ def _collect_aws(
         raise ValueError(
             "aws-posture sync requires --fixture-dir, or "
             f"{AWS_ACCOUNT_ID_ENV} plus read-only AWS credentials "
-            "(AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY via the standard provider chain)"
+            "(SSO profile, assumed role, instance role, or the standard provider chain)"
         )
     client = AWSClient(region_name=env.get(AWS_REGION_ENV))
     return collect_aws_evidence(client, account_id=account_id)

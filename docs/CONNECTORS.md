@@ -34,6 +34,11 @@ Validate it with:
 security-lakehouse connectors validate
 ```
 
+For live Azure, AWS, or Snowflake trials, use the least-privilege runbook in
+[`docs/LIVE_CLOUD_POC.md`](LIVE_CLOUD_POC.md). It keeps first-run access
+read-only and avoids passwords, human-scoped developer tokens, root keys, and
+broad cloud credentials.
+
 List configured connector contracts:
 
 ```bash
