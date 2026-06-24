@@ -96,7 +96,7 @@ def test_probe_validates_staged_payload_without_enabling(tmp_path: Path) -> None
         connector_id="clickhouse-telemetry-lake",
         credentials={
             "host": "https://cluster.example.clickhouse.cloud:8443",
-            "token": "scoped-read-token",
+            "credential_ref": "TRUSTOPS_CLICKHOUSE_TOKEN",
         },
         options={},
     )
@@ -115,7 +115,7 @@ def test_probe_rejects_incomplete_staged_payload(tmp_path: Path) -> None:
     )
     assert rec["result"] == "error"
     assert "missing required connector configuration" in rec["error"]
-    assert "token" in rec["error"]
+    assert "credential_ref" in rec["error"]
     assert latest_config(tmp_path, "clickhouse-telemetry-lake") is None
 
 
@@ -441,7 +441,7 @@ def test_connector_configure_rejects_empty_enable(tmp_path: Path) -> None:
         assert status == HTTPStatus.BAD_REQUEST
         assert "missing required connector configuration" in body["reason"]
         assert "host" in body["reason"]
-        assert "token" in body["reason"]
+        assert "credential_ref" in body["reason"]
         assert "password" not in body["reason"]
         assert "database" not in body["reason"]
         assert "events_table" not in body["reason"]
@@ -504,7 +504,7 @@ def test_clickhouse_enable_rejects_contract_only_probe(tmp_path: Path) -> None:
             body={
                 "credentials": {
                     "host": "https://cluster.example.clickhouse.cloud:8443",
-                    "token": "scoped-read-token",
+                    "credential_ref": "TRUSTOPS_CLICKHOUSE_TOKEN",
                 },
                 "options": {},
             },
@@ -521,7 +521,7 @@ def test_clickhouse_enable_rejects_contract_only_probe(tmp_path: Path) -> None:
                 "state": "enabled",
                 "credentials": {
                     "host": "https://cluster.example.clickhouse.cloud:8443",
-                    "token": "scoped-read-token",
+                    "credential_ref": "TRUSTOPS_CLICKHOUSE_TOKEN",
                 },
                 "options": {},
             },
@@ -542,7 +542,7 @@ def test_connector_probe_accepts_staged_payload_without_enable(tmp_path: Path) -
             body={
                 "credentials": {
                     "host": "https://cluster.example.clickhouse.cloud:8443",
-                    "token": "scoped-read-token",
+                    "credential_ref": "TRUSTOPS_CLICKHOUSE_TOKEN",
                 },
                 "options": {},
             },
