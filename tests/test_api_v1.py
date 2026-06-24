@@ -10,6 +10,7 @@ from http import HTTPStatus
 from http.server import ThreadingHTTPServer
 from pathlib import Path
 
+from security_lakehouse import api_v1
 from security_lakehouse.server import _Handler
 
 
@@ -391,6 +392,10 @@ def test_v1_snapshot_post_uses_envelope(tmp_path: Path) -> None:
         assert Path(body["data"]["snapshot_path"]).is_file()
     finally:
         server.shutdown()
+
+
+def test_v1_snapshot_post_requires_snapshot_scope() -> None:
+    assert api_v1.required_post_scope("/api/v1/snapshots") == "snapshot"
 
 
 def test_v1_errors_use_contract_envelope(tmp_path: Path) -> None:
