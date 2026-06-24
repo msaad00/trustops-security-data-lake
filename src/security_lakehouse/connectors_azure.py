@@ -57,25 +57,28 @@ class AzureClient:
         try:
             from azure.identity import DefaultAzureCredential  # noqa: PLC0415
             from azure.mgmt.authorization import AuthorizationManagementClient  # noqa: PLC0415
-            from azure.mgmt.resource import (  # noqa: PLC0415
-                PolicyClient,
-                ResourceManagementClient,
-            )
+            from azure.mgmt.resource import ResourceManagementClient  # noqa: PLC0415
         except ImportError as exc:  # pragma: no cover - exercised only with live Azure
             raise RuntimeError(
                 "azure-posture live collection requires azure-identity and azure-mgmt-* "
                 "packages; install them or use --fixture-dir"
             ) from exc
+        try:
+            from azure.mgmt.resource import PolicyClient  # type: ignore[attr-defined]  # noqa: PLC0415
+        except ImportError:  # pragma: no cover - depends on installed Azure SDK version
+            PolicyClient = None  # type: ignore[assignment]
         self.subscription_id = subscription_id
         credential = DefaultAzureCredential()
         self._authz = AuthorizationManagementClient(credential, subscription_id)
-        self._policy = PolicyClient(credential, subscription_id)
+        self._policy = PolicyClient(credential, subscription_id) if PolicyClient is not None else None
         self._resources = ResourceManagementClient(credential, subscription_id)
 
     def role_assignments(self) -> list[dict[str, Any]]:
         return [self._as_dict(item) for item in self._authz.role_assignments.list_for_subscription()]
 
     def policy_assignments(self) -> list[dict[str, Any]]:
+        if self._policy is None:
+            return []
         return [self._as_dict(item) for item in self._policy.policy_assignments.list()]
 
     def resources(self) -> list[dict[str, Any]]:

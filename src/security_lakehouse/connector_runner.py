@@ -117,11 +117,12 @@ JIRA_BASE_URL_ENV = "JIRA_BASE_URL"
 JIRA_EMAIL_ENV = "JIRA_EMAIL"
 
 # Environment variables carrying Snowflake connection metadata for read-only
-# evidence-lake collection. The credential resolves from SNOWFLAKE_OAUTH_TOKEN
-# by default, or an explicit ``--token-env`` override.
+# evidence-lake collection. Browser SSO is preferred for human POCs. OAuth can
+# still be supplied by automation through SNOWFLAKE_OAUTH_TOKEN or --token-env.
 SNOWFLAKE_ACCOUNT_ENV = "SNOWFLAKE_ACCOUNT"
 SNOWFLAKE_USER_ENV = "SNOWFLAKE_USER"
 SNOWFLAKE_OAUTH_TOKEN_ENV = "SNOWFLAKE_OAUTH_TOKEN"
+SNOWFLAKE_AUTHENTICATOR_ENV = "SNOWFLAKE_AUTHENTICATOR"
 SNOWFLAKE_WAREHOUSE_ENV = "SNOWFLAKE_WAREHOUSE"
 SNOWFLAKE_DATABASE_ENV = "SNOWFLAKE_DATABASE"
 SNOWFLAKE_SCHEMA_ENV = "SNOWFLAKE_SCHEMA"
@@ -464,16 +465,18 @@ def _collect_snowflake(
     else:
         user = env.get(SNOWFLAKE_USER_ENV)
         credential = _resolve_provider_token(token_env, SNOWFLAKE_OAUTH_TOKEN_ENV, env)
-        if not account or not user or not credential:
+        authenticator = env.get(SNOWFLAKE_AUTHENTICATOR_ENV) or ("oauth" if credential else "externalbrowser")
+        if not account or not user:
             raise ValueError(
                 "snowflake-evidence-lake sync requires --fixture-dir, or "
-                f"{SNOWFLAKE_ACCOUNT_ENV} plus {SNOWFLAKE_USER_ENV} and a read-only OAuth token "
+                f"{SNOWFLAKE_ACCOUNT_ENV} plus {SNOWFLAKE_USER_ENV} with browser SSO "
+                f"({SNOWFLAKE_AUTHENTICATOR_ENV}=externalbrowser) or a read-only OAuth token "
                 f"({SNOWFLAKE_OAUTH_TOKEN_ENV} or --token-env)"
             )
         params = {
             "account": account,
             "user": user,
-            "authenticator": "oauth",
+            "authenticator": authenticator,
             "token": credential,
             "warehouse": env.get(SNOWFLAKE_WAREHOUSE_ENV),
             "database": env.get(SNOWFLAKE_DATABASE_ENV),

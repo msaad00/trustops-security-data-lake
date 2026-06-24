@@ -45,6 +45,15 @@ dev = [
 analytics = [
     "duckdb>=1.0",
 ]
+# Live cloud connector SDKs. The core package stays dependency-free; install
+# this extra only when running AWS, Azure, or Snowflake collection locally.
+cloud = [
+    "boto3>=1.34",
+    "azure-identity>=1.17",
+    "azure-mgmt-authorization>=4.0",
+    "azure-mgmt-resource>=23.0",
+    "snowflake-connector-python>=3.12",
+]
 # Agent-native front door: the Model Context Protocol server that exposes the
 # read surface over stdio so an agent can query posture headlessly.
 mcp = [

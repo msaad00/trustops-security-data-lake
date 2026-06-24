@@ -117,22 +117,30 @@ security-lakehouse connectors sync \
   --fixture-dir tests/fixtures/snowflake
 ```
 
-For live Snowflake collection, install the Snowflake Python connector and use a
-least-privilege role with `USAGE` on warehouse/database/schema and `SELECT` on
-the evidence views. Use an OAuth token or an explicit `--token-env` provider
-secret; TrustOps only issues `SELECT * FROM <view>` reads:
+For live Snowflake collection, install the cloud connector extra and use the
+fixed POC objects from [`docs/LIVE_CLOUD_POC.md`](LIVE_CLOUD_POC.md):
+`TRUSTOPS_SECURITY_LAKE.EVIDENCE`, `TRUSTOPS_READ_WH`, and `TRUSTOPS_READER`.
+For a human POC, use browser SSO. TrustOps only issues
+`SELECT * FROM <view>` reads:
 
 ```bash
-SNOWFLAKE_ACCOUNT=... \
-SNOWFLAKE_USER=trustops_reader \
-SNOWFLAKE_OAUTH_TOKEN=... \
+uv pip install -e ".[cloud]"
+
+SNOWFLAKE_ACCOUNT="$SNOWFLAKE_ACCOUNT" \
+SNOWFLAKE_USER="$SNOWFLAKE_USER" \
+SNOWFLAKE_AUTHENTICATOR=externalbrowser \
+SNOWFLAKE_ROLE=TRUSTOPS_READER \
 SNOWFLAKE_WAREHOUSE=TRUSTOPS_READ_WH \
-SNOWFLAKE_DATABASE=TRUSTOPS \
+SNOWFLAKE_DATABASE=TRUSTOPS_SECURITY_LAKE \
 SNOWFLAKE_SCHEMA=EVIDENCE \
 security-lakehouse connectors sync \
   --lake build/lakehouse \
   --connector-id snowflake-evidence-lake
 ```
+
+Headless jobs can set `SNOWFLAKE_AUTHENTICATOR=oauth` and provide
+`SNOWFLAKE_OAUTH_TOKEN` from a secret manager at process start. The raw value is
+not written into the lake.
 
 By default the runner rebuilds bronze, silver, gold, marts, and current posture
 from the managed raw connector file. Use `--no-materialize` when you only want
