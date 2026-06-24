@@ -188,6 +188,7 @@ class CreateAgentRunRequest(_StrictModel):
     objective: str = ""
     role: str | None = None
     idempotency_key: str | None = None
+    orchestrator: str = "sequential"
     use_model: bool = False
     max_context_chars: int | None = None
     max_fact_items: int | None = None
@@ -918,6 +919,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
                 idempotency_key=body.idempotency_key,
                 provider=provider,
                 budget=budget,
+                orchestrator=body.orchestrator,
             )
         except ValueError as exc:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc

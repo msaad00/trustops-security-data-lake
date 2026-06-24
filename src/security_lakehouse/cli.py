@@ -381,6 +381,12 @@ def _parser() -> argparse.ArgumentParser:
         default="Review posture and propose evidence-gap actions.",
         help="agent objective recorded in the run state",
     )
+    agents_review.add_argument(
+        "--orchestrator",
+        default="sequential",
+        choices=["sequential", "langgraph"],
+        help="deterministic node orchestrator; langgraph requires the agents extra",
+    )
     agents_review.add_argument("--provider", default=None, help="override TRUSTOPS_AGENT_PROVIDER")
     agents_review.add_argument("--model", default=None, help="override TRUSTOPS_AGENT_MODEL")
     agents_review.add_argument("--base-url", default=None, help="override TRUSTOPS_AGENT_BASE_URL")
@@ -1193,6 +1199,7 @@ def _agents_posture_review(args: argparse.Namespace) -> int:
             objective=args.objective,
             provider=_agent_provider_from_args(args),
             budget=_agent_budget_from_args(args),
+            orchestrator=args.orchestrator,
         )
     )
     decisions = state.get("decisions") or []

@@ -15,7 +15,7 @@ from security_lakehouse.agents.model_contract import (
     validate_model_output,
 )
 from security_lakehouse.agents.providers import ModelProviderConfig, provider_from_env
-from security_lakehouse.agents.state import AgentDecision, AgentRunState
+from security_lakehouse.agents.state import AgentDecision, AgentOrchestrator, AgentRunState
 from security_lakehouse.agents.tools import (
     assess_data_readiness,
     load_evidence_gaps,
@@ -24,6 +24,28 @@ from security_lakehouse.agents.tools import (
 )
 
 ModelClient = Callable[[dict[str, Any], ModelProviderConfig], dict[str, Any]]
+
+
+def _initial_posture_state(
+    lake_dir: str | Path,
+    *,
+    role: str,
+    objective: str,
+    provider: ModelProviderConfig,
+    budget: AgentBudgetPolicy,
+    orchestrator: AgentOrchestrator,
+) -> AgentRunState:
+    return {
+        "lake_dir": str(lake_dir),
+        "role": role,
+        "objective": objective,
+        "mode": "rules_only",
+        "orchestrator": orchestrator,
+        "model_provider": provider.public_dict(),
+        "agent_budget": budget.public_dict(),
+        "data_readiness": assess_data_readiness(lake_dir, role=role, harness="posture_review"),
+        "errors": [],
+    }
 
 
 def _load_posture_node(state: AgentRunState) -> AgentRunState:
@@ -62,23 +84,29 @@ def run_posture_review(
     provider: ModelProviderConfig | None = None,
     budget: AgentBudgetPolicy | None = None,
     model_client: ModelClient | None = None,
+    orchestrator: AgentOrchestrator = "sequential",
 ) -> AgentRunState:
     """Run the posture-review harness without requiring LangGraph or an LLM."""
     provider = provider or provider_from_env()
     budget = budget or AgentBudgetPolicy.from_env()
-    state: AgentRunState = {
-        "lake_dir": str(lake_dir),
-        "role": role,
-        "objective": objective,
-        "mode": "rules_only",
-        "model_provider": provider.public_dict(),
-        "agent_budget": budget.public_dict(),
-        "data_readiness": assess_data_readiness(lake_dir, role=role, harness="posture_review"),
-        "errors": [],
-    }
-    state = _load_posture_node(state)
-    state = _load_gaps_node(state)
-    state = _propose_actions_node(state)
+    if orchestrator not in {"sequential", "langgraph"}:
+        raise ValueError("posture_review orchestrator must be 'sequential' or 'langgraph'")
+    state = _initial_posture_state(
+        lake_dir,
+        role=role,
+        objective=objective,
+        provider=provider,
+        budget=budget,
+        orchestrator=orchestrator,
+    )
+    if orchestrator == "langgraph":
+        state = dict(build_posture_review_graph().invoke(state))
+        state["mode"] = "langgraph"
+        state["orchestrator"] = "langgraph"
+    else:
+        state = _load_posture_node(state)
+        state = _load_gaps_node(state)
+        state = _propose_actions_node(state)
     if provider.enabled:
         context = build_model_context(dict(state), provider, budget=budget)
         state["model_context"] = context

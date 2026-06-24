@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any, Literal, TypedDict
 
 AgentMode = Literal["rules_only", "model_assisted", "langgraph"]
+AgentOrchestrator = Literal["sequential", "langgraph"]
 
 
 @dataclass(frozen=True)
@@ -25,6 +26,7 @@ class AgentRunState(TypedDict, total=False):
     lake_dir: str
     role: str
     mode: AgentMode
+    orchestrator: AgentOrchestrator
     objective: str
     data_readiness: dict[str, Any]
     posture: dict[str, Any]
