@@ -210,7 +210,10 @@ def _missing_required_config(
     options: dict[str, Any],
 ) -> list[str]:
     if connector_id == "clickhouse-telemetry-lake":
-        return [field for field in ("host", "token") if not _has_value(credentials, field)]
+        missing = ["host"] if not _has_value(credentials, "host") else []
+        if not (_has_value(credentials, "credential_ref") or _has_value(credentials, "token")):
+            missing.append("credential_ref")
+        return missing
 
     if connector_id == "snowflake-evidence-lake":
         missing = [field for field in ("account", "user") if not _has_value(credentials, field)]

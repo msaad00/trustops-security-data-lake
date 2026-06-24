@@ -85,7 +85,11 @@ async function post<T>(path: string, body: unknown): Promise<T> {
   if (res.status === 401) redirectToLogin();
   if (!res.ok) {
     const payload = await res.json().catch(() => ({}));
-    const reason = (payload as { reason?: string }).reason ?? `${res.status}`;
+    const reason =
+      (payload as { reason?: string }).reason ??
+      (payload as { errors?: Array<{ detail?: string }> }).errors?.[0]
+        ?.detail ??
+      `${res.status}`;
     throw new Error(`${path} -> ${reason}`);
   }
   return (await res.json()) as T;
@@ -105,7 +109,11 @@ async function mutate<T>(
   if (res.status === 401) redirectToLogin();
   if (!res.ok) {
     const payload = await res.json().catch(() => ({}));
-    const reason = (payload as { reason?: string }).reason ?? `${res.status}`;
+    const reason =
+      (payload as { reason?: string }).reason ??
+      (payload as { errors?: Array<{ detail?: string }> }).errors?.[0]
+        ?.detail ??
+      `${res.status}`;
     throw new Error(`${path} -> ${reason}`);
   }
   return (await res.json()) as T;
@@ -214,26 +222,34 @@ export const api = {
   verifyEvidence: (eventId: string) =>
     post<VerifyResult>(`/evidence/${encodeURIComponent(eventId)}/verify`, {}),
   listConnectors: () =>
-    get<{ count: number; connectors: ConnectorView[] }>("/connectors"),
+    get<{ data: ConnectorView[]; meta: { count: number } }>(
+      "/v1/connectors",
+    ).then((body) => ({
+      count: body.meta.count,
+      connectors: body.data,
+    })),
   configureConnector: (id: string, payload: ConfigurePayload) =>
-    post<{ event: Record<string, unknown> }>(
-      `/connectors/${encodeURIComponent(id)}/configure`,
+    post<{ data: Record<string, unknown> }>(
+      `/v1/connectors/${encodeURIComponent(id)}/configure`,
       payload,
-    ),
+    ).then((body) => ({ event: body.data })),
   probeConnector: (id: string, payload: ProbePayload = {}) =>
-    post<{ run: ConnectorRun }>(
-      `/connectors/${encodeURIComponent(id)}/probe`,
+    post<{ data: ConnectorRun }>(
+      `/v1/connectors/${encodeURIComponent(id)}/probe`,
       payload,
-    ),
+    ).then((body) => ({ run: body.data })),
   discoverConnector: (id: string, payload: DiscoverPayload = {}) =>
-    post<{ run: ConnectorRun }>(
-      `/connectors/${encodeURIComponent(id)}/discover`,
+    post<{ data: ConnectorRun }>(
+      `/v1/connectors/${encodeURIComponent(id)}/discover`,
       payload,
-    ),
+    ).then((body) => ({ run: body.data })),
   connectorRuns: (id: string) =>
-    get<{ connector_id: string; runs: ConnectorRun[] }>(
-      `/connectors/${encodeURIComponent(id)}/runs`,
-    ),
+    get<{ data: ConnectorRun[]; meta: { connector_id: string } }>(
+      `/v1/connectors/${encodeURIComponent(id)}/runs`,
+    ).then((body) => ({
+      connector_id: body.meta.connector_id,
+      runs: body.data,
+    })),
   listFrameworks: () =>
     get<{ count: number; frameworks: FrameworkView[] }>("/frameworks"),
   frameworkDetail: (id: string) =>

@@ -54,10 +54,9 @@ const CREDENTIAL_FIELDS: Record<string, FieldDef[]> = {
       placeholder: "trustops_reader",
     },
     {
-      name: "token",
+      name: "credential_ref",
       label: "Scoped credential reference",
       placeholder: "TRUSTOPS_CLICKHOUSE_TOKEN",
-      secret: true,
       required: true,
     },
   ],
@@ -78,7 +77,6 @@ const CREDENTIAL_FIELDS: Record<string, FieldDef[]> = {
       name: "credential_ref",
       label: "Credential reference",
       placeholder: "SNOWFLAKE_OAUTH_TOKEN",
-      secret: true,
       required: true,
     },
   ],
@@ -88,11 +86,6 @@ const CREDENTIAL_FIELDS: Record<string, FieldDef[]> = {
       label: "AWS account ID",
       placeholder: "123456789012",
       required: true,
-    },
-    {
-      name: "region",
-      label: "Region",
-      placeholder: "us-east-1",
     },
   ],
   "azure-posture": [
@@ -106,6 +99,13 @@ const CREDENTIAL_FIELDS: Record<string, FieldDef[]> = {
 };
 
 const SCOPE_FIELDS: Record<string, FieldDef[]> = {
+  "aws-posture": [
+    {
+      name: "region",
+      label: "Region",
+      placeholder: "us-east-1",
+    },
+  ],
   "snowflake-evidence-lake": [
     {
       name: "warehouse",
@@ -165,14 +165,12 @@ const fallbackFieldsFor = (credentialType: string): FieldDef[] => {
         name: "client_secret_ref",
         label: "Client secret reference",
         placeholder: "TRUSTOPS_CLIENT_SECRET",
-        secret: true,
         required: true,
       },
       {
         name: "refresh_token_ref",
         label: "Refresh token reference",
         placeholder: "TRUSTOPS_REFRESH_TOKEN",
-        secret: true,
         required: true,
       },
     ];
@@ -201,10 +199,9 @@ const fallbackFieldsFor = (credentialType: string): FieldDef[] => {
   if (credentialType.includes("token"))
     return [
       {
-        name: "token",
+        name: "credential_ref",
         label: "Scoped credential reference",
         placeholder: "TRUSTOPS_SOURCE_TOKEN",
-        secret: true,
         required: true,
       },
     ];
@@ -596,9 +593,8 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                     Read scope
                   </div>
                   <div className="mt-1 text-xs font-semibold text-muted">
-                    A live probe must validate the token and discover only the
-                    databases and tables visible to that read scope before this
-                    connector can be enabled.
+                    Discover only the databases and tables visible to the scoped
+                    read identity before this connector is enabled.
                   </div>
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     <Badge tone="info">discovered tables</Badge>
@@ -607,8 +603,8 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                   </div>
                   {!isEnabled && (
                     <div className="mt-2 text-xs text-muted">
-                      Enter the host and scoped token, test access, then enable.
-                      Raw secrets are not persisted.
+                      Enter the host and credential reference, test access, then
+                      enable. Raw secrets are not persisted.
                     </div>
                   )}
                 </div>
