@@ -181,6 +181,7 @@ export interface CreateAgentRunPayload {
   objective?: string;
   role?: string;
   idempotency_key?: string;
+  orchestrator?: "sequential" | "langgraph";
   use_model?: boolean;
   max_context_chars?: number;
   max_fact_items?: number;

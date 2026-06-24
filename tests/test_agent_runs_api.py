@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import json
 from http import HTTPStatus
 from pathlib import Path
@@ -160,6 +161,40 @@ def test_agent_run_api_create_list_get_and_idempotency(env) -> None:
     fetched = client.get(f"/api/v1/agent-runs/{run['id']}", headers=_bearer(tokens["contributor"]))
     assert fetched.status_code == HTTPStatus.OK
     assert fetched.json()["data"]["id"] == run["id"]
+
+
+def test_agent_run_api_langgraph_orchestrator_requires_extra(env) -> None:
+    if importlib.util.find_spec("langgraph") is not None:
+        pytest.skip("LangGraph-installed API path is covered by the harness execution tests")
+    _app, client, tokens = env
+
+    created = client.post(
+        "/api/v1/agent-runs",
+        json={"harness": "posture_review", "orchestrator": "langgraph"},
+        headers=_bearer(tokens["contributor"]),
+    )
+
+    assert created.status_code == HTTPStatus.BAD_REQUEST
+    assert created.json()["errors"][0] == {
+        "code": "bad_request",
+        "detail": "langgraph orchestrator requires trustops-security-data-lake[agents]",
+    }
+
+
+def test_agent_run_api_rejects_langgraph_for_soc_triage(env) -> None:
+    _app, client, tokens = env
+
+    created = client.post(
+        "/api/v1/agent-runs",
+        json={"harness": "soc_triage", "orchestrator": "langgraph"},
+        headers=_bearer(tokens["contributor"]),
+    )
+
+    assert created.status_code == HTTPStatus.BAD_REQUEST
+    assert created.json()["errors"][0] == {
+        "code": "bad_request",
+        "detail": "soc_triage only supports the sequential orchestrator",
+    }
 
 
 def test_agent_run_approval_executes_evidence_request_once(env) -> None:

@@ -238,6 +238,7 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         objective: str = "",
         role: str = "",
         idempotency_key: str = "",
+        orchestrator: str = "sequential",
         use_model: bool = False,
         max_context_chars: int | None = None,
         max_fact_items: int | None = None,
@@ -252,6 +253,7 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         payload: dict[str, Any] = {
             "harness": harness,
             "objective": objective,
+            "orchestrator": orchestrator,
             "use_model": use_model,
         }
         if role:

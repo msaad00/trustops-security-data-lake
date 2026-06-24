@@ -176,6 +176,7 @@ def test_mcp_agent_run_tools_call_authenticated_api(tmp_path, monkeypatch):
         objective="triage current alerts",
         role="read_only",
         idempotency_key="mcp-run-1",
+        orchestrator="sequential",
         use_model=False,
         max_fact_items=5,
     )
@@ -198,6 +199,7 @@ def test_mcp_agent_run_tools_call_authenticated_api(tmp_path, monkeypatch):
         "objective": "triage current alerts",
         "role": "read_only",
         "idempotency_key": "mcp-run-1",
+        "orchestrator": "sequential",
         "use_model": False,
         "max_fact_items": 5,
     }

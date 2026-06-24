@@ -34,8 +34,8 @@ The first harness lives under `security_lakehouse.agents`:
   Ollama, OpenAI-compatible APIs, and Anthropic.
 - `evaluations.py` computes deterministic harness checks, failures, coverage,
   score, confidence, and risk level from TrustOps state.
-- `graphs.py` runs the first posture-review flow and can compile a LangGraph
-  graph when `trustops-security-data-lake[agents]` is installed.
+- `graphs.py` runs the first posture-review flow sequentially or through a
+  LangGraph graph when `trustops-security-data-lake[agents]` is installed.
 
 ## Provider defaults
 
@@ -123,9 +123,21 @@ approved contract.
 4. proposes evidence-request actions
 5. marks every write as `requires_approval`
 
-This is intentionally deterministic. LangGraph can orchestrate the same nodes,
-and later model-backed nodes can summarize or prioritize, but they must consume
-the already-redacted state and act only through TrustOps APIs.
+This is intentionally deterministic. LangGraph can orchestrate the same nodes
+with `--orchestrator langgraph`, and later model-backed nodes can summarize or
+prioritize, but they must consume the already-redacted state and act only
+through TrustOps APIs.
+
+```bash
+security-lakehouse agents posture-review \
+  --lake ./lake \
+  --role read_only \
+  --orchestrator langgraph
+```
+
+That command changes orchestration, not authority. Evidence, redaction,
+control results, proposed writes, approvals, and evaluation still come from
+TrustOps deterministic code.
 
 With `TRUSTOPS_AGENT_USE_MODEL=1`, the optional provider receives:
 
@@ -192,14 +204,14 @@ Server mode persists harness runs in the application-state database:
 curl -s -X POST "$TRUSTOPS_URL/api/v1/agent-runs" \
   -H "authorization: Bearer $TRUSTOPS_API_KEY" \
   -H "content-type: application/json" \
-  --data '{"harness":"posture_review","idempotency_key":"review-2026-06-22"}' | jq .
+  --data '{"harness":"posture_review","orchestrator":"langgraph","idempotency_key":"review-2026-06-22"}' | jq .
 ```
 
-The response includes the run mode, deterministic evaluation, proposed actions,
-budget/provider metadata, data-readiness preflight, and the sanitized run state.
-The raw lake path is not persisted in the state payload. Supplying the same
-tenant-scoped `idempotency_key` returns the previous run instead of rerunning
-the harness, which makes scheduler and agent retries safe.
+The response includes the run mode, orchestrator, deterministic evaluation,
+proposed actions, budget/provider metadata, data-readiness preflight, and the
+sanitized run state. The raw lake path is not persisted in the state payload.
+Supplying the same tenant-scoped `idempotency_key` returns the previous run
+instead of rerunning the harness, which makes scheduler and agent retries safe.
 
 Approve one stored proposal through the API when a human, scheduler policy, or
 authorized headless client decides it should write:

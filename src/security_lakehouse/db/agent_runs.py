@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 from dataclasses import asdict
 from datetime import UTC, datetime
@@ -14,6 +15,7 @@ from sqlalchemy.orm import Session
 
 from security_lakehouse.agents import AgentBudgetPolicy, AgentDecision, run_posture_review, run_soc_triage
 from security_lakehouse.agents.providers import ModelProviderConfig, provider_from_env
+from security_lakehouse.agents.state import AgentOrchestrator
 from security_lakehouse.db.models import AGENT_RUN_HARNESSES, AGENT_RUN_STATUSES, AgentRun
 
 
@@ -131,6 +133,7 @@ def run_and_persist_agent(
     idempotency_key: str | None = None,
     provider: ModelProviderConfig | None = None,
     budget: AgentBudgetPolicy | None = None,
+    orchestrator: str = "sequential",
     now: datetime | None = None,
 ) -> tuple[AgentRun, bool]:
     """Run a harness and persist the sanitized result.
@@ -140,6 +143,13 @@ def run_and_persist_agent(
     """
     if harness not in AGENT_RUN_HARNESSES:
         raise ValueError(f"harness must be one of {list(AGENT_RUN_HARNESSES)}, got {harness!r}")
+    if orchestrator not in {"sequential", "langgraph"}:
+        raise ValueError("orchestrator must be 'sequential' or 'langgraph'")
+    if harness != "posture_review" and orchestrator != "sequential":
+        raise ValueError(f"{harness} only supports the sequential orchestrator")
+    if orchestrator == "langgraph" and importlib.util.find_spec("langgraph") is None:
+        raise ValueError("langgraph orchestrator requires trustops-security-data-lake[agents]")
+    safe_orchestrator: AgentOrchestrator = "langgraph" if orchestrator == "langgraph" else "sequential"
     if idempotency_key:
         existing = get_agent_run_by_idempotency_key(session, tenant_id=tenant_id, idempotency_key=idempotency_key)
         if existing is not None:
@@ -154,6 +164,7 @@ def run_and_persist_agent(
         "role": role,
         "provider": provider.public_dict(),
         "budget": budget.public_dict(),
+        "orchestrator": safe_orchestrator,
     }
     safe_lake = lake_dir.resolve()
     if not safe_lake.exists() or not safe_lake.is_dir():
@@ -162,7 +173,14 @@ def run_and_persist_agent(
     try:
         if harness == "posture_review":
             state = dict(
-                run_posture_review(safe_lake, role=role, objective=objective, provider=provider, budget=budget)
+                run_posture_review(
+                    safe_lake,
+                    role=role,
+                    objective=objective,
+                    provider=provider,
+                    budget=budget,
+                    orchestrator=safe_orchestrator,
+                )
             )
         else:
             state = dict(run_soc_triage(safe_lake, role=role, objective=objective, provider=provider, budget=budget))
@@ -171,6 +189,7 @@ def run_and_persist_agent(
         state = {
             "role": role,
             "mode": "rules_only",
+            "orchestrator": safe_orchestrator,
             "objective": objective,
             "model_provider": provider.public_dict(),
             "agent_budget": budget.public_dict(),

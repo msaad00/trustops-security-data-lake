@@ -188,6 +188,23 @@ def test_langgraph_builder_is_optional() -> None:
         build_posture_review_graph()
 
 
+def test_posture_review_langgraph_orchestrator_is_explicit(tmp_path: Path) -> None:
+    _seed_gap(tmp_path)
+
+    if importlib.util.find_spec("langgraph") is None:
+        with pytest.raises(RuntimeError, match="install trustops-security-data-lake\\[agents\\]"):
+            run_posture_review(tmp_path, role="read_only", orchestrator="langgraph")
+        return
+
+    state = run_posture_review(tmp_path, role="read_only", orchestrator="langgraph")
+
+    assert state["mode"] == "langgraph"
+    assert state["orchestrator"] == "langgraph"
+    assert state["decisions"][0].action == "create_evidence_request"
+    assert state["decisions"][0].requires_approval is True
+    assert state["evaluation"]["ok"] is True
+
+
 def test_provider_configured_without_use_model_stays_deterministic(tmp_path: Path) -> None:
     _seed_gap(tmp_path)
     provider = ModelProviderConfig(provider="ollama", model="llama3.1", base_url="http://127.0.0.1:11434")
@@ -494,6 +511,15 @@ def test_posture_review_cli_outputs_json(tmp_path: Path, capsys) -> None:
     assert out["evaluation"]["confidence"] == "high"
     assert out["evidence_gaps"][0]["owner"] == "[redacted]"
     assert out["decisions"][0]["requires_approval"] is True
+
+
+def test_posture_review_cli_langgraph_orchestrator_requires_extra(tmp_path: Path, capsys) -> None:
+    if importlib.util.find_spec("langgraph") is not None:
+        pytest.skip("covered by direct LangGraph execution test when the optional extra is installed")
+    _seed_gap(tmp_path)
+
+    assert main(["agents", "posture-review", "--lake", str(tmp_path), "--orchestrator", "langgraph"]) == 1
+    assert "install trustops-security-data-lake[agents]" in capsys.readouterr().err
 
 
 def test_posture_review_cli_can_build_model_context_without_call(tmp_path: Path, capsys) -> None:

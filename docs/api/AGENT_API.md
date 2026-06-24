@@ -74,23 +74,23 @@ agent action should be rendered back to humans with the same audit trail.
 
 ## Routes
 
-| Method | Path                                                             | Purpose                                                                                          |
-| ------ | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `GET`  | `/api/v1/healthz`                                                | service health                                                                                   |
-| `GET`  | `/api/v1/posture/current`                                        | continuously evaluated posture                                                                   |
-| `GET`  | `/api/v1/posture/as-of`                                          | posture at a point in time                                                                       |
-| `GET`  | `/api/v1/control-tests`                                          | control tests with owners, evidence requirements, confidence, and next action                    |
-| `GET`  | `/api/v1/violations`                                             | open control and asset violations                                                                |
-| `GET`  | `/api/v1/controls`                                               | control workbench data                                                                           |
-| `GET`  | `/api/v1/evidence`                                               | normalized evidence facts, filterable by any top-level field                                     |
-| `GET`  | `/api/v1/evidence/freshness`                                     | evidence freshness rows with SLO status, age, reason, and next action                            |
-| `GET`  | `/api/v1/assets`                                                 | asset risk queue                                                                                 |
-| `GET`  | `/api/v1/snapshots`                                              | list point-in-time assessment snapshots                                                          |
-| `POST` | `/api/v1/snapshots`                                              | create a point-in-time assessment snapshot                                                       |
-| `GET`  | `/api/v1/agent-runs`                                             | persisted human/headless harness runs                                                            |
-| `POST` | `/api/v1/agent-runs`                                             | run and persist a deterministic or optional model-assisted harness with data-readiness preflight |
-| `GET`  | `/api/v1/agent-runs/{run_id}`                                    | inspect one persisted harness run, including evaluation and proposed actions                     |
-| `POST` | `/api/v1/agent-runs/{run_id}/decisions/{decision_index}/approve` | approve one stored proposal and execute its allowlisted TrustOps write idempotently              |
+| Method | Path                                                             | Purpose                                                                                                                            |
+| ------ | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `GET`  | `/api/v1/healthz`                                                | service health                                                                                                                     |
+| `GET`  | `/api/v1/posture/current`                                        | continuously evaluated posture                                                                                                     |
+| `GET`  | `/api/v1/posture/as-of`                                          | posture at a point in time                                                                                                         |
+| `GET`  | `/api/v1/control-tests`                                          | control tests with owners, evidence requirements, confidence, and next action                                                      |
+| `GET`  | `/api/v1/violations`                                             | open control and asset violations                                                                                                  |
+| `GET`  | `/api/v1/controls`                                               | control workbench data                                                                                                             |
+| `GET`  | `/api/v1/evidence`                                               | normalized evidence facts, filterable by any top-level field                                                                       |
+| `GET`  | `/api/v1/evidence/freshness`                                     | evidence freshness rows with SLO status, age, reason, and next action                                                              |
+| `GET`  | `/api/v1/assets`                                                 | asset risk queue                                                                                                                   |
+| `GET`  | `/api/v1/snapshots`                                              | list point-in-time assessment snapshots                                                                                            |
+| `POST` | `/api/v1/snapshots`                                              | create a point-in-time assessment snapshot                                                                                         |
+| `GET`  | `/api/v1/agent-runs`                                             | persisted human/headless harness runs                                                                                              |
+| `POST` | `/api/v1/agent-runs`                                             | run and persist a deterministic, optional LangGraph-orchestrated, or optional model-assisted harness with data-readiness preflight |
+| `GET`  | `/api/v1/agent-runs/{run_id}`                                    | inspect one persisted harness run, including evaluation and proposed actions                                                       |
+| `POST` | `/api/v1/agent-runs/{run_id}/decisions/{decision_index}/approve` | approve one stored proposal and execute its allowlisted TrustOps write idempotently                                                |
 
 The unversioned `/api/*` routes remain for the bundled console and local
 compatibility. Server mode serves the same unversioned surface behind the same
