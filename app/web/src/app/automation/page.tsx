@@ -421,14 +421,18 @@ export default function AutomationPage() {
     flash("Starter workflow opened.");
   };
 
-  const persist = async () => {
+  const saveCurrentWorkflow = async ({
+    announce,
+  }: {
+    announce: boolean;
+  }): Promise<string | null> => {
     if (!editor.name.trim()) {
       flash("Workflow needs a name");
-      return;
+      return null;
     }
     if (editor.nodes.length === 0) {
       flash("Add at least one node before saving");
-      return;
+      return null;
     }
     try {
       const { workflow } = await save.mutateAsync({
@@ -438,20 +442,35 @@ export default function AutomationPage() {
         nodes: toApiNodes(editor.nodes),
         edges: toApiEdges(editor.edges),
       });
+      setEditor((current) => ({
+        ...current,
+        workflow_id: workflow.workflow_id,
+        name: workflow.name,
+        description: workflow.description,
+      }));
       setActiveId(workflow.workflow_id);
-      flash(`Saved ${workflow.name} v${workflow.version}.`);
+      if (announce) {
+        flash(`Saved ${workflow.name} v${workflow.version}.`);
+      }
+      return workflow.workflow_id;
     } catch (err) {
       flash(`Save failed: ${(err as Error).message}`);
+      return null;
     }
   };
 
+  const persist = async () => {
+    await saveCurrentWorkflow({ announce: true });
+  };
+
   const execute = async () => {
-    if (!editor.workflow_id) {
-      flash("Save the workflow first.");
+    const workflowId =
+      editor.workflow_id ?? (await saveCurrentWorkflow({ announce: false }));
+    if (!workflowId) {
       return;
     }
     try {
-      const { run: result } = await run.mutateAsync(editor.workflow_id);
+      const { run: result } = await run.mutateAsync(workflowId);
       setLastRun(result);
       flash(
         `Run ${result.result.toUpperCase()} — ${result.node_results.length} nodes executed.`,
@@ -531,14 +550,16 @@ export default function AutomationPage() {
                 <Button
                   variant="primary"
                   onClick={execute}
-                  disabled={run.isPending || !editor.workflow_id}
+                  disabled={
+                    run.isPending || save.isPending || editor.nodes.length === 0
+                  }
                 >
-                  {run.isPending ? (
+                  {run.isPending || save.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     <Play className="h-4 w-4" />
                   )}{" "}
-                  Run
+                  {editor.workflow_id ? "Run" : "Save & run"}
                 </Button>
               </>
             )}
