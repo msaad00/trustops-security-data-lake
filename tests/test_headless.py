@@ -20,6 +20,19 @@ from security_lakehouse.server_app import create_app  # noqa: E402
 from test_api_v1 import _seed_lake  # noqa: E402
 
 
+def _bearer(token: str) -> dict[str, str]:
+    return {"Authorization": f"Bearer {token}"}
+
+
+def _token_for_role(app, tmp_path: Path, role: str) -> str:
+    _seed_lake(tmp_path)
+    with session_scope(app.state.sessionmaker) as session:
+        tenant = create_tenant(session, slug=f"tenant-{role}", name=f"Tenant {role}")
+        user = create_user(session, tenant_id=tenant.id, email=f"{role}@acme.test", role=role)
+        _key, token = create_api_key(session, tenant_id=tenant.id, user_id=user.id)
+    return token
+
+
 def test_resource_catalog_lists_core_resources() -> None:
     catalog = api_v1.resource_catalog()
     paths = {row["path"] for row in catalog}
@@ -56,6 +69,32 @@ def test_v1_index_describes_contract(tmp_path: Path) -> None:
     assert any(row["resource"] == "posture.current" for row in data["resources"])
     assert data["openapi"] == "/openapi.json"
     assert data["streams"] == ["/api/v1/stream"]
+
+
+def test_v1_connector_actions_require_connector_manage_scope(tmp_path: Path) -> None:
+    app = create_app(tmp_path)
+    client = TestClient(app)
+    read_token = _token_for_role(app, tmp_path, "read_only")
+    admin_token = _token_for_role(app, tmp_path, "security_admin")
+
+    denied = client.post(
+        "/api/v1/connectors/aws-posture/discover",
+        json={"credentials": {"account_id": "123456789012"}, "options": {"region": "us-west-2"}},
+        headers=_bearer(read_token),
+    )
+    assert denied.status_code == HTTPStatus.FORBIDDEN
+    assert denied.json()["errors"][0] == {
+        "code": "forbidden",
+        "detail": "requires scope: connector_manage",
+    }
+
+    allowed = client.post(
+        "/api/v1/connectors/aws-posture/discover",
+        json={"credentials": {"account_id": "123456789012"}, "options": {"region": "us-west-2"}},
+        headers=_bearer(admin_token),
+    )
+    assert allowed.status_code == HTTPStatus.CREATED
+    assert allowed.json()["meta"]["resource"] == "connector.discover"
 
 
 def test_openapi_schema_documents_surface(tmp_path: Path) -> None:
