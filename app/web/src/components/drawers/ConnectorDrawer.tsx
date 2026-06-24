@@ -52,8 +52,8 @@ const CREDENTIAL_FIELDS: Record<string, FieldDef[]> = {
     },
     {
       name: "token",
-      label: "Scoped access token",
-      placeholder: "paste scoped token...",
+      label: "Scoped credential reference",
+      placeholder: "TRUSTOPS_CLICKHOUSE_TOKEN",
       secret: true,
       required: true,
     },
@@ -72,10 +72,31 @@ const CREDENTIAL_FIELDS: Record<string, FieldDef[]> = {
       required: true,
     },
     {
-      name: "private_key",
-      label: "Private key or OAuth token",
-      placeholder: "paste key or token...",
+      name: "oauth_token",
+      label: "OAuth token reference",
+      placeholder: "SNOWFLAKE_OAUTH_TOKEN",
       secret: true,
+      required: true,
+    },
+  ],
+  "aws-posture": [
+    {
+      name: "account_id",
+      label: "AWS account ID",
+      placeholder: "123456789012",
+      required: true,
+    },
+    {
+      name: "region",
+      label: "Region",
+      placeholder: "us-east-1",
+    },
+  ],
+  "azure-posture": [
+    {
+      name: "subscription_id",
+      label: "Azure subscription ID",
+      placeholder: "00000000-0000-0000-0000-000000000000",
       required: true,
     },
   ],
@@ -120,16 +141,16 @@ const fallbackFieldsFor = (credentialType: string): FieldDef[] => {
         required: true,
       },
       {
-        name: "client_secret",
-        label: "Client secret",
-        placeholder: "paste secret...",
+        name: "client_secret_ref",
+        label: "Client secret reference",
+        placeholder: "TRUSTOPS_CLIENT_SECRET",
         secret: true,
         required: true,
       },
       {
-        name: "refresh_token",
-        label: "Refresh token",
-        placeholder: "paste refresh token...",
+        name: "refresh_token_ref",
+        label: "Refresh token reference",
+        placeholder: "TRUSTOPS_REFRESH_TOKEN",
         secret: true,
         required: true,
       },
@@ -150,8 +171,8 @@ const fallbackFieldsFor = (credentialType: string): FieldDef[] => {
       },
       {
         name: "private_key",
-        label: "Private key",
-        placeholder: "paste key...",
+        label: "Private key reference",
+        placeholder: "TRUSTOPS_PRIVATE_KEY",
         secret: true,
         required: true,
       },
@@ -160,8 +181,8 @@ const fallbackFieldsFor = (credentialType: string): FieldDef[] => {
     return [
       {
         name: "token",
-        label: "Scoped token",
-        placeholder: "paste token...",
+        label: "Scoped credential reference",
+        placeholder: "TRUSTOPS_SOURCE_TOKEN",
         secret: true,
         required: true,
       },
@@ -181,8 +202,8 @@ const fallbackFieldsFor = (credentialType: string): FieldDef[] => {
       },
       {
         name: "token",
-        label: "Scoped access token",
-        placeholder: "paste scoped token...",
+        label: "Scoped credential reference",
+        placeholder: "TRUSTOPS_SOURCE_TOKEN",
         secret: true,
         required: true,
       },
@@ -199,8 +220,8 @@ const fallbackFieldsFor = (credentialType: string): FieldDef[] => {
   return [
     {
       name: "api_key",
-      label: "API key",
-      placeholder: "paste API key...",
+      label: "API key reference",
+      placeholder: "TRUSTOPS_SOURCE_API_KEY",
       secret: true,
       required: true,
     },

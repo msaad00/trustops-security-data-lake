@@ -210,6 +210,12 @@ def _missing_required_config(
         )
         return missing
 
+    if connector_id == "aws-posture":
+        return ["account_id"] if not _has_value(credentials, "account_id") else []
+
+    if connector_id == "azure-posture":
+        return ["subscription_id"] if not _has_value(credentials, "subscription_id") else []
+
     if "token" in credential_type:
         return ["token"] if not _has_value(credentials, "token") else []
     if "scoped_user" in credential_type:

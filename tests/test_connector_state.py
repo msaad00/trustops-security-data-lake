@@ -106,6 +106,39 @@ def test_probe_rejects_incomplete_staged_payload(tmp_path: Path) -> None:
     assert latest_config(tmp_path, "clickhouse-telemetry-lake") is None
 
 
+def test_keyless_cloud_connectors_require_only_scope_identifiers() -> None:
+    assert _missing_required_config(
+        "aws-posture",
+        "aws_sso_or_read_only_role",
+        {},
+        {},
+    ) == ["account_id"]
+    assert (
+        _missing_required_config(
+            "aws-posture",
+            "aws_sso_or_read_only_role",
+            {"account_id": "123456789012"},
+            {},
+        )
+        == []
+    )
+    assert _missing_required_config(
+        "azure-posture",
+        "azure_default_credential_reader",
+        {},
+        {},
+    ) == ["subscription_id"]
+    assert (
+        _missing_required_config(
+            "azure-posture",
+            "azure_default_credential_reader",
+            {"subscription_id": "00000000-0000-0000-0000-000000000000"},
+            {},
+        )
+        == []
+    )
+
+
 def test_probe_unknown_connector_returns_error(tmp_path: Path) -> None:
     rec = run_probe(tmp_path, connector_id="not-a-real-connector")
     assert rec["result"] == "error"
