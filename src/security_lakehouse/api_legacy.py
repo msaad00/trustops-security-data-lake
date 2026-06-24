@@ -25,6 +25,7 @@ from security_lakehouse.connector_state import (
     configure_payload_error,
     enablement_probe_error,
     list_runs,
+    run_discovery,
     run_probe,
 )
 from security_lakehouse.framework_detail import build_framework_detail
@@ -84,6 +85,8 @@ def required_post_scope(path: str) -> str:
     if _suffix_match(path, "/api/evidence/", "/verify") is not None:
         return "write"
     if _suffix_match(path, "/api/connectors/", "/configure") is not None:
+        return "connector_manage"
+    if _suffix_match(path, "/api/connectors/", "/discover") is not None:
         return "connector_manage"
     if _suffix_match(path, "/api/connectors/", "/probe") is not None:
         return "connector_manage"
@@ -285,6 +288,16 @@ def handle_post(path: str, body: Body, lake_dir: str | Path, *, role: str = "") 
         record = run_probe(
             lake,
             connector_id=probe,
+            actor=str(body.get("actor") or "console"),
+            credentials=body.get("credentials") if "credentials" in body else None,
+            options=body.get("options") if "options" in body else None,
+        )
+        return HTTPStatus.CREATED, {"run": record}
+    discover = _suffix_match(path, "/api/connectors/", "/discover")
+    if discover is not None:
+        record = run_discovery(
+            lake,
+            connector_id=discover,
             actor=str(body.get("actor") or "console"),
             credentials=body.get("credentials") if "credentials" in body else None,
             options=body.get("options") if "options" in body else None,

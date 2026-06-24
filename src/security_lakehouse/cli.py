@@ -89,6 +89,25 @@ def _parser() -> argparse.ArgumentParser:
         help="scheduled sync collects raw evidence only; do not rebuild bronze/silver/gold outputs",
     )
     connectors_configure.set_defaults(func=_connectors_configure)
+    connectors_discover = connectors_sub.add_parser("discover", help="discover selectable read scopes for a connector")
+    connectors_discover.add_argument("--lake", required=True, help="security data lake output directory")
+    connectors_discover.add_argument("--connector-id", required=True, help="connector id from connectors/catalog.json")
+    connectors_discover.add_argument("--actor", default="cli", help="actor recorded on the discovery event")
+    connectors_discover.add_argument("--account-id", default=None, help="AWS account id for aws-posture discovery")
+    connectors_discover.add_argument(
+        "--subscription-id", default=None, help="Azure subscription id for azure-posture discovery"
+    )
+    connectors_discover.add_argument("--account", default=None, help="Snowflake account for discovery")
+    connectors_discover.add_argument("--user", default=None, help="Snowflake read-only user for discovery")
+    connectors_discover.add_argument(
+        "--oauth-token-env",
+        default=None,
+        help="environment variable reference for a Snowflake OAuth token; value is not read by discovery",
+    )
+    connectors_discover.add_argument("--warehouse", default=None, help="Snowflake warehouse selector")
+    connectors_discover.add_argument("--database", default=None, help="Snowflake database selector")
+    connectors_discover.add_argument("--schema", default=None, help="Snowflake schema selector")
+    connectors_discover.set_defaults(func=_connectors_discover)
     connectors_sync = connectors_sub.add_parser("sync", help="run a configured connector into the managed raw lake")
     connectors_sync.add_argument("--lake", required=True, help="security data lake output directory")
     connectors_sync.add_argument("--connector-id", required=True, help="connector id from connectors/catalog.json")
@@ -554,6 +573,52 @@ def _connectors_configure(args: argparse.Namespace) -> int:
     )
     print(json.dumps({"event": event}, indent=2, sort_keys=True))
     return 0
+
+
+def _connectors_discover(args: argparse.Namespace) -> int:
+    from security_lakehouse.connector_state import run_discovery
+
+    credentials = {
+        key: value
+        for key, value in {
+            "account_id": args.account_id,
+            "subscription_id": args.subscription_id,
+            "account": args.account,
+            "user": args.user,
+            "credential_ref": args.oauth_token_env,
+        }.items()
+        if value is not None
+    }
+    options = {
+        key: value
+        for key, value in {
+            "warehouse": args.warehouse,
+            "database": args.database,
+            "schema": args.schema,
+        }.items()
+        if value is not None
+    }
+    run = run_discovery(
+        args.lake,
+        connector_id=args.connector_id,
+        actor=args.actor,
+        credentials=credentials,
+        options=options,
+    )
+    print(
+        json.dumps(
+            {
+                "run": {
+                    "connector_id": args.connector_id,
+                    "kind": "discover",
+                    "result": "ok" if run.get("result") == "ok" else "error",
+                }
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return 0 if run.get("result") == "ok" else 1
 
 
 def _connectors_sync(args: argparse.Namespace) -> int:
