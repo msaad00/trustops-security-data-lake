@@ -219,6 +219,7 @@ def test_v1_all_read_routes_use_envelope(tmp_path: Path) -> None:
         for path, resource in [
             ("/api/v1/healthz", "healthz"),
             ("/api/v1/posture/current", "posture.current"),
+            ("/api/v1/connectors", "connectors"),
             ("/api/v1/controls", "controls"),
             ("/api/v1/control-tests", "control-tests"),
             ("/api/v1/evidence", "evidence"),
@@ -233,6 +234,90 @@ def test_v1_all_read_routes_use_envelope(tmp_path: Path) -> None:
             assert body["meta"]["api_version"] == "v1"
             assert body["meta"]["resource"] == resource
             assert body["errors"] == []
+    finally:
+        server.shutdown()
+
+
+def test_v1_resource_catalog_advertises_connector_actions(tmp_path: Path) -> None:
+    server = _spin(tmp_path)
+    try:
+        status, body = _request(server, "GET", "/api/v1")
+        assert status == HTTPStatus.OK
+        by_path = {item["path"]: item for item in body["data"]["resources"]}
+        assert by_path["/api/v1/connectors"]["methods"] == ["GET"]
+        assert by_path["/api/v1/connectors/{connector_id}/runs"]["methods"] == ["GET"]
+        assert by_path["/api/v1/connectors/{connector_id}/discover"]["scopes"] == ["connector_manage"]
+        assert by_path["/api/v1/connectors/{connector_id}/probe"]["scopes"] == ["connector_manage"]
+        assert by_path["/api/v1/connectors/{connector_id}/configure"]["scopes"] == ["connector_manage"]
+    finally:
+        server.shutdown()
+
+
+def test_v1_connector_discovery_is_enveloped_and_history_safe(tmp_path: Path) -> None:
+    server = _spin(tmp_path)
+    try:
+        status, body = _request(
+            server,
+            "POST",
+            "/api/v1/connectors/aws-posture/discover",
+            body={
+                "actor": "agent-harness",
+                "credentials": {"account_id": "123456789012"},
+                "options": {"region": "us-west-2"},
+            },
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["meta"]["resource"] == "connector.discover"
+        assert body["data"]["kind"] == "discover"
+        assert body["data"]["result"] == "ok"
+        assert body["data"]["metadata"]["selection_mode"] == "account"
+        assert body["data"]["metadata"]["selectors"][0]["name"] == "123456789012"
+
+        status, body = _request(server, "GET", "/api/v1/connectors/aws-posture/runs")
+        assert status == HTTPStatus.OK
+        assert body["meta"]["resource"] == "connector.runs"
+        assert body["meta"]["connector_id"] == "aws-posture"
+        assert body["meta"]["count"] == 1
+        assert body["data"][0]["kind"] == "discover"
+        assert body["data"][0]["metadata"] == {}
+    finally:
+        server.shutdown()
+
+
+def test_v1_connector_configure_requires_matching_ok_probe(tmp_path: Path) -> None:
+    server = _spin(tmp_path)
+    try:
+        status, body = _request(
+            server,
+            "POST",
+            "/api/v1/connectors/github-security/configure",
+            body={"state": "enabled", "credentials": {"token": "abc"}, "options": {"org": "x"}},
+        )
+        assert status == HTTPStatus.BAD_REQUEST
+        assert body["meta"]["resource"] == "connector.configure"
+        assert "Test connection" in body["errors"][0]["detail"]
+
+        status, body = _request(
+            server,
+            "POST",
+            "/api/v1/connectors/github-security/probe",
+            body={"credentials": {"token": "abc"}, "options": {"org": "x"}},
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["meta"]["resource"] == "connector.probe"
+        assert body["data"]["result"] == "ok"
+        assert body["data"]["access_fingerprint"]
+
+        status, body = _request(
+            server,
+            "POST",
+            "/api/v1/connectors/github-security/configure",
+            body={"state": "enabled", "credentials": {"token": "abc"}, "options": {"org": "x"}},
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["meta"]["resource"] == "connector.configure"
+        assert body["data"]["state"] == "enabled"
+        assert body["data"]["credentials"]["token"].startswith("***")
     finally:
         server.shutdown()
 

@@ -616,24 +616,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         return JSONResponse(
             api_v1.envelope(
                 "index",
-                {
-                    "api_version": api_v1.API_VERSION,
-                    "resources": api_v1.resource_catalog(),
-                    "collection_controls": {
-                        "limit": "1-1000 (default 100)",
-                        "offset": ">= 0",
-                        "sort": "field, or -field for descending",
-                        "filters": "any field=value (comma-separated values = OR)",
-                    },
-                    "auth": {
-                        "api_key": "Authorization: Bearer <token>",
-                        "session": "httpOnly cookie via OIDC/SAML SSO",
-                        "methods_endpoint": "/api/v1/auth/methods",
-                    },
-                    "streams": ["/api/v1/stream"],
-                    "openapi": "/openapi.json",
-                    "docs": "/docs",
-                },
+                api_v1.index_payload(),
             )
         )
 
@@ -1429,14 +1412,21 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         return JSONResponse(_redact_payload(body, identity), status_code=int(_status))
 
     @app.post("/api/v1/{rest:path}")
-    async def v1_post(rest: str, request: Request, identity: Identity = Depends(_require_snapshot)) -> JSONResponse:
+    async def v1_post(rest: str, request: Request, identity: Identity = Depends(_require_read)) -> JSONResponse:
         try:
             body = await request.json()
         except Exception:  # noqa: BLE001 - empty/invalid body is treated as no body
             body = {}
+        v1_path = f"/api/v1/{rest}"
+        required_scope = api_v1.required_post_scope(v1_path)
+        if not identity.has_scope(required_scope):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"requires scope: {required_scope}",
+            )
         # handle_post rebuilds posture and writes a snapshot; offload so it does
         # not block the event loop.
-        _status, payload = await run_in_threadpool(api_v1.handle_post, f"/api/v1/{rest}", body, lake_for(identity))
+        _status, payload = await run_in_threadpool(api_v1.handle_post, v1_path, body, lake_for(identity))
         return JSONResponse(payload, status_code=int(_status))
 
     # --- legacy console surface (authenticated; same handlers as local mode) ---

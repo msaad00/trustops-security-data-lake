@@ -61,7 +61,7 @@ class _Handler(BaseHTTPRequestHandler):
         if parsed.path == "/api/healthz":
             self._send_json({"ok": True, "service": "trustops-assessment"})
             return
-        if parsed.path.startswith("/api/v1/"):
+        if parsed.path == "/api/v1" or parsed.path.startswith("/api/v1/"):
             self._handle_v1_get(parsed.path, parse_qs(parsed.query))
             return
         status, body = api_legacy.handle_get(parsed.path, parse_qs(parsed.query), self.lake_dir)
@@ -95,7 +95,7 @@ class _Handler(BaseHTTPRequestHandler):
         self._send_json(body, status=status)
 
     def _handle_v1_post(self, path: str) -> None:
-        body = self._read_json_body() if path == "/api/v1/snapshots" else {}
+        body = self._read_json_body()
         status, payload = api_v1.handle_post(path, body, self.lake_dir)
         self._send_json(payload, status=status)
 

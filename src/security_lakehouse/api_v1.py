@@ -25,6 +25,15 @@ from security_lakehouse.assessment import (
     verify_snapshot_chain,
     write_assessment_snapshot,
 )
+from security_lakehouse.connector_state import (
+    append_config_event,
+    build_catalog_view,
+    configure_payload_error,
+    enablement_probe_error,
+    list_runs,
+    run_discovery,
+    run_probe,
+)
 from security_lakehouse.framework_detail import build_framework_detail
 from security_lakehouse.graph import analyze_coverage
 from security_lakehouse.io import read_jsonl, resolve_path
@@ -115,6 +124,30 @@ COLLECTION_LOADERS: dict[str, tuple[str, Callable[[Path], list[JsonObject]]]] = 
 
 # Resources that also accept writes via handle_post.
 _WRITABLE = {"/api/v1/snapshots": ["POST"]}
+
+
+def _suffix_match(path: str, prefix: str, suffix: str) -> str | None:
+    if not path.startswith(prefix) or not path.endswith(suffix):
+        return None
+    rest = path[len(prefix) : -len(suffix)]
+    return rest or None
+
+
+def _connector_action(path: str, action: str) -> str | None:
+    return _suffix_match(path, "/api/v1/connectors/", f"/{action}")
+
+
+def required_post_scope(path: str) -> str:
+    """Return the RBAC scope required to mutate a v1 route."""
+    if path == "/api/v1/snapshots":
+        return "snapshot"
+    if _connector_action(path, "configure") is not None:
+        return "connector_manage"
+    if _connector_action(path, "discover") is not None:
+        return "connector_manage"
+    if _connector_action(path, "probe") is not None:
+        return "connector_manage"
+    return "write"
 
 
 # Typed write/read routes served only by the FastAPI server (``server_app``).
@@ -293,6 +326,49 @@ EXTENDED_RESOURCES: list[JsonObject] = [
 def resource_catalog() -> list[JsonObject]:
     """Self-describing list of v1 resources, for headless/agent discovery."""
     catalog: list[JsonObject] = []
+    catalog.extend(
+        [
+            {
+                "resource": "connectors",
+                "path": "/api/v1/connectors",
+                "kind": "collection",
+                "methods": ["GET"],
+                "scopes": ["read"],
+            },
+            {
+                "resource": "connector.runs",
+                "path": "/api/v1/connectors/{connector_id}/runs",
+                "kind": "collection",
+                "methods": ["GET"],
+                "scopes": ["read"],
+                "path_params": ["connector_id"],
+            },
+            {
+                "resource": "connector.configure",
+                "path": "/api/v1/connectors/{connector_id}/configure",
+                "kind": "action",
+                "methods": ["POST"],
+                "scopes": ["connector_manage"],
+                "path_params": ["connector_id"],
+            },
+            {
+                "resource": "connector.discover",
+                "path": "/api/v1/connectors/{connector_id}/discover",
+                "kind": "action",
+                "methods": ["POST"],
+                "scopes": ["connector_manage"],
+                "path_params": ["connector_id"],
+            },
+            {
+                "resource": "connector.probe",
+                "path": "/api/v1/connectors/{connector_id}/probe",
+                "kind": "action",
+                "methods": ["POST"],
+                "scopes": ["connector_manage"],
+                "path_params": ["connector_id"],
+            },
+        ]
+    )
     catalog.append(
         {
             "resource": "framework.detail",
@@ -368,6 +444,28 @@ def resource_catalog() -> list[JsonObject]:
         )
     catalog.extend(dict(entry) for entry in EXTENDED_RESOURCES)
     return sorted(catalog, key=lambda row: row["path"])
+
+
+def index_payload() -> JsonObject:
+    """Return the self-describing v1 contract index."""
+    return {
+        "api_version": API_VERSION,
+        "resources": resource_catalog(),
+        "collection_controls": {
+            "limit": "1-1000 (default 100)",
+            "offset": ">= 0",
+            "sort": "field, or -field for descending",
+            "filters": "any field=value (comma-separated values = OR)",
+        },
+        "auth": {
+            "api_key": "Authorization: Bearer <token>",
+            "session": "httpOnly cookie via OIDC/SAML SSO",
+            "methods_endpoint": "/api/v1/auth/methods",
+        },
+        "streams": ["/api/v1/stream"],
+        "openapi": "/openapi.json",
+        "docs": "/docs",
+    }
 
 
 def filter_collection(rows: list[JsonObject], params: Params) -> tuple[list[JsonObject], dict[str, list[str]]]:
@@ -513,6 +611,22 @@ def collection_response(resource: str, rows: list[JsonObject], params: Params) -
 def handle_get(path: str, params: Params, lake_dir: str | Path) -> tuple[HTTPStatus, JsonObject]:
     """Resolve a v1 GET into an ``(status, body)`` pair."""
     lake = resolve_path(lake_dir)
+    if path == "/api/v1":
+        return HTTPStatus.OK, envelope("index", index_payload())
+    if path == "/api/v1/connectors":
+        rows = build_catalog_view(lake)
+        return HTTPStatus.OK, collection_response("connectors", rows, params)
+    connector_runs = _suffix_match(path, "/api/v1/connectors/", "/runs")
+    if connector_runs is not None:
+        rows = list_runs(lake, connector_runs)
+        try:
+            body = collection_response("connector.runs", rows, params)
+        except ValueError:
+            return HTTPStatus.BAD_REQUEST, error_envelope(
+                "bad_request", "invalid request parameters", resource="connector.runs"
+            )
+        body["meta"]["connector_id"] = connector_runs
+        return HTTPStatus.OK, body
     if path.startswith("/api/v1/frameworks/") and path.endswith("/detail"):
         framework_id = path[len("/api/v1/frameworks/") : -len("/detail")]
         detail = build_framework_detail(framework_id, lake)
@@ -597,8 +711,60 @@ def handle_get(path: str, params: Params, lake_dir: str | Path) -> tuple[HTTPSta
 def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tuple[HTTPStatus, JsonObject]:
     """Resolve a v1 POST into an ``(status, body)`` pair."""
     lake = resolve_path(lake_dir)
+    payload = body or {}
     if path == "/api/v1/snapshots":
-        reason = str((body or {}).get("reason") or "api_request")
+        reason = str(payload.get("reason") or "api_request")
         snapshot_path = write_assessment_snapshot(lake, reason=reason)
         return HTTPStatus.CREATED, envelope("snapshots", {"snapshot_path": str(snapshot_path), "reason": reason})
+    configure = _connector_action(path, "configure")
+    if configure is not None:
+        state = str(payload.get("state") or "enabled").lower()
+        credentials = payload.get("credentials") or {}
+        options = payload.get("options") or {}
+        error = configure_payload_error(
+            connector_id=configure,
+            state=state,
+            credentials=credentials,
+            options=options,
+        )
+        if error:
+            return HTTPStatus.BAD_REQUEST, error_envelope("bad_request", error, resource="connector.configure")
+        error = enablement_probe_error(
+            lake,
+            connector_id=configure,
+            state=state,
+            credentials=credentials,
+            options=options,
+        )
+        if error:
+            return HTTPStatus.BAD_REQUEST, error_envelope("bad_request", error, resource="connector.configure")
+        record = append_config_event(
+            lake,
+            connector_id=configure,
+            state=state,
+            actor=str(payload.get("actor") or "console"),
+            credentials=credentials,
+            options=options,
+        )
+        return HTTPStatus.CREATED, envelope("connector.configure", record)
+    discover = _connector_action(path, "discover")
+    if discover is not None:
+        record = run_discovery(
+            lake,
+            connector_id=discover,
+            actor=str(payload.get("actor") or "console"),
+            credentials=payload.get("credentials") if "credentials" in payload else None,
+            options=payload.get("options") if "options" in payload else None,
+        )
+        return HTTPStatus.CREATED, envelope("connector.discover", record)
+    probe = _connector_action(path, "probe")
+    if probe is not None:
+        record = run_probe(
+            lake,
+            connector_id=probe,
+            actor=str(payload.get("actor") or "console"),
+            credentials=payload.get("credentials") if "credentials" in payload else None,
+            options=payload.get("options") if "options" in payload else None,
+        )
+        return HTTPStatus.CREATED, envelope("connector.probe", record)
     return HTTPStatus.NOT_FOUND, error_envelope("not_found", f"unknown route {path}")
