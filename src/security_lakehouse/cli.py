@@ -184,6 +184,11 @@ def _parser() -> argparse.ArgumentParser:
         action="store_true",
         help="keep running later connectors and write a partial report if one connector fails",
     )
+    scenario_run.add_argument(
+        "--summary",
+        action="store_true",
+        help="emit a concise operator summary instead of the full JSON report",
+    )
     scenario_run.set_defaults(func=_scenario_run)
 
     controls = sub.add_parser("controls", help="control catalog commands")
@@ -756,7 +761,11 @@ def _ingestion_plan(args: argparse.Namespace) -> int:
 
 
 def _scenario_run(args: argparse.Namespace) -> int:
-    from security_lakehouse.scenarios import parse_fixture_specs, run_live_cloud_posture_scenario
+    from security_lakehouse.scenarios import (
+        format_live_cloud_posture_summary,
+        parse_fixture_specs,
+        run_live_cloud_posture_scenario,
+    )
 
     report = run_live_cloud_posture_scenario(
         args.lake,
@@ -765,7 +774,10 @@ def _scenario_run(args: argparse.Namespace) -> int:
         actor=args.actor,
         continue_on_error=args.continue_on_error,
     )
-    print(json.dumps(report, indent=2, sort_keys=True))
+    if args.summary:
+        print(format_live_cloud_posture_summary(report))
+    else:
+        print(json.dumps(report, indent=2, sort_keys=True))
     return 0 if report["summary"]["ok"] else 1
 
 
