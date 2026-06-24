@@ -104,6 +104,61 @@ def test_snowflake_poc_bootstrap_matches_connector_contract() -> None:
     assert "SECRET" not in body
 
 
+def test_aws_posture_role_bootstrap_matches_connector_contract() -> None:
+    body = (REPO_ROOT / "deploy" / "aws" / "trustops-posture-readonly-role.yaml").read_text(encoding="utf-8")
+
+    for expected in (
+        "TrustOpsPostureReadOnlyRole",
+        "sts:AssumeRole",
+        "sts:ExternalId",
+        "iam:GetAccountPasswordPolicy",
+        "iam:GetAccountSummary",
+        "iam:ListMFADevices",
+        "iam:ListUsers",
+    ):
+        assert expected in body
+
+    for forbidden in (
+        "iam:Create",
+        "iam:Delete",
+        "iam:Update",
+        "iam:Put",
+        "iam:Attach",
+        "iam:Detach",
+        "iam:PassRole",
+        "AdministratorAccess",
+        "PowerUserAccess",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+    ):
+        assert forbidden not in body
+
+    assert 'Default: ""' not in body
+    assert "NoEcho: true" in body
+    assert "CREATE USER" not in body.upper()
+
+
+def test_azure_posture_reader_bootstrap_matches_connector_contract() -> None:
+    body = (REPO_ROOT / "deploy" / "azure" / "trustops-posture-reader.bicep").read_text(encoding="utf-8")
+
+    assert "targetScope = 'subscription'" in body
+    assert "Microsoft.Authorization/roleAssignments@2022-04-01" in body
+    assert "acdd72a7-3385-48ef-bd42-f606fba81ae7" in body
+    assert "DefaultAzureCredential" not in body
+
+    for forbidden in (
+        "Owner",
+        "Contributor",
+        "User Access Administrator",
+        "Managed Identity Operator",
+        "f1a07417-d97a-45cb-824c-7a7467783830",
+        "password",
+        "clientSecret",
+        "accessKey",
+    ):
+        assert forbidden not in body
+
+
 def test_has_adapter_agrees_with_registry() -> None:
     for connector_id in REAL_ADAPTERS:
         assert connector_state.has_adapter(connector_id) is True

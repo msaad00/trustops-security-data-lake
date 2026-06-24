@@ -8,6 +8,7 @@ Three install surfaces — pick the one that fits your blast radius.
 | **Container image** | CI, Docker Compose, single-host servers                     | `docker run -p 8787:8787 -v $PWD/build/lakehouse:/lake ghcr.io/msaad00/trustops:latest`        |
 | **Helm + EKS**      | Production self-hosted, customer-data-residency requirement | See [Helm chart](helm/trustops/) + [EKS reference IaC](eks-terraform/) below                   |
 | **Snowflake POC**   | Governed evidence lake using customer-owned Snowflake views | Run [`snowflake/bootstrap_poc.sql`](snowflake/bootstrap_poc.sql), then connect the reader role |
+| **Cloud POC roles** | Read-only AWS/Azure posture collection without static keys   | Deploy [`aws/trustops-posture-readonly-role.yaml`](aws/trustops-posture-readonly-role.yaml) or [`azure/trustops-posture-reader.bicep`](azure/trustops-posture-reader.bicep) |
 
 ## Container image
 
@@ -68,6 +69,23 @@ kubectl -n trustops get pods
 ```
 
 The IAM policy is intentionally tiny: `s3:ListBucket` + `s3:GetObject*` on the named evidence bucket. No write/delete actions, no other AWS resources. That's the customer-data-residency boundary: TrustOps reads where the data lives, and the principal it runs as can't move bytes anywhere else.
+
+## Cloud posture POC roles
+
+The live AWS and Azure posture connectors can be proven without static keys:
+
+- AWS: `deploy/aws/trustops-posture-readonly-role.yaml` creates
+  `TrustOpsPostureReadOnlyRole` with only the IAM read calls used by the
+  connector. The trust policy is parameterized so customers can allow their own
+  TrustOps runtime role, SSO role, or brokered automation principal to assume it.
+- Azure: `deploy/azure/trustops-posture-reader.bicep` assigns built-in `Reader`
+  at subscription scope to a service principal, managed identity, or group.
+  If a tenant blocks role-assignment reads, grant a customer-owned read role
+  that includes `Microsoft.Authorization/roleAssignments/read`. TrustOps uses
+  `DefaultAzureCredential` at runtime.
+
+Both templates are bootstrap helpers for read-only evidence collection. They do
+not create users, credentials, long-lived keys, or remediation permissions.
 
 ## Snowflake POC bootstrap
 
