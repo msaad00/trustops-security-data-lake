@@ -34,6 +34,24 @@ The current AWS runner uses the standard `boto3` credential chain and only calls
 
 Use an SSO profile or assumed read-only role. Do not create root credentials.
 
+To create the exact read-only role TrustOps needs, deploy the CloudFormation
+template in the target AWS account:
+
+```bash
+aws cloudformation deploy \
+  --stack-name trustops-posture-readonly \
+  --template-file deploy/aws/trustops-posture-readonly-role.yaml \
+  --capabilities CAPABILITY_NAMED_IAM \
+  --parameter-overrides \
+    TrustedPrincipalArn=arn:aws:iam::<trustops-runtime-account-id>:role/<trustops-runtime-role> \
+    ExternalId=<customer-generated-external-id>
+```
+
+The role grants only `iam:ListUsers`, `iam:ListMFADevices`,
+`iam:GetAccountPasswordPolicy`, and `iam:GetAccountSummary`. Use SSO, an
+assumed role, or workload identity to run the connector; do not generate long
+lived access keys.
+
 ```bash
 aws sso login --profile trustops-poc
 security-lakehouse connectors configure \
@@ -67,6 +85,23 @@ persisting the credential. The connector reads:
 For a POC, built-in `Reader` at subscription scope is usually enough for
 resources and policy assignments. Add an explicit role-assignment read grant if
 the tenant blocks that read.
+
+To provision a service principal or managed identity with the expected built-in
+read roles:
+
+```bash
+az deployment sub create \
+  --location eastus \
+  --template-file deploy/azure/trustops-posture-reader.bicep \
+  --parameters principalId=<service-principal-or-managed-identity-object-id> \
+               principalType=ServicePrincipal
+```
+
+The module assigns `Reader` for resource and policy inventory. If the tenant
+blocks role-assignment reads for that identity, grant a customer-owned read role
+that includes `Microsoft.Authorization/roleAssignments/read`. TrustOps then
+uses `DefaultAzureCredential` from Cloud Shell, managed identity, or service
+principal environment variables.
 
 ```bash
 az login
