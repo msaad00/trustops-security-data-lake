@@ -136,6 +136,31 @@ def _parser() -> argparse.ArgumentParser:
     ingestion_plan.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     ingestion_plan.set_defaults(func=_ingestion_plan)
 
+    scenario = sub.add_parser("scenario", help="run repeatable TrustOps proof scenarios")
+    scenario_sub = scenario.add_subparsers(dest="scenario_command", required=True)
+    scenario_run = scenario_sub.add_parser("run", help="run a named scenario and emit a JSON report")
+    scenario_run.add_argument("name", choices=["live-cloud-posture"], help="scenario name")
+    scenario_run.add_argument("--lake", required=True, help="security data lake output directory")
+    scenario_run.add_argument(
+        "--connector",
+        action="append",
+        default=None,
+        help="connector id to run; repeatable. Defaults to Azure, AWS, and Snowflake posture connectors.",
+    )
+    scenario_run.add_argument(
+        "--fixture",
+        action="append",
+        default=None,
+        help="offline fixture binding as connector_id=path; repeatable for CI or local demos",
+    )
+    scenario_run.add_argument("--actor", default="scenario", help="actor recorded on connector/workflow events")
+    scenario_run.add_argument(
+        "--continue-on-error",
+        action="store_true",
+        help="keep running later connectors and write a partial report if one connector fails",
+    )
+    scenario_run.set_defaults(func=_scenario_run)
+
     controls = sub.add_parser("controls", help="control catalog commands")
     controls_sub = controls.add_subparsers(dest="controls_command", required=True)
     controls_provenance = controls_sub.add_parser("provenance", help="list controls missing source provenance")
@@ -652,6 +677,20 @@ def _ingestion_plan(args: argparse.Namespace) -> int:
         print(f"{p.connector_id:28} {p.velocity:18} {p.method:32} {p.freshness_slo:>6}")
         print(f"{'':28} └ {p.cost_note}")
     return 0
+
+
+def _scenario_run(args: argparse.Namespace) -> int:
+    from security_lakehouse.scenarios import parse_fixture_specs, run_live_cloud_posture_scenario
+
+    report = run_live_cloud_posture_scenario(
+        args.lake,
+        connectors=args.connector,
+        fixture_dirs=parse_fixture_specs(args.fixture),
+        actor=args.actor,
+        continue_on_error=args.continue_on_error,
+    )
+    print(json.dumps(report, indent=2, sort_keys=True))
+    return 0 if report["summary"]["ok"] else 1
 
 
 def _controls_provenance(args: argparse.Namespace) -> int:

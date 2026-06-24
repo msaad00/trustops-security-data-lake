@@ -5,6 +5,12 @@ the first POC must be read-only and reversible. Do not paste passwords,
 human-scoped developer tokens, root keys, or broad cloud credentials into chat,
 Git, screenshots, or PR bodies.
 
+For repeatable end-to-end proof, use
+[`security-lakehouse scenario run live-cloud-posture`](SCENARIOS.md) after the
+provider-specific setup below. The scenario syncs connectors, materializes the
+lake, verifies evidence integrity, freezes a snapshot, runs a workflow DAG, and
+writes a JSON report.
+
 ## Credential Boundary
 
 Preferred order:
