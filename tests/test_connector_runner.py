@@ -67,6 +67,24 @@ def test_connector_sync_upserts_stable_event_ids(tmp_path: Path) -> None:
 
 
 def test_connector_sync_cli_runs_fixture_connector(tmp_path: Path, capsys) -> None:  # type: ignore[no-untyped-def]
+    credentials = json.dumps({"token": "fixture-read-token"})
+    options = json.dumps({"org": "acme"})
+    probe = main(
+        [
+            "connectors",
+            "probe",
+            "--lake",
+            str(tmp_path),
+            "--connector-id",
+            "github-security",
+            "--credentials-json",
+            credentials,
+            "--options-json",
+            options,
+        ]
+    )
+    assert probe == 0
+    capsys.readouterr()
     configure = main(
         [
             "connectors",
@@ -77,6 +95,10 @@ def test_connector_sync_cli_runs_fixture_connector(tmp_path: Path, capsys) -> No
             "github-security",
             "--state",
             "enabled",
+            "--credentials-json",
+            credentials,
+            "--options-json",
+            options,
         ]
     )
     assert configure == 0
@@ -105,6 +127,26 @@ def test_connector_sync_cli_runs_fixture_connector(tmp_path: Path, capsys) -> No
 
 
 def test_connector_configure_cli_persists_schedule_options(tmp_path: Path, capsys) -> None:  # type: ignore[no-untyped-def]
+    credentials = json.dumps({"token": "fixture-read-token"})
+    options = json.dumps({"org": "acme", "repo": "acme/model-service"})
+    assert (
+        main(
+            [
+                "connectors",
+                "probe",
+                "--lake",
+                str(tmp_path),
+                "--connector-id",
+                "github-security",
+                "--credentials-json",
+                credentials,
+                "--options-json",
+                options,
+            ]
+        )
+        == 0
+    )
+    capsys.readouterr()
     code = main(
         [
             "connectors",
@@ -115,6 +157,10 @@ def test_connector_configure_cli_persists_schedule_options(tmp_path: Path, capsy
             "github-security",
             "--state",
             "enabled",
+            "--credentials-json",
+            credentials,
+            "--options-json",
+            options,
             "--sync-schedule",
             "every 15m",
             "--repo",
@@ -133,7 +179,71 @@ def test_connector_configure_cli_persists_schedule_options(tmp_path: Path, capsy
     assert options == {
         "fixture_dir": str(FIXTURE),
         "materialize": False,
+        "org": "acme",
         "repo": "acme/model-service",
         "sync_schedule": "every 15m",
         "token_env": "GH_READ_TOKEN",
     }
+
+
+def test_connector_configure_cli_rejects_enable_without_probe(tmp_path: Path, capsys) -> None:  # type: ignore[no-untyped-def]
+    code = main(
+        [
+            "connectors",
+            "configure",
+            "--lake",
+            str(tmp_path),
+            "--connector-id",
+            "github-security",
+            "--state",
+            "enabled",
+            "--credentials-json",
+            json.dumps({"token": "fixture-read-token"}),
+            "--options-json",
+            json.dumps({"org": "acme"}),
+        ]
+    )
+
+    assert code == 1
+    assert "Test connection" in capsys.readouterr().err
+
+
+def test_connector_configure_cli_requires_matching_probe(tmp_path: Path, capsys) -> None:  # type: ignore[no-untyped-def]
+    assert (
+        main(
+            [
+                "connectors",
+                "probe",
+                "--lake",
+                str(tmp_path),
+                "--connector-id",
+                "github-security",
+                "--credentials-json",
+                json.dumps({"token": "fixture-read-token"}),
+                "--options-json",
+                json.dumps({"org": "acme"}),
+            ]
+        )
+        == 0
+    )
+    capsys.readouterr()
+
+    code = main(
+        [
+            "connectors",
+            "configure",
+            "--lake",
+            str(tmp_path),
+            "--connector-id",
+            "github-security",
+            "--state",
+            "enabled",
+            "--credentials-json",
+            json.dumps({"token": "rotated-token"}),
+            "--options-json",
+            json.dumps({"org": "acme"}),
+        ]
+    )
+
+    assert code == 1
+    assert "exact credentials" in capsys.readouterr().err

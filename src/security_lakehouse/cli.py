@@ -66,6 +66,16 @@ def _parser() -> argparse.ArgumentParser:
     connectors_configure.add_argument("--state", required=True, choices=["enabled", "disabled"], help="connector state")
     connectors_configure.add_argument("--actor", default="cli", help="actor recorded on the configuration event")
     connectors_configure.add_argument(
+        "--credentials-json",
+        default=None,
+        help="JSON object with non-secret connector identity fields and secret references, never raw passwords",
+    )
+    connectors_configure.add_argument(
+        "--options-json",
+        default=None,
+        help="JSON object with selected read scope, schedule, or connector options",
+    )
+    connectors_configure.add_argument(
         "--sync-schedule",
         default=None,
         help="optional scheduler expression for continuous connector syncs, for example '@hourly' or 'every 15m'",
@@ -108,6 +118,21 @@ def _parser() -> argparse.ArgumentParser:
     connectors_discover.add_argument("--database", default=None, help="Snowflake database selector")
     connectors_discover.add_argument("--schema", default=None, help="Snowflake schema selector")
     connectors_discover.set_defaults(func=_connectors_discover)
+    connectors_probe = connectors_sub.add_parser("probe", help="test connector access before enabling it")
+    connectors_probe.add_argument("--lake", required=True, help="security data lake output directory")
+    connectors_probe.add_argument("--connector-id", required=True, help="connector id from connectors/catalog.json")
+    connectors_probe.add_argument("--actor", default="cli", help="actor recorded on the probe event")
+    connectors_probe.add_argument(
+        "--credentials-json",
+        default=None,
+        help="JSON object with non-secret connector identity fields and secret references, never raw passwords",
+    )
+    connectors_probe.add_argument(
+        "--options-json",
+        default=None,
+        help="JSON object with selected read scope or connector options",
+    )
+    connectors_probe.set_defaults(func=_connectors_probe)
     connectors_sync = connectors_sub.add_parser("sync", help="run a configured connector into the managed raw lake")
     connectors_sync.add_argument("--lake", required=True, help="security data lake output directory")
     connectors_sync.add_argument("--connector-id", required=True, help="connector id from connectors/catalog.json")
@@ -575,12 +600,31 @@ def _connectors_list(args: argparse.Namespace) -> int:
     return 0
 
 
-def _connectors_configure(args: argparse.Namespace) -> int:
-    from security_lakehouse.connector_state import append_config_event
+def _json_object(raw: str | None, *, flag: str) -> dict[str, object]:
+    if raw is None:
+        return {}
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"{flag} must be a JSON object") from exc
+    if not isinstance(payload, dict):
+        raise ValueError(f"{flag} must be a JSON object")
+    return payload
 
+
+def _connectors_configure(args: argparse.Namespace) -> int:
+    from security_lakehouse.connector_state import (
+        append_config_event,
+        configure_payload_error,
+        enablement_probe_error,
+    )
+
+    credentials = _json_object(args.credentials_json, flag="--credentials-json")
+    options = _json_object(args.options_json, flag="--options-json")
     options = {
         key: value
         for key, value in {
+            **options,
             "sync_schedule": args.sync_schedule,
             "repo": args.repo,
             "fixture_dir": args.fixture_dir,
@@ -589,11 +633,29 @@ def _connectors_configure(args: argparse.Namespace) -> int:
         }.items()
         if value is not None
     }
+    error = configure_payload_error(
+        connector_id=args.connector_id,
+        state=args.state,
+        credentials=credentials,
+        options=options,
+    )
+    if error:
+        raise ValueError(error)
+    error = enablement_probe_error(
+        args.lake,
+        connector_id=args.connector_id,
+        state=args.state,
+        credentials=credentials,
+        options=options,
+    )
+    if error:
+        raise ValueError(error)
     event = append_config_event(
         args.lake,
         connector_id=args.connector_id,
         state=args.state,
         actor=args.actor,
+        credentials=credentials,
         options=options,
     )
     print(json.dumps({"event": event}, indent=2, sort_keys=True))
@@ -643,6 +705,20 @@ def _connectors_discover(args: argparse.Namespace) -> int:
             sort_keys=True,
         )
     )
+    return 0 if run.get("result") == "ok" else 1
+
+
+def _connectors_probe(args: argparse.Namespace) -> int:
+    from security_lakehouse.connector_state import run_probe
+
+    run = run_probe(
+        args.lake,
+        connector_id=args.connector_id,
+        actor=args.actor,
+        credentials=_json_object(args.credentials_json, flag="--credentials-json"),
+        options=_json_object(args.options_json, flag="--options-json"),
+    )
+    print(json.dumps({"run": run}, indent=2, sort_keys=True))
     return 0 if run.get("result") == "ok" else 1
 
 

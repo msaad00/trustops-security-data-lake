@@ -40,6 +40,7 @@ PRODUCTION_STATUS_ORDER = {
     "local_demo": 2,
 }
 _ACCESS_FINGERPRINT_KEY = b"trustops-access-fingerprint-v1"
+_ACCESS_FINGERPRINT_OPTION_EXCLUDES = frozenset({"raw", "sync_schedule", "fixture_dir", "token_env", "materialize"})
 
 
 def _gold(lake_dir: str | Path) -> Path:
@@ -71,7 +72,7 @@ def _access_fingerprint(credentials: dict[str, Any] | None, options: dict[str, A
     """
     payload = {
         "credentials": credentials or {},
-        "options": {k: v for k, v in (options or {}).items() if k != "raw"},
+        "options": {k: v for k, v in (options or {}).items() if k not in _ACCESS_FINGERPRINT_OPTION_EXCLUDES},
     }
     return hashlib.pbkdf2_hmac(
         "sha256",
@@ -344,6 +345,9 @@ def _scope_candidates(
         database = str(options.get("database") or "")
         schema = str(options.get("schema") or "")
         warehouse = str(options.get("warehouse") or "")
+        recommended_database = "TRUSTOPS_SECURITY_LAKE"
+        recommended_schema = "EVIDENCE"
+        recommended_warehouse = "TRUSTOPS_READ_WH"
         defaults = {
             "audit_events": "TRUSTOPS_AUDIT_EVENTS",
             "control_posture": "TRUSTOPS_CONTROL_POSTURE",
@@ -382,10 +386,19 @@ def _scope_candidates(
                 },
                 *views,
             ],
+            "requires_selection": [
+                name
+                for name, selected in (
+                    ("warehouse", warehouse),
+                    ("database", database),
+                    ("schema", schema),
+                )
+                if not selected
+            ],
             "recommended_options": {
-                "warehouse": warehouse or "TRUSTOPS_READ_WH",
-                "database": database or "<EVIDENCE_DATABASE>",
-                "schema": schema or "<EVIDENCE_SCHEMA>",
+                "warehouse": warehouse or recommended_warehouse,
+                "database": database or recommended_database,
+                "schema": schema or recommended_schema,
                 **defaults,
             },
         }

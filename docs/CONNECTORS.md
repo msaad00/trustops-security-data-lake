@@ -76,13 +76,35 @@ Every executable runner writes valid raw evidence into:
 <lake>/raw/connector_events.jsonl
 ```
 
-Enable the connector, then sync it:
+The production lifecycle is intentionally the same for UI, API, CLI, scheduler,
+and agents:
+
+1. create a scoped source role, app, or service identity,
+2. discover the read scope visible to that identity,
+3. probe the exact credential reference and scope,
+4. enable only after the probe succeeds,
+5. sync manually or by schedule.
+
+Do not paste passwords, human-scoped developer tokens, root keys, or private
+keys into TrustOps. Use SSO, an assumable role, OAuth, key-pair auth, or a
+secret-manager reference. TrustOps records a non-secret fingerprint so a later
+enable action must match the probed access payload.
+
+Probe and enable a fixture-backed GitHub connector:
 
 ```bash
+security-lakehouse connectors probe \
+  --lake build/lakehouse \
+  --connector-id github-security \
+  --credentials-json '{"token":"fixture-read-token"}' \
+  --options-json '{"org":"acme"}'
+
 security-lakehouse connectors configure \
   --lake build/lakehouse \
   --connector-id github-security \
-  --state enabled
+  --state enabled \
+  --credentials-json '{"token":"fixture-read-token"}' \
+  --options-json '{"org":"acme"}'
 
 security-lakehouse connectors sync \
   --lake build/lakehouse \
@@ -91,10 +113,24 @@ security-lakehouse connectors sync \
   --fixture-dir tests/fixtures/github-governance
 ```
 
-For live GitHub collection, omit `--fixture-dir` and provide a GitHub App
-installation token through the selected token environment variable:
+For live GitHub collection, use a GitHub App installation token from the
+selected environment variable or secret manager. The configure payload should
+store the reference name, not the raw token:
 
 ```bash
+security-lakehouse connectors probe \
+  --lake build/lakehouse \
+  --connector-id github-security \
+  --credentials-json '{"credential_ref":"TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN"}' \
+  --options-json '{"repo":"OWNER/REPO"}'
+
+security-lakehouse connectors configure \
+  --lake build/lakehouse \
+  --connector-id github-security \
+  --state enabled \
+  --credentials-json '{"credential_ref":"TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN"}' \
+  --options-json '{"repo":"OWNER/REPO"}'
+
 TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN=... security-lakehouse connectors sync \
   --lake build/lakehouse \
   --connector-id github-security \
@@ -106,10 +142,18 @@ views (`audit_events`, `control_posture`, `asset_risk`, and
 `evidence_bundles`) and exercises the same raw-to-gold pipeline:
 
 ```bash
+security-lakehouse connectors probe \
+  --lake build/lakehouse \
+  --connector-id snowflake-evidence-lake \
+  --credentials-json '{"account":"fixture","user":"trustops_reader","credential_ref":"fixture-sso"}' \
+  --options-json '{"warehouse":"TRUSTOPS_READ_WH","database":"TRUSTOPS_SECURITY_LAKE","schema":"EVIDENCE","audit_events":"TRUSTOPS_AUDIT_EVENTS","control_posture":"TRUSTOPS_CONTROL_POSTURE","asset_risk":"TRUSTOPS_ASSET_RISK","evidence_bundles":"TRUSTOPS_EVIDENCE_BUNDLES"}'
+
 security-lakehouse connectors configure \
   --lake build/lakehouse \
   --connector-id snowflake-evidence-lake \
-  --state enabled
+  --state enabled \
+  --credentials-json '{"account":"fixture","user":"trustops_reader","credential_ref":"fixture-sso"}' \
+  --options-json '{"warehouse":"TRUSTOPS_READ_WH","database":"TRUSTOPS_SECURITY_LAKE","schema":"EVIDENCE","audit_events":"TRUSTOPS_AUDIT_EVENTS","control_posture":"TRUSTOPS_CONTROL_POSTURE","asset_risk":"TRUSTOPS_ASSET_RISK","evidence_bundles":"TRUSTOPS_EVIDENCE_BUNDLES"}'
 
 security-lakehouse connectors sync \
   --lake build/lakehouse \
@@ -155,10 +199,18 @@ continuous posture.
 Persist scheduler options on the connector configuration:
 
 ```bash
+security-lakehouse connectors probe \
+  --lake build/lakehouse \
+  --connector-id github-security \
+  --credentials-json '{"credential_ref":"TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN"}' \
+  --options-json '{"repo":"OWNER/REPO"}'
+
 security-lakehouse connectors configure \
   --lake build/lakehouse \
   --connector-id github-security \
   --state enabled \
+  --credentials-json '{"credential_ref":"TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN"}' \
+  --options-json '{"repo":"OWNER/REPO"}' \
   --sync-schedule "every 15m" \
   --repo OWNER/REPO
 ```
