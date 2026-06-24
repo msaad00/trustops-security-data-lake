@@ -32,12 +32,14 @@ security-lakehouse scenario run live-cloud-posture \
   --connector snowflake-evidence-lake \
   --fixture azure-posture=tests/fixtures/azure \
   --fixture aws-posture=tests/fixtures/aws \
-  --fixture snowflake-evidence-lake=tests/fixtures/snowflake
+  --fixture snowflake-evidence-lake=tests/fixtures/snowflake \
+  --summary
 ```
 
 Expected proof points:
 
 - sync result per connector
+- evidence-by-source counts
 - silver evidence count and source mix
 - evidence integrity `ok: true`
 - snapshot-chain verification `ok: true`
@@ -53,7 +55,8 @@ TrustOps storing credentials.
 ```bash
 security-lakehouse scenario run live-cloud-posture \
   --lake build/scenarios/azure-live \
-  --connector azure-posture
+  --connector azure-posture \
+  --summary
 ```
 
 Set `AZURE_SUBSCRIPTION_ID` for the target subscription. The connector reads
@@ -71,7 +74,8 @@ assumed role, or workload identity. Do not create root access keys.
 AWS_ACCOUNT_ID=030225640638 \
 security-lakehouse scenario run live-cloud-posture \
   --lake build/scenarios/aws-live \
-  --connector aws-posture
+  --connector aws-posture \
+  --summary
 ```
 
 The current AWS connector reads IAM users, MFA devices, the account summary, and
@@ -93,7 +97,8 @@ SNOWFLAKE_DATABASE=TRUSTOPS_SECURITY_LAKE \
 SNOWFLAKE_SCHEMA=EVIDENCE \
 security-lakehouse scenario run live-cloud-posture \
   --lake build/scenarios/snowflake-live \
-  --connector snowflake-evidence-lake
+  --connector snowflake-evidence-lake \
+  --summary
 ```
 
 Headless jobs can use `SNOWFLAKE_AUTHENTICATOR=oauth` with
@@ -115,8 +120,14 @@ SNOWFLAKE_WAREHOUSE=TRUSTOPS_READ_WH \
 SNOWFLAKE_DATABASE=TRUSTOPS_SECURITY_LAKE \
 SNOWFLAKE_SCHEMA=EVIDENCE \
 security-lakehouse scenario run live-cloud-posture \
-  --lake build/scenarios/live-cloud-posture
+  --lake build/scenarios/live-cloud-posture \
+  --summary
 ```
+
+`--summary` prints the operator view: connector status, evidence counts by
+source, posture score/state, integrity status, snapshot-chain verification,
+workflow result, and the durable report path. Omit it when an automation or PR
+attachment needs the full JSON report.
 
 This is the default scenario for proving that TrustOps can operate as a
 self-hosted, deterministic trust center: evidence comes from real systems, the

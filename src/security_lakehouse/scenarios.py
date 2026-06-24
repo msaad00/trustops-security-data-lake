@@ -7,6 +7,7 @@ without creating a second execution path.
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any
@@ -114,6 +115,52 @@ def run_live_cloud_posture_scenario(
     return report
 
 
+def format_live_cloud_posture_summary(report: dict[str, Any]) -> str:
+    """Render the scenario report as a concise operator-facing summary."""
+    summary = report.get("summary") or {}
+    integrity = report.get("integrity") or {}
+    snapshot_chain = report.get("snapshot_chain") or {}
+    workflow_run = (report.get("workflow") or {}).get("run") or {}
+    source_counts = summary.get("evidence_by_source") or {}
+    connector_results = summary.get("connector_results") or []
+
+    lines = [
+        f"TrustOps scenario: {report.get('scenario', LIVE_CLOUD_SCENARIO)}",
+        f"Status: {'ok' if summary.get('ok') else 'needs attention'}",
+        (f"Evidence: {summary.get('evidence_count', 0)} normalized rows from {_format_counts(source_counts)}"),
+        (
+            "Posture: "
+            f"{summary.get('posture_state', 'unknown')} "
+            f"score={summary.get('posture_score', 'unknown')} "
+            f"open_violations={summary.get('open_violations', 'unknown')} "
+            f"frameworks={summary.get('frameworks', 'unknown')}"
+        ),
+        "Connectors:",
+    ]
+    for result in connector_results:
+        status = "ok" if result.get("ok") else "failed"
+        evidence_count = result.get("evidence_count", 0)
+        materialized = "materialized" if result.get("materialized") else "raw-only"
+        line = f"- {result.get('connector_id')}: {status}, evidence={evidence_count}, {materialized}"
+        if not result.get("ok") and result.get("error"):
+            line = f"{line}, error={result['error']}"
+        lines.append(line)
+
+    lines.extend(
+        [
+            f"Integrity: {'ok' if integrity.get('ok') else 'not verified'}",
+            (
+                "Snapshot chain: "
+                f"{'ok' if snapshot_chain.get('ok') else 'not verified'} "
+                f"length={snapshot_chain.get('length', 0)}"
+            ),
+            f"Workflow: {workflow_run.get('result', 'not run')}",
+            f"Report: {(report.get('artifacts') or {}).get('report', '')}",
+        ]
+    )
+    return "\n".join(lines)
+
+
 def _run_scenario_workflow(lake: Path, *, actor: str) -> dict[str, Any]:
     workflow = save_workflow(
         lake,
@@ -160,8 +207,10 @@ def _scenario_report(
 ) -> dict[str, Any]:
     posture = build_current_posture(lake)
     silver_rows = read_jsonl(lake / "silver" / "normalized_events.jsonl", missing_ok=True)
+    evidence_by_source = Counter(str(row.get("source") or "") for row in silver_rows if row.get("source"))
     workflow_ok = workflow is not None and (workflow.get("run") or {}).get("result") == "ok"
     chain_ok = snapshot_chain is not None and snapshot_chain.get("ok") is True
+    connector_results = [_connector_result_summary(sync) for sync in syncs]
     return {
         "schema_version": "trustops.scenario_report.v1",
         "scenario": LIVE_CLOUD_SCENARIO,
@@ -174,7 +223,12 @@ def _scenario_report(
             and bool(integrity and integrity.get("ok"))
             and chain_ok
             and workflow_ok,
+            "connector_count": len(connector_results),
+            "successful_connectors": sum(1 for row in connector_results if row.get("ok")),
+            "failed_connectors": sum(1 for row in connector_results if not row.get("ok")),
+            "connector_results": connector_results,
             "evidence_count": len(silver_rows),
+            "evidence_by_source": dict(sorted(evidence_by_source.items())),
             "sources": sorted({str(row.get("source") or "") for row in silver_rows if row.get("source")}),
             "posture_score": posture.get("posture", {}).get("score"),
             "posture_state": posture.get("posture", {}).get("state"),
@@ -200,3 +254,19 @@ def _write_report(lake: Path, report: dict[str, Any]) -> Path:
     path = lake.joinpath(*SCENARIO_REPORT)
     write_json(path, report)
     return path
+
+
+def _connector_result_summary(sync: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "connector_id": sync.get("connector_id"),
+        "ok": bool(sync.get("ok")),
+        "evidence_count": int(sync.get("evidence_count") or 0),
+        "materialized": bool(sync.get("materialized")),
+        "error": str(sync.get("error") or "")[:240] if not sync.get("ok") else "",
+    }
+
+
+def _format_counts(counts: dict[str, Any]) -> str:
+    if not counts:
+        return "no sources"
+    return ", ".join(f"{source}={count}" for source, count in sorted(counts.items()))

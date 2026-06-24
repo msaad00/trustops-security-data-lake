@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 from security_lakehouse.cli import main
-from security_lakehouse.scenarios import run_live_cloud_posture_scenario
+from security_lakehouse.scenarios import format_live_cloud_posture_summary, run_live_cloud_posture_scenario
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -28,8 +28,35 @@ def test_live_cloud_posture_scenario_runs_connectors_integrity_snapshot_and_work
     )
 
     assert report["summary"]["ok"] is True
+    assert report["summary"]["connector_count"] == 3
+    assert report["summary"]["successful_connectors"] == 3
+    assert report["summary"]["failed_connectors"] == 0
     assert report["summary"]["evidence_count"] == 22
+    assert report["summary"]["evidence_by_source"] == {"aws": 7, "azure": 7, "snowflake": 8}
     assert report["summary"]["sources"] == ["aws", "azure", "snowflake"]
+    assert report["summary"]["connector_results"] == [
+        {
+            "connector_id": "azure-posture",
+            "ok": True,
+            "evidence_count": 7,
+            "materialized": True,
+            "error": "",
+        },
+        {
+            "connector_id": "aws-posture",
+            "ok": True,
+            "evidence_count": 7,
+            "materialized": True,
+            "error": "",
+        },
+        {
+            "connector_id": "snowflake-evidence-lake",
+            "ok": True,
+            "evidence_count": 8,
+            "materialized": True,
+            "error": "",
+        },
+    ]
     assert report["integrity"]["ok"] is True
     assert report["snapshot_chain"]["ok"] is True
     assert report["snapshot_chain"]["length"] == 2
@@ -65,3 +92,53 @@ def test_live_cloud_posture_scenario_cli_emits_report(tmp_path: Path, capsys) ->
     assert payload["scenario"] == "live-cloud-posture"
     assert payload["summary"]["ok"] is True
     assert payload["integrity"]["silver_count"] == 22
+
+
+def test_live_cloud_posture_scenario_cli_can_emit_operator_summary(tmp_path: Path, capsys) -> None:  # type: ignore[no-untyped-def]
+    code = main(
+        [
+            "scenario",
+            "run",
+            "live-cloud-posture",
+            "--lake",
+            str(tmp_path),
+            "--connector",
+            "azure-posture",
+            "--connector",
+            "aws-posture",
+            "--connector",
+            "snowflake-evidence-lake",
+            "--fixture",
+            f"azure-posture={FIXTURES / 'azure'}",
+            "--fixture",
+            f"aws-posture={FIXTURES / 'aws'}",
+            "--fixture",
+            f"snowflake-evidence-lake={FIXTURES / 'snowflake'}",
+            "--summary",
+        ]
+    )
+
+    assert code == 0
+    output = capsys.readouterr().out
+    assert "TrustOps scenario: live-cloud-posture" in output
+    assert "Status: ok" in output
+    assert "Evidence: 22 normalized rows from aws=7, azure=7, snowflake=8" in output
+    assert "- azure-posture: ok, evidence=7, materialized" in output
+    assert "Integrity: ok" in output
+    assert "Snapshot chain: ok length=2" in output
+    assert "Workflow: ok" in output
+
+
+def test_live_cloud_posture_summary_formatter_handles_partial_failure(tmp_path: Path) -> None:
+    report = run_live_cloud_posture_scenario(
+        tmp_path,
+        connectors=["aws-posture", "azure-posture"],
+        fixture_dirs={"aws-posture": str(FIXTURES / "aws")},
+        actor="test",
+        continue_on_error=True,
+    )
+
+    output = format_live_cloud_posture_summary(report)
+    assert "Status: needs attention" in output
+    assert "- aws-posture: ok, evidence=7, materialized" in output
+    assert "- azure-posture: failed" in output
