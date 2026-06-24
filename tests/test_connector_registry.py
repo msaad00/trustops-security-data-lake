@@ -84,6 +84,26 @@ def test_source_connector_guidance_avoids_password_and_pat_paths() -> None:
             assert needle not in body, f"{needle!r} should not be recommended in {path}"
 
 
+def test_snowflake_poc_bootstrap_matches_connector_contract() -> None:
+    body = (REPO_ROOT / "deploy" / "snowflake" / "bootstrap_poc.sql").read_text(encoding="utf-8")
+
+    for expected in (
+        "TRUSTOPS_SECURITY_LAKE",
+        "TRUSTOPS_READ_WH",
+        "TRUSTOPS_READER",
+        "TRUSTOPS_AUDIT_EVENTS",
+        "TRUSTOPS_CONTROL_POSTURE",
+        "TRUSTOPS_ASSET_RISK",
+        "TRUSTOPS_EVIDENCE_BUNDLES",
+    ):
+        assert expected in body
+    assert "GRANT SELECT ON VIEW" in body
+    assert "GRANT USAGE ON WAREHOUSE TRUSTOPS_READ_WH" in body
+    assert "CREATE USER" not in body
+    assert "PASSWORD" not in body
+    assert "SECRET" not in body
+
+
 def test_has_adapter_agrees_with_registry() -> None:
     for connector_id in REAL_ADAPTERS:
         assert connector_state.has_adapter(connector_id) is True
