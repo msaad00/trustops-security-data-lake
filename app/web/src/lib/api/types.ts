@@ -244,13 +244,14 @@ export type ConnectorState = "enabled" | "disabled";
 
 export interface ConnectorRun {
   connector_id: string;
-  kind: "probe" | "sync";
+  kind: "discover" | "probe" | "sync";
   result: "ok" | "error" | "skipped";
   actor: string;
   duration_ms: number | null;
   evidence_count: number | null;
   error: string | null;
   access_fingerprint: string | null;
+  metadata?: Record<string, unknown>;
   occurred_at: string;
 }
 
@@ -290,6 +291,8 @@ export interface ProbePayload {
   credentials?: Record<string, string>;
   options?: Record<string, unknown>;
 }
+
+export type DiscoverPayload = ProbePayload;
 
 export type FrameworkFreshness = "fresh" | "stale" | "expired" | "never_pulled";
 

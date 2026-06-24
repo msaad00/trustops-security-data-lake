@@ -7,6 +7,7 @@ import {
   Loader2,
   PauseCircle,
   PlayCircle,
+  Search,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,11 +15,13 @@ import { Drawer } from "@/components/ui/drawer";
 import {
   useConfigureMutation,
   useConnectorRuns,
+  useDiscoverMutation,
   useProbeMutation,
 } from "@/lib/api/hooks";
 import { useAuditorMode } from "@/lib/state/auditor";
 import type {
   ConfigurePayload,
+  ConnectorRun,
   ConnectorView,
   ProbePayload,
 } from "@/lib/api/types";
@@ -72,8 +75,8 @@ const CREDENTIAL_FIELDS: Record<string, FieldDef[]> = {
       required: true,
     },
     {
-      name: "oauth_token",
-      label: "OAuth token reference",
+      name: "credential_ref",
+      label: "Credential reference",
       placeholder: "SNOWFLAKE_OAUTH_TOKEN",
       secret: true,
       required: true,
@@ -123,9 +126,27 @@ const SCOPE_FIELDS: Record<string, FieldDef[]> = {
       required: true,
     },
     {
-      name: "evidence_view",
-      label: "Evidence view",
-      placeholder: "EVIDENCE_EVENTS",
+      name: "audit_events",
+      label: "Audit events view",
+      placeholder: "TRUSTOPS_AUDIT_EVENTS",
+      required: true,
+    },
+    {
+      name: "control_posture",
+      label: "Control posture view",
+      placeholder: "TRUSTOPS_CONTROL_POSTURE",
+      required: true,
+    },
+    {
+      name: "asset_risk",
+      label: "Asset risk view",
+      placeholder: "TRUSTOPS_ASSET_RISK",
+      required: true,
+    },
+    {
+      name: "evidence_bundles",
+      label: "Evidence bundles view",
+      placeholder: "TRUSTOPS_EVIDENCE_BUNDLES",
       required: true,
     },
   ],
@@ -249,15 +270,18 @@ const labelForStatus = (status: string) =>
 export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
   const auditor = useAuditorMode();
   const configure = useConfigureMutation();
+  const discover = useDiscoverMutation();
   const probe = useProbeMutation();
   const runs = useConnectorRuns(connector?.connector_id ?? null);
   const [creds, setCreds] = useState<Record<string, string>>({});
   const [options, setOptions] = useState<Record<string, string>>({});
   const [accessValidated, setAccessValidated] = useState(false);
+  const [discoveryRun, setDiscoveryRun] = useState<ConnectorRun | null>(null);
 
   useEffect(() => {
     setCreds({});
     setAccessValidated(false);
+    setDiscoveryRun(null);
     const configured = connector?.configured_options ?? {};
     setOptions(
       Object.fromEntries(
@@ -298,6 +322,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
     Object.entries(options).filter(([, value]) => value.trim() !== ""),
   );
   const canTestAccess = isEnabled || canEnable;
+  const canDiscover = isEnabled || missingCredentials.length === 0;
 
   const enable = async () => {
     if (!canEnable) {
@@ -362,6 +387,46 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
     }
   };
 
+  const runDiscovery = async () => {
+    try {
+      const payload: ProbePayload = { actor: "console" };
+      if (!isEnabled) {
+        payload.credentials = stagedCredentials;
+        payload.options = stagedOptions;
+      }
+      const { run } = await discover.mutateAsync({
+        id: connector.connector_id,
+        payload,
+      });
+      setDiscoveryRun(run);
+      if (
+        run.result === "ok" &&
+        run.metadata?.recommended_options &&
+        typeof run.metadata.recommended_options === "object"
+      ) {
+        const recommended = Object.entries(
+          run.metadata.recommended_options as Record<string, unknown>,
+        ).reduce<Record<string, string>>((acc, [key, value]) => {
+          if (typeof value === "string" && value.trim() !== "") {
+            acc[key] = value;
+          }
+          return acc;
+        }, {});
+        if (Object.keys(recommended).length > 0) {
+          setOptions((current) => ({ ...current, ...recommended }));
+        }
+      }
+      onToast(
+        run.result === "ok"
+          ? "Scope discovery complete."
+          : `Discovery error: ${run.error ?? "see history"}`,
+      );
+    } catch (err) {
+      setDiscoveryRun(null);
+      onToast(`Discovery failed: ${(err as Error).message}`);
+    }
+  };
+
   return (
     <Drawer
       open={true}
@@ -377,6 +442,18 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
               persisted.
             </span>
             <div className="flex flex-wrap gap-2">
+              <Button
+                variant="default"
+                onClick={runDiscovery}
+                disabled={discover.isPending || !canDiscover}
+              >
+                {discover.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Search className="h-4 w-4" />
+                )}{" "}
+                Discover scope
+              </Button>
               <Button
                 variant="default"
                 onClick={runProbe}
@@ -546,6 +623,33 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
               <div className="mt-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-900">
                 Test connection before enabling. The probe validates required
                 fields without persisting raw credentials.
+              </div>
+            )}
+            {discoveryRun?.metadata && (
+              <div className="mt-2 rounded-lg border border-line bg-slate-50 p-3 text-xs">
+                <div className="font-black uppercase tracking-wide text-muted">
+                  Discovered scope
+                </div>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {Array.isArray(discoveryRun.metadata.selectors) &&
+                    discoveryRun.metadata.selectors
+                      .filter((item): item is Record<string, unknown> =>
+                        Boolean(item && typeof item === "object"),
+                      )
+                      .slice(0, 8)
+                      .map((item, index) => (
+                        <Badge
+                          key={`${String(item.kind)}-${String(item.name)}-${index}`}
+                          tone={item.selected ? "ready" : "info"}
+                        >
+                          {String(item.kind)}: {String(item.name)}
+                        </Badge>
+                      ))}
+                </div>
+                <div className="mt-2 text-muted">
+                  Use discovered scopes to fill the read scope fields, then test
+                  connection before enabling.
+                </div>
               </div>
             )}
             {canEnable && !isEnabled && accessValidated && (

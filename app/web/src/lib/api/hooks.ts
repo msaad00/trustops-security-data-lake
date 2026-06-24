@@ -25,6 +25,7 @@ import type {
   FrameworkDetail,
   NormalizedEvent,
   ProbePayload,
+  DiscoverPayload,
   SavedView,
   Tag,
   TrackingEvent,
@@ -235,6 +236,23 @@ export function useProbeMutation() {
       id: string;
       payload?: ProbePayload;
     }) => api.probeConnector(id, payload),
+    onSuccess: (_data, { id }) => {
+      qc.invalidateQueries({ queryKey: ["connectors"] });
+      qc.invalidateQueries({ queryKey: ["connector-runs", id] });
+    },
+  });
+}
+
+export function useDiscoverMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload = {},
+    }: {
+      id: string;
+      payload?: DiscoverPayload;
+    }) => api.discoverConnector(id, payload),
     onSuccess: (_data, { id }) => {
       qc.invalidateQueries({ queryKey: ["connectors"] });
       qc.invalidateQueries({ queryKey: ["connector-runs", id] });

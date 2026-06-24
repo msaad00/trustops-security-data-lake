@@ -20,6 +20,7 @@ import type {
   ControlPosture,
   ControlTest,
   ControlArticleMapping,
+  DiscoverPayload,
   Crosswalk,
   CreateAgentRunPayload,
   EvidenceFreshness,
@@ -222,6 +223,11 @@ export const api = {
   probeConnector: (id: string, payload: ProbePayload = {}) =>
     post<{ run: ConnectorRun }>(
       `/connectors/${encodeURIComponent(id)}/probe`,
+      payload,
+    ),
+  discoverConnector: (id: string, payload: DiscoverPayload = {}) =>
+    post<{ run: ConnectorRun }>(
+      `/connectors/${encodeURIComponent(id)}/discover`,
       payload,
     ),
   connectorRuns: (id: string) =>

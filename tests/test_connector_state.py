@@ -12,12 +12,14 @@ from http.server import ThreadingHTTPServer
 from pathlib import Path
 
 from security_lakehouse.connector_state import (
+    _access_fingerprint,
     _missing_required_config,
     append_config_event,
     build_catalog_view,
     latest_config,
     latest_run,
     list_runs,
+    run_discovery,
     run_probe,
 )
 from security_lakehouse.framework_provenance import build_framework_view
@@ -46,8 +48,19 @@ def test_configure_records_state_and_redacts_credentials(tmp_path: Path) -> None
         state="enabled",
         actor="alice",
         credentials={"token": "source_connector_secret", "username": "alice"},
+        options={"org": "acme"},
     )
     assert again["credential_fingerprint"] == record["credential_fingerprint"]
+    assert record["credential_fingerprint"] != "source_connector_secret"
+
+
+def test_access_fingerprint_changes_with_secret_rotation() -> None:
+    first = _access_fingerprint({"token": "abc"}, {"org": "x"})
+    same = _access_fingerprint({"token": "abc"}, {"org": "x"})
+    rotated = _access_fingerprint({"token": "different"}, {"org": "x"})
+
+    assert first == same
+    assert first != rotated
 
 
 def test_latest_config_returns_most_recent(tmp_path: Path) -> None:
@@ -104,6 +117,92 @@ def test_probe_rejects_incomplete_staged_payload(tmp_path: Path) -> None:
     assert "missing required connector configuration" in rec["error"]
     assert "token" in rec["error"]
     assert latest_config(tmp_path, "clickhouse-telemetry-lake") is None
+
+
+def test_discovery_returns_selectable_snowflake_scope_without_enable(tmp_path: Path) -> None:
+    rec = run_discovery(
+        tmp_path,
+        connector_id="snowflake-evidence-lake",
+        credentials={
+            "account": "org-account",
+            "user": "trustops_reader",
+            "credential_ref": "TRUSTOPS_SNOWFLAKE_OAUTH",
+        },
+        options={
+            "warehouse": "TRUSTOPS_READ_WH",
+            "database": "TRUSTOPS",
+            "schema": "GOLD",
+        },
+    )
+
+    assert rec["kind"] == "discover"
+    assert rec["result"] == "ok"
+    assert rec["evidence_count"] == 7
+    assert rec["metadata"]["selection_mode"] == "curated_views"
+    selectors = rec["metadata"]["selectors"]
+    assert {"kind": "database", "name": "TRUSTOPS", "required": True, "selected": True} in selectors
+    assert {"kind": "view", "name": "TRUSTOPS_AUDIT_EVENTS", "required": True, "purpose": "audit_events"} in selectors
+    assert latest_config(tmp_path, "snowflake-evidence-lake") is None
+
+
+def test_discovery_validates_scope_credentials_without_password_terms(tmp_path: Path) -> None:
+    rec = run_discovery(
+        tmp_path,
+        connector_id="snowflake-evidence-lake",
+        credentials={"account": "org-account"},
+        options={},
+    )
+
+    assert rec["kind"] == "discover"
+    assert rec["result"] == "error"
+    assert "missing required connector discovery configuration" in rec["error"]
+    assert "user" in rec["error"]
+    assert "credential_ref" in rec["error"]
+    assert "password" not in rec["error"]
+
+
+def test_discovery_reuses_enabled_config_without_retyping_credentials(tmp_path: Path) -> None:
+    append_config_event(
+        tmp_path,
+        connector_id="aws-posture",
+        state="enabled",
+        actor="alice",
+        credentials={"account_id": "123456789012"},
+        options={"region": "us-west-2"},
+    )
+
+    rec = run_discovery(tmp_path, connector_id="aws-posture")
+
+    assert rec["kind"] == "discover"
+    assert rec["result"] == "ok"
+    assert rec["metadata"]["selection_mode"] == "account"
+    assert rec["metadata"]["selectors"][0]["name"] == "123456789012"
+
+
+def test_discovery_returns_cloud_scope_candidates(tmp_path: Path) -> None:
+    aws = run_discovery(
+        tmp_path,
+        connector_id="aws-posture",
+        credentials={"account_id": "123456789012"},
+        options={"region": "us-west-2"},
+    )
+    azure = run_discovery(
+        tmp_path,
+        connector_id="azure-posture",
+        credentials={"subscription_id": "00000000-0000-0000-0000-000000000000"},
+        options={},
+    )
+
+    assert aws["result"] == "ok"
+    assert aws["metadata"]["selectors"][0] == {
+        "kind": "account",
+        "name": "123456789012",
+        "required": True,
+        "selected": True,
+    }
+    assert aws["metadata"]["recommended_options"] == {"region": "us-west-2"}
+    assert azure["result"] == "ok"
+    assert azure["metadata"]["selectors"][0]["kind"] == "subscription"
 
 
 def test_keyless_cloud_connectors_require_only_scope_identifiers() -> None:
@@ -457,6 +556,54 @@ def test_connector_probe_accepts_staged_payload_without_enable(tmp_path: Path) -
         by_id = {item["connector_id"]: item for item in body["connectors"]}
         assert by_id["clickhouse-telemetry-lake"]["state"] == "disabled"
         assert by_id["clickhouse-telemetry-lake"]["credential_fingerprint"] is None
+    finally:
+        server.shutdown()
+
+
+def test_connector_discover_route_returns_scope_candidates(tmp_path: Path) -> None:
+    server = _spin_handler(tmp_path)
+    try:
+        status, body = _request(
+            server,
+            "POST",
+            "/api/connectors/aws-posture/discover",
+            body={
+                "credentials": {"account_id": "123456789012"},
+                "options": {"region": "us-west-2"},
+            },
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["run"]["kind"] == "discover"
+        assert body["run"]["result"] == "ok"
+        assert body["run"]["metadata"]["selection_mode"] == "account"
+        assert body["run"]["metadata"]["selectors"][0]["name"] == "123456789012"
+
+        status, body = _request(server, "GET", "/api/connectors/aws-posture/runs")
+        assert status == HTTPStatus.OK
+        assert body["runs"][0]["kind"] == "discover"
+        assert body["runs"][0]["metadata"] == {}
+    finally:
+        server.shutdown()
+
+
+def test_connector_discover_route_reuses_enabled_config(tmp_path: Path) -> None:
+    server = _spin_handler(tmp_path)
+    try:
+        append_config_event(
+            tmp_path,
+            connector_id="aws-posture",
+            state="enabled",
+            actor="alice",
+            credentials={"account_id": "123456789012"},
+            options={"region": "us-west-2"},
+        )
+
+        status, body = _request(server, "POST", "/api/connectors/aws-posture/discover", body={})
+
+        assert status == HTTPStatus.CREATED
+        assert body["run"]["kind"] == "discover"
+        assert body["run"]["result"] == "ok"
+        assert body["run"]["metadata"]["selectors"][0]["name"] == "123456789012"
     finally:
         server.shutdown()
 

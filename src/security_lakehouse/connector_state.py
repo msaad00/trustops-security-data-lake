@@ -4,7 +4,7 @@ Persists three layers on top of the static ``connectors/catalog.json``:
 
 * ``gold/connector_config.jsonl`` — append-only configuration events
   (enabled/disabled, credentials redacted, options) per connector.
-* ``gold/connector_runs.jsonl`` — append-only probe + sync run history.
+* ``gold/connector_runs.jsonl`` — append-only discovery + probe + sync run history.
 
 These are separate from the assessment posture so configuration changes
 never mutate the immutable evidence pipeline.
@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import time
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -31,13 +32,14 @@ RUNS_FILE = "connector_runs.jsonl"
 DEFAULT_FRESHNESS_SLO_MINUTES = 1440
 
 VALID_STATES = {"enabled", "disabled"}
-VALID_RUN_KINDS = {"probe", "sync"}
+VALID_RUN_KINDS = {"discover", "probe", "sync"}
 VALID_RUN_RESULTS = {"ok", "error", "skipped"}
 PRODUCTION_STATUS_ORDER = {
     "primary_lake": 0,
     "supported_connector": 1,
     "local_demo": 2,
 }
+_ACCESS_FINGERPRINT_KEY = b"trustops-access-fingerprint-v1"
 
 
 def _gold(lake_dir: str | Path) -> Path:
@@ -61,12 +63,23 @@ def _redact_credentials(payload: dict[str, Any] | None) -> dict[str, Any]:
 
 
 def _access_fingerprint(credentials: dict[str, Any] | None, options: dict[str, Any] | None) -> str:
-    """Hash the exact scoped-access payload a probe or enable request used."""
+    """Return a deterministic non-secret fingerprint for a scoped-access payload.
+
+    The fingerprint is derived with PBKDF2 so secret-bearing staged payloads can
+    be compared for exact probe-before-enable matching without persisting the
+    raw credential material.
+    """
     payload = {
         "credentials": credentials or {},
         "options": {k: v for k, v in (options or {}).items() if k != "raw"},
     }
-    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()[:16]
+    return hashlib.pbkdf2_hmac(
+        "sha256",
+        json.dumps(payload, sort_keys=True).encode("utf-8"),
+        _ACCESS_FINGERPRINT_KEY,
+        100_000,
+        dklen=16,
+    ).hex()[:16]
 
 
 def _utc_now_iso() -> str:
@@ -95,10 +108,8 @@ def append_config_event(
         "state": state,
         "actor": actor or "anonymous",
         "credentials": _redact_credentials(credentials),
-        "credential_fingerprint": hashlib.sha256(
-            json.dumps(credentials or {}, sort_keys=True).encode("utf-8")
-        ).hexdigest()[:16],
         "options": options or {},
+        "credential_fingerprint": _access_fingerprint(credentials, options),
         "occurred_at": _utc_now_iso(),
     }
     gold = _gold(lake_dir)
@@ -203,10 +214,26 @@ def _missing_required_config(
 
     if connector_id == "snowflake-evidence-lake":
         missing = [field for field in ("account", "user") if not _has_value(credentials, field)]
-        if not (_has_value(credentials, "private_key") or _has_value(credentials, "oauth_token")):
-            missing.append("private_key or oauth_token")
+        if not (
+            _has_value(credentials, "credential_ref")
+            or _has_value(credentials, "private_key_ref")
+            or _has_value(credentials, "oauth_token_ref")
+            or _has_value(credentials, "private_key")
+            or _has_value(credentials, "oauth_token")
+        ):
+            missing.append("credential_ref")
         missing.extend(
-            field for field in ("warehouse", "database", "schema", "evidence_view") if not _has_value(options, field)
+            field
+            for field in (
+                "warehouse",
+                "database",
+                "schema",
+                "audit_events",
+                "control_posture",
+                "asset_risk",
+                "evidence_bundles",
+            )
+            if not _has_value(options, field)
         )
         return missing
 
@@ -217,7 +244,11 @@ def _missing_required_config(
         return ["subscription_id"] if not _has_value(credentials, "subscription_id") else []
 
     if "token" in credential_type:
-        return ["token"] if not _has_value(credentials, "token") else []
+        return (
+            ["credential_ref"]
+            if not (_has_value(credentials, "credential_ref") or _has_value(credentials, "token"))
+            else []
+        )
     if "scoped_user" in credential_type:
         return [field for field in ("host", "token") if not _has_value(credentials, field)]
     if "key_pair" in credential_type:
@@ -238,6 +269,7 @@ def append_run_event(
     evidence_count: int | None = None,
     error: str | None = None,
     access_fingerprint: str | None = None,
+    metadata: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Persist a probe or sync run result."""
     if kind not in VALID_RUN_KINDS:
@@ -253,6 +285,7 @@ def append_run_event(
         "evidence_count": evidence_count,
         "error": error,
         "access_fingerprint": access_fingerprint,
+        "metadata": metadata or {},
         "occurred_at": _utc_now_iso(),
     }
     gold = _gold(lake_dir)
@@ -260,6 +293,205 @@ def append_run_event(
     path = gold / RUNS_FILE
     with path.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(record, separators=(",", ":")) + "\n")
+    return record
+
+
+def _missing_discovery_config(
+    connector_id: str,
+    credential_type: str,
+    credentials: dict[str, Any],
+) -> list[str]:
+    if connector_id == "snowflake-evidence-lake":
+        missing = [field for field in ("account", "user") if not _has_value(credentials, field)]
+        if not (
+            _has_value(credentials, "credential_ref")
+            or _has_value(credentials, "private_key_ref")
+            or _has_value(credentials, "oauth_token_ref")
+            or _has_value(credentials, "private_key")
+            or _has_value(credentials, "oauth_token")
+        ):
+            missing.append("credential_ref")
+        return missing
+    if connector_id == "aws-posture":
+        return ["account_id"] if not _has_value(credentials, "account_id") else []
+    if connector_id == "azure-posture":
+        return ["subscription_id"] if not _has_value(credentials, "subscription_id") else []
+    return _missing_required_config(connector_id, credential_type, credentials, {})
+
+
+def _discovery_scope_context(credentials: dict[str, Any], options: dict[str, Any]) -> dict[str, Any]:
+    """Allowlist non-secret discovery scope fields before anything is persisted."""
+    return {
+        "account_id": str(credentials.get("account_id") or ""),
+        "subscription_id": str(credentials.get("subscription_id") or ""),
+        "account": str(credentials.get("account") or ""),
+        "user": str(credentials.get("user") or ""),
+        "region": str(credentials.get("region") or options.get("region") or ""),
+    }
+
+
+def _scope_candidates(
+    *,
+    connector_id: str,
+    scope: dict[str, Any],
+    options: dict[str, Any],
+) -> dict[str, Any]:
+    """Return selectable read-scope candidates without collecting evidence."""
+    if connector_id == "snowflake-evidence-lake":
+        database = str(options.get("database") or "")
+        schema = str(options.get("schema") or "")
+        warehouse = str(options.get("warehouse") or "")
+        defaults = {
+            "audit_events": "TRUSTOPS_AUDIT_EVENTS",
+            "control_posture": "TRUSTOPS_CONTROL_POSTURE",
+            "asset_risk": "TRUSTOPS_ASSET_RISK",
+            "evidence_bundles": "TRUSTOPS_EVIDENCE_BUNDLES",
+        }
+        views = [
+            {
+                "kind": "view",
+                "name": str(options.get(key) or default),
+                "required": True,
+                "purpose": key,
+            }
+            for key, default in defaults.items()
+        ]
+        return {
+            "selection_mode": "curated_views",
+            "selectors": [
+                {
+                    "kind": "warehouse",
+                    "name": warehouse,
+                    "required": True,
+                    "selected": bool(warehouse),
+                },
+                {
+                    "kind": "database",
+                    "name": database,
+                    "required": True,
+                    "selected": bool(database),
+                },
+                {
+                    "kind": "schema",
+                    "name": schema,
+                    "required": True,
+                    "selected": bool(schema),
+                },
+                *views,
+            ],
+            "recommended_options": {
+                "warehouse": warehouse or "TRUSTOPS_READ_WH",
+                "database": database or "<EVIDENCE_DATABASE>",
+                "schema": schema or "<EVIDENCE_SCHEMA>",
+                **defaults,
+            },
+        }
+    if connector_id == "aws-posture":
+        account_id = str(scope.get("account_id") or "")
+        region = str(scope.get("region") or options.get("region") or "us-east-1")
+        return {
+            "selection_mode": "account",
+            "selectors": [
+                {"kind": "account", "name": account_id, "required": True, "selected": bool(account_id)},
+                {"kind": "region", "name": region, "required": False, "selected": bool(region)},
+            ],
+            "recommended_options": {"region": region},
+        }
+    if connector_id == "azure-posture":
+        subscription_id = str(scope.get("subscription_id") or "")
+        return {
+            "selection_mode": "subscription",
+            "selectors": [
+                {
+                    "kind": "subscription",
+                    "name": subscription_id,
+                    "required": True,
+                    "selected": bool(subscription_id),
+                }
+            ],
+            "recommended_options": {},
+        }
+    if connector_id == "clickhouse-telemetry-lake":
+        return {
+            "selection_mode": "visible_tables",
+            "selectors": [
+                {"kind": "database", "name": "<discovered>", "required": True, "selected": False},
+                {"kind": "table", "name": "<discovered>", "required": True, "selected": False},
+            ],
+            "recommended_options": {},
+        }
+    return {
+        "selection_mode": "configured_scope",
+        "selectors": [],
+        "recommended_options": options,
+    }
+
+
+def run_discovery(
+    lake_dir: str | Path,
+    *,
+    connector_id: str,
+    actor: str = "console",
+    credentials: dict[str, Any] | None = None,
+    options: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Discover selectable connector scopes without persisting credentials."""
+    started = time.perf_counter()
+    catalog = load_connector_catalog()
+    if connector_id not in catalog:
+        return append_run_event(
+            lake_dir,
+            connector_id=connector_id,
+            kind="discover",
+            result="error",
+            actor=actor,
+            error=f"unknown connector_id {connector_id!r}",
+        )
+    staged_payload = credentials is not None or options is not None
+    if staged_payload:
+        credentials = credentials or {}
+        options = {k: v for k, v in (options or {}).items() if k != "raw"}
+    else:
+        config = latest_config(lake_dir, connector_id)
+        if config and config.get("state") == "enabled":
+            credentials = dict(config.get("credentials") or {})
+            options = {k: v for k, v in dict(config.get("options") or {}).items() if k != "raw"}
+        else:
+            credentials = {}
+            options = {}
+    missing = _missing_discovery_config(
+        connector_id,
+        str(catalog[connector_id].get("credential_type") or ""),
+        credentials,
+    )
+    if missing:
+        return append_run_event(
+            lake_dir,
+            connector_id=connector_id,
+            kind="discover",
+            result="error",
+            actor=actor,
+            error="missing required connector discovery configuration: " + ", ".join(missing),
+        )
+    metadata = _scope_candidates(
+        connector_id=connector_id,
+        scope=_discovery_scope_context(credentials, options),
+        options=options,
+    )
+    selectors = [item for item in metadata.get("selectors", []) if isinstance(item, dict)]
+    record = append_run_event(
+        lake_dir,
+        connector_id=connector_id,
+        kind="discover",
+        result="ok",
+        actor=actor,
+        duration_ms=max(0, round((time.perf_counter() - started) * 1000)),
+        evidence_count=len(selectors),
+    )
+    # Discovery metadata is returned to the caller for setup UX, but not written
+    # to the append-only run log. Run history records that discovery happened;
+    # persisted connector config remains the durable source for selected scope.
+    record["metadata"] = metadata
     return record
 
 
