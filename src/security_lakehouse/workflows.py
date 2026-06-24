@@ -17,7 +17,7 @@ Persistence
 Action library (the registry is the extension point):
 
   trigger.evidence_changed     fires when new silver events land
-  trigger.cron                 fires on a cron schedule (informational)
+  trigger.cron                 fires on a cron schedule via scheduler tick
   check.evidence_exists        passes when N silver events match a filter
   check.control_pass           passes when a control_id's latest test is "pass"
   action.snapshot              freezes a point-in-time assessment snapshot
@@ -568,7 +568,7 @@ ACTION_LIBRARY: dict[str, dict[str, Any]] = {
     "trigger.cron": {
         "kind": "trigger",
         "label": "Cron schedule",
-        "description": "Fires on a cron schedule (canvas-only; the runner is not wired yet).",
+        "description": "Fires when the scheduler tick finds this workflow due.",
         "input_schema": {"schedule": {"type": "string", "label": "Cron expression", "default": "@hourly"}},
         "output_schema": {"trigger_kind": "string", "schedule": "string"},
         "handler": _cron,

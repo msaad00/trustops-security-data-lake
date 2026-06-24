@@ -78,7 +78,7 @@ export function ActionPalette({ catalog, onAdd }: Props) {
   const hasResults = KIND_ORDER.some((k) => byKind(k).length > 0);
 
   return (
-    <Card className="flex max-h-[min(660px,calc(100dvh-315px))] min-h-[500px] flex-col overflow-hidden">
+    <Card className="flex max-h-[min(760px,calc(100dvh-245px))] min-h-[560px] flex-col overflow-hidden">
       <CardHeader className="shrink-0">
         <CardTitle>Action library</CardTitle>
         <CardDescription>

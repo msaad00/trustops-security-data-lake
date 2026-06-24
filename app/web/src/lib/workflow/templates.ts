@@ -97,8 +97,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
   {
     id: "evidence-missing-alert",
     name: "Evidence missing alert",
-    description:
-      "Hourly SOC 2 CC6.1 evidence check; freeze a snapshot when fresh evidence is missing.",
+    description: "SOC 2 CC6.1 evidence check; snapshot if missing.",
     tags: ["scheduled", "alert"],
     nodes: [
       node("t", "trigger.cron", { schedule: "@hourly" }, 90, 220),
