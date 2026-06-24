@@ -1,9 +1,8 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { MarkerType, type Edge } from "@xyflow/react";
 import {
-  ArrowRight,
   LayoutTemplate,
   Loader2,
   Play,
@@ -218,7 +217,13 @@ function toApiEdges(edges: Edge[]) {
   }));
 }
 
-function WorkflowSpine({ nodes, edges }: { nodes: FlowNode[]; edges: Edge[] }) {
+function WorkflowHealthStrip({
+  nodes,
+  edges,
+}: {
+  nodes: FlowNode[];
+  edges: Edge[];
+}) {
   const counts = {
     triggers: nodes.filter((n) => n.data.kind === "trigger").length,
     checks: nodes.filter((n) => n.data.kind === "check").length,
@@ -226,66 +231,86 @@ function WorkflowSpine({ nodes, edges }: { nodes: FlowNode[]; edges: Edge[] }) {
     edges: edges.length,
   };
   const connected = counts.edges > 0 || nodes.length <= 1;
-  const stages = [
-    {
-      label: "Trigger",
-      value: counts.triggers,
-      detail: "evidence changed, cron, or webhook",
-    },
-    {
-      label: "Check",
-      value: counts.checks,
-      detail: "control pass, evidence exists, branch conditions",
-    },
-    {
-      label: "Action",
-      value: counts.actions,
-      detail: "assign owner, create ticket, freeze snapshot, notify",
-    },
-  ];
 
   return (
-    <section className="grid gap-2 rounded-xl border border-line bg-white p-3 shadow-card">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h2 className="text-sm font-black text-ink">
-            Workflow connection map
-          </h2>
-          <p className="mt-0.5 text-xs leading-5 text-muted">
-            A workflow is a directed graph: trigger inputs, check branches, and
-            actions write back to remediation, snapshots, audit, or external
-            systems.
-          </p>
+    <div className="flex flex-wrap items-center gap-2 text-xs">
+      <Badge tone={connected ? "ready" : "attention"}>
+        {connected ? `${counts.edges} edges` : "connect nodes"}
+      </Badge>
+      <span className="rounded-full bg-blue-50 px-2.5 py-1 font-black text-blue-700">
+        {counts.triggers} trigger
+      </span>
+      <span className="rounded-full bg-amber-50 px-2.5 py-1 font-black text-amber-700">
+        {counts.checks} check
+      </span>
+      <span className="rounded-full bg-emerald-50 px-2.5 py-1 font-black text-emerald-700">
+        {counts.actions} action
+      </span>
+    </div>
+  );
+}
+
+function RunnerContract({
+  nodes,
+  edges,
+}: {
+  nodes: FlowNode[];
+  edges: Edge[];
+}) {
+  return (
+    <details className="group rounded-xl border border-line bg-white shadow-card">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3">
+        <div className="min-w-0">
+          <div className="text-sm font-black text-ink">
+            Workflow runner contract
+          </div>
+          <div className="truncate text-xs text-muted">
+            Same saved DAG for UI, API, scheduler, CLI, MCP tools, and agents.
+          </div>
         </div>
-        <Badge tone={connected ? "ready" : "attention"}>
-          {connected ? `${counts.edges} connected edges` : "connect nodes"}
-        </Badge>
-      </div>
-      <div className="grid gap-2 lg:grid-cols-[1fr_auto_1fr_auto_1fr] lg:items-stretch">
-        {stages.map((stage, idx) => (
-          <Fragment key={stage.label}>
-            <div className="rounded-lg border border-line bg-panel p-3">
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[11px] font-black uppercase tracking-wide text-muted">
-                  {stage.label}
-                </span>
-                <span className="text-lg font-black tabular-nums text-ink">
-                  {stage.value}
-                </span>
+        <WorkflowHealthStrip nodes={nodes} edges={edges} />
+      </summary>
+      <div className="border-t border-line p-4">
+        <div className="grid gap-3 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start">
+          <span className="grid h-10 w-10 place-items-center rounded-lg bg-panel text-brand ring-1 ring-line">
+            <ServerCog className="h-5 w-5" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-sm leading-5 text-muted">
+              Save writes an append-only workflow version to{" "}
+              <code>gold/workflows.jsonl</code>. Run executes the same DAG
+              through the backend workflow engine, enforces RBAC and egress
+              guards, writes results to <code>gold/workflow_runs.jsonl</code>,
+              and exposes the run through human and headless surfaces.
+            </p>
+            <div className="mt-3 grid gap-2 text-xs md:grid-cols-4">
+              <div className="rounded-lg border border-line bg-panel p-2">
+                <b className="text-ink">Human</b>
+                <div className="mt-1 text-muted">
+                  Design, approve, run, inspect.
+                </div>
               </div>
-              <p className="mt-1 text-xs leading-5 text-slate-600">
-                {stage.detail}
-              </p>
+              <div className="rounded-lg border border-line bg-panel p-2">
+                <b className="text-ink">Headless</b>
+                <div className="mt-1 text-muted">REST/CLI run saved DAGs.</div>
+              </div>
+              <div className="rounded-lg border border-line bg-panel p-2">
+                <b className="text-ink">Scheduler</b>
+                <div className="mt-1 text-muted">
+                  Cron triggers fire due flows.
+                </div>
+              </div>
+              <div className="rounded-lg border border-line bg-panel p-2">
+                <b className="text-ink">Agents</b>
+                <div className="mt-1 text-muted">
+                  MCP lists and runs workflows.
+                </div>
+              </div>
             </div>
-            {idx < stages.length - 1 && (
-              <div className="hidden items-center justify-center text-muted lg:flex">
-                <ArrowRight className="h-5 w-5" />
-              </div>
-            )}
-          </Fragment>
-        ))}
+          </div>
+        </div>
       </div>
-    </section>
+    </details>
   );
 }
 
@@ -492,15 +517,15 @@ export default function AutomationPage() {
   }, [lastRun, selectedNode]);
 
   return (
-    <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
+    <div className="grid min-w-0 gap-4 px-4 py-5 sm:px-5 lg:px-7">
       <PageHeader
         eyebrow="Workflows"
         title="Workflow builder"
-        description="Design, save, and run closed-loop trust operations from one canvas."
+        description="Design and run trust automation from a populated canvas."
         actions={
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <Button variant="primary" onClick={startNewWorkflow}>
-              <Plus className="h-4 w-4" /> Starter
+              <Plus className="h-4 w-4" /> New starter
             </Button>
             <select
               value={activeId === NEW_WORKFLOW_ID ? "" : activeId}
@@ -568,7 +593,7 @@ export default function AutomationPage() {
       />
 
       <Card className="overflow-hidden border-brand/20">
-        <div className="grid gap-3 p-3 sm:grid-cols-[minmax(220px,0.75fr)_minmax(260px,1.25fr)]">
+        <div className="grid gap-3 p-3 xl:grid-cols-[minmax(220px,0.7fr)_minmax(280px,1fr)_auto] xl:items-end">
           <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
             Name
             <input
@@ -591,6 +616,9 @@ export default function AutomationPage() {
               disabled={auditor}
             />
           </label>
+          <div className="flex min-w-0 items-center xl:justify-end">
+            <WorkflowHealthStrip nodes={editor.nodes} edges={editor.edges} />
+          </div>
         </div>
       </Card>
 
@@ -619,49 +647,7 @@ export default function AutomationPage() {
         />
       </div>
 
-      <WorkflowSpine nodes={editor.nodes} edges={editor.edges} />
-
-      <Card className="grid gap-3 p-4 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start">
-        <span className="grid h-10 w-10 place-items-center rounded-lg bg-panel text-brand ring-1 ring-line">
-          <ServerCog className="h-5 w-5" />
-        </span>
-        <div className="min-w-0">
-          <div className="text-sm font-black text-ink">
-            One runner for UI, API, scheduler, CLI, and agents
-          </div>
-          <p className="mt-1 text-sm leading-5 text-muted">
-            Save writes an append-only workflow version to{" "}
-            <code>gold/workflows.jsonl</code>. Run executes the same DAG through
-            the backend workflow engine, enforces RBAC and egress guards, writes
-            results to <code>gold/workflow_runs.jsonl</code>, and exposes the
-            run through the console, REST API, CLI, scheduler, and MCP tools.
-          </p>
-          <div className="mt-3 grid gap-2 text-xs md:grid-cols-4">
-            <div className="rounded-lg border border-line bg-panel p-2">
-              <b className="text-ink">Human</b>
-              <div className="mt-1 text-muted">
-                Design, approve, run, inspect.
-              </div>
-            </div>
-            <div className="rounded-lg border border-line bg-panel p-2">
-              <b className="text-ink">Headless</b>
-              <div className="mt-1 text-muted">REST/CLI run saved DAGs.</div>
-            </div>
-            <div className="rounded-lg border border-line bg-panel p-2">
-              <b className="text-ink">Scheduler</b>
-              <div className="mt-1 text-muted">
-                Cron triggers fire due flows.
-              </div>
-            </div>
-            <div className="rounded-lg border border-line bg-panel p-2">
-              <b className="text-ink">Agents</b>
-              <div className="mt-1 text-muted">
-                MCP lists and runs workflows.
-              </div>
-            </div>
-          </div>
-        </div>
-      </Card>
+      <RunnerContract nodes={editor.nodes} edges={editor.edges} />
 
       <Card className="overflow-hidden">
         <CardHeader>
