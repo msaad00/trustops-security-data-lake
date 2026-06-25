@@ -2,19 +2,22 @@
 
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 from pathlib import Path
+from types import SimpleNamespace
+from typing import Any
 
 import pytest
 
-from security_lakehouse.connector_runner import CONNECTOR_RAW_FILE, ConnectorSyncError, run_connector_sync
+import security_lakehouse.connector_runner as connector_runner
 from security_lakehouse.connector_state import (
     append_config_event,
     has_adapter,
     latest_run,
     run_probe,
 )
-from security_lakehouse.connectors_azure import AzureClient, AzureFixtureClient, collect_azure_evidence
+from security_lakehouse.connectors_azure import AzureCliClient, AzureClient, AzureFixtureClient, collect_azure_evidence
 from security_lakehouse.io import read_jsonl
 from security_lakehouse.validation import validate_raw_events
 
@@ -97,7 +100,7 @@ def test_collect_azure_evidence_is_schema_valid_and_mapped() -> None:
 
 def test_azure_connector_sync_writes_raw_and_materializes_lake(tmp_path: Path) -> None:
     append_config_event(tmp_path, connector_id="azure-posture", state="enabled", actor="alice")
-    result = run_connector_sync(
+    result = connector_runner.run_connector_sync(
         tmp_path,
         connector_id="azure-posture",
         fixture_dir=FIXTURE,
@@ -106,7 +109,7 @@ def test_azure_connector_sync_writes_raw_and_materializes_lake(tmp_path: Path) -
     assert result.evidence_count == 7
     assert result.materialized is True
 
-    raw_rows = read_jsonl(tmp_path / CONNECTOR_RAW_FILE)
+    raw_rows = read_jsonl(tmp_path / connector_runner.CONNECTOR_RAW_FILE)
     assert validate_raw_events(raw_rows) == []
     assert len(raw_rows) == 7
     assert all(r["source"] == "azure" for r in raw_rows)
@@ -119,30 +122,55 @@ def test_azure_connector_sync_writes_raw_and_materializes_lake(tmp_path: Path) -
     assert run["evidence_count"] == 7
 
 
+def test_azure_connector_sync_falls_back_to_az_cli_when_sdk_unavailable(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    class BrokenAzureClient:
+        def __init__(self, subscription_id: str) -> None:
+            raise RuntimeError("azure sdk import failed")
+
+    class FixtureBackedAzureCliClient(AzureFixtureClient):
+        def __init__(self, subscription_id: str) -> None:
+            super().__init__(FIXTURE, subscription_id=subscription_id)
+
+    monkeypatch.setenv("AZURE_SUBSCRIPTION_ID", SUBSCRIPTION)
+    monkeypatch.setattr(connector_runner, "AzureClient", BrokenAzureClient)
+    monkeypatch.setattr(connector_runner, "AzureCliClient", FixtureBackedAzureCliClient)
+
+    append_config_event(tmp_path, connector_id="azure-posture", state="enabled", actor="a")
+    result = connector_runner.run_connector_sync(tmp_path, connector_id="azure-posture")
+
+    assert result.result == "ok"
+    assert result.evidence_count == 7
+    raw_rows = read_jsonl(tmp_path / connector_runner.CONNECTOR_RAW_FILE)
+    assert len(raw_rows) == 7
+    assert all(row["entity"]["org"] == SUBSCRIPTION for row in raw_rows)
+
+
 def test_azure_connector_sync_upserts_stable_event_ids(tmp_path: Path) -> None:
     append_config_event(tmp_path, connector_id="azure-posture", state="enabled", actor="a")
-    first = run_connector_sync(tmp_path, connector_id="azure-posture", fixture_dir=FIXTURE)
-    second = run_connector_sync(
+    first = connector_runner.run_connector_sync(tmp_path, connector_id="azure-posture", fixture_dir=FIXTURE)
+    second = connector_runner.run_connector_sync(
         tmp_path,
         connector_id="azure-posture",
         fixture_dir=FIXTURE,
         materialize=False,
     )
     assert first.evidence_count == second.evidence_count == 7
-    assert len(read_jsonl(tmp_path / CONNECTOR_RAW_FILE)) == 7
+    assert len(read_jsonl(tmp_path / connector_runner.CONNECTOR_RAW_FILE)) == 7
 
 
 def test_azure_connector_sync_requires_enabled_connector(tmp_path: Path) -> None:
-    with pytest.raises(ConnectorSyncError, match="not enabled") as exc:
-        run_connector_sync(tmp_path, connector_id="azure-posture", fixture_dir=FIXTURE)
+    with pytest.raises(connector_runner.ConnectorSyncError, match="not enabled") as exc:
+        connector_runner.run_connector_sync(tmp_path, connector_id="azure-posture", fixture_dir=FIXTURE)
     assert exc.value.run["result"] == "error"
 
 
 def test_azure_connector_sync_without_fixture_or_creds_errors(tmp_path: Path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
     monkeypatch.delenv("AZURE_SUBSCRIPTION_ID", raising=False)
     append_config_event(tmp_path, connector_id="azure-posture", state="enabled", actor="a")
-    with pytest.raises(ConnectorSyncError, match="requires --fixture-dir"):
-        run_connector_sync(tmp_path, connector_id="azure-posture")
+    with pytest.raises(connector_runner.ConnectorSyncError, match="requires --fixture-dir"):
+        connector_runner.run_connector_sync(tmp_path, connector_id="azure-posture")
 
 
 def test_azure_client_policy_assignments_degrade_when_policy_sdk_missing() -> None:
@@ -150,6 +178,50 @@ def test_azure_client_policy_assignments_degrade_when_policy_sdk_missing() -> No
     client._policy = None
 
     assert client.policy_assignments() == []
+
+
+def test_azure_cli_client_reads_cloud_shell_json(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[list[str]] = []
+
+    def fake_which(executable: str) -> str:
+        assert executable == "az"
+        return "/usr/bin/az"
+
+    def fake_run(
+        cmd: list[str],
+        *,
+        check: bool,
+        capture_output: bool,
+        text: bool,
+        timeout: int,
+    ) -> SimpleNamespace:
+        assert check is True
+        assert capture_output is True
+        assert text is True
+        assert timeout == 90
+        calls.append(cmd)
+        if cmd[1:4] == ["role", "assignment", "list"]:
+            payload: list[dict[str, Any]] = [{"id": "role-1", "roleDefinitionName": "Reader"}]
+        elif cmd[1:4] == ["policy", "assignment", "list"]:
+            payload = [{"id": "policy-1", "properties": {"enforcementMode": "Default"}}]
+        elif cmd[1:3] == ["resource", "list"]:
+            payload = [{"id": "/subscriptions/sub/resourceGroups/rg/providers/Microsoft.Storage/storageAccounts/a"}]
+        else:  # pragma: no cover - defensive branch for unexpected command shape
+            payload = []
+        return SimpleNamespace(stdout=json.dumps(payload), stderr="")
+
+    monkeypatch.setattr("security_lakehouse.connectors_azure.shutil.which", fake_which)
+    monkeypatch.setattr("security_lakehouse.connectors_azure.subprocess.run", fake_run)
+
+    client = AzureCliClient("sub")
+
+    assert client.role_assignments() == [{"id": "role-1", "roleDefinitionName": "Reader"}]
+    assert client.policy_assignments() == [{"id": "policy-1", "properties": {"enforcementMode": "Default"}}]
+    assert client.resources() == [
+        {"id": "/subscriptions/sub/resourceGroups/rg/providers/Microsoft.Storage/storageAccounts/a"}
+    ]
+    assert all("--subscription" in call for call in calls)
+    assert all(call[-4:] == ["--subscription", "sub", "--output", "json"] for call in calls)
 
 
 def test_azure_adapter_is_registered_and_probe_reports_ok(tmp_path: Path) -> None:
