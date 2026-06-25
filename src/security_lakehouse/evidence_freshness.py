@@ -19,11 +19,17 @@ STATUS_SCORES = {"fresh": 100, "stale": 30, "expired": 0, "missing": 0}
 
 SOURCE_CONNECTOR_ALIASES = {
     "audit-log": "snowflake-evidence-lake",
+    "aws": "aws-posture",
+    "azure": "azure-posture",
     "cloud-cspm": "object-storage-evidence",
     "compliance-export": "snowflake-evidence-lake",
+    "gcp": "gcp-posture",
     "github": "github-security",
+    "google_workspace": "google-workspace-identity",
+    "google-workspace": "google-workspace-identity",
     "identity-provider": "identity-provider",
     "model-registry": "object-storage-evidence",
+    "okta": "okta-identity",
     "runtime-gateway": "runtime-gateway",
     "scanner": "object-storage-evidence",
     "siem": "siem-alerts",

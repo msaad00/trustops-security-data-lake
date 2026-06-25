@@ -143,6 +143,13 @@ def test_azure_sync_preserves_evidence_refs_and_generic_evidence_types(tmp_path:
     assert hipaa["result"] == "pass"
     assert hipaa["freshness_status"] == "fresh"
 
+    freshness_rows = read_jsonl(tmp_path / "gold" / "evidence_freshness.jsonl")
+    assert freshness_rows
+    assert {row["connector_id"] for row in freshness_rows} == {"azure-posture"}
+
+    current_posture = json.loads((tmp_path / "gold" / "current_posture.json").read_text(encoding="utf-8"))
+    assert current_posture["evidence_freshness"]["sources"][0]["connector_id"] == "azure-posture"
+
     assets = read_jsonl(tmp_path / "gold" / "asset_risk.jsonl")
     cloud_resource = next(row for row in assets if row["asset_type"] == "cloud_resource")
     assert "SOC2-CC6.1" in cloud_resource["applicable_control_ids"]
