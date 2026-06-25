@@ -12,6 +12,9 @@ Two clients sit behind one interface, mirroring ``connectors_aws``:
   (``azure-identity`` + ``azure-mgmt-*``). The SDK imports are lazy (inside the
   client) so the base/test install never needs them; CI runs entirely off
   fixtures.
+* :class:`AzureCliClient` — authenticated read-only reads via the ``az`` CLI.
+  This keeps Azure Cloud Shell usable when the management SDK namespace shifts
+  across installed versions.
 * :class:`AzureFixtureClient` — reads ``role_assignments.json`` /
   ``policy_assignments.json`` / ``resources.json`` from a fixture directory so
   collection is fully testable without live Azure credentials.
@@ -23,7 +26,10 @@ list/read operations (``roleAssignments/read``, ``policyStates/read``,
 
 from __future__ import annotations
 
+import json
 import re
+import shutil
+import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -55,17 +61,19 @@ class AzureClient:
 
     def __init__(self, subscription_id: str) -> None:
         try:
-            from azure.identity import DefaultAzureCredential  # noqa: PLC0415
-            from azure.mgmt.authorization import AuthorizationManagementClient  # noqa: PLC0415
-            from azure.mgmt.resource import ResourceManagementClient  # noqa: PLC0415
+            from azure.identity import DefaultAzureCredential  # type: ignore[import-not-found]  # noqa: PLC0415
+            from azure.mgmt.authorization import (
+                AuthorizationManagementClient,  # type: ignore[import-not-found]  # noqa: PLC0415
+            )
+            from azure.mgmt.resource import ResourceManagementClient  # type: ignore[import-not-found]  # noqa: PLC0415
         except ImportError as exc:  # pragma: no cover - exercised only with live Azure
             raise RuntimeError(
                 "azure-posture live collection requires azure-identity and azure-mgmt-* "
                 "packages; install them or use --fixture-dir"
             ) from exc
         try:
-            from azure.mgmt.resource import PolicyClient  # type: ignore[attr-defined]  # noqa: PLC0415
-        except ImportError:  # pragma: no cover - depends on installed Azure SDK version
+            from azure.mgmt.resource import PolicyClient  # type: ignore[attr-defined,import-not-found]  # noqa: PLC0415
+        except (AttributeError, ImportError):  # pragma: no cover - depends on installed Azure SDK version
             PolicyClient = None  # type: ignore[assignment]
         self.subscription_id = subscription_id
         credential = DefaultAzureCredential()
@@ -94,6 +102,60 @@ class AzureClient:
             if isinstance(payload, dict):
                 return payload
         return {}
+
+
+class AzureCliClient:
+    """Authenticated, read-only Azure subscription client backed by ``az``.
+
+    Azure Cloud Shell already has a logged-in ``az`` session. Using subprocess
+    argument arrays avoids shell expansion, and all commands are read-only list
+    calls scoped to the configured subscription.
+    """
+
+    def __init__(self, subscription_id: str, *, executable: str = "az") -> None:
+        self.subscription_id = subscription_id
+        resolved = shutil.which(executable)
+        if resolved is None:
+            raise RuntimeError("azure-posture live collection requires the az CLI on PATH")
+        self._az = resolved
+
+    def role_assignments(self) -> list[dict[str, Any]]:
+        return self._run_json(["role", "assignment", "list", "--include-inherited"])
+
+    def policy_assignments(self) -> list[dict[str, Any]]:
+        return self._run_json(["policy", "assignment", "list"])
+
+    def resources(self) -> list[dict[str, Any]]:
+        return self._run_json(["resource", "list"])
+
+    def _run_json(self, args: list[str]) -> list[dict[str, Any]]:
+        cmd = [self._az, *args, "--subscription", self.subscription_id, "--output", "json"]
+        try:
+            completed = subprocess.run(
+                cmd,
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=90,
+            )
+        except subprocess.TimeoutExpired as exc:
+            raise RuntimeError("azure CLI command timed out during azure-posture collection") from exc
+        except subprocess.CalledProcessError as exc:
+            detail = _scrub_cli_error(exc.stderr)
+            raise RuntimeError(f"azure CLI command failed during azure-posture collection: {detail}") from exc
+
+        try:
+            payload = json.loads(completed.stdout or "[]")
+        except json.JSONDecodeError as exc:
+            raise RuntimeError("azure CLI returned invalid JSON during azure-posture collection") from exc
+        if isinstance(payload, list):
+            return [item for item in payload if isinstance(item, dict)]
+        if isinstance(payload, dict):
+            value = payload.get("value")
+            if isinstance(value, list):
+                return [item for item in value if isinstance(item, dict)]
+            return [payload]
+        return []
 
 
 class AzureFixtureClient:
@@ -126,7 +188,7 @@ class AzureFixtureClient:
 
 
 def collect_azure_evidence(
-    client: AzureClient | AzureFixtureClient,
+    client: AzureClient | AzureCliClient | AzureFixtureClient,
     *,
     collected_at: datetime | None = None,
     tenant_id: str = "customer-managed",
@@ -366,3 +428,10 @@ def _truncate_tail(slug: str, *, limit: int = 96) -> str:
     if len(slug) <= limit:
         return slug
     return slug[-limit:].strip("-")
+
+
+def _scrub_cli_error(stderr: str | None) -> str:
+    message = " ".join(str(stderr or "").split())
+    if not message:
+        return "no stderr"
+    return message[:300]

@@ -24,6 +24,7 @@ from security_lakehouse.connectors_aws import (
     collect_aws_evidence,
 )
 from security_lakehouse.connectors_azure import (
+    AzureCliClient,
     AzureClient,
     AzureFixtureClient,
     collect_azure_evidence,
@@ -417,14 +418,18 @@ def _collect_azure(
     if fixture_dir:
         subscription_id = env.get(AZURE_SUBSCRIPTION_ID_ENV) or "00000000-0000-0000-0000-000000000000"
         return collect_azure_evidence(AzureFixtureClient(fixture_dir, subscription_id=subscription_id))
-    subscription_id = env.get(AZURE_SUBSCRIPTION_ID_ENV)
+    subscription_id = env.get(AZURE_SUBSCRIPTION_ID_ENV) or ""
     if not subscription_id:
         raise ValueError(
             "azure-posture sync requires --fixture-dir, or "
             f"{AZURE_SUBSCRIPTION_ID_ENV} plus read-only Azure credentials "
             "(DefaultAzureCredential: service-principal env vars / managed identity / az login)"
         )
-    client = AzureClient(subscription_id)
+    client: AzureClient | AzureCliClient
+    try:
+        client = AzureClient(subscription_id)
+    except RuntimeError:
+        client = AzureCliClient(subscription_id)
     return collect_azure_evidence(client)
 
 
