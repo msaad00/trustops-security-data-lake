@@ -43,7 +43,7 @@ controls, route risk, automate follow-up, and share proof safely.
 | **Headless agents**          | `/api/v1` envelopes, OpenAPI, Python SDK, MCP tools, persisted harness runs, approvals, and optional LangGraph. | CI, MCP clients, internal agents |
 
 Current catalog scope is explicit: **8 framework families**, **34 seeded
-controls**, **34 reviewed mappings**, **13 modeled asset types**, and **92
+controls**, **34 reviewed mappings**, **16 modeled asset types**, and **100
 control-to-asset applicability links**. Coverage means seeded repo coverage,
 not certification or full-framework audit coverage. See
 [Framework Coverage](docs/FRAMEWORK_COVERAGE.md).
@@ -78,18 +78,33 @@ idempotency, snapshots, hashes, and audit logs.
 </p>
 
 ```mermaid
+flowchart TB
+  Sources[Cloud, identity, repo, runtime, scanner, ticketing, AI evidence]
+  Lake[Customer-controlled lake or local evidence store]
+  Evidence[Normalized evidence, hashes, freshness, owners]
+  Rules[Controls-as-code evaluation]
+  Posture[Posture, tests, violations, assets]
+  Actions[Findings, remediation, workflows, trust sharing]
+
+  Sources --> Lake --> Evidence --> Rules --> Posture --> Actions
+```
+
+```mermaid
 flowchart LR
-  Sources[Cloud, identity, repo, runtime, scanner, ticketing, AI evidence] --> Lake[Customer-controlled lake or local evidence store]
-  Lake --> Evidence[Normalized evidence + hashes + freshness]
-  Evidence --> Rules[Controls-as-code evaluation]
-  Rules --> Posture[Posture, tests, violations, assets]
-  Posture --> UI[Human console]
-  Posture --> API[/api/v1 + SDK + MCP/]
-  Posture --> Snapshots[Immutable snapshots + posture-as-of]
-  Posture --> Share[Trust center shares]
-  API --> Harness[Optional agent harness]
-  Harness --> Approval[Approval-gated writes]
-  Approval --> Work[Tasks, evidence requests, snapshots]
+  Posture[Deterministic posture state]
+  Console[Human console]
+  API[API, SDK, MCP]
+  Snapshot[Immutable snapshots]
+  Share[Trust center shares]
+  Harness[Optional agent harness]
+  Approval[Approval-gated writes]
+  Work[Tasks, evidence requests, snapshots]
+
+  Posture --> Console
+  Posture --> API
+  Posture --> Snapshot
+  Posture --> Share
+  API --> Harness --> Approval --> Work
 ```
 
 ### Storage Modes
