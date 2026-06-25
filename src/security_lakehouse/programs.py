@@ -8,11 +8,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from security_lakehouse.catalog import load_control_catalog, load_framework_registry
+from security_lakehouse.catalog import _data_root, load_control_catalog, load_framework_registry
 from security_lakehouse.evidence_freshness import summarize_control_freshness
 from security_lakehouse.models import utc_iso
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = _data_root()
 DEFAULT_PROGRAM_CATALOG = ROOT / "programs" / "catalog.json"
 FAIL_STATUSES = {"open", "failed", "blocked", "noncompliant"}
 LIFECYCLE = {

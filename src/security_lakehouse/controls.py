@@ -5,10 +5,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse.catalog import _data_root
 from security_lakehouse.io import read_json
 
-DEFAULT_MAPPING_PATH = Path(__file__).resolve().parents[2] / "mappings" / "control_map.json"
-DEFAULT_CATALOG_PATH = Path(__file__).resolve().parents[2] / "controls" / "catalog.json"
+ROOT = _data_root()
+DEFAULT_MAPPING_PATH = ROOT / "mappings" / "control_map.json"
+DEFAULT_CATALOG_PATH = ROOT / "controls" / "catalog.json"
 
 
 def load_control_map(path: str | Path | None = None) -> dict[str, dict[str, Any]]:

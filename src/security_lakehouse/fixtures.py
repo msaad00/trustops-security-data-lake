@@ -13,7 +13,9 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+from security_lakehouse.catalog import _data_root
+
+ROOT = _data_root()
 FIXTURES_DIR = ROOT / "mockup_companies"
 
 

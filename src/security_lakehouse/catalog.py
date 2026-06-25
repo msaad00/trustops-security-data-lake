@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -14,13 +15,25 @@ def _data_root() -> Path:
     Resolution order:
       1. ``TRUSTOPS_DATA_DIR`` environment variable — set by the Docker
          image and Helm chart so the wheel can find the JSON catalogs.
-      2. ``parents[2]`` of this module — the developer checkout where the
-         data lives alongside ``src/``.
+      2. Known install/check-out roots that contain the runtime catalogs.
+         Editable installs keep them in the repository root; wheels install
+         ``data-files`` under the environment prefix.
     """
     override = os.environ.get("TRUSTOPS_DATA_DIR")
     if override:
         return Path(override)
-    return Path(__file__).resolve().parents[2]
+    module_path = Path(__file__).resolve()
+    candidates = (
+        module_path.parents[2],
+        Path(sys.prefix),
+        Path(sys.base_prefix),
+    )
+    for candidate in candidates:
+        if (candidate / "connectors" / "catalog.json").is_file() and (
+            candidate / "controls" / "catalog.json"
+        ).is_file():
+            return candidate
+    return module_path.parents[2]
 
 
 ROOT = _data_root()
