@@ -39,6 +39,11 @@ For live Azure, AWS, or Snowflake trials, use the least-privilege runbook in
 read-only and avoids passwords, human-scoped developer tokens, root keys, and
 broad cloud credentials.
 
+For production operation, use
+[`docs/CONTINUOUS_INGESTION.md`](CONTINUOUS_INGESTION.md). It describes the
+customer-owned identity boundary, probe-gated enablement, scheduler loop,
+idempotent raw upserts, API limits, error behavior, and snapshot integrity.
+
 List configured connector contracts:
 
 ```bash

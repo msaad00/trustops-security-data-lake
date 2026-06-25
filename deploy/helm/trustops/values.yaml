@@ -109,6 +109,12 @@ scheduler:
 # Optional: extra env vars (e.g. for SCIM / OIDC integration in future PRs).
 env: []
 
+# Optional: extra volume mounts and volumes for customer-managed secrets such as
+# a Snowflake service-user private key. Keep secret contents in Kubernetes or an
+# external secret operator; TrustOps receives only the mounted file path.
+extraVolumeMounts: []
+extraVolumes: []
+
 nodeSelector: {}
 tolerations: []
 affinity: {}

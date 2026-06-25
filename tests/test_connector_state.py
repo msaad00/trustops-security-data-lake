@@ -18,6 +18,7 @@ from security_lakehouse.connector_state import (
     _missing_required_config,
     append_config_event,
     build_catalog_view,
+    configure_payload_error,
     latest_config,
     latest_run,
     list_runs,
@@ -287,6 +288,48 @@ def test_discovery_validates_scope_credentials_without_password_terms(tmp_path: 
     assert "user" in rec["error"]
     assert "credential_ref" in rec["error"]
     assert "password" not in rec["error"]
+
+
+def test_snowflake_public_config_requires_secret_references() -> None:
+    error = configure_payload_error(
+        connector_id="snowflake-evidence-lake",
+        state="enabled",
+        credentials={
+            "account": "org-account",
+            "user": "TRUSTOPS_INGEST_SVC",
+            "private_key": "raw-key-material",
+        },
+        options={
+            "warehouse": "TRUSTOPS_READ_WH",
+            "database": "TRUSTOPS_SECURITY_LAKE",
+            "schema": "EVIDENCE",
+            "audit_events": "TRUSTOPS_AUDIT_EVENTS",
+            "control_posture": "TRUSTOPS_CONTROL_POSTURE",
+            "asset_risk": "TRUSTOPS_ASSET_RISK",
+            "evidence_bundles": "TRUSTOPS_EVIDENCE_BUNDLES",
+        },
+    )
+
+    assert error
+    assert "credential_ref" in error
+    assert "private_key" not in error
+
+
+def test_snowflake_discovery_requires_secret_references(tmp_path: Path) -> None:
+    rec = run_discovery(
+        tmp_path,
+        connector_id="snowflake-evidence-lake",
+        credentials={
+            "account": "org-account",
+            "user": "TRUSTOPS_INGEST_SVC",
+            "oauth_token": "raw-oauth-token",
+        },
+        options={},
+    )
+
+    assert rec["result"] == "error"
+    assert "credential_ref" in rec["error"]
+    assert "oauth_token" not in rec["error"]
 
 
 def test_discovery_reuses_enabled_config_without_retyping_credentials(tmp_path: Path) -> None:

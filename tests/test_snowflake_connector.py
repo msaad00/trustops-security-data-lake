@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
+from decimal import Decimal
 from pathlib import Path
+from typing import Any
 
 import pytest
 
 from security_lakehouse import connector_runner, connector_state
 from security_lakehouse.connectors_snowflake import (
+    SnowflakeClient,
     SnowflakeFixtureClient,
     _probe_query_params,
     collect_snowflake_evidence,
@@ -65,6 +68,34 @@ def test_snowflake_sync_writes_raw_evidence_and_materializes(tmp_path: Path) -> 
     assert run is not None
     assert run["result"] == "ok"
     assert run["evidence_count"] == 8
+
+
+def test_snowflake_live_select_normalizes_driver_values() -> None:
+    client = object.__new__(SnowflakeClient)
+    client.query_params = {"account": "acme"}
+    client.views = {"audit_events": "TRUSTOPS_AUDIT_EVENTS"}
+    client._connector = _FakeSnowflakeConnector(
+        rows=[
+            (
+                Decimal("42"),
+                Decimal("0.95"),
+                datetime(2026, 6, 25, 12, 30, tzinfo=UTC),
+                date(2026, 6, 25),
+            )
+        ],
+        description=[("COUNT_VALUE",), ("CONFIDENCE",), ("CREATED_AT",), ("CREATED_ON",)],
+    )
+
+    rows = client._select_view("audit_events")
+
+    assert rows == [
+        {
+            "count_value": 42,
+            "confidence": 0.95,
+            "created_at": "2026-06-25T12:30:00Z",
+            "created_on": "2026-06-25",
+        }
+    ]
 
 
 def test_snowflake_live_requires_account_and_user_for_sso_or_oauth(
@@ -276,3 +307,42 @@ def test_snowflake_probe_rejects_missing_oauth_ref_without_connection() -> None:
             },
             env={},
         )
+
+
+class _FakeSnowflakeConnector:
+    def __init__(self, *, rows: list[tuple[Any, ...]], description: list[tuple[str]]) -> None:
+        self._rows = rows
+        self._description = description
+
+    def connect(self, **_params: object) -> _FakeSnowflakeConnection:
+        return _FakeSnowflakeConnection(self._rows, self._description)
+
+
+class _FakeSnowflakeConnection:
+    def __init__(self, rows: list[tuple[Any, ...]], description: list[tuple[str]]) -> None:
+        self._rows = rows
+        self._description = description
+
+    def __enter__(self) -> _FakeSnowflakeConnection:
+        return self
+
+    def __exit__(self, *_args: object) -> None:
+        return None
+
+    def cursor(self) -> _FakeSnowflakeCursor:
+        return _FakeSnowflakeCursor(self._rows, self._description)
+
+
+class _FakeSnowflakeCursor:
+    def __init__(self, rows: list[tuple[Any, ...]], description: list[tuple[str]]) -> None:
+        self._rows = rows
+        self.description = description
+
+    def execute(self, _query: str) -> None:
+        return None
+
+    def fetchall(self) -> list[tuple[Any, ...]]:
+        return self._rows
+
+    def close(self) -> None:
+        return None
