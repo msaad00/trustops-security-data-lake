@@ -29,6 +29,11 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_NO_CACHE_DIR=1
 WORKDIR /src
 COPY pyproject.toml README.md ./
 COPY src/ ./src/
+COPY connectors/ ./connectors/
+COPY controls/ ./controls/
+COPY frameworks/ ./frameworks/
+COPY mappings/ ./mappings/
+COPY programs/ ./programs/
 # Bring the static export into the package tree before install so wheel
 # package-data picks it up.
 COPY --from=web-build /src/security_lakehouse/web/dist/ ./src/security_lakehouse/web/dist/
@@ -64,6 +69,7 @@ COPY frameworks/ /opt/trustops-data/frameworks/
 COPY controls/ /opt/trustops-data/controls/
 COPY connectors/ /opt/trustops-data/connectors/
 COPY mappings/ /opt/trustops-data/mappings/
+COPY programs/ /opt/trustops-data/programs/
 
 USER trustops
 WORKDIR /home/trustops

@@ -95,6 +95,13 @@ where = ["src"]
     "migrations/versions/*.py",
 ]
 
+[tool.setuptools.data-files]
+"connectors" = ["connectors/catalog.json"]
+"controls" = ["controls/bundle.lock.json", "controls/catalog.json"]
+"frameworks" = ["frameworks/registry.json", "frameworks/verified_article_ids.json"]
+"mappings" = ["mappings/control_articles.json", "mappings/control_map.json"]
+"programs" = ["programs/catalog.json"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
