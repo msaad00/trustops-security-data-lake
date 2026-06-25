@@ -118,11 +118,14 @@ JIRA_BASE_URL_ENV = "JIRA_BASE_URL"
 JIRA_EMAIL_ENV = "JIRA_EMAIL"
 
 # Environment variables carrying Snowflake connection metadata for read-only
-# evidence-lake collection. Browser SSO is preferred for human POCs. OAuth can
-# still be supplied by automation through SNOWFLAKE_OAUTH_TOKEN or --token-env.
+# evidence-lake collection. Browser SSO is only for human POCs. Continuous
+# automation should use a service user with key-pair auth or OAuth materialized
+# by the runtime secret manager.
 SNOWFLAKE_ACCOUNT_ENV = "SNOWFLAKE_ACCOUNT"
 SNOWFLAKE_USER_ENV = "SNOWFLAKE_USER"
 SNOWFLAKE_OAUTH_TOKEN_ENV = "SNOWFLAKE_OAUTH_TOKEN"
+SNOWFLAKE_PRIVATE_KEY_FILE_ENV = "SNOWFLAKE_PRIVATE_KEY_FILE"
+SNOWFLAKE_PRIVATE_KEY_FILE_PWD_ENV = "SNOWFLAKE_PRIVATE_KEY_FILE_PWD"
 SNOWFLAKE_AUTHENTICATOR_ENV = "SNOWFLAKE_AUTHENTICATOR"
 SNOWFLAKE_WAREHOUSE_ENV = "SNOWFLAKE_WAREHOUSE"
 SNOWFLAKE_DATABASE_ENV = "SNOWFLAKE_DATABASE"
@@ -470,12 +473,17 @@ def _collect_snowflake(
     else:
         user = env.get(SNOWFLAKE_USER_ENV)
         credential = _resolve_provider_token(token_env, SNOWFLAKE_OAUTH_TOKEN_ENV, env)
-        authenticator = env.get(SNOWFLAKE_AUTHENTICATOR_ENV) or ("oauth" if credential else "externalbrowser")
+        private_key_file = env.get(SNOWFLAKE_PRIVATE_KEY_FILE_ENV)
+        private_key_file_pwd = env.get(SNOWFLAKE_PRIVATE_KEY_FILE_PWD_ENV)
+        authenticator = env.get(SNOWFLAKE_AUTHENTICATOR_ENV)
+        if not authenticator:
+            authenticator = "oauth" if credential else "SNOWFLAKE_JWT" if private_key_file else "externalbrowser"
         if not account or not user:
             raise ValueError(
                 "snowflake-evidence-lake sync requires --fixture-dir, or "
                 f"{SNOWFLAKE_ACCOUNT_ENV} plus {SNOWFLAKE_USER_ENV} with browser SSO "
-                f"({SNOWFLAKE_AUTHENTICATOR_ENV}=externalbrowser) or a read-only OAuth token "
+                f"({SNOWFLAKE_AUTHENTICATOR_ENV}=externalbrowser), a Snowflake service-user key file "
+                f"({SNOWFLAKE_PRIVATE_KEY_FILE_ENV}), or a read-only OAuth token "
                 f"({SNOWFLAKE_OAUTH_TOKEN_ENV} or --token-env)"
             )
         params = {
@@ -488,6 +496,9 @@ def _collect_snowflake(
             "schema": env.get(SNOWFLAKE_SCHEMA_ENV),
             "role": env.get(SNOWFLAKE_ROLE_ENV),
         }
+        if private_key_file and not credential:
+            params["private_key_file"] = private_key_file
+            params["private_key_file_pwd"] = private_key_file_pwd
         views = {
             key: env.get(f"SNOWFLAKE_VIEW_{key.upper()}") or default for key, default in SNOWFLAKE_DEFAULT_VIEWS.items()
         }

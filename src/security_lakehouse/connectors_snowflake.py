@@ -177,9 +177,10 @@ def probe_snowflake_access(
 ) -> dict[str, Any]:
     """Validate Snowflake read scope without collecting evidence.
 
-    The probe uses either browser SSO (``credential_ref=externalbrowser``) or a
-    named OAuth token environment variable. It returns object names, row counts,
-    and sanitized diagnostics only; raw credential material is never returned.
+    The probe uses browser SSO for human POCs, a named OAuth token environment
+    variable, or a service-user private-key file reference. It returns object
+    names, row counts, and sanitized diagnostics only; raw credential material is
+    never returned.
     """
     environment = env or os.environ
     query_params = _probe_query_params(credentials=credentials, options=options, env=environment)
@@ -219,9 +220,19 @@ def _probe_query_params(
         credentials.get("credential_ref") or credentials.get("oauth_token_ref") or credentials.get("token_env") or ""
     ).strip()
     oauth_token = str(credentials.get("oauth_token") or credentials.get("token") or "").strip() or None
+    private_key_ref = str(credentials.get("private_key_ref") or credentials.get("private_key_file_ref") or "").strip()
+    private_key_file = str(credentials.get("private_key_file") or "").strip() or None
+    private_key_file_pwd_ref = str(credentials.get("private_key_file_pwd_ref") or "").strip()
     authenticator = str(options.get("authenticator") or credentials.get("authenticator") or "").strip()
 
-    if credential_ref and credential_ref.lower() != "externalbrowser":
+    if private_key_ref:
+        private_key_file = env.get(private_key_ref)
+        if not private_key_file:
+            raise ValueError(f"Snowflake private_key_ref environment variable {private_key_ref!r} is not set")
+        authenticator = authenticator or "SNOWFLAKE_JWT"
+    elif private_key_file:
+        authenticator = authenticator or "SNOWFLAKE_JWT"
+    elif credential_ref and credential_ref.lower() != "externalbrowser":
         oauth_token = env.get(credential_ref)
         if not oauth_token:
             raise ValueError(f"Snowflake credential_ref environment variable {credential_ref!r} is not set")
@@ -233,7 +244,8 @@ def _probe_query_params(
     else:
         authenticator = authenticator or "externalbrowser"
 
-    return {
+    private_key_file_pwd = env.get(private_key_file_pwd_ref) if private_key_file_pwd_ref else None
+    params = {
         "account": account,
         "user": user,
         "authenticator": authenticator,
@@ -243,6 +255,10 @@ def _probe_query_params(
         "schema": str(options.get("schema") or "").strip() or None,
         "role": str(options.get("role") or credentials.get("role") or "").strip() or None,
     }
+    if private_key_file and not oauth_token:
+        params["private_key_file"] = private_key_file
+        params["private_key_file_pwd"] = private_key_file_pwd
+    return params
 
 
 def _audit_event(account: str, row: dict[str, Any], collected_at: datetime, tenant_id: str) -> dict[str, Any] | None:
