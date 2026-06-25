@@ -153,9 +153,7 @@ def test_snowflake_live_uses_oauth_when_token_env_is_present(tmp_path: Path, mon
     assert captured["query_params"]["token"] == "read-only-oauth-token"
 
 
-def test_snowflake_live_uses_key_pair_file_for_service_user(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_snowflake_live_uses_key_pair_file_for_service_user(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     connector_state.append_config_event(
         tmp_path,
         connector_id="snowflake-evidence-lake",
