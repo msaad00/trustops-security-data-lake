@@ -122,6 +122,33 @@ def test_azure_connector_sync_writes_raw_and_materializes_lake(tmp_path: Path) -
     assert run["evidence_count"] == 7
 
 
+def test_azure_sync_preserves_evidence_refs_and_generic_evidence_types(tmp_path: Path) -> None:
+    append_config_event(tmp_path, connector_id="azure-posture", state="enabled", actor="alice")
+    connector_runner.run_connector_sync(tmp_path, connector_id="azure-posture", fixture_dir=FIXTURE)
+
+    silver_rows = read_jsonl(tmp_path / "silver" / "normalized_events.jsonl")
+    role_rows = [row for row in silver_rows if row["event_type"] == "azure.cloud.role_assignment"]
+    assert role_rows
+    assert all(row["evidence_ref"].startswith(f"/subscriptions/{SUBSCRIPTION}") for row in role_rows)
+    assert all({"cloud.config", "identity.access_review"} <= set(row["evidence_types"]) for row in role_rows)
+
+    control_tests = {row["control_id"]: row for row in read_jsonl(tmp_path / "gold" / "control_tests.jsonl")}
+    soc2 = control_tests["SOC2-CC6.1"]
+    assert "cloud.config" in soc2["observed_evidence_types"]
+    assert "identity.access_review" in soc2["observed_evidence_types"]
+    assert "cloud.config" not in soc2["missing_evidence_types"]
+    assert "identity.access_review" not in soc2["missing_evidence_types"]
+
+    hipaa = control_tests["HIPAA-164.308(a)(4)"]
+    assert hipaa["result"] == "pass"
+    assert hipaa["freshness_status"] == "fresh"
+
+    assets = read_jsonl(tmp_path / "gold" / "asset_risk.jsonl")
+    cloud_resource = next(row for row in assets if row["asset_type"] == "cloud_resource")
+    assert "SOC2-CC6.1" in cloud_resource["applicable_control_ids"]
+    assert "NIST-AI-RMF-MAP-1.5" in cloud_resource["applicable_control_ids"]
+
+
 def test_azure_connector_sync_falls_back_to_az_cli_when_sdk_unavailable(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

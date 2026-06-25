@@ -29,8 +29,11 @@
       "reviewed_date": "2026-05-23",
       "signal_source": "silver/normalized_events.jsonl",
       "asset_types": [
+        "cloud_policy",
+        "cloud_resource",
         "iam_role",
         "identity_group",
+        "identity_role_assignment",
         "identity_user",
         "okta_user"
       ]
@@ -87,7 +90,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-23",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": ["ai_model", "ai_agent"]
+      "asset_types": ["ai_model", "ai_agent", "cloud_resource"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.7",
@@ -250,8 +253,11 @@
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
       "asset_types": [
+        "cloud_policy",
+        "cloud_resource",
         "iam_role",
         "identity_group",
+        "identity_role_assignment",
         "identity_user",
         "okta_user"
       ]
@@ -338,6 +344,7 @@
       "asset_types": [
         "iam_role",
         "identity_group",
+        "identity_role_assignment",
         "identity_user",
         "okta_user"
       ]

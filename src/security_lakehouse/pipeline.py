@@ -17,6 +17,7 @@ from security_lakehouse.evidence_freshness import (
     stale_control_ids,
     summarize_source_freshness,
 )
+from security_lakehouse.evidence_types import expand_evidence_types
 from security_lakehouse.io import read_jsonl, write_json, write_jsonl
 from security_lakehouse.models import SEVERITY_SCORE, PipelineResult, parse_event_time, utc_iso
 from security_lakehouse.policy import ControlContext, evaluate_control
@@ -264,12 +265,14 @@ def _silver_row(row: dict[str, Any], raw_sha256: str) -> dict[str, Any]:
     attributes = row.get("attributes") or {}
     asset_id = str(entity.get("asset_id") or entity.get("id") or entity.get("name") or "unknown")
     severity = str(row.get("severity", "info")).lower()
+    event_type = str(row["event_type"])
     return {
         "event_id": str(row["event_id"]),
         "tenant_id": str(row["tenant_id"]),
         "event_time": utc_iso(parse_event_time(str(row["event_time"]))),
         "source": str(row["source"]),
-        "event_type": str(row["event_type"]),
+        "event_type": event_type,
+        "evidence_types": expand_evidence_types(event_type),
         "asset_id": asset_id,
         "asset_type": str(entity.get("asset_type") or entity.get("type") or "unknown"),
         "asset_owner": str(entity.get("owner") or attributes.get("owner") or "unassigned"),
@@ -279,8 +282,10 @@ def _silver_row(row: dict[str, Any], raw_sha256: str) -> dict[str, Any]:
         "status": str(row.get("status", "observed")).lower(),
         "control_ids": [str(item) for item in row.get("controls", [])],
         "evidence_id": str(evidence.get("evidence_id") or row["event_id"]),
-        "evidence_ref": str(evidence.get("uri") or evidence.get("ref") or ""),
-        "evidence_collected_at": str(evidence.get("collected_at") or row["event_time"]),
+        "evidence_ref": str(evidence.get("uri") or evidence.get("ref") or evidence.get("evidence_ref") or ""),
+        "evidence_collected_at": str(
+            evidence.get("collected_at") or evidence.get("evidence_collected_at") or row["event_time"]
+        ),
         "raw_sha256": raw_sha256,
     }
 

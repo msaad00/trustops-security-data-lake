@@ -114,7 +114,9 @@ def build_control_tests(
         evidence_events = events_by_control.get(control_id, [])
         failing_events = [event for event in evidence_events if event["status"] in FAIL_STATUSES]
         required_types = [str(item) for item in config.get("required_evidence_types", [])]
-        observed_types = sorted({str(event["event_type"]) for event in evidence_events})
+        observed_types = sorted(
+            {str(evidence_type) for event in evidence_events for evidence_type in _event_evidence_types(event)}
+        )
         missing_types = sorted(set(required_types) - set(observed_types))
         freshness = summarize_control_freshness(
             evidence_events,
@@ -244,6 +246,13 @@ def _latest_evidence_at(events: list[dict[str, Any]]) -> str | None:
     values = [str(event.get("evidence_collected_at") or event.get("event_time") or "") for event in events]
     values = [value for value in values if value]
     return max(values) if values else None
+
+
+def _event_evidence_types(event: dict[str, Any]) -> list[str]:
+    evidence_types = event.get("evidence_types")
+    if isinstance(evidence_types, list):
+        return [str(item) for item in evidence_types if str(item)]
+    return [str(event.get("event_type") or "")]
 
 
 def _read_json(path: str | Path) -> dict[str, Any]:
