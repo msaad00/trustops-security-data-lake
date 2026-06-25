@@ -13,11 +13,11 @@ reviewers/agents   -> read posture, runs, evidence, snapshots, trust shares
 
 ## Responsibilities
 
-| Layer              | Owns                                      | Must not own                         |
-| ------------------ | ----------------------------------------- | ------------------------------------ |
-| Customer platform  | Snowflake user, cloud role, secret mount  | TrustOps app code                    |
-| TrustOps connector | read scope, fingerprint, sync history     | passwords, PATs, raw private keys    |
-| Scheduler          | due checks, locks, sync/evaluation runs   | broad cloud permissions              |
+| Layer              | Owns                                     | Must not own                         |
+| ------------------ | ---------------------------------------- | ------------------------------------ |
+| Customer platform  | Snowflake user, cloud role, secret mount | TrustOps app code                    |
+| TrustOps connector | read scope, fingerprint, sync history    | passwords, PATs, raw private keys    |
+| Scheduler          | due checks, locks, sync/evaluation runs  | broad cloud permissions              |
 | Assessment engine  | normalized evidence, controls, snapshots | connector-specific compliance claims |
 
 ## Production Flow
@@ -148,15 +148,15 @@ evidence status, snapshots, and shared API/UI/agent access to the same state.
 
 The headless path uses the same operations as the UI:
 
-| Operation                 | Route                                           | Scope              |
-| ------------------------- | ----------------------------------------------- | ------------------ |
-| List connectors           | `GET /api/v1/connectors`                        | `read`             |
-| List connector run history | `GET /api/v1/connectors/{connector_id}/runs`   | `read`             |
-| Discover scope            | `POST /api/v1/connectors/{connector_id}/discover` | `connector_manage` |
-| Probe access              | `POST /api/v1/connectors/{connector_id}/probe`  | `connector_manage` |
-| Configure connector       | `POST /api/v1/connectors/{connector_id}/configure` | `connector_manage` |
-| Create snapshot           | `POST /api/v1/snapshots`                        | `snapshot`         |
-| Verify snapshot chain     | `GET /api/v1/snapshots/integrity`               | `read`             |
+| Operation                  | Route                                              | Scope              |
+| -------------------------- | -------------------------------------------------- | ------------------ |
+| List connectors            | `GET /api/v1/connectors`                           | `read`             |
+| List connector run history | `GET /api/v1/connectors/{connector_id}/runs`       | `read`             |
+| Discover scope             | `POST /api/v1/connectors/{connector_id}/discover`  | `connector_manage` |
+| Probe access               | `POST /api/v1/connectors/{connector_id}/probe`     | `connector_manage` |
+| Configure connector        | `POST /api/v1/connectors/{connector_id}/configure` | `connector_manage` |
+| Create snapshot            | `POST /api/v1/snapshots`                           | `snapshot`         |
+| Verify snapshot chain      | `GET /api/v1/snapshots/integrity`                  | `read`             |
 
 This is the path external portals, internal platform automation, MCP tools, and
 agent harnesses should use. CLI examples are wrappers around the same contract,
