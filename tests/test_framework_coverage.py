@@ -21,8 +21,8 @@ def test_framework_coverage_ledger_counts_seeded_mappings(capsys) -> None:
     assert summary["reviewed_mapping_count"] == 34
     assert summary["missing_mapping_count"] == 0
     assert summary["seeded_mapping_coverage_pct"] == 100.0
-    assert summary["asset_type_count"] == 13
-    assert summary["control_asset_applicability_link_count"] == 92
+    assert summary["asset_type_count"] == 16
+    assert summary["control_asset_applicability_link_count"] == 100
     assert summary["official_logo_count"] == 0
     assert summary["certification_seal_count"] == 0
     assert all(row["asset_policy"].startswith("neutral label") for row in rows)
@@ -38,8 +38,8 @@ def test_framework_coverage_markdown_is_source_linked_not_logo_based() -> None:
     markdown = render_framework_coverage_markdown(build_framework_coverage(), build_control_asset_applicability())
 
     assert "Seeded mapping coverage: 100.0%" in markdown
-    assert "Asset types modeled: 13" in markdown
-    assert "Control-to-asset applicability links: 92" in markdown
+    assert "Asset types modeled: 16" in markdown
+    assert "Control-to-asset applicability links: 100" in markdown
     assert "## Control-To-Asset Applicability" in markdown
     assert "| `iam_role` | 4 |" in markdown
     assert "Official source" in markdown

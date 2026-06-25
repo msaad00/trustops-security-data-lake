@@ -99,12 +99,12 @@ def summarize_control_freshness(
     )
     latest_by_type: dict[str, dict[str, Any]] = {}
     for row in freshness_rows:
-        event_type = str(row["event_type"])
-        current = latest_by_type.get(event_type)
-        if current is None or str(row.get("evidence_collected_at") or "") > str(
-            current.get("evidence_collected_at") or ""
-        ):
-            latest_by_type[event_type] = row
+        for event_type in _record_evidence_types(row):
+            current = latest_by_type.get(event_type)
+            if current is None or str(row.get("evidence_collected_at") or "") > str(
+                current.get("evidence_collected_at") or ""
+            ):
+                latest_by_type[event_type] = row
 
     required = [str(item) for item in required_evidence_types]
     missing = [event_type for event_type in required if event_type not in latest_by_type]
@@ -209,12 +209,21 @@ def _base_record(
         "source": str(row.get("source") or "unknown"),
         "connector_id": connector_id,
         "event_type": str(row.get("event_type") or ""),
+        "evidence_types": _record_evidence_types(row),
         "asset_id": str(row.get("asset_id") or ""),
         "control_ids": [str(item) for item in row.get("control_ids", [])],
         "evidence_collected_at": str(row.get("evidence_collected_at") or ""),
         "evaluated_at": utc_iso(evaluated_at),
         "freshness_slo_minutes": freshness_slo_minutes,
     }
+
+
+def _record_evidence_types(row: dict[str, Any]) -> list[str]:
+    evidence_types = row.get("evidence_types")
+    if isinstance(evidence_types, list):
+        return [str(item) for item in evidence_types if str(item)]
+    event_type = str(row.get("event_type") or "")
+    return [event_type] if event_type else []
 
 
 def _connector_id_for_source(source: str, connectors: dict[str, dict[str, Any]]) -> str:
