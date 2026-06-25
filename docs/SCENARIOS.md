@@ -84,8 +84,8 @@ the account password policy when authorized.
 ### Snowflake Live Proof
 
 Create the fixed Snowflake POC views from
-[`docs/LIVE_CLOUD_POC.md`](LIVE_CLOUD_POC.md), then run the scenario with browser
-SSO:
+[`docs/LIVE_CLOUD_POC.md`](LIVE_CLOUD_POC.md). Browser SSO is acceptable for a
+human proof only:
 
 ```bash
 SNOWFLAKE_ACCOUNT="$SNOWFLAKE_ACCOUNT" \
@@ -101,9 +101,28 @@ security-lakehouse scenario run live-cloud-posture \
   --summary
 ```
 
-Headless jobs can use `SNOWFLAKE_AUTHENTICATOR=oauth` with
-`SNOWFLAKE_OAUTH_TOKEN` injected by the runtime secret manager. The raw token is
-not persisted in the lake.
+Continuous jobs should use a non-human Snowflake service user with key-pair
+auth. The private key is mounted by the runtime secret manager and only the file
+path is passed to TrustOps:
+
+```bash
+SNOWFLAKE_ACCOUNT="$SNOWFLAKE_ACCOUNT" \
+SNOWFLAKE_USER=TRUSTOPS_INGEST_SVC \
+SNOWFLAKE_AUTHENTICATOR=SNOWFLAKE_JWT \
+SNOWFLAKE_PRIVATE_KEY_FILE="$SNOWFLAKE_PRIVATE_KEY_FILE" \
+SNOWFLAKE_ROLE=TRUSTOPS_READER \
+SNOWFLAKE_WAREHOUSE=TRUSTOPS_READ_WH \
+SNOWFLAKE_DATABASE=TRUSTOPS_SECURITY_LAKE \
+SNOWFLAKE_SCHEMA=EVIDENCE \
+security-lakehouse scenario run live-cloud-posture \
+  --lake build/scenarios/snowflake-live \
+  --connector snowflake-evidence-lake \
+  --summary
+```
+
+OAuth is also supported when the customer already has a governed token broker:
+set `SNOWFLAKE_AUTHENTICATOR=oauth` with `SNOWFLAKE_OAUTH_TOKEN` injected by the
+runtime secret manager. Raw credentials are not persisted in the lake.
 
 ### Full Live Proof
 
@@ -113,8 +132,9 @@ After Azure, AWS, and Snowflake are configured, run all three into one lake:
 AZURE_SUBSCRIPTION_ID=8e134453-ac1f-46fb-8047-0af5d5e86427 \
 AWS_ACCOUNT_ID=030225640638 \
 SNOWFLAKE_ACCOUNT="$SNOWFLAKE_ACCOUNT" \
-SNOWFLAKE_USER="$SNOWFLAKE_USER" \
-SNOWFLAKE_AUTHENTICATOR=externalbrowser \
+SNOWFLAKE_USER=TRUSTOPS_INGEST_SVC \
+SNOWFLAKE_AUTHENTICATOR=SNOWFLAKE_JWT \
+SNOWFLAKE_PRIVATE_KEY_FILE="$SNOWFLAKE_PRIVATE_KEY_FILE" \
 SNOWFLAKE_ROLE=TRUSTOPS_READER \
 SNOWFLAKE_WAREHOUSE=TRUSTOPS_READ_WH \
 SNOWFLAKE_DATABASE=TRUSTOPS_SECURITY_LAKE \

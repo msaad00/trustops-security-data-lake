@@ -76,7 +76,13 @@ def test_snowflake_live_requires_account_and_user_for_sso_or_oauth(
         state="enabled",
         actor="alice",
     )
-    for name in ("SNOWFLAKE_ACCOUNT", "SNOWFLAKE_USER", "SNOWFLAKE_OAUTH_TOKEN", "SNOWFLAKE_AUTHENTICATOR"):
+    for name in (
+        "SNOWFLAKE_ACCOUNT",
+        "SNOWFLAKE_USER",
+        "SNOWFLAKE_OAUTH_TOKEN",
+        "SNOWFLAKE_PRIVATE_KEY_FILE",
+        "SNOWFLAKE_AUTHENTICATOR",
+    ):
         monkeypatch.delenv(name, raising=False)
 
     with pytest.raises(connector_runner.ConnectorSyncError, match="SNOWFLAKE_ACCOUNT"):
@@ -147,6 +153,37 @@ def test_snowflake_live_uses_oauth_when_token_env_is_present(tmp_path: Path, mon
     assert captured["query_params"]["token"] == "read-only-oauth-token"
 
 
+def test_snowflake_live_uses_key_pair_file_for_service_user(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    connector_state.append_config_event(
+        tmp_path,
+        connector_id="snowflake-evidence-lake",
+        state="enabled",
+        actor="alice",
+    )
+    captured: dict[str, object] = {}
+
+    class FakeSnowflakeClient:
+        def __init__(self, *, query_params: dict[str, object], views: dict[str, str]) -> None:
+            captured["query_params"] = query_params
+
+    monkeypatch.setattr(connector_runner, "SnowflakeClient", FakeSnowflakeClient)
+    monkeypatch.setattr(connector_runner, "collect_snowflake_evidence", lambda client, account=None: [])
+    monkeypatch.setenv("SNOWFLAKE_ACCOUNT", "acme-trustops")
+    monkeypatch.setenv("SNOWFLAKE_USER", "TRUSTOPS_INGEST_SVC")
+    monkeypatch.setenv("SNOWFLAKE_PRIVATE_KEY_FILE", "/run/secrets/trustops_snowflake_key.p8")
+    monkeypatch.delenv("SNOWFLAKE_OAUTH_TOKEN", raising=False)
+    monkeypatch.delenv("SNOWFLAKE_AUTHENTICATOR", raising=False)
+
+    result = connector_runner.run_connector_sync(tmp_path, connector_id="snowflake-evidence-lake", materialize=False)
+
+    assert result.result == "ok"
+    assert captured["query_params"]["authenticator"] == "SNOWFLAKE_JWT"
+    assert captured["query_params"]["private_key_file"] == "/run/secrets/trustops_snowflake_key.p8"
+    assert captured["query_params"]["token"] is None
+
+
 def test_snowflake_probe_resolves_oauth_ref_from_environment() -> None:
     params = _probe_query_params(
         credentials={
@@ -173,6 +210,57 @@ def test_snowflake_probe_resolves_oauth_ref_from_environment() -> None:
         "schema": "EVIDENCE",
         "role": "TRUSTOPS_READER",
     }
+
+
+def test_snowflake_probe_resolves_private_key_ref_from_environment() -> None:
+    params = _probe_query_params(
+        credentials={
+            "account": "acme-trustops",
+            "user": "TRUSTOPS_INGEST_SVC",
+            "private_key_ref": "SNOWFLAKE_PRIVATE_KEY_FILE",
+            "private_key_file_pwd_ref": "SNOWFLAKE_PRIVATE_KEY_FILE_PWD",
+        },
+        options={
+            "warehouse": "TRUSTOPS_READ_WH",
+            "database": "TRUSTOPS_SECURITY_LAKE",
+            "schema": "EVIDENCE",
+            "role": "TRUSTOPS_READER",
+        },
+        env={
+            "SNOWFLAKE_PRIVATE_KEY_FILE": "/run/secrets/trustops_snowflake_key.p8",
+            "SNOWFLAKE_PRIVATE_KEY_FILE_PWD": "key-password",
+        },
+    )
+
+    assert params == {
+        "account": "acme-trustops",
+        "user": "TRUSTOPS_INGEST_SVC",
+        "authenticator": "SNOWFLAKE_JWT",
+        "token": None,
+        "warehouse": "TRUSTOPS_READ_WH",
+        "database": "TRUSTOPS_SECURITY_LAKE",
+        "schema": "EVIDENCE",
+        "role": "TRUSTOPS_READER",
+        "private_key_file": "/run/secrets/trustops_snowflake_key.p8",
+        "private_key_file_pwd": "key-password",
+    }
+
+
+def test_snowflake_probe_rejects_missing_private_key_ref_without_connection() -> None:
+    with pytest.raises(ValueError, match="SNOWFLAKE_PRIVATE_KEY_FILE"):
+        probe_snowflake_access(
+            credentials={
+                "account": "acme-trustops",
+                "user": "TRUSTOPS_INGEST_SVC",
+                "private_key_ref": "SNOWFLAKE_PRIVATE_KEY_FILE",
+            },
+            options={
+                "warehouse": "TRUSTOPS_READ_WH",
+                "database": "TRUSTOPS_SECURITY_LAKE",
+                "schema": "EVIDENCE",
+            },
+            env={},
+        )
 
 
 def test_snowflake_probe_rejects_missing_oauth_ref_without_connection() -> None:

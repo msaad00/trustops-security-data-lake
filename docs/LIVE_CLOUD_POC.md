@@ -17,8 +17,8 @@ Preferred order:
 
 1. local SSO or CLI profile, such as `aws sso login` or `az login`
 2. short-lived assumed role or service principal scoped to read-only posture
-3. OAuth token or secret-manager reference exposed only as an environment
-   variable for the local process
+3. service-user key-pair auth or OAuth exposed only as an environment variable
+   or mounted secret for the local process
 
 TrustOps should store configuration metadata and fingerprints, not raw cloud
 secrets. Use fixtures until a live probe proves access.
@@ -164,7 +164,8 @@ admin role that can create the database, warehouse, role, secure views, and
 grants.
 
 For a human POC, use browser SSO. No Snowflake credential needs to be pasted
-into chat, Git, or TrustOps config:
+into chat, Git, or TrustOps config. Do not use this path for scheduled
+ingestion:
 
 ```bash
 security-lakehouse connectors probe \
@@ -198,25 +199,64 @@ security-lakehouse connectors sync \
   --connector-id snowflake-evidence-lake
 ```
 
-For headless automation, use OAuth or workload-managed identity materialized
-outside the repo and pass only the environment variable into the process:
+For headless automation, create a non-human service user and use Snowflake
+key-pair auth. The service user should have only `TRUSTOPS_READER` and
+`USAGE` on `TRUSTOPS_READ_WH`.
+
+Run [`deploy/snowflake/bootstrap_service_user.sql`](../deploy/snowflake/bootstrap_service_user.sql)
+after setting `TRUSTOPS_SERVICE_RSA_PUBLIC_KEY` in the Snowflake worksheet. The
+matching private key stays in your secret manager or mounted runtime secret,
+not in Snowflake, Git, chat, screenshots, or TrustOps connector config.
+
+Probe and enable the connector with a key-file reference:
 
 ```bash
 security-lakehouse connectors probe \
   --lake build/lakehouse \
   --connector-id snowflake-evidence-lake \
-  --credentials-json '{"account":"'"$SNOWFLAKE_ACCOUNT"'","user":"'"$SNOWFLAKE_USER"'","credential_ref":"SNOWFLAKE_OAUTH_TOKEN"}' \
+  --credentials-json '{"account":"'"$SNOWFLAKE_ACCOUNT"'","user":"TRUSTOPS_INGEST_SVC","private_key_ref":"SNOWFLAKE_PRIVATE_KEY_FILE"}' \
+  --options-json '{"warehouse":"TRUSTOPS_READ_WH","database":"TRUSTOPS_SECURITY_LAKE","schema":"EVIDENCE","role":"TRUSTOPS_READER","audit_events":"TRUSTOPS_AUDIT_EVENTS","control_posture":"TRUSTOPS_CONTROL_POSTURE","asset_risk":"TRUSTOPS_ASSET_RISK","evidence_bundles":"TRUSTOPS_EVIDENCE_BUNDLES"}'
+
+security-lakehouse connectors configure \
+  --lake build/lakehouse \
+  --connector-id snowflake-evidence-lake \
+  --state enabled \
+  --credentials-json '{"account":"'"$SNOWFLAKE_ACCOUNT"'","user":"TRUSTOPS_INGEST_SVC","private_key_ref":"SNOWFLAKE_PRIVATE_KEY_FILE"}' \
+  --options-json '{"warehouse":"TRUSTOPS_READ_WH","database":"TRUSTOPS_SECURITY_LAKE","schema":"EVIDENCE","role":"TRUSTOPS_READER","audit_events":"TRUSTOPS_AUDIT_EVENTS","control_posture":"TRUSTOPS_CONTROL_POSTURE","asset_risk":"TRUSTOPS_ASSET_RISK","evidence_bundles":"TRUSTOPS_EVIDENCE_BUNDLES"}' \
+  --sync-schedule "every 15m"
+
+SNOWFLAKE_ACCOUNT="$SNOWFLAKE_ACCOUNT" \
+SNOWFLAKE_USER=TRUSTOPS_INGEST_SVC \
+SNOWFLAKE_AUTHENTICATOR=SNOWFLAKE_JWT \
+SNOWFLAKE_PRIVATE_KEY_FILE="$SNOWFLAKE_PRIVATE_KEY_FILE" \
+SNOWFLAKE_ROLE=TRUSTOPS_READER \
+SNOWFLAKE_WAREHOUSE=TRUSTOPS_READ_WH \
+SNOWFLAKE_DATABASE=TRUSTOPS_SECURITY_LAKE \
+SNOWFLAKE_SCHEMA=EVIDENCE \
+security-lakehouse connectors sync \
+  --lake build/lakehouse \
+  --connector-id snowflake-evidence-lake
+```
+
+OAuth is also supported when the customer already has a governed token broker.
+The token must be injected by the runtime secret manager:
+
+```bash
+security-lakehouse connectors probe \
+  --lake build/lakehouse \
+  --connector-id snowflake-evidence-lake \
+  --credentials-json '{"account":"'"$SNOWFLAKE_ACCOUNT"'","user":"TRUSTOPS_INGEST_SVC","credential_ref":"SNOWFLAKE_OAUTH_TOKEN"}' \
   --options-json '{"warehouse":"TRUSTOPS_READ_WH","database":"TRUSTOPS_SECURITY_LAKE","schema":"EVIDENCE","audit_events":"TRUSTOPS_AUDIT_EVENTS","control_posture":"TRUSTOPS_CONTROL_POSTURE","asset_risk":"TRUSTOPS_ASSET_RISK","evidence_bundles":"TRUSTOPS_EVIDENCE_BUNDLES"}'
 
 security-lakehouse connectors configure \
   --lake build/lakehouse \
   --connector-id snowflake-evidence-lake \
   --state enabled \
-  --credentials-json '{"account":"'"$SNOWFLAKE_ACCOUNT"'","user":"'"$SNOWFLAKE_USER"'","credential_ref":"SNOWFLAKE_OAUTH_TOKEN"}' \
+  --credentials-json '{"account":"'"$SNOWFLAKE_ACCOUNT"'","user":"TRUSTOPS_INGEST_SVC","credential_ref":"SNOWFLAKE_OAUTH_TOKEN"}' \
   --options-json '{"warehouse":"TRUSTOPS_READ_WH","database":"TRUSTOPS_SECURITY_LAKE","schema":"EVIDENCE","audit_events":"TRUSTOPS_AUDIT_EVENTS","control_posture":"TRUSTOPS_CONTROL_POSTURE","asset_risk":"TRUSTOPS_ASSET_RISK","evidence_bundles":"TRUSTOPS_EVIDENCE_BUNDLES"}'
 
 SNOWFLAKE_ACCOUNT="$SNOWFLAKE_ACCOUNT" \
-SNOWFLAKE_USER="$SNOWFLAKE_USER" \
+SNOWFLAKE_USER=TRUSTOPS_INGEST_SVC \
 SNOWFLAKE_AUTHENTICATOR=oauth \
 SNOWFLAKE_OAUTH_TOKEN="$SNOWFLAKE_OAUTH_TOKEN" \
 SNOWFLAKE_ROLE=TRUSTOPS_READER \

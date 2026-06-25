@@ -164,8 +164,8 @@ security-lakehouse connectors sync \
 For live Snowflake collection, install the cloud connector extra and use the
 fixed POC objects from [`docs/LIVE_CLOUD_POC.md`](LIVE_CLOUD_POC.md):
 `TRUSTOPS_SECURITY_LAKE.EVIDENCE`, `TRUSTOPS_READ_WH`, and `TRUSTOPS_READER`.
-For a human POC, use browser SSO. TrustOps only issues
-`SELECT * FROM <view>` reads:
+For a human POC, use browser SSO. This is not the scheduled-ingestion path.
+TrustOps only issues `SELECT * FROM <view>` reads:
 
 ```bash
 uv pip install -e ".[cloud]"
@@ -182,9 +182,34 @@ security-lakehouse connectors sync \
   --connector-id snowflake-evidence-lake
 ```
 
-Headless jobs can set `SNOWFLAKE_AUTHENTICATOR=oauth` and provide
-`SNOWFLAKE_OAUTH_TOKEN` from a secret manager at process start. The raw value is
-not written into the lake.
+Headless jobs should use a non-human service user such as
+`TRUSTOPS_INGEST_SVC`, with only `TRUSTOPS_READER` and warehouse `USAGE`.
+Snowflake key-pair auth uses a mounted private-key file path, not raw key
+contents in connector config:
+
+```bash
+security-lakehouse connectors probe \
+  --lake build/lakehouse \
+  --connector-id snowflake-evidence-lake \
+  --credentials-json '{"account":"'"$SNOWFLAKE_ACCOUNT"'","user":"TRUSTOPS_INGEST_SVC","private_key_ref":"SNOWFLAKE_PRIVATE_KEY_FILE"}' \
+  --options-json '{"warehouse":"TRUSTOPS_READ_WH","database":"TRUSTOPS_SECURITY_LAKE","schema":"EVIDENCE","role":"TRUSTOPS_READER","audit_events":"TRUSTOPS_AUDIT_EVENTS","control_posture":"TRUSTOPS_CONTROL_POSTURE","asset_risk":"TRUSTOPS_ASSET_RISK","evidence_bundles":"TRUSTOPS_EVIDENCE_BUNDLES"}'
+
+SNOWFLAKE_ACCOUNT="$SNOWFLAKE_ACCOUNT" \
+SNOWFLAKE_USER=TRUSTOPS_INGEST_SVC \
+SNOWFLAKE_AUTHENTICATOR=SNOWFLAKE_JWT \
+SNOWFLAKE_PRIVATE_KEY_FILE="$SNOWFLAKE_PRIVATE_KEY_FILE" \
+SNOWFLAKE_ROLE=TRUSTOPS_READER \
+SNOWFLAKE_WAREHOUSE=TRUSTOPS_READ_WH \
+SNOWFLAKE_DATABASE=TRUSTOPS_SECURITY_LAKE \
+SNOWFLAKE_SCHEMA=EVIDENCE \
+security-lakehouse connectors sync \
+  --lake build/lakehouse \
+  --connector-id snowflake-evidence-lake
+```
+
+OAuth is also supported when the customer's runtime has a governed token broker:
+set `SNOWFLAKE_AUTHENTICATOR=oauth` and inject `SNOWFLAKE_OAUTH_TOKEN` from the
+secret manager at process start. The raw value is not written into the lake.
 
 By default the runner rebuilds bronze, silver, gold, marts, and current posture
 from the managed raw connector file. Use `--no-materialize` when you only want
