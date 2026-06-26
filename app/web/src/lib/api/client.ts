@@ -30,6 +30,7 @@ import type {
   FrameworkView,
   ReviewedCrosswalk,
   Health,
+  IngestionStatus,
   NormalizedEvent,
   SavedView,
   SnapshotResponse,
@@ -192,6 +193,10 @@ export const api = {
       "DELETE",
     ).then((b) => b.data),
   posture: () => get<Assessment>("/posture/current"),
+  ingestionStatus: () =>
+    get<{ data: IngestionStatus }>("/v1/ingestion/status").then(
+      (body) => body.data,
+    ),
   controls: () => get<{ controls: ControlPosture[] }>("/controls"),
   controlTests: () =>
     get<{ count: number; control_tests: ControlTest[] }>("/control-tests"),

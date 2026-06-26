@@ -23,6 +23,7 @@ import type {
   EntityTag,
   FrameworkView,
   FrameworkDetail,
+  IngestionStatus,
   NormalizedEvent,
   ProbePayload,
   DiscoverPayload,
@@ -75,6 +76,17 @@ export function usePosture(opts?: Opts<Assessment>) {
     refetchInterval: LIVE,
     refetchOnWindowFocus: true,
     initialData,
+    ...opts,
+  });
+}
+
+export function useIngestionStatus(opts?: Opts<IngestionStatus>) {
+  return useQuery({
+    queryKey: ["ingestion", "status"],
+    queryFn: api.ingestionStatus,
+    staleTime: STALE,
+    refetchInterval: LIVE,
+    refetchOnWindowFocus: true,
     ...opts,
   });
 }
