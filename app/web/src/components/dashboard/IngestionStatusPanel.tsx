@@ -130,7 +130,9 @@ export function IngestionStatusPanel({
                     className="inline-flex items-center gap-2 rounded-md border border-line bg-white px-2.5 py-1 text-xs font-bold text-slate-600"
                   >
                     {source.source}
-                    <strong className="text-ink">{source.evidence_count}</strong>
+                    <strong className="text-ink">
+                      {source.evidence_count}
+                    </strong>
                   </span>
                 ))
               ) : (
@@ -166,7 +168,8 @@ export function IngestionStatusPanel({
                             : "attention"
                       }
                     >
-                      {connector.latest_sync.result ?? connector.freshness_state}
+                      {connector.latest_sync.result ??
+                        connector.freshness_state}
                     </Badge>
                   </div>
                 ))
