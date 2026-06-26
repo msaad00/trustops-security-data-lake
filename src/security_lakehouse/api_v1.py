@@ -36,6 +36,7 @@ from security_lakehouse.connector_state import (
 )
 from security_lakehouse.framework_detail import build_framework_detail
 from security_lakehouse.graph import analyze_coverage
+from security_lakehouse.ingestion_status import build_ingestion_status
 from security_lakehouse.io import read_jsonl, resolve_path
 from security_lakehouse.tracking import verify_tracking_chain
 
@@ -92,6 +93,7 @@ def list_snapshots(lake_dir: str | Path) -> list[JsonObject]:
 # Route -> (resource name, loader) for endpoints returning a single object.
 SINGLETON_LOADERS: dict[str, tuple[str, Callable[[Path], Any]]] = {
     "/api/v1/healthz": ("healthz", lambda _lake: {"ok": True, "service": "trustops-assessment"}),
+    "/api/v1/ingestion/status": ("ingestion.status", build_ingestion_status),
     "/api/v1/posture/current": ("posture.current", build_current_posture),
     "/api/v1/graph/coverage": ("graph.coverage", analyze_coverage),
 }
