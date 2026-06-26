@@ -129,9 +129,11 @@ def test_node_failure_isolated_to_its_branch(tmp_path: Path) -> None:
     run = run_workflow(tmp_path, workflow_id=saved["workflow_id"])
     by_id = {r["node_id"]: r for r in run["node_results"]}
 
-    # The failing node errors.
+    # The failing node errors, surfacing only a safe failure category (the
+    # exception class name) — never the raw exception text, which can leak
+    # internal paths or lake contents at the HTTP boundary.
     assert by_id["bad"]["result"] == "error"
-    assert "violation_id" in by_id["bad"]["error"]
+    assert by_id["bad"]["error"] == "node execution failed (ValueError)"
 
     # Its descendant is skipped with an upstream reason.
     assert by_id["bad_child"]["result"] == "skipped"

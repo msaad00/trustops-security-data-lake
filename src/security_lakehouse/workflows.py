@@ -1071,6 +1071,18 @@ def _edge_allows(edge: dict[str, Any], parent_result: dict[str, Any] | None) -> 
     return True
 
 
+def _node_failure_reason(exc: Exception) -> str:
+    """A safe, bounded failure category for a workflow node.
+
+    The run log is returned to the caller at the HTTP boundary, and a raw
+    exception string can carry internal filesystem paths, lake contents, or
+    secret material. Only the exception class name — a code identifier, not
+    runtime data — is surfaced, so an operator still sees the failure category
+    without the engine leaking internals.
+    """
+    return f"node execution failed ({type(exc).__name__})"
+
+
 def run_workflow(
     lake_dir: str | Path,
     *,
@@ -1166,11 +1178,11 @@ def run_workflow(
             result_entry["result"] = "ok"
             result_entry["output"] = output
             outputs_by_node[node_id] = output
-        except Exception as exc:  # surface every failure in the run log
+        except Exception as exc:  # noqa: BLE001 - failure is logged as a safe category, never raw text
             any_failed = True
             failed_nodes.add(node_id)
             result_entry["result"] = "error"
-            result_entry["error"] = str(exc)
+            result_entry["error"] = _node_failure_reason(exc)
         node_results.append(result_entry)
         results_by_node[node_id] = result_entry
         # No break: a node failure only blocks its descendants (handled by the
