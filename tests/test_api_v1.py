@@ -11,6 +11,7 @@ from http.server import ThreadingHTTPServer
 from pathlib import Path
 
 from security_lakehouse import api_v1
+from security_lakehouse.connector_state import append_config_event, append_run_event
 from security_lakehouse.server import _Handler
 
 
@@ -219,6 +220,7 @@ def test_v1_all_read_routes_use_envelope(tmp_path: Path) -> None:
     try:
         for path, resource in [
             ("/api/v1/healthz", "healthz"),
+            ("/api/v1/ingestion/status", "ingestion.status"),
             ("/api/v1/posture/current", "posture.current"),
             ("/api/v1/connectors", "connectors"),
             ("/api/v1/controls", "controls"),
@@ -245,11 +247,95 @@ def test_v1_resource_catalog_advertises_connector_actions(tmp_path: Path) -> Non
         status, body = _request(server, "GET", "/api/v1")
         assert status == HTTPStatus.OK
         by_path = {item["path"]: item for item in body["data"]["resources"]}
+        assert by_path["/api/v1/ingestion/status"]["resource"] == "ingestion.status"
         assert by_path["/api/v1/connectors"]["methods"] == ["GET"]
         assert by_path["/api/v1/connectors/{connector_id}/runs"]["methods"] == ["GET"]
         assert by_path["/api/v1/connectors/{connector_id}/discover"]["scopes"] == ["connector_manage"]
         assert by_path["/api/v1/connectors/{connector_id}/probe"]["scopes"] == ["connector_manage"]
         assert by_path["/api/v1/connectors/{connector_id}/configure"]["scopes"] == ["connector_manage"]
+    finally:
+        server.shutdown()
+
+
+def test_v1_ingestion_status_summarizes_live_runs_and_proof_pack(tmp_path: Path) -> None:
+    server = _spin(tmp_path)
+    try:
+        append_config_event(
+            tmp_path,
+            connector_id="snowflake-evidence-lake",
+            state="enabled",
+            actor="test",
+            credentials={"account": "acct", "user": "TRUSTOPS_INGEST_SVC", "private_key_ref": "SNOWFLAKE_KEY"},
+            options={
+                "warehouse": "TRUSTOPS_READ_WH",
+                "database": "TRUSTOPS_SECURITY_LAKE",
+                "schema": "EVIDENCE",
+                "audit_events": "TRUSTOPS_AUDIT_EVENTS",
+                "control_posture": "TRUSTOPS_CONTROL_POSTURE",
+                "asset_risk": "TRUSTOPS_ASSET_RISK",
+                "evidence_bundles": "TRUSTOPS_EVIDENCE_BUNDLES",
+            },
+        )
+        append_run_event(
+            tmp_path,
+            connector_id="snowflake-evidence-lake",
+            kind="sync",
+            result="ok",
+            actor="scheduler",
+            evidence_count=2,
+            duration_ms=42,
+        )
+        (tmp_path / "gold" / "evidence_integrity.json").write_text(
+            json.dumps({"ok": True, "evidence_count": 2, "unique_event_ids": 2, "duplicate_event_ids": 0}),
+            encoding="utf-8",
+        )
+        (tmp_path / "gold" / "current_posture.json").write_text(
+            json.dumps({"posture": {"score": 75, "state": "attention_required", "open_violation_count": 1}}),
+            encoding="utf-8",
+        )
+        report_dir = tmp_path / "gold" / "scenario_reports"
+        report_dir.mkdir(parents=True, exist_ok=True)
+        (report_dir / "live-cloud-posture.json").write_text(
+            json.dumps(
+                {
+                    "scenario": "live-cloud-posture",
+                    "summary": {
+                        "ok": True,
+                        "proof_state": "needs_review",
+                        "evidence_count": 2,
+                        "sources": ["okta", "model-registry"],
+                        "open_violations": 1,
+                        "recommended_actions": [
+                            {
+                                "priority": "p1",
+                                "action": "triage_open_findings",
+                                "reason": "1 open violation needs an owner.",
+                            }
+                        ],
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        (report_dir / "live-cloud-posture.md").write_text("# Proof\n", encoding="utf-8")
+
+        status, body = _request(server, "GET", "/api/v1/ingestion/status")
+        assert status == HTTPStatus.OK
+        assert body["meta"]["resource"] == "ingestion.status"
+        data = body["data"]
+        assert data["state"] in {"active", "attention_required"}
+        assert data["summary"]["enabled_connectors"] == 1
+        assert data["summary"]["evidence_count"] == 2
+        assert data["sources"] == [
+            {"source": "model-registry", "evidence_count": 1},
+            {"source": "okta", "evidence_count": 1},
+        ]
+        snowflake = next(row for row in data["connectors"] if row["connector_id"] == "snowflake-evidence-lake")
+        assert snowflake["latest_sync"]["result"] == "ok"
+        assert data["integrity"]["ok"] is True
+        assert data["proof"]["proof_pack_exists"] is True
+        assert data["proof"]["proof_state"] == "needs_review"
+        assert any(action["action"] == "triage_open_findings" for action in data["recommended_actions"])
     finally:
         server.shutdown()
 
