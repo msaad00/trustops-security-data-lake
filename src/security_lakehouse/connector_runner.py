@@ -11,7 +11,7 @@ from __future__ import annotations
 import os
 import time
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -159,8 +159,15 @@ def run_connector_sync(
     lake = Path(lake_dir)
     start = time.perf_counter()
     try:
-        _require_enabled(lake, connector_id)
-        rows = _collect(connector_id, repo=repo, fixture_dir=fixture_dir, token_env=token_env)
+        config = _require_enabled(lake, connector_id)
+        rows = _collect(
+            connector_id,
+            repo=repo,
+            fixture_dir=fixture_dir,
+            token_env=token_env,
+            credentials=dict(config.get("credentials") or {}),
+            options=dict(config.get("options") or {}),
+        )
         raw_path = lake / CONNECTOR_RAW_FILE
         _upsert_raw_events(raw_path, rows)
         if materialize:
@@ -203,13 +210,14 @@ class ConnectorSyncError(RuntimeError):
         self.run = run
 
 
-def _require_enabled(lake: Path, connector_id: str) -> None:
+def _require_enabled(lake: Path, connector_id: str) -> dict[str, Any]:
     catalog = load_connector_catalog()
     if connector_id not in catalog:
         raise ValueError(f"unknown connector_id {connector_id!r}")
     config = latest_config(lake, connector_id)
     if not config or config.get("state") != "enabled":
         raise ValueError("connector is not enabled; configure it before sync")
+    return config
 
 
 @dataclass(frozen=True)
@@ -226,6 +234,12 @@ class SyncInputs:
     fixture_dir: str | Path | None
     token_env: str
     env: dict[str, str]
+    # Non-secret identity fields persisted at configure time (e.g. subscription_id,
+    # account_id, project_id). Secret material is never stored here — it is
+    # redacted to a fingerprint in connector_state — so builders read live secrets
+    # from env/credential providers and fall back to these for identity scoping.
+    credentials: dict[str, Any] = field(default_factory=dict)
+    options: dict[str, Any] = field(default_factory=dict)
 
 
 # A connector builder takes the uniform :class:`SyncInputs` and returns the
@@ -279,7 +293,7 @@ def _build_gcp(inputs: SyncInputs) -> list[dict[str, Any]]:
 
 
 def _build_azure(inputs: SyncInputs) -> list[dict[str, Any]]:
-    return _collect_azure(fixture_dir=inputs.fixture_dir, env=inputs.env)
+    return _collect_azure(fixture_dir=inputs.fixture_dir, env=inputs.env, credentials=inputs.credentials)
 
 
 def _build_jira(inputs: SyncInputs) -> list[dict[str, Any]]:
@@ -317,6 +331,8 @@ def _collect(
     repo: str | None,
     fixture_dir: str | Path | None,
     token_env: str,
+    credentials: dict[str, Any] | None = None,
+    options: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     builder = REGISTRY.get(connector_id)
     if builder is None:
@@ -327,6 +343,8 @@ def _collect(
             fixture_dir=fixture_dir,
             token_env=token_env,
             env=dict(os.environ),
+            credentials=dict(credentials or {}),
+            options=dict(options or {}),
         )
     )
 
@@ -417,15 +435,21 @@ def _collect_azure(
     *,
     fixture_dir: str | Path | None,
     env: dict[str, str],
+    credentials: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
+    stored_subscription = str((credentials or {}).get("subscription_id") or "").strip()
     if fixture_dir:
-        subscription_id = env.get(AZURE_SUBSCRIPTION_ID_ENV) or "00000000-0000-0000-0000-000000000000"
+        subscription_id = (
+            env.get(AZURE_SUBSCRIPTION_ID_ENV) or stored_subscription or "00000000-0000-0000-0000-000000000000"
+        )
         return collect_azure_evidence(AzureFixtureClient(fixture_dir, subscription_id=subscription_id))
-    subscription_id = env.get(AZURE_SUBSCRIPTION_ID_ENV) or ""
+    # Prefer the env var (operator override) but fall back to the subscription_id
+    # captured at configure time so an enabled connector syncs without re-exporting it.
+    subscription_id = env.get(AZURE_SUBSCRIPTION_ID_ENV) or stored_subscription
     if not subscription_id:
         raise ValueError(
-            "azure-posture sync requires --fixture-dir, or "
-            f"{AZURE_SUBSCRIPTION_ID_ENV} plus read-only Azure credentials "
+            "azure-posture sync requires --fixture-dir, a configured subscription_id, or "
+            f"{AZURE_SUBSCRIPTION_ID_ENV}, plus read-only Azure credentials "
             "(DefaultAzureCredential: service-principal env vars / managed identity / az login)"
         )
     client: AzureClient | AzureCliClient
