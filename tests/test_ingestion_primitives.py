@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from security_lakehouse.connector_runner import _upsert_raw_events
+from security_lakehouse.connector_runner import _upsert_raw_events, _write_mode
 from security_lakehouse.connectors_okta import OktaClient, OktaFixtureClient, collect_okta_evidence
 from security_lakehouse.ingestion import backoff
 from security_lakehouse.ingestion.merge import dedupe_by_key
@@ -123,12 +123,74 @@ def test_dedupe_recency_last_writer_wins() -> None:
 def test_raw_upsert_is_idempotent_on_rerun(tmp_path: Path) -> None:
     rows = collect_okta_evidence(OktaFixtureClient(FIXTURE))
     raw = tmp_path / "raw" / "connector_events.jsonl"
-    first = _upsert_raw_events(raw, rows)
+    first = _upsert_raw_events(raw, rows, connector_id="okta-identity", write_mode="append")
     # Re-running the exact same sync must not double-count.
-    second = _upsert_raw_events(raw, rows)
+    second = _upsert_raw_events(raw, rows, connector_id="okta-identity", write_mode="append")
     assert len(first) == len(second)
     on_disk = raw.read_text().strip().splitlines()
     assert len(on_disk) == len(first)
+
+
+def _ids(rows: list[dict]) -> set[str]:
+    return {str(r["event_id"]) for r in rows}
+
+
+def test_write_mode_resolves_from_catalog_data_shape() -> None:
+    # current_state evidence is a snapshot; event-log evidence is append-only.
+    assert _write_mode("azure-posture") == "snapshot"
+    assert _write_mode("okta-identity") == "snapshot"
+    assert _write_mode("github-security") == "append"
+    # Unknown connectors fall back to the non-destructive default.
+    assert _write_mode("does-not-exist") == "append"
+
+
+def test_snapshot_mode_detects_deletions(tmp_path: Path) -> None:
+    rows = collect_okta_evidence(OktaFixtureClient(FIXTURE))
+    assert len(rows) > 1
+    raw = tmp_path / "raw" / "connector_events.jsonl"
+
+    full = _upsert_raw_events(raw, list(rows), connector_id="okta-identity", write_mode="snapshot")
+    assert _ids(full) == _ids(rows)
+
+    # An entity removed at the source must disappear on the next snapshot.
+    reduced_input = list(rows[:-1])
+    dropped_id = str(rows[-1]["event_id"])
+    reduced = _upsert_raw_events(raw, reduced_input, connector_id="okta-identity", write_mode="snapshot")
+    assert dropped_id not in _ids(reduced)
+    assert _ids(reduced) == _ids(rows[:-1])
+
+
+def test_snapshot_replace_isolates_other_connectors(tmp_path: Path) -> None:
+    okta_rows = collect_okta_evidence(OktaFixtureClient(FIXTURE))
+    azure_fixture = Path(__file__).parent / "fixtures" / "azure"
+    from security_lakehouse.connectors_azure import AzureFixtureClient, collect_azure_evidence
+
+    azure_rows = collect_azure_evidence(
+        AzureFixtureClient(azure_fixture, subscription_id="11111111-1111-1111-1111-111111111111")
+    )
+    raw = tmp_path / "raw" / "connector_events.jsonl"
+
+    _upsert_raw_events(raw, list(okta_rows), connector_id="okta-identity", write_mode="snapshot")
+    both = _upsert_raw_events(raw, list(azure_rows), connector_id="azure-posture", write_mode="snapshot")
+    assert _ids(okta_rows) <= _ids(both)
+    assert _ids(azure_rows) <= _ids(both)
+
+    # Re-syncing azure with fewer rows must not touch okta's evidence.
+    after = _upsert_raw_events(raw, list(azure_rows[:-1]), connector_id="azure-posture", write_mode="snapshot")
+    assert _ids(okta_rows) <= _ids(after)
+    assert str(azure_rows[-1]["event_id"]) not in _ids(after)
+
+
+def test_append_mode_accumulates_history(tmp_path: Path) -> None:
+    rows = collect_okta_evidence(OktaFixtureClient(FIXTURE))
+    first_half = list(rows[: len(rows) // 2])
+    second_half = list(rows[len(rows) // 2 :])
+    raw = tmp_path / "raw" / "connector_events.jsonl"
+
+    _upsert_raw_events(raw, first_half, connector_id="github-security", write_mode="append")
+    merged = _upsert_raw_events(raw, second_half, connector_id="github-security", write_mode="append")
+    # Append never drops earlier events even when a later pull omits them.
+    assert _ids(rows) <= _ids(merged)
 
 
 # --- okta 429 backoff (wired into the client) -------------------------------

@@ -169,7 +169,7 @@ def run_connector_sync(
             options=dict(config.get("options") or {}),
         )
         raw_path = lake / CONNECTOR_RAW_FILE
-        _upsert_raw_events(raw_path, rows)
+        _upsert_raw_events(raw_path, rows, connector_id=connector_id, write_mode=_write_mode(connector_id))
         if materialize:
             run_pipeline(raw_path, lake)
         run = append_run_event(
@@ -530,18 +530,64 @@ def _collect_snowflake(
     return collect_snowflake_evidence(client, account=account)
 
 
-def _upsert_raw_events(raw_path: Path, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+# A connector whose evidence describes current state (IAM, config, inventory)
+# is written as a per-run snapshot: the latest pull is the whole truth, so an
+# entity removed at the source must disappear from the lake. Event-log evidence
+# (audit/alert streams) is append-only: history is never overwritten.
+SNAPSHOT_DATA_SHAPE = "current_state"
+
+
+def _write_mode(connector_id: str) -> str:
+    """Resolve the raw-write mode for ``connector_id`` from its catalog data shape.
+
+    ``current_state`` → ``snapshot`` (replace this connector's prior rows so
+    deletions propagate); anything else → ``append`` (the non-destructive default,
+    used for event-log sources and any connector that does not declare a shape).
+    """
+    entry = load_connector_catalog().get(connector_id) or {}
+    return "snapshot" if entry.get("data_shape") == SNAPSHOT_DATA_SHAPE else "append"
+
+
+def _dedupe_latest(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Collapse a single pull to one row per event_id, last occurrence winning."""
+    indexed = list(enumerate(rows))
+    deduped = dedupe_by_key(indexed, key=lambda pair: str(pair[1]["event_id"]), recency=lambda pair: pair[0])
+    return [row for _position, row in deduped]
+
+
+def _upsert_raw_events(
+    raw_path: Path,
+    rows: list[dict[str, Any]],
+    *,
+    connector_id: str,
+    write_mode: str,
+) -> list[dict[str, Any]]:
+    # Stamp ownership so a snapshot replace can scope to this connector's rows
+    # without disturbing evidence collected by any other connector.
+    for row in rows:
+        row["connector_id"] = connector_id
     existing = read_jsonl(raw_path) if raw_path.exists() else []
-    # Idempotent upsert: dedup existing + incoming on event_id, last write wins,
-    # so re-running a sync over overlapping data never double-counts. Natural-key
-    # order (existing first, new ids appended) is preserved via the position key.
-    indexed = list(enumerate(existing + rows))
-    deduped = dedupe_by_key(
-        indexed,
-        key=lambda pair: str(pair[1]["event_id"]),
-        recency=lambda pair: pair[0],
-    )
-    merged = [row for _position, row in deduped]
+    fresh = _dedupe_latest(rows)
+
+    if write_mode == "snapshot":
+        # Snapshot replace: drop this connector's prior rows (so entities deleted
+        # at the source vanish) and any row this pull re-delivers; keep everyone
+        # else's evidence untouched. This is what gives current-state connectors
+        # deletion detection instead of an ever-growing union.
+        incoming_ids = {str(row["event_id"]) for row in fresh}
+        retained = [
+            row
+            for row in existing
+            if row.get("connector_id") != connector_id and str(row.get("event_id")) not in incoming_ids
+        ]
+        merged = retained + fresh
+    else:
+        # Append (idempotent): dedup existing + incoming on event_id, last write
+        # wins, so an overlapping re-pull never double-counts and history stays.
+        indexed = list(enumerate(existing + fresh))
+        deduped = dedupe_by_key(indexed, key=lambda pair: str(pair[1]["event_id"]), recency=lambda pair: pair[0])
+        merged = [row for _position, row in deduped]
+
     errors = validate_raw_events(merged)
     if errors:
         raise ValueError("connector raw evidence validation failed:\n" + "\n".join(errors))
