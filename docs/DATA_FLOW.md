@@ -3,6 +3,10 @@
 The product is assessment-first. Data can arrive from an existing security data
 lake or from TrustOps-managed connector outputs.
 
+For the production operating loop that turns this data flow into continuous
+collection, evaluation, snapshots, and API access, see
+[`CONTINUOUS_INGESTION.md`](CONTINUOUS_INGESTION.md).
+
 ## Two Connection Modes
 
 ```mermaid

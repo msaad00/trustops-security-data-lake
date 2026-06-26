@@ -52,6 +52,9 @@ spec:
                   mountPath: /tmp
                 - name: home
                   mountPath: /home/trustops
+                {{- with .Values.extraVolumeMounts }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
           volumes:
             - name: lake
               {{- if .Values.lake.persistence.enabled }}
@@ -64,4 +67,7 @@ spec:
               emptyDir: {}
             - name: home
               emptyDir: {}
+            {{- with .Values.extraVolumes }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
 {{- end }}

@@ -224,8 +224,6 @@ def _missing_required_config(
             _has_value(credentials, "credential_ref")
             or _has_value(credentials, "private_key_ref")
             or _has_value(credentials, "oauth_token_ref")
-            or _has_value(credentials, "private_key")
-            or _has_value(credentials, "oauth_token")
         ):
             missing.append("credential_ref")
         missing.extend(
@@ -313,8 +311,6 @@ def _missing_discovery_config(
             _has_value(credentials, "credential_ref")
             or _has_value(credentials, "private_key_ref")
             or _has_value(credentials, "oauth_token_ref")
-            or _has_value(credentials, "private_key")
-            or _has_value(credentials, "oauth_token")
         ):
             missing.append("credential_ref")
         return missing

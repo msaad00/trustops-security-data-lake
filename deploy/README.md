@@ -44,6 +44,10 @@ Key value groups:
 - `serviceAccount.annotations` — bind an IRSA role (EKS) or Workload Identity (GKE) here for read-only access to the customer evidence bucket.
 - `scheduler` — opt-in CronJob that runs `security-lakehouse scheduler tick` to fire `trigger.cron` workflows. Disable with `scheduler.enabled=false` if you drive it from an external scheduler.
 - `defaultTrustRole` — set to `auditor` for the Trust Center deployment so it serves the redacted projection by default.
+- `extraVolumes` / `extraVolumeMounts` — mount customer-managed secrets such as
+  a Snowflake service-user private key into both the API pod and scheduler
+  CronJob. TrustOps should receive only a file path such as
+  `SNOWFLAKE_PRIVATE_KEY_FILE=/var/run/secrets/trustops/snowflake_key.p8`.
 
 `helm lint deploy/helm/trustops` and `helm template trustops deploy/helm/trustops` both run in CI.
 
@@ -100,7 +104,10 @@ Run it from a Snowflake role allowed to create a database, warehouse, role, and
 grants. The script does not create users, stages, integrations, external
 network access, or credential material. After it returns counts for the four
 views, connect TrustOps with the `snowflake-evidence-lake` connector and browser
-SSO or OAuth.
+SSO for human proof, or a non-human service user with key-pair/OAuth for
+continuous ingestion. See
+[`docs/CONTINUOUS_INGESTION.md`](../docs/CONTINUOUS_INGESTION.md) for the
+production API/scheduler contract.
 
 ## What's not in this PR
 

@@ -19,7 +19,8 @@ from __future__ import annotations
 import os
 import re
 from collections.abc import Iterable
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -104,7 +105,10 @@ class SnowflakeClient:
             try:
                 cursor.execute(f"SELECT * FROM {view}")  # noqa: S608 - identifier is strictly validated above
                 names = [str(col[0]).lower() for col in cursor.description or []]
-                return [dict(zip(names, row, strict=False)) for row in cursor.fetchall()]
+                return [
+                    {key: _json_safe_snowflake_value(value) for key, value in zip(names, row, strict=False)}
+                    for row in cursor.fetchall()
+                ]
             finally:
                 cursor.close()
 
@@ -502,6 +506,19 @@ def _int(value: Any) -> int | None:
         return int(value)
     except (TypeError, ValueError):
         return None
+
+
+def _json_safe_snowflake_value(value: Any) -> Any:
+    """Return a JSON-serializable representation of Snowflake driver values."""
+    if isinstance(value, Decimal):
+        if value == value.to_integral_value():
+            return int(value)
+        return float(value)
+    if isinstance(value, datetime):
+        return utc_iso(value.astimezone(UTC) if value.tzinfo else value.replace(tzinfo=UTC))
+    if isinstance(value, date):
+        return value.isoformat()
+    return value
 
 
 def _slug(value: Any) -> str:

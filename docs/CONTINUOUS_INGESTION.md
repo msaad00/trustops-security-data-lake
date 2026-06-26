@@ -1,0 +1,163 @@
+# Continuous Ingestion Operating Model
+
+TrustOps is not meant to run as a pile of one-off bootstrap scripts. Bootstrap
+artifacts create customer-owned read scopes. The running product then uses the
+same connector contract from the UI, REST API, CLI, scheduler, and agents.
+
+```text
+customer admin/IaC -> scoped identity + read views
+operator/API       -> discover -> probe -> enable
+scheduler          -> sync -> materialize -> evaluate -> snapshot/workflow
+reviewers/agents   -> read posture, runs, evidence, snapshots, trust shares
+```
+
+## Responsibilities
+
+| Layer              | Owns                                     | Must not own                         |
+| ------------------ | ---------------------------------------- | ------------------------------------ |
+| Customer platform  | Snowflake user, cloud role, secret mount | TrustOps app code                    |
+| TrustOps connector | read scope, fingerprint, sync history    | passwords, PATs, raw private keys    |
+| Scheduler          | due checks, locks, sync/evaluation runs  | broad cloud permissions              |
+| Assessment engine  | normalized evidence, controls, snapshots | connector-specific compliance claims |
+
+## Production Flow
+
+1. **Provision access outside TrustOps.**
+   Use Terraform, Bicep, CloudFormation, Snowflake SQL, or the customer secret
+   manager. Identities are non-human and read-only by default.
+
+2. **Discover available scope.**
+   Discovery returns selectable databases, views, accounts, subscriptions, or
+   recommended options without enabling collection.
+
+   ```bash
+   security-lakehouse connectors discover \
+     --lake /lake \
+     --connector-id snowflake-evidence-lake \
+     --account "$SNOWFLAKE_ACCOUNT" \
+     --user TRUSTOPS_INGEST_SVC \
+     --warehouse TRUSTOPS_READ_WH \
+     --database TRUSTOPS_SECURITY_LAKE \
+     --schema EVIDENCE
+   ```
+
+3. **Probe exact access.**
+   Probe validates the same identity and read scope that will be enabled. It
+   writes a non-secret access fingerprint to `gold/connector_runs.jsonl`.
+
+   ```bash
+   security-lakehouse connectors probe \
+     --lake /lake \
+     --connector-id snowflake-evidence-lake \
+     --credentials-json '{"account":"'"$SNOWFLAKE_ACCOUNT"'","user":"TRUSTOPS_INGEST_SVC","private_key_ref":"SNOWFLAKE_PRIVATE_KEY_FILE"}' \
+     --options-json '{"warehouse":"TRUSTOPS_READ_WH","database":"TRUSTOPS_SECURITY_LAKE","schema":"EVIDENCE","role":"TRUSTOPS_READER","audit_events":"TRUSTOPS_AUDIT_EVENTS","control_posture":"TRUSTOPS_CONTROL_POSTURE","asset_risk":"TRUSTOPS_ASSET_RISK","evidence_bundles":"TRUSTOPS_EVIDENCE_BUNDLES"}'
+   ```
+
+4. **Enable only after a successful probe.**
+   Public API and console enablement require the latest probe to be `ok` and to
+   match the same credential/scope fingerprint.
+
+   ```bash
+   security-lakehouse connectors configure \
+     --lake /lake \
+     --connector-id snowflake-evidence-lake \
+     --state enabled \
+     --credentials-json '{"account":"'"$SNOWFLAKE_ACCOUNT"'","user":"TRUSTOPS_INGEST_SVC","private_key_ref":"SNOWFLAKE_PRIVATE_KEY_FILE"}' \
+     --options-json '{"warehouse":"TRUSTOPS_READ_WH","database":"TRUSTOPS_SECURITY_LAKE","schema":"EVIDENCE","role":"TRUSTOPS_READER","audit_events":"TRUSTOPS_AUDIT_EVENTS","control_posture":"TRUSTOPS_CONTROL_POSTURE","asset_risk":"TRUSTOPS_ASSET_RISK","evidence_bundles":"TRUSTOPS_EVIDENCE_BUNDLES"}' \
+     --sync-schedule "every 15m"
+   ```
+
+5. **Run continuously.**
+   Production deployments should run `security-lakehouse scheduler tick` from a
+   Kubernetes `CronJob`, system cron, CI scheduler, Airflow, Dagster, Prefect, or
+   another orchestrator. The Helm chart ships a scheduler CronJob.
+
+6. **Review outcomes from API/UI/agents.**
+   Connector run history, evidence, controls, snapshots, and integrity checks
+   are exposed through `/api/v1` resources and the console. Collection endpoints
+   paginate with `limit` `1..1000`, `offset`, sort, filters, and next cursors.
+
+## Runtime Contract
+
+| Concern           | Current behavior                                                                                   |
+| ----------------- | -------------------------------------------------------------------------------------------------- |
+| Credentials       | Connector config stores references and fingerprints, not raw passwords or private keys.            |
+| Enablement        | Public enablement is probe-gated and rejects changed scope until the new payload is probed.        |
+| Scheduling        | `scheduler tick` uses an advisory lock and persisted last-fired state to avoid overlapping fires.  |
+| Idempotency       | Connector raw events are upserted by `event_id`; overlapping syncs do not double-count evidence.   |
+| Incremental reads | Full-scope sync is safe by idempotent upsert; cursor/watermark adapters use ingestion primitives.  |
+| Rate limits       | Shared backoff primitives exist; adapter-specific 429/backoff handling is implemented where wired. |
+| API limits        | Collection APIs cap `limit` at 1000 and return `400 bad_request` for invalid paging params.        |
+| Errors            | Sync/probe failures are recorded in `gold/connector_runs.jsonl` with sanitized messages.           |
+| Integrity         | Pipeline integrity records evidence hashes and idempotency set hashes in gold artifacts.           |
+| Snapshots         | Point-in-time snapshots are hash-chained and verifiable through `/api/v1/snapshots/integrity`.     |
+| Agents            | Agents consume the same API/resources; model output can propose actions, not bypass controls.      |
+
+## Snowflake Production Pattern
+
+For Snowflake, `deploy/snowflake/bootstrap_poc.sql` and
+`deploy/snowflake/bootstrap_service_user.sql` are examples of the customer-side
+admin/IaC step. In production, a team should convert those objects into its
+normal change-management system:
+
+- `TRUSTOPS_READER` is a read-only role.
+- `TRUSTOPS_INGEST_SVC` is a non-human service user.
+- The RSA public key is set in Snowflake.
+- The matching private key is stored in the customer secret manager.
+- The TrustOps runtime mounts the private key and sets
+  `SNOWFLAKE_PRIVATE_KEY_FILE`.
+
+In Kubernetes, mount the key as a Secret and pass the file path to both the API
+pod and scheduler CronJob through Helm values:
+
+```yaml
+env:
+  - name: SNOWFLAKE_ACCOUNT
+    value: MJFAYEE-YS65534
+  - name: SNOWFLAKE_USER
+    value: TRUSTOPS_INGEST_SVC
+  - name: SNOWFLAKE_AUTHENTICATOR
+    value: SNOWFLAKE_JWT
+  - name: SNOWFLAKE_PRIVATE_KEY_FILE
+    value: /var/run/secrets/trustops/snowflake_key.p8
+  - name: SNOWFLAKE_ROLE
+    value: TRUSTOPS_READER
+  - name: SNOWFLAKE_WAREHOUSE
+    value: TRUSTOPS_READ_WH
+  - name: SNOWFLAKE_DATABASE
+    value: TRUSTOPS_SECURITY_LAKE
+  - name: SNOWFLAKE_SCHEMA
+    value: EVIDENCE
+
+extraVolumeMounts:
+  - name: snowflake-key
+    mountPath: /var/run/secrets/trustops
+    readOnly: true
+
+extraVolumes:
+  - name: snowflake-key
+    secret:
+      secretName: trustops-snowflake-key
+```
+
+The bootstrap SQL proves the required Snowflake boundary; the continuous
+TrustOps value comes from scheduled sync, deterministic evaluation, fresh
+evidence status, snapshots, and shared API/UI/agent access to the same state.
+
+## API Surface
+
+The headless path uses the same operations as the UI:
+
+| Operation                  | Route                                              | Scope              |
+| -------------------------- | -------------------------------------------------- | ------------------ |
+| List connectors            | `GET /api/v1/connectors`                           | `read`             |
+| List connector run history | `GET /api/v1/connectors/{connector_id}/runs`       | `read`             |
+| Discover scope             | `POST /api/v1/connectors/{connector_id}/discover`  | `connector_manage` |
+| Probe access               | `POST /api/v1/connectors/{connector_id}/probe`     | `connector_manage` |
+| Configure connector        | `POST /api/v1/connectors/{connector_id}/configure` | `connector_manage` |
+| Create snapshot            | `POST /api/v1/snapshots`                           | `snapshot`         |
+| Verify snapshot chain      | `GET /api/v1/snapshots/integrity`                  | `read`             |
+
+This is the path external portals, internal platform automation, MCP tools, and
+agent harnesses should use. CLI examples are wrappers around the same contract,
+not a separate operating mode.
