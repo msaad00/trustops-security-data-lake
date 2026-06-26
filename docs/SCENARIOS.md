@@ -18,7 +18,13 @@ runs a workflow DAG, and writes:
 
 ```text
 <lake>/gold/scenario_reports/live-cloud-posture.json
+<lake>/gold/scenario_reports/live-cloud-posture.md
 ```
+
+The JSON report is for automation. The Markdown proof pack is for humans: it
+summarizes connector status, source-by-source evidence coverage, posture state,
+snapshot/integrity/workflow checks, recommended next actions, and durable
+artifact paths.
 
 ### Fixture Proof
 
@@ -44,7 +50,11 @@ Expected proof points:
 - evidence integrity `ok: true`
 - snapshot-chain verification `ok: true`
 - workflow run `ok`
-- artifact paths for raw, bronze, silver, current posture, integrity, and report
+- source breakdown by provider, asset, control, severity, and event type
+- recommended next actions based on failed connectors, integrity, snapshot,
+  workflow, stale evidence, and open violations
+- artifact paths for raw, bronze, silver, current posture, integrity, JSON
+  report, and Markdown proof pack
 
 ### Azure Live Proof
 
@@ -146,8 +156,8 @@ security-lakehouse scenario run live-cloud-posture \
 
 `--summary` prints the operator view: connector status, evidence counts by
 source, posture score/state, integrity status, snapshot-chain verification,
-workflow result, and the durable report path. Omit it when an automation or PR
-attachment needs the full JSON report.
+workflow result, the durable JSON report path, and the Markdown proof pack path.
+Omit it when an automation or PR attachment needs the full JSON report.
 
 This is the default scenario for proving that TrustOps can operate as a
 self-hosted, deterministic trust center: evidence comes from real systems, the

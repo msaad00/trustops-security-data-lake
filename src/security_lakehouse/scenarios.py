@@ -22,6 +22,7 @@ from security_lakehouse.workflows import run_workflow, save_workflow
 LIVE_CLOUD_SCENARIO = "live-cloud-posture"
 DEFAULT_LIVE_CONNECTORS = ("azure-posture", "aws-posture", "snowflake-evidence-lake")
 SCENARIO_REPORT = ("gold", "scenario_reports", "live-cloud-posture.json")
+SCENARIO_PROOF_PACK = ("gold", "scenario_reports", "live-cloud-posture.md")
 SCENARIO_WORKFLOW_ID = "live-cloud-posture-freeze"
 
 
@@ -155,6 +156,7 @@ def format_live_cloud_posture_summary(report: dict[str, Any]) -> str:
                 f"length={snapshot_chain.get('length', 0)}"
             ),
             f"Workflow: {workflow_run.get('result', 'not run')}",
+            f"Proof pack: {(report.get('artifacts') or {}).get('proof_pack', '')}",
             f"Report: {(report.get('artifacts') or {}).get('report', '')}",
         ]
     )
@@ -208,9 +210,42 @@ def _scenario_report(
     posture = build_current_posture(lake)
     silver_rows = read_jsonl(lake / "silver" / "normalized_events.jsonl", missing_ok=True)
     evidence_by_source = Counter(str(row.get("source") or "") for row in silver_rows if row.get("source"))
+    source_breakdown = _source_breakdown(silver_rows)
     workflow_ok = workflow is not None and (workflow.get("run") or {}).get("result") == "ok"
     chain_ok = snapshot_chain is not None and snapshot_chain.get("ok") is True
     connector_results = [_connector_result_summary(sync) for sync in syncs]
+    summary = {
+        "ok": all(row.get("ok") for row in syncs)
+        and bool(integrity and integrity.get("ok"))
+        and chain_ok
+        and workflow_ok,
+        "proof_state": _proof_state(posture),
+        "connector_count": len(connector_results),
+        "successful_connectors": sum(1 for row in connector_results if row.get("ok")),
+        "failed_connectors": sum(1 for row in connector_results if not row.get("ok")),
+        "connector_results": connector_results,
+        "evidence_count": len(silver_rows),
+        "evidence_by_source": dict(sorted(evidence_by_source.items())),
+        "sources": sorted({str(row.get("source") or "") for row in silver_rows if row.get("source")}),
+        "source_breakdown": source_breakdown,
+        "event_type_count": len({str(row.get("event_type") or "") for row in silver_rows if row.get("event_type")}),
+        "asset_count": len({str(row.get("asset_id") or "") for row in silver_rows if row.get("asset_id")}),
+        "controls_referenced": len(_controls_referenced(silver_rows)),
+        "posture_score": posture.get("posture", {}).get("score"),
+        "posture_state": posture.get("posture", {}).get("state"),
+        "open_violations": posture.get("posture", {}).get("open_violation_count"),
+        "critical_violations": posture.get("posture", {}).get("critical_violation_count"),
+        "high_violations": posture.get("posture", {}).get("high_violation_count"),
+        "frameworks": posture.get("posture", {}).get("framework_count"),
+    }
+    summary["recommended_actions"] = _recommended_actions(
+        summary=summary,
+        syncs=syncs,
+        integrity=integrity,
+        snapshot_chain=snapshot_chain,
+        workflow=workflow,
+        posture=posture,
+    )
     return {
         "schema_version": "trustops.scenario_report.v1",
         "scenario": LIVE_CLOUD_SCENARIO,
@@ -218,23 +253,7 @@ def _scenario_report(
         "lake": str(lake),
         "connectors": connectors,
         "syncs": syncs,
-        "summary": {
-            "ok": all(row.get("ok") for row in syncs)
-            and bool(integrity and integrity.get("ok"))
-            and chain_ok
-            and workflow_ok,
-            "connector_count": len(connector_results),
-            "successful_connectors": sum(1 for row in connector_results if row.get("ok")),
-            "failed_connectors": sum(1 for row in connector_results if not row.get("ok")),
-            "connector_results": connector_results,
-            "evidence_count": len(silver_rows),
-            "evidence_by_source": dict(sorted(evidence_by_source.items())),
-            "sources": sorted({str(row.get("source") or "") for row in silver_rows if row.get("source")}),
-            "posture_score": posture.get("posture", {}).get("score"),
-            "posture_state": posture.get("posture", {}).get("state"),
-            "open_violations": posture.get("posture", {}).get("open_violation_count"),
-            "frameworks": posture.get("posture", {}).get("framework_count"),
-        },
+        "summary": summary,
         "integrity": integrity,
         "snapshot": snapshot,
         "snapshot_chain": snapshot_chain,
@@ -246,6 +265,7 @@ def _scenario_report(
             "posture": str(lake / "gold" / "current_posture.json"),
             "integrity": str(lake / "gold" / "evidence_integrity.json"),
             "report": str(lake.joinpath(*SCENARIO_REPORT)),
+            "proof_pack": str(lake.joinpath(*SCENARIO_PROOF_PACK)),
         },
     }
 
@@ -253,6 +273,14 @@ def _scenario_report(
 def _write_report(lake: Path, report: dict[str, Any]) -> Path:
     path = lake.joinpath(*SCENARIO_REPORT)
     write_json(path, report)
+    _write_proof_pack(lake, report)
+    return path
+
+
+def _write_proof_pack(lake: Path, report: dict[str, Any]) -> Path:
+    path = lake.joinpath(*SCENARIO_PROOF_PACK)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(_format_proof_pack(report), encoding="utf-8")
     return path
 
 
@@ -270,3 +298,201 @@ def _format_counts(counts: dict[str, Any]) -> str:
     if not counts:
         return "no sources"
     return ", ".join(f"{source}={count}" for source, count in sorted(counts.items()))
+
+
+def _source_breakdown(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    by_source: dict[str, list[dict[str, Any]]] = {}
+    for row in rows:
+        source = str(row.get("source") or "unknown")
+        by_source.setdefault(source, []).append(row)
+    breakdown = []
+    for source, source_rows in sorted(by_source.items()):
+        event_types = Counter(str(row.get("event_type") or "unknown") for row in source_rows)
+        severities = Counter(str(row.get("severity") or "unknown") for row in source_rows)
+        breakdown.append(
+            {
+                "source": source,
+                "evidence_count": len(source_rows),
+                "asset_count": len({str(row.get("asset_id") or "") for row in source_rows if row.get("asset_id")}),
+                "control_count": len(_controls_referenced(source_rows)),
+                "open_items": sum(1 for row in source_rows if str(row.get("status") or "").lower() == "open"),
+                "high_or_critical": sum(
+                    1 for row in source_rows if str(row.get("severity") or "").lower() in {"high", "critical"}
+                ),
+                "top_event_types": [
+                    {"event_type": event_type, "count": count} for event_type, count in event_types.most_common(5)
+                ],
+                "severity_counts": dict(sorted(severities.items())),
+            }
+        )
+    return breakdown
+
+
+def _controls_referenced(rows: list[dict[str, Any]]) -> set[str]:
+    controls: set[str] = set()
+    for row in rows:
+        raw = row.get("control_ids")
+        if isinstance(raw, list):
+            controls.update(str(item) for item in raw if str(item).strip())
+        elif raw:
+            controls.add(str(raw))
+    return controls
+
+
+def _proof_state(posture: dict[str, Any]) -> str:
+    current = posture.get("posture") or {}
+    if current.get("critical_violation_count", 0):
+        return "action_required"
+    score = float(current.get("score") or 0)
+    if score >= 80:
+        return "review_ready"
+    if score >= 50:
+        return "needs_review"
+    return "action_required"
+
+
+def _recommended_actions(
+    *,
+    summary: dict[str, Any],
+    syncs: list[dict[str, Any]],
+    integrity: dict[str, Any] | None,
+    snapshot_chain: dict[str, Any] | None,
+    workflow: dict[str, Any] | None,
+    posture: dict[str, Any],
+) -> list[dict[str, str]]:
+    actions: list[dict[str, str]] = []
+    failed = [row for row in syncs if not row.get("ok")]
+    if failed:
+        actions.append(
+            {
+                "priority": "p0",
+                "action": "restore_failed_connectors",
+                "reason": f"{len(failed)} connector(s) failed; posture is incomplete until every selected source syncs.",
+            }
+        )
+    if not (integrity and integrity.get("ok")):
+        actions.append(
+            {
+                "priority": "p0",
+                "action": "repair_evidence_integrity",
+                "reason": "Evidence hash/idempotency checks did not pass.",
+            }
+        )
+    if not (snapshot_chain and snapshot_chain.get("ok")):
+        actions.append(
+            {
+                "priority": "p0",
+                "action": "repair_snapshot_chain",
+                "reason": "Snapshot ledger verification failed or did not run.",
+            }
+        )
+    if not (workflow and (workflow.get("run") or {}).get("result") == "ok"):
+        actions.append(
+            {
+                "priority": "p1",
+                "action": "inspect_workflow_run",
+                "reason": "The scenario workflow did not complete successfully.",
+            }
+        )
+    if int(summary.get("critical_violations") or 0):
+        actions.append(
+            {
+                "priority": "p0",
+                "action": "assign_critical_findings",
+                "reason": f"{summary.get('critical_violations')} critical violation(s) are open.",
+            }
+        )
+    elif int(summary.get("open_violations") or 0):
+        actions.append(
+            {
+                "priority": "p1",
+                "action": "triage_open_findings",
+                "reason": f"{summary.get('open_violations')} open violation(s) need owners or exceptions.",
+            }
+        )
+    if (posture.get("evidence_freshness") or {}).get("stale_count", 0):
+        actions.append(
+            {
+                "priority": "p1",
+                "action": "refresh_stale_evidence",
+                "reason": f"{(posture.get('evidence_freshness') or {}).get('stale_count')} evidence item(s) are stale.",
+            }
+        )
+    if not actions:
+        actions.append(
+            {
+                "priority": "p2",
+                "action": "share_review_pack",
+                "reason": "Connectors, integrity, snapshots, and workflow checks are ready for reviewer validation.",
+            }
+        )
+    return actions[:5]
+
+
+def _format_proof_pack(report: dict[str, Any]) -> str:
+    summary = report.get("summary") or {}
+    integrity = report.get("integrity") or {}
+    snapshot_chain = report.get("snapshot_chain") or {}
+    workflow_run = (report.get("workflow") or {}).get("run") or {}
+    artifacts = report.get("artifacts") or {}
+    lines = [
+        "# TrustOps Live Cloud Proof Pack",
+        "",
+        f"- Scenario: `{report.get('scenario', LIVE_CLOUD_SCENARIO)}`",
+        f"- Status: `{'ok' if summary.get('ok') else 'needs_attention'}`",
+        f"- Proof state: `{summary.get('proof_state', 'unknown')}`",
+        f"- Evidence: `{summary.get('evidence_count', 0)}` normalized rows across `{len(summary.get('sources') or [])}` source(s)",
+        f"- Posture: `{summary.get('posture_state', 'unknown')}` score `{summary.get('posture_score', 'unknown')}`",
+        f"- Open violations: `{summary.get('open_violations', 'unknown')}`",
+        f"- Snapshot chain: `{'ok' if snapshot_chain.get('ok') else 'not_verified'}` length `{snapshot_chain.get('length', 0)}`",
+        f"- Integrity: `{'ok' if integrity.get('ok') else 'not_verified'}`",
+        f"- Workflow: `{workflow_run.get('result', 'not_run')}`",
+        "",
+        "## Connector Results",
+        "",
+        "| Connector | Status | Evidence | Materialized |",
+        "| --- | --- | ---: | --- |",
+    ]
+    for row in summary.get("connector_results") or []:
+        lines.append(
+            "| "
+            f"`{row.get('connector_id')}` | "
+            f"{'ok' if row.get('ok') else 'failed'} | "
+            f"{row.get('evidence_count', 0)} | "
+            f"{'yes' if row.get('materialized') else 'no'} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Source Breakdown",
+            "",
+            "| Source | Evidence | Assets | Controls | Open | High/Critical |",
+            "| --- | ---: | ---: | ---: | ---: | ---: |",
+        ]
+    )
+    for row in summary.get("source_breakdown") or []:
+        lines.append(
+            "| "
+            f"`{row.get('source')}` | "
+            f"{row.get('evidence_count', 0)} | "
+            f"{row.get('asset_count', 0)} | "
+            f"{row.get('control_count', 0)} | "
+            f"{row.get('open_items', 0)} | "
+            f"{row.get('high_or_critical', 0)} |"
+        )
+    lines.extend(["", "## Recommended Actions", ""])
+    for action in summary.get("recommended_actions") or []:
+        lines.append(f"- `{action.get('priority')}` `{action.get('action')}`: {action.get('reason')}")
+    lines.extend(
+        [
+            "",
+            "## Durable Artifacts",
+            "",
+            f"- JSON report: `{artifacts.get('report', '')}`",
+            f"- Current posture: `{artifacts.get('posture', '')}`",
+            f"- Integrity: `{artifacts.get('integrity', '')}`",
+            f"- Silver evidence: `{artifacts.get('silver', '')}`",
+            f"- Raw connector events: `{artifacts.get('raw', '')}`",
+        ]
+    )
+    return "\n".join(lines) + "\n"
