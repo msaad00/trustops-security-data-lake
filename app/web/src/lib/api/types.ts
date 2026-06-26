@@ -279,6 +279,86 @@ export interface ConnectorView {
   last_sync: ConnectorRun | null;
 }
 
+export interface IngestionAction {
+  priority: "p0" | "p1" | "p2" | string;
+  action: string;
+  reason: string;
+}
+
+export interface IngestionStatus {
+  state:
+    | "active"
+    | "attention_required"
+    | "error"
+    | "needs_configuration"
+    | "needs_data"
+    | string;
+  summary: {
+    connector_count: number;
+    enabled_connectors: number;
+    failed_connectors: number;
+    never_synced_connectors: number;
+    evidence_count: number;
+    source_count: number;
+    stale_evidence: number;
+    posture_score: number | null;
+    posture_state: string | null;
+    open_violations: number | null;
+  };
+  sources: Array<{ source: string; evidence_count: number }>;
+  connectors: Array<{
+    connector_id: string;
+    name: string;
+    category: string;
+    state: ConnectorState | string;
+    production_status: string;
+    collection_mode: string;
+    access_boundary: string;
+    freshness_slo_minutes: number;
+    freshness_state: string | null;
+    last_sync_at: string | null;
+    next_run_at: string | null;
+    latest_sync: {
+      connector_id?: string;
+      kind?: string;
+      result: "ok" | "error" | "skipped" | null;
+      occurred_at?: string | null;
+      duration_ms?: number | null;
+      evidence_count?: number | null;
+      error?: string | null;
+    };
+    last_error: string | null;
+  }>;
+  latest_runs: ConnectorRun[];
+  pipeline: Array<{
+    name: string;
+    path: string;
+    exists: boolean;
+    row_count: number | null;
+  }>;
+  integrity: {
+    ok: boolean | null;
+    evidence_count?: number | null;
+    unique_event_ids?: number | null;
+    duplicate_event_ids?: number | null;
+    raw_sha256?: string | null;
+  };
+  proof: {
+    report_path: string;
+    report_exists: boolean;
+    proof_pack_path: string;
+    proof_pack_exists: boolean;
+    scenario: string | null;
+    status: string;
+    proof_state: string | null;
+    evidence_count: number | null;
+    sources: string[];
+    open_violations: number | null;
+    recommended_actions: IngestionAction[];
+  };
+  recommended_actions: IngestionAction[];
+}
+
 export interface ConfigurePayload {
   state: ConnectorState;
   actor?: string;

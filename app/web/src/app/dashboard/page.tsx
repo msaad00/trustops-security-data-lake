@@ -3,6 +3,7 @@
 import {
   useControlTests,
   useFrameworks,
+  useIngestionStatus,
   usePosture,
   usePostureStream,
 } from "@/lib/api/hooks";
@@ -12,6 +13,7 @@ import { FixNext } from "@/components/dashboard/FixNext";
 import { EvidenceTrend } from "@/components/dashboard/EvidenceTrend";
 import { ControlTestTable } from "@/components/dashboard/ControlTestTable";
 import { TrustLifecycle } from "@/components/dashboard/TrustLifecycle";
+import { IngestionStatusPanel } from "@/components/dashboard/IngestionStatusPanel";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { QueryState } from "@/components/QueryState";
@@ -68,6 +70,7 @@ function ExecutiveMetric({
 export default function DashboardPage() {
   const posture = usePosture();
   const tests = useControlTests();
+  const ingestion = useIngestionStatus();
   const registeredFrameworks = useFrameworks();
   const { connected } = usePostureStream();
   const data = posture.data;
@@ -213,6 +216,10 @@ export default function DashboardPage() {
             </div>
           </div>
         </Card>
+
+        <QueryState queries={ingestion} label="ingestion status">
+          <IngestionStatusPanel status={ingestion.data} />
+        </QueryState>
 
         <ReadinessGrid
           frameworks={frameworks}
