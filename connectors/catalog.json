@@ -305,6 +305,7 @@
       "credential_type": "azure_default_credential_reader",
       "minimum_permissions": [
         "Microsoft.Authorization/roleAssignments/read",
+        "Microsoft.Authorization/roleDefinitions/read",
         "Microsoft.Resources/subscriptions/read",
         "Microsoft.Authorization/policyAssignments/read",
         "Microsoft.Resources/subscriptions/resources/read"

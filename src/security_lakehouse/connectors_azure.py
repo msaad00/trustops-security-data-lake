@@ -84,6 +84,10 @@ class AzureClient:
     def role_assignments(self) -> list[dict[str, Any]]:
         return [self._as_dict(item) for item in self._authz.role_assignments.list_for_subscription()]
 
+    def role_definitions(self) -> list[dict[str, Any]]:
+        scope = f"/subscriptions/{self.subscription_id}"
+        return [self._as_dict(item) for item in self._authz.role_definitions.list(scope)]
+
     def policy_assignments(self) -> list[dict[str, Any]]:
         if self._policy is None:
             return []
@@ -121,6 +125,9 @@ class AzureCliClient:
 
     def role_assignments(self) -> list[dict[str, Any]]:
         return self._run_json(["role", "assignment", "list", "--include-inherited"])
+
+    def role_definitions(self) -> list[dict[str, Any]]:
+        return self._run_json(["role", "definition", "list"])
 
     def policy_assignments(self) -> list[dict[str, Any]]:
         return self._run_json(["policy", "assignment", "list"])
@@ -170,6 +177,9 @@ class AzureFixtureClient:
     def role_assignments(self) -> list[dict[str, Any]]:
         return self._read_list("role_assignments.json")
 
+    def role_definitions(self) -> list[dict[str, Any]]:
+        return self._read_list("role_definitions.json")
+
     def policy_assignments(self) -> list[dict[str, Any]]:
         return self._read_list("policy_assignments.json")
 
@@ -210,8 +220,9 @@ def collect_azure_evidence(
     subscription = _subscription_slug(client.subscription_id)
     rows: list[dict[str, Any]] = []
 
+    role_name_by_id = _role_definition_name_map(client)
     for assignment in client.role_assignments():
-        event = _role_assignment_event(subscription, assignment, now, tenant_id)
+        event = _role_assignment_event(subscription, assignment, now, tenant_id, role_name_by_id)
         if event is not None:
             rows.append(event)
 
@@ -233,12 +244,19 @@ def _role_assignment_event(
     assignment: dict[str, Any],
     collected_at: datetime,
     tenant_id: str,
+    role_name_by_id: dict[str, str] | None = None,
 ) -> dict[str, Any] | None:
     props = _props(assignment)
     assignment_id = str(assignment.get("id") or assignment.get("name") or props.get("scope") or "").strip()
     if not assignment_id:
         return None
+    role_definition_id = str(props.get("role_definition_id") or props.get("roleDefinitionId") or "").strip()
     role_name = str(props.get("role_definition_name") or props.get("roleDefinitionName") or "").strip()
+    if not role_name and role_definition_id:
+        # The SDK role_assignments payload carries only the role definition id
+        # (a GUID path), never the display name; resolve it from the role
+        # definition catalog so privileged-role detection has a name to match.
+        role_name = _resolve_role_name(role_definition_id, role_name_by_id or {})
     principal_id = str(props.get("principal_id") or props.get("principalId") or "").strip()
     principal_type = str(props.get("principal_type") or props.get("principalType") or "Unknown").strip()
     scope = str(props.get("scope") or f"/subscriptions/{subscription}").strip()
@@ -261,6 +279,7 @@ def _role_assignment_event(
         attributes={
             "assignment_id": assignment_id,
             "role_name": role_name,
+            "role_definition_id": role_definition_id,
             "principal_id": principal_id,
             "principal_type": principal_type,
             "scope": scope,
@@ -342,6 +361,49 @@ def _resource_event(
             "subscription_id": subscription,
         },
     )
+
+
+def _role_definition_name_map(
+    client: AzureClient | AzureCliClient | AzureFixtureClient,
+) -> dict[str, str]:
+    """Map Azure role definition ids -> display names, keyed for tolerant lookup.
+
+    Resolution is best-effort: a least-privilege reader may lack
+    ``roleDefinitions/read``, and not every client version exposes the SDK
+    surface, so any failure yields an empty map and role names stay blank rather
+    than failing the whole collection. Each definition is indexed by its full
+    resource id, by its GUID name, and by the GUID tail of its id so an
+    assignment's ``role_definition_id`` matches regardless of which form it
+    carries.
+    """
+    getter = getattr(client, "role_definitions", None)
+    if not callable(getter):
+        return {}
+    try:
+        definitions = getter()
+    except Exception:  # noqa: BLE001 - best-effort enrichment, never fatal
+        return {}
+    mapping: dict[str, str] = {}
+    for definition in definitions or []:
+        if not isinstance(definition, dict):
+            continue
+        props = _props(definition)
+        name = str(props.get("role_name") or props.get("roleName") or "").strip()
+        if not name:
+            continue
+        full_id = str(definition.get("id") or "").strip().lower()
+        guid = str(definition.get("name") or "").strip().lower()
+        if full_id:
+            mapping[full_id] = name
+            mapping[full_id.rsplit("/", 1)[-1]] = name
+        if guid:
+            mapping[guid] = name
+    return mapping
+
+
+def _resolve_role_name(role_definition_id: str, role_name_by_id: dict[str, str]) -> str:
+    key = role_definition_id.lower()
+    return role_name_by_id.get(key) or role_name_by_id.get(key.rsplit("/", 1)[-1], "")
 
 
 def _props(item: dict[str, Any]) -> dict[str, Any]:

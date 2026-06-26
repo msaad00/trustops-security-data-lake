@@ -258,6 +258,160 @@ def test_azure_cli_client_reads_cloud_shell_json(monkeypatch: pytest.MonkeyPatch
     assert all(call[-4:] == ["--subscription", "sub", "--output", "json"] for call in calls)
 
 
+class _StubAzureClient:
+    """In-memory Azure client for exercising role-definition resolution.
+
+    Mirrors the live SDK shape where ``role_assignments`` carry only a
+    ``roleDefinitionId`` (a GUID path) and the display name must be resolved from
+    a separate ``role_definitions`` catalog.
+    """
+
+    def __init__(
+        self,
+        subscription_id: str,
+        *,
+        role_assignments: list[dict[str, Any]],
+        role_definitions: list[dict[str, Any]] | RuntimeError,
+    ) -> None:
+        self.subscription_id = subscription_id
+        self._role_assignments = role_assignments
+        self._role_definitions = role_definitions
+
+    def role_assignments(self) -> list[dict[str, Any]]:
+        return self._role_assignments
+
+    def role_definitions(self) -> list[dict[str, Any]]:
+        if isinstance(self._role_definitions, RuntimeError):
+            raise self._role_definitions
+        return self._role_definitions
+
+    def policy_assignments(self) -> list[dict[str, Any]]:
+        return []
+
+    def resources(self) -> list[dict[str, Any]]:
+        return []
+
+
+def _assignment_id_only(sub: str, role_definition_id: str, *, scope: str) -> dict[str, Any]:
+    return {
+        "id": f"/subscriptions/{sub}/providers/Microsoft.Authorization/roleAssignments/ra-{role_definition_id[-4:]}",
+        "properties": {
+            "roleDefinitionId": role_definition_id,
+            "principalId": "bbbb1111-1111-1111-1111-111111111111",
+            "principalType": "User",
+            "scope": scope,
+        },
+    }
+
+
+def test_role_name_resolved_from_role_definition_id_revives_privileged_detection() -> None:
+    # The live SDK omits the role display name; without resolution privileged
+    # detection silently dies. Owner at subscription scope must surface as high.
+    owner_def_id = (
+        f"/subscriptions/{SUBSCRIPTION}/providers/Microsoft.Authorization"
+        "/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635"
+    )
+    client = _StubAzureClient(
+        SUBSCRIPTION,
+        role_assignments=[_assignment_id_only(SUBSCRIPTION, owner_def_id, scope=f"/subscriptions/{SUBSCRIPTION}")],
+        role_definitions=[
+            {
+                "id": owner_def_id,
+                "name": "8e3af657-a8ff-443c-a75c-2fe8c4bcb635",
+                "properties": {"roleName": "Owner"},
+            }
+        ],
+    )
+
+    rows = collect_azure_evidence(client, collected_at=datetime(2026, 6, 3, tzinfo=UTC))
+
+    assert validate_raw_events(rows) == []
+    role = _by_type(rows, "azure.cloud.role_assignment")[0]
+    assert role["attributes"]["role_name"] == "Owner"
+    assert role["attributes"]["role_definition_id"] == owner_def_id
+    assert role["attributes"]["privileged_role"] is True
+    assert role["status"] == "open"
+    assert role["severity"] == "high"
+
+
+def test_role_resolution_is_best_effort_when_role_definitions_unreadable() -> None:
+    # A least-privilege reader may lack roleDefinitions/read; collection must not
+    # fail — the assignment is still emitted, just without a resolved name.
+    role_def_id = (
+        f"/subscriptions/{SUBSCRIPTION}/providers/Microsoft.Authorization"
+        "/roleDefinitions/00000000-0000-0000-0000-000000000099"
+    )
+    client = _StubAzureClient(
+        SUBSCRIPTION,
+        role_assignments=[_assignment_id_only(SUBSCRIPTION, role_def_id, scope=f"/subscriptions/{SUBSCRIPTION}")],
+        role_definitions=RuntimeError("AuthorizationFailed: roleDefinitions/read denied"),
+    )
+
+    rows = collect_azure_evidence(client, collected_at=datetime(2026, 6, 3, tzinfo=UTC))
+
+    assert validate_raw_events(rows) == []
+    role = _by_type(rows, "azure.cloud.role_assignment")[0]
+    assert role["attributes"]["role_name"] == ""
+    assert role["attributes"]["privileged_role"] is False
+    assert role["attributes"]["role_definition_id"] == role_def_id
+
+
+def test_azure_fixture_client_reads_role_definitions(tmp_path: Path) -> None:
+    fixture = tmp_path / "az"
+    fixture.mkdir()
+    role_def_id = (
+        f"/subscriptions/{SUBSCRIPTION}/providers/Microsoft.Authorization"
+        "/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+    )
+    (fixture / "role_assignments.json").write_text(
+        json.dumps([_assignment_id_only(SUBSCRIPTION, role_def_id, scope=f"/subscriptions/{SUBSCRIPTION}")]),
+        encoding="utf-8",
+    )
+    (fixture / "role_definitions.json").write_text(
+        json.dumps(
+            [{"id": role_def_id, "name": role_def_id.rsplit("/", 1)[-1], "properties": {"roleName": "Contributor"}}]
+        ),
+        encoding="utf-8",
+    )
+
+    client = AzureFixtureClient(fixture, subscription_id=SUBSCRIPTION)
+    assert client.role_definitions()
+
+    rows = collect_azure_evidence(client, collected_at=datetime(2026, 6, 3, tzinfo=UTC))
+    role = _by_type(rows, "azure.cloud.role_assignment")[0]
+    assert role["attributes"]["role_name"] == "Contributor"
+    assert role["attributes"]["privileged_role"] is True
+
+
+def test_azure_sync_uses_stored_subscription_id_when_env_absent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # An enabled connector must sync off its configured subscription_id without
+    # the operator re-exporting AZURE_SUBSCRIPTION_ID.
+    monkeypatch.delenv("AZURE_SUBSCRIPTION_ID", raising=False)
+    captured: dict[str, str] = {}
+
+    class FixtureBackedAzureClient(AzureFixtureClient):
+        def __init__(self, subscription_id: str) -> None:
+            captured["subscription_id"] = subscription_id
+            super().__init__(FIXTURE, subscription_id=subscription_id)
+
+    monkeypatch.setattr(connector_runner, "AzureClient", FixtureBackedAzureClient)
+
+    append_config_event(
+        tmp_path,
+        connector_id="azure-posture",
+        state="enabled",
+        actor="a",
+        credentials={"subscription_id": SUBSCRIPTION},
+    )
+    result = connector_runner.run_connector_sync(tmp_path, connector_id="azure-posture")
+
+    assert result.result == "ok"
+    assert result.evidence_count == 7
+    assert captured["subscription_id"] == SUBSCRIPTION
+
+
 def test_azure_adapter_is_registered_and_probe_reports_ok(tmp_path: Path) -> None:
     assert has_adapter("azure-posture") is True
     # Before enablement the probe is skipped (no synthetic collection signal).
