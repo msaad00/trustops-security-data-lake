@@ -208,3 +208,8 @@ def test_gcp_collect_is_iam_only_valid_when_org_and_assets_degrade() -> None:
     assert len(bindings) == 2
     owner = next(r for r in bindings if r["attributes"]["role"] == "roles/owner")
     assert owner["severity"] == "high"
+    # Sole "user:" member => human identity.
+    assert owner["attributes"]["identity_type"] == "human"
+    # Sole "serviceAccount:" member => service identity.
+    viewer = next(r for r in bindings if r["attributes"]["role"] == "roles/viewer")
+    assert viewer["attributes"]["identity_type"] == "service"
