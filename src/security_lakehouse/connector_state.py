@@ -671,6 +671,18 @@ def has_adapter(connector_id: str) -> bool:
     return connector_id in _implemented_adapters()
 
 
+def _safe_run_error(exc: Exception) -> str:
+    """Bounded, safe error text for a run record surfaced at the HTTP boundary.
+
+    A probe run record is returned to the caller over the API, and a raw
+    exception string can carry connection detail or internal paths. Record only
+    the exception class name — a code identifier, not runtime data — so the
+    operator still sees the failure category without the engine leaking
+    internals. (The configure step reports missing fields separately and safely.)
+    """
+    return type(exc).__name__
+
+
 def run_probe(
     lake_dir: str | Path,
     *,
@@ -769,7 +781,7 @@ def run_probe(
                 kind="probe",
                 result="error",
                 actor=actor,
-                error=str(exc),
+                error=_safe_run_error(exc),
                 access_fingerprint=staged_access_fingerprint,
             )
         failed = [
