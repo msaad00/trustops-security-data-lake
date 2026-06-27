@@ -78,8 +78,18 @@ class GCPClient:
                 "google-cloud-asset; install them or use --fixture-dir"
             ) from exc
         self._projects = resourcemanager_v3.ProjectsClient()
-        self._org_policies = resourcemanager_v3.OrgPolicyClient()
         self._assets = asset_v1.AssetServiceClient()
+        # Org Policy lives in the separate google-cloud-org-policy distribution
+        # (google.cloud.orgpolicy_v2), not resourcemanager_v3. It is optional so
+        # IAM-binding and asset collection still run when the package is absent
+        # or the reader lacks orgpolicy access.
+        self._org_policies: Any | None = None
+        try:
+            from google.cloud import orgpolicy_v2  # noqa: PLC0415
+
+            self._org_policies = orgpolicy_v2.OrgPolicyClient()
+        except ImportError:  # pragma: no cover - optional dependency
+            self._org_policies = None
 
     def iam_bindings(self) -> list[dict[str, Any]]:
         policy = self._projects.get_iam_policy(resource=f"projects/{self.project_id}")
@@ -94,29 +104,43 @@ class GCPClient:
         return bindings
 
     def org_policies(self) -> list[dict[str, Any]]:
+        if self._org_policies is None:
+            return []
         policies: list[dict[str, Any]] = []
-        for policy in self._org_policies.list_policies(parent=f"projects/{self.project_id}"):
-            spec = getattr(policy, "spec", None)
-            rules = getattr(spec, "rules", []) if spec is not None else []
-            enforced = any(bool(getattr(rule, "enforce", False)) for rule in rules)
-            policies.append(
-                {
-                    "name": getattr(policy, "name", ""),
-                    "constraint": getattr(policy, "name", "").split("/policies/")[-1],
-                    "enforced": enforced,
-                }
-            )
+        try:
+            listing = self._org_policies.list_policies(parent=f"projects/{self.project_id}")
+            for policy in listing:
+                spec = getattr(policy, "spec", None)
+                rules = getattr(spec, "rules", []) if spec is not None else []
+                enforced = any(bool(getattr(rule, "enforce", False)) for rule in rules)
+                policies.append(
+                    {
+                        "name": getattr(policy, "name", ""),
+                        "constraint": getattr(policy, "name", "").split("/policies/")[-1],
+                        "enforced": enforced,
+                    }
+                )
+        except Exception:  # noqa: BLE001 - best-effort: Org Policy API may be disabled/unauthorized
+            # The Org Policy API may be disabled or unauthorized for a
+            # least-privilege reader. IAM + asset evidence still collects.
+            return []
         return policies
 
     def assets(self) -> list[dict[str, Any]]:
         assets: list[dict[str, Any]] = []
-        for asset in self._assets.list_assets(request={"parent": f"projects/{self.project_id}"}):
-            assets.append(
-                {
-                    "name": getattr(asset, "name", ""),
-                    "asset_type": getattr(asset, "asset_type", ""),
-                }
-            )
+        try:
+            listing = self._assets.list_assets(request={"parent": f"projects/{self.project_id}"})
+            for asset in listing:
+                assets.append(
+                    {
+                        "name": getattr(asset, "name", ""),
+                        "asset_type": getattr(asset, "asset_type", ""),
+                    }
+                )
+        except Exception:  # noqa: BLE001 - best-effort: Cloud Asset API may be disabled/unauthorized
+            # IAM-binding evidence still collects when the Cloud Asset API is
+            # not enabled; enabling cloudasset.googleapis.com adds inventory.
+            return []
         return assets
 
 
