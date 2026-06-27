@@ -89,12 +89,30 @@ const CREDENTIAL_FIELDS: Record<string, FieldDef[]> = {
       placeholder: "123456789012",
       required: true,
     },
+    {
+      name: "role_arn",
+      label: "Read-only role ARN (optional)",
+      placeholder: "arn:aws:iam::123456789012:role/TrustOpsPostureReadOnlyRole",
+    },
+    {
+      name: "external_id",
+      label: "External ID (optional, with role ARN)",
+      placeholder: "shared secret used in the role trust policy",
+    },
   ],
   "azure-posture": [
     {
       name: "subscription_id",
       label: "Azure subscription ID",
       placeholder: "00000000-0000-0000-0000-000000000000",
+      required: true,
+    },
+  ],
+  "gcp-posture": [
+    {
+      name: "project_id",
+      label: "GCP project ID",
+      placeholder: "my-project-123456",
       required: true,
     },
   ],
