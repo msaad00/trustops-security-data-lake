@@ -247,6 +247,12 @@ def _missing_required_config(
     if connector_id == "azure-posture":
         return ["subscription_id"] if not _has_value(credentials, "subscription_id") else []
 
+    if connector_id == "gcp-posture":
+        # Credentials resolve through Application Default Credentials, so only
+        # the project scope is required — no stored credential reference, the
+        # same identity model as aws-posture and azure-posture.
+        return ["project_id"] if not _has_value(credentials, "project_id") else []
+
     if "token" in credential_type:
         return (
             ["credential_ref"]
@@ -326,6 +332,7 @@ def _discovery_scope_context(credentials: dict[str, Any], options: dict[str, Any
     return {
         "account_id": str(credentials.get("account_id") or ""),
         "subscription_id": str(credentials.get("subscription_id") or ""),
+        "project_id": str(credentials.get("project_id") or ""),
         "account": str(credentials.get("account") or ""),
         "user": str(credentials.get("user") or ""),
         "region": str(credentials.get("region") or options.get("region") or ""),

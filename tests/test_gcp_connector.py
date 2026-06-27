@@ -146,3 +146,65 @@ def test_gcp_adapter_is_registered_and_probe_reports_ok(tmp_path: Path) -> None:
     # Adapter-available -> probe is "ok", not "skipped", and reports no count.
     assert ok["result"] == "ok"
     assert ok["evidence_count"] is None
+
+
+def test_gcp_required_config_is_project_id_only() -> None:
+    # GCP authenticates via Application Default Credentials, so the only required
+    # config is the project scope — no credential_ref (the same identity model as
+    # aws-posture / azure-posture).
+    from security_lakehouse.connector_state import _missing_required_config
+
+    assert _missing_required_config("gcp-posture", "gcp_adc_reader", {}, {}) == ["project_id"]
+    assert _missing_required_config("gcp-posture", "gcp_adc_reader", {"project_id": "p"}, {}) == []
+
+
+def test_gcp_client_org_policies_and_assets_degrade_when_apis_unavailable() -> None:
+    # A least-privilege reader (or a project with the Org Policy / Cloud Asset
+    # APIs disabled) must not fail the whole sync: those two collectors degrade
+    # to empty while IAM-binding evidence still flows.
+    from security_lakehouse.connectors_gcp import GCPClient
+
+    client = GCPClient.__new__(GCPClient)
+    client.project_id = PROJECT
+
+    class _ApiDisabled:
+        def list_policies(self, **_kwargs: object) -> list[object]:
+            raise RuntimeError("Org Policy API has not been used in project ... or it is disabled")
+
+        def list_assets(self, **_kwargs: object) -> list[object]:
+            raise RuntimeError("Cloud Asset API has not been used in project ... or it is disabled")
+
+    client._org_policies = _ApiDisabled()
+    client._assets = _ApiDisabled()
+    assert client.org_policies() == []
+    assert client.assets() == []
+
+    # An absent org-policy client (package/API unavailable) is also non-fatal.
+    client._org_policies = None
+    assert client.org_policies() == []
+
+
+def test_gcp_collect_is_iam_only_valid_when_org_and_assets_degrade() -> None:
+    # Mirrors the live degraded path: IAM bindings collect and map to controls,
+    # privileged roles surface as findings, with org-policy/asset collectors empty.
+    class _IamOnlyClient:
+        project_id = PROJECT
+
+        def iam_bindings(self) -> list[dict[str, object]]:
+            return [
+                {"role": "roles/owner", "members": ["user:admin@example.com"]},
+                {"role": "roles/viewer", "members": ["serviceAccount:reader@example.com"]},
+            ]
+
+        def org_policies(self) -> list[dict[str, object]]:
+            return []
+
+        def assets(self) -> list[dict[str, object]]:
+            return []
+
+    rows = collect_gcp_evidence(_IamOnlyClient(), project_id=PROJECT)
+    assert validate_raw_events(rows) == []
+    bindings = [r for r in rows if r["event_type"] == "gcp.cloud.iam_binding"]
+    assert len(bindings) == 2
+    owner = next(r for r in bindings if r["attributes"]["role"] == "roles/owner")
+    assert owner["severity"] == "high"

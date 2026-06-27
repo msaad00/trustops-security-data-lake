@@ -46,12 +46,15 @@ analytics = [
     "duckdb>=1.0",
 ]
 # Live cloud connector SDKs. The core package stays dependency-free; install
-# this extra only when running AWS, Azure, or Snowflake collection locally.
+# this extra only when running AWS, Azure, GCP, or Snowflake collection locally.
 cloud = [
     "boto3>=1.34",
     "azure-identity>=1.17",
     "azure-mgmt-authorization>=4.0",
     "azure-mgmt-resource>=23.0",
+    "google-cloud-asset>=3.20",
+    "google-cloud-resource-manager>=1.12",
+    "google-cloud-org-policy>=1.11",
     "snowflake-connector-python>=3.12",
 ]
 # Agent-native front door: the Model Context Protocol server that exposes the
