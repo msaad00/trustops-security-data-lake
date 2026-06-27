@@ -107,6 +107,36 @@ flowchart LR
   API --> Harness --> Approval --> Work
 ```
 
+### Evidence Pipeline
+
+Read-only ingestion lands immutable raw evidence, then a medallion of idempotent
+`MERGE`s normalizes and maps it to controls. The lake sits behind one pluggable
+sink interface (Snowflake implemented today; ClickHouse and an embedded store are
+the next targets), so evidence stays in infrastructure the customer owns.
+
+```mermaid
+flowchart LR
+  subgraph SRC["Read-only sources"]
+    C1[AWS / Azure / GCP]
+    C2[GitHub / Okta / Jira]
+  end
+  SRC -->|"assume-role or key-pair, read-only, idempotent"| RAW
+  subgraph MED["Medallion ETL"]
+    RAW[("Bronze: raw, immutable, raw_sha256")]
+    SIL[("Silver: normalized, deduped")]
+    GOLD[("Gold: posture, asset risk")]
+    RAW -->|"stage then MERGE"| SIL -->|"map controls, MERGE"| GOLD
+  end
+  GOLD --> VIEW["Auditor and exec views: chain of custody"]
+  VIEW --> UI["Trust Center UI"]
+  MED -.->|"land and evaluate in place"| LAKE
+  subgraph LAKE["Pluggable security data lake"]
+    L1[(Snowflake)]
+    L2[(ClickHouse)]
+    L3[(DuckDB)]
+  end
+```
+
 ### Storage Modes
 
 | Mode                       | Use when                                                                                        | Boundary                                 |
