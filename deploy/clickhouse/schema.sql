@@ -35,7 +35,8 @@ create table if not exists security.normalized_events
 engine = MergeTree
 partition by toYYYYMM(event_time)
 order by (tenant_id, event_time, source, event_type, asset_id)
-ttl event_time + interval 730 day;
+-- TTL expressions require Date/DateTime; event_time is DateTime64, so cast it.
+ttl toDateTime(event_time) + interval 730 day;
 
 create table if not exists security.control_posture
 (
