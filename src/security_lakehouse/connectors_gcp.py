@@ -29,6 +29,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse.identity import classify_identity_type
 from security_lakehouse.io import read_json
 from security_lakehouse.models import utc_iso
 
@@ -230,6 +231,16 @@ def _iam_event(
     role = str(binding["role"])
     members = sorted(str(m) for m in binding.get("members", []) if m)
     privileged = role in PRIVILEGED_ROLES
+    # A binding can bind several members; classify each and collapse to a single
+    # identity_type when they agree, otherwise mark the binding "mixed" (or
+    # "unknown" when there are no members to classify).
+    member_types = {classify_identity_type(member=m) for m in members}
+    if not member_types:
+        identity_type = "unknown"
+    elif len(member_types) == 1:
+        identity_type = member_types.pop()
+    else:
+        identity_type = "mixed"
     return _event(
         project=project,
         collected_at=collected_at,
@@ -248,6 +259,7 @@ def _iam_event(
             "role": role,
             "members": members,
             "member_count": len(members),
+            "identity_type": identity_type,
             "privileged": privileged,
         },
     )

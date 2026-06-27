@@ -34,6 +34,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse.identity import classify_identity_type
 from security_lakehouse.io import read_json
 from security_lakehouse.models import utc_iso
 
@@ -282,6 +283,7 @@ def _role_assignment_event(
             "role_definition_id": role_definition_id,
             "principal_id": principal_id,
             "principal_type": principal_type,
+            "identity_type": classify_identity_type(principal_type=principal_type),
             "scope": scope,
             "privileged_role": privileged,
             "subscription_scope": subscription_scope,

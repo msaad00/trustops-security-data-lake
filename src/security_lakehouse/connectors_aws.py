@@ -27,6 +27,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse.identity import classify_identity_type
 from security_lakehouse.io import read_json
 from security_lakehouse.models import utc_iso
 
@@ -292,6 +293,7 @@ def _mfa_event(
         attributes={
             "user_name": user_name,
             "console_access": console_access,
+            "identity_type": classify_identity_type(console_access=console_access),
             "mfa_enrolled": enrolled,
             "mfa_device_count": len(device_serials),
             "mfa_device_serials": device_serials,

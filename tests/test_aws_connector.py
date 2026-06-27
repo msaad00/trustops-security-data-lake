@@ -249,6 +249,7 @@ def test_mfa_finding_only_applies_to_console_users(tmp_path: Path) -> None:
     assert mfa["human-admin"]["severity"] == "high"
     assert mfa["human-admin"]["attributes"]["needs_mfa"] is True
     assert mfa["human-admin"]["attributes"]["console_access"] is True
+    assert mfa["human-admin"]["attributes"]["identity_type"] == "human"
 
     # Service identity (no console login) -> not a finding; MFA marked N/A.
     assert mfa["svc-scanner"]["status"] == "pass"
@@ -256,6 +257,7 @@ def test_mfa_finding_only_applies_to_console_users(tmp_path: Path) -> None:
     assert mfa["svc-scanner"]["attributes"]["needs_mfa"] is False
     assert mfa["svc-scanner"]["attributes"]["console_access"] is False
     assert mfa["svc-scanner"]["attributes"]["mfa_not_applicable"] is True
+    assert mfa["svc-scanner"]["attributes"]["identity_type"] == "service"
 
 
 def test_aws_client_console_access_reads_login_profile(monkeypatch: pytest.MonkeyPatch) -> None:

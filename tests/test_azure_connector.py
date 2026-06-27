@@ -65,12 +65,16 @@ def test_collect_azure_evidence_is_schema_valid_and_mapped() -> None:
     assert owner["severity"] == "high"
     assert owner["attributes"]["privileged_role"] is True
     assert owner["attributes"]["subscription_scope"] is True
+    # principalType "User" => human identity.
+    assert owner["attributes"]["identity_type"] == "human"
 
     # Reader at subscription scope is observed/info (not privileged).
     reader = _role(rows, "Reader")
     assert reader["status"] == "observed"
     assert reader["severity"] == "info"
     assert reader["attributes"]["privileged_role"] is False
+    # principalType "ServicePrincipal" => service identity.
+    assert reader["attributes"]["identity_type"] == "service"
 
     # Contributor scoped to a resource group is not a subscription-scope finding.
     contributor = _role(rows, "Contributor")
