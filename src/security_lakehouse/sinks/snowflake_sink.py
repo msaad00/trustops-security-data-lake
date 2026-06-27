@@ -175,17 +175,30 @@ def rows_for_spec(spec: TableSpec, lake_dir: str | Path) -> list[dict[str, Any]]
 
 
 def merge_sql(spec: TableSpec) -> str:
-    """Build the idempotent staging -> target MERGE for a table spec."""
+    """Build the idempotent staging -> target MERGE for a table spec.
+
+    The MATCHED branch is guarded by a change condition so the UPDATE only fires
+    when a non-key column actually differs. We compare every projected non-key
+    column with Snowflake's null-safe ``EQUAL_NULL`` (which also works on the
+    VARIANT ``control_ids``) and update only when ``NOT (all columns equal)``.
+
+    Why: re-loading identical data must be a true no-op. Skipping no-op updates
+    means ``loaded_at`` is bumped only for rows that genuinely changed, so the
+    set of freshly updated rows *is* the drift signal — what actually changed
+    between syncs, not every matched row.
+    """
     staging = f"STG_{spec.table}"
     select = ", ".join(f"PARSE_JSON({c}) AS {c}" if c in spec.variant else c for c in spec.columns)
     on = " AND ".join(f"t.{k} = s.{k}" for k in spec.key)
-    update = ", ".join(f"{c} = s.{c}" for c in spec.columns if c not in spec.key)
+    non_key = [c for c in spec.columns if c not in spec.key]
+    change_condition = " AND ".join(f"EQUAL_NULL(t.{c}, s.{c})" for c in non_key)
+    update = ", ".join(f"{c} = s.{c}" for c in non_key)
     insert_cols = ", ".join(spec.columns)
     insert_vals = ", ".join(f"s.{c}" for c in spec.columns)
     return (
         f"MERGE INTO {spec.schema}.{spec.table} t "
         f"USING (SELECT {select} FROM {spec.schema}.{staging}) s ON {on} "
-        f"WHEN MATCHED THEN UPDATE SET {update} "
+        f"WHEN MATCHED AND NOT ({change_condition}) THEN UPDATE SET {update} "
         f"WHEN NOT MATCHED THEN INSERT ({insert_cols}) VALUES ({insert_vals})"
     )
 
