@@ -190,7 +190,7 @@ def test_land_if_configured_invokes_sink_when_configured(monkeypatch: pytest.Mon
 
     monkeypatch.setattr(sinks, "SnowflakeSink", _FakeSink)
     env = {"SNOWFLAKE_ACCOUNT": "a", "SNOWFLAKE_USER": "u", "SNOWFLAKE_PRIVATE_KEY_FILE": "/k"}
-    assert sinks.land_if_configured("/lake", env) == {"NORMALIZED_EVENTS": 5}
+    assert sinks.land_if_configured("/lake", env) == {"snowflake": {"NORMALIZED_EVENTS": 5}}
     assert seen["lake"] == "/lake"
 
 
