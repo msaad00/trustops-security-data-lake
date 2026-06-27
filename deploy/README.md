@@ -8,7 +8,7 @@ Three install surfaces — pick the one that fits your blast radius.
 | **Container image** | CI, Docker Compose, single-host servers                     | `docker run -p 8787:8787 -v $PWD/build/lakehouse:/lake ghcr.io/msaad00/trustops:latest`                                                                                     |
 | **Helm + EKS**      | Production self-hosted, customer-data-residency requirement | See [Helm chart](helm/trustops/) + [EKS reference IaC](eks-terraform/) below                                                                                                |
 | **Snowflake POC**   | Governed evidence lake using customer-owned Snowflake views | Run [`snowflake/bootstrap_poc.sql`](snowflake/bootstrap_poc.sql), then connect the reader role                                                                              |
-| **Cloud POC roles** | Read-only AWS/Azure posture collection without static keys  | Deploy [`aws/trustops-posture-readonly-role.yaml`](aws/trustops-posture-readonly-role.yaml) or [`azure/trustops-posture-reader.bicep`](azure/trustops-posture-reader.bicep) |
+| **Cloud POC roles** | Read-only AWS/Azure/GCP posture collection without static keys  | Deploy [`aws/trustops-posture-readonly-role.yaml`](aws/trustops-posture-readonly-role.yaml), [`azure/trustops-posture-reader.bicep`](azure/trustops-posture-reader.bicep), or [`gcp/trustops-posture-reader.tf`](gcp/trustops-posture-reader.tf) |
 
 ## Container image
 
@@ -76,7 +76,7 @@ The IAM policy is intentionally tiny: `s3:ListBucket` + `s3:GetObject*` on the n
 
 ## Cloud posture POC roles
 
-The live AWS and Azure posture connectors can be proven without static keys:
+The live AWS, Azure, and GCP posture connectors can be proven without static keys:
 
 - AWS: `deploy/aws/trustops-posture-readonly-role.yaml` creates
   `TrustOpsPostureReadOnlyRole` with only the IAM read calls used by the
@@ -87,6 +87,11 @@ The live AWS and Azure posture connectors can be proven without static keys:
   If a tenant blocks role-assignment reads, grant a customer-owned read role
   that includes `Microsoft.Authorization/roleAssignments/read`. TrustOps uses
   `DefaultAzureCredential` at runtime.
+- GCP: `deploy/gcp/trustops-posture-reader.tf` creates a read-only service
+  account with `iam.securityReviewer`, `cloudasset.viewer`, and
+  `orgpolicy.policyViewer`, enables the read APIs, and optionally binds GKE
+  Workload Identity so the runtime impersonates it with no exported key.
+  TrustOps uses Application Default Credentials at runtime.
 
 Both templates are bootstrap helpers for read-only evidence collection. They do
 not create users, credentials, long-lived keys, or remediation permissions.
