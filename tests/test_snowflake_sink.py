@@ -170,9 +170,9 @@ def test_load_writes_staging_and_merges_each_table() -> None:
 
 
 def test_land_if_configured_is_noop_without_env() -> None:
-    from security_lakehouse.sinks import land_if_configured
+    import security_lakehouse.sinks as sinks
 
-    assert land_if_configured("/lake", {}) is None
+    assert sinks.land_if_configured("/lake", {}) is None
 
 
 def test_land_if_configured_invokes_sink_when_configured(monkeypatch: pytest.MonkeyPatch) -> None:
