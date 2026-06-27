@@ -221,6 +221,38 @@ def test_snowflake_probe_blocks_missing_views(tmp_path: Path, monkeypatch: pytes
     assert latest_config(tmp_path, "snowflake-evidence-lake") is None
 
 
+def test_snowflake_probe_records_sanitized_error_not_raw_exception(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # A probe ValueError must not flow to the HTTP boundary verbatim (CodeQL
+    # py/stack-trace-exposure): the run record carries the exception category,
+    # not the raw message, which could contain a path or connection detail.
+    def boom(*, credentials: dict, options: dict) -> dict:
+        raise ValueError("connection to host 10.0.0.5:443 failed: /etc/secret/key unreadable")
+
+    monkeypatch.setattr("security_lakehouse.connector_state.probe_snowflake_access", boom)
+
+    rec = run_probe(
+        tmp_path,
+        connector_id="snowflake-evidence-lake",
+        credentials={"account": "org-account", "user": "trustops_reader", "credential_ref": "externalbrowser"},
+        options={
+            "warehouse": "TRUSTOPS_READ_WH",
+            "database": "TRUSTOPS_SECURITY_LAKE",
+            "schema": "EVIDENCE",
+            "audit_events": "TRUSTOPS_AUDIT_EVENTS",
+            "control_posture": "TRUSTOPS_CONTROL_POSTURE",
+            "asset_risk": "TRUSTOPS_ASSET_RISK",
+            "evidence_bundles": "TRUSTOPS_EVIDENCE_BUNDLES",
+        },
+    )
+
+    assert rec["result"] == "error"
+    assert rec["error"] == "ValueError"
+    assert "10.0.0.5" not in rec["error"]
+    assert "/etc/secret/key" not in rec["error"]
+
+
 def test_discovery_returns_selectable_snowflake_scope_without_enable(tmp_path: Path) -> None:
     rec = run_discovery(
         tmp_path,
