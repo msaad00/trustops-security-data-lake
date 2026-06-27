@@ -9,6 +9,7 @@ and optionally materialize bronze/silver/gold outputs.
 from __future__ import annotations
 
 import os
+import sys
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -61,6 +62,7 @@ from security_lakehouse.ingestion.merge import dedupe_by_key
 from security_lakehouse.io import read_jsonl, write_jsonl
 from security_lakehouse.pipeline import run_pipeline
 from security_lakehouse.repo_governance import sync_repo_governance
+from security_lakehouse.sinks import land_if_configured
 from security_lakehouse.validation import validate_raw_events
 
 CONNECTOR_RAW_FILE = "raw/connector_events.jsonl"
@@ -178,6 +180,7 @@ def run_connector_sync(
         _upsert_raw_events(raw_path, rows, connector_id=connector_id, write_mode=_write_mode(connector_id))
         if materialize:
             run_pipeline(raw_path, lake)
+            _land_to_sink(lake)
         run = append_run_event(
             lake,
             connector_id=connector_id,
@@ -214,6 +217,26 @@ class ConnectorSyncError(RuntimeError):
     def __init__(self, message: str, *, run: dict[str, Any]) -> None:
         super().__init__(message)
         self.run = run
+
+
+def _land_to_sink(lake: Path) -> None:
+    """Project the freshly materialized lake to a configured external sink.
+
+    The local lake is the source of truth; an evidence sink (Snowflake today) is
+    an optional, idempotent projection, so a sink failure — warehouse down,
+    transient auth — is reported to stderr and swallowed rather than failing the
+    sync. No-op unless ``SNOWFLAKE_*`` is configured.
+    """
+    try:
+        landed = land_if_configured(lake, dict(os.environ))
+    except Exception as exc:  # noqa: BLE001 - sink is optional; never fatal to collection
+        print(
+            f"warning: evidence sink load failed ({type(exc).__name__}); local lake is unaffected",
+            file=sys.stderr,
+        )
+        return
+    if landed:
+        print(f"evidence sink: landed {sum(landed.values())} rows {landed}", file=sys.stderr)
 
 
 def _require_enabled(lake: Path, connector_id: str) -> dict[str, Any]:

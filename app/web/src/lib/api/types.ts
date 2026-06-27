@@ -206,11 +206,7 @@ export interface SnapshotResponse {
 }
 
 export type TrackingState =
-  | "open"
-  | "triaged"
-  | "in_progress"
-  | "resolved"
-  | "dismissed";
+  "open" | "triaged" | "in_progress" | "resolved" | "dismissed";
 
 export interface TrackingEvent {
   tracking_id: string;
@@ -267,10 +263,7 @@ export interface ConnectorView {
   default_route: string;
   freshness_slo_minutes: number;
   production_status:
-    | "primary_lake"
-    | "supported_connector"
-    | "local_demo"
-    | string;
+    "primary_lake" | "supported_connector" | "local_demo" | string;
   state: ConnectorState;
   configured_at: string | null;
   credential_fingerprint: string | null;

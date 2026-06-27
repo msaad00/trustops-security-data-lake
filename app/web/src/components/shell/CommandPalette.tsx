@@ -33,12 +33,7 @@ import type {
 interface PaletteItem {
   id: string;
   group:
-    | "Actions"
-    | "Routes"
-    | "Controls"
-    | "Violations"
-    | "Evidence"
-    | "Workflows";
+    "Actions" | "Routes" | "Controls" | "Violations" | "Evidence" | "Workflows";
   label: string;
   subtitle?: string;
   href?: string;
