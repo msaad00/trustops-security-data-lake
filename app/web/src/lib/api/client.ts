@@ -243,6 +243,18 @@ export const api = {
       `/v1/connectors/${encodeURIComponent(id)}/probe`,
       payload,
     ).then((body) => ({ run: body.data })),
+  syncConnector: (id: string, payload: { actor?: string } = {}) =>
+    post<{
+      data: {
+        connector_id: string;
+        result: string;
+        evidence_count: number | null;
+        materialized: boolean;
+        run: ConnectorRun;
+      };
+    }>(`/v1/connectors/${encodeURIComponent(id)}/sync`, payload).then(
+      (body) => body.data,
+    ),
   discoverConnector: (id: string, payload: DiscoverPayload = {}) =>
     post<{ data: ConnectorRun }>(
       `/v1/connectors/${encodeURIComponent(id)}/discover`,

@@ -253,6 +253,22 @@ def test_v1_resource_catalog_advertises_connector_actions(tmp_path: Path) -> Non
         assert by_path["/api/v1/connectors/{connector_id}/discover"]["scopes"] == ["connector_manage"]
         assert by_path["/api/v1/connectors/{connector_id}/probe"]["scopes"] == ["connector_manage"]
         assert by_path["/api/v1/connectors/{connector_id}/configure"]["scopes"] == ["connector_manage"]
+        assert by_path["/api/v1/connectors/{connector_id}/sync"]["methods"] == ["POST"]
+        assert by_path["/api/v1/connectors/{connector_id}/sync"]["scopes"] == ["connector_manage"]
+    finally:
+        server.shutdown()
+
+
+def test_v1_connector_sync_failure_is_generic_and_does_not_leak(tmp_path: Path) -> None:
+    server = _spin(tmp_path)
+    try:
+        # Syncing a connector that is not enabled fails; the endpoint must return
+        # a generic error envelope with no exception detail crossing the boundary.
+        status, body = _request(server, "POST", "/api/v1/connectors/aws-posture/sync", {})
+        assert status == HTTPStatus.BAD_REQUEST
+        assert body["errors"][0]["code"] == "sync_failed"
+        assert "see the connector runs" in body["errors"][0]["detail"]
+        assert "Traceback" not in json.dumps(body)
     finally:
         server.shutdown()
 
