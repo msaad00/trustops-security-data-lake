@@ -7,6 +7,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse.connector_health import build_connector_health
 from security_lakehouse.connector_state import build_catalog_view, list_runs
 from security_lakehouse.io import read_json, read_jsonl
 
@@ -30,6 +31,8 @@ def build_ingestion_status(lake_dir: str | Path) -> JsonObject:
         row for row in connectors if row.get("latest_sync", {}).get("result") == "error" or row.get("last_error")
     ]
     never_synced = [row for row in enabled if row.get("latest_sync", {}).get("result") is None]
+    health = build_connector_health(lake)
+    silent_count = int(health["summary"]["silent"]) + int(health["summary"]["never_succeeded"])
     state = _overall_state(
         enabled=enabled,
         evidence_count=len(evidence_rows),
@@ -48,12 +51,14 @@ def build_ingestion_status(lake_dir: str | Path) -> JsonObject:
             "evidence_count": len(evidence_rows),
             "source_count": len(source_counts),
             "stale_evidence": stale_count,
+            "silent_connectors": silent_count,
             "posture_score": (current_posture.get("posture") or {}).get("score"),
             "posture_state": (current_posture.get("posture") or {}).get("state"),
             "open_violations": (current_posture.get("posture") or {}).get("open_violation_count"),
         },
         "sources": [{"source": source, "evidence_count": count} for source, count in sorted(source_counts.items())],
         "connectors": connectors,
+        "health": health,
         "latest_runs": [_run_summary(row) for row in latest_runs],
         "pipeline": _pipeline_artifacts(lake),
         "integrity": _integrity_summary(integrity),
@@ -64,6 +69,7 @@ def build_ingestion_status(lake_dir: str | Path) -> JsonObject:
             failed_connectors=failed_connectors,
             never_synced=never_synced,
             stale_count=stale_count,
+            silent_count=silent_count,
             proof=proof,
             current_posture=current_posture,
         ),
@@ -190,10 +196,22 @@ def _recommended_actions(
     failed_connectors: list[JsonObject],
     never_synced: list[JsonObject],
     stale_count: int,
+    silent_count: int,
     proof: JsonObject,
     current_posture: JsonObject,
 ) -> list[JsonObject]:
     actions: list[JsonObject] = []
+    if silent_count:
+        actions.append(
+            {
+                "priority": "p0",
+                "action": "investigate_silent_connectors",
+                "reason": (
+                    f"{silent_count} enabled connector(s) have no successful sync within their freshness SLO "
+                    "(silent failure) — evidence is going stale without anyone being told."
+                ),
+            }
+        )
     if state == "needs_configuration":
         actions.append(
             {
