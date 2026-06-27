@@ -66,12 +66,43 @@ def test_merge_sql_is_idempotent_upsert_keyed_on_primary_key() -> None:
     sql = merge_sql(_spec("CONTROL_POSTURE"))
     assert "MERGE INTO SECURITY_GOLD.CONTROL_POSTURE t" in sql
     assert "ON t.tenant_id = s.tenant_id AND t.control_id = s.control_id" in sql
-    assert "WHEN MATCHED THEN UPDATE SET" in sql
+    # The MATCHED branch is now change-guarded so no-op reloads do not update.
+    assert "WHEN MATCHED AND NOT (" in sql
+    assert "THEN UPDATE SET" in sql
     assert "WHEN NOT MATCHED THEN INSERT" in sql
 
     # Array column is reconstructed as a Snowflake ARRAY via PARSE_JSON.
     silver_sql = merge_sql(_spec("NORMALIZED_EVENTS"))
     assert "PARSE_JSON(control_ids) AS control_ids" in silver_sql
+
+
+def _change_condition(sql: str) -> str:
+    """Isolate the text inside ``WHEN MATCHED AND NOT ( ... )``."""
+    head = "WHEN MATCHED AND NOT ("
+    start = sql.index(head) + len(head)
+    end = sql.index(") THEN UPDATE SET", start)
+    return sql[start:end]
+
+
+def test_merge_sql_change_condition_covers_non_key_columns_only() -> None:
+    # Composite key: both key columns are excluded; a non-key column is included.
+    sql = merge_sql(_spec("CONTROL_POSTURE"))
+    cond = _change_condition(sql)
+    assert "EQUAL_NULL(t.status, s.status)" in cond
+    assert "EQUAL_NULL(t.risk_score, s.risk_score)" in cond
+    # Key columns must never appear in the change condition.
+    assert "t.tenant_id" not in cond
+    assert "t.control_id" not in cond
+
+
+def test_merge_sql_change_condition_single_key_includes_variant_column() -> None:
+    # Single key (event_id): excluded from the condition; status compared; the
+    # VARIANT control_ids column is compared with EQUAL_NULL like any other.
+    sql = merge_sql(_spec("NORMALIZED_EVENTS"))
+    cond = _change_condition(sql)
+    assert "EQUAL_NULL(t.status, s.status)" in cond
+    assert "EQUAL_NULL(t.control_ids, s.control_ids)" in cond
+    assert "t.event_id" not in cond
 
 
 class _FakeCursor:
