@@ -272,3 +272,60 @@ def test_aws_client_console_access_reads_login_profile(monkeypatch: pytest.Monke
     client._iam = _IAM()
     assert client.console_access("human") is True
     assert client.console_access("svc") is False
+
+
+def test_access_key_hygiene_flags_stale_service_account_keys(tmp_path: Path) -> None:
+    # For a service identity (no console / no MFA) the relevant control is key
+    # rotation, not MFA: a stale active access key is the open finding.
+    fixture = tmp_path / "aws"
+    fixture.mkdir()
+    (fixture / "iam_users.json").write_text(
+        json.dumps([{"UserName": "svc-scanner", "Arn": f"arn:aws:iam::{ACCOUNT}:user/svc-scanner"}]),
+        encoding="utf-8",
+    )
+    (fixture / "mfa_devices.json").write_text(json.dumps({"svc-scanner": []}), encoding="utf-8")
+    (fixture / "login_profiles.json").write_text(json.dumps([]), encoding="utf-8")  # programmatic
+    (fixture / "access_keys.json").write_text(
+        json.dumps(
+            {"svc-scanner": [{"AccessKeyId": "AKIASTALE", "Status": "Active", "CreateDate": "2024-01-01T00:00:00Z"}]}
+        ),
+        encoding="utf-8",
+    )
+
+    rows = collect_aws_evidence(
+        AWSFixtureClient(fixture), account_id=ACCOUNT, collected_at=datetime(2026, 6, 27, tzinfo=UTC)
+    )
+    assert validate_raw_events(rows) == []
+
+    key_events = [r for r in rows if r["event_type"] == "aws.iam.access_key_hygiene"]
+    assert len(key_events) == 1
+    ev = key_events[0]
+    assert ev["status"] == "open"
+    assert ev["severity"] == "medium"
+    assert ev["attributes"]["identity_type"] == "service"
+    assert ev["attributes"]["stale_key"] is True
+    assert ev["attributes"]["oldest_active_key_age_days"] > 90
+
+    # The missing-MFA event is NOT a finding for this service identity.
+    mfa = next(r for r in rows if r["event_type"] == "aws.iam.mfa_enrollment")
+    assert mfa["status"] == "pass"
+
+
+def test_access_key_hygiene_passes_on_fresh_single_key(tmp_path: Path) -> None:
+    fixture = tmp_path / "aws"
+    fixture.mkdir()
+    (fixture / "iam_users.json").write_text(
+        json.dumps([{"UserName": "svc-fresh", "Arn": f"arn:aws:iam::{ACCOUNT}:user/svc-fresh"}]), encoding="utf-8"
+    )
+    (fixture / "access_keys.json").write_text(
+        json.dumps(
+            {"svc-fresh": [{"AccessKeyId": "AKIAFRESH", "Status": "Active", "CreateDate": "2026-06-01T00:00:00Z"}]}
+        ),
+        encoding="utf-8",
+    )
+    rows = collect_aws_evidence(
+        AWSFixtureClient(fixture), account_id=ACCOUNT, collected_at=datetime(2026, 6, 27, tzinfo=UTC)
+    )
+    key = next(r for r in rows if r["event_type"] == "aws.iam.access_key_hygiene")
+    assert key["status"] == "pass"
+    assert key["attributes"]["stale_key"] is False
