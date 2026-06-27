@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
@@ -219,3 +220,53 @@ def test_aws_client_uses_ambient_chain_without_role_arn(monkeypatch: pytest.Monk
     # No assume-role call; IAM client comes straight from the provider chain.
     assert fake.assume_calls == []
     assert fake.iam_from == "client"
+
+
+def test_mfa_finding_only_applies_to_console_users(tmp_path: Path) -> None:
+    # MFA is a console (human) control. A key-only service identity with no login
+    # profile must not be flagged for "no MFA"; only a console user is.
+    fixture = tmp_path / "aws"
+    fixture.mkdir()
+    (fixture / "iam_users.json").write_text(
+        json.dumps(
+            [
+                {"UserName": "human-admin", "Arn": f"arn:aws:iam::{ACCOUNT}:user/human-admin"},
+                {"UserName": "svc-scanner", "Arn": f"arn:aws:iam::{ACCOUNT}:user/svc-scanner"},
+            ]
+        ),
+        encoding="utf-8",
+    )
+    (fixture / "mfa_devices.json").write_text(json.dumps({"human-admin": [], "svc-scanner": []}), encoding="utf-8")
+    # Only the human has a console login profile.
+    (fixture / "login_profiles.json").write_text(json.dumps(["human-admin"]), encoding="utf-8")
+
+    rows = collect_aws_evidence(AWSFixtureClient(fixture), account_id=ACCOUNT)
+    assert validate_raw_events(rows) == []
+    mfa = {r["attributes"]["user_name"]: r for r in rows if r["event_type"] == "aws.iam.mfa_enrollment"}
+
+    # Console user without MFA -> high open finding.
+    assert mfa["human-admin"]["status"] == "open"
+    assert mfa["human-admin"]["severity"] == "high"
+    assert mfa["human-admin"]["attributes"]["needs_mfa"] is True
+    assert mfa["human-admin"]["attributes"]["console_access"] is True
+
+    # Service identity (no console login) -> not a finding; MFA marked N/A.
+    assert mfa["svc-scanner"]["status"] == "pass"
+    assert mfa["svc-scanner"]["severity"] == "info"
+    assert mfa["svc-scanner"]["attributes"]["needs_mfa"] is False
+    assert mfa["svc-scanner"]["attributes"]["console_access"] is False
+    assert mfa["svc-scanner"]["attributes"]["mfa_not_applicable"] is True
+
+
+def test_aws_client_console_access_reads_login_profile(monkeypatch: pytest.MonkeyPatch) -> None:
+    # GetLoginProfile success => console user; NoSuchEntity (raises) => programmatic.
+    class _IAM:
+        def get_login_profile(self, *, UserName: str):  # noqa: N803
+            if UserName == "human":
+                return {"LoginProfile": {"UserName": "human"}}
+            raise RuntimeError("NoSuchEntity")
+
+    client = AWSClient.__new__(AWSClient)
+    client._iam = _IAM()
+    assert client.console_access("human") is True
+    assert client.console_access("svc") is False
