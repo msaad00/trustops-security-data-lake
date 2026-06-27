@@ -255,6 +255,28 @@ export function useProbeMutation() {
   });
 }
 
+export function useSyncMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload = {},
+    }: {
+      id: string;
+      payload?: { actor?: string };
+    }) => api.syncConnector(id, payload),
+    onSuccess: (_data, { id }) => {
+      // A sync lands evidence: refresh the connector, its runs, and the posture
+      // surfaces so the UI reflects the new state immediately.
+      qc.invalidateQueries({ queryKey: ["connectors"] });
+      qc.invalidateQueries({ queryKey: ["connector-runs", id] });
+      qc.invalidateQueries({ queryKey: ["posture", "current"] });
+      qc.invalidateQueries({ queryKey: ["ingestion", "status"] });
+      qc.invalidateQueries({ queryKey: ["violations"] });
+    },
+  });
+}
+
 export function useDiscoverMutation() {
   const qc = useQueryClient();
   return useMutation({

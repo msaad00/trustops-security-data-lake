@@ -7,6 +7,7 @@ import {
   Loader2,
   PauseCircle,
   PlayCircle,
+  RefreshCw,
   Search,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +18,7 @@ import {
   useConnectorRuns,
   useDiscoverMutation,
   useProbeMutation,
+  useSyncMutation,
 } from "@/lib/api/hooks";
 import { useAuditorMode } from "@/lib/state/auditor";
 import type {
@@ -269,6 +271,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
   const configure = useConfigureMutation();
   const discover = useDiscoverMutation();
   const probe = useProbeMutation();
+  const sync = useSyncMutation();
   const runs = useConnectorRuns(connector?.connector_id ?? null);
   const [creds, setCreds] = useState<Record<string, string>>({});
   const [options, setOptions] = useState<Record<string, string>>({});
@@ -384,6 +387,22 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
     }
   };
 
+  const runSync = async () => {
+    try {
+      const result = await sync.mutateAsync({
+        id: connector.connector_id,
+        payload: { actor: "console" },
+      });
+      onToast(
+        result.result === "ok"
+          ? `Sync complete: ${result.evidence_count ?? 0} evidence item(s) landed.`
+          : "Sync finished with errors; see history.",
+      );
+    } catch (err) {
+      onToast(`Sync failed: ${(err as Error).message}`);
+    }
+  };
+
   const runDiscovery = async () => {
     try {
       const payload: ProbePayload = { actor: "console" };
@@ -463,6 +482,20 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                 )}{" "}
                 Test connection
               </Button>
+              {isEnabled ? (
+                <Button
+                  variant="primary"
+                  onClick={runSync}
+                  disabled={sync.isPending}
+                >
+                  {sync.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4" />
+                  )}{" "}
+                  Sync now
+                </Button>
+              ) : null}
               {isEnabled ? (
                 <Button
                   variant="default"

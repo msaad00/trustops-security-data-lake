@@ -25,6 +25,7 @@ from security_lakehouse.assessment import (
     verify_snapshot_chain,
     write_assessment_snapshot,
 )
+from security_lakehouse.connector_runner import ConnectorSyncError, run_connector_sync
 from security_lakehouse.connector_state import (
     append_config_event,
     build_catalog_view,
@@ -364,6 +365,14 @@ def resource_catalog() -> list[JsonObject]:
             {
                 "resource": "connector.probe",
                 "path": "/api/v1/connectors/{connector_id}/probe",
+                "kind": "action",
+                "methods": ["POST"],
+                "scopes": ["connector_manage"],
+                "path_params": ["connector_id"],
+            },
+            {
+                "resource": "connector.sync",
+                "path": "/api/v1/connectors/{connector_id}/sync",
                 "kind": "action",
                 "methods": ["POST"],
                 "scopes": ["connector_manage"],
@@ -769,4 +778,29 @@ def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tup
             options=payload.get("options") if "options" in payload else None,
         )
         return HTTPStatus.CREATED, envelope("connector.probe", record)
+    sync = _connector_action(path, "sync")
+    if sync is not None:
+        try:
+            result = run_connector_sync(
+                lake,
+                connector_id=sync,
+                actor=str(payload.get("actor") or "console"),
+            )
+        except ConnectorSyncError:
+            # The run is persisted with its outcome; surface a generic failure
+            # here so no exception detail crosses the HTTP boundary. The reason
+            # is available via GET /api/v1/connectors/{id}/runs.
+            return HTTPStatus.BAD_REQUEST, error_envelope(
+                "sync_failed", "connector sync failed; see the connector runs for details", resource="connector.sync"
+            )
+        return HTTPStatus.CREATED, envelope(
+            "connector.sync",
+            {
+                "connector_id": result.connector_id,
+                "result": result.result,
+                "evidence_count": result.evidence_count,
+                "materialized": result.materialized,
+                "run": result.run,
+            },
+        )
     return HTTPStatus.NOT_FOUND, error_envelope("not_found", f"unknown route {path}")
