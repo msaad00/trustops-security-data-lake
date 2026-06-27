@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -14,7 +16,7 @@ from security_lakehouse.connector_state import (
     latest_run,
     run_probe,
 )
-from security_lakehouse.connectors_aws import AWSFixtureClient, collect_aws_evidence
+from security_lakehouse.connectors_aws import AWSClient, AWSFixtureClient, collect_aws_evidence
 from security_lakehouse.io import read_jsonl
 from security_lakehouse.validation import validate_raw_events
 
@@ -146,3 +148,74 @@ def test_aws_adapter_is_registered_and_probe_reports_ok(tmp_path: Path) -> None:
     # Adapter-available -> probe is "ok", not "skipped", and reports no count.
     assert ok["result"] == "ok"
     assert ok["evidence_count"] is None
+
+
+class _FakeBoto3:
+    """Minimal boto3 stand-in to exercise AWSClient auth modes offline."""
+
+    def __init__(self) -> None:
+        self.assume_calls: list[dict] = []
+        self.iam_from = ""  # "client" (ambient) or "session" (assumed)
+        self.session_creds: dict | None = None
+
+    def client(self, service: str, region_name=None):  # noqa: ANN001
+        if service == "sts":
+            outer = self
+
+            class _STS:
+                def assume_role(self, **kwargs):  # noqa: ANN003
+                    outer.assume_calls.append(kwargs)
+                    return {
+                        "Credentials": {
+                            "AccessKeyId": "ASIA_TMP",
+                            "SecretAccessKey": "secret_tmp",
+                            "SessionToken": "token_tmp",
+                        }
+                    }
+
+            return _STS()
+        if service == "iam":
+            self.iam_from = "client"
+            return SimpleNamespace(get_paginator=lambda *_a, **_k: None)
+        raise AssertionError(f"unexpected client {service}")
+
+    def Session(self, **creds):  # noqa: N802, ANN003
+        self.session_creds = creds
+        outer = self
+
+        class _Session:
+            def client(self, service: str):  # noqa: ANN001
+                assert service == "iam"
+                outer.iam_from = "session"
+                return SimpleNamespace(get_paginator=lambda *_a, **_k: None)
+
+        return _Session()
+
+
+def test_aws_client_assumes_role_with_external_id(monkeypatch: pytest.MonkeyPatch) -> None:
+    # The hosted-GRC connect model: hand TrustOps a Role ARN + External ID and it
+    # assumes the read-only role via STS — no static key, no ambient identity.
+    fake = _FakeBoto3()
+    monkeypatch.setitem(sys.modules, "boto3", fake)
+
+    AWSClient(role_arn="arn:aws:iam::123456789012:role/TrustOpsPostureReadOnlyRole", external_id="ext-secret-123")
+
+    assert len(fake.assume_calls) == 1
+    call = fake.assume_calls[0]
+    assert call["RoleArn"].endswith(":role/TrustOpsPostureReadOnlyRole")
+    assert call["ExternalId"] == "ext-secret-123"
+    assert call["RoleSessionName"] == "trustops-posture"
+    # IAM client is built from the assumed short-lived session, not ambient.
+    assert fake.iam_from == "session"
+    assert fake.session_creds["aws_session_token"] == "token_tmp"
+
+
+def test_aws_client_uses_ambient_chain_without_role_arn(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = _FakeBoto3()
+    monkeypatch.setitem(sys.modules, "boto3", fake)
+
+    AWSClient()
+
+    # No assume-role call; IAM client comes straight from the provider chain.
+    assert fake.assume_calls == []
+    assert fake.iam_from == "client"

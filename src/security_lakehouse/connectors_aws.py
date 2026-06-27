@@ -47,17 +47,47 @@ class AWSClient:
     """Authenticated, read-only AWS IAM client backed by ``boto3``.
 
     ``boto3`` is imported lazily so installs that never touch live AWS do not
-    need it. Credentials and region resolve through boto3's standard provider
-    chain (``AWS_ACCESS_KEY_ID`` / ``AWS_SECRET_ACCESS_KEY`` /
-    ``AWS_SESSION_TOKEN`` / ``AWS_REGION`` / profiles / instance roles).
+    need it. Two auth modes:
+
+    * **Ambient** (default) — credentials resolve through boto3's standard
+      provider chain (``AWS_*`` env vars / profiles / IRSA / instance roles).
+      Use this when TrustOps already runs as the reader identity.
+    * **Assume-role** — when ``role_arn`` is given, TrustOps calls
+      ``sts:AssumeRole`` (with the customer's ``external_id`` for confused-deputy
+      protection) and reads with the returned short-lived session. This is the
+      hosted-GRC connect model: the customer deploys the read-only role
+      (``deploy/aws/trustops-posture-readonly-role.yaml``) and hands TrustOps
+      only the Role ARN + External ID — never a key. The base session used to
+      assume is itself ambient (the runtime's pod/instance identity).
     """
 
-    def __init__(self, *, region_name: str | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        region_name: str | None = None,
+        role_arn: str | None = None,
+        external_id: str | None = None,
+        session_name: str = "trustops-posture",
+    ) -> None:
         try:
             import boto3  # noqa: PLC0415
         except ImportError as exc:  # pragma: no cover - exercised only with live AWS
             raise RuntimeError("aws-posture live collection requires boto3; install it or use --fixture-dir") from exc
-        self._iam = boto3.client("iam", region_name=region_name)
+        if role_arn:
+            sts = boto3.client("sts", region_name=region_name)
+            assume_kwargs: dict[str, Any] = {"RoleArn": role_arn, "RoleSessionName": session_name}
+            if external_id:
+                assume_kwargs["ExternalId"] = external_id
+            creds = sts.assume_role(**assume_kwargs)["Credentials"]
+            session = boto3.Session(
+                aws_access_key_id=creds["AccessKeyId"],
+                aws_secret_access_key=creds["SecretAccessKey"],
+                aws_session_token=creds["SessionToken"],
+                region_name=region_name,
+            )
+            self._iam = session.client("iam")
+        else:
+            self._iam = boto3.client("iam", region_name=region_name)
 
     def users(self) -> list[dict[str, Any]]:
         users: list[dict[str, Any]] = []
