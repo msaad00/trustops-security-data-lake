@@ -95,6 +95,12 @@ OKTA_ORG_URL_ENV = "OKTA_ORG_URL"
 # preferably SSO, assumed roles, workload identity, or instance roles.
 AWS_ACCOUNT_ID_ENV = "AWS_ACCOUNT_ID"
 AWS_REGION_ENV = "AWS_REGION"
+# Optional cross-account assume-role auth (the hosted-GRC connect model): the
+# customer deploys the read-only role and hands TrustOps only the Role ARN +
+# External ID. TrustOps assumes it with its own ambient/base identity. These can
+# come from the connector's stored credentials or be overridden by env.
+AWS_ROLE_ARN_ENV = "AWS_ROLE_ARN"
+AWS_EXTERNAL_ID_ENV = "AWS_EXTERNAL_ID"
 
 # Environment variable carrying the Google Workspace customer id for live
 # collection. The OAuth bearer token is read from ``token_env`` (defaults to
@@ -277,7 +283,7 @@ def _build_okta(inputs: SyncInputs) -> list[dict[str, Any]]:
 
 
 def _build_aws(inputs: SyncInputs) -> list[dict[str, Any]]:
-    return _collect_aws(fixture_dir=inputs.fixture_dir, env=inputs.env)
+    return _collect_aws(fixture_dir=inputs.fixture_dir, env=inputs.env, credentials=inputs.credentials)
 
 
 def _build_google_workspace(inputs: SyncInputs) -> list[dict[str, Any]]:
@@ -375,18 +381,24 @@ def _collect_aws(
     *,
     fixture_dir: str | Path | None,
     env: dict[str, str],
+    credentials: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
+    creds = credentials or {}
     if fixture_dir:
-        fixture_account = env.get(AWS_ACCOUNT_ID_ENV) or "000000000000"
+        fixture_account = env.get(AWS_ACCOUNT_ID_ENV) or str(creds.get("account_id") or "") or "000000000000"
         return collect_aws_evidence(AWSFixtureClient(fixture_dir), account_id=fixture_account)
-    account_id = env.get(AWS_ACCOUNT_ID_ENV)
+    # account_id and (optional) cross-account assume-role config come from the
+    # connector's stored credentials, with env overrides for operators.
+    account_id = env.get(AWS_ACCOUNT_ID_ENV) or str(creds.get("account_id") or "").strip()
     if not account_id:
         raise ValueError(
-            "aws-posture sync requires --fixture-dir, or "
-            f"{AWS_ACCOUNT_ID_ENV} plus read-only AWS credentials "
+            "aws-posture sync requires --fixture-dir, a configured account_id, or "
+            f"{AWS_ACCOUNT_ID_ENV}, plus read-only AWS credentials "
             "(SSO profile, assumed role, instance role, or the standard provider chain)"
         )
-    client = AWSClient(region_name=env.get(AWS_REGION_ENV))
+    role_arn = (env.get(AWS_ROLE_ARN_ENV) or str(creds.get("role_arn") or "")).strip() or None
+    external_id = (env.get(AWS_EXTERNAL_ID_ENV) or str(creds.get("external_id") or "")).strip() or None
+    client = AWSClient(region_name=env.get(AWS_REGION_ENV), role_arn=role_arn, external_id=external_id)
     return collect_aws_evidence(client, account_id=account_id)
 
 

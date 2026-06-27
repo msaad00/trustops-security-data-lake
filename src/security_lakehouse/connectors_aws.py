@@ -47,17 +47,47 @@ class AWSClient:
     """Authenticated, read-only AWS IAM client backed by ``boto3``.
 
     ``boto3`` is imported lazily so installs that never touch live AWS do not
-    need it. Credentials and region resolve through boto3's standard provider
-    chain (``AWS_ACCESS_KEY_ID`` / ``AWS_SECRET_ACCESS_KEY`` /
-    ``AWS_SESSION_TOKEN`` / ``AWS_REGION`` / profiles / instance roles).
+    need it. Two auth modes:
+
+    * **Ambient** (default) — credentials resolve through boto3's standard
+      provider chain (``AWS_*`` env vars / profiles / IRSA / instance roles).
+      Use this when TrustOps already runs as the reader identity.
+    * **Assume-role** — when ``role_arn`` is given, TrustOps calls
+      ``sts:AssumeRole`` (with the customer's ``external_id`` for confused-deputy
+      protection) and reads with the returned short-lived session. This is the
+      hosted-GRC connect model: the customer deploys the read-only role
+      (``deploy/aws/trustops-posture-readonly-role.yaml``) and hands TrustOps
+      only the Role ARN + External ID — never a key. The base session used to
+      assume is itself ambient (the runtime's pod/instance identity).
     """
 
-    def __init__(self, *, region_name: str | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        region_name: str | None = None,
+        role_arn: str | None = None,
+        external_id: str | None = None,
+        session_name: str = "trustops-posture",
+    ) -> None:
         try:
             import boto3  # noqa: PLC0415
         except ImportError as exc:  # pragma: no cover - exercised only with live AWS
             raise RuntimeError("aws-posture live collection requires boto3; install it or use --fixture-dir") from exc
-        self._iam = boto3.client("iam", region_name=region_name)
+        if role_arn:
+            sts = boto3.client("sts", region_name=region_name)
+            assume_kwargs: dict[str, Any] = {"RoleArn": role_arn, "RoleSessionName": session_name}
+            if external_id:
+                assume_kwargs["ExternalId"] = external_id
+            creds = sts.assume_role(**assume_kwargs)["Credentials"]
+            session = boto3.Session(
+                aws_access_key_id=creds["AccessKeyId"],
+                aws_secret_access_key=creds["SecretAccessKey"],
+                aws_session_token=creds["SessionToken"],
+                region_name=region_name,
+            )
+            self._iam = session.client("iam")
+        else:
+            self._iam = boto3.client("iam", region_name=region_name)
 
     def users(self) -> list[dict[str, Any]]:
         users: list[dict[str, Any]] = []
@@ -84,6 +114,20 @@ class AWSClient:
             return self._iam.get_account_summary().get("SummaryMap", {})
         except Exception:  # noqa: BLE001 - summary is optional context
             return {}
+
+    def console_access(self, user_name: str) -> bool:
+        """True when the IAM user has a console login profile (a password).
+
+        MFA only applies to console (human) sign-in. A user with no login
+        profile is a programmatic/service identity that authenticates with
+        access keys, so a missing MFA device is not a finding for it. ``NoSuchEntity``
+        from ``GetLoginProfile`` means no console password.
+        """
+        try:
+            self._iam.get_login_profile(UserName=user_name)
+            return True
+        except Exception:  # noqa: BLE001 - NoSuchEntity => programmatic-only identity
+            return False
 
 
 class AWSFixtureClient:
@@ -115,6 +159,20 @@ class AWSFixtureClient:
         if isinstance(payload, dict):
             return payload.get("SummaryMap", payload)
         return {}
+
+    def console_access(self, user_name: str) -> bool:
+        """Console (login-profile) users come from ``login_profiles.json``.
+
+        The file is a JSON list of usernames that have a console password. When
+        it is absent the data is unknown, so we conservatively treat the user as
+        a console user (surface a missing-MFA finding rather than hide it).
+        """
+        path = self.fixture / "login_profiles.json"
+        if not path.exists():
+            return True
+        payload = read_json(path)
+        names = payload if isinstance(payload, list) else []
+        return str(user_name) in {str(name) for name in names}
 
     def _read(self, name: str) -> Any:
         path = self.fixture / name
@@ -155,7 +213,8 @@ def collect_aws_evidence(
             continue
         rows.append(_user_event(account, user, now, tenant_id))
         devices = client.mfa_devices(user_name)
-        rows.append(_mfa_event(account, user_name, user, devices, now, tenant_id))
+        console = client.console_access(user_name)
+        rows.append(_mfa_event(account, user_name, user, devices, now, tenant_id, console_access=console))
 
     rows.append(_policy_event(account, client.password_policy(), now, tenant_id))
     return rows
@@ -205,14 +264,18 @@ def _mfa_event(
     devices: list[dict[str, Any]],
     collected_at: datetime,
     tenant_id: str,
+    *,
+    console_access: bool = True,
 ) -> dict[str, Any]:
     device_serials = sorted(
         str(d.get("SerialNumber")) for d in devices if isinstance(d, dict) and d.get("SerialNumber")
     )
     enrolled = bool(device_serials)
     arn = str(user.get("Arn") or f"arn:aws:iam::{account}:user/{user_name}")
-    # An IAM user with no MFA device is the finding worth raising.
-    needs_mfa = not enrolled
+    # MFA is a console (human sign-in) control. A key-only programmatic/service
+    # identity has no login profile, so a missing MFA device is not a finding for
+    # it — only a console user without MFA is the finding worth raising.
+    needs_mfa = console_access and not enrolled
     return _event(
         account=account,
         collected_at=collected_at,
@@ -228,10 +291,14 @@ def _mfa_event(
         evidence_ref=f"{arn}/mfa-devices",
         attributes={
             "user_name": user_name,
+            "console_access": console_access,
             "mfa_enrolled": enrolled,
             "mfa_device_count": len(device_serials),
             "mfa_device_serials": device_serials,
             "needs_mfa": needs_mfa,
+            # Surface why a key-only identity is not flagged, so the posture is
+            # self-explanatory to an auditor.
+            "mfa_not_applicable": (not console_access),
         },
     )
 
