@@ -236,7 +236,8 @@ def _land_to_sink(lake: Path) -> None:
         )
         return
     if landed:
-        print(f"evidence sink: landed {sum(landed.values())} rows {landed}", file=sys.stderr)
+        total = sum(sum(tables.values()) for tables in landed.values())
+        print(f"evidence sink: landed {total} rows across {list(landed)} -> {landed}", file=sys.stderr)
 
 
 def _require_enabled(lake: Path, connector_id: str) -> dict[str, Any]:
