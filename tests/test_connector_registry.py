@@ -113,6 +113,8 @@ def test_aws_posture_role_bootstrap_matches_connector_contract() -> None:
         "sts:ExternalId",
         "iam:GetAccountPasswordPolicy",
         "iam:GetAccountSummary",
+        "iam:GetLoginProfile",
+        "iam:ListAccessKeys",
         "iam:ListMFADevices",
         "iam:ListUsers",
     ):
