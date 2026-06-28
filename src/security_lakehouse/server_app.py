@@ -37,7 +37,7 @@ from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from security_lakehouse import api_legacy, api_v1, tenancy, trust_share
+from security_lakehouse import api_legacy, api_v1, remediation_guidance, tenancy, trust_share
 from security_lakehouse.assessment import build_current_posture, write_assessment_snapshot
 from security_lakehouse.auth.dependencies import get_session, require_scope
 from security_lakehouse.auth.oidc import OIDCLoginError, build_oauth, complete_oidc_login, load_oidc_config
@@ -53,6 +53,7 @@ from security_lakehouse.auth.saml import (
     saml_request_data,
 )
 from security_lakehouse.auth.sessions import SESSION_COOKIE
+from security_lakehouse.catalog import load_control_catalog
 from security_lakehouse.dashboard import render_dashboard
 from security_lakehouse.data_policy import redact_payload
 from security_lakehouse.db import agent_runs as agent_runs_db
@@ -1495,6 +1496,17 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         except NotFound as exc:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
         return JSONResponse(api_v1.envelope("access-reviews.items", _redact_payload(item, identity)))
+
+    # --- remediation guidance ---
+    @app.get("/api/v1/controls/{control_id}/remediation")
+    def control_remediation(
+        control_id: str, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        control = load_control_catalog().get(control_id)
+        if control is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="control not found")
+        data = remediation_guidance.guidance_for_control(control)
+        return JSONResponse(api_v1.envelope("controls.remediation", data))
 
     # --- tags ---
     @app.get("/api/v1/tags")

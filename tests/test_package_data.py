@@ -16,7 +16,7 @@ def test_wheel_data_files_include_runtime_catalogs() -> None:
         "connectors": ["connectors/catalog.json"],
         "controls": ["controls/bundle.lock.json", "controls/catalog.json"],
         "frameworks": ["frameworks/registry.json", "frameworks/verified_article_ids.json"],
-        "mappings": ["mappings/control_articles.json", "mappings/control_map.json"],
+        "mappings": ["mappings/control_articles.json", "mappings/control_map.json", "mappings/remediation_guidance.json"],
         "programs": ["programs/catalog.json"],
     }
     assert data_files == expected

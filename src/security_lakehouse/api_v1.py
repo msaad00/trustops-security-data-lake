@@ -264,6 +264,14 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "scopes": ["read"],
     },
     {
+        "resource": "controls.remediation",
+        "path": "/api/v1/controls/{control_id}/remediation",
+        "kind": "singleton",
+        "methods": ["GET"],
+        "scopes": ["read"],
+        "path_params": ["control_id"],
+    },
+    {
         "resource": "access-reviews",
         "path": "/api/v1/access-reviews/{campaign_id}",
         "kind": "singleton",

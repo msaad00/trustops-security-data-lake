@@ -1,0 +1,70 @@
+{
+  "schema": "trustops.remediation_guidance.v1",
+  "scope": "Neutral, framework-agnostic 'how to fix' guidance keyed by control risk domain. Resolved for a failing control so an owner gets next steps, not just a finding. A per-control override may be added later; the default applies when a domain is not yet authored.",
+  "default": {
+    "summary": "Assign an owner, fix the underlying gap, and re-collect evidence so the control test passes on the next evaluation.",
+    "steps": [
+      "Assign the failing control to an accountable owner with a due date.",
+      "Investigate the open finding(s) the control test reported and confirm the root cause.",
+      "Apply the fix at the source (configuration, policy, or process), not just the symptom.",
+      "Re-run the connector sync so fresh evidence is collected, then verify the control test returns to passing."
+    ],
+    "references": []
+  },
+  "by_risk_domain": {
+    "identity": {
+      "summary": "Tighten who can access what: enforce MFA, least privilege, key hygiene, and timely deprovisioning, then prove it with current identity evidence.",
+      "steps": [
+        "Require MFA for every human (console) account; exempt only key-pair service identities and track them separately.",
+        "Remove standing privileged access in favor of least-privilege roles and just-in-time elevation.",
+        "Rotate or disable access keys older than the policy window and any that are unused.",
+        "Deprovision accounts for departed users and run a periodic access review to certify the rest."
+      ],
+      "references": [
+        "CIS Controls v8 — 5 (Account Management), 6 (Access Control Management)"
+      ]
+    },
+    "monitoring": {
+      "summary": "Make security-relevant activity observable: centralize logs, alert on the events that matter, and retain them long enough to investigate.",
+      "steps": [
+        "Ship security and audit logs from every in-scope system to a central, access-controlled store.",
+        "Define alerts for the high-signal events (privileged use, auth failures, config changes) with an owner for triage.",
+        "Set a retention period that meets the applicable framework and your investigation needs.",
+        "Confirm collection is unbroken — a silent gap in monitoring is itself a finding."
+      ],
+      "references": ["CIS Controls v8 — 8 (Audit Log Management)"]
+    },
+    "data-protection": {
+      "summary": "Protect data by classification: encrypt it in transit and at rest, restrict access to it, and retain or dispose of it per policy.",
+      "steps": [
+        "Classify the data store and confirm encryption in transit and at rest is enabled.",
+        "Scope access to the data to the minimum roles, and review that access periodically.",
+        "Apply the retention/disposal policy for the data's classification.",
+        "Re-collect the posture evidence for the affected store and verify the control test passes."
+      ],
+      "references": [
+        "ISO/IEC 27001:2022 — A.8 (Asset & information protection)"
+      ]
+    },
+    "risk-management": {
+      "summary": "Run the risk loop: identify, assess, treat, and review risks on a defined cadence, with an accountable owner per risk.",
+      "steps": [
+        "Record the risk in the register with severity, likelihood, and impact.",
+        "Choose a treatment (mitigate, transfer, accept) and assign an owner and due date.",
+        "For accepted risks, capture the rationale and an approver.",
+        "Re-assess on the defined cadence so the risk view stays current."
+      ],
+      "references": ["ISO/IEC 27005 — risk management process"]
+    },
+    "ai-governance": {
+      "summary": "Govern AI systems like any other asset: inventory them, map their context and dependencies, assign oversight, and document decisions.",
+      "steps": [
+        "Add the AI system to an inventory with its purpose, owner, data sources, and dependencies.",
+        "Map its operating context and risks, and record the assessment.",
+        "Assign human oversight with the authority to pause or roll back the system.",
+        "Keep documentation current so the governance evidence reflects the deployed system."
+      ],
+      "references": ["NIST AI RMF — GOVERN & MAP functions"]
+    }
+  }
+}
