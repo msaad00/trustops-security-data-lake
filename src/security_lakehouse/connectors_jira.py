@@ -34,6 +34,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse.ingestion import backoff
 from security_lakehouse.io import read_json
 from security_lakehouse.models import utc_iso
 
@@ -136,8 +137,14 @@ class JiraClient:
                 "user-agent": "trustops-security-data-lake",
             },
         )
-        with urllib.request.urlopen(request, timeout=self.timeout) as resp:  # noqa: S310
-            payload = json.loads(resp.read().decode("utf-8"))
+
+        # Jira rate-limits with HTTP 429 + a Retry-After header; back off and
+        # retry transient 429/5xx rather than failing the whole collection.
+        def _fetch() -> Any:
+            with urllib.request.urlopen(request, timeout=self.timeout) as resp:  # noqa: S310
+                return json.loads(resp.read().decode("utf-8"))
+
+        payload = backoff.http_retry(_fetch)
         if isinstance(payload, dict):
             return payload
         raise ValueError(f"Jira returned non-object JSON for {url}")
