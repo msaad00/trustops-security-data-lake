@@ -59,6 +59,7 @@ from security_lakehouse.connectors_snowflake import (
     collect_snowflake_evidence,
 )
 from security_lakehouse.ingestion.merge import dedupe_by_key
+from security_lakehouse.ingestion.watermark import read_watermark, write_watermark
 from security_lakehouse.io import read_jsonl, write_jsonl
 from security_lakehouse.pipeline import run_pipeline
 from security_lakehouse.repo_governance import sync_repo_governance
@@ -151,6 +152,9 @@ class ConnectorSyncResult:
     evidence_count: int
     materialized: bool
     run: dict[str, Any]
+    # High-water cursor this connector has synced through (append/event-log
+    # connectors only); ``None`` for snapshot connectors that replace state.
+    watermark_cursor: str | None = None
 
 
 def run_connector_sync(
@@ -166,18 +170,25 @@ def run_connector_sync(
     """Run one configured connector and persist its evidence + run event."""
     lake = Path(lake_dir)
     start = time.perf_counter()
+    write_mode = _write_mode(connector_id)
     try:
         config = _require_enabled(lake, connector_id)
+        # Append/event-log connectors resume from their last high-water cursor so
+        # a sync only needs to fetch what is new; snapshot connectors always pull
+        # the full current state, so they carry no watermark.
+        since = read_watermark(lake, connector_id) if write_mode == "append" else None
         rows = _collect(
             connector_id,
             repo=repo,
             fixture_dir=fixture_dir,
             token_env=token_env,
+            since=since,
             credentials=dict(config.get("credentials") or {}),
             options=dict(config.get("options") or {}),
         )
         raw_path = lake / CONNECTOR_RAW_FILE
-        _upsert_raw_events(raw_path, rows, connector_id=connector_id, write_mode=_write_mode(connector_id))
+        _upsert_raw_events(raw_path, rows, connector_id=connector_id, write_mode=write_mode)
+        cursor = _advance_watermark(lake, connector_id, rows, write_mode=write_mode)
         if materialize:
             run_pipeline(raw_path, lake)
             _land_to_sink(lake)
@@ -198,6 +209,7 @@ def run_connector_sync(
             evidence_count=len(rows),
             materialized=materialize,
             run=run,
+            watermark_cursor=cursor,
         )
     except Exception as exc:
         run = append_run_event(
@@ -281,6 +293,9 @@ class SyncInputs:
     fixture_dir: str | Path | None
     token_env: str
     env: dict[str, str]
+    # Last high-water cursor for append/event-log connectors, so a builder can
+    # scope its pull to records newer than ``since`` (``None`` = full pull).
+    since: str | None = None
     # Non-secret identity fields persisted at configure time (e.g. subscription_id,
     # account_id, project_id). Secret material is never stored here — it is
     # redacted to a fingerprint in connector_state — so builders read live secrets
@@ -378,6 +393,7 @@ def _collect(
     repo: str | None,
     fixture_dir: str | Path | None,
     token_env: str,
+    since: str | None = None,
     credentials: dict[str, Any] | None = None,
     options: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
@@ -390,6 +406,7 @@ def _collect(
             fixture_dir=fixture_dir,
             token_env=token_env,
             env=dict(os.environ),
+            since=since,
             credentials=dict(credentials or {}),
             options=dict(options or {}),
         )
@@ -603,6 +620,27 @@ def _write_mode(connector_id: str) -> str:
     """
     entry = load_connector_catalog().get(connector_id) or {}
     return "snapshot" if entry.get("data_shape") == SNAPSHOT_DATA_SHAPE else "append"
+
+
+def _advance_watermark(lake: Path, connector_id: str, rows: list[dict[str, Any]], *, write_mode: str) -> str | None:
+    """Advance an append connector's high-water cursor to the newest event time.
+
+    Returns the cursor written (the max ``event_time`` across ``rows``), or
+    ``None`` for a snapshot connector or a pull with no timestamped rows. The
+    cursor is monotonic: an out-of-order or partial re-pull never moves it back,
+    so the next sync resumes from the true high-water mark.
+    """
+    if write_mode != "append":
+        return None
+    cursors = [str(row.get("event_time")) for row in rows if row.get("event_time")]
+    if not cursors:
+        return read_watermark(lake, connector_id)
+    cursor = max(cursors)
+    prior = read_watermark(lake, connector_id)
+    if prior is not None and cursor <= prior:
+        return prior
+    write_watermark(lake, connector_id, cursor)
+    return cursor
 
 
 def _dedupe_latest(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
