@@ -24,6 +24,7 @@ import type {
   ConnectorRun,
   ConnectorView,
   ControlPosture,
+  ControlRemediation,
   ControlTest,
   ControlArticleMapping,
   DiscoverPayload,
@@ -449,6 +450,10 @@ export const api = {
     get<{ data: AccessReviewCoverage[] }>("/v1/access-reviews/coverage").then(
       (b) => b.data,
     ),
+  controlRemediation: (controlId: string) =>
+    get<{ data: ControlRemediation }>(
+      `/v1/controls/${encodeURIComponent(controlId)}/remediation`,
+    ).then((b) => b.data),
 };
 
 export interface SnapshotSummary {

@@ -3,7 +3,11 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Drawer } from "@/components/ui/drawer";
-import { useControlTests, usePosture } from "@/lib/api/hooks";
+import {
+  useControlRemediation,
+  useControlTests,
+  usePosture,
+} from "@/lib/api/hooks";
 import type { ControlPosture } from "@/lib/api/types";
 
 interface Props {
@@ -18,6 +22,7 @@ const toneFor = (s: string) =>
 export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
   const tests = useControlTests();
   const posture = usePosture();
+  const remediation = useControlRemediation(control?.control_id ?? null);
 
   const test = control
     ? (tests.data ?? []).find((t) => t.control_id === control.control_id)
@@ -104,6 +109,31 @@ export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
               ))}
             </div>
           </div>
+          {remediation.data && (
+            <div className="rounded-xl border border-line bg-blue-50/40 p-3">
+              <div className="mb-1 text-xs font-black uppercase tracking-wide text-muted">
+                How to fix
+                {!remediation.data.matched && (
+                  <Badge tone="default" className="ml-2 normal-case">
+                    general guidance
+                  </Badge>
+                )}
+              </div>
+              <p className="text-sm text-ink">{remediation.data.summary}</p>
+              {remediation.data.steps.length > 0 && (
+                <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-ink">
+                  {remediation.data.steps.map((step, i) => (
+                    <li key={i}>{step}</li>
+                  ))}
+                </ol>
+              )}
+              {remediation.data.references.length > 0 && (
+                <div className="mt-2 text-xs text-muted">
+                  {remediation.data.references.join(" · ")}
+                </div>
+              )}
+            </div>
+          )}
           <div className="flex flex-wrap gap-2">
             <Button variant="default">Request evidence</Button>
             <Button variant="default">Open in dashboard</Button>

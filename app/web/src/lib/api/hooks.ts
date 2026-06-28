@@ -20,6 +20,7 @@ import type {
   ConnectorRun,
   ConnectorView,
   ControlPosture,
+  ControlRemediation,
   ControlTest,
   Crosswalk,
   EvidenceFreshness,
@@ -916,5 +917,14 @@ export function useDecideAccessReviewItemMutation(campaignId: string | null) {
       qc.invalidateQueries({ queryKey: ["access-review", campaignId] });
       qc.invalidateQueries({ queryKey: ["access-review-coverage"] });
     },
+  });
+}
+
+export function useControlRemediation(controlId: string | null) {
+  return useQuery<ControlRemediation>({
+    queryKey: ["control-remediation", controlId],
+    queryFn: () => api.controlRemediation(controlId as string),
+    enabled: Boolean(controlId),
+    staleTime: 60_000,
   });
 }
