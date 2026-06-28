@@ -49,6 +49,8 @@ Resources:
                 Action:
                   - iam:GetAccountPasswordPolicy
                   - iam:GetAccountSummary
+                  - iam:GetLoginProfile
+                  - iam:ListAccessKeys
                   - iam:ListMFADevices
                   - iam:ListUsers
                 Resource: "*"

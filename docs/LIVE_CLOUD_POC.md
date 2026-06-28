@@ -29,6 +29,8 @@ The current AWS runner uses the standard `boto3` credential chain and only calls
 
 - `iam:ListUsers`
 - `iam:ListMFADevices`
+- `iam:ListAccessKeys`
+- `iam:GetLoginProfile`
 - `iam:GetAccountPasswordPolicy`
 - `iam:GetAccountSummary`
 
@@ -47,10 +49,10 @@ aws cloudformation deploy \
     ExternalId=<customer-generated-external-id>
 ```
 
-The role grants only `iam:ListUsers`, `iam:ListMFADevices`,
-`iam:GetAccountPasswordPolicy`, and `iam:GetAccountSummary`. Use SSO, an
-assumed role, or workload identity to run the connector; do not generate long
-lived access keys.
+The role grants only IAM read actions needed to classify users, console access,
+MFA enrollment, access-key hygiene, password policy, and account summary. Use
+SSO, an assumed role, or workload identity to run the connector; do not generate
+long lived access keys.
 
 ```bash
 aws sso login --profile trustops-poc

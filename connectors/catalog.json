@@ -142,10 +142,12 @@
       "minimum_permissions": [
         "iam:ListUsers",
         "iam:ListMFADevices",
+        "iam:ListAccessKeys",
+        "iam:GetLoginProfile",
         "iam:GetAccountPasswordPolicy",
         "iam:GetAccountSummary"
       ],
-      "evidence_types": ["identity", "config", "mfa"],
+      "evidence_types": ["identity", "config", "mfa", "access_key"],
       "default_route": "dual",
       "freshness_slo_minutes": 360,
       "is_implemented": true,
