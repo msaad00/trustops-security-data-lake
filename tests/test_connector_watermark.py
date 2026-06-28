@@ -11,7 +11,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import security_lakehouse.connector_runner as cr
 from security_lakehouse.connector_runner import _advance_watermark, run_connector_sync
 from security_lakehouse.connector_state import append_config_event
 from security_lakehouse.ingestion.watermark import read_watermark, write_watermark
