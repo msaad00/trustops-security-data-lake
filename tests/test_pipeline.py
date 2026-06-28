@@ -143,6 +143,24 @@ def test_pipeline_writes_bronze_silver_gold_and_mart(tmp_path: Path) -> None:
     assert top_asset == "container:rag-api@sha256:91ab"
 
 
+def test_pipeline_synthesizes_internal_evidence_ref_when_source_has_no_uri(tmp_path: Path) -> None:
+    raw_row = read_jsonl(RAW)[0]
+    raw_row["source"] = "aws"
+    raw_row["event_id"] = "aws-missing-provider-ref"
+    raw_row["evidence"] = {"evidence_id": "ev-aws-missing-provider-ref"}
+    raw = tmp_path / "raw.jsonl"
+    raw.write_text(json.dumps(raw_row) + "\n", encoding="utf-8")
+
+    run_pipeline(raw, tmp_path / "lake")
+
+    silver = read_jsonl(tmp_path / "lake" / "silver" / "normalized_events.jsonl")
+    assert silver[0]["evidence_ref"] == "trustops://bronze/aws/aws-missing-provider-ref"
+
+    freshness = read_jsonl(tmp_path / "lake" / "gold" / "evidence_freshness.jsonl")
+    assert freshness[0]["connector_id"] == "aws-posture"
+    assert freshness[0]["status"] != "missing"
+
+
 def test_pipeline_integrity_evidence_set_hash_is_idempotent(tmp_path: Path) -> None:
     run_pipeline(RAW, tmp_path / "lake-a")
     run_pipeline(RAW, tmp_path / "lake-b")

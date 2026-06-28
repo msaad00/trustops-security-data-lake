@@ -111,6 +111,27 @@ def test_aws_connector_sync_writes_raw_and_materializes_lake(tmp_path: Path) -> 
     assert run["evidence_count"] == 7
 
 
+def test_aws_sync_preserves_evidence_refs_and_freshness_source(tmp_path: Path) -> None:
+    append_config_event(tmp_path, connector_id="aws-posture", state="enabled", actor="alice")
+    run_connector_sync(tmp_path, connector_id="aws-posture", fixture_dir=FIXTURE)
+
+    silver_rows = read_jsonl(tmp_path / "silver" / "normalized_events.jsonl")
+    assert silver_rows
+    assert all(row["source"] == "aws" for row in silver_rows)
+    assert all(row["evidence_ref"] for row in silver_rows)
+
+    freshness_rows = read_jsonl(tmp_path / "gold" / "evidence_freshness.jsonl")
+    assert freshness_rows
+    assert {row["connector_id"] for row in freshness_rows} == {"aws-posture"}
+    assert {row["status"] for row in freshness_rows} == {"fresh"}
+
+    current_posture = json.loads((tmp_path / "gold" / "current_posture.json").read_text(encoding="utf-8"))
+    source = current_posture["evidence_freshness"]["sources"][0]
+    assert source["source"] == "aws"
+    assert source["connector_id"] == "aws-posture"
+    assert source["missing_count"] == 0
+
+
 def test_aws_connector_sync_upserts_stable_event_ids(tmp_path: Path) -> None:
     append_config_event(tmp_path, connector_id="aws-posture", state="enabled", actor="a")
     first = run_connector_sync(tmp_path, connector_id="aws-posture", fixture_dir=FIXTURE)
