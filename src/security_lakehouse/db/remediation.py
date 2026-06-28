@@ -13,6 +13,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from security_lakehouse.db.base import apply_pagination
 from security_lakehouse.db.models import (
     EVIDENCE_REQUEST_STATUSES,
     EXCEPTION_STATUSES,
@@ -81,13 +82,19 @@ def list_tasks(
     owner: str | None = None,
     overdue: bool | None = None,
     now: datetime | None = None,
+    limit: int | None = None,
+    offset: int | None = None,
 ) -> list[RemediationTask]:
     stmt = select(RemediationTask).where(RemediationTask.tenant_id == tenant_id)
     if status:
         stmt = stmt.where(RemediationTask.status == status)
     if owner:
         stmt = stmt.where(RemediationTask.owner == owner)
-    rows = list(session.scalars(stmt.order_by(RemediationTask.created_at.desc())))
+    # ``overdue`` is derived from ``due_at`` + status (a model method, not a
+    # column), so it can only be filtered in Python. Pagination still bounds the
+    # rows we materialise; the overdue refinement then narrows the page.
+    stmt = apply_pagination(stmt.order_by(RemediationTask.created_at.desc()), limit=limit, offset=offset)
+    rows = list(session.scalars(stmt))
     if overdue is not None:
         moment = _now(now)
         rows = [t for t in rows if t.is_overdue(now=moment) == overdue]
@@ -174,11 +181,19 @@ def create_evidence_request(
     return request
 
 
-def list_evidence_requests(session: Session, *, tenant_id: str, status: str | None = None) -> list[EvidenceRequest]:
+def list_evidence_requests(
+    session: Session,
+    *,
+    tenant_id: str,
+    status: str | None = None,
+    limit: int | None = None,
+    offset: int | None = None,
+) -> list[EvidenceRequest]:
     stmt = select(EvidenceRequest).where(EvidenceRequest.tenant_id == tenant_id)
     if status:
         stmt = stmt.where(EvidenceRequest.status == status)
-    return list(session.scalars(stmt.order_by(EvidenceRequest.created_at.desc())))
+    stmt = apply_pagination(stmt.order_by(EvidenceRequest.created_at.desc()), limit=limit, offset=offset)
+    return list(session.scalars(stmt))
 
 
 def set_evidence_request_status(
@@ -238,10 +253,19 @@ def create_exception(
 
 
 def list_exceptions(
-    session: Session, *, tenant_id: str, active_only: bool = False, now: datetime | None = None
+    session: Session,
+    *,
+    tenant_id: str,
+    active_only: bool = False,
+    now: datetime | None = None,
+    limit: int | None = None,
+    offset: int | None = None,
 ) -> list[ControlException]:
     stmt = select(ControlException).where(ControlException.tenant_id == tenant_id)
-    rows = list(session.scalars(stmt.order_by(ControlException.created_at.desc())))
+    # ``active`` is a derived predicate (a model method), so it is filtered in
+    # Python after the paginated fetch bounds how many rows we materialise.
+    stmt = apply_pagination(stmt.order_by(ControlException.created_at.desc()), limit=limit, offset=offset)
+    rows = list(session.scalars(stmt))
     if active_only:
         moment = _now(now)
         rows = [e for e in rows if e.is_active(now=moment)]

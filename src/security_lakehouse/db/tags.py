@@ -16,6 +16,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from security_lakehouse.db.base import apply_pagination
 from security_lakehouse.db.models import EntityTag, SavedView, Tag
 
 
@@ -56,8 +57,9 @@ def create_tag(
     return tag
 
 
-def list_tags(session: Session, *, tenant_id: str) -> list[Tag]:
+def list_tags(session: Session, *, tenant_id: str, limit: int | None = None, offset: int | None = None) -> list[Tag]:
     stmt = select(Tag).where(Tag.tenant_id == tenant_id).order_by(Tag.name)
+    stmt = apply_pagination(stmt, limit=limit, offset=offset)
     return list(session.scalars(stmt))
 
 
@@ -243,11 +245,14 @@ def list_saved_views(
     *,
     tenant_id: str,
     surface: str | None = None,
+    limit: int | None = None,
+    offset: int | None = None,
 ) -> list[SavedView]:
     stmt = select(SavedView).where(SavedView.tenant_id == tenant_id)
     if surface:
         stmt = stmt.where(SavedView.surface == surface)
-    return list(session.scalars(stmt.order_by(SavedView.name)))
+    stmt = apply_pagination(stmt.order_by(SavedView.name), limit=limit, offset=offset)
+    return list(session.scalars(stmt))
 
 
 def get_saved_view(session: Session, *, tenant_id: str, view_id: str) -> SavedView | None:

@@ -12,6 +12,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from security_lakehouse.db.base import apply_pagination
 from security_lakehouse.db.models import RISK_LEVELS, RISK_STATUSES, Risk
 
 
@@ -84,6 +85,8 @@ def list_risks(
     status: str | None = None,
     severity: str | None = None,
     owner: str | None = None,
+    limit: int | None = None,
+    offset: int | None = None,
 ) -> list[Risk]:
     stmt = select(Risk).where(Risk.tenant_id == tenant_id)
     if status:
@@ -92,7 +95,8 @@ def list_risks(
         stmt = stmt.where(Risk.severity == severity)
     if owner:
         stmt = stmt.where(Risk.owner == owner)
-    return list(session.scalars(stmt.order_by(Risk.created_at.desc())))
+    stmt = apply_pagination(stmt.order_by(Risk.created_at.desc()), limit=limit, offset=offset)
+    return list(session.scalars(stmt))
 
 
 def update_risk(
