@@ -36,13 +36,13 @@ def test_live_cloud_posture_scenario_runs_connectors_integrity_snapshot_and_work
     assert report["summary"]["sources"] == ["aws", "azure", "snowflake"]
     assert report["summary"]["event_type_count"] == 10
     assert report["summary"]["asset_count"] == 19
-    assert report["summary"]["controls_referenced"] == 7
+    assert report["summary"]["controls_referenced"] == 9
     assert report["summary"]["proof_state"] == "action_required"
     assert report["summary"]["source_breakdown"][0] == {
         "source": "aws",
         "evidence_count": 7,
         "asset_count": 4,
-        "control_count": 3,
+        "control_count": 5,
         "open_items": 3,
         "high_or_critical": 2,
         "top_event_types": [
@@ -56,7 +56,7 @@ def test_live_cloud_posture_scenario_runs_connectors_integrity_snapshot_and_work
         {
             "priority": "p1",
             "action": "triage_open_findings",
-            "reason": "17 open violation(s) need owners or exceptions.",
+            "reason": "19 open violation(s) need owners or exceptions.",
         }
     ]
     assert report["summary"]["connector_results"] == [
@@ -92,7 +92,7 @@ def test_live_cloud_posture_scenario_runs_connectors_integrity_snapshot_and_work
     proof_text = proof_pack.read_text(encoding="utf-8")
     assert "# TrustOps Live Cloud Proof Pack" in proof_text
     assert "| `snowflake-evidence-lake` | ok | 8 | yes |" in proof_text
-    assert "`triage_open_findings`: 17 open violation(s) need owners or exceptions." in proof_text
+    assert "`triage_open_findings`: 19 open violation(s) need owners or exceptions." in proof_text
 
 
 def test_live_cloud_posture_scenario_cli_emits_report(tmp_path: Path, capsys) -> None:  # type: ignore[no-untyped-def]
