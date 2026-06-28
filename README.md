@@ -68,8 +68,9 @@ not certification or full-framework audit coverage. See
 
 ## Architecture
 
-TrustOps keeps compliance truth deterministic. Agents and models can summarize,
-prioritize, and propose actions, but the core assessment engine owns evidence
+TrustOps keeps compliance truth deterministic. Connectors and lake adapters move
+evidence; the assessment core is the product. Agents and models can summarize,
+prioritize, and propose actions, but the core engine owns evidence
 normalization, control evaluation, RBAC, tenant isolation, approvals,
 idempotency, snapshots, hashes, and audit logs.
 
@@ -77,23 +78,38 @@ idempotency, snapshots, hashes, and audit logs.
   <img src="docs/images/trustops-assessment-architecture.svg" alt="TrustOps assessment architecture with evidence sources, data lake, control evaluation, API, UI, workflows, snapshots, and trust shares" width="100%">
 </p>
 
-**1. End-to-end flow.** Evidence is collected read-only, evaluated by the
-deterministic core, then exposed through product surfaces and guarded actions.
-The middle band is the source of truth; nothing downstream can rewrite a control
-verdict.
+**1. End-to-end flow.** Evidence is collected read-only, materialized into a
+customer-owned lake or local store, evaluated by the deterministic core, then
+exposed through product surfaces and guarded actions. The assessment core is the
+source of truth; nothing downstream can rewrite a control verdict.
 
-| 1. Read-only evidence                                                                  | 2. Deterministic source of truth                                                                                        | 3. Surfaces and actions                                                                             |
-| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Cloud: AWS, Azure, GCP<br>Identity: Okta, Google<br>Code, tickets, runtime, AI systems | Customer-owned lake: bronze, silver, gold<br>Controls-as-code evaluation<br>Posture, tests, findings, assets, snapshots | Console dashboards<br>API, SDK, MCP<br>Trust-center shares<br>Tasks, evidence requests, remediation |
-| Scoped role, key-pair, OAuth, or service identity                                      | Idempotent loads, hashes, freshness, tenant/RBAC policy, audit chain                                                    | Human approval gates for writes; append-only audit for every action                                 |
+| 1. Sources                                                                             | 2. Ingest                                                                                 | 3. Materialize                                                                                                  | 4. Assess                                                                                  | 5. Operate and share                                                                     |
+| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| Cloud: AWS, Azure, GCP<br>Identity: Okta, Google<br>Code, tickets, runtime, AI systems | Pull or receive raw facts with scoped role, key-pair, OAuth, webhook, or service identity | Store trusted bronze/silver/gold views in Snowflake, ClickHouse, DuckDB, SQLite, object storage, or local files | Controls-as-code computes pass/fail/stale/missing, scores, findings, assets, and snapshots | Console dashboards<br>API, SDK, MCP<br>Workflows, trust-center shares, evidence requests |
+| Source systems stay read-only                                                          | Ingest is idempotent and retry-safe                                                       | Storage is pluggable; customers keep evidence in their own infrastructure                                       | The deterministic core owns verdicts                                                       | Human approval gates for writes; append-only audit records every action                  |
 
 ```text
 Read-only sources
-    -> customer-owned evidence lake
-    -> deterministic controls-as-code
-    -> posture, findings, snapshots
-    -> console, API, trust shares, workflows
+    -> ingest adapters
+    -> customer-owned evidence lake or local store
+    -> TrustOps deterministic assessment
+    -> dashboards, API, workflows, trust shares, agents
 ```
+
+**Terms.**
+
+- **Ingest** means read-only evidence collection. It can pull from cloud APIs,
+  receive webhooks, or read an existing lake, but it should not decide control
+  status.
+- **Materialize** means writing queryable evidence and posture views into the
+  selected store, such as Snowflake today, DuckDB/local files for self-hosted
+  use, or ClickHouse for telemetry analytics.
+- **Assessment is the product** means the controls-as-code engine, evidence
+  model, snapshots, hashes, RBAC, and audit trail are the authoritative TrustOps
+  value. Connectors, warehouses, and models are adapters around that contract.
+- **Interchangeable adapters** means a team can swap Snowflake for local files,
+  add AWS or Azure connectors, or run with no LLM, while the same assessment API
+  and verdict logic still apply.
 
 **2. Agent and LangGraph boundary.** The agent harness is advisory and optional.
 LangGraph, or the built-in sequential runner, orchestrates reads of already

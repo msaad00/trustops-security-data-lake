@@ -1,68 +1,172 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
-  <title id="title">TrustOps assessment architecture</title>
-  <desc id="desc">Modular continuous compliance assessment architecture with evidence inputs, assessment core, lake adapters, API, UI, and agent skills.</desc>
-  <rect width="1280" height="720" rx="0" fill="#eef2f6"/>
-  <rect x="42" y="40" width="1196" height="640" rx="18" fill="#ffffff" stroke="#d6dee9"/>
-  <text x="82" y="92" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800" fill="#111827">TrustOps Continuous Assessment Architecture</text>
-  <text x="82" y="122" font-family="Inter, Arial, sans-serif" font-size="16" fill="#607086">Modular evidence, evaluation, snapshots, lake adapters, and human/agent experience layers</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="780" viewBox="0 0 1280 780" role="img" aria-labelledby="title desc">
+  <title id="title">TrustOps continuous assessment architecture</title>
+  <desc id="desc">Read-only evidence sources flow through ingestion and a customer-owned evidence lake into the deterministic TrustOps assessment core, then into dashboards, workflows, APIs, trust-center shares, and optional agent orchestration.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M1,1 L11,6 L1,11 z" fill="#3b4a5f"/>
+    </marker>
+    <linearGradient id="core" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#1e3a5f"/>
+    </linearGradient>
+    <linearGradient id="lake" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ecfeff"/>
+      <stop offset="1" stop-color="#eff6ff"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .label { font-family: Inter, Arial, sans-serif; fill: #0f172a; }
+      .muted { font-family: Inter, Arial, sans-serif; fill: #62718a; }
+      .tiny { font-family: Inter, Arial, sans-serif; fill: #62718a; font-size: 12px; }
+      .pill { font-family: Inter, Arial, sans-serif; font-size: 12px; font-weight: 800; }
+      .smallTitle { font-family: Inter, Arial, sans-serif; font-size: 15px; font-weight: 800; fill: #0f172a; }
+      .smallText { font-family: Inter, Arial, sans-serif; font-size: 13px; fill: #52627a; }
+    </style>
+  </defs>
 
-  <g font-family="Inter, Arial, sans-serif">
-    <rect x="82" y="170" width="220" height="340" rx="12" fill="#f8fafc" stroke="#cfd8e6"/>
-    <text x="108" y="208" font-size="18" font-weight="800" fill="#111827">Evidence Inputs</text>
-    <text x="108" y="246" font-size="14" fill="#607086">Cloud posture</text>
-    <text x="108" y="276" font-size="14" fill="#607086">Vulnerability scans</text>
-    <text x="108" y="306" font-size="14" fill="#607086">Identity reviews</text>
-    <text x="108" y="336" font-size="14" fill="#607086">Runtime policy</text>
-    <text x="108" y="366" font-size="14" fill="#607086">SIEM alerts</text>
-    <text x="108" y="396" font-size="14" fill="#607086">Tickets</text>
-    <text x="108" y="426" font-size="14" fill="#607086">Model registry</text>
+  <rect width="1280" height="780" fill="#eef3f8"/>
+  <rect x="42" y="34" width="1196" height="712" rx="24" fill="#ffffff" stroke="#d7e0ec" filter="url(#softShadow)"/>
 
-    <rect x="382" y="170" width="260" height="340" rx="12" fill="#111827"/>
-    <text x="412" y="208" font-size="18" font-weight="800" fill="#ffffff">Assessment Core</text>
-    <rect x="412" y="236" width="200" height="42" rx="8" fill="#1f2937"/>
-    <text x="432" y="263" font-size="14" fill="#dbeafe">Evidence model</text>
-    <rect x="412" y="292" width="200" height="42" rx="8" fill="#1f2937"/>
-    <text x="432" y="319" font-size="14" fill="#dbeafe">Control catalog</text>
-    <rect x="412" y="348" width="200" height="42" rx="8" fill="#1f2937"/>
-    <text x="432" y="375" font-size="14" fill="#dbeafe">Evaluation engine</text>
-    <rect x="412" y="404" width="200" height="42" rx="8" fill="#1f2937"/>
-    <text x="432" y="431" font-size="14" fill="#dbeafe">Snapshot service</text>
-
-    <rect x="722" y="170" width="220" height="150" rx="12" fill="#f8fafc" stroke="#cfd8e6"/>
-    <text x="752" y="208" font-size="18" font-weight="800" fill="#1d6fdc">Snowflake</text>
-    <text x="752" y="238" font-size="14" fill="#607086">Governed evidence</text>
-    <text x="752" y="266" font-size="14" fill="#607086">Audit views</text>
-    <text x="752" y="294" font-size="14" fill="#607086">RBAC + retention</text>
-
-    <rect x="722" y="360" width="220" height="150" rx="12" fill="#f8fafc" stroke="#cfd8e6"/>
-    <text x="752" y="398" font-size="18" font-weight="800" fill="#c99a00">ClickHouse</text>
-    <text x="752" y="428" font-size="14" fill="#607086">Telemetry analytics</text>
-    <text x="752" y="456" font-size="14" fill="#607086">Trends + detections</text>
-    <text x="752" y="484" font-size="14" fill="#607086">Fast aggregations</text>
-
-    <rect x="1022" y="170" width="160" height="340" rx="12" fill="#f8fafc" stroke="#cfd8e6"/>
-    <text x="1050" y="208" font-size="18" font-weight="800" fill="#111827">Experience</text>
-    <text x="1050" y="246" font-size="14" fill="#607086">API</text>
-    <text x="1050" y="276" font-size="14" fill="#607086">CLI</text>
-    <text x="1050" y="306" font-size="14" fill="#607086">UI</text>
-    <text x="1050" y="336" font-size="14" fill="#607086">Skills</text>
-    <text x="1050" y="366" font-size="14" fill="#607086">Snapshots</text>
+  <g class="label">
+    <text x="78" y="88" font-size="31" font-weight="850">TrustOps Continuous Assessment Architecture</text>
+    <text x="78" y="118" class="muted" font-size="16">Assessment is the product. Ingestion and storage are replaceable adapters around the same deterministic control engine.</text>
   </g>
 
-  <g stroke="#607086" stroke-width="3" fill="none" marker-end="url(#arrow)">
-    <defs>
-      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-        <path d="M0,0 L0,6 L9,3 z" fill="#607086"/>
-      </marker>
-    </defs>
-    <path d="M302 340 C330 340 348 340 382 340"/>
-    <path d="M642 300 C675 265 690 245 722 245"/>
-    <path d="M642 390 C675 425 690 435 722 435"/>
-    <path d="M942 245 C975 245 990 245 1022 245"/>
-    <path d="M942 435 C975 435 990 435 1022 435"/>
+  <!-- Step rail -->
+  <g class="label" font-size="12" font-weight="800">
+    <rect x="78" y="146" width="160" height="28" rx="14" fill="#e0f2fe"/>
+    <text x="96" y="165" fill="#0369a1">1 SOURCE READS</text>
+    <rect x="280" y="146" width="166" height="28" rx="14" fill="#eef2ff"/>
+    <text x="300" y="165" fill="#4338ca">2 INGEST</text>
+    <rect x="500" y="146" width="190" height="28" rx="14" fill="#ecfeff"/>
+    <text x="520" y="165" fill="#0f766e">3 MATERIALIZE</text>
+    <rect x="738" y="146" width="174" height="28" rx="14" fill="#fef3c7"/>
+    <text x="758" y="165" fill="#92400e">4 ASSESS</text>
+    <rect x="972" y="146" width="190" height="28" rx="14" fill="#f5f3ff"/>
+    <text x="992" y="165" fill="#6d28d9">5 OPERATE + SHARE</text>
   </g>
 
-  <rect x="82" y="562" width="1100" height="70" rx="12" fill="#ecfdf5" stroke="#b7e4cf"/>
-  <text x="108" y="604" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800" fill="#0f766e">Principle:</text>
-  <text x="198" y="604" font-family="Inter, Arial, sans-serif" font-size="18" fill="#111827">assessment is the product; ingestion and lake materialization are interchangeable adapters.</text>
+  <!-- Sources -->
+  <g>
+    <rect x="78" y="210" width="188" height="350" rx="16" fill="#f8fafc" stroke="#d5deea"/>
+    <text x="104" y="246" class="label" font-size="20" font-weight="850">Evidence sources</text>
+    <text x="104" y="272" class="muted" font-size="13">Read-only, least privilege</text>
+
+    <g transform="translate(104,302)">
+      <rect width="128" height="34" rx="9" fill="#0f172a"/>
+      <text x="16" y="23" fill="#ffffff" class="pill">AWS</text>
+      <rect y="46" width="128" height="34" rx="9" fill="#1d4ed8"/>
+      <text x="16" y="69" fill="#ffffff" class="pill">Azure</text>
+      <rect y="92" width="128" height="34" rx="9" fill="#ffffff" stroke="#d5deea"/>
+      <text x="16" y="115" fill="#0f172a" class="pill">Google Cloud</text>
+      <rect y="138" width="128" height="34" rx="9" fill="#ecfdf5" stroke="#bbf7d0"/>
+      <text x="16" y="161" fill="#047857" class="pill">Identity</text>
+      <rect y="184" width="128" height="34" rx="9" fill="#fff7ed" stroke="#fed7aa"/>
+      <text x="16" y="207" fill="#c2410c" class="pill">Scanners</text>
+      <rect y="230" width="128" height="34" rx="9" fill="#f5f3ff" stroke="#ddd6fe"/>
+      <text x="16" y="253" fill="#6d28d9" class="pill">Tickets + AI</text>
+    </g>
+  </g>
+
+  <!-- Ingest -->
+  <g>
+    <rect x="314" y="250" width="170" height="270" rx="16" fill="#f8fafc" stroke="#d5deea"/>
+    <circle cx="399" cy="306" r="28" fill="#eef2ff"/>
+    <path d="M386 305 h22 m-9 -9 9 9 -9 9" stroke="#4f46e5" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="346" y="356" class="label" font-size="20" font-weight="850">Ingest</text>
+    <text x="342" y="384" class="smallText">Pull or receive raw facts</text>
+    <text x="342" y="407" class="smallText">without changing source</text>
+    <text x="342" y="430" class="smallText">systems or deciding</text>
+    <text x="342" y="453" class="smallText">compliance.</text>
+    <rect x="344" y="478" width="110" height="24" rx="12" fill="#eef2ff"/>
+    <text x="360" y="495" class="pill" fill="#4338ca">idempotent</text>
+  </g>
+
+  <!-- Lake materialization -->
+  <g>
+    <rect x="532" y="210" width="222" height="350" rx="18" fill="url(#lake)" stroke="#b9d7f0"/>
+    <text x="562" y="246" class="label" font-size="20" font-weight="850">Evidence lake</text>
+    <text x="562" y="272" class="muted" font-size="13">Customer-owned source of facts</text>
+
+    <g transform="translate(562,286)">
+      <rect width="164" height="40" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+      <text x="16" y="25" class="smallTitle">Bronze raw</text>
+      <text x="16" y="62" class="smallText">raw_sha256, replayable</text>
+      <rect y="84" width="164" height="40" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+      <text x="16" y="109" class="smallTitle">Silver facts</text>
+      <text x="16" y="146" class="smallText">normalized, deduped</text>
+      <rect y="168" width="164" height="40" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+      <text x="16" y="193" class="smallTitle">Gold posture</text>
+      <text x="16" y="230" class="smallText">control-ready views</text>
+    </g>
+
+    <g transform="translate(558,520)">
+      <rect x="0" y="0" width="78" height="26" rx="13" fill="#ffffff" stroke="#cbd5e1"/>
+      <text x="13" y="18" class="pill" fill="#1d4ed8">Snowflake</text>
+      <rect x="88" y="0" width="86" height="26" rx="13" fill="#ffffff" stroke="#cbd5e1"/>
+      <text x="101" y="18" class="pill" fill="#b7791f">ClickHouse</text>
+    </g>
+  </g>
+
+  <!-- Assessment core -->
+  <g>
+    <rect x="806" y="210" width="226" height="350" rx="18" fill="url(#core)" filter="url(#softShadow)"/>
+    <text x="836" y="246" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="850">TrustOps core</text>
+    <text x="836" y="272" fill="#bfdbfe" font-family="Inter, Arial, sans-serif" font-size="13">The deterministic product</text>
+
+    <g transform="translate(836,306)">
+      <rect width="166" height="36" rx="9" fill="#1f2a3a"/>
+      <text x="14" y="23" fill="#e5f0ff" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800">Control catalog</text>
+      <rect y="50" width="166" height="36" rx="9" fill="#1f2a3a"/>
+      <text x="14" y="73" fill="#e5f0ff" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800">Rules + exceptions</text>
+      <rect y="100" width="166" height="36" rx="9" fill="#1f2a3a"/>
+      <text x="14" y="123" fill="#e5f0ff" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800">Evaluation engine</text>
+      <rect y="150" width="166" height="36" rx="9" fill="#1f2a3a"/>
+      <text x="14" y="173" fill="#e5f0ff" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800">Snapshots + hashes</text>
+    </g>
+
+    <rect x="836" y="506" width="166" height="30" rx="15" fill="#dcfce7"/>
+    <text x="860" y="526" class="pill" fill="#166534">verdicts, not vibes</text>
+  </g>
+
+  <!-- Products -->
+  <g>
+    <rect x="1080" y="210" width="120" height="350" rx="16" fill="#f8fafc" stroke="#d5deea"/>
+    <text x="1106" y="246" class="label" font-size="20" font-weight="850">Products</text>
+    <g transform="translate(1105,292)" class="smallText">
+      <circle cx="9" cy="0" r="8" fill="#dbeafe"/><text x="26" y="5">Console</text>
+      <circle cx="9" cy="42" r="8" fill="#ede9fe"/><text x="26" y="47">API</text>
+      <circle cx="9" cy="84" r="8" fill="#dcfce7"/><text x="26" y="89">CLI</text>
+      <circle cx="9" cy="126" r="8" fill="#fef3c7"/><text x="26" y="131">Workflows</text>
+      <circle cx="9" cy="168" r="8" fill="#fee2e2"/><text x="26" y="173">Trust shares</text>
+      <circle cx="9" cy="210" r="8" fill="#cffafe"/><text x="26" y="215">Agents</text>
+    </g>
+  </g>
+
+  <!-- Arrows -->
+  <g stroke="#3b4a5f" stroke-width="3" fill="none" marker-end="url(#arrow)">
+    <path d="M266 385 H314"/>
+    <path d="M484 385 H532"/>
+    <path d="M754 385 H806"/>
+    <path d="M1032 385 H1080"/>
+  </g>
+
+  <!-- Bottom definitions -->
+  <g>
+    <rect x="78" y="608" width="1122" height="90" rx="16" fill="#f8fafc" stroke="#d5deea"/>
+    <g transform="translate(108,638)">
+      <text class="smallTitle" x="0" y="0">Ingest</text>
+      <text class="smallText" x="0" y="24">read-only collection</text>
+      <line x1="184" y1="-14" x2="184" y2="42" stroke="#d5deea"/>
+
+      <text class="smallTitle" x="226" y="0">Materialize</text>
+      <text class="smallText" x="226" y="24">write trusted views into Snowflake, ClickHouse, DuckDB, or local files</text>
+      <line x1="630" y1="-14" x2="630" y2="42" stroke="#d5deea"/>
+
+      <text class="smallTitle" x="672" y="0">Assessment</text>
+      <text class="smallText" x="672" y="24">controls-as-code verdicts, scores, evidence gaps, snapshots, and audit trail</text>
+    </g>
+  </g>
 </svg>
