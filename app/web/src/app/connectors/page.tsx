@@ -35,6 +35,27 @@ const labelForStatus = (status: string) =>
 const toneForState = (state: string) =>
   state === "enabled" ? "ready" : "default";
 
+// Sync health for an enabled connector, derived (like the backend) from the last
+// successful sync vs the connector's freshness SLO: within SLO is healthy, past
+// it is stale, and 3x past it is silent (likely a broken collection).
+type Health = {
+  label: string;
+  tone: "ready" | "attention" | "critical" | "default";
+};
+
+function syncHealth(connector: ConnectorView): Health | null {
+  if (connector.state !== "enabled") return null;
+  const sync = connector.last_sync;
+  if (!sync || sync.result !== "ok" || !sync.occurred_at) {
+    return { label: "never synced", tone: "attention" };
+  }
+  const ageMinutes = (Date.now() - Date.parse(sync.occurred_at)) / 60000;
+  const slo = connector.freshness_slo_minutes || 1440;
+  if (ageMinutes <= slo) return { label: "healthy", tone: "ready" };
+  if (ageMinutes <= slo * 3) return { label: "stale sync", tone: "attention" };
+  return { label: "silent", tone: "critical" };
+}
+
 const toneForProbe = (result?: string) =>
   result === "ok"
     ? "ready"
@@ -52,6 +73,7 @@ function ConnectorRow({
   onSelect: () => void;
 }) {
   const probe = connector.last_probe;
+  const health = syncHealth(connector);
   return (
     <button
       type="button"
@@ -65,6 +87,7 @@ function ConnectorRow({
         <span className="flex flex-wrap items-center gap-2">
           <span className="truncate font-black text-ink">{connector.name}</span>
           <Badge tone={toneForState(connector.state)}>{connector.state}</Badge>
+          {health && <Badge tone={health.tone}>{health.label}</Badge>}
           <Badge tone={toneForStatus(connector.production_status)}>
             {labelForStatus(connector.production_status)}
           </Badge>
@@ -117,6 +140,10 @@ export default function ConnectorsPage() {
     total: data.length,
     enabled: data.filter((c) => c.state === "enabled").length,
     primary: data.filter((c) => c.production_status === "primary_lake").length,
+    unhealthy: data.filter((c) => {
+      const h = syncHealth(c);
+      return h !== null && h.tone !== "ready";
+    }).length,
   };
 
   const selectedLive = selected
@@ -135,6 +162,11 @@ export default function ConnectorsPage() {
               <Plug className="mr-1 inline h-3 w-3" /> {totals.enabled}/
               {totals.total} enabled
             </span>
+            {totals.unhealthy > 0 && (
+              <span className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-black text-rose-700">
+                {totals.unhealthy} need attention
+              </span>
+            )}
             <span className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-black text-slate-600">
               <ShieldCheck className="mr-1 inline h-3 w-3 text-emerald-600" />{" "}
               least-privilege roles only
