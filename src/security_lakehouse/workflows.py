@@ -869,6 +869,40 @@ def list_workflows(lake_dir: str | Path) -> list[dict[str, Any]]:
     return sorted(latest.values(), key=lambda r: str(r.get("occurred_at") or ""), reverse=True)
 
 
+def _evidence_changed_trigger(workflow: dict[str, Any]) -> dict[str, Any] | None:
+    for node in workflow.get("nodes", []) or []:
+        if str(node.get("node_type") or "") == "trigger.evidence_changed":
+            return node
+    return None
+
+
+def run_evidence_changed_workflows(
+    lake_dir: str | Path,
+    *,
+    actor: str = "evidence_changed",
+    connector_id: str | None = None,
+) -> list[dict[str, Any]]:
+    """Run every workflow whose entry trigger is ``trigger.evidence_changed``.
+
+    This is the push side of continuous evaluation: instead of waiting for the
+    next cron tick, a sync that lands fresh evidence fires the dependent
+    automations immediately. A trigger may scope itself to one source via a
+    ``connector_id`` param; an unscoped trigger fires on any evidence change.
+    """
+    runs: list[dict[str, Any]] = []
+    for workflow in list_workflows(lake_dir):
+        trigger = _evidence_changed_trigger(workflow)
+        if trigger is None:
+            continue
+        wanted = str((trigger.get("params") or {}).get("connector_id") or "").strip()
+        if wanted and connector_id and wanted != connector_id:
+            continue
+        workflow_id = str(workflow.get("workflow_id") or "")
+        if workflow_id:
+            runs.append(run_workflow(lake_dir, workflow_id=workflow_id, actor=actor))
+    return runs
+
+
 def get_workflow(lake_dir: str | Path, workflow_id: str) -> dict[str, Any] | None:
     for w in list_workflows(lake_dir):
         if w["workflow_id"] == workflow_id:

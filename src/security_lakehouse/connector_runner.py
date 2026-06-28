@@ -181,6 +181,7 @@ def run_connector_sync(
         if materialize:
             run_pipeline(raw_path, lake)
             _land_to_sink(lake)
+            _fire_evidence_changed(lake, connector_id)
         run = append_run_event(
             lake,
             connector_id=connector_id,
@@ -238,6 +239,22 @@ def _land_to_sink(lake: Path) -> None:
     if landed:
         total = sum(sum(tables.values()) for tables in landed.values())
         print(f"evidence sink: landed {total} rows across {list(landed)} -> {landed}", file=sys.stderr)
+
+
+def _fire_evidence_changed(lake: Path, connector_id: str) -> None:
+    """Push side of continuous eval: a sync that landed evidence runs the
+    ``trigger.evidence_changed`` workflows immediately, instead of waiting for the
+    next cron tick. Best-effort — an automation failure never fails collection.
+    """
+    try:
+        from security_lakehouse.workflows import run_evidence_changed_workflows  # noqa: PLC0415
+
+        runs = run_evidence_changed_workflows(lake, connector_id=connector_id)
+    except Exception as exc:  # noqa: BLE001 - automations are optional; never fatal to a sync
+        print(f"warning: evidence_changed automations failed ({type(exc).__name__})", file=sys.stderr)
+        return
+    if runs:
+        print(f"evidence_changed: fired {len(runs)} workflow(s) after {connector_id} sync", file=sys.stderr)
 
 
 def _require_enabled(lake: Path, connector_id: str) -> dict[str, Any]:
