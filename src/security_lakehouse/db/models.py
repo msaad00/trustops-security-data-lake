@@ -31,6 +31,13 @@ EXCEPTION_STATUSES = ("active", "revoked", "expired")
 RISK_STATUSES = ("open", "mitigating", "accepted", "closed")
 RISK_LEVELS = ("low", "medium", "high", "critical")
 
+# Access-review vocabularies (GRC pillar): periodic user-access certification.
+# A campaign walks draft → active → completed; each item (one subject's access)
+# is certified, revoked, or flagged by a reviewer.
+ACCESS_REVIEW_STATUSES = ("draft", "active", "completed", "cancelled")
+ACCESS_REVIEW_CLOSED = {"completed", "cancelled"}
+ACCESS_REVIEW_DECISIONS = ("pending", "certified", "revoked", "flagged")
+
 # Human/headless agent harness run records.
 AGENT_RUN_HARNESSES = ("posture_review", "soc_triage")
 AGENT_RUN_STATUSES = ("completed", "failed")
@@ -404,3 +411,72 @@ class AgentRun(Base):
         DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
     )
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class AccessReviewCampaign(Base):
+    """A periodic user-access certification campaign (GRC access-review pillar).
+
+    A campaign scopes a set of subjects (users/identities, typically sourced from
+    a connector's identity evidence) and asks reviewers to certify, revoke, or
+    flag each one's access. The campaign + its decisions are the audit evidence
+    that access was reviewed — the artifact an auditor asks for under access-
+    control criteria (SOC 2 CC6.x, ISO 27001 A.5.18).
+    """
+
+    __tablename__ = "access_review_campaigns"
+    __table_args__ = (Index("ix_access_review_campaigns_tenant_status", "tenant_id", "status"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    scope: Mapped[str] = mapped_column(String(128), nullable=False, default="all")
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="draft")
+    control_id: Mapped[str | None] = mapped_column(String(128), nullable=True, index=True)
+    due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_by: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    items: Mapped[list[AccessReviewItem]] = relationship(back_populates="campaign", cascade="all, delete-orphan")
+
+
+class AccessReviewItem(Base):
+    """One subject's access under review within a campaign.
+
+    Each item is a single reviewer decision: certify (access is appropriate),
+    revoke (should be removed), or flag (needs follow-up). ``subject_id`` is the
+    reviewed identity/asset (e.g. ``okta:user:123``); ``access_summary`` is the
+    redacted description of what that subject can do.
+    """
+
+    __tablename__ = "access_review_items"
+    __table_args__ = (Index("ix_access_review_items_campaign_decision", "campaign_id", "decision"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    campaign_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("access_review_campaigns.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    subject_id: Mapped[str] = mapped_column(String(255), nullable=False)
+    subject_name: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    source: Mapped[str] = mapped_column(String(64), nullable=False, default="")
+    access_summary: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    decision: Mapped[str] = mapped_column(String(16), nullable=False, default="pending")
+    reviewer: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    note: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    decided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
+
+    campaign: Mapped[AccessReviewCampaign] = relationship(back_populates="items")
