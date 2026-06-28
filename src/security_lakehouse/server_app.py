@@ -56,7 +56,7 @@ from security_lakehouse.db import agent_runs as agent_runs_db
 from security_lakehouse.db import metrics as metrics_db
 from security_lakehouse.db import migrate, remediation, repository
 from security_lakehouse.db import tags as tags_db
-from security_lakehouse.db.base import create_engine_for, session_factory
+from security_lakehouse.db.base import DEFAULT_PAGE_LIMIT, clamp_limit, create_engine_for, session_factory
 from security_lakehouse.db.models import REMEDIATION_PRIORITIES
 from security_lakehouse.io import resolve_path
 from security_lakehouse.services import NotFound, ValidationError
@@ -213,6 +213,24 @@ def _params(request: Request) -> dict[str, list[str]]:
     for key, value in request.query_params.multi_items():
         params.setdefault(key, []).append(value)
     return params
+
+
+def _pagination(params: dict[str, list[str]]) -> tuple[int, int]:
+    """Read ``limit``/``offset`` query params, clamped to a safe page window.
+
+    A missing/invalid ``limit`` defaults to ``DEFAULT_PAGE_LIMIT`` so list
+    endpoints are always bounded; an oversized one is capped server-side.
+    """
+    limit_raw = (params.get("limit") or [None])[0]
+    offset_raw = (params.get("offset") or [None])[0]
+    limit = clamp_limit(int(limit_raw)) if limit_raw and limit_raw.lstrip("-").isdigit() else DEFAULT_PAGE_LIMIT
+    offset = int(offset_raw) if offset_raw and offset_raw.isdigit() else 0
+    return limit, max(0, offset)
+
+
+def _page_meta(limit: int, offset: int, count: int) -> dict[str, int]:
+    """Envelope ``meta`` fields describing the returned page."""
+    return {"count": count, "limit": limit, "offset": offset}
 
 
 def _insecure_requested() -> bool:
@@ -984,6 +1002,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         request: Request, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
     ) -> JSONResponse:
         params = _params(request)
+        limit, offset = _pagination(params)
         overdue_raw = (params.get("overdue") or [None])[0]
         overdue = None if overdue_raw is None else overdue_raw.lower() in {"1", "true", "yes"}
         rows = grc_services.list_tasks(
@@ -992,9 +1011,13 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             status=(params.get("status") or [None])[0],
             owner=(params.get("owner") or [None])[0],
             overdue=overdue,
+            limit=limit,
+            offset=offset,
         )
         return JSONResponse(
-            api_v1.envelope("remediation.tasks", _redact_payload(rows, identity), meta={"count": len(rows)})
+            api_v1.envelope(
+                "remediation.tasks", _redact_payload(rows, identity), meta=_page_meta(limit, offset, len(rows))
+            )
         )
 
     @app.post("/api/v1/remediation/tasks", status_code=status.HTTP_201_CREATED)
@@ -1051,12 +1074,22 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     def list_evidence_requests(
         request: Request, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
     ) -> JSONResponse:
+        params = _params(request)
+        limit, offset = _pagination(params)
         rows = remediation.list_evidence_requests(
-            session, tenant_id=identity.tenant_id, status=(_params(request).get("status") or [None])[0]
+            session,
+            tenant_id=identity.tenant_id,
+            status=(params.get("status") or [None])[0],
+            limit=limit,
+            offset=offset,
         )
         data = [remediation.evidence_request_to_dict(row) for row in rows]
         return JSONResponse(
-            api_v1.envelope("remediation.evidence_requests", _redact_payload(data, identity), meta={"count": len(data)})
+            api_v1.envelope(
+                "remediation.evidence_requests",
+                _redact_payload(data, identity),
+                meta=_page_meta(limit, offset, len(data)),
+            )
         )
 
     @app.post("/api/v1/remediation/evidence-requests", status_code=status.HTTP_201_CREATED)
@@ -1105,15 +1138,21 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     def list_exceptions(
         request: Request, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
     ) -> JSONResponse:
-        active_raw = (_params(request).get("active") or [None])[0]
+        params = _params(request)
+        limit, offset = _pagination(params)
+        active_raw = (params.get("active") or [None])[0]
         rows = remediation.list_exceptions(
             session,
             tenant_id=identity.tenant_id,
             active_only=bool(active_raw and active_raw.lower() in {"1", "true", "yes"}),
+            limit=limit,
+            offset=offset,
         )
         data = [remediation.exception_to_dict(row) for row in rows]
         return JSONResponse(
-            api_v1.envelope("remediation.exceptions", _redact_payload(data, identity), meta={"count": len(data)})
+            api_v1.envelope(
+                "remediation.exceptions", _redact_payload(data, identity), meta=_page_meta(limit, offset, len(data))
+            )
         )
 
     @app.post("/api/v1/remediation/exceptions", status_code=status.HTTP_201_CREATED)
@@ -1158,14 +1197,19 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         request: Request, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
     ) -> JSONResponse:
         params = _params(request)
+        limit, offset = _pagination(params)
         data = grc_services.list_risks(
             session,
             identity.tenant_id,
             status=(params.get("status") or [None])[0],
             severity=(params.get("severity") or [None])[0],
             owner=(params.get("owner") or [None])[0],
+            limit=limit,
+            offset=offset,
         )
-        return JSONResponse(api_v1.envelope("risks", _redact_payload(data, identity), meta={"count": len(data)}))
+        return JSONResponse(
+            api_v1.envelope("risks", _redact_payload(data, identity), meta=_page_meta(limit, offset, len(data)))
+        )
 
     @app.post("/api/v1/risks", status_code=status.HTTP_201_CREATED)
     def create_risk(
@@ -1226,10 +1270,15 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
 
     # --- tags ---
     @app.get("/api/v1/tags")
-    def list_tags(identity: Identity = Depends(_require_read), session: Session = Depends(get_session)) -> JSONResponse:
-        rows = tags_db.list_tags(session, tenant_id=identity.tenant_id)
+    def list_tags(
+        request: Request, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        limit, offset = _pagination(_params(request))
+        rows = tags_db.list_tags(session, tenant_id=identity.tenant_id, limit=limit, offset=offset)
         data = [tags_db.tag_to_dict(t) for t in rows]
-        return JSONResponse(api_v1.envelope("tags", _redact_payload(data, identity), meta={"count": len(data)}))
+        return JSONResponse(
+            api_v1.envelope("tags", _redact_payload(data, identity), meta=_page_meta(limit, offset, len(data)))
+        )
 
     @app.post("/api/v1/tags", status_code=status.HTTP_201_CREATED)
     def create_tag(
@@ -1324,10 +1373,16 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         identity: Identity = Depends(_require_read),
         session: Session = Depends(get_session),
     ) -> JSONResponse:
-        surface = (_params(request).get("surface") or [None])[0]
-        rows = tags_db.list_saved_views(session, tenant_id=identity.tenant_id, surface=surface)
+        params = _params(request)
+        limit, offset = _pagination(params)
+        surface = (params.get("surface") or [None])[0]
+        rows = tags_db.list_saved_views(
+            session, tenant_id=identity.tenant_id, surface=surface, limit=limit, offset=offset
+        )
         data = [tags_db.saved_view_to_dict(v) for v in rows]
-        return JSONResponse(api_v1.envelope("saved_views", _redact_payload(data, identity), meta={"count": len(data)}))
+        return JSONResponse(
+            api_v1.envelope("saved_views", _redact_payload(data, identity), meta=_page_meta(limit, offset, len(data)))
+        )
 
     @app.post("/api/v1/saved-views", status_code=status.HTTP_201_CREATED)
     def create_saved_view(

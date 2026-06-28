@@ -18,12 +18,49 @@ import os
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
+from typing import TYPE_CHECKING, TypeVar
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
+if TYPE_CHECKING:
+    from sqlalchemy.sql import Select
+
 ENV_DATABASE_URL = "TRUSTOPS_DATABASE_URL"
+
+# Pagination bounds for list endpoints. ``DEFAULT_PAGE_LIMIT`` is the page size
+# the HTTP layer applies when a caller does not ask for one; ``MAX_PAGE_LIMIT``
+# is the hard ceiling so a hostile ``?limit=10000000`` cannot exhaust memory.
+DEFAULT_PAGE_LIMIT = 100
+MAX_PAGE_LIMIT = 500
+
+_SelectT = TypeVar("_SelectT", bound="Select")
+
+
+def clamp_limit(limit: int | None, *, default: int = DEFAULT_PAGE_LIMIT, maximum: int = MAX_PAGE_LIMIT) -> int:
+    """Clamp a caller-supplied page size into ``[1, maximum]`` (``default`` when unset/invalid)."""
+    if limit is None:
+        return default
+    try:
+        value = int(limit)
+    except (TypeError, ValueError):
+        return default
+    return max(1, min(value, maximum))
+
+
+def apply_pagination(stmt: _SelectT, *, limit: int | None = None, offset: int | None = None) -> _SelectT:
+    """Apply ``LIMIT``/``OFFSET`` to a select.
+
+    ``limit=None`` leaves the statement unbounded so internal callers (SDK/CLI
+    aggregations that need every row) keep their current behaviour. The HTTP
+    layer always passes an explicit, clamped limit so API responses are bounded.
+    """
+    if limit is not None:
+        stmt = stmt.limit(clamp_limit(limit))
+    if offset:
+        stmt = stmt.offset(max(0, int(offset)))
+    return stmt
 
 
 class Base(DeclarativeBase):
