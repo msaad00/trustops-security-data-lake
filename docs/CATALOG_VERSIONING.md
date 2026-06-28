@@ -3,7 +3,7 @@
 Frameworks and controls are living artifacts. Regulations get revised, mappings
 get re-reviewed, controls are retired and superseded. An audit must be able to
 state **exactly** which control text and which framework version were in force
-during its window — and reproduce that view later. This is how Vanta/Drata pin
+during its window — and reproduce that view later. This is how compliance platforms pin
 an audit to a control library version and how CSPM rule packs ship versioned,
 checksummed content.
 
