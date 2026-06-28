@@ -43,6 +43,7 @@ PRODUCTION_STATUS_ORDER = {
 }
 _ACCESS_FINGERPRINT_KEY = b"trustops-access-fingerprint-v1"
 _ACCESS_FINGERPRINT_OPTION_EXCLUDES = frozenset({"raw", "sync_schedule", "fixture_dir", "token_env", "materialize"})
+_SECRET_REFERENCE_SUFFIXES = ("_ref", "_env")
 
 
 def _gold(lake_dir: str | Path) -> Path:
@@ -55,7 +56,9 @@ def _redact_credentials(payload: dict[str, Any] | None) -> dict[str, Any]:
     out: dict[str, Any] = {}
     for key, value in payload.items():
         key_l = key.lower()
-        if any(sensitive in key_l for sensitive in SENSITIVE_FIELD_NAMES):
+        if key_l.endswith(_SECRET_REFERENCE_SUFFIXES):
+            out[key] = value
+        elif any(sensitive in key_l for sensitive in SENSITIVE_FIELD_NAMES):
             if isinstance(value, str) and value:
                 out[key] = "***" + hashlib.sha256(value.encode("utf-8")).hexdigest()[:8]
             else:

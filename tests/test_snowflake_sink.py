@@ -236,3 +236,28 @@ def test_sync_sink_failure_is_swallowed(monkeypatch: pytest.MonkeyPatch, capsys:
     monkeypatch.setattr(connector_runner, "land_if_configured", boom)
     connector_runner._land_to_sink(Path("/lake"))  # must not raise
     assert "sink load failed" in capsys.readouterr().err
+
+
+def test_snowflake_source_sync_does_not_infer_snowflake_sink(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import security_lakehouse.connector_runner as connector_runner
+
+    seen: dict[str, str] = {}
+
+    def fake_land(_lake: Path, env: dict[str, str]) -> None:
+        seen.update(env)
+        return None
+
+    monkeypatch.setattr(connector_runner, "land_if_configured", fake_land)
+    monkeypatch.setenv("SNOWFLAKE_ACCOUNT", "source-account")
+    monkeypatch.setenv("SNOWFLAKE_USER", "TRUSTOPS_INGEST_SVC")
+    monkeypatch.setenv("SNOWFLAKE_PRIVATE_KEY_FILE", "/run/secrets/key.p8")
+    monkeypatch.setenv("TRUSTOPS_DUCKDB_PATH", "/tmp/trustops.duckdb")
+
+    connector_runner._land_to_sink(Path("/lake"), connector_id="snowflake-evidence-lake")
+
+    assert "SNOWFLAKE_ACCOUNT" not in seen
+    assert "SNOWFLAKE_USER" not in seen
+    assert "SNOWFLAKE_PRIVATE_KEY_FILE" not in seen
+    assert seen["TRUSTOPS_DUCKDB_PATH"] == "/tmp/trustops.duckdb"
