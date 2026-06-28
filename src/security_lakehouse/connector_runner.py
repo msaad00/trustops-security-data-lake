@@ -319,7 +319,7 @@ def _build_google_workspace(inputs: SyncInputs) -> list[dict[str, Any]]:
 
 
 def _build_gcp(inputs: SyncInputs) -> list[dict[str, Any]]:
-    return _collect_gcp(fixture_dir=inputs.fixture_dir, env=inputs.env)
+    return _collect_gcp(fixture_dir=inputs.fixture_dir, env=inputs.env, credentials=inputs.credentials)
 
 
 def _build_azure(inputs: SyncInputs) -> list[dict[str, Any]]:
@@ -452,15 +452,19 @@ def _collect_gcp(
     *,
     fixture_dir: str | Path | None,
     env: dict[str, str],
+    credentials: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
+    stored_project = str((credentials or {}).get("project_id") or "").strip()
     if fixture_dir:
-        fixture_project = env.get(GCP_PROJECT_ID_ENV) or "fixture-project"
+        fixture_project = env.get(GCP_PROJECT_ID_ENV) or stored_project or "fixture-project"
         return collect_gcp_evidence(GCPFixtureClient(fixture_dir, project_id=fixture_project))
-    project_id = env.get(GCP_PROJECT_ID_ENV)
+    # Prefer the env override, else the project_id captured at configure time so an
+    # enabled connector syncs without re-exporting GCP_PROJECT_ID.
+    project_id = env.get(GCP_PROJECT_ID_ENV) or stored_project
     if not project_id:
         raise ValueError(
-            "gcp-posture sync requires --fixture-dir, or "
-            f"{GCP_PROJECT_ID_ENV} plus read-only GCP credentials "
+            "gcp-posture sync requires --fixture-dir, a configured project_id, or "
+            f"{GCP_PROJECT_ID_ENV}, plus read-only GCP credentials "
             "(GOOGLE_APPLICATION_CREDENTIALS / workload identity via Application Default Credentials)"
         )
     client = GCPClient(project_id)
