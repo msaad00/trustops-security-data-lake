@@ -108,3 +108,37 @@ def test_in_memory_database_is_supported() -> None:
     landed = sink.load("/nonexistent-lake")
     assert landed == {"normalized_events": 0, "control_posture": 0, "asset_risk": 0}
     conn.close()
+
+
+def test_gold_views_query_in_place(tmp_path: Path) -> None:
+    lake = _seed_lake(tmp_path)
+    db = tmp_path / "lake.duckdb"
+    DuckDBSink(DuckDBSinkConfig(database=str(db))).load(lake)
+
+    conn = duckdb.connect(str(db))
+    try:
+        # auditor_control_evidence joins the failing SOC2-CC6.1 control to the
+        # aws-1 event that carries it in its control_ids array.
+        rows = conn.execute(
+            "SELECT control_id, source FROM auditor_control_evidence WHERE control_id = 'SOC2-CC6.1'"
+        ).fetchall()
+        assert rows == [("SOC2-CC6.1", "aws")]
+
+        # executive_risk_summary aggregates per framework (1 SOC 2 control, failing).
+        summary = conn.execute("SELECT framework, controls, failing_controls FROM executive_risk_summary").fetchall()
+        assert summary == [("SOC 2", 1, 1)]
+    finally:
+        conn.close()
+
+
+def test_views_survive_reload(tmp_path: Path) -> None:
+    lake = _seed_lake(tmp_path)
+    db = tmp_path / "lake.duckdb"
+    sink = DuckDBSink(DuckDBSinkConfig(database=str(db)))
+    sink.load(lake)
+    sink.load(lake)  # CREATE OR REPLACE VIEW stays valid across reloads
+    conn = duckdb.connect(str(db))
+    try:
+        assert conn.execute("SELECT count(*) FROM executive_risk_summary").fetchone()[0] == 1
+    finally:
+        conn.close()
