@@ -1450,6 +1450,20 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
         return JSONResponse(api_v1.envelope("access-reviews.items", item), status_code=status.HTTP_201_CREATED)
 
+    @app.post("/api/v1/access-reviews/{campaign_id}/seed")
+    def seed_access_review(
+        campaign_id: str,
+        identity: Identity = Depends(_require_control_manage),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        try:
+            result = access_review_services.seed_campaign_from_evidence(
+                session, lake_for(identity), identity.tenant_id, campaign_id
+            )
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("access-reviews", result))
+
     @app.post("/api/v1/access-reviews/items/{item_id}/decision")
     def decide_access_review_item(
         item_id: str,

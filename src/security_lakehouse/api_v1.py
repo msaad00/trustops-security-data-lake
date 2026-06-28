@@ -273,6 +273,14 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "path_params": ["campaign_id"],
     },
     {
+        "resource": "access-reviews",
+        "path": "/api/v1/access-reviews/{campaign_id}/seed",
+        "kind": "singleton",
+        "methods": ["POST"],
+        "scopes": ["control_manage"],
+        "path_params": ["campaign_id"],
+    },
+    {
         "resource": "access-reviews.items",
         "path": "/api/v1/access-reviews/items/{item_id}/decision",
         "kind": "singleton",
