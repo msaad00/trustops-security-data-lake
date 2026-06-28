@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from security_lakehouse.connector_runner import _advance_watermark, run_connector_sync
+from security_lakehouse import connector_runner as cr
 from security_lakehouse.connector_state import append_config_event
 from security_lakehouse.ingestion.watermark import read_watermark, write_watermark
 
@@ -27,7 +27,7 @@ def _rows(*times: str) -> list[dict]:
 
 
 def test_advance_writes_max_event_time_for_append(tmp_path: Path) -> None:
-    cursor = _advance_watermark(
+    cursor = cr._advance_watermark(
         tmp_path, "okta-system-log", _rows("2026-06-01T00:00:00Z", "2026-06-03T00:00:00Z"), write_mode="append"
     )
     assert cursor == "2026-06-03T00:00:00Z"
@@ -35,7 +35,7 @@ def test_advance_writes_max_event_time_for_append(tmp_path: Path) -> None:
 
 
 def test_snapshot_connector_carries_no_watermark(tmp_path: Path) -> None:
-    cursor = _advance_watermark(tmp_path, "aws-posture", _rows("2026-06-03T00:00:00Z"), write_mode="snapshot")
+    cursor = cr._advance_watermark(tmp_path, "aws-posture", _rows("2026-06-03T00:00:00Z"), write_mode="snapshot")
     assert cursor is None
     assert read_watermark(tmp_path, "aws-posture") is None
 
@@ -43,14 +43,14 @@ def test_snapshot_connector_carries_no_watermark(tmp_path: Path) -> None:
 def test_cursor_is_monotonic(tmp_path: Path) -> None:
     write_watermark(tmp_path, "siem-alerts", "2026-06-10T00:00:00Z")
     # An older pull must not move the high-water mark backwards.
-    cursor = _advance_watermark(tmp_path, "siem-alerts", _rows("2026-06-05T00:00:00Z"), write_mode="append")
+    cursor = cr._advance_watermark(tmp_path, "siem-alerts", _rows("2026-06-05T00:00:00Z"), write_mode="append")
     assert cursor == "2026-06-10T00:00:00Z"
     assert read_watermark(tmp_path, "siem-alerts") == "2026-06-10T00:00:00Z"
 
 
 def test_empty_pull_keeps_prior_cursor(tmp_path: Path) -> None:
     write_watermark(tmp_path, "siem-alerts", "2026-06-10T00:00:00Z")
-    assert _advance_watermark(tmp_path, "siem-alerts", [], write_mode="append") == "2026-06-10T00:00:00Z"
+    assert cr._advance_watermark(tmp_path, "siem-alerts", [], write_mode="append") == "2026-06-10T00:00:00Z"
 
 
 # --- integration: through run_connector_sync ---------------------------------
@@ -60,7 +60,7 @@ def test_append_connector_sync_advances_watermark(tmp_path: Path) -> None:
     append_config_event(tmp_path, connector_id="github-security", state="enabled", actor="alice")
     assert read_watermark(tmp_path, "github-security") is None  # nothing synced yet
 
-    result = run_connector_sync(
+    result = cr.run_connector_sync(
         tmp_path, connector_id="github-security", repo="acme/model-service", fixture_dir=GITHUB_FIXTURE
     )
     assert result.result == "ok"
@@ -70,7 +70,7 @@ def test_append_connector_sync_advances_watermark(tmp_path: Path) -> None:
     assert read_watermark(tmp_path, "github-security") == result.watermark_cursor
 
     # A second sync never regresses the cursor.
-    again = run_connector_sync(
+    again = cr.run_connector_sync(
         tmp_path, connector_id="github-security", repo="acme/model-service", fixture_dir=GITHUB_FIXTURE
     )
     assert again.watermark_cursor >= result.watermark_cursor
@@ -88,14 +88,16 @@ def test_since_is_read_and_threaded_for_append(tmp_path: Path, monkeypatch) -> N
         return real_build(inputs)
 
     monkeypatch.setitem(cr.REGISTRY, "github-security", _spy)
-    run_connector_sync(tmp_path, connector_id="github-security", repo="acme/model-service", fixture_dir=GITHUB_FIXTURE)
+    cr.run_connector_sync(
+        tmp_path, connector_id="github-security", repo="acme/model-service", fixture_dir=GITHUB_FIXTURE
+    )
     # The prior cursor is read and handed to the builder as ``since``.
     assert seen["since"] == "2020-01-01T00:00:00Z"
 
 
 def test_snapshot_connector_sync_records_no_cursor(tmp_path: Path) -> None:
     append_config_event(tmp_path, connector_id="aws-posture", state="enabled", actor="alice")
-    result = run_connector_sync(tmp_path, connector_id="aws-posture", fixture_dir=AWS_FIXTURE)
+    result = cr.run_connector_sync(tmp_path, connector_id="aws-posture", fixture_dir=AWS_FIXTURE)
     assert result.result == "ok"
     assert result.watermark_cursor is None
     assert read_watermark(tmp_path, "aws-posture") is None
