@@ -44,17 +44,17 @@ No model is required. If no provider is configured, the harness runs in
 
 Environment knobs:
 
-| Variable                         | Purpose                                                                                                    |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Variable                         | Purpose                                                                                                     |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | `TRUSTOPS_AGENT_PROVIDER`        | `rules_only`, `ollama`, `openai`, `openai_compatible`, `anthropic`, `bedrock`, `vertex`, `snowflake_cortex` |
-| `TRUSTOPS_AGENT_MODEL`           | Provider model name                                                                                        |
-| `TRUSTOPS_AGENT_BASE_URL`        | Local provider URL, defaulting to Ollama at `http://127.0.0.1:11434` when provider is `ollama`             |
-| `TRUSTOPS_AGENT_API_KEY_ENV`     | Name of the environment variable holding the provider API key (API-key providers only)                     |
+| `TRUSTOPS_AGENT_MODEL`           | Provider model name                                                                                         |
+| `TRUSTOPS_AGENT_BASE_URL`        | Local provider URL, defaulting to Ollama at `http://127.0.0.1:11434` when provider is `ollama`              |
+| `TRUSTOPS_AGENT_API_KEY_ENV`     | Name of the environment variable holding the provider API key (API-key providers only)                      |
 | `TRUSTOPS_AGENT_REGION`          | Bedrock AWS region (falls back to `AWS_REGION`)                                                             |
 | `TRUSTOPS_AGENT_PROJECT`         | Vertex AI GCP project id                                                                                    |
 | `TRUSTOPS_AGENT_LOCATION`        | Vertex AI location (defaults to `us-central1`)                                                              |
-| `TRUSTOPS_AGENT_USE_MODEL`       | Set to `1` to actually call the provider; unset means deterministic harness only                           |
-| `TRUSTOPS_AGENT_TIMEOUT_SECONDS` | Optional provider request timeout, clamped between 1 and 120 seconds                                       |
+| `TRUSTOPS_AGENT_USE_MODEL`       | Set to `1` to actually call the provider; unset means deterministic harness only                            |
+| `TRUSTOPS_AGENT_TIMEOUT_SECONDS` | Optional provider request timeout, clamped between 1 and 120 seconds                                        |
 
 `openai_compatible` is supported for local or customer-chosen providers that
 serve `/chat/completions`. The harness records provider metadata but never
