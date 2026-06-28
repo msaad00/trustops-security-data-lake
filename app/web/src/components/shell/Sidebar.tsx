@@ -20,6 +20,7 @@ import {
   ShieldAlert,
   ShieldCheck,
   Sparkles,
+  UserCheck,
   Zap,
 } from "lucide-react";
 import { SidebarFooter } from "./SidebarFooter";
@@ -85,6 +86,12 @@ const ITEMS: RailItem[] = [
     href: "/risks",
     label: "Risk register",
     Icon: ShieldAlert,
+    group: "Review",
+  },
+  {
+    href: "/access-reviews",
+    label: "Access reviews",
+    Icon: UserCheck,
     group: "Review",
   },
   { href: "/graph", label: "Graph", Icon: Network, group: "Review" },

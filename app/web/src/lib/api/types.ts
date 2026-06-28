@@ -834,3 +834,62 @@ export interface RemediationInsights {
   resolved_count: number;
   sla_eligible_count: number;
 }
+
+export type AccessReviewStatus = "draft" | "active" | "completed" | "cancelled";
+export type AccessReviewDecision =
+  "pending" | "certified" | "revoked" | "flagged";
+
+export interface AccessReviewCampaign {
+  id: string;
+  name: string;
+  description: string;
+  scope: string;
+  status: AccessReviewStatus;
+  control_id: string | null;
+  due_at: string | null;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  completed_at: string | null;
+  progress?: AccessReviewProgress;
+}
+
+export interface AccessReviewProgress {
+  total: number;
+  reviewed: number;
+  pending: number;
+  certified: number;
+  revoked: number;
+  flagged: number;
+}
+
+export interface AccessReviewItem {
+  id: string;
+  campaign_id: string;
+  subject_id: string;
+  subject_name: string;
+  source: string;
+  access_summary: string;
+  decision: AccessReviewDecision;
+  reviewer: string;
+  note: string;
+  decided_at: string | null;
+  created_at: string;
+}
+
+export interface AccessReviewSeedResult {
+  added: number;
+  skipped: number;
+  candidates: number;
+}
+
+export interface AccessReviewCoverage {
+  control_id: string;
+  framework: string | null;
+  title: string | null;
+  campaigns: number;
+  completed_campaigns: number;
+  last_completed_at: string | null;
+  current: boolean;
+  decisions: Record<AccessReviewDecision, number>;
+}

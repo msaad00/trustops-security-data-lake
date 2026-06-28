@@ -1,5 +1,11 @@
 import { isAuditorMode } from "@/lib/state/auditor";
 import type {
+  AccessReviewCampaign,
+  AccessReviewCoverage,
+  AccessReviewDecision,
+  AccessReviewItem,
+  AccessReviewSeedResult,
+  AccessReviewStatus,
   ActionSpec,
   AgentRun,
   Assessment,
@@ -401,6 +407,48 @@ export const api = {
       `/v1/agent-runs/${encodeURIComponent(runId)}/decisions/${decisionIndex}/approve`,
       { note },
     ).then((b) => b.data),
+  accessReviews: (query = "") =>
+    get<{ data: AccessReviewCampaign[] }>(`/v1/access-reviews${query}`).then(
+      (b) => b.data,
+    ),
+  createAccessReview: (
+    payload: { name: string } & Partial<AccessReviewCampaign>,
+  ) =>
+    post<{ data: AccessReviewCampaign }>("/v1/access-reviews", payload).then(
+      (b) => b.data,
+    ),
+  accessReview: (id: string) =>
+    get<{ data: AccessReviewCampaign }>(
+      `/v1/access-reviews/${encodeURIComponent(id)}`,
+    ).then((b) => b.data),
+  setAccessReviewStatus: (id: string, status: AccessReviewStatus) =>
+    mutate<{ data: AccessReviewCampaign }>(
+      `/v1/access-reviews/${encodeURIComponent(id)}`,
+      "PATCH",
+      { status },
+    ).then((b) => b.data),
+  accessReviewItems: (id: string, query = "") =>
+    get<{ data: AccessReviewItem[] }>(
+      `/v1/access-reviews/${encodeURIComponent(id)}/items${query}`,
+    ).then((b) => b.data),
+  seedAccessReview: (id: string) =>
+    post<{ data: AccessReviewSeedResult }>(
+      `/v1/access-reviews/${encodeURIComponent(id)}/seed`,
+      {},
+    ).then((b) => b.data),
+  decideAccessReviewItem: (
+    itemId: string,
+    decision: AccessReviewDecision,
+    note = "",
+  ) =>
+    post<{ data: AccessReviewItem }>(
+      `/v1/access-reviews/items/${encodeURIComponent(itemId)}/decision`,
+      { decision, note },
+    ).then((b) => b.data),
+  accessReviewCoverage: () =>
+    get<{ data: AccessReviewCoverage[] }>("/v1/access-reviews/coverage").then(
+      (b) => b.data,
+    ),
 };
 
 export interface SnapshotSummary {
