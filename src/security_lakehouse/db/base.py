@@ -34,9 +34,11 @@ MAX_PAGE_LIMIT = 500
 
 
 class _SupportsPagination(Protocol):
-    def limit(self, limit: int) -> _SupportsPagination: ...
+    def limit(self, limit: int) -> _SupportsPagination:
+        pass
 
-    def offset(self, offset: int) -> _SupportsPagination: ...
+    def offset(self, offset: int) -> _SupportsPagination:
+        pass
 
 
 _SelectT = TypeVar("_SelectT", bound=_SupportsPagination)
