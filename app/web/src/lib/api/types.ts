@@ -893,3 +893,14 @@ export interface AccessReviewCoverage {
   current: boolean;
   decisions: Record<AccessReviewDecision, number>;
 }
+
+export interface ControlRemediation {
+  control_id: string;
+  risk_domain: string | null;
+  framework: string | null;
+  title: string | null;
+  matched: boolean;
+  summary: string;
+  steps: string[];
+  references: string[];
+}
