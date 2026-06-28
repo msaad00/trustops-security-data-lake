@@ -258,6 +258,30 @@ class SnowflakeSink:
 
         return write_pandas
 
+    def cortex_complete(self, model: str, prompt: str) -> str:
+        """Run inference inside Snowflake via ``SNOWFLAKE.CORTEX.COMPLETE``.
+
+        The prompt is the only thing that crosses into Snowflake and the response
+        is generated in-warehouse, so evidence never leaves the customer's lake
+        to reach a third-party model endpoint. Returns the raw completion text.
+        """
+        conn = self._connect()
+        try:
+            cursor = conn.cursor()
+            try:
+                cursor.execute(
+                    "SELECT SNOWFLAKE.CORTEX.COMPLETE(%(model)s, %(prompt)s)",
+                    {"model": model, "prompt": prompt},
+                )
+                row = cursor.fetchone()
+            finally:
+                cursor.close()
+        finally:
+            conn.close()
+        if not row or row[0] is None:
+            raise RuntimeError("Cortex COMPLETE returned no content")
+        return str(row[0])
+
     def load(self, lake_dir: str | Path) -> dict[str, int]:
         """Land every configured medallion table; return rows landed per table."""
         import pandas as pd  # noqa: PLC0415
