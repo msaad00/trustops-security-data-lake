@@ -1,7 +1,7 @@
 {
   "schema": "trustops.mapping.v1",
   "scope": "reviewed_control_to_source_article",
-  "guardrail": "Article identifiers and titles are reproduced as auditable references; full regulatory text is not embedded — link out to the official source.",
+  "guardrail": "Article identifiers and titles are reproduced as auditable references; full regulatory text is not embedded \u2014 link out to the official source.",
   "mappings": [
     {
       "control_id": "SOC2-CC6.1",
@@ -139,7 +139,7 @@
           "official_source_url": "https://www.iso.org/standard/27001",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "Annex A control A.8.16 (Monitoring activities) — continuous detection of anomalous behaviour."
+          "rationale": "Annex A control A.8.16 (Monitoring activities) \u2014 continuous detection of anomalous behaviour."
         }
       ]
     },
@@ -153,7 +153,7 @@
           "official_source_url": "https://www.iso.org/standard/27001",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "Annex A control A.5.30 — ICT continuity is planned, implemented, maintained, and tested."
+          "rationale": "Annex A control A.5.30 \u2014 ICT continuity is planned, implemented, maintained, and tested."
         }
       ]
     },
@@ -167,7 +167,7 @@
           "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.308",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "45 CFR §164.308(a)(4) — Information access management standard."
+          "rationale": "45 CFR \u00a7164.308(a)(4) \u2014 Information access management standard."
         }
       ]
     },
@@ -181,7 +181,7 @@
           "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.312",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "45 CFR §164.312(b) — Implement hardware, software, or procedural mechanisms that record and examine activity."
+          "rationale": "45 CFR \u00a7164.312(b) \u2014 Implement hardware, software, or procedural mechanisms that record and examine activity."
         }
       ]
     },
@@ -195,7 +195,7 @@
           "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.312",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "45 CFR §164.312(e) — Guard against unauthorized access to ePHI transmitted over an electronic communications network."
+          "rationale": "45 CFR \u00a7164.312(e) \u2014 Guard against unauthorized access to ePHI transmitted over an electronic communications network."
         }
       ]
     },
@@ -209,7 +209,7 @@
           "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.308",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-26T00:00:00Z",
-          "rationale": "45 CFR §164.308(a)(1)(ii)(A) is mapped for risk-analysis evidence over electronic-PHI systems."
+          "rationale": "45 CFR \u00a7164.308(a)(1)(ii)(A) is mapped for risk-analysis evidence over electronic-PHI systems."
         }
       ]
     },
@@ -223,7 +223,7 @@
           "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.308",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-26T00:00:00Z",
-          "rationale": "45 CFR §164.308(a)(1)(ii)(B) is mapped for remediation and risk-reduction evidence after ePHI risks are identified."
+          "rationale": "45 CFR \u00a7164.308(a)(1)(ii)(B) is mapped for remediation and risk-reduction evidence after ePHI risks are identified."
         }
       ]
     },
@@ -237,7 +237,7 @@
           "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.312",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-26T00:00:00Z",
-          "rationale": "45 CFR §164.312(a)(2)(iv) is mapped for encryption and decryption evidence over electronic-PHI systems."
+          "rationale": "45 CFR \u00a7164.312(a)(2)(iv) is mapped for encryption and decryption evidence over electronic-PHI systems."
         }
       ]
     },
@@ -251,7 +251,7 @@
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "PCI DSS v4.0 Requirement 7 — Restrict access by business need to know (sub-requirements 7.1–7.3)."
+          "rationale": "PCI DSS v4.0 Requirement 7 \u2014 Restrict access by business need to know (sub-requirements 7.1\u20137.3)."
         }
       ]
     },
@@ -265,7 +265,7 @@
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "PCI DSS v4.0 Requirement 10 — Log and monitor all access (sub-requirements 10.1–10.7)."
+          "rationale": "PCI DSS v4.0 Requirement 10 \u2014 Log and monitor all access (sub-requirements 10.1\u201310.7)."
         }
       ]
     },
@@ -279,7 +279,7 @@
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "PCI DSS v4.0 Requirement 11 — Regular testing (sub-requirements 11.1–11.6, vulnerability scans + pen tests)."
+          "rationale": "PCI DSS v4.0 Requirement 11 \u2014 Regular testing (sub-requirements 11.1\u201311.6, vulnerability scans + pen tests)."
         }
       ]
     },
@@ -293,7 +293,7 @@
           "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02016R0679-20160504#tocId41",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "GDPR Art. 32 — Controllers and processors implement appropriate technical and organisational measures."
+          "rationale": "GDPR Art. 32 \u2014 Controllers and processors implement appropriate technical and organisational measures."
         }
       ]
     },
@@ -307,7 +307,7 @@
           "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02016R0679-20160504#tocId39",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "GDPR Art. 30 — Each controller maintains a record of processing activities under its responsibility."
+          "rationale": "GDPR Art. 30 \u2014 Each controller maintains a record of processing activities under its responsibility."
         }
       ]
     },
@@ -321,7 +321,7 @@
           "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02016R0679-20160504#tocId42",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "GDPR Art. 33 — Notification within 72 hours of becoming aware of a personal data breach."
+          "rationale": "GDPR Art. 33 \u2014 Notification within 72 hours of becoming aware of a personal data breach."
         }
       ]
     },
@@ -377,7 +377,7 @@
           "official_source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "EU AI Act Art. 9 — Risk management system for high-risk AI systems must be established, implemented, documented and maintained."
+          "rationale": "EU AI Act Art. 9 \u2014 Risk management system for high-risk AI systems must be established, implemented, documented and maintained."
         }
       ]
     },
@@ -391,7 +391,7 @@
           "official_source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "EU AI Act Art. 10 — Training, validation and testing data sets shall be subject to data governance and management practices."
+          "rationale": "EU AI Act Art. 10 \u2014 Training, validation and testing data sets shall be subject to data governance and management practices."
         }
       ]
     },
@@ -405,7 +405,7 @@
           "official_source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "EU AI Act Art. 12 — High-risk AI systems shall technically allow automatic recording of events (logs) over the lifetime of the system."
+          "rationale": "EU AI Act Art. 12 \u2014 High-risk AI systems shall technically allow automatic recording of events (logs) over the lifetime of the system."
         }
       ]
     },
@@ -461,7 +461,7 @@
           "official_source_url": "https://www.iso.org/standard/42001",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "ISO/IEC 42001:2023 clause 6.1.3 — define and apply an AI risk treatment process with options, controls, and a Statement of Applicability."
+          "rationale": "ISO/IEC 42001:2023 clause 6.1.3 \u2014 define and apply an AI risk treatment process with options, controls, and a Statement of Applicability."
         }
       ]
     },
@@ -475,7 +475,49 @@
           "official_source_url": "https://www.iso.org/standard/42001",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "ISO/IEC 42001:2023 clause 8.1 — the organization plans, implements, and controls the operational AI processes and retains evidence of their operation (clause 8.2 is AI risk assessment, 8.4 is AI system impact assessment)."
+          "rationale": "ISO/IEC 42001:2023 clause 8.1 \u2014 the organization plans, implements, and controls the operational AI processes and retains evidence of their operation (clause 8.2 is AI risk assessment, 8.4 is AI system impact assessment)."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-AWS-1.8",
+      "framework_id": "cis_aws",
+      "articles": [
+        {
+          "article_id": "1.8",
+          "title": "IAM password policy requires a minimum length of 14 or greater",
+          "official_source_url": "https://www.cisecurity.org/benchmark/amazon_web_services",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-27T00:00:00Z",
+          "rationale": "The AWS connector scores the account password policy against the benchmark length floor and raises an open config finding when it is weaker; that finding is the direct test for this recommendation."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-AWS-1.10",
+      "framework_id": "cis_aws",
+      "articles": [
+        {
+          "article_id": "1.10",
+          "title": "MFA is enabled for all IAM users with a console password",
+          "official_source_url": "https://www.cisecurity.org/benchmark/amazon_web_services",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-27T00:00:00Z",
+          "rationale": "The AWS connector raises an open finding for any console-password IAM user without an MFA device, gating purely programmatic identities out; that finding is the direct test for this recommendation."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-AWS-1.14",
+      "framework_id": "cis_aws",
+      "articles": [
+        {
+          "article_id": "1.14",
+          "title": "Access keys are rotated every 90 days or less",
+          "official_source_url": "https://www.cisecurity.org/benchmark/amazon_web_services",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-27T00:00:00Z",
+          "rationale": "The AWS connector raises an open access-key-hygiene finding when an active key is older than the 90-day rotation SLO (or more than one active key exists); that finding is the direct test for this recommendation."
         }
       ]
     }

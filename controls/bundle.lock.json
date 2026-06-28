@@ -1,15 +1,22 @@
 {
   "schema_version": "trustops.catalog_bundle.v1",
   "as_of": null,
-  "framework_count": 8,
-  "control_count": 34,
-  "crosswalk_count": 34,
+  "framework_count": 9,
+  "control_count": 37,
+  "crosswalk_count": 37,
   "components": {
-    "frameworks": "41052f3c9f297ab54f402fb2a5f7d1e901f0e1954daa8e93fbe02599ae893838",
-    "controls": "53bac60e92156004ff3307787bc83f61f3f60ff527c9198cac816254c850d330",
-    "crosswalk": "c49e8e6ece24b59dbed7fc166b8348697a2d157d9d56e82ad7508fb59a000000"
+    "frameworks": "81c2f11747206b743cf90c85f0cca04b628a1c15568a160d5a40b0b7fdcbf805",
+    "controls": "4309c8caa9886912de98770545ebda49f5e7b6a476524f93d4f56706f48aca81",
+    "crosswalk": "4560f3305469e32c1e02d4ac3cb6aa555cfe7836b54409158756de3d12c6822f"
   },
   "framework_versions": [
+    {
+      "framework_id": "cis_aws",
+      "version": "v3.0.0",
+      "effective_date": "2024-01-31",
+      "superseded_by": null,
+      "source_sha256": null
+    },
     {
       "framework_id": "eu-ai-act-2024-1689",
       "version": "Regulation (EU) 2024/1689",
@@ -68,6 +75,27 @@
     }
   ],
   "control_versions": [
+    {
+      "control_id": "CIS-AWS-1.10",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-27",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.14",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-27",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.8",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-27",
+      "lifecycle_status": "active"
+    },
     {
       "control_id": "EU-AI-ACT-Art.10",
       "framework_id": "eu-ai-act-2024-1689",
@@ -307,5 +335,5 @@
       "lifecycle_status": "active"
     }
   ],
-  "bundle_sha256": "d31ea5edc3bc335ed433b8ee374b6d173cdf8a14deea7fcf3952f7e5da47c59e"
+  "bundle_sha256": "0792206fdadfe84e5f2b1aabec80e6c56de2449f6988ff29240de6684700f6c0"
 }

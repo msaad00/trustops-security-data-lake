@@ -35,6 +35,7 @@ _FORMAT_PATTERNS: dict[str, str] = {
     "pci-dss-v4": r"^Req-\d",
     "eu-ai-act-2024-1689": r"^Art\.\d+$",
     "iso-42001-2023": r"^\d+(\.\d+)*$",
+    "cis_aws": r"^\d+(\.\d+)*$",
 }
 
 

@@ -35,8 +35,11 @@ from security_lakehouse.models import utc_iso
 # wiring (SOC2-CC6.1 logical access, ISO27001-A.5.15 access control,
 # HIPAA-164.308(a)(4) access management).
 IDENTITY_CONTROLS = ["SOC2-CC6.1", "ISO27001-A.5.15", "HIPAA-164.308(a)(4)"]
-MFA_CONTROLS = ["SOC2-CC6.1", "HIPAA-164.308(a)(4)"]
-POLICY_CONTROLS = ["SOC2-CC6.1", "ISO27001-A.5.15"]
+# Each finding also carries the CIS AWS Foundations Benchmark control it tests, so
+# CIS coverage is evaluated from the same signal as the SOC 2 / ISO / HIPAA mapping.
+MFA_CONTROLS = ["SOC2-CC6.1", "HIPAA-164.308(a)(4)", "CIS-AWS-1.10"]
+POLICY_CONTROLS = ["SOC2-CC6.1", "ISO27001-A.5.15", "CIS-AWS-1.8"]
+ACCESS_KEY_CONTROLS = [*IDENTITY_CONTROLS, "CIS-AWS-1.14"]
 
 # AWS-recommended password-policy floor used to score the account policy. A
 # policy that meets every one of these is "strong"; anything weaker is an open
@@ -374,7 +377,7 @@ def _access_key_event(
         event_type="aws.iam.access_key_hygiene",
         asset_id=f"aws:iam:user/{user_name}",
         asset_type="identity_account",
-        controls=IDENTITY_CONTROLS,
+        controls=ACCESS_KEY_CONTROLS,
         status="open" if needs_rotation else "pass",
         severity="medium" if needs_rotation else "info",
         evidence_ref=f"{arn}/access-keys",
