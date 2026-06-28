@@ -18,14 +18,11 @@ import os
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import TYPE_CHECKING, TypeVar
+from typing import Protocol, TypeVar
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
-
-if TYPE_CHECKING:
-    from sqlalchemy.sql import Select
 
 ENV_DATABASE_URL = "TRUSTOPS_DATABASE_URL"
 
@@ -35,7 +32,13 @@ ENV_DATABASE_URL = "TRUSTOPS_DATABASE_URL"
 DEFAULT_PAGE_LIMIT = 100
 MAX_PAGE_LIMIT = 500
 
-_SelectT = TypeVar("_SelectT", bound="Select")
+class _SupportsPagination(Protocol):
+    def limit(self, limit: int) -> "_SupportsPagination": ...
+
+    def offset(self, offset: int) -> "_SupportsPagination": ...
+
+
+_SelectT = TypeVar("_SelectT", bound=_SupportsPagination)
 
 
 def clamp_limit(limit: int | None, *, default: int = DEFAULT_PAGE_LIMIT, maximum: int = MAX_PAGE_LIMIT) -> int:
