@@ -9,6 +9,9 @@ import {
 } from "@tanstack/react-query";
 import { api, bootstrapAssessment, type SnapshotSummary } from "./client";
 import type {
+  AccessReviewCampaign,
+  AccessReviewDecision,
+  AccessReviewStatus,
   AgentRun,
   Assessment,
   AssetRisk,
@@ -830,4 +833,88 @@ export function usePostureStream(): { connected: boolean } {
     return () => es.close();
   }, [qc]);
   return { connected };
+}
+
+export function useAccessReviews(query = "") {
+  return useQuery({
+    queryKey: ["access-reviews", query],
+    queryFn: () => api.accessReviews(query),
+    staleTime: STALE,
+    refetchInterval: LIVE,
+  });
+}
+
+export function useAccessReview(id: string | null) {
+  return useQuery({
+    queryKey: ["access-review", id],
+    queryFn: () => api.accessReview(id as string),
+    enabled: Boolean(id),
+    staleTime: STALE,
+  });
+}
+
+export function useAccessReviewItems(id: string | null, query = "") {
+  return useQuery({
+    queryKey: ["access-review-items", id, query],
+    queryFn: () => api.accessReviewItems(id as string, query),
+    enabled: Boolean(id),
+    staleTime: STALE,
+  });
+}
+
+export function useAccessReviewCoverage() {
+  return useQuery({
+    queryKey: ["access-review-coverage"],
+    queryFn: () => api.accessReviewCoverage(),
+    staleTime: STALE,
+    refetchInterval: LIVE,
+  });
+}
+
+export function useCreateAccessReviewMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: { name: string } & Partial<AccessReviewCampaign>) =>
+      api.createAccessReview(payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["access-reviews"] }),
+  });
+}
+
+export function useSetAccessReviewStatusMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: { id: string; status: AccessReviewStatus }) =>
+      api.setAccessReviewStatus(vars.id, vars.status),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["access-reviews"] });
+      qc.invalidateQueries({ queryKey: ["access-review-coverage"] });
+    },
+  });
+}
+
+export function useSeedAccessReviewMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.seedAccessReview(id),
+    onSuccess: (_data, id) => {
+      qc.invalidateQueries({ queryKey: ["access-review-items", id] });
+      qc.invalidateQueries({ queryKey: ["access-review", id] });
+    },
+  });
+}
+
+export function useDecideAccessReviewItemMutation(campaignId: string | null) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: {
+      itemId: string;
+      decision: AccessReviewDecision;
+      note?: string;
+    }) => api.decideAccessReviewItem(vars.itemId, vars.decision, vars.note),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["access-review-items", campaignId] });
+      qc.invalidateQueries({ queryKey: ["access-review", campaignId] });
+      qc.invalidateQueries({ queryKey: ["access-review-coverage"] });
+    },
+  });
 }
