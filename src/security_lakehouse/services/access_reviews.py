@@ -217,6 +217,8 @@ def seed_campaign_from_evidence(
         added += 1
     session.commit()
     return {"added": added, "skipped": len(candidates) - added, "candidates": len(candidates)}
+
+
 def control_coverage(session: Session, tenant_id: str, *, now: datetime | None = None) -> list[dict[str, Any]]:
     """Map access-review activity to the access controls it satisfies.
 
