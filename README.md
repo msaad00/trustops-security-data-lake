@@ -132,13 +132,14 @@ customer-owned warehouse, or read from an existing evidence lake.
 | **Gold**           | Control posture, asset risk, framework readiness, violations    | Deterministic rules, snapshots, append-only audit    |
 | **Trust surfaces** | Dashboards, trust shares, APIs, workflows                       | Redaction, tenant/RBAC policy, approval-gated writes |
 
-| Storage target       | Current role                                                                  |
-| -------------------- | ----------------------------------------------------------------------------- |
-| Local files + SQLite | Default self-hosted and CI path.                                              |
-| DuckDB mart          | Optional local analytical mart for columnar queries.                          |
-| Snowflake sink       | Customer-owned governed evidence lake adapter.                                |
-| ClickHouse sink      | Customer-owned high-volume telemetry and analytics lake adapter.              |
-| Existing lake read   | Read-only mode for teams that already centralize security evidence elsewhere. |
+| Storage target       | Current role                                                                    |
+| -------------------- | ------------------------------------------------------------------------------- |
+| Local files + SQLite | Default self-hosted and CI path.                                                |
+| DuckDB mart          | Optional local analytical mart for columnar queries.                            |
+| Snowflake sink       | Customer-owned governed evidence lake adapter.                                  |
+| ClickHouse sink      | Customer-owned high-volume telemetry and analytics lake adapter.                |
+| DuckDB sink          | Embedded, zero-server evidence-lake adapter; self-bootstrapping and idempotent. |
+| Existing lake read   | Read-only mode for teams that already centralize security evidence elsewhere.   |
 
 ### Storage Modes
 
