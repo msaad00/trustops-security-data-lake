@@ -33,6 +33,8 @@ def list_risks(
     status: str | None = None,
     severity: str | None = None,
     owner: str | None = None,
+    limit: int | None = None,
+    offset: int | None = None,
 ) -> list[dict[str, Any]]:
     rows = risks_db.list_risks(
         session,
@@ -40,6 +42,8 @@ def list_risks(
         status=status,
         severity=severity,
         owner=owner,
+        limit=limit,
+        offset=offset,
     )
     return [risks_db.risk_to_dict(row) for row in rows]
 
@@ -126,6 +130,8 @@ def list_tasks(
     status: str | None = None,
     owner: str | None = None,
     overdue: bool | None = None,
+    limit: int | None = None,
+    offset: int | None = None,
 ) -> list[dict[str, Any]]:
     tasks = remediation.list_tasks(
         session,
@@ -133,6 +139,8 @@ def list_tasks(
         status=status,
         owner=owner,
         overdue=overdue,
+        limit=limit,
+        offset=offset,
     )
     return [remediation.task_to_dict(task) for task in tasks]
 
