@@ -4,11 +4,14 @@ import { useEffect, useState } from "react";
 import {
   AlertCircle,
   CheckCircle2,
+  Database,
+  KeyRound,
   Loader2,
   PauseCircle,
   PlayCircle,
   RefreshCw,
   Search,
+  ShieldCheck,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -66,20 +69,25 @@ const CREDENTIAL_FIELDS: Record<string, FieldDef[]> = {
     {
       name: "account",
       label: "Snowflake account",
-      placeholder: "org-account",
+      placeholder: "MJFAYEE-YS65534",
       required: true,
     },
     {
       name: "user",
-      label: "Read-only user",
-      placeholder: "TRUSTOPS_READER",
+      label: "Service user",
+      placeholder: "TRUSTOPS_INGEST_SVC",
       required: true,
     },
     {
-      name: "credential_ref",
-      label: "Credential reference",
-      placeholder: "SNOWFLAKE_OAUTH_TOKEN",
+      name: "private_key_ref",
+      label: "Private key file env var",
+      placeholder: "SNOWFLAKE_PRIVATE_KEY_FILE",
       required: true,
+    },
+    {
+      name: "private_key_file_pwd_ref",
+      label: "Key password env var (optional)",
+      placeholder: "SNOWFLAKE_PRIVATE_KEY_FILE_PWD",
     },
   ],
   "aws-posture": [
@@ -341,6 +349,19 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
   );
   const canTestAccess = isEnabled || canEnable;
   const canDiscover = isEnabled || missingCredentials.length === 0;
+  const latestError = (runs.data ?? []).find((run) => run.error);
+  const sourceMode =
+    connector.connector_id === "snowflake-evidence-lake"
+      ? "Existing security lake"
+      : connector.connector_id === "aws-posture" ||
+          connector.connector_id === "azure-posture" ||
+          connector.connector_id === "gcp-posture"
+        ? "Direct cloud source"
+        : connector.collection_mode.replace(/_/g, " ");
+  const syncEffect =
+    connector.connector_id === "snowflake-evidence-lake"
+      ? "Reads governed evidence views, normalizes rows, recomputes posture, freezes snapshots, and triggers evidence-change workflows."
+      : "Collects read-only source facts, lands raw evidence, recomputes posture, freezes snapshots, and triggers evidence-change workflows.";
 
   const enable = async () => {
     if (!canEnable) {
@@ -557,6 +578,27 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
           <Badge>freshness {connector.freshness_slo_minutes}m SLO</Badge>
         </div>
 
+        <section className="rounded-xl border border-line bg-slate-50 p-3">
+          <div className="flex items-start gap-3">
+            <div className="rounded-lg border border-line bg-white p-2 text-brand">
+              <Database className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="text-xs font-black uppercase tracking-wide text-muted">
+                Human app flow · {sourceMode}
+              </div>
+              <div className="mt-1 text-sm font-semibold text-ink">
+                Configure read scope, test access, enable, then sync from this
+                drawer.
+              </div>
+              <div className="mt-1 text-xs leading-5 text-muted">
+                {syncEffect} Agents, API, scheduler, and UI all read the same
+                resulting lake state.
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="rounded-xl border border-line p-3">
           <div className="text-xs font-black uppercase tracking-wide text-muted">
             Required permissions
@@ -587,6 +629,16 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
             <div className="text-xs font-black uppercase tracking-wide text-muted">
               Scoped access · {connector.credential_type.replace(/_/g, " ")}
             </div>
+            {connector.connector_id === "snowflake-evidence-lake" && (
+              <div className="mt-2 flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-950">
+                <KeyRound className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <div>
+                  TrustOps stores only the service user, scope, and env-var
+                  names. The running server must mount the private key file and
+                  expose it through <code>SNOWFLAKE_PRIVATE_KEY_FILE</code>.
+                </div>
+              </div>
+            )}
             <div className="mt-2 grid gap-2">
               {credentialFields.map((field) => (
                 <label
@@ -704,6 +756,14 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                 Access checked. Enable writes the redacted configuration event.
               </div>
             )}
+            {latestError?.error && (
+              <div className="mt-2 flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-900">
+                <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <div>
+                  <b>Latest run needs attention:</b> {latestError.error}
+                </div>
+              </div>
+            )}
             {isEnabled && connector.credential_fingerprint ? (
               <div className="mt-2 text-xs text-muted">
                 Last fingerprint:{" "}
@@ -722,7 +782,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
 
         <section>
           <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
-            <AlertCircle className="h-3 w-3" /> Run history ·{" "}
+            <ShieldCheck className="h-3 w-3" /> Run history ·{" "}
             {runs.data?.length ?? 0} events
           </div>
           <div className="grid gap-2">

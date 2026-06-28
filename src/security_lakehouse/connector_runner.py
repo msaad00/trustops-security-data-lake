@@ -56,6 +56,7 @@ from security_lakehouse.connectors_snowflake import (
 from security_lakehouse.connectors_snowflake import (
     SnowflakeClient,
     SnowflakeFixtureClient,
+    _probe_query_params,
     collect_snowflake_evidence,
 )
 from security_lakehouse.ingestion.merge import dedupe_by_key
@@ -191,7 +192,7 @@ def run_connector_sync(
         cursor = _advance_watermark(lake, connector_id, rows, write_mode=write_mode)
         if materialize:
             run_pipeline(raw_path, lake)
-            _land_to_sink(lake)
+            _land_to_sink(lake, connector_id=connector_id)
             _fire_evidence_changed(lake, connector_id)
         run = append_run_event(
             lake,
@@ -232,7 +233,7 @@ class ConnectorSyncError(RuntimeError):
         self.run = run
 
 
-def _land_to_sink(lake: Path) -> None:
+def _land_to_sink(lake: Path, *, connector_id: str | None = None) -> None:
     """Project the freshly materialized lake to a configured external sink.
 
     The local lake is the source of truth; configured evidence sinks are optional,
@@ -240,8 +241,25 @@ def _land_to_sink(lake: Path) -> None:
     is reported to stderr and swallowed rather than failing the sync. No-op
     unless a Snowflake, ClickHouse, or DuckDB sink is configured.
     """
+    env = dict(os.environ)
+    if connector_id == "snowflake-evidence-lake":
+        # Snowflake can be either an existing read-only evidence lake or an
+        # optional write sink. A read-connector sync must not infer write-sink
+        # intent from the same SNOWFLAKE_* runtime variables used for key-pair
+        # auth, otherwise a least-privilege reader sees noisy sink failures.
+        for key in (
+            SNOWFLAKE_ACCOUNT_ENV,
+            SNOWFLAKE_USER_ENV,
+            SNOWFLAKE_PRIVATE_KEY_FILE_ENV,
+            SNOWFLAKE_PRIVATE_KEY_FILE_PWD_ENV,
+            SNOWFLAKE_ROLE_ENV,
+            SNOWFLAKE_WAREHOUSE_ENV,
+            SNOWFLAKE_DATABASE_ENV,
+            SNOWFLAKE_SCHEMA_ENV,
+        ):
+            env.pop(key, None)
     try:
-        landed = land_if_configured(lake, dict(os.environ))
+        landed = land_if_configured(lake, env)
     except Exception as exc:  # noqa: BLE001 - sink is optional; never fatal to collection
         print(
             f"warning: evidence sink load failed ({type(exc).__name__}); local lake is unaffected",
@@ -363,7 +381,13 @@ def _build_jira(inputs: SyncInputs) -> list[dict[str, Any]]:
 
 
 def _build_snowflake(inputs: SyncInputs) -> list[dict[str, Any]]:
-    return _collect_snowflake(fixture_dir=inputs.fixture_dir, token_env=inputs.token_env, env=inputs.env)
+    return _collect_snowflake(
+        fixture_dir=inputs.fixture_dir,
+        token_env=inputs.token_env,
+        env=inputs.env,
+        credentials=inputs.credentials,
+        options=inputs.options,
+    )
 
 
 REGISTRY: dict[str, ConnectorBuilder] = {
@@ -563,42 +587,56 @@ def _collect_snowflake(
     fixture_dir: str | Path | None,
     token_env: str,
     env: dict[str, str],
+    credentials: dict[str, Any] | None = None,
+    options: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     client: SnowflakeClient | SnowflakeFixtureClient
-    account = env.get(SNOWFLAKE_ACCOUNT_ENV)
+    credentials = credentials or {}
+    options = options or {}
+    account = str(credentials.get("account") or env.get(SNOWFLAKE_ACCOUNT_ENV) or "").strip() or None
     if fixture_dir:
         client = SnowflakeFixtureClient(fixture_dir, account=account or "fixture-snowflake")
     else:
-        user = env.get(SNOWFLAKE_USER_ENV)
-        credential = _resolve_provider_token(token_env, SNOWFLAKE_OAUTH_TOKEN_ENV, env)
-        private_key_file = env.get(SNOWFLAKE_PRIVATE_KEY_FILE_ENV)
-        private_key_file_pwd = env.get(SNOWFLAKE_PRIVATE_KEY_FILE_PWD_ENV)
-        authenticator = env.get(SNOWFLAKE_AUTHENTICATOR_ENV)
-        if not authenticator:
-            authenticator = "oauth" if credential else "SNOWFLAKE_JWT" if private_key_file else "externalbrowser"
-        if not account or not user:
+        effective_credentials = {
+            "account": account,
+            "user": str(credentials.get("user") or env.get(SNOWFLAKE_USER_ENV) or "").strip(),
+            "role": str(credentials.get("role") or env.get(SNOWFLAKE_ROLE_ENV) or "").strip(),
+            "authenticator": str(
+                credentials.get("authenticator") or env.get(SNOWFLAKE_AUTHENTICATOR_ENV) or ""
+            ).strip(),
+            "credential_ref": str(credentials.get("credential_ref") or "").strip(),
+            "oauth_token_ref": str(credentials.get("oauth_token_ref") or "").strip(),
+            "private_key_ref": str(credentials.get("private_key_ref") or "").strip(),
+            "private_key_file_pwd_ref": str(credentials.get("private_key_file_pwd_ref") or "").strip(),
+        }
+        effective_options = {
+            "warehouse": str(options.get("warehouse") or env.get(SNOWFLAKE_WAREHOUSE_ENV) or "").strip(),
+            "database": str(options.get("database") or env.get(SNOWFLAKE_DATABASE_ENV) or "").strip(),
+            "schema": str(options.get("schema") or env.get(SNOWFLAKE_SCHEMA_ENV) or "").strip(),
+            "role": str(options.get("role") or env.get(SNOWFLAKE_ROLE_ENV) or "").strip(),
+            "authenticator": str(options.get("authenticator") or env.get(SNOWFLAKE_AUTHENTICATOR_ENV) or "").strip(),
+        }
+        if token_env != DEFAULT_TOKEN_ENV and env.get(token_env):
+            effective_credentials["credential_ref"] = token_env
+        elif not effective_credentials["credential_ref"] and env.get(SNOWFLAKE_OAUTH_TOKEN_ENV):
+            effective_credentials["credential_ref"] = SNOWFLAKE_OAUTH_TOKEN_ENV
+        if not effective_credentials["private_key_ref"] and env.get(SNOWFLAKE_PRIVATE_KEY_FILE_ENV):
+            effective_credentials["private_key_ref"] = SNOWFLAKE_PRIVATE_KEY_FILE_ENV
+        if not effective_credentials["private_key_file_pwd_ref"] and env.get(SNOWFLAKE_PRIVATE_KEY_FILE_PWD_ENV):
+            effective_credentials["private_key_file_pwd_ref"] = SNOWFLAKE_PRIVATE_KEY_FILE_PWD_ENV
+        try:
+            params = _probe_query_params(credentials=effective_credentials, options=effective_options, env=env)
+        except ValueError as exc:
             raise ValueError(
                 "snowflake-evidence-lake sync requires --fixture-dir, or "
                 f"{SNOWFLAKE_ACCOUNT_ENV} plus {SNOWFLAKE_USER_ENV} with browser SSO "
                 f"({SNOWFLAKE_AUTHENTICATOR_ENV}=externalbrowser), a Snowflake service-user key file "
                 f"({SNOWFLAKE_PRIVATE_KEY_FILE_ENV}), or a read-only OAuth token "
                 f"({SNOWFLAKE_OAUTH_TOKEN_ENV} or --token-env)"
-            )
-        params = {
-            "account": account,
-            "user": user,
-            "authenticator": authenticator,
-            "token": credential,
-            "warehouse": env.get(SNOWFLAKE_WAREHOUSE_ENV),
-            "database": env.get(SNOWFLAKE_DATABASE_ENV),
-            "schema": env.get(SNOWFLAKE_SCHEMA_ENV),
-            "role": env.get(SNOWFLAKE_ROLE_ENV),
-        }
-        if private_key_file and not credential:
-            params["private_key_file"] = private_key_file
-            params["private_key_file_pwd"] = private_key_file_pwd
+            ) from exc
         views = {
-            key: env.get(f"SNOWFLAKE_VIEW_{key.upper()}") or default for key, default in SNOWFLAKE_DEFAULT_VIEWS.items()
+            key: str(options.get(key) or env.get(f"SNOWFLAKE_VIEW_{key.upper()}") or default)
+            for key, default in SNOWFLAKE_DEFAULT_VIEWS.items()
         }
         client = SnowflakeClient(query_params=params, views=views)
     return collect_snowflake_evidence(client, account=account)

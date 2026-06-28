@@ -213,6 +213,74 @@ def test_snowflake_live_uses_key_pair_file_for_service_user(tmp_path: Path, monk
     assert captured["query_params"]["token"] is None
 
 
+def test_snowflake_sync_uses_configured_scope_and_private_key_ref(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    connector_state.append_config_event(
+        tmp_path,
+        connector_id="snowflake-evidence-lake",
+        state="enabled",
+        actor="alice",
+        credentials={
+            "account": "MJFAYEE-YS65534",
+            "user": "TRUSTOPS_INGEST_SVC",
+            "private_key_ref": "SNOWFLAKE_PRIVATE_KEY_FILE",
+        },
+        options={
+            "warehouse": "TRUSTOPS_READ_WH",
+            "database": "TRUSTOPS_SECURITY_LAKE",
+            "schema": "EVIDENCE",
+            "role": "TRUSTOPS_READER",
+            "audit_events": "TRUSTOPS_AUDIT_EVENTS",
+            "control_posture": "TRUSTOPS_CONTROL_POSTURE",
+            "asset_risk": "TRUSTOPS_ASSET_RISK",
+            "evidence_bundles": "TRUSTOPS_EVIDENCE_BUNDLES",
+        },
+    )
+    captured: dict[str, object] = {}
+
+    class FakeSnowflakeClient:
+        def __init__(self, *, query_params: dict[str, object], views: dict[str, str]) -> None:
+            captured["query_params"] = query_params
+            captured["views"] = views
+
+    monkeypatch.setattr(connector_runner, "SnowflakeClient", FakeSnowflakeClient)
+    monkeypatch.setattr(connector_runner, "collect_snowflake_evidence", lambda client, account=None: [])
+    monkeypatch.setenv("SNOWFLAKE_PRIVATE_KEY_FILE", "/run/secrets/trustops_snowflake_key.p8")
+    for name in (
+        "SNOWFLAKE_ACCOUNT",
+        "SNOWFLAKE_USER",
+        "SNOWFLAKE_WAREHOUSE",
+        "SNOWFLAKE_DATABASE",
+        "SNOWFLAKE_SCHEMA",
+        "SNOWFLAKE_ROLE",
+        "SNOWFLAKE_OAUTH_TOKEN",
+    ):
+        monkeypatch.delenv(name, raising=False)
+
+    result = connector_runner.run_connector_sync(tmp_path, connector_id="snowflake-evidence-lake", materialize=False)
+
+    assert result.result == "ok"
+    assert captured["query_params"] == {
+        "account": "MJFAYEE-YS65534",
+        "user": "TRUSTOPS_INGEST_SVC",
+        "authenticator": "SNOWFLAKE_JWT",
+        "token": None,
+        "warehouse": "TRUSTOPS_READ_WH",
+        "database": "TRUSTOPS_SECURITY_LAKE",
+        "schema": "EVIDENCE",
+        "role": "TRUSTOPS_READER",
+        "private_key_file": "/run/secrets/trustops_snowflake_key.p8",
+        "private_key_file_pwd": None,
+    }
+    assert captured["views"] == {
+        "audit_events": "TRUSTOPS_AUDIT_EVENTS",
+        "control_posture": "TRUSTOPS_CONTROL_POSTURE",
+        "asset_risk": "TRUSTOPS_ASSET_RISK",
+        "evidence_bundles": "TRUSTOPS_EVIDENCE_BUNDLES",
+    }
+
+
 def test_snowflake_probe_resolves_oauth_ref_from_environment() -> None:
     params = _probe_query_params(
         credentials={
