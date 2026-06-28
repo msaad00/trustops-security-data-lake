@@ -77,34 +77,86 @@ idempotency, snapshots, hashes, and audit logs.
   <img src="docs/images/trustops-assessment-architecture.svg" alt="TrustOps assessment architecture with evidence sources, data lake, control evaluation, API, UI, workflows, snapshots, and trust shares" width="100%">
 </p>
 
-```mermaid
-flowchart TB
-  Sources[Cloud, identity, repo, runtime, scanner, ticketing, AI evidence]
-  Lake[Customer-controlled lake or local evidence store]
-  Evidence[Normalized evidence, hashes, freshness, owners]
-  Rules[Controls-as-code evaluation]
-  Posture[Posture, tests, violations, assets]
-  Actions[Findings, remediation, workflows, trust sharing]
+**1. End-to-end flow** — read-only evidence becomes deterministic posture, then
+surfaces and actions. The middle band is the source of truth; nothing downstream
+can rewrite a control verdict.
 
-  Sources --> Lake --> Evidence --> Rules --> Posture --> Actions
+```mermaid
+%%{init: {'theme':'base','themeVariables':{'fontSize':'15px','lineColor':'#7c8db5'}}}%%
+flowchart LR
+  subgraph SRC["① Read-only evidence sources"]
+    direction TB
+    S1["☁️ Cloud<br/>AWS · Azure · GCP"]
+    S2["🔑 Identity<br/>Okta · Google"]
+    S3["🧩 Code · tickets · AI<br/>GitHub · Jira · MCP"]
+  end
+
+  subgraph CORE["② Deterministic assessment core — source of truth"]
+    direction TB
+    LK[("🗄️ Customer-owned lake<br/>bronze · silver · gold")]
+    RU["📐 Controls-as-code engine<br/>declarative pass/fail rules"]
+    PO["📊 Posture · control tests<br/>violations · assets"]
+    LK --> RU --> PO
+  end
+
+  subgraph OUT["③ Surfaces & actions"]
+    direction TB
+    CO["🖥️ Human console"]
+    AP["🔌 API · SDK · MCP"]
+    SH["🔗 Trust-center shares"]
+    WK["✅ Tasks · evidence requests<br/>remediation · snapshots"]
+  end
+
+  SRC -->|"assume-role / key-pair<br/>read-only · idempotent"| CORE
+  CORE --> OUT
+
+  classDef src fill:#0b2545,stroke:#4a90d9,color:#eaf2ff;
+  classDef core fill:#11331f,stroke:#52b788,color:#e8fff1;
+  classDef out fill:#2e1f3e,stroke:#b07cc6,color:#f6ecff;
+  class S1,S2,S3 src;
+  class LK,RU,PO core;
+  class CO,AP,SH,WK out;
 ```
 
-```mermaid
-flowchart LR
-  Posture[Deterministic posture state]
-  Console[Human console]
-  API[API, SDK, MCP]
-  Snapshot[Immutable snapshots]
-  Share[Trust center shares]
-  Harness[Optional agent harness]
-  Approval[Approval-gated writes]
-  Work[Tasks, evidence requests, snapshots]
+**2. Where the agents — and LangGraph — sit.** The agent harness is _advisory and
+optional_. LangGraph (or a plain sequential runner) only orchestrates reads of
+already-redacted facts and _proposes_ actions; a bring-your-own model is an
+optional step inside that graph, budgeted and constrained to an allow-listed tool
+set. Every write passes a human approval gate, and the deterministic engine —
+never the model — owns the verdict.
 
-  Posture --> Console
-  Posture --> API
-  Posture --> Snapshot
-  Posture --> Share
-  API --> Harness --> Approval --> Work
+```mermaid
+%%{init: {'theme':'base','themeVariables':{'fontSize':'15px','lineColor':'#7c8db5'}}}%%
+flowchart LR
+  subgraph DET["Deterministic core (authoritative)"]
+    direction TB
+    PF["Redacted posture<br/>+ evidence gaps"]
+    EV["Control evaluation<br/>+ guardrail checks"]
+  end
+
+  subgraph HARNESS["Optional agent harness — advisory only"]
+    direction TB
+    LG{{"LangGraph orchestrator<br/>· or sequential runner ·"}}
+    N1["load_posture"] --> N2["load_evidence_gaps"] --> N3["propose_actions"]
+    MD["🧠 BYO model (optional)<br/>Anthropic · OpenAI · Bedrock<br/>Vertex · Snowflake Cortex"]
+    LG -. drives .-> N1
+    N3 -. "budgeted · allow-listed<br/>tool calls only" .-> MD
+  end
+
+  GATE{{"🧑‍⚖️ Human approval gate"}}
+  WR["API writes<br/>tasks · evidence requests"]
+  AUD[("🔒 Append-only audit log")]
+
+  PF --> LG
+  N3 --> GATE --> WR --> AUD
+  EV ==>|"pass/fail the model<br/>cannot override"| WR
+
+  classDef det fill:#11331f,stroke:#52b788,color:#e8fff1;
+  classDef agent fill:#0b2545,stroke:#4a90d9,color:#eaf2ff;
+  classDef gate fill:#5a2d0c,stroke:#e8923a,color:#fff3e6;
+  class PF,EV det;
+  class LG,N1,N2,N3,MD agent;
+  class GATE,WR,AUD gate;
 ```
 
 ### Evidence Pipeline
@@ -115,26 +167,42 @@ sink interface (Snowflake implemented today; ClickHouse and an embedded store ar
 the next targets), so evidence stays in infrastructure the customer owns.
 
 ```mermaid
+%%{init: {'theme':'base','themeVariables':{'fontSize':'15px','lineColor':'#7c8db5'}}}%%
 flowchart LR
   subgraph SRC["Read-only sources"]
-    C1[AWS / Azure / GCP]
-    C2[GitHub / Okta / Jira]
+    direction TB
+    C1["AWS · Azure · GCP"]
+    C2["GitHub · Okta · Jira"]
   end
-  SRC -->|"assume-role or key-pair, read-only, idempotent"| RAW
-  subgraph MED["Medallion ETL"]
-    RAW[("Bronze: raw, immutable, raw_sha256")]
-    SIL[("Silver: normalized, deduped")]
-    GOLD[("Gold: posture, asset risk")]
-    RAW -->|"stage then MERGE"| SIL -->|"map controls, MERGE"| GOLD
+
+  subgraph MED["Medallion ETL — idempotent MERGE"]
+    direction LR
+    RAW[("🥉 Bronze<br/>raw · immutable<br/>raw_sha256")]
+    SIL[("🥈 Silver<br/>normalized · deduped")]
+    GOLD[("🥇 Gold<br/>posture · asset risk")]
+    RAW -->|"stage → MERGE"| SIL -->|"map controls → MERGE"| GOLD
   end
-  GOLD --> VIEW["Auditor and exec views: chain of custody"]
-  VIEW --> UI["Trust Center UI"]
-  MED -.->|"land and evaluate in place"| LAKE
-  subgraph LAKE["Pluggable security data lake"]
-    L1[(Snowflake)]
-    L2[(ClickHouse)]
-    L3[(DuckDB)]
+
+  GOLD --> VIEW["📜 Auditor & exec views<br/>chain of custody"] --> UI["🖥️ Trust Center UI"]
+
+  subgraph LAKE["Pluggable security data lake (customer-owned)"]
+    direction LR
+    L1[("Snowflake<br/>✅ today")]
+    L2[("ClickHouse<br/>next")]
+    L3[("DuckDB<br/>next")]
   end
+  MED -. "land & evaluate in place" .-> LAKE
+
+  SRC -->|"assume-role / key-pair<br/>read-only · idempotent"| RAW
+
+  classDef src fill:#0b2545,stroke:#4a90d9,color:#eaf2ff;
+  classDef med fill:#11331f,stroke:#52b788,color:#e8fff1;
+  classDef out fill:#2e1f3e,stroke:#b07cc6,color:#f6ecff;
+  classDef lake fill:#3a2c0a,stroke:#d4a72c,color:#fff8e6;
+  class C1,C2 src;
+  class RAW,SIL,GOLD med;
+  class VIEW,UI out;
+  class L1,L2,L3 lake;
 ```
 
 ### Storage Modes
