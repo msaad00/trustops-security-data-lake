@@ -160,6 +160,26 @@ TABLE_SPECS: tuple[DuckTableSpec, ...] = (
 )
 
 
+# Gold "evaluate in place" views — the same auditor + executive surfaces the
+# Snowflake schema ships, expressed in DuckDB SQL so the embedded lake is queried,
+# not re-derived in Python. They read only the tables this sink lands, so they are
+# always valid after a load. ``control_ids`` membership uses DuckDB's
+# ``list_contains`` over the native ``VARCHAR[]`` column.
+GOLD_VIEWS: tuple[str, ...] = (
+    "CREATE OR REPLACE VIEW auditor_control_evidence AS "
+    "SELECT c.framework, c.control_id, c.title, c.status AS control_status, c.risk_score, "
+    "e.event_time, e.source, e.event_type, e.asset_id, e.severity, e.status AS event_status, "
+    "e.evidence_ref, e.raw_sha256 "
+    "FROM control_posture c JOIN normalized_events e ON list_contains(e.control_ids, c.control_id)",
+    "CREATE OR REPLACE VIEW executive_risk_summary AS "
+    "SELECT framework, count(*) AS controls, "
+    "count(*) FILTER (WHERE status = 'fail') AS failing_controls, "
+    "round(avg(risk_score), 2) AS avg_risk_score, "
+    "round(avg(evidence_coverage), 4) AS avg_evidence_coverage "
+    "FROM control_posture GROUP BY framework ORDER BY avg_risk_score DESC",
+)
+
+
 def _coerce_datetime(value: Any) -> datetime:
     """Parse an ISO-8601 string (``Z`` accepted) to a UTC-aware datetime."""
     if isinstance(value, datetime):
@@ -225,6 +245,10 @@ class DuckDBSink:
                     rows,
                 )
                 landed[spec.table] = len(rows)
+            # Project the gold "evaluate in place" views so compliance can be
+            # queried in the embedded lake without re-running the Python engine.
+            for view_sql in GOLD_VIEWS:
+                conn.execute(view_sql)
         finally:
             if self._connection is None:
                 conn.close()
