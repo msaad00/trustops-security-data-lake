@@ -163,8 +163,8 @@ flowchart LR
 
 Read-only ingestion lands immutable raw evidence, then a medallion of idempotent
 `MERGE`s normalizes and maps it to controls. The lake sits behind one pluggable
-sink interface (Snowflake implemented today; ClickHouse and an embedded store are
-the next targets), so evidence stays in infrastructure the customer owns.
+sink interface — a warehouse (Snowflake, ClickHouse) or an embedded DuckDB file —
+so evidence stays in infrastructure the customer owns.
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'fontSize':'15px','lineColor':'#7c8db5'}}}%%
@@ -187,9 +187,9 @@ flowchart LR
 
   subgraph LAKE["Pluggable security data lake (customer-owned)"]
     direction LR
-    L1[("Snowflake<br/>✅ today")]
-    L2[("ClickHouse<br/>next")]
-    L3[("DuckDB<br/>next")]
+    L1[("Snowflake<br/>✅")]
+    L2[("ClickHouse<br/>✅")]
+    L3[("DuckDB<br/>✅ embedded")]
   end
   MED -. "land & evaluate in place" .-> LAKE
 
