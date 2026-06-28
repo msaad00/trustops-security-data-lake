@@ -77,133 +77,68 @@ idempotency, snapshots, hashes, and audit logs.
   <img src="docs/images/trustops-assessment-architecture.svg" alt="TrustOps assessment architecture with evidence sources, data lake, control evaluation, API, UI, workflows, snapshots, and trust shares" width="100%">
 </p>
 
-**1. End-to-end flow** — read-only evidence becomes deterministic posture, then
-surfaces and actions. The middle band is the source of truth; nothing downstream
-can rewrite a control verdict.
+**1. End-to-end flow.** Evidence is collected read-only, evaluated by the
+deterministic core, then exposed through product surfaces and guarded actions.
+The middle band is the source of truth; nothing downstream can rewrite a control
+verdict.
 
-```mermaid
-%%{init: {'theme':'base','themeVariables':{'fontSize':'15px','lineColor':'#7c8db5'}}}%%
-flowchart LR
-  subgraph SRC["① Read-only evidence sources"]
-    direction TB
-    S1["☁️ Cloud<br/>AWS · Azure · GCP"]
-    S2["🔑 Identity<br/>Okta · Google"]
-    S3["🧩 Code · tickets · AI<br/>GitHub · Jira · MCP"]
-  end
+| 1. Read-only evidence                                                                  | 2. Deterministic source of truth                                                                                        | 3. Surfaces and actions                                                                             |
+| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Cloud: AWS, Azure, GCP<br>Identity: Okta, Google<br>Code, tickets, runtime, AI systems | Customer-owned lake: bronze, silver, gold<br>Controls-as-code evaluation<br>Posture, tests, findings, assets, snapshots | Console dashboards<br>API, SDK, MCP<br>Trust-center shares<br>Tasks, evidence requests, remediation |
+| Scoped role, key-pair, OAuth, or service identity                                      | Idempotent loads, hashes, freshness, tenant/RBAC policy, audit chain                                                    | Human approval gates for writes; append-only audit for every action                                 |
 
-  subgraph CORE["② Deterministic assessment core — source of truth"]
-    direction TB
-    LK[("🗄️ Customer-owned lake<br/>bronze · silver · gold")]
-    RU["📐 Controls-as-code engine<br/>declarative pass/fail rules"]
-    PO["📊 Posture · control tests<br/>violations · assets"]
-    LK --> RU --> PO
-  end
-
-  subgraph OUT["③ Surfaces & actions"]
-    direction TB
-    CO["🖥️ Human console"]
-    AP["🔌 API · SDK · MCP"]
-    SH["🔗 Trust-center shares"]
-    WK["✅ Tasks · evidence requests<br/>remediation · snapshots"]
-  end
-
-  SRC -->|"assume-role / key-pair<br/>read-only · idempotent"| CORE
-  CORE --> OUT
-
-  classDef src fill:#0b2545,stroke:#4a90d9,color:#eaf2ff;
-  classDef core fill:#11331f,stroke:#52b788,color:#e8fff1;
-  classDef out fill:#2e1f3e,stroke:#b07cc6,color:#f6ecff;
-  class S1,S2,S3 src;
-  class LK,RU,PO core;
-  class CO,AP,SH,WK out;
+```text
+Read-only sources
+    -> customer-owned evidence lake
+    -> deterministic controls-as-code
+    -> posture, findings, snapshots
+    -> console, API, trust shares, workflows
 ```
 
-**2. Where the agents — and LangGraph — sit.** The agent harness is _advisory and
-optional_. LangGraph (or a plain sequential runner) only orchestrates reads of
-already-redacted facts and _proposes_ actions; a bring-your-own model is an
-optional step inside that graph, budgeted and constrained to an allow-listed tool
-set. Every write passes a human approval gate, and the deterministic engine —
-never the model — owns the verdict.
+**2. Agent and LangGraph boundary.** The agent harness is advisory and optional.
+LangGraph, or the built-in sequential runner, orchestrates reads of already
+redacted facts and proposes actions. Bring-your-own models are optional,
+budgeted, and constrained to allow-listed tools. The deterministic engine owns
+the verdict.
 
-```mermaid
-%%{init: {'theme':'base','themeVariables':{'fontSize':'15px','lineColor':'#7c8db5'}}}%%
-flowchart LR
-  subgraph DET["Deterministic core (authoritative)"]
-    direction TB
-    PF["Redacted posture<br/>+ evidence gaps"]
-    EV["Control evaluation<br/>+ guardrail checks"]
-  end
+| Deterministic core, always on                     | Optional harness, advisory only                                | Write boundary                                                |
+| ------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------- |
+| Loads redacted posture and evidence gaps          | Runs `load_posture`, `load_evidence_gaps`, `propose_actions`   | Writes require approval and RBAC                              |
+| Evaluates controls, freshness, exceptions, guards | Can use LangGraph or the plain runner                          | Approved writes create tasks, evidence requests, or snapshots |
+| Produces pass/fail/stale/missing verdicts         | Can call a configured model provider inside budget/tool limits | Audit log records actor, input hash, decision, and result     |
 
-  subgraph HARNESS["Optional agent harness — advisory only"]
-    direction TB
-    LG{{"LangGraph orchestrator<br/>· or sequential runner ·"}}
-    N1["load_posture"] --> N2["load_evidence_gaps"] --> N3["propose_actions"]
-    MD["🧠 BYO model (optional)<br/>Anthropic · OpenAI · Bedrock<br/>Vertex · Snowflake Cortex"]
-    LG -. drives .-> N1
-    N3 -. "budgeted · allow-listed<br/>tool calls only" .-> MD
-  end
+```text
+Deterministic facts
+    -> optional harness
+    -> optional BYO model
+    -> proposed action
+    -> human/API approval gate
+    -> audited write
 
-  GATE{{"🧑‍⚖️ Human approval gate"}}
-  WR["API writes<br/>tasks · evidence requests"]
-  AUD[("🔒 Append-only audit log")]
-
-  PF --> LG
-  N3 --> GATE --> WR --> AUD
-  EV ==>|"pass/fail the model<br/>cannot override"| WR
-
-  classDef det fill:#11331f,stroke:#52b788,color:#e8fff1;
-  classDef agent fill:#0b2545,stroke:#4a90d9,color:#eaf2ff;
-  classDef gate fill:#5a2d0c,stroke:#e8923a,color:#fff3e6;
-  class PF,EV det;
-  class LG,N1,N2,N3,MD agent;
-  class GATE,WR,AUD gate;
+Model output never overrides a control verdict.
 ```
 
 ### Evidence Pipeline
 
-Read-only ingestion lands immutable raw evidence, then a medallion of idempotent
-`MERGE`s normalizes and maps it to controls. The lake sits behind one pluggable
-sink interface (Snowflake implemented today; ClickHouse and an embedded store are
-the next targets), so evidence stays in infrastructure the customer owns.
+Read-only ingestion lands immutable raw evidence, then idempotent transforms
+normalize and map it to controls. The same model can run locally, land into a
+customer-owned warehouse, or read from an existing evidence lake.
 
-```mermaid
-%%{init: {'theme':'base','themeVariables':{'fontSize':'15px','lineColor':'#7c8db5'}}}%%
-flowchart LR
-  subgraph SRC["Read-only sources"]
-    direction TB
-    C1["AWS · Azure · GCP"]
-    C2["GitHub · Okta · Jira"]
-  end
+| Stage              | What it stores or computes                                      | Integrity contract                                   |
+| ------------------ | --------------------------------------------------------------- | ---------------------------------------------------- |
+| **Source read**    | Cloud, identity, code, ticketing, runtime, scanner, AI evidence | Least-privilege read scope; no compliance verdicts   |
+| **Bronze**         | Raw replay records and source metadata                          | Immutable rows, `raw_sha256`, idempotent ingestion   |
+| **Silver**         | Normalized facts, owners, assets, freshness                     | Deduped facts, stable IDs, schema validation         |
+| **Gold**           | Control posture, asset risk, framework readiness, violations    | Deterministic rules, snapshots, append-only audit    |
+| **Trust surfaces** | Dashboards, trust shares, APIs, workflows                       | Redaction, tenant/RBAC policy, approval-gated writes |
 
-  subgraph MED["Medallion ETL — idempotent MERGE"]
-    direction LR
-    RAW[("🥉 Bronze<br/>raw · immutable<br/>raw_sha256")]
-    SIL[("🥈 Silver<br/>normalized · deduped")]
-    GOLD[("🥇 Gold<br/>posture · asset risk")]
-    RAW -->|"stage → MERGE"| SIL -->|"map controls → MERGE"| GOLD
-  end
-
-  GOLD --> VIEW["📜 Auditor & exec views<br/>chain of custody"] --> UI["🖥️ Trust Center UI"]
-
-  subgraph LAKE["Pluggable security data lake (customer-owned)"]
-    direction LR
-    L1[("Snowflake<br/>✅ today")]
-    L2[("ClickHouse<br/>next")]
-    L3[("DuckDB<br/>next")]
-  end
-  MED -. "land & evaluate in place" .-> LAKE
-
-  SRC -->|"assume-role / key-pair<br/>read-only · idempotent"| RAW
-
-  classDef src fill:#0b2545,stroke:#4a90d9,color:#eaf2ff;
-  classDef med fill:#11331f,stroke:#52b788,color:#e8fff1;
-  classDef out fill:#2e1f3e,stroke:#b07cc6,color:#f6ecff;
-  classDef lake fill:#3a2c0a,stroke:#d4a72c,color:#fff8e6;
-  class C1,C2 src;
-  class RAW,SIL,GOLD med;
-  class VIEW,UI out;
-  class L1,L2,L3 lake;
-```
+| Storage target       | Current role                                                                  |
+| -------------------- | ----------------------------------------------------------------------------- |
+| Local files + SQLite | Default self-hosted and CI path.                                              |
+| DuckDB mart          | Optional local analytical mart for columnar queries.                          |
+| Snowflake sink       | Customer-owned governed evidence lake adapter.                                |
+| ClickHouse sink      | Customer-owned high-volume telemetry and analytics lake adapter.              |
+| Existing lake read   | Read-only mode for teams that already centralize security evidence elsewhere. |
 
 ### Storage Modes
 
