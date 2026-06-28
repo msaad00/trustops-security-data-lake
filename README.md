@@ -42,8 +42,8 @@ controls, route risk, automate follow-up, and share proof safely.
 | **Trust center**             | Scoped internal, auditor, and customer-facing summaries with expiring shares and redaction policy.              | Sales engineering, auditors      |
 | **Headless agents**          | `/api/v1` envelopes, OpenAPI, Python SDK, MCP tools, persisted harness runs, approvals, and optional LangGraph. | CI, MCP clients, internal agents |
 
-Current catalog scope is explicit: **8 framework families**, **34 seeded
-controls**, **34 reviewed mappings**, **16 modeled asset types**, and **100
+Current catalog scope is explicit: **9 framework families**, **37 seeded
+controls**, **37 reviewed mappings**, **18 modeled asset types**, and **107
 control-to-asset applicability links**. Coverage means seeded repo coverage,
 not certification or full-framework audit coverage. See
 [Framework Coverage](docs/FRAMEWORK_COVERAGE.md).
