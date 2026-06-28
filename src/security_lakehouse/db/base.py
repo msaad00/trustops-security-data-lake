@@ -32,10 +32,11 @@ ENV_DATABASE_URL = "TRUSTOPS_DATABASE_URL"
 DEFAULT_PAGE_LIMIT = 100
 MAX_PAGE_LIMIT = 500
 
-class _SupportsPagination(Protocol):
-    def limit(self, limit: int) -> "_SupportsPagination": ...
 
-    def offset(self, offset: int) -> "_SupportsPagination": ...
+class _SupportsPagination(Protocol):
+    def limit(self, limit: int) -> _SupportsPagination: ...
+
+    def offset(self, offset: int) -> _SupportsPagination: ...
 
 
 _SelectT = TypeVar("_SelectT", bound=_SupportsPagination)
