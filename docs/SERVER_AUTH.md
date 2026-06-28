@@ -144,6 +144,27 @@ API error defaults:
 - Every secured request receives an `X-Correlation-ID` and an authorization
   audit event.
 
+## Rate limiting
+
+The authenticated API surface is rate limited per credential with an in-process
+token bucket, so one caller (or a leaked key) cannot exhaust the server. The
+bucket is keyed by a hash of the presented bearer token, falling back to the
+client host for unauthenticated callers, so one tenant's burst never consumes
+another's budget. A throttled request returns `429` with `code=rate_limited` and
+a `Retry-After` header; health probes (`/api/healthz`, `/api/v1/healthz`) are
+exempt so a limiter trip never hides liveness from an orchestrator.
+
+```bash
+export TRUSTOPS_API_RATE_LIMIT_RPS="50"    # steady tokens/second per credential
+export TRUSTOPS_API_RATE_LIMIT_BURST="100" # bucket capacity (short-spike headroom)
+```
+
+Defaults are `50` rps / `100` burst — generous enough that interactive and agent
+traffic never trips them, low enough to blunt a runaway loop. Set
+`TRUSTOPS_API_RATE_LIMIT_RPS=0` to disable. The limiter is single-node and
+in-process; a multi-replica deployment that needs a shared budget should front
+the API with a gateway limiter or a shared store (Redis).
+
 ## Tenant data isolation
 
 Server mode binds to a lake _root_. Each tenant's bronze/silver/gold evidence
