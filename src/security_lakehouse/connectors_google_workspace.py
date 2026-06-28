@@ -31,6 +31,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse.ingestion import backoff
 from security_lakehouse.io import read_json
 from security_lakehouse.models import utc_iso
 
@@ -86,8 +87,14 @@ class GoogleWorkspaceClient:
                 "user-agent": "trustops-security-data-lake",
             },
         )
-        with urllib.request.urlopen(request, timeout=self.timeout) as resp:  # noqa: S310
-            payload = json.loads(resp.read().decode("utf-8"))
+
+        # The Directory API rate-limits with HTTP 429 + a Retry-After header;
+        # back off and retry transient 429/5xx rather than failing collection.
+        def _fetch() -> Any:
+            with urllib.request.urlopen(request, timeout=self.timeout) as resp:  # noqa: S310
+                return json.loads(resp.read().decode("utf-8"))
+
+        payload = backoff.http_retry(_fetch)
         if isinstance(payload, dict):
             items = payload.get(key, [])
             return [item for item in items if isinstance(item, dict)]

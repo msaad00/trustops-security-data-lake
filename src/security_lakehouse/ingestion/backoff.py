@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import random
 import time
+import urllib.error
 from collections.abc import Callable
 from typing import Any, TypeVar
 
@@ -18,6 +19,20 @@ T = TypeVar("T")
 
 # Status codes that warrant a retry (rate-limit + transient gateway errors).
 RETRYABLE_STATUS = frozenset({429, 502, 503, 504})
+
+
+def is_retryable_http(exc: BaseException) -> bool:
+    """A 429 or transient 5xx from any HTTP source is worth retrying."""
+    return isinstance(exc, urllib.error.HTTPError) and exc.code in RETRYABLE_STATUS
+
+
+def http_retry_after(exc: BaseException) -> float | None:
+    """Read a server ``Retry-After`` (seconds) from a 429 response, if present."""
+    if isinstance(exc, urllib.error.HTTPError) and exc.headers:
+        raw = exc.headers.get("Retry-After")
+        if raw and str(raw).strip().isdigit():
+            return float(str(raw).strip())
+    return None
 
 
 def next_delay(
@@ -49,14 +64,16 @@ def retry(
     max_retries: int = 4,
     base: float = 0.5,
     cap: float = 30.0,
-    sleep: Callable[[float], Any] = time.sleep,
+    sleep: Callable[[float], Any] | None = None,
 ) -> T:
     """Call ``fn`` with retry on classified-transient exceptions.
 
     ``is_retryable`` decides whether an exception is worth retrying;
     ``retry_after`` extracts a server-suggested delay (e.g. from a 429 header).
-    Raises the last exception once ``max_retries`` is exhausted.
+    Raises the last exception once ``max_retries`` is exhausted. ``sleep``
+    defaults to :func:`time.sleep`, resolved at call time so tests can patch it.
     """
+    _sleep = sleep or time.sleep
     attempt = 0
     while True:
         try:
@@ -64,5 +81,10 @@ def retry(
         except Exception as exc:
             if attempt >= max_retries or not is_retryable(exc):
                 raise
-            sleep(next_delay(attempt, base=base, cap=cap, retry_after=retry_after(exc)))
+            _sleep(next_delay(attempt, base=base, cap=cap, retry_after=retry_after(exc)))
             attempt += 1
+
+
+def http_retry(fn: Callable[[], T], **kwargs: Any) -> T:
+    """Retry ``fn`` on retryable HTTP errors (429 / transient 5xx), honoring ``Retry-After``."""
+    return retry(fn, is_retryable=is_retryable_http, retry_after=http_retry_after, **kwargs)
