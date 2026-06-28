@@ -16,7 +16,9 @@ Import this module only when the ``server`` extra is installed.
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
+import math
 import os
 import secrets
 import uuid
@@ -39,6 +41,7 @@ from security_lakehouse import api_legacy, api_v1, tenancy, trust_share
 from security_lakehouse.assessment import build_current_posture, write_assessment_snapshot
 from security_lakehouse.auth.dependencies import get_session, require_scope
 from security_lakehouse.auth.oidc import OIDCLoginError, build_oauth, complete_oidc_login, load_oidc_config
+from security_lakehouse.auth.rate_limit import RateLimitConfig, RateLimiter
 from security_lakehouse.auth.rbac import Identity, scopes_for_role
 from security_lakehouse.auth.request_audit import append_request_audit
 from security_lakehouse.auth.saml import (
@@ -65,7 +68,28 @@ from security_lakehouse.web import web_dist_dir, web_dist_index
 
 _COOKIE_SECURE = os.environ.get("TRUSTOPS_COOKIE_SECURE", "true").lower() in {"1", "true", "yes", "on"}
 
-_ERROR_CODES = {400: "bad_request", 401: "unauthorized", 403: "forbidden", 404: "not_found"}
+_ERROR_CODES = {400: "bad_request", 401: "unauthorized", 403: "forbidden", 404: "not_found", 429: "rate_limited"}
+
+# Health probes are exempt from rate limiting so a limiter trip can never hide
+# liveness from an orchestrator.
+_RATE_LIMIT_EXEMPT = {"/api/healthz", "/api/v1/healthz"}
+
+
+def _rate_limit_key(request: Request) -> str:
+    """Bucket key for a request: the presented credential, else the client host.
+
+    The bearer token is hashed so raw key material never lands in the limiter's
+    in-memory map; unauthenticated callers fall back to their source host.
+    """
+    auth = request.headers.get("Authorization", "")
+    if auth.lower().startswith("bearer "):
+        token = auth[7:].strip()
+        if token:
+            return "k:" + hashlib.sha256(token.encode("utf-8")).hexdigest()[:32]
+    client = request.client.host if request.client else "unknown"
+    return "h:" + client
+
+
 _LEGACY_ERROR_REASONS = {
     HTTPStatus.BAD_REQUEST: "invalid request",
     HTTPStatus.FORBIDDEN: "forbidden",
@@ -528,6 +552,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     )
     app.state.sessionmaker = session_factory(engine)
     app.state.require_auth = require_auth and not _insecure_requested()
+    app.state.rate_limiter = RateLimiter(RateLimitConfig.from_env(dict(os.environ)))
 
     def lake_for(identity: Identity) -> Path:
         """Resolve the per-request lake for ``identity`` so one tenant can never
@@ -581,6 +606,23 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             )
         response.headers["X-Correlation-ID"] = correlation_id
         return response
+
+    # Registered last so it wraps outermost: a throttled request is shed here
+    # before it reaches the audit threadpool write or a route handler.
+    @app.middleware("http")
+    async def _rate_limit(request: Request, call_next):
+        limiter: RateLimiter = app.state.rate_limiter
+        path = request.url.path
+        if limiter.enabled and path.startswith("/api/") and path not in _RATE_LIMIT_EXEMPT:
+            allowed, retry_after = limiter.check(_rate_limit_key(request))
+            if not allowed:
+                response = JSONResponse(
+                    api_v1.error_envelope("rate_limited", "rate limit exceeded; slow down and retry"),
+                    status_code=int(HTTPStatus.TOO_MANY_REQUESTS),
+                )
+                response.headers["Retry-After"] = str(max(1, math.ceil(retry_after)))
+                return response
+        return await call_next(request)
 
     @app.exception_handler(StarletteHTTPException)
     async def _error_envelope(request: Request, exc: StarletteHTTPException) -> JSONResponse:
