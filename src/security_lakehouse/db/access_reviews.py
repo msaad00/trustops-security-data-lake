@@ -12,7 +12,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import case, func, select
 from sqlalchemy.orm import Session
 
 from security_lakehouse.db.base import apply_pagination
@@ -197,6 +197,47 @@ def campaign_progress(session: Session, *, tenant_id: str, campaign_id: str) -> 
     return counts
 
 
+def control_coverage(session: Session, *, tenant_id: str) -> dict[str, dict[str, Any]]:
+    """Aggregate access-review activity per mapped control_id.
+
+    For each control a campaign targets, report how many campaigns exist, how
+    many completed, the most recent completion, and the per-decision item counts
+    across those campaigns — the raw inputs for "is this access control under a
+    current review?".
+    """
+    coverage: dict[str, dict[str, Any]] = {}
+    campaign_rows = session.execute(
+        select(
+            AccessReviewCampaign.control_id,
+            func.count(),
+            func.sum(case((AccessReviewCampaign.status == "completed", 1), else_=0)),
+            func.max(AccessReviewCampaign.completed_at),
+        )
+        .where(AccessReviewCampaign.tenant_id == tenant_id, AccessReviewCampaign.control_id.is_not(None))
+        .group_by(AccessReviewCampaign.control_id)
+    ).all()
+    for control_id, campaigns, completed, last_completed in campaign_rows:
+        coverage[str(control_id)] = {
+            "control_id": str(control_id),
+            "campaigns": int(campaigns),
+            "completed_campaigns": int(completed or 0),
+            "last_completed_at": last_completed,
+            "decisions": {decision: 0 for decision in ACCESS_REVIEW_DECISIONS},
+        }
+
+    item_rows = session.execute(
+        select(AccessReviewCampaign.control_id, AccessReviewItem.decision, func.count())
+        .join(AccessReviewItem, AccessReviewItem.campaign_id == AccessReviewCampaign.id)
+        .where(AccessReviewCampaign.tenant_id == tenant_id, AccessReviewCampaign.control_id.is_not(None))
+        .group_by(AccessReviewCampaign.control_id, AccessReviewItem.decision)
+    ).all()
+    for control_id, decision, count in item_rows:
+        entry = coverage.get(str(control_id))
+        if entry is not None:
+            entry["decisions"][str(decision)] = int(count)
+    return coverage
+
+
 # --- serialization -----------------------------------------------------------
 
 
@@ -236,6 +277,7 @@ __all__ = [
     "add_item",
     "campaign_progress",
     "campaign_to_dict",
+    "control_coverage",
     "create_campaign",
     "get_campaign",
     "get_item",

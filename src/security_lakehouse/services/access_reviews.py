@@ -9,12 +9,13 @@ CLI — gets durable DB-backed writes. Repository ``ValueError`` is surfaced as
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from sqlalchemy.orm import Session
 
+from security_lakehouse.catalog import load_control_catalog
 from security_lakehouse.db import access_reviews as ar
 from security_lakehouse.io import read_jsonl
 from security_lakehouse.services import NotFound, ValidationError
@@ -22,6 +23,9 @@ from security_lakehouse.services import NotFound, ValidationError
 # Silver asset types that represent a reviewable identity (a user/principal whose
 # access a reviewer certifies). Group/policy/config rows are not per-subject access.
 IDENTITY_ASSET_TYPES = {"identity_account", "identity_user", "okta_user", "iam_role"}
+# A completed access review counts as current evidence for this long (a year is
+# the common audit cadence for access certification).
+COVERAGE_FRESHNESS_DAYS = 365
 
 
 def list_campaigns(
@@ -213,10 +217,45 @@ def seed_campaign_from_evidence(
         added += 1
     session.commit()
     return {"added": added, "skipped": len(candidates) - added, "candidates": len(candidates)}
+def control_coverage(session: Session, tenant_id: str, *, now: datetime | None = None) -> list[dict[str, Any]]:
+    """Map access-review activity to the access controls it satisfies.
+
+    Joins each campaign's ``control_id`` to the control catalog (framework +
+    title) and computes whether the control is under a *current* review — a
+    completed campaign within :data:`COVERAGE_FRESHNESS_DAYS`. This is the
+    access-control evidence an auditor asks for (SOC 2 CC6.x, ISO 27001 A.5.18):
+    not just "was access reviewed" but "is the review still in date, and what did
+    it find".
+    """
+    moment = now or datetime.now(UTC)
+    raw = ar.control_coverage(session, tenant_id=tenant_id)
+    catalog = load_control_catalog()
+    rows: list[dict[str, Any]] = []
+    for control_id, agg in raw.items():
+        control = catalog.get(control_id, {})
+        last_completed = agg["last_completed_at"]
+        last_aware = (
+            last_completed.replace(tzinfo=UTC) if last_completed and last_completed.tzinfo is None else last_completed
+        )
+        is_current = bool(last_aware and (moment - last_aware).days <= COVERAGE_FRESHNESS_DAYS)
+        rows.append(
+            {
+                "control_id": control_id,
+                "framework": control.get("framework"),
+                "title": control.get("title"),
+                "campaigns": agg["campaigns"],
+                "completed_campaigns": agg["completed_campaigns"],
+                "last_completed_at": last_aware.isoformat() if last_aware else None,
+                "current": is_current,
+                "decisions": agg["decisions"],
+            }
+        )
+    return sorted(rows, key=lambda row: str(row["control_id"]))
 
 
 __all__ = [
     "add_item",
+    "control_coverage",
     "create_campaign",
     "get_campaign",
     "identity_subjects_from_silver",

@@ -1376,6 +1376,16 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
         return JSONResponse(api_v1.envelope("access-reviews", campaign), status_code=status.HTTP_201_CREATED)
 
+    # Registered before the ``/{campaign_id}`` route so the static segment wins.
+    @app.get("/api/v1/access-reviews/coverage")
+    def access_review_coverage(
+        identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        data = access_review_services.control_coverage(session, identity.tenant_id)
+        return JSONResponse(
+            api_v1.envelope("access-reviews.coverage", _redact_payload(data, identity), meta={"count": len(data)})
+        )
+
     @app.get("/api/v1/access-reviews/{campaign_id}")
     def get_access_review(
         campaign_id: str, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)

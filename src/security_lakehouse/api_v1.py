@@ -257,6 +257,13 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "scopes": ["read", "control_manage"],
     },
     {
+        "resource": "access-reviews.coverage",
+        "path": "/api/v1/access-reviews/coverage",
+        "kind": "collection",
+        "methods": ["GET"],
+        "scopes": ["read"],
+    },
+    {
         "resource": "access-reviews",
         "path": "/api/v1/access-reviews/{campaign_id}",
         "kind": "singleton",
