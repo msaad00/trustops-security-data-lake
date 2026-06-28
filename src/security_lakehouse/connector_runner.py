@@ -235,10 +235,10 @@ class ConnectorSyncError(RuntimeError):
 def _land_to_sink(lake: Path) -> None:
     """Project the freshly materialized lake to a configured external sink.
 
-    The local lake is the source of truth; an evidence sink (Snowflake today) is
-    an optional, idempotent projection, so a sink failure — warehouse down,
-    transient auth — is reported to stderr and swallowed rather than failing the
-    sync. No-op unless ``SNOWFLAKE_*`` is configured.
+    The local lake is the source of truth; configured evidence sinks are optional,
+    idempotent projections, so a sink failure — warehouse down, transient auth —
+    is reported to stderr and swallowed rather than failing the sync. No-op
+    unless a Snowflake, ClickHouse, or DuckDB sink is configured.
     """
     try:
         landed = land_if_configured(lake, dict(os.environ))
