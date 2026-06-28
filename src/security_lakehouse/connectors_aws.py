@@ -43,6 +43,11 @@ POLICY_CONTROLS = ["SOC2-CC6.1", "ISO27001-A.5.15"]
 # config finding an auditor should look at.
 MIN_PASSWORD_LENGTH = 14
 
+# Access-key rotation SLO. For a service identity (no console / no MFA) the
+# relevant control is key hygiene, not MFA: an active access key older than this,
+# or more than one active key, is the finding an auditor should review.
+MAX_ACCESS_KEY_AGE_DAYS = 90
+
 
 class AWSClient:
     """Authenticated, read-only AWS IAM client backed by ``boto3``.
@@ -130,6 +135,14 @@ class AWSClient:
         except Exception:  # noqa: BLE001 - NoSuchEntity => programmatic-only identity
             return False
 
+    def access_keys(self, user_name: str) -> list[dict[str, Any]]:
+        """Access-key metadata (id, status, create date) for an IAM user."""
+        keys: list[dict[str, Any]] = []
+        paginator = self._iam.get_paginator("list_access_keys")
+        for page in paginator.paginate(UserName=user_name):
+            keys.extend(page.get("AccessKeyMetadata", []))
+        return keys
+
 
 class AWSFixtureClient:
     """Offline AWS IAM client backed by a fixture directory."""
@@ -175,6 +188,13 @@ class AWSFixtureClient:
         names = payload if isinstance(payload, list) else []
         return str(user_name) in {str(name) for name in names}
 
+    def access_keys(self, user_name: str) -> list[dict[str, Any]]:
+        payload = self._read("access_keys.json")
+        if isinstance(payload, dict):
+            items = payload.get(str(user_name), [])
+            return [item for item in items if isinstance(item, dict)]
+        return [item for item in payload if isinstance(item, dict) and str(item.get("UserName")) == str(user_name)]
+
     def _read(self, name: str) -> Any:
         path = self.fixture / name
         return read_json(path) if path.exists() else []
@@ -216,6 +236,9 @@ def collect_aws_evidence(
         devices = client.mfa_devices(user_name)
         console = client.console_access(user_name)
         rows.append(_mfa_event(account, user_name, user, devices, now, tenant_id, console_access=console))
+        keys = client.access_keys(user_name)
+        if keys:
+            rows.append(_access_key_event(account, user_name, user, keys, now, tenant_id, console_access=console))
 
     rows.append(_policy_event(account, client.password_policy(), now, tenant_id))
     return rows
@@ -301,6 +324,69 @@ def _mfa_event(
             # Surface why a key-only identity is not flagged, so the posture is
             # self-explanatory to an auditor.
             "mfa_not_applicable": (not console_access),
+        },
+    )
+
+
+def _access_key_age_days(create_date: Any, now: datetime) -> int | None:
+    """Days since an access key was created, from a datetime or ISO-8601 string."""
+    if isinstance(create_date, datetime):
+        created = create_date
+    else:
+        text = str(create_date or "").strip()
+        if not text:
+            return None
+        try:
+            created = datetime.fromisoformat(text.replace("Z", "+00:00"))
+        except ValueError:
+            return None
+    if created.tzinfo is None:
+        created = created.replace(tzinfo=UTC)
+    return (now - created).days
+
+
+def _access_key_event(
+    account: str,
+    user_name: str,
+    user: dict[str, Any],
+    keys: list[dict[str, Any]],
+    collected_at: datetime,
+    tenant_id: str,
+    *,
+    console_access: bool = True,
+) -> dict[str, Any]:
+    arn = str(user.get("Arn") or f"arn:aws:iam::{account}:user/{user_name}")
+    active = [k for k in keys if isinstance(k, dict) and str(k.get("Status")) == "Active"]
+    ages = [age for k in active if (age := _access_key_age_days(k.get("CreateDate"), collected_at)) is not None]
+    oldest = max(ages) if ages else 0
+    stale = oldest > MAX_ACCESS_KEY_AGE_DAYS
+    multiple_active = len(active) > 1
+    # Key rotation is the access-management control that applies to a service
+    # identity (where MFA does not). A stale or duplicated active key is the open
+    # finding worth review.
+    needs_rotation = stale or multiple_active
+    return _event(
+        account=account,
+        collected_at=collected_at,
+        tenant_id=tenant_id,
+        signal="access_key_hygiene",
+        dedupe_key=user_name,
+        event_type="aws.iam.access_key_hygiene",
+        asset_id=f"aws:iam:user/{user_name}",
+        asset_type="identity_account",
+        controls=IDENTITY_CONTROLS,
+        status="open" if needs_rotation else "pass",
+        severity="medium" if needs_rotation else "info",
+        evidence_ref=f"{arn}/access-keys",
+        attributes={
+            "user_name": user_name,
+            "identity_type": classify_identity_type(console_access=console_access),
+            "active_key_count": len(active),
+            "oldest_active_key_age_days": oldest,
+            "key_rotation_sla_days": MAX_ACCESS_KEY_AGE_DAYS,
+            "stale_key": stale,
+            "multiple_active_keys": multiple_active,
+            "needs_rotation": needs_rotation,
         },
     )
 
