@@ -1,7 +1,7 @@
 """React (Next.js static export) assessment console.
 
 `npm --prefix app/web run build` populates the ``dist`` directory below with
-the Vanta/Drata-grade workbench. dashboard.py and server.py prefer it when
+the compliance-grade workbench. dashboard.py and server.py prefer it when
 present and fall back to the legacy single-file template otherwise.
 """
 

@@ -27,7 +27,7 @@ REMEDIATION_PRIORITIES = ("low", "medium", "high", "critical")
 EVIDENCE_REQUEST_STATUSES = ("open", "fulfilled", "cancelled")
 EXCEPTION_STATUSES = ("active", "revoked", "expired")
 
-# GRC risk-register vocabularies (Drata/Vanta pillar).
+# GRC risk-register vocabularies.
 RISK_STATUSES = ("open", "mitigating", "accepted", "closed")
 RISK_LEVELS = ("low", "medium", "high", "critical")
 

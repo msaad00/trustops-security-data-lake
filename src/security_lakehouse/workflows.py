@@ -1,7 +1,7 @@
 """Workflow (story) DAG + action library + persistence.
 
 A workflow is a directed acyclic graph of typed actions that runs against
-the lake. The library aims for Tines-grade UX: every node has a published
+the lake. The library aims for best-in-class UX: every node has a published
 input/output schema, can be tested live with sample data, and the whole
 DAG is versioned + persisted append-only.
 
@@ -1181,7 +1181,7 @@ def run_workflow(
                 break
         # Gate on incoming edge conditions: skip the node if *any* parent
         # edge declines (failed condition with the parent's `passed=true`,
-        # or vice versa). This mirrors how Tines edges flow conditionally.
+        # or vice versa). This is how conditional edges flow.
         if skip_reason is None:
             for edge in parents.get(node_id, []):
                 parent_id = str(edge.get("source"))
