@@ -18,9 +18,8 @@ import os
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Protocol, TypeVar
 
-from sqlalchemy import create_engine
+from sqlalchemy import Select, create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
@@ -31,17 +30,6 @@ ENV_DATABASE_URL = "TRUSTOPS_DATABASE_URL"
 # is the hard ceiling so a hostile ``?limit=10000000`` cannot exhaust memory.
 DEFAULT_PAGE_LIMIT = 100
 MAX_PAGE_LIMIT = 500
-
-
-class _SupportsPagination(Protocol):
-    def limit(self, limit: int) -> _SupportsPagination:
-        pass
-
-    def offset(self, offset: int) -> _SupportsPagination:
-        pass
-
-
-_SelectT = TypeVar("_SelectT", bound=_SupportsPagination)
 
 
 def clamp_limit(limit: int | None, *, default: int = DEFAULT_PAGE_LIMIT, maximum: int = MAX_PAGE_LIMIT) -> int:
@@ -55,7 +43,7 @@ def clamp_limit(limit: int | None, *, default: int = DEFAULT_PAGE_LIMIT, maximum
     return max(1, min(value, maximum))
 
 
-def apply_pagination(stmt: _SelectT, *, limit: int | None = None, offset: int | None = None) -> _SelectT:
+def apply_pagination(stmt: Select, *, limit: int | None = None, offset: int | None = None) -> Select:
     """Apply ``LIMIT``/``OFFSET`` to a select.
 
     ``limit=None`` leaves the statement unbounded so internal callers (SDK/CLI
