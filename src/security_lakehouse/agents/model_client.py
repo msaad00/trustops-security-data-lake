@@ -28,6 +28,12 @@ def call_model_json(context: dict[str, Any], provider: ModelProviderConfig) -> d
         return _call_openai_compatible(context, provider)
     if provider.provider == "anthropic":
         return _call_anthropic(context, provider)
+    if provider.provider == "bedrock":
+        return _call_bedrock(context, provider)
+    if provider.provider == "vertex":
+        return _call_vertex(context, provider)
+    if provider.provider == "snowflake_cortex":
+        return _call_cortex(context, provider)
     raise ModelClientError(f"unsupported model provider: {provider.provider}")
 
 
@@ -126,3 +132,114 @@ def _call_anthropic(context: dict[str, Any], provider: ModelProviderConfig) -> d
     blocks = response.get("content") if isinstance(response.get("content"), list) else []
     first = blocks[0] if blocks and isinstance(blocks[0], dict) else {}
     return _parse_json_content(str(first.get("text") or ""))
+
+
+def _bedrock_runtime_client(region: str) -> Any:
+    """Build a Bedrock runtime client. Split out so tests can inject a fake."""
+    try:
+        import boto3  # noqa: PLC0415
+    except ImportError as exc:  # pragma: no cover - exercised only without the aws extra
+        raise ModelClientError("install boto3 (the 'aws' extra) to use the bedrock provider") from exc
+    return boto3.client("bedrock-runtime", region_name=region)
+
+
+def _call_bedrock(context: dict[str, Any], provider: ModelProviderConfig) -> dict[str, Any]:
+    """Call Amazon Bedrock through the model-agnostic Converse API.
+
+    Credentials come from the ambient AWS chain (IAM role / IRSA / env), so no
+    API key is held by TrustOps. Converse normalizes the request across model
+    families, so any Bedrock chat model works without a per-family schema.
+    """
+    if not provider.model:
+        raise ModelClientError("TRUSTOPS_AGENT_MODEL is required for bedrock")
+    region = provider.region or os.environ.get("AWS_REGION") or os.environ.get("AWS_DEFAULT_REGION")
+    if not region:
+        raise ModelClientError("bedrock requires a region (TRUSTOPS_AGENT_REGION or AWS_REGION)")
+    messages = model_messages(context)
+    client = _bedrock_runtime_client(region)
+    try:
+        response = client.converse(
+            modelId=provider.model,
+            system=[{"text": messages[0]["content"]}],
+            messages=[{"role": "user", "content": [{"text": messages[1]["content"]}]}],
+            inferenceConfig={"maxTokens": _max_output_tokens(context)},
+        )
+    except Exception as exc:  # botocore ClientError + friends
+        raise ModelClientError(f"bedrock: {exc}") from exc
+    blocks = response.get("output", {}).get("message", {}).get("content", [])
+    text = blocks[0].get("text") if blocks and isinstance(blocks[0], dict) else ""
+    return _parse_json_content(str(text or ""))
+
+
+def _vertex_access_token() -> str:
+    """Mint a GCP access token from Application Default Credentials.
+
+    Split out so tests can inject a token without google-auth installed.
+    """
+    try:
+        import google.auth  # noqa: PLC0415
+        import google.auth.transport.requests  # noqa: PLC0415
+    except ImportError as exc:  # pragma: no cover - exercised only without the gcp extra
+        raise ModelClientError("install google-auth (the 'gcp' extra) to use the vertex provider") from exc
+    credentials, _project = google.auth.default(scopes=["https://www.googleapis.com/auth/cloud-platform"])
+    credentials.refresh(google.auth.transport.requests.Request())
+    return str(credentials.token)
+
+
+def _call_vertex(context: dict[str, Any], provider: ModelProviderConfig) -> dict[str, Any]:
+    """Call Vertex AI ``generateContent`` with an ADC-minted bearer token."""
+    if not provider.model:
+        raise ModelClientError("TRUSTOPS_AGENT_MODEL is required for vertex")
+    if not provider.project:
+        raise ModelClientError("vertex requires a project (TRUSTOPS_AGENT_PROJECT)")
+    location = provider.location or "us-central1"
+    token = _vertex_access_token()
+    messages = model_messages(context)
+    url = (
+        f"https://{location}-aiplatform.googleapis.com/v1/projects/{provider.project}"
+        f"/locations/{location}/publishers/google/models/{provider.model}:generateContent"
+    )
+    payload = {
+        "systemInstruction": {"parts": [{"text": messages[0]["content"]}]},
+        "contents": [{"role": "user", "parts": [{"text": messages[1]["content"]}]}],
+        "generationConfig": {
+            "maxOutputTokens": _max_output_tokens(context),
+            "responseMimeType": "application/json",
+        },
+    }
+    response = _post_json(
+        url,
+        payload,
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"},
+        timeout=provider.timeout_seconds,
+    )
+    candidates = response.get("candidates") if isinstance(response.get("candidates"), list) else []
+    content = candidates[0].get("content") if candidates and isinstance(candidates[0], dict) else {}
+    parts = content.get("parts") if isinstance(content, dict) and isinstance(content.get("parts"), list) else []
+    text = parts[0].get("text") if parts and isinstance(parts[0], dict) else ""
+    return _parse_json_content(str(text or ""))
+
+
+def _call_cortex(context: dict[str, Any], provider: ModelProviderConfig) -> dict[str, Any]:
+    """Run inference in-warehouse via Snowflake Cortex so evidence never leaves the lake.
+
+    Reuses the same Snowflake key-pair connection as the medallion sink, so the
+    redacted prompt is the only thing that crosses into Snowflake and the
+    completion is generated next to the data.
+    """
+    if not provider.model:
+        raise ModelClientError("TRUSTOPS_AGENT_MODEL is required for snowflake_cortex")
+    from security_lakehouse.sinks.snowflake_sink import SnowflakeSink, SnowflakeSinkConfig  # noqa: PLC0415
+
+    config = SnowflakeSinkConfig.from_env(dict(os.environ))
+    if config is None:
+        raise ModelClientError(
+            "snowflake_cortex requires SNOWFLAKE_ACCOUNT, SNOWFLAKE_USER, and SNOWFLAKE_PRIVATE_KEY_FILE"
+        )
+    messages = model_messages(context)
+    prompt = f"{messages[0]['content']}\n\n{messages[1]['content']}"
+    try:
+        text = SnowflakeSink(config).cortex_complete(provider.model, prompt)
+    except Exception as exc:
+        raise ModelClientError(f"snowflake_cortex: {exc}") from exc
+    return _parse_json_content(text)

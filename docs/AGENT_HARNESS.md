@@ -44,18 +44,40 @@ No model is required. If no provider is configured, the harness runs in
 
 Environment knobs:
 
-| Variable                         | Purpose                                                                                        |
-| -------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `TRUSTOPS_AGENT_PROVIDER`        | `rules_only`, `ollama`, `openai`, `openai_compatible`, `anthropic`, or a future adapter        |
-| `TRUSTOPS_AGENT_MODEL`           | Provider model name                                                                            |
-| `TRUSTOPS_AGENT_BASE_URL`        | Local provider URL, defaulting to Ollama at `http://127.0.0.1:11434` when provider is `ollama` |
-| `TRUSTOPS_AGENT_API_KEY_ENV`     | Name of the environment variable holding the provider API key                                  |
-| `TRUSTOPS_AGENT_USE_MODEL`       | Set to `1` to actually call the provider; unset means deterministic harness only               |
-| `TRUSTOPS_AGENT_TIMEOUT_SECONDS` | Optional provider request timeout, clamped between 1 and 120 seconds                           |
+| Variable                         | Purpose                                                                                                    |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `TRUSTOPS_AGENT_PROVIDER`        | `rules_only`, `ollama`, `openai`, `openai_compatible`, `anthropic`, `bedrock`, `vertex`, `snowflake_cortex` |
+| `TRUSTOPS_AGENT_MODEL`           | Provider model name                                                                                        |
+| `TRUSTOPS_AGENT_BASE_URL`        | Local provider URL, defaulting to Ollama at `http://127.0.0.1:11434` when provider is `ollama`             |
+| `TRUSTOPS_AGENT_API_KEY_ENV`     | Name of the environment variable holding the provider API key (API-key providers only)                     |
+| `TRUSTOPS_AGENT_REGION`          | Bedrock AWS region (falls back to `AWS_REGION`)                                                             |
+| `TRUSTOPS_AGENT_PROJECT`         | Vertex AI GCP project id                                                                                    |
+| `TRUSTOPS_AGENT_LOCATION`        | Vertex AI location (defaults to `us-central1`)                                                              |
+| `TRUSTOPS_AGENT_USE_MODEL`       | Set to `1` to actually call the provider; unset means deterministic harness only                           |
+| `TRUSTOPS_AGENT_TIMEOUT_SECONDS` | Optional provider request timeout, clamped between 1 and 120 seconds                                       |
 
 `openai_compatible` is supported for local or customer-chosen providers that
 serve `/chat/completions`. The harness records provider metadata but never
 prints raw API keys.
+
+### Bring-your-own cloud model
+
+Three providers authenticate through an ambient credential chain instead of an
+API key, so no model secret is ever held by TrustOps:
+
+- **`bedrock`** — Amazon Bedrock via the model-agnostic Converse API.
+  Credentials come from the standard AWS chain (IAM role / IRSA / env); set
+  `TRUSTOPS_AGENT_REGION` (or `AWS_REGION`) and a Bedrock `TRUSTOPS_AGENT_MODEL`.
+  Requires the `aws` extra (`boto3`).
+- **`vertex`** — Vertex AI `generateContent` with an Application Default
+  Credentials bearer token. Set `TRUSTOPS_AGENT_PROJECT` and a Gemini
+  `TRUSTOPS_AGENT_MODEL`. Requires `google-auth`.
+- **`snowflake_cortex`** — inference runs **inside** Snowflake via
+  `SNOWFLAKE.CORTEX.COMPLETE`, reusing the same key-pair connection as the
+  medallion sink (`SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`,
+  `SNOWFLAKE_PRIVATE_KEY_FILE`). The redacted prompt is the only thing that
+  crosses into the warehouse, so evidence never leaves the customer's lake to
+  reach a third-party model endpoint.
 
 ## Budget policy
 

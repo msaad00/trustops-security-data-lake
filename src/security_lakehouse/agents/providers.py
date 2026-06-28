@@ -5,7 +5,22 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 
-SUPPORTED_PROVIDERS = {"rules_only", "ollama", "openai", "openai_compatible", "anthropic"}
+SUPPORTED_PROVIDERS = {
+    "rules_only",
+    "ollama",
+    "openai",
+    "openai_compatible",
+    "anthropic",
+    "bedrock",
+    "vertex",
+    "snowflake_cortex",
+}
+
+# Providers that authenticate through an ambient credential chain (an IAM role,
+# Application Default Credentials, or a Snowflake key-pair) rather than a single
+# ``*_API_KEY`` environment variable. They are "configured" when a model is named;
+# the credential itself is resolved and validated at call time.
+_AMBIENT_CREDENTIAL_PROVIDERS = {"bedrock", "vertex", "snowflake_cortex"}
 
 
 def _env_bool(name: str, *, default: bool = False) -> bool:
@@ -38,6 +53,9 @@ class ModelProviderConfig:
     api_key_env: str = ""
     use_model: bool = False
     timeout_seconds: float = 20.0
+    region: str = ""  # bedrock (AWS region)
+    project: str = ""  # vertex (GCP project id)
+    location: str = ""  # vertex (GCP location/region)
 
     @property
     def enabled(self) -> bool:
@@ -45,12 +63,23 @@ class ModelProviderConfig:
             return False
         if self.provider == "ollama":
             return bool(self.base_url)
+        if self.provider == "bedrock":
+            return bool(self.model)
+        if self.provider == "vertex":
+            return bool(self.model and self.project)
+        if self.provider == "snowflake_cortex":
+            return bool(self.model)
         return bool(self.api_key_env and os.environ.get(self.api_key_env))
 
     @property
     def should_call_model(self) -> bool:
         """Whether the harness should make a provider request."""
         return self.enabled and self.use_model
+
+    @property
+    def uses_ambient_credentials(self) -> bool:
+        """True when the provider authenticates via a credential chain, not an API key env."""
+        return self.provider in _AMBIENT_CREDENTIAL_PROVIDERS
 
     def public_dict(self) -> dict[str, object]:
         """Return non-secret provider metadata suitable for audit output."""
@@ -61,6 +90,10 @@ class ModelProviderConfig:
             "configured": self.enabled,
             "credential_env_configured": bool(self.api_key_env),
             "credential_present": bool(self.api_key_env and os.environ.get(self.api_key_env)),
+            "ambient_credentials": self.uses_ambient_credentials,
+            "region": self.region,
+            "project": self.project,
+            "location": self.location,
             "use_model": self.use_model,
             "timeout_seconds": self.timeout_seconds,
         }
@@ -79,6 +112,10 @@ def provider_from_env() -> ModelProviderConfig:
         timeout_seconds = max(1.0, min(float(timeout), 120.0))
     except ValueError:
         timeout_seconds = 20.0
+    # Vertex needs a location; default to the most common region when unset so a
+    # caller only has to supply project + model.
+    location = os.environ.get("TRUSTOPS_AGENT_LOCATION", "us-central1" if provider == "vertex" else "")
+    region = os.environ.get("TRUSTOPS_AGENT_REGION") or os.environ.get("AWS_REGION", "")
     return ModelProviderConfig(
         provider=provider,
         model=os.environ.get("TRUSTOPS_AGENT_MODEL", ""),
@@ -89,4 +126,7 @@ def provider_from_env() -> ModelProviderConfig:
         api_key_env=os.environ.get("TRUSTOPS_AGENT_API_KEY_ENV", default_key_env),
         use_model=_env_bool("TRUSTOPS_AGENT_USE_MODEL"),
         timeout_seconds=timeout_seconds,
+        region=region,
+        project=os.environ.get("TRUSTOPS_AGENT_PROJECT", ""),
+        location=location,
     )
