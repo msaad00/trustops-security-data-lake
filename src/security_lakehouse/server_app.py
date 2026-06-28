@@ -63,6 +63,7 @@ from security_lakehouse.db.base import DEFAULT_PAGE_LIMIT, clamp_limit, create_e
 from security_lakehouse.db.models import REMEDIATION_PRIORITIES
 from security_lakehouse.io import resolve_path
 from security_lakehouse.services import NotFound, ValidationError
+from security_lakehouse.services import access_reviews as access_review_services
 from security_lakehouse.services import grc as grc_services
 from security_lakehouse.web import web_dist_dir, web_dist_index
 
@@ -187,6 +188,30 @@ class UpdateRiskRequest(_StrictModel):
     control_id: str | None = None
     asset_id: str | None = None
     due_at: str | None = None
+
+
+class CreateCampaignRequest(_StrictModel):
+    name: str
+    description: str = ""
+    scope: str = "all"
+    control_id: str | None = None
+    due_at: str | None = None
+
+
+class CampaignStatusRequest(_StrictModel):
+    status: str
+
+
+class AddReviewItemRequest(_StrictModel):
+    subject_id: str
+    subject_name: str = ""
+    source: str = ""
+    access_summary: str = ""
+
+
+class ReviewDecisionRequest(_StrictModel):
+    decision: str
+    note: str = ""
 
 
 class CreateTagRequest(_StrictModel):
@@ -1309,6 +1334,143 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         except NotFound as exc:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
         return JSONResponse(api_v1.envelope("risks", result))
+
+    # --- access reviews (GRC) ---
+    @app.get("/api/v1/access-reviews")
+    def list_access_reviews(
+        request: Request, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        params = _params(request)
+        limit, offset = _pagination(params)
+        data = access_review_services.list_campaigns(
+            session,
+            identity.tenant_id,
+            status=(params.get("status") or [None])[0],
+            limit=limit,
+            offset=offset,
+        )
+        return JSONResponse(
+            api_v1.envelope(
+                "access-reviews", _redact_payload(data, identity), meta=_page_meta(limit, offset, len(data))
+            )
+        )
+
+    @app.post("/api/v1/access-reviews", status_code=status.HTTP_201_CREATED)
+    def create_access_review(
+        body: CreateCampaignRequest,
+        identity: Identity = Depends(_require_control_manage),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        try:
+            campaign = access_review_services.create_campaign(
+                session,
+                identity.tenant_id,
+                name=body.name,
+                description=body.description,
+                scope=body.scope,
+                control_id=body.control_id,
+                due_at=_parse_dt(body.due_at),
+                created_by=identity.email,
+            )
+        except ValidationError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("access-reviews", campaign), status_code=status.HTTP_201_CREATED)
+
+    @app.get("/api/v1/access-reviews/{campaign_id}")
+    def get_access_review(
+        campaign_id: str, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        try:
+            data = access_review_services.get_campaign(session, identity.tenant_id, campaign_id)
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("access-reviews", _redact_payload(data, identity)))
+
+    @app.patch("/api/v1/access-reviews/{campaign_id}")
+    def update_access_review_status(
+        campaign_id: str,
+        body: CampaignStatusRequest,
+        identity: Identity = Depends(_require_control_manage),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        try:
+            campaign = access_review_services.set_campaign_status(
+                session, identity.tenant_id, campaign_id, status=body.status
+            )
+        except ValidationError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("access-reviews", campaign))
+
+    @app.get("/api/v1/access-reviews/{campaign_id}/items")
+    def list_access_review_items(
+        campaign_id: str,
+        request: Request,
+        identity: Identity = Depends(_require_read),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        params = _params(request)
+        limit, offset = _pagination(params)
+        try:
+            data = access_review_services.list_items(
+                session,
+                identity.tenant_id,
+                campaign_id,
+                decision=(params.get("decision") or [None])[0],
+                limit=limit,
+                offset=offset,
+            )
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(
+            api_v1.envelope(
+                "access-reviews.items", _redact_payload(data, identity), meta=_page_meta(limit, offset, len(data))
+            )
+        )
+
+    @app.post("/api/v1/access-reviews/{campaign_id}/items", status_code=status.HTTP_201_CREATED)
+    def add_access_review_item(
+        campaign_id: str,
+        body: AddReviewItemRequest,
+        identity: Identity = Depends(_require_control_manage),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        try:
+            item = access_review_services.add_item(
+                session,
+                identity.tenant_id,
+                campaign_id,
+                subject_id=body.subject_id,
+                subject_name=body.subject_name,
+                source=body.source,
+                access_summary=body.access_summary,
+            )
+        except ValidationError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("access-reviews.items", item), status_code=status.HTTP_201_CREATED)
+
+    @app.post("/api/v1/access-reviews/items/{item_id}/decision")
+    def decide_access_review_item(
+        item_id: str,
+        body: ReviewDecisionRequest,
+        identity: Identity = Depends(_require_control_manage),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        try:
+            item = access_review_services.record_decision(
+                session,
+                identity.tenant_id,
+                item_id,
+                decision=body.decision,
+                reviewer=identity.email,
+                note=body.note,
+            )
+        except ValidationError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("access-reviews.items", _redact_payload(item, identity)))
 
     # --- tags ---
     @app.get("/api/v1/tags")
