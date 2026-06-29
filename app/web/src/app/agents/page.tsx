@@ -5,8 +5,10 @@ import {
   Bot,
   CheckCircle2,
   ClipboardCopy,
+  Gauge,
   GitBranch,
   Loader2,
+  LockKeyhole,
   Play,
   ShieldCheck,
   Sparkles,
@@ -316,6 +318,32 @@ function harnessLabel(harness: AgentHarness): string {
   return harness.replaceAll("_", " ");
 }
 
+type Orchestrator = "sequential" | "langgraph";
+type BudgetProfile = "small" | "standard";
+
+const BUDGETS: Record<
+  BudgetProfile,
+  {
+    label: string;
+    max_fact_items: number;
+    max_context_chars: number;
+    max_output_tokens: number;
+  }
+> = {
+  small: {
+    label: "Small context",
+    max_fact_items: 20,
+    max_context_chars: 12000,
+    max_output_tokens: 600,
+  },
+  standard: {
+    label: "Standard review",
+    max_fact_items: 40,
+    max_context_chars: 20000,
+    max_output_tokens: 900,
+  },
+};
+
 export default function AgentsPage() {
   const auditor = useAuditorMode();
   const agentRuns = useAgentRuns();
@@ -333,6 +361,9 @@ export default function AgentsPage() {
   const [response, setResponse] = useState<string | null>(null);
   const [status, setStatus] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
+  const [orchestrator, setOrchestrator] = useState<Orchestrator>("sequential");
+  const [useModel, setUseModel] = useState(false);
+  const [budgetProfile, setBudgetProfile] = useState<BudgetProfile>("small");
 
   const runs = agentRuns.data ?? [];
   const selectedRun =
@@ -361,16 +392,20 @@ export default function AgentsPage() {
 
   const runHarness = async (harness: "posture_review" | "soc_triage") => {
     const spec = HARNESS_COPY[harness];
+    const budget = BUDGETS[budgetProfile];
+    const safeOrchestrator =
+      harness === "posture_review" ? orchestrator : "sequential";
     try {
       const run = await createRun.mutateAsync({
         harness,
         objective: spec.objective,
         role: "analyst",
-        use_model: false,
+        orchestrator: safeOrchestrator,
+        use_model: useModel,
         idempotency_key: `console-${harness}-${Date.now()}`,
-        max_fact_items: 40,
-        max_context_chars: 12000,
-        max_output_tokens: 900,
+        max_fact_items: budget.max_fact_items,
+        max_context_chars: budget.max_context_chars,
+        max_output_tokens: budget.max_output_tokens,
       });
       setSelectedRunId(run.id);
       flash("Harness run saved.");
@@ -465,10 +500,98 @@ export default function AgentsPage() {
           <CardHeader>
             <CardTitle>Start a harness</CardTitle>
             <CardDescription>
-              Model-off by default. Writes stay proposed until approved.
+              Choose orchestration and budget, then run an approval-gated
+              review.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3">
+            <div className="grid gap-3 rounded-xl border border-line bg-slate-50 p-3">
+              <div className="grid gap-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-xs font-black uppercase tracking-wide text-muted">
+                    Orchestrator
+                  </span>
+                  <Badge tone={orchestrator === "langgraph" ? "info" : "ready"}>
+                    {orchestrator}
+                  </Badge>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {(["sequential", "langgraph"] as const).map((value) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => setOrchestrator(value)}
+                      className={[
+                        "rounded-lg border px-3 py-2 text-left text-xs font-black capitalize",
+                        orchestrator === value
+                          ? "border-brand bg-blue-50 text-brand"
+                          : "border-line bg-white text-ink",
+                      ].join(" ")}
+                    >
+                      {value}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-line bg-white p-3">
+                <input
+                  type="checkbox"
+                  checked={useModel}
+                  onChange={(event) => setUseModel(event.target.checked)}
+                  className="mt-1"
+                />
+                <span className="min-w-0">
+                  <span className="block text-xs font-black text-ink">
+                    Use configured model
+                  </span>
+                  <span className="mt-0.5 block text-xs leading-5 text-muted">
+                    Off means rules-only. On still keeps decisions budgeted,
+                    evaluated, and approval-gated.
+                  </span>
+                </span>
+              </label>
+
+              <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
+                Budget
+                <select
+                  value={budgetProfile}
+                  onChange={(event) =>
+                    setBudgetProfile(event.target.value as BudgetProfile)
+                  }
+                  className="rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                >
+                  {Object.entries(BUDGETS).map(([value, budget]) => (
+                    <option key={value} value={value}>
+                      {budget.label} · {budget.max_fact_items} facts ·{" "}
+                      {budget.max_output_tokens} tokens
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div className="grid gap-2 sm:grid-cols-3">
+              <div className="rounded-lg border border-line bg-white p-3">
+                <LockKeyhole className="h-4 w-4 text-brand" />
+                <div className="mt-2 text-xs font-black text-ink">
+                  Writes require approval
+                </div>
+              </div>
+              <div className="rounded-lg border border-line bg-white p-3">
+                <Gauge className="h-4 w-4 text-brand" />
+                <div className="mt-2 text-xs font-black text-ink">
+                  Budget is enforced
+                </div>
+              </div>
+              <div className="rounded-lg border border-line bg-white p-3">
+                <ShieldCheck className="h-4 w-4 text-brand" />
+                <div className="mt-2 text-xs font-black text-ink">
+                  Core owns verdicts
+                </div>
+              </div>
+            </div>
+
             {(["posture_review", "soc_triage"] as const).map((harness) => {
               const spec = HARNESS_COPY[harness];
               const Icon = spec.icon;
@@ -488,7 +611,9 @@ export default function AgentsPage() {
                   <span className="min-w-0">
                     <span className="block">{spec.label}</span>
                     <span className="block truncate text-xs font-bold text-muted">
-                      deterministic evidence + eval pass
+                      {harness === "posture_review"
+                        ? `${orchestrator} · ${useModel ? "model assisted" : "rules only"}`
+                        : `sequential · ${useModel ? "model assisted" : "rules only"}`}
                     </span>
                   </span>
                 </Button>
@@ -676,20 +801,20 @@ export default function AgentsPage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-3 pt-2">
-        <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
+      <details className="grid gap-3 rounded-xl border border-line bg-white p-4">
+        <summary className="flex min-w-0 cursor-pointer list-none flex-wrap items-center justify-between gap-2">
           <div className="min-w-0">
             <h2 className="text-lg font-black text-ink">API runner</h2>
             <p className="text-sm font-bold text-muted">
-              Exact contracts for humans, CLI, scheduler, and headless agents.
+              Advanced contracts for CLI, scheduler, MCP, and headless agents.
             </p>
           </div>
           <Badge tone="info">
             <Sparkles className="mr-1 h-3 w-3" /> {ROUTES.length} routes
           </Badge>
-        </div>
+        </summary>
 
-        <div className="grid gap-5 lg:grid-cols-[320px_minmax(0,1fr)]">
+        <div className="mt-4 grid gap-5 lg:grid-cols-[320px_minmax(0,1fr)]">
           <Card className="overflow-hidden">
             <CardHeader>
               <CardTitle>Routes</CardTitle>
@@ -832,7 +957,7 @@ export default function AgentsPage() {
             </Card>
           </div>
         </div>
-      </div>
+      </details>
     </div>
   );
 }
