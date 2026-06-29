@@ -67,4 +67,3 @@ platform: deployable by URL, usable by humans, and callable by headless agents.
 - Production operations need backup/restore drills, external secret sync,
   multi-replica guidance, alerting, WAF/API gateway guidance, and hosted
   observability before a broad public launch.
-
