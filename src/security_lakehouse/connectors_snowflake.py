@@ -98,6 +98,42 @@ class SnowflakeClient:
             "views": checks,
         }
 
+    def discover_scope(self) -> dict[str, Any]:
+        """Return read-scope objects visible to the active Snowflake role."""
+        with self._connector.connect(**self.query_params) as conn:  # pragma: no cover - live Snowflake only
+            cursor = conn.cursor()
+            try:
+                context = _connection_context(cursor)
+                warehouse = str(self.query_params.get("warehouse") or context.get("warehouse") or "")
+                database = str(self.query_params.get("database") or context.get("database") or "")
+                schema = str(self.query_params.get("schema") or context.get("schema") or "")
+                warehouses = _show_names(cursor, "SHOW WAREHOUSES")
+                databases = _show_names(cursor, "SHOW DATABASES")
+                schemas: list[str] = []
+                views: list[str] = []
+                if database:
+                    schemas = _show_names(cursor, f"SHOW SCHEMAS IN DATABASE {_safe_identifier(database)}")
+                if database and schema:
+                    views = _show_names(
+                        cursor,
+                        f"SHOW VIEWS IN SCHEMA {_safe_identifier(database)}.{_safe_identifier(schema)}",
+                    )
+                return _snowflake_scope_metadata(
+                    context=context,
+                    warehouses=warehouses,
+                    databases=databases,
+                    schemas=schemas,
+                    views=views,
+                    selected={
+                        "warehouse": warehouse,
+                        "database": database,
+                        "schema": schema,
+                        **{key: str(self.views.get(key) or "") for key in VIEW_PURPOSES},
+                    },
+                )
+            finally:
+                cursor.close()
+
     def _select_view(self, key: str) -> list[dict[str, Any]]:
         view = _safe_identifier(self.views[key])
         with self._connector.connect(**self.query_params) as conn:  # pragma: no cover - live Snowflake only
@@ -207,6 +243,35 @@ def probe_snowflake_access(
             ],
         }
     return result
+
+
+def discover_snowflake_scope(
+    *,
+    credentials: dict[str, Any],
+    options: dict[str, Any],
+    env: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Discover Snowflake warehouses, databases, schemas, and views granted to the role.
+
+    Discovery uses the same server-side credential references as probing. The
+    UI should collect only account + service identity + a secret reference, then
+    let the active Snowflake grants drive which scope objects can be selected.
+    """
+    environment = env or os.environ
+    try:
+        query_params = _probe_query_params(credentials=credentials, options=options, env=environment)
+        views = {key: str(options.get(key) or default) for key, default in DEFAULT_VIEWS.items()}
+        return SnowflakeClient(query_params=query_params, views=views).discover_scope()
+    except Exception as exc:  # pragma: no cover - exercised with the live driver
+        return {
+            "ok": False,
+            "selection_mode": "live_snowflake_scope",
+            "context": {},
+            "selectors": [],
+            "candidates": {},
+            "recommended_options": {},
+            "error": _snowflake_error_message(exc),
+        }
 
 
 def _probe_query_params(
@@ -540,6 +605,122 @@ def _connection_context(cursor: Any) -> dict[str, Any]:
         "database": row[2],
         "schema": row[3],
     }
+
+
+def _show_names(cursor: Any, query: str) -> list[str]:
+    cursor.execute(query)
+    names = [str(col[0]).lower() for col in cursor.description or []]
+    try:
+        name_index = names.index("name")
+    except ValueError:
+        name_index = 1 if len(names) > 1 else 0
+    out: list[str] = []
+    for row in cursor.fetchall():
+        if name_index < len(row):
+            value = str(row[name_index] or "").strip()
+            if value:
+                out.append(value)
+    return sorted(set(out), key=str.lower)
+
+
+def _snowflake_scope_metadata(
+    *,
+    context: dict[str, Any],
+    warehouses: list[str],
+    databases: list[str],
+    schemas: list[str],
+    views: list[str],
+    selected: dict[str, str],
+) -> dict[str, Any]:
+    recommended = {
+        "warehouse": _pick_scope_value(warehouses, selected.get("warehouse"), "TRUSTOPS_READ_WH"),
+        "database": _pick_scope_value(databases, selected.get("database"), "TRUSTOPS_SECURITY_LAKE"),
+        "schema": _pick_scope_value(schemas, selected.get("schema"), "EVIDENCE"),
+    }
+    for purpose, default in DEFAULT_VIEWS.items():
+        recommended[purpose] = _pick_view_value(views, selected.get(purpose), purpose, default)
+    selectors = [
+        *_selector_rows("warehouse", warehouses, selected=recommended["warehouse"], required=True),
+        *_selector_rows("database", databases, selected=recommended["database"], required=True),
+        *_selector_rows("schema", schemas, selected=recommended["schema"], required=True),
+        *[
+            {
+                "kind": "view",
+                "name": view,
+                "purpose": _view_purpose(view),
+                "required": _view_purpose(view) in DEFAULT_VIEWS,
+                "selected": view.upper() in {recommended[purpose].upper() for purpose in VIEW_PURPOSES},
+            }
+            for view in views
+        ],
+    ]
+    requires_selection = [
+        field
+        for field in ("warehouse", "database", "schema", *VIEW_PURPOSES)
+        if not str(recommended.get(field) or "").strip()
+    ]
+    return {
+        "ok": True,
+        "selection_mode": "live_snowflake_scope",
+        "context": context,
+        "selectors": selectors,
+        "requires_selection": requires_selection,
+        "candidates": {
+            "warehouses": warehouses,
+            "databases": databases,
+            "schemas": schemas,
+            "views": views,
+        },
+        "recommended_options": {key: value for key, value in recommended.items() if value},
+    }
+
+
+def _selector_rows(kind: str, values: list[str], *, selected: str, required: bool) -> list[dict[str, Any]]:
+    if not values and selected:
+        values = [selected]
+    return [
+        {
+            "kind": kind,
+            "name": value,
+            "required": required,
+            "selected": bool(selected and value.upper() == selected.upper()),
+        }
+        for value in values
+    ]
+
+
+def _pick_scope_value(values: list[str], selected: str | None, default: str) -> str:
+    return _pick_name(values, selected) or _pick_name(values, default) or (values[0] if values else "")
+
+
+def _pick_view_value(values: list[str], selected: str | None, purpose: str, default: str) -> str:
+    return (
+        _pick_name(values, selected)
+        or _pick_name(values, default)
+        or next((value for value in values if _view_purpose(value) == purpose), "")
+    )
+
+
+def _pick_name(values: list[str], name: str | None) -> str:
+    if not name:
+        return ""
+    for value in values:
+        if value.upper() == str(name).upper():
+            return value
+    return ""
+
+
+def _view_purpose(name: str) -> str:
+    text = name.upper()
+    if "AUDIT" in text and "EVENT" in text:
+        return "audit_events"
+    if "CONTROL" in text and ("POSTURE" in text or "STATUS" in text):
+        return "control_posture"
+    if "ASSET" in text and "RISK" in text:
+        return "asset_risk"
+    if "EVIDENCE" in text and ("BUNDLE" in text or "ARTIFACT" in text):
+        return "evidence_bundles"
+    return "view"
 
 
 def _view_probe_check(cursor: Any, *, purpose: str, view: str) -> dict[str, Any]:
