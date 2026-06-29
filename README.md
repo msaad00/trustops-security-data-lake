@@ -22,7 +22,11 @@ lake, cloud, or local boundary.
   ·
   <a href="docs/SHAREABLE_POC_HOSTING.md"><strong>Host A POC</strong></a>
   ·
+  <a href="docs/RELEASE_READINESS.md"><strong>Release Readiness</strong></a>
+  ·
   <a href="docs/AWS_SNOWFLAKE_DEMO.md"><strong>AWS + Snowflake Demo</strong></a>
+  ·
+  <a href="CHANGELOG.md"><strong>Changelog</strong></a>
   ·
   <a href="docs/TRUSTOPS_85_PLAN.md"><strong>85% Plan</strong></a>
   ·
@@ -34,6 +38,11 @@ lake, cloud, or local boundary.
 </p>
 
 ## What You Get
+
+Current release: **0.2.0**, focused on invite-only hosted POC readiness. It is
+ready for local OSS demos and controlled self-hosted pilots; it is not yet a
+public self-serve SaaS. See [Release Readiness](docs/RELEASE_READINESS.md) and
+the [Changelog](CHANGELOG.md).
 
 TrustOps is built around one operating loop: collect evidence, evaluate
 controls, route risk, automate follow-up, and share proof safely.

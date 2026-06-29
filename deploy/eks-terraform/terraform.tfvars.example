@@ -15,4 +15,4 @@ evidence_bucket_name = "acme-trustops-evidence"
 
 # Pin the image. Empty defaults to chart appVersion.
 # image_repository = "ghcr.io/msaad00/trustops"
-# image_tag        = "0.1.0"
+# image_tag        = "0.2.0"

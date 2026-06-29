@@ -242,6 +242,11 @@ Before sending the link, confirm:
 - Scheduler CronJob has a recent successful run.
 - No raw credential values appear in connector config, run history, logs, or UI.
 
+The canonical release gate lives in
+[Release Readiness](RELEASE_READINESS.md). Use it before tagging a release or
+sharing an evaluator URL: it covers the same POC checks plus build, Helm,
+integrity, workflow, and agent-review verification.
+
 ## Current Gaps
 
 The repo is ready for a controlled self-hosted POC. A public multi-customer

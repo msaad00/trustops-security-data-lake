@@ -17,6 +17,10 @@ the chart, server auth, persistent lake storage, scheduler, and server-side
 connector secrets into one operator path. For the current AWS + Snowflake
 demo target, use the checked-in values profile at
 [`deploy/examples/aws-snowflake-poc-values.yaml`](examples/aws-snowflake-poc-values.yaml).
+Before sending the URL, run the gate in
+[`docs/RELEASE_READINESS.md`](../docs/RELEASE_READINESS.md): health, auth,
+source sync, posture, integrity, workflow run, agent review, trust share, and
+secret-redaction checks all need to pass.
 
 ## Container image
 
@@ -40,7 +44,7 @@ Renders in any conformant Kubernetes ≥ 1.27:
 ```bash
 helm install trustops ./deploy/helm/trustops \
   --namespace trustops --create-namespace \
-  --set image.tag=0.1.0 \
+  --set image.tag=0.2.0 \
   --set ingress.enabled=true \
   --set ingress.hosts[0].host=trustops.example.com
 ```
