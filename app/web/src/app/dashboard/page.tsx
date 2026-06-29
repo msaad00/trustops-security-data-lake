@@ -27,12 +27,12 @@ function stateHeadline(state?: string) {
 
 function stateCopy(state?: string) {
   if (state === "ready") {
-    return "Evidence, controls, and framework readiness are clean enough to share.";
+    return "Ready for auditor or customer sharing.";
   }
   if (state === "critical") {
-    return "Assign owners to critical findings, refresh stale evidence, then rerun controls.";
+    return "Assign critical owners and refresh stale proof.";
   }
-  return "Review open gaps and owner queues before the next trust share.";
+  return "Review gaps before the next trust share.";
 }
 
 function ExecutiveMetric({
@@ -103,8 +103,8 @@ export default function DashboardPage() {
             Executive trust overview
           </h1>
           <p className="mt-1 max-w-[720px] text-sm leading-5 text-muted">
-            Readiness, open risk, stale evidence, and owner action across audit,
-            customer, cloud, identity, runtime, and AI surfaces.
+            Live readiness, risk, evidence freshness, and owner action in one
+            place.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -138,7 +138,7 @@ export default function DashboardPage() {
                   Trust score
                 </div>
                 <p className="mt-1 text-xs leading-5 text-muted">
-                  Board-level signal for audit readiness and customer trust.
+                  Audit, customer, and security readiness.
                 </p>
               </div>
             </div>

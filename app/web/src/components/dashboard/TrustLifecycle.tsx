@@ -29,7 +29,7 @@ export function TrustLifecycle({ posture, assessmentHash }: Props) {
       label: "Sources",
       href: "/connectors",
       Icon: Database,
-      detail: "Connectors and governed lake reads feed normalized facts.",
+      detail: "Connect cloud, identity, code, vendor, or lake sources.",
       state:
         staleEvidence > 0 ? `${staleEvidence} stale evidence` : "fresh enough",
       tone: staleEvidence > 0 ? "attention" : "ready",
@@ -38,7 +38,7 @@ export function TrustLifecycle({ posture, assessmentHash }: Props) {
       label: "Evidence",
       href: "/evidence",
       Icon: FileSearch,
-      detail: "Bronze replay, silver facts, hashes, freshness, and owners.",
+      detail: "Normalize proof, verify hashes, and track freshness.",
       state: `${staleEvidence} stale`,
       tone: staleEvidence > 0 ? "attention" : "ready",
     },
@@ -46,7 +46,7 @@ export function TrustLifecycle({ posture, assessmentHash }: Props) {
       label: "Controls",
       href: "/controls",
       Icon: ShieldCheck,
-      detail: "Rules evaluate evidence against framework-mapped controls.",
+      detail: "Evaluate mapped controls with deterministic rules.",
       state: `${failedTests} failing`,
       tone: failedTests > 0 ? "critical" : "ready",
     },
@@ -54,7 +54,7 @@ export function TrustLifecycle({ posture, assessmentHash }: Props) {
       label: "Risk queue",
       href: "/violations",
       Icon: ListChecks,
-      detail: "Failed controls become owned findings and remediation work.",
+      detail: "Turn failed checks into owned remediation.",
       state:
         criticalViolations > 0
           ? `${criticalViolations} critical`
@@ -70,7 +70,7 @@ export function TrustLifecycle({ posture, assessmentHash }: Props) {
       label: "Workflow",
       href: "/automation",
       Icon: GitBranch,
-      detail: "DAG runs route evidence requests, tickets, snapshots, alerts.",
+      detail: "Route approvals, tickets, snapshots, and alerts.",
       state: "designer",
       tone: "info",
     },
@@ -78,7 +78,7 @@ export function TrustLifecycle({ posture, assessmentHash }: Props) {
       label: "Trust share",
       href: "/trust-center",
       Icon: Share2,
-      detail: "Scoped internal, auditor, and customer views reuse the hash.",
+      detail: "Share scoped, hashed assurance views.",
       state: assessmentHash ? assessmentHash.slice(0, 8) : "not cut",
       tone: assessmentHash ? "ready" : "default",
     },
@@ -90,8 +90,8 @@ export function TrustLifecycle({ posture, assessmentHash }: Props) {
         <div>
           <h2 className="text-sm font-black text-ink">How trust flows</h2>
           <p className="mt-0.5 text-xs leading-5 text-muted">
-            Evidence becomes control results, results become work, and the same
-            signed state becomes shareable assurance.
+            From source connection to control result, remediation, and shareable
+            proof.
           </p>
         </div>
         <Badge tone="info">operating map</Badge>

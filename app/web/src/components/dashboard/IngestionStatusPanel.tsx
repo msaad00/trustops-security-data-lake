@@ -24,11 +24,11 @@ function toneForState(state?: string): "ready" | "attention" | "critical" {
 }
 
 function labelForState(state?: string) {
-  if (state === "active") return "Live ingestion healthy";
-  if (state === "error") return "Ingestion needs repair";
+  if (state === "active") return "Healthy";
+  if (state === "error") return "Needs repair";
   if (state === "needs_configuration") return "Connect a source";
   if (state === "needs_data") return "Run initial sync";
-  return "Ingestion needs review";
+  return "Needs review";
 }
 
 function Metric({
@@ -77,10 +77,10 @@ export function IngestionStatusPanel({
         <div className="min-w-0">
           <CardTitle className="flex items-center gap-2">
             <Activity className="h-4 w-4 text-brand" />
-            Live ingestion
+            Source health
           </CardTitle>
           <CardDescription>
-            Source sync health, evidence coverage, and proof-pack readiness.
+            Connected sources, freshness, and reviewer proof.
           </CardDescription>
         </div>
         <Badge tone={toneForState(status?.state)}>
@@ -102,7 +102,7 @@ export function IngestionStatusPanel({
           <Metric
             label="Freshness"
             value={summary?.stale_evidence ?? 0}
-            detail="stale or expired"
+            detail="stale evidence"
           />
           <Metric
             label="Proof pack"
@@ -137,7 +137,7 @@ export function IngestionStatusPanel({
                 ))
               ) : (
                 <span className="text-sm text-muted">
-                  No normalized evidence has landed yet.
+                  No evidence has landed yet.
                 </span>
               )}
             </div>
@@ -175,7 +175,7 @@ export function IngestionStatusPanel({
                 ))
               ) : (
                 <div className="px-3 py-3 text-sm text-muted">
-                  Enable a read-only connector or land existing-lake evidence.
+                  Enable a connector or sync an existing lake.
                 </div>
               )}
             </div>
@@ -194,7 +194,7 @@ export function IngestionStatusPanel({
               <p className="mt-2 text-sm leading-5 text-muted">
                 {proofReady
                   ? `${status?.proof?.evidence_count ?? 0} rows in latest proof pack across ${(status?.proof?.sources ?? []).length} sources.`
-                  : "Run the live-cloud posture scenario after the first sync to create a proof pack."}
+                  : "Run a sync to create the first proof pack."}
               </p>
             </div>
             <div className="rounded-lg border border-line bg-white p-3">
