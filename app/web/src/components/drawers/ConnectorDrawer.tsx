@@ -337,6 +337,54 @@ const requiredFirst = (fields: FieldDef[]) =>
     (a, b) => Number(Boolean(b.required)) - Number(Boolean(a.required)),
   );
 
+const SNOWFLAKE_CORE_SCOPE = new Set(["warehouse", "database", "schema"]);
+
+function SnowflakeSetupHint({
+  canDiscover,
+  discovered,
+}: {
+  canDiscover: boolean;
+  discovered: boolean;
+}) {
+  return (
+    <div className="rounded-xl border border-blue-200 bg-blue-50 p-3">
+      <div className="flex items-start gap-2">
+        <KeyRound className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
+        <div className="min-w-0">
+          <div className="text-sm font-black text-blue-950">
+            Connect with a read-only Snowflake service identity.
+          </div>
+          <div className="mt-1 text-xs leading-5 text-blue-950">
+            Add account, service user, and the server-side key reference. Then
+            discover what the role can see and choose from the returned
+            warehouses, schemas, and views.
+          </div>
+        </div>
+      </div>
+      <div className="mt-3 grid gap-2 sm:grid-cols-3">
+        <div className="rounded-lg bg-white/70 p-2">
+          <Badge tone={canDiscover ? "ready" : "attention"}>
+            {canDiscover ? "ready" : "needed"}
+          </Badge>
+          <div className="mt-1 text-xs font-black text-ink">Identity</div>
+        </div>
+        <div className="rounded-lg bg-white/70 p-2">
+          <Badge tone={discovered ? "ready" : "default"}>
+            {discovered ? "done" : "next"}
+          </Badge>
+          <div className="mt-1 text-xs font-black text-ink">Discovery</div>
+        </div>
+        <div className="rounded-lg bg-white/70 p-2">
+          <Badge tone={discovered ? "attention" : "default"}>
+            {discovered ? "choose" : "locked"}
+          </Badge>
+          <div className="mt-1 text-xs font-black text-ink">Read scope</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
   const auditor = useAuditorMode();
   const configure = useConfigureMutation();
@@ -398,6 +446,16 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
   const discoveryMetadata = discoveryRun?.metadata;
   const showSnowflakeScopeFields =
     !isSnowflake || isEnabled || Boolean(discoveryRun) || isConfigured(options);
+  const actionableMissingRequired =
+    isSnowflake && !showSnowflakeScopeFields
+      ? [...missingCredentials, "Discovered read scope"]
+      : missingRequired;
+  const coreScopeFields = isSnowflake
+    ? scopeFields.filter((field) => SNOWFLAKE_CORE_SCOPE.has(field.name))
+    : scopeFields;
+  const advancedScopeFields = isSnowflake
+    ? scopeFields.filter((field) => !SNOWFLAKE_CORE_SCOPE.has(field.name))
+    : [];
   const liveDiscoveryError =
     typeof discoveryMetadata?.live_discovery_error === "string"
       ? discoveryMetadata.live_discovery_error
@@ -447,7 +505,9 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
   ];
   const enable = async () => {
     if (!canEnable) {
-      onToast(`Required before enabling: ${missingRequired.join(", ")}.`);
+      onToast(
+        `Required before enabling: ${actionableMissingRequired.join(", ")}.`,
+      );
       return;
     }
     if (!isEnabled && !accessValidated) {
@@ -589,7 +649,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                 ) : (
                   <Search className="h-4 w-4" />
                 )}{" "}
-                Discover scope
+                {isSnowflake ? "Discover objects" : "Discover scope"}
               </Button>
               <Button
                 variant="default"
@@ -719,14 +779,11 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
               Scoped access · {connector.credential_type.replace(/_/g, " ")}
             </div>
             {connector.connector_id === "snowflake-evidence-lake" && (
-              <div className="mt-2 flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-950">
-                <KeyRound className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                <div>
-                  Enter the account, service user, and server-side credential
-                  reference. Discovery signs in with that role and returns only
-                  warehouses, databases, schemas, and views Snowflake grants to
-                  it. Raw keys and OAuth tokens never enter the browser.
-                </div>
+              <div className="mt-2">
+                <SnowflakeSetupHint
+                  canDiscover={canDiscover}
+                  discovered={showSnowflakeScopeFields}
+                />
               </div>
             )}
             <div className="mt-2 grid gap-2">
@@ -796,19 +853,38 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                     Read scope
                   </div>
                   <div className="mt-1 text-xs font-semibold text-muted">
-                    Click <b>Discover scope</b> after entering the service
-                    identity. TrustOps will replace typed object names with
-                    selectable Snowflake objects visible to that read-only role.
+                    Click <b>Discover objects</b> after entering the service
+                    identity. TrustOps will show only Snowflake objects visible
+                    to that role, then prefill the recommended read scope.
                   </div>
                 </div>
               )}
               {scopeFields.length > 0 && showSnowflakeScopeFields && (
                 <div className="mt-2 border-t border-line pt-3">
-                  <div className="text-xs font-black uppercase tracking-wide text-muted">
-                    Read scope
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <div className="text-xs font-black uppercase tracking-wide text-muted">
+                        Read scope
+                      </div>
+                      {isSnowflake && (
+                        <div className="mt-1 text-xs font-semibold text-muted">
+                          Choose the warehouse, database, and schema this role
+                          can read. View names are auto-filled from discovery.
+                        </div>
+                      )}
+                    </div>
+                    {isSnowflake && (
+                      <Badge
+                        tone={missingScope.length === 0 ? "ready" : "attention"}
+                      >
+                        {missingScope.length === 0
+                          ? "scope ready"
+                          : `${missingScope.length} missing`}
+                      </Badge>
+                    )}
                   </div>
                   <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                    {scopeFields.map((field) => {
+                    {coreScopeFields.map((field) => {
                       const candidates = stringCandidates(
                         discoveryMetadata,
                         candidateKeyForField(field.name),
@@ -870,9 +946,75 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                       );
                     })}
                   </div>
+                  {advancedScopeFields.length > 0 && (
+                    <details className="mt-3 rounded-lg border border-line bg-slate-50 p-3">
+                      <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-muted">
+                        Advanced view mapping
+                      </summary>
+                      <div className="mt-2 text-xs leading-5 text-muted">
+                        Defaults work for the TrustOps Snowflake schema. Change
+                        these only when your evidence lake uses custom view
+                        names.
+                      </div>
+                      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                        {advancedScopeFields.map((field) => {
+                          const candidates = stringCandidates(
+                            discoveryMetadata,
+                            candidateKeyForField(field.name),
+                          );
+                          const currentValue = options[field.name] ?? "";
+                          const selectValues = currentValue
+                            ? Array.from(new Set([currentValue, ...candidates]))
+                            : candidates;
+                          const onScopeChange = (value: string) => {
+                            setAccessValidated(false);
+                            setOptions((current) => ({
+                              ...current,
+                              [field.name]: value,
+                            }));
+                          };
+                          return (
+                            <label
+                              key={field.name}
+                              className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
+                            >
+                              {field.label}
+                              {selectValues.length > 0 ? (
+                                <select
+                                  value={currentValue}
+                                  onChange={(e) =>
+                                    onScopeChange(e.target.value)
+                                  }
+                                  className="rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                                >
+                                  <option value="">
+                                    Select {field.label.toLowerCase()}
+                                  </option>
+                                  {selectValues.map((value) => (
+                                    <option key={value} value={value}>
+                                      {value}
+                                    </option>
+                                  ))}
+                                </select>
+                              ) : (
+                                <input
+                                  value={currentValue}
+                                  onChange={(e) =>
+                                    onScopeChange(e.target.value)
+                                  }
+                                  placeholder={field.placeholder}
+                                  className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                                />
+                              )}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </details>
+                  )}
                 </div>
               )}
-              {usesDiscoveredReadScope && (
+              {usesDiscoveredReadScope && !isSnowflake && (
                 <div className="mt-2 rounded-lg border border-line bg-slate-50 p-3">
                   <div className="text-xs font-black uppercase tracking-wide text-muted">
                     Read scope
@@ -897,7 +1039,8 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
             </div>
             {!canEnable && !isEnabled && (
               <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-900">
-                Required before enabling: {missingRequired.join(", ")}.
+                Required before enabling: {actionableMissingRequired.join(", ")}
+                .
               </div>
             )}
             {canEnable && !isEnabled && !accessValidated && (
