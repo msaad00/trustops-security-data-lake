@@ -112,13 +112,20 @@ def test_aws_connector_sync_writes_raw_and_materializes_lake(tmp_path: Path) -> 
 
 
 def test_aws_sync_preserves_evidence_refs_and_freshness_source(tmp_path: Path) -> None:
-    append_config_event(tmp_path, connector_id="aws-posture", state="enabled", actor="alice")
+    append_config_event(
+        tmp_path,
+        connector_id="aws-posture",
+        state="enabled",
+        actor="alice",
+        credentials={"account_id": ACCOUNT},
+    )
     run_connector_sync(tmp_path, connector_id="aws-posture", fixture_dir=FIXTURE)
 
     silver_rows = read_jsonl(tmp_path / "silver" / "normalized_events.jsonl")
     assert silver_rows
     assert all(row["source"] == "aws" for row in silver_rows)
     assert all(row["evidence_ref"] for row in silver_rows)
+    assert {row["asset_owner"] for row in silver_rows} == {ACCOUNT}
 
     freshness_rows = read_jsonl(tmp_path / "gold" / "evidence_freshness.jsonl")
     assert freshness_rows
@@ -130,6 +137,14 @@ def test_aws_sync_preserves_evidence_refs_and_freshness_source(tmp_path: Path) -
     assert source["source"] == "aws"
     assert source["connector_id"] == "aws-posture"
     assert source["missing_count"] == 0
+
+    violations = current_posture["violations"]
+    assert violations
+    assert {row["asset_owner"] for row in violations} == {ACCOUNT}
+
+    assets = read_jsonl(tmp_path / "gold" / "asset_risk.jsonl")
+    assert assets
+    assert {row["asset_owner"] for row in assets} == {ACCOUNT}
 
 
 def test_aws_connector_sync_upserts_stable_event_ids(tmp_path: Path) -> None:
