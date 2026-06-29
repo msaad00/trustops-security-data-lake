@@ -22,6 +22,10 @@ lake, cloud, or local boundary.
   ·
   <a href="docs/SHAREABLE_POC_HOSTING.md"><strong>Host A POC</strong></a>
   ·
+  <a href="docs/AWS_SNOWFLAKE_DEMO.md"><strong>AWS + Snowflake Demo</strong></a>
+  ·
+  <a href="docs/TRUSTOPS_85_PLAN.md"><strong>85% Plan</strong></a>
+  ·
   <a href="docs/FRAMEWORK_COVERAGE.md"><strong>Frameworks</strong></a>
   ·
   <a href="docs/api/AGENT_API.md"><strong>Agent API</strong></a>

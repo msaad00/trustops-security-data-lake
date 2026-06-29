@@ -2,18 +2,21 @@
 
 Three install surfaces — pick the one that fits your blast radius.
 
-| Surface             | When to use                                                    | Command                                                                                                                                                                                                                                          |
-| ------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Python wheel**    | Local demos, single laptop, contributor onboarding             | `pip install trustops-security-data-lake && security-lakehouse serve --lake build/lakehouse`                                                                                                                                                     |
-| **Container image** | CI, Docker Compose, single-host servers                        | `docker run -p 8787:8787 -v $PWD/build/lakehouse:/lake ghcr.io/msaad00/trustops:latest`                                                                                                                                                          |
-| **Helm + EKS**      | Production self-hosted, customer-data-residency requirement    | See [Helm chart](helm/trustops/) + [EKS reference IaC](eks-terraform/) below                                                                                                                                                                     |
-| **Snowflake POC**   | Governed evidence lake using customer-owned Snowflake views    | Run [`snowflake/bootstrap_poc.sql`](snowflake/bootstrap_poc.sql), then connect the reader role                                                                                                                                                   |
-| **Cloud POC roles** | Read-only AWS/Azure/GCP posture collection without static keys | Deploy [`aws/trustops-posture-readonly-role.yaml`](aws/trustops-posture-readonly-role.yaml), [`azure/trustops-posture-reader.bicep`](azure/trustops-posture-reader.bicep), or [`gcp/trustops-posture-reader.tf`](gcp/trustops-posture-reader.tf) |
+| Surface                  | When to use                                                                                  | Command                                                                                                                                                                                                                                          |
+| ------------------------ | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Python wheel**         | Local demos, single laptop, contributor onboarding                                           | `pip install trustops-security-data-lake && security-lakehouse serve --lake build/lakehouse`                                                                                                                                                     |
+| **Container image**      | CI, Docker Compose, single-host servers                                                      | `docker run -p 8787:8787 -v $PWD/build/lakehouse:/lake ghcr.io/msaad00/trustops:latest`                                                                                                                                                          |
+| **Helm + EKS**           | Production self-hosted, customer-data-residency requirement                                  | See [Helm chart](helm/trustops/) + [EKS reference IaC](eks-terraform/) below                                                                                                                                                                     |
+| **Snowflake POC**        | Governed evidence lake using customer-owned Snowflake views                                  | Run [`snowflake/bootstrap_poc.sql`](snowflake/bootstrap_poc.sql), then connect the reader role                                                                                                                                                   |
+| **Cloud POC roles**      | Read-only AWS/Azure/GCP posture collection without static keys                               | Deploy [`aws/trustops-posture-readonly-role.yaml`](aws/trustops-posture-readonly-role.yaml), [`azure/trustops-posture-reader.bicep`](azure/trustops-posture-reader.bicep), or [`gcp/trustops-posture-reader.tf`](gcp/trustops-posture-reader.tf) |
+| **AWS + Snowflake demo** | Shareable HTTPS POC with scheduler, OIDC, Snowflake key-pair auth, and AWS read-only posture | Use [`examples/aws-snowflake-poc-values.yaml`](examples/aws-snowflake-poc-values.yaml) with the [demo package runbook](../docs/AWS_SNOWFLAKE_DEMO.md)                                                                                            |
 
 To publish a real HTTPS link for evaluators, follow the
 [shareable POC hosting runbook](../docs/SHAREABLE_POC_HOSTING.md). It combines
 the chart, server auth, persistent lake storage, scheduler, and server-side
-connector secrets into one operator path.
+connector secrets into one operator path. For the current AWS + Snowflake
+demo target, use the checked-in values profile at
+[`deploy/examples/aws-snowflake-poc-values.yaml`](examples/aws-snowflake-poc-values.yaml).
 
 ## Container image
 

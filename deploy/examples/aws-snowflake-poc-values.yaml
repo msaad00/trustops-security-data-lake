@@ -1,0 +1,111 @@
+# AWS-hosted TrustOps POC with Snowflake as the governed evidence lake.
+#
+# This file is intentionally renderable as-is for `helm template`, but the
+# hostname, image tag, and IRSA role ARN must be changed for a real cluster.
+# Snowflake object names match the TrustOps bootstrap scripts.
+
+image:
+  repository: ghcr.io/msaad00/trustops
+  tag: latest
+  pullPolicy: Always
+
+replicaCount: 1
+
+serviceAccount:
+  create: true
+  name: trustops
+  annotations:
+    # Replace with the EKS runtime role that can assume customer read-only
+    # cloud-posture roles. Do not attach write/remediation permissions.
+    eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/trustops-runtime-readonly
+
+ingress:
+  enabled: true
+  className: alb
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/healthcheck-path: /api/healthz
+  hosts:
+    - host: trustops-poc.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: trustops-poc-tls
+      hosts:
+        - trustops-poc.example.com
+
+lake:
+  persistence:
+    enabled: true
+    size: 50Gi
+    accessMode: ReadWriteOnce
+
+scheduler:
+  enabled: true
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+
+env:
+  - name: TRUSTOPS_PUBLIC_URL
+    value: https://trustops-poc.example.com
+  - name: TRUSTOPS_SESSION_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: trustops-server
+        key: TRUSTOPS_SESSION_SECRET
+
+  # Human auth. Point these at Auth0, Okta, Entra ID, Cognito, or another OIDC
+  # provider before sharing a public URL.
+  - name: TRUSTOPS_OIDC_ISSUER
+    value: https://idp.example.com
+  - name: TRUSTOPS_OIDC_CLIENT_ID
+    value: trustops-poc
+  - name: TRUSTOPS_OIDC_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: trustops-oidc
+        key: client_secret
+  - name: TRUSTOPS_OIDC_TENANT_SLUG
+    value: poc
+  - name: TRUSTOPS_OIDC_AUTO_PROVISION
+    value: "true"
+
+  # Snowflake service-user key-pair auth. TrustOps receives a mounted key file,
+  # not a password or browser user credential.
+  - name: SNOWFLAKE_ACCOUNT
+    value: MJFAYEE-YS65534
+  - name: SNOWFLAKE_USER
+    value: TRUSTOPS_INGEST_SVC
+  - name: SNOWFLAKE_AUTHENTICATOR
+    value: SNOWFLAKE_JWT
+  - name: SNOWFLAKE_PRIVATE_KEY_FILE
+    value: /var/run/secrets/trustops/snowflake_key.p8
+  - name: SNOWFLAKE_ROLE
+    value: TRUSTOPS_READER
+  - name: SNOWFLAKE_WAREHOUSE
+    value: TRUSTOPS_READ_WH
+  - name: SNOWFLAKE_DATABASE
+    value: TRUSTOPS_SECURITY_LAKE
+  - name: SNOWFLAKE_SCHEMA
+    value: EVIDENCE
+
+extraVolumeMounts:
+  - name: snowflake-key
+    mountPath: /var/run/secrets/trustops
+    readOnly: true
+
+extraVolumes:
+  - name: snowflake-key
+    secret:
+      secretName: trustops-snowflake-key
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 2000m
+    memory: 2Gi
