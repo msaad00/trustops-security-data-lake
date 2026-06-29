@@ -339,6 +339,18 @@ const requiredFirst = (fields: FieldDef[]) =>
 
 const SNOWFLAKE_CORE_SCOPE = new Set(["warehouse", "database", "schema"]);
 
+function formatWhen(value: string | null | undefined) {
+  if (!value) return "not yet";
+  const parsed = Date.parse(value);
+  if (Number.isNaN(parsed)) return value.slice(0, 19);
+  return new Intl.DateTimeFormat(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(parsed));
+}
+
 function SnowflakeSetupHint({
   canDiscover,
   discovered,
@@ -382,6 +394,102 @@ function SnowflakeSetupHint({
         </div>
       </div>
     </div>
+  );
+}
+
+function LatestSyncProof({
+  connector,
+  syncing,
+  onSync,
+}: {
+  connector: ConnectorView;
+  syncing: boolean;
+  onSync: () => void;
+}) {
+  const sync = connector.last_sync;
+  const enabled = connector.state === "enabled";
+  const ok = sync?.result === "ok";
+  const failed = sync?.result === "error";
+  const evidenceCount = sync?.evidence_count ?? 0;
+  const tone = ok
+    ? "ready"
+    : failed
+      ? "critical"
+      : enabled
+        ? "attention"
+        : "default";
+  const title = ok
+    ? "Evidence sync complete"
+    : failed
+      ? "Latest sync failed"
+      : enabled
+        ? "Ready to sync evidence"
+        : "Enable before syncing";
+  const detail = ok
+    ? `${evidenceCount} evidence row(s) landed and posture surfaces will refresh.`
+    : failed
+      ? (sync?.error ?? "Review run history for the connector error.")
+      : enabled
+        ? "Run sync to land evidence, refresh posture, and update trust views."
+        : "Test access, enable the connector, then run the first sync.";
+
+  return (
+    <section className="rounded-xl border border-line bg-white p-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-black uppercase tracking-wide text-muted">
+              Latest sync
+            </span>
+            <Badge tone={tone}>{sync?.result ?? connector.state}</Badge>
+          </div>
+          <div className="mt-2 text-base font-black text-ink">{title}</div>
+          <p className="mt-1 max-w-2xl text-xs leading-5 text-muted">
+            {detail}
+          </p>
+        </div>
+        <Button
+          variant={ok ? "default" : "primary"}
+          onClick={onSync}
+          disabled={!enabled || syncing}
+        >
+          {syncing ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <RefreshCw className="h-4 w-4" />
+          )}
+          Sync now
+        </Button>
+      </div>
+      <div className="mt-3 grid gap-2 sm:grid-cols-3">
+        <div className="rounded-lg border border-line bg-panel p-2">
+          <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+            Evidence
+          </div>
+          <div className="mt-1 text-sm font-black text-ink">
+            {sync?.evidence_count ?? "—"}
+          </div>
+        </div>
+        <div className="rounded-lg border border-line bg-panel p-2">
+          <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+            Last run
+          </div>
+          <div className="mt-1 text-sm font-black text-ink">
+            {formatWhen(sync?.occurred_at)}
+          </div>
+        </div>
+        <div className="rounded-lg border border-line bg-panel p-2">
+          <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+            Duration
+          </div>
+          <div className="mt-1 text-sm font-black text-ink">
+            {sync?.duration_ms !== null && sync?.duration_ms !== undefined
+              ? `${sync.duration_ms} ms`
+              : "—"}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -1105,6 +1213,12 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
             )}
           </section>
         )}
+
+        <LatestSyncProof
+          connector={connector}
+          syncing={sync.isPending}
+          onSync={runSync}
+        />
 
         <section>
           <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
