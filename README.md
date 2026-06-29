@@ -20,6 +20,8 @@ lake, cloud, or local boundary.
   ·
   <a href="docs/CONNECTORS.md"><strong>Connectors</strong></a>
   ·
+  <a href="docs/SHAREABLE_POC_HOSTING.md"><strong>Host A POC</strong></a>
+  ·
   <a href="docs/FRAMEWORK_COVERAGE.md"><strong>Frameworks</strong></a>
   ·
   <a href="docs/api/AGENT_API.md"><strong>Agent API</strong></a>
@@ -308,6 +310,7 @@ TrustOps treats compliance evidence as sensitive operational data.
 | **Egress**      | External actions belong behind workflow policy and allowlists, not arbitrary agent output.                 |
 
 Docs:
+[Shareable POC Hosting](docs/SHAREABLE_POC_HOSTING.md),
 [Server Auth](docs/SERVER_AUTH.md),
 [Data Model](docs/DATA_MODEL.md),
 [Agent API](docs/api/AGENT_API.md),
