@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  Bot,
   CheckCircle2,
   CircleAlert,
   CircleDot,
@@ -48,6 +49,7 @@ function stepIcon(step: PocReadinessStep) {
   if (step.id === "headless_access") return KeyRound;
   if (step.id === "source_sync") return Plug;
   if (step.id === "trust_share") return Share2;
+  if (step.id === "agent_review") return Bot;
   return step.status === "ready" ? CheckCircle2 : CircleAlert;
 }
 
@@ -60,6 +62,7 @@ function actionLabel(step: PocReadinessStep) {
   if (step.status === "ready") {
     if (step.id === "source_sync") return "Review sources";
     if (step.id === "trust_share") return "Review shares";
+    if (step.id === "agent_review") return "Review runs";
     return "Review";
   }
   if (step.id === "public_url") return "Configure URL";
@@ -67,6 +70,7 @@ function actionLabel(step: PocReadinessStep) {
   if (step.id === "headless_access") return "Issue API key";
   if (step.id === "source_sync") return "Connect source";
   if (step.id === "trust_share") return "Create share";
+  if (step.id === "agent_review") return "Run review";
   return "Open";
 }
 
@@ -462,6 +466,11 @@ export default function PocPage() {
                   detail="active external links"
                 />
                 <Metric
+                  label="Agent reviews"
+                  value={data.agents.completed}
+                  detail={`${data.agents.pending_decisions} pending decision(s)`}
+                />
+                <Metric
                   label="Public URL"
                   value={data.public_url ? "set" : "missing"}
                   detail={data.public_url ?? "TRUSTOPS_PUBLIC_URL"}
@@ -518,6 +527,12 @@ export default function PocPage() {
               <Link href="/trust-center">
                 <Share2 className="h-4 w-4" />
                 Share trust
+              </Link>
+            </Button>
+            <Button asChild variant="default">
+              <Link href="/agents">
+                <Bot className="h-4 w-4" />
+                Run agent review
               </Link>
             </Button>
             {data.public_url && (
