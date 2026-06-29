@@ -282,12 +282,30 @@ def _silver_row(row: dict[str, Any], raw_sha256: str) -> dict[str, Any]:
         "status": str(row.get("status", "observed")).lower(),
         "control_ids": [str(item) for item in row.get("controls", [])],
         "evidence_id": str(evidence.get("evidence_id") or row["event_id"]),
-        "evidence_ref": str(evidence.get("uri") or evidence.get("ref") or evidence.get("evidence_ref") or ""),
+        "evidence_ref": _evidence_ref(row, evidence, raw_sha256),
         "evidence_collected_at": str(
             evidence.get("collected_at") or evidence.get("evidence_collected_at") or row["event_time"]
         ),
         "raw_sha256": raw_sha256,
     }
+
+
+def _evidence_ref(row: dict[str, Any], evidence: dict[str, Any], raw_sha256: str) -> str:
+    """Return an inspectable evidence pointer, even when a source lacks one.
+
+    Some live cloud APIs expose posture facts without a durable object URL.
+    TrustOps still has an immutable bronze row for that fact, so use a stable
+    internal evidence reference instead of letting freshness mark valid evidence
+    as missing.
+    """
+    explicit = str(evidence.get("uri") or evidence.get("ref") or evidence.get("evidence_ref") or "").strip()
+    if explicit:
+        return explicit
+    source = str(row.get("source") or "unknown").strip() or "unknown"
+    event_id = str(row.get("event_id") or "").strip()
+    if event_id:
+        return f"trustops://bronze/{source}/{event_id}"
+    return f"trustops://bronze/{source}/{raw_sha256}"
 
 
 def _build_control_rows(
