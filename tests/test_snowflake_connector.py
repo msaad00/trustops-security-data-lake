@@ -98,6 +98,48 @@ def test_snowflake_live_select_normalizes_driver_values() -> None:
     ]
 
 
+def test_snowflake_live_discovery_recommends_visible_scope() -> None:
+    client = object.__new__(SnowflakeClient)
+    client.query_params = {
+        "account": "acme",
+        "warehouse": "TRUSTOPS_READ_WH",
+        "database": "TRUSTOPS_SECURITY_LAKE",
+        "schema": "EVIDENCE",
+    }
+    client.views = {
+        "audit_events": "TRUSTOPS_AUDIT_EVENTS",
+        "control_posture": "TRUSTOPS_CONTROL_POSTURE",
+        "asset_risk": "TRUSTOPS_ASSET_RISK",
+        "evidence_bundles": "TRUSTOPS_EVIDENCE_BUNDLES",
+    }
+    client._connector = _FakeSnowflakeDiscoveryConnector()
+
+    result = client.discover_scope()
+
+    assert result["ok"] is True
+    assert result["selection_mode"] == "live_snowflake_scope"
+    assert result["candidates"] == {
+        "warehouses": ["TRUSTOPS_READ_WH"],
+        "databases": ["TRUSTOPS_SECURITY_LAKE"],
+        "schemas": ["EVIDENCE"],
+        "views": [
+            "TRUSTOPS_ASSET_RISK",
+            "TRUSTOPS_AUDIT_EVENTS",
+            "TRUSTOPS_CONTROL_POSTURE",
+            "TRUSTOPS_EVIDENCE_BUNDLES",
+        ],
+    }
+    assert result["recommended_options"] == {
+        "warehouse": "TRUSTOPS_READ_WH",
+        "database": "TRUSTOPS_SECURITY_LAKE",
+        "schema": "EVIDENCE",
+        "audit_events": "TRUSTOPS_AUDIT_EVENTS",
+        "control_posture": "TRUSTOPS_CONTROL_POSTURE",
+        "asset_risk": "TRUSTOPS_ASSET_RISK",
+        "evidence_bundles": "TRUSTOPS_EVIDENCE_BUNDLES",
+    }
+
+
 def test_snowflake_live_requires_account_and_user_for_sso_or_oauth(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -386,6 +428,11 @@ class _FakeSnowflakeConnector:
         return _FakeSnowflakeConnection(self._rows, self._description)
 
 
+class _FakeSnowflakeDiscoveryConnector:
+    def connect(self, **_params: object) -> _FakeSnowflakeConnection:
+        return _FakeSnowflakeDiscoveryConnection()
+
+
 class _FakeSnowflakeConnection:
     def __init__(self, rows: list[tuple[Any, ...]], description: list[tuple[str]]) -> None:
         self._rows = rows
@@ -401,6 +448,17 @@ class _FakeSnowflakeConnection:
         return _FakeSnowflakeCursor(self._rows, self._description)
 
 
+class _FakeSnowflakeDiscoveryConnection:
+    def __enter__(self) -> _FakeSnowflakeDiscoveryConnection:
+        return self
+
+    def __exit__(self, *_args: object) -> None:
+        return None
+
+    def cursor(self) -> _FakeSnowflakeDiscoveryCursor:
+        return _FakeSnowflakeDiscoveryCursor()
+
+
 class _FakeSnowflakeCursor:
     def __init__(self, rows: list[tuple[Any, ...]], description: list[tuple[str]]) -> None:
         self._rows = rows
@@ -408,6 +466,48 @@ class _FakeSnowflakeCursor:
 
     def execute(self, _query: str) -> None:
         return None
+
+    def fetchall(self) -> list[tuple[Any, ...]]:
+        return self._rows
+
+    def close(self) -> None:
+        return None
+
+
+class _FakeSnowflakeDiscoveryCursor:
+    description: list[tuple[str]]
+
+    def __init__(self) -> None:
+        self._rows: list[tuple[Any, ...]] = []
+        self.description = []
+
+    def execute(self, query: str) -> None:
+        normalized = query.upper()
+        if normalized.startswith("SELECT CURRENT_ROLE"):
+            self.description = [("CURRENT_ROLE",), ("CURRENT_WAREHOUSE",), ("CURRENT_DATABASE",), ("CURRENT_SCHEMA",)]
+            self._rows = [("TRUSTOPS_READER", "TRUSTOPS_READ_WH", "TRUSTOPS_SECURITY_LAKE", "EVIDENCE")]
+        elif normalized == "SHOW WAREHOUSES":
+            self.description = [("created_on",), ("name",)]
+            self._rows = [(None, "TRUSTOPS_READ_WH")]
+        elif normalized == "SHOW DATABASES":
+            self.description = [("created_on",), ("name",)]
+            self._rows = [(None, "TRUSTOPS_SECURITY_LAKE")]
+        elif normalized.startswith("SHOW SCHEMAS"):
+            self.description = [("created_on",), ("name",)]
+            self._rows = [(None, "EVIDENCE")]
+        elif normalized.startswith("SHOW VIEWS"):
+            self.description = [("created_on",), ("name",)]
+            self._rows = [
+                (None, "TRUSTOPS_CONTROL_POSTURE"),
+                (None, "TRUSTOPS_AUDIT_EVENTS"),
+                (None, "TRUSTOPS_EVIDENCE_BUNDLES"),
+                (None, "TRUSTOPS_ASSET_RISK"),
+            ]
+        else:  # pragma: no cover - protects fake cursor contract
+            raise AssertionError(f"unexpected query {query}")
+
+    def fetchone(self) -> tuple[Any, ...] | None:
+        return self._rows[0] if self._rows else None
 
     def fetchall(self) -> list[tuple[Any, ...]]:
         return self._rows

@@ -80,9 +80,14 @@ const CREDENTIAL_FIELDS: Record<string, FieldDef[]> = {
     },
     {
       name: "private_key_ref",
-      label: "Private key file env var",
+      label: "Credential reference",
       placeholder: "SNOWFLAKE_PRIVATE_KEY_FILE",
       required: true,
+    },
+    {
+      name: "role",
+      label: "Read-only role (optional)",
+      placeholder: "TRUSTOPS_READER",
     },
     {
       name: "private_key_file_pwd_ref",
@@ -292,6 +297,35 @@ const labelForStatus = (status: string) =>
         ? "Local demo"
         : status.replace(/_/g, " ");
 
+const metadataObject = (value: unknown): Record<string, unknown> =>
+  value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+
+const stringCandidates = (
+  metadata: Record<string, unknown> | undefined,
+  key: string,
+) => {
+  const candidates = metadataObject(metadata?.candidates);
+  const values = candidates[key];
+  if (!Array.isArray(values)) return [];
+  return values
+    .filter((value): value is string => typeof value === "string")
+    .filter((value) => value.trim() !== "");
+};
+
+const candidateKeyForField = (field: string) =>
+  field === "warehouse"
+    ? "warehouses"
+    : field === "database"
+      ? "databases"
+      : field === "schema"
+        ? "schemas"
+        : "views";
+
+const isConfigured = (options: Record<string, string>) =>
+  Object.values(options).some((value) => value.trim() !== "");
+
 export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
   const auditor = useAuditorMode();
   const configure = useConfigureMutation();
@@ -330,8 +364,9 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
     CREDENTIAL_FIELDS[connector.connector_id] ??
     fallbackFieldsFor(connector.credential_type);
   const scopeFields = SCOPE_FIELDS[connector.connector_id] ?? [];
+  const isSnowflake = connector.connector_id === "snowflake-evidence-lake";
   const usesDiscoveredReadScope =
-    connector.connector_id === "clickhouse-telemetry-lake";
+    connector.connector_id === "clickhouse-telemetry-lake" || isSnowflake;
   const isEnabled = connector.state === "enabled";
   const missingCredentials = credentialFields
     .filter((field) => field.required && !(creds[field.name] ?? "").trim())
@@ -349,6 +384,13 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
   );
   const canTestAccess = isEnabled || canEnable;
   const canDiscover = isEnabled || missingCredentials.length === 0;
+  const discoveryMetadata = discoveryRun?.metadata;
+  const showSnowflakeScopeFields =
+    !isSnowflake || isEnabled || Boolean(discoveryRun) || isConfigured(options);
+  const liveDiscoveryError =
+    typeof discoveryMetadata?.live_discovery_error === "string"
+      ? discoveryMetadata.live_discovery_error
+      : null;
   const latestError = (runs.data ?? []).find((run) => run.error);
   const sourceMode =
     connector.connector_id === "snowflake-evidence-lake"
@@ -633,9 +675,10 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
               <div className="mt-2 flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-950">
                 <KeyRound className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                 <div>
-                  TrustOps stores only the service user, scope, and env-var
-                  names. The running server must mount the private key file and
-                  expose it through <code>SNOWFLAKE_PRIVATE_KEY_FILE</code>.
+                  Enter the account, service user, and server-side credential
+                  reference. Discovery signs in with that role and returns only
+                  warehouses, databases, schemas, and views Snowflake grants to
+                  it. Raw keys and OAuth tokens never enter the browser.
                 </div>
               </div>
             )}
@@ -661,32 +704,85 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                   />
                 </label>
               ))}
-              {scopeFields.length > 0 && (
+              {isSnowflake && !showSnowflakeScopeFields && (
+                <div className="mt-2 rounded-lg border border-line bg-slate-50 p-3">
+                  <div className="text-xs font-black uppercase tracking-wide text-muted">
+                    Read scope
+                  </div>
+                  <div className="mt-1 text-xs font-semibold text-muted">
+                    Click <b>Discover scope</b> after entering the service
+                    identity. TrustOps will replace typed object names with
+                    selectable Snowflake objects visible to that read-only role.
+                  </div>
+                </div>
+              )}
+              {scopeFields.length > 0 && showSnowflakeScopeFields && (
                 <div className="mt-2 border-t border-line pt-3">
                   <div className="text-xs font-black uppercase tracking-wide text-muted">
                     Read scope
                   </div>
                   <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                    {scopeFields.map((field) => (
-                      <label
-                        key={field.name}
-                        className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
-                      >
-                        {field.label}
-                        <input
-                          value={options[field.name] ?? ""}
-                          onChange={(e) => {
-                            setAccessValidated(false);
-                            setOptions((current) => ({
-                              ...current,
-                              [field.name]: e.target.value,
-                            }));
-                          }}
-                          placeholder={field.placeholder}
-                          className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
-                        />
-                      </label>
-                    ))}
+                    {scopeFields.map((field) => {
+                      const candidates = stringCandidates(
+                        discoveryMetadata,
+                        candidateKeyForField(field.name),
+                      );
+                      const currentValue = options[field.name] ?? "";
+                      const selectValues = currentValue
+                        ? Array.from(new Set([currentValue, ...candidates]))
+                        : candidates;
+                      const onScopeChange = (value: string) => {
+                        setAccessValidated(false);
+                        setOptions((current) => {
+                          const next = { ...current, [field.name]: value };
+                          if (isSnowflake && field.name === "database") {
+                            delete next.schema;
+                            delete next.audit_events;
+                            delete next.control_posture;
+                            delete next.asset_risk;
+                            delete next.evidence_bundles;
+                          }
+                          if (isSnowflake && field.name === "schema") {
+                            delete next.audit_events;
+                            delete next.control_posture;
+                            delete next.asset_risk;
+                            delete next.evidence_bundles;
+                          }
+                          return next;
+                        });
+                      };
+                      return (
+                        <label
+                          key={field.name}
+                          className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
+                        >
+                          {field.label}
+                          {isSnowflake && selectValues.length > 0 ? (
+                            <select
+                              value={currentValue}
+                              onChange={(e) => onScopeChange(e.target.value)}
+                              className="rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                            >
+                              <option value="">
+                                Select {field.label.toLowerCase()}
+                              </option>
+                              {selectValues.map((value) => (
+                                <option key={value} value={value}>
+                                  {value}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <input
+                              value={currentValue}
+                              onChange={(e) => onScopeChange(e.target.value)}
+                              placeholder={field.placeholder}
+                              className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                            />
+                          )}
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -746,8 +842,9 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                       ))}
                 </div>
                 <div className="mt-2 text-muted">
-                  Use discovered scopes to fill the read scope fields, then test
-                  connection before enabling.
+                  {liveDiscoveryError
+                    ? `Live metadata was unavailable (${liveDiscoveryError}); defaults remain editable.`
+                    : "Select the discovered scope, then test connection before enabling."}
                 </div>
               </div>
             )}
