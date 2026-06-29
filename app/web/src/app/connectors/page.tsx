@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Plug, Search, ShieldCheck } from "lucide-react";
+import { Plug, RefreshCw, Search, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -64,6 +64,61 @@ const toneForProbe = (result?: string) =>
       : result === "skipped"
         ? "attention"
         : "default";
+
+function ConnectorSetupRail() {
+  const steps = [
+    {
+      step: "01",
+      label: "Connect",
+      detail: "Service role, OAuth, or key pair.",
+      Icon: Plug,
+    },
+    {
+      step: "02",
+      label: "Discover",
+      detail: "Show only granted scope.",
+      Icon: Search,
+    },
+    {
+      step: "03",
+      label: "Test",
+      detail: "Validate access before enablement.",
+      Icon: ShieldCheck,
+    },
+    {
+      step: "04",
+      label: "Sync",
+      detail: "Refresh evidence and posture.",
+      Icon: RefreshCw,
+    },
+  ] as const;
+
+  return (
+    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+      {steps.map(({ step, label, detail, Icon }) => (
+        <div
+          key={step}
+          className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-xl border border-line bg-white p-3 shadow-card"
+        >
+          <span className="grid h-9 w-9 place-items-center rounded-lg bg-panel text-brand ring-1 ring-line">
+            <Icon className="h-4 w-4" />
+          </span>
+          <span className="min-w-0">
+            <span className="flex items-center gap-2">
+              <span className="text-[10px] font-black text-muted">{step}</span>
+              <span className="truncate text-sm font-black text-ink">
+                {label}
+              </span>
+            </span>
+            <span className="mt-0.5 block truncate text-xs text-muted">
+              {detail}
+            </span>
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function ConnectorRow({
   connector,
@@ -155,7 +210,7 @@ export default function ConnectorsPage() {
       <PageHeader
         eyebrow="Connectors"
         title="Connector registry"
-        description="Configure read-only credentials per source, run a live probe, and watch evidence land in bronze. Credentials are hashed to a fingerprint server-side — the raw secret is never persisted to disk or sent back over the wire."
+        description="Connect read-only sources, discover allowed scope, test access, then sync evidence into TrustOps."
         actions={
           <>
             <span className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-black text-slate-600">
@@ -169,11 +224,13 @@ export default function ConnectorsPage() {
             )}
             <span className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-black text-slate-600">
               <ShieldCheck className="mr-1 inline h-3 w-3 text-emerald-600" />{" "}
-              least-privilege roles only
+              least privilege
             </span>
           </>
         }
       />
+
+      <ConnectorSetupRail />
 
       <div className="flex min-w-0 flex-wrap items-center gap-2 rounded-xl border border-line bg-white p-2.5 shadow-card">
         <div className="relative min-w-[260px] flex-1">
@@ -201,9 +258,7 @@ export default function ConnectorsPage() {
           <CardHeader>
             <CardTitle>{filtered.length} connectors</CardTitle>
             <CardDescription>
-              Click a row to configure credentials, run a probe, or disable the
-              connector. {totals.primary} primary evidence lake sources are
-              modeled for governed warehouse and telemetry lake deployments.
+              Click a row to connect, test, enable, sync, or disable a source.
             </CardDescription>
           </CardHeader>
           <div className="grid gap-2 p-4 pt-0">
