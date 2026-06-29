@@ -200,6 +200,51 @@ export interface AuthMethods {
   methods: AuthMethod[];
 }
 
+export interface PocReadinessStep {
+  id: string;
+  label: string;
+  status: "ready" | "needs_setup" | string;
+  detail: string;
+  href: string | null;
+  blocking: boolean;
+}
+
+export interface PocReadiness {
+  state: "ready" | "internal_ready" | "needs_setup" | string;
+  shareable: boolean;
+  public_url: string | null;
+  workspace: {
+    tenant_id: string;
+    workspace_id: string;
+    current_user: string;
+    current_role: string;
+  };
+  access: {
+    require_auth: boolean;
+    browser_sso_configured: boolean;
+    active_api_keys: number;
+    users_by_role: Record<string, number>;
+  };
+  connectors: {
+    enabled: number;
+    failed: number;
+    silent: number;
+    evidence_count: number;
+    source_count: number;
+  };
+  trust_shares: {
+    active: number;
+  };
+  ingestion: {
+    state: string;
+    posture_score: number | null;
+    open_violations: number | null;
+    recommended_actions: IngestionAction[];
+  };
+  steps: PocReadinessStep[];
+  next_step: PocReadinessStep | null;
+}
+
 export interface SnapshotResponse {
   snapshot_path: string;
   reason: string;

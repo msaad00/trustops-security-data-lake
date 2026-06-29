@@ -29,6 +29,7 @@ import type {
   FrameworkDetail,
   IngestionStatus,
   NormalizedEvent,
+  PocReadiness,
   ProbePayload,
   DiscoverPayload,
   SavedView,
@@ -91,6 +92,17 @@ export function useIngestionStatus(opts?: Opts<IngestionStatus>) {
     staleTime: STALE,
     refetchInterval: LIVE,
     refetchOnWindowFocus: true,
+    ...opts,
+  });
+}
+
+export function usePocReadiness(opts?: Opts<PocReadiness>) {
+  return useQuery({
+    queryKey: ["platform", "poc-readiness"],
+    queryFn: api.pocReadiness,
+    staleTime: STALE,
+    refetchInterval: LIVE,
+    retry: false,
     ...opts,
   });
 }

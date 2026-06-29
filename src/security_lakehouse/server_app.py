@@ -34,6 +34,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -61,7 +62,8 @@ from security_lakehouse.db import metrics as metrics_db
 from security_lakehouse.db import migrate, remediation, repository
 from security_lakehouse.db import tags as tags_db
 from security_lakehouse.db.base import DEFAULT_PAGE_LIMIT, clamp_limit, create_engine_for, session_factory
-from security_lakehouse.db.models import REMEDIATION_PRIORITIES
+from security_lakehouse.db.models import REMEDIATION_PRIORITIES, User
+from security_lakehouse.ingestion_status import build_ingestion_status
 from security_lakehouse.io import resolve_path
 from security_lakehouse.services import NotFound, ValidationError
 from security_lakehouse.services import access_reviews as access_review_services
@@ -500,6 +502,146 @@ def _public_trust_summary(lake: Path, share: dict[str, object]) -> dict[str, obj
     }
 
 
+def _poc_step(
+    *,
+    step_id: str,
+    label: str,
+    ready: bool,
+    detail: str,
+    href: str | None = None,
+    blocking: bool = True,
+) -> dict[str, object]:
+    return {
+        "id": step_id,
+        "label": label,
+        "status": "ready" if ready else "needs_setup",
+        "detail": detail,
+        "href": href,
+        "blocking": blocking,
+    }
+
+
+def _build_poc_readiness(
+    *,
+    app: FastAPI,
+    lake: Path,
+    identity: Identity,
+    session: Session,
+) -> dict[str, object]:
+    """Return the tenant's readiness to host a shareable POC."""
+    now = datetime.now(UTC)
+    public_url = (
+        os.environ.get("TRUSTOPS_PUBLIC_URL")
+        or os.environ.get("TRUSTOPS_BASE_URL")
+        or os.environ.get("TRUSTOPS_APP_URL")
+        or ""
+    ).rstrip("/")
+    sso_configured = app.state.oauth is not None or app.state.saml_config is not None
+    keys = repository.list_api_keys(session, tenant_id=identity.tenant_id)
+    active_keys = [key for key in keys if key.is_active(now=now)]
+    role_counts = {
+        str(role): int(count)
+        for role, count in session.execute(
+            select(User.role, func.count())
+            .where(User.tenant_id == identity.tenant_id, User.is_active.is_(True))
+            .group_by(User.role)
+        ).all()
+    }
+    ingestion = build_ingestion_status(lake)
+    ingestion_summary = ingestion.get("summary") or {}
+    active_shares = [share for share in trust_share.list_shares(lake) if not share.get("expired")]
+    enabled_connectors = int(ingestion_summary.get("enabled_connectors") or 0)
+    evidence_count = int(ingestion_summary.get("evidence_count") or 0)
+    failed_connectors = int(ingestion_summary.get("failed_connectors") or 0)
+    silent_connectors = int(ingestion_summary.get("silent_connectors") or 0)
+    source_ready = enabled_connectors > 0 and evidence_count > 0 and failed_connectors == 0 and silent_connectors == 0
+    human_access_ready = (not bool(app.state.require_auth)) or sso_configured
+    headless_access_ready = len(active_keys) > 0
+
+    steps = [
+        _poc_step(
+            step_id="public_url",
+            label="Public URL",
+            ready=bool(public_url),
+            detail=public_url or "Set TRUSTOPS_PUBLIC_URL for invite links.",
+        ),
+        _poc_step(
+            step_id="human_access",
+            label="Human access",
+            ready=human_access_ready,
+            detail="SSO configured" if sso_configured else "Configure OIDC or SAML for browser login.",
+            href="/console/login",
+        ),
+        _poc_step(
+            step_id="headless_access",
+            label="Agent/API access",
+            ready=headless_access_ready,
+            detail=f"{len(active_keys)} active API key(s)" if active_keys else "Issue an API key for headless clients.",
+            href="/api/v1/auth/keys",
+            blocking=False,
+        ),
+        _poc_step(
+            step_id="source_sync",
+            label="Source sync",
+            ready=source_ready,
+            detail=(
+                f"{evidence_count} evidence row(s) from {enabled_connectors} enabled source(s)"
+                if source_ready
+                else "Connect, test, enable, and sync at least one source."
+            ),
+            href="/console/connectors",
+        ),
+        _poc_step(
+            step_id="trust_share",
+            label="Trust share",
+            ready=bool(active_shares),
+            detail=f"{len(active_shares)} active share link(s)"
+            if active_shares
+            else "Create a scoped trust-center share.",
+            href="/console/trust-center",
+        ),
+    ]
+    blocking_ready = all(step["status"] == "ready" for step in steps if step["blocking"])
+    any_access_ready = human_access_ready or headless_access_ready
+    state = "ready" if blocking_ready else ("internal_ready" if source_ready and any_access_ready else "needs_setup")
+    next_step = next((step for step in steps if step["status"] != "ready"), None)
+    return {
+        "state": state,
+        "shareable": state == "ready",
+        "public_url": public_url or None,
+        "workspace": {
+            "tenant_id": identity.tenant_id,
+            "workspace_id": identity.workspace_id or identity.tenant_id,
+            "current_user": identity.email,
+            "current_role": identity.role,
+        },
+        "access": {
+            "require_auth": bool(app.state.require_auth),
+            "browser_sso_configured": sso_configured,
+            "active_api_keys": len(active_keys),
+            "users_by_role": role_counts,
+        },
+        "connectors": {
+            "enabled": enabled_connectors,
+            "failed": failed_connectors,
+            "silent": silent_connectors,
+            "evidence_count": evidence_count,
+            "source_count": int(ingestion_summary.get("source_count") or 0),
+        },
+        "trust_shares": {
+            "active": len(active_shares),
+        },
+        "ingestion": {
+            "state": ingestion.get("state"),
+            "posture_score": ingestion_summary.get("posture_score"),
+            "open_violations": ingestion_summary.get("open_violations"),
+            "recommended_actions": ingestion.get("recommended_actions") or [],
+        },
+        "steps": steps,
+        "next_step": next_step,
+    }
+
+
 def _legacy_error_payload(status_code: HTTPStatus) -> dict[str, str]:
     """Return generic server-mode legacy API errors.
 
@@ -919,6 +1061,14 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="key not found or already revoked")
         session.commit()
         return JSONResponse(api_v1.envelope("auth.keys", {"id": key_id, "revoked": True}))
+
+    @app.get("/api/v1/platform/poc-readiness")
+    def poc_readiness(
+        identity: Identity = Depends(_require_admin),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        data = _build_poc_readiness(app=app, lake=lake_for(identity), identity=identity, session=session)
+        return JSONResponse(api_v1.envelope("platform.poc-readiness", data))
 
     # --- agent harness runs ---
     @app.get("/api/v1/agent-runs", tags=["agents"])

@@ -39,6 +39,7 @@ import type {
   Health,
   IngestionStatus,
   NormalizedEvent,
+  PocReadiness,
   SavedView,
   SnapshotResponse,
   Tag,
@@ -131,6 +132,10 @@ export const api = {
   health: () => get<Health>("/healthz"),
   authMethods: () =>
     get<{ data: AuthMethods }>("/v1/auth/methods").then((body) => body.data),
+  pocReadiness: () =>
+    get<{ data: PocReadiness }>("/v1/platform/poc-readiness").then(
+      (body) => body.data,
+    ),
   remediationTasks: (query = "") =>
     get<{ data: RemediationTask[] }>(`/v1/remediation/tasks${query}`).then(
       (b) => b.data,
