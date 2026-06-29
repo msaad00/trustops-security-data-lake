@@ -95,7 +95,16 @@ static keys:
 
 ## 3. Deploy With Helm
 
-Create a POC values file:
+For a generic deployment, create a POC values file. For the current AWS +
+Snowflake demo, start from the checked-in profile instead:
+
+```bash
+cp deploy/examples/aws-snowflake-poc-values.yaml poc-values.yaml
+$EDITOR poc-values.yaml
+```
+
+That profile includes the scheduler, OIDC placeholders, Snowflake key-pair
+mount, and EKS IRSA annotation. The minimal shape is:
 
 ```yaml
 # poc-values.yaml
