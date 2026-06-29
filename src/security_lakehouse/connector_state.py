@@ -24,7 +24,7 @@ from security_lakehouse.connectors import (
     load_connector_catalog,
 )
 from security_lakehouse.connectors_snowflake import CONNECTOR_ID as SNOWFLAKE_CONNECTOR_ID
-from security_lakehouse.connectors_snowflake import probe_snowflake_access
+from security_lakehouse.connectors_snowflake import discover_snowflake_scope, probe_snowflake_access
 from security_lakehouse.models import parse_event_time, utc_iso
 
 CONFIG_FILE = "connector_config.jsonl"
@@ -345,6 +345,7 @@ def _discovery_scope_context(credentials: dict[str, Any], options: dict[str, Any
 def _scope_candidates(
     *,
     connector_id: str,
+    credentials: dict[str, Any],
     scope: dict[str, Any],
     options: dict[str, Any],
 ) -> dict[str, Any]:
@@ -371,7 +372,10 @@ def _scope_candidates(
             }
             for key, default in defaults.items()
         ]
-        return {
+        live = discover_snowflake_scope(credentials=credentials, options=options)
+        if live.get("ok"):
+            return live
+        curated = {
             "selection_mode": "curated_views",
             "selectors": [
                 {
@@ -410,6 +414,8 @@ def _scope_candidates(
                 **defaults,
             },
         }
+        curated["live_discovery_error"] = live.get("error")
+        return curated
     if connector_id == "aws-posture":
         account_id = str(scope.get("account_id") or "")
         region = str(scope.get("region") or options.get("region") or "us-east-1")
@@ -499,6 +505,7 @@ def run_discovery(
         )
     metadata = _scope_candidates(
         connector_id=connector_id,
+        credentials=credentials,
         scope=_discovery_scope_context(credentials, options),
         options=options,
     )

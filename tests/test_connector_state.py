@@ -10,9 +10,11 @@ from datetime import UTC, datetime, timedelta
 from http import HTTPStatus
 from http.server import ThreadingHTTPServer
 from pathlib import Path
+from typing import Any
 
 import pytest
 
+from security_lakehouse import connector_state
 from security_lakehouse.connector_state import (
     _access_fingerprint,
     _missing_required_config,
@@ -277,6 +279,61 @@ def test_discovery_returns_selectable_snowflake_scope_without_enable(tmp_path: P
     selectors = rec["metadata"]["selectors"]
     assert {"kind": "database", "name": "TRUSTOPS_SECURITY_LAKE", "required": True, "selected": True} in selectors
     assert {"kind": "view", "name": "TRUSTOPS_AUDIT_EVENTS", "required": True, "purpose": "audit_events"} in selectors
+    assert latest_config(tmp_path, "snowflake-evidence-lake") is None
+
+
+def test_discovery_uses_live_snowflake_scope_when_credentials_resolve(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def fake_discover_snowflake_scope(*, credentials: dict[str, Any], options: dict[str, Any]) -> dict[str, Any]:
+        assert credentials["account"] == "org-account"
+        assert credentials["private_key_ref"] == "SNOWFLAKE_PRIVATE_KEY_FILE"
+        assert options == {"database": "TRUSTOPS_SECURITY_LAKE"}
+        return {
+            "ok": True,
+            "selection_mode": "live_snowflake_scope",
+            "selectors": [
+                {"kind": "warehouse", "name": "TRUSTOPS_READ_WH", "required": True, "selected": True},
+                {"kind": "database", "name": "TRUSTOPS_SECURITY_LAKE", "required": True, "selected": True},
+                {"kind": "schema", "name": "EVIDENCE", "required": True, "selected": True},
+                {
+                    "kind": "view",
+                    "name": "TRUSTOPS_AUDIT_EVENTS",
+                    "required": True,
+                    "purpose": "audit_events",
+                    "selected": True,
+                },
+            ],
+            "candidates": {
+                "warehouses": ["TRUSTOPS_READ_WH"],
+                "databases": ["TRUSTOPS_SECURITY_LAKE"],
+                "schemas": ["EVIDENCE"],
+                "views": ["TRUSTOPS_AUDIT_EVENTS"],
+            },
+            "recommended_options": {
+                "warehouse": "TRUSTOPS_READ_WH",
+                "database": "TRUSTOPS_SECURITY_LAKE",
+                "schema": "EVIDENCE",
+                "audit_events": "TRUSTOPS_AUDIT_EVENTS",
+            },
+        }
+
+    monkeypatch.setattr(connector_state, "discover_snowflake_scope", fake_discover_snowflake_scope)
+
+    rec = run_discovery(
+        tmp_path,
+        connector_id="snowflake-evidence-lake",
+        credentials={
+            "account": "org-account",
+            "user": "TRUSTOPS_INGEST_SVC",
+            "private_key_ref": "SNOWFLAKE_PRIVATE_KEY_FILE",
+        },
+        options={"database": "TRUSTOPS_SECURITY_LAKE"},
+    )
+
+    assert rec["result"] == "ok"
+    assert rec["metadata"]["selection_mode"] == "live_snowflake_scope"
+    assert rec["metadata"]["candidates"]["views"] == ["TRUSTOPS_AUDIT_EVENTS"]
     assert latest_config(tmp_path, "snowflake-evidence-lake") is None
 
 
