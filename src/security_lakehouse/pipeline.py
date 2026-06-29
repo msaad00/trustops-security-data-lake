@@ -275,7 +275,7 @@ def _silver_row(row: dict[str, Any], raw_sha256: str) -> dict[str, Any]:
         "evidence_types": expand_evidence_types(event_type),
         "asset_id": asset_id,
         "asset_type": str(entity.get("asset_type") or entity.get("type") or "unknown"),
-        "asset_owner": str(entity.get("owner") or attributes.get("owner") or "unassigned"),
+        "asset_owner": str(entity.get("asset_owner") or entity.get("owner") or attributes.get("owner") or "unassigned"),
         "environment": str(entity.get("environment") or attributes.get("environment") or "unknown"),
         "severity": severity,
         "severity_score": SEVERITY_SCORE[severity],
