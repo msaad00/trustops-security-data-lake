@@ -154,7 +154,7 @@ Skill manifests should include:
 
 ```yaml
 name: evidence-ingestion
-version: 0.1.0
+version: 0.2.0
 role_required: security_admin
 reads:
   - connector_config

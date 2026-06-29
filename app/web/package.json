@@ -1,7 +1,7 @@
 {
   "name": "trustops-console",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "TrustOps assessment console — Next.js workbench served by the security-lakehouse Python package.",
   "scripts": {
     "dev": "next dev -p 5173",
