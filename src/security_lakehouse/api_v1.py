@@ -377,6 +377,13 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "methods": ["POST"],
         "scopes": ["write"],
     },
+    {
+        "resource": "platform.poc-readiness",
+        "path": "/api/v1/platform/poc-readiness",
+        "kind": "singleton",
+        "methods": ["GET"],
+        "scopes": ["auth_admin"],
+    },
 ]
 
 

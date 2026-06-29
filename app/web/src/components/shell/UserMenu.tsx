@@ -1,12 +1,14 @@
 "use client";
 
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import Link from "next/link";
 import {
   Building2,
   ChevronDown,
   LogOut,
   Monitor,
   Moon,
+  Rocket,
   Settings,
   Sun,
   User,
@@ -100,6 +102,15 @@ export function UserMenu() {
           <DropdownMenu.Item className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm text-ink outline-none data-[highlighted]:bg-slate-50">
             <User className="h-4 w-4 text-muted" />
             Profile
+          </DropdownMenu.Item>
+          <DropdownMenu.Item asChild>
+            <Link
+              href="/poc"
+              className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm text-ink outline-none data-[highlighted]:bg-slate-50"
+            >
+              <Rocket className="h-4 w-4 text-muted" />
+              POC readiness
+            </Link>
           </DropdownMenu.Item>
           <DropdownMenu.Item className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm text-ink outline-none data-[highlighted]:bg-slate-50">
             <Settings className="h-4 w-4 text-muted" />
