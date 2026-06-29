@@ -235,6 +235,12 @@ export interface PocReadiness {
   trust_shares: {
     active: number;
   };
+  agents: {
+    runs: number;
+    completed: number;
+    pending_decisions: number;
+    latest_run_at: string | null;
+  };
   ingestion: {
     state: string;
     posture_score: number | null;

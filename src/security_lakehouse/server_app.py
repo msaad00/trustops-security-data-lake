@@ -557,6 +557,15 @@ def _build_poc_readiness(
     source_ready = enabled_connectors > 0 and evidence_count > 0 and failed_connectors == 0 and silent_connectors == 0
     human_access_ready = (not bool(app.state.require_auth)) or sso_configured
     headless_access_ready = len(active_keys) > 0
+    agent_run_rows = agent_runs_db.list_agent_runs(session, tenant_id=identity.tenant_id, limit=100)
+    completed_agent_runs = [row for row in agent_run_rows if row.status == "completed"]
+    pending_agent_decisions = sum(
+        1
+        for row in agent_run_rows
+        for decision in agent_runs_db.agent_run_decisions(row)
+        if decision.get("status") == "proposed"
+    )
+    latest_agent_run_at = agent_run_rows[0].created_at.isoformat() if agent_run_rows else None
 
     steps = [
         _poc_step(
@@ -600,6 +609,18 @@ def _build_poc_readiness(
             else "Create a scoped trust-center share.",
             href="/console/trust-center",
         ),
+        _poc_step(
+            step_id="agent_review",
+            label="Agent review",
+            ready=bool(completed_agent_runs),
+            detail=(
+                f"{len(completed_agent_runs)} completed run(s), {pending_agent_decisions} pending decision(s)"
+                if completed_agent_runs
+                else "Run a governed review to propose approval-gated next actions."
+            ),
+            href="/console/agents",
+            blocking=False,
+        ),
     ]
     blocking_ready = all(step["status"] == "ready" for step in steps if step["blocking"])
     any_access_ready = human_access_ready or headless_access_ready
@@ -630,6 +651,12 @@ def _build_poc_readiness(
         },
         "trust_shares": {
             "active": len(active_shares),
+        },
+        "agents": {
+            "runs": len(agent_run_rows),
+            "completed": len(completed_agent_runs),
+            "pending_decisions": pending_agent_decisions,
+            "latest_run_at": latest_agent_run_at,
         },
         "ingestion": {
             "state": ingestion.get("state"),
