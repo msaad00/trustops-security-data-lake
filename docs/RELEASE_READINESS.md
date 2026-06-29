@@ -6,12 +6,12 @@ commercial SaaS launch.
 
 ## Current Product Bar
 
-| Target | Status | Reason |
-| ------ | ------ | ------ |
-| Local OSS demo | Ready | Fixtures, pipeline, web console, API, workflows, agent harness, and tests run locally. |
+| Target                 | Status       | Reason                                                                                                                                           |
+| ---------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Local OSS demo         | Ready        | Fixtures, pipeline, web console, API, workflows, agent harness, and tests run locally.                                                           |
 | Invite-only hosted POC | Mostly ready | Helm, server auth, scheduler, Snowflake/AWS/Azure live paths, trust shares, and first-run readiness exist. Operator bootstrap is still required. |
-| Self-hosted team pilot | Close | Needs customer-specific OIDC, secret manager, backup, scheduler, lake storage, and connector grants. |
-| Public self-serve SaaS | Not ready | Needs signup, tenant lifecycle, SCIM, billing/limits, abuse controls, managed operations, and stronger hosted connector UX. |
+| Self-hosted team pilot | Close        | Needs customer-specific OIDC, secret manager, backup, scheduler, lake storage, and connector grants.                                             |
+| Public self-serve SaaS | Not ready    | Needs signup, tenant lifecycle, SCIM, billing/limits, abuse controls, managed operations, and stronger hosted connector UX.                      |
 
 ## What Is Release-Ready
 
@@ -70,18 +70,18 @@ commercial SaaS launch.
 
 A hosted POC link is ready to share when all gates below pass.
 
-| Gate | Command or UI check | Expected result |
-| ---- | ------------------- | --------------- |
-| HTTPS health | `curl -fsS https://HOST/api/healthz` | `ok` response over TLS |
-| Auth | Open `/console/poc/` in a private browser | Redirects to OIDC/SAML, then lands in console |
-| Tenant state | `/console/poc/` | No blocking setup item before external share |
-| Source sync | Connector drawer | One `ok` probe and one `ok` sync with evidence count |
-| Posture | Dashboard | Non-empty framework portfolio and current score |
-| Integrity | Evidence drawer | Hash verification succeeds for sampled evidence |
-| Workflow | Workflow run or scheduler tick | Run is persisted and visible |
-| Agent review | `/console/agents/` | Completed run with budget, input hash, eval, and decisions |
-| Trust share | `/console/trust-center/` | Create, open, expire, and revoke a scoped share |
-| Secrets | Logs/UI/config | No raw passwords, PATs, OAuth tokens, or private keys |
+| Gate         | Command or UI check                       | Expected result                                            |
+| ------------ | ----------------------------------------- | ---------------------------------------------------------- |
+| HTTPS health | `curl -fsS https://HOST/api/healthz`      | `ok` response over TLS                                     |
+| Auth         | Open `/console/poc/` in a private browser | Redirects to OIDC/SAML, then lands in console              |
+| Tenant state | `/console/poc/`                           | No blocking setup item before external share               |
+| Source sync  | Connector drawer                          | One `ok` probe and one `ok` sync with evidence count       |
+| Posture      | Dashboard                                 | Non-empty framework portfolio and current score            |
+| Integrity    | Evidence drawer                           | Hash verification succeeds for sampled evidence            |
+| Workflow     | Workflow run or scheduler tick            | Run is persisted and visible                               |
+| Agent review | `/console/agents/`                        | Completed run with budget, input hash, eval, and decisions |
+| Trust share  | `/console/trust-center/`                  | Create, open, expire, and revoke a scoped share            |
+| Secrets      | Logs/UI/config                            | No raw passwords, PATs, OAuth tokens, or private keys      |
 
 ## Release Verification
 
@@ -133,11 +133,10 @@ commercial-hosting gaps:
 
 ## Go / No-Go
 
-| Release decision | Current answer |
-| ---------------- | -------------- |
-| Ship OSS `0.2.0` release | Go |
-| Share invite-only hosted POC with known evaluators | Go after deployment gates pass |
-| Allow arbitrary public signup | No-go |
-| Market as certification replacement | No-go |
-| Market as self-hosted TrustOps / compliance data lake foundation | Go |
-
+| Release decision                                                 | Current answer                 |
+| ---------------------------------------------------------------- | ------------------------------ |
+| Ship OSS `0.2.0` release                                         | Go                             |
+| Share invite-only hosted POC with known evaluators               | Go after deployment gates pass |
+| Allow arbitrary public signup                                    | No-go                          |
+| Market as certification replacement                              | No-go                          |
+| Market as self-hosted TrustOps / compliance data lake foundation | Go                             |
