@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import {
   AlertCircle,
   CheckCircle2,
-  Database,
   KeyRound,
+  ListChecks,
   Loader2,
   PauseCircle,
   PlayCircle,
@@ -43,6 +43,12 @@ interface FieldDef {
   placeholder: string;
   secret?: boolean;
   required?: boolean;
+}
+
+interface SetupStep {
+  label: string;
+  detail: string;
+  tone: "ready" | "attention" | "default";
 }
 
 const CREDENTIAL_FIELDS: Record<string, FieldDef[]> = {
@@ -326,6 +332,11 @@ const candidateKeyForField = (field: string) =>
 const isConfigured = (options: Record<string, string>) =>
   Object.values(options).some((value) => value.trim() !== "");
 
+const requiredFirst = (fields: FieldDef[]) =>
+  [...fields].sort(
+    (a, b) => Number(Boolean(b.required)) - Number(Boolean(a.required)),
+  );
+
 export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
   const auditor = useAuditorMode();
   const configure = useConfigureMutation();
@@ -392,19 +403,48 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
       ? discoveryMetadata.live_discovery_error
       : null;
   const latestError = (runs.data ?? []).find((run) => run.error);
-  const sourceMode =
-    connector.connector_id === "snowflake-evidence-lake"
-      ? "Existing security lake"
-      : connector.connector_id === "aws-posture" ||
-          connector.connector_id === "azure-posture" ||
-          connector.connector_id === "gcp-posture"
-        ? "Direct cloud source"
-        : connector.collection_mode.replace(/_/g, " ");
-  const syncEffect =
-    connector.connector_id === "snowflake-evidence-lake"
-      ? "Reads governed evidence views, normalizes rows, recomputes posture, freezes snapshots, and triggers evidence-change workflows."
-      : "Collects read-only source facts, lands raw evidence, recomputes posture, freezes snapshots, and triggers evidence-change workflows.";
-
+  const latestProbeOk =
+    connector.last_probe?.result === "ok" || accessValidated || isEnabled;
+  const latestSyncOk = connector.last_sync?.result === "ok";
+  const scopeReady = scopeFields.length === 0 || missingScope.length === 0;
+  const needsDiscovery =
+    usesDiscoveredReadScope &&
+    !isEnabled &&
+    !discoveryRun &&
+    !isConfigured(options);
+  const setupSteps: SetupStep[] = [
+    {
+      label: "Access",
+      detail:
+        missingCredentials.length === 0
+          ? "Identity staged"
+          : `${missingCredentials.length} field(s) needed`,
+      tone: missingCredentials.length === 0 ? "ready" : "attention",
+    },
+    {
+      label: "Scope",
+      detail: needsDiscovery
+        ? "Discover available objects"
+        : scopeReady
+          ? "Read scope selected"
+          : `${missingScope.length} field(s) needed`,
+      tone: needsDiscovery || !scopeReady ? "attention" : "ready",
+    },
+    {
+      label: "Validate",
+      detail: latestProbeOk ? "Connection checked" : "Run test",
+      tone: latestProbeOk ? "ready" : "default",
+    },
+    {
+      label: "Sync",
+      detail: latestSyncOk
+        ? "Evidence landed"
+        : isEnabled
+          ? "Ready to sync"
+          : "Enable first",
+      tone: latestSyncOk ? "ready" : isEnabled ? "attention" : "default",
+    },
+  ];
   const enable = async () => {
     if (!canEnable) {
       onToast(`Required before enabling: ${missingRequired.join(", ")}.`);
@@ -609,62 +649,69 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
       }
     >
       <div className="grid gap-5 text-sm">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge tone={isEnabled ? "ready" : "default"}>
-            {connector.state}
-          </Badge>
-          <Badge>{labelForStatus(connector.production_status)}</Badge>
-          <Badge tone="info">
-            {connector.access_boundary.replace("_", " ")}
-          </Badge>
-          <Badge>freshness {connector.freshness_slo_minutes}m SLO</Badge>
-        </div>
-
         <section className="rounded-xl border border-line bg-slate-50 p-3">
-          <div className="flex items-start gap-3">
-            <div className="rounded-lg border border-line bg-white p-2 text-brand">
-              <Database className="h-4 w-4" />
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge tone={isEnabled ? "ready" : "default"}>
+              {connector.state}
+            </Badge>
+            <Badge>{labelForStatus(connector.production_status)}</Badge>
+            <Badge tone="info">
+              {connector.access_boundary.replace("_", " ")}
+            </Badge>
+            <Badge>freshness {connector.freshness_slo_minutes}m</Badge>
+          </div>
+          <div className="mt-3 grid gap-2 sm:grid-cols-4">
+            {setupSteps.map((step, index) => (
+              <div
+                key={step.label}
+                className="rounded-lg border border-line bg-white p-2.5"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[10px] font-black uppercase tracking-wide text-muted">
+                    {index + 1}. {step.label}
+                  </span>
+                  <Badge tone={step.tone}>
+                    {step.tone === "ready" ? "done" : "next"}
+                  </Badge>
+                </div>
+                <div className="mt-1 truncate text-xs font-bold text-ink">
+                  {step.detail}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <details className="rounded-xl border border-line p-3">
+          <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
+            <ListChecks className="h-3.5 w-3.5" /> Connector contract
+          </summary>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div>
+              <div className="text-xs font-black uppercase tracking-wide text-muted">
+                Permissions
+              </div>
+              <ul className="mt-2 space-y-1 text-xs">
+                {connector.minimum_permissions.map((perm) => (
+                  <li key={perm} className="flex items-start gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                    <code className="text-ink">{perm}</code>
+                  </li>
+                ))}
+              </ul>
             </div>
             <div>
               <div className="text-xs font-black uppercase tracking-wide text-muted">
-                Human app flow · {sourceMode}
+                Evidence
               </div>
-              <div className="mt-1 text-sm font-semibold text-ink">
-                Configure read scope, test access, enable, then sync from this
-                drawer.
-              </div>
-              <div className="mt-1 text-xs leading-5 text-muted">
-                {syncEffect} Agents, API, scheduler, and UI all read the same
-                resulting lake state.
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {connector.evidence_types.map((t) => (
+                  <Badge key={t}>{t}</Badge>
+                ))}
               </div>
             </div>
           </div>
-        </section>
-
-        <section className="rounded-xl border border-line p-3">
-          <div className="text-xs font-black uppercase tracking-wide text-muted">
-            Required permissions
-          </div>
-          <ul className="mt-2 space-y-1 text-xs">
-            {connector.minimum_permissions.map((perm) => (
-              <li key={perm} className="flex items-start gap-2">
-                <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
-                <code className="text-ink">{perm}</code>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="rounded-xl border border-line p-3">
-          <div className="text-xs font-black uppercase tracking-wide text-muted">
-            Evidence types this connector lands
-          </div>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {connector.evidence_types.map((t) => (
-              <Badge key={t}>{t}</Badge>
-            ))}
-          </div>
-        </section>
+        </details>
 
         {!auditor && (
           <section className="rounded-xl border border-line p-3">
@@ -683,27 +730,66 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
               </div>
             )}
             <div className="mt-2 grid gap-2">
-              {credentialFields.map((field) => (
-                <label
-                  key={field.name}
-                  className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
-                >
-                  {field.label}
-                  <input
-                    type={field.secret ? "password" : "text"}
-                    value={creds[field.name] ?? ""}
-                    onChange={(e) => {
-                      setAccessValidated(false);
-                      setCreds((c) => ({
-                        ...c,
-                        [field.name]: e.target.value,
-                      }));
-                    }}
-                    className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
-                    placeholder={field.placeholder}
-                  />
-                </label>
-              ))}
+              {requiredFirst(credentialFields)
+                .filter((field) => field.required)
+                .map((field) => (
+                  <label
+                    key={field.name}
+                    className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
+                  >
+                    {field.label}
+                    <input
+                      type={field.secret ? "password" : "text"}
+                      value={creds[field.name] ?? ""}
+                      onChange={(e) => {
+                        setAccessValidated(false);
+                        setCreds((c) => ({
+                          ...c,
+                          [field.name]: e.target.value,
+                        }));
+                      }}
+                      className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                      placeholder={field.placeholder}
+                    />
+                  </label>
+                ))}
+              {credentialFields.some((field) => !field.required) && (
+                <details className="rounded-lg border border-line bg-slate-50 p-3">
+                  <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-muted">
+                    Advanced identity settings
+                  </summary>
+                  <div className="mt-3 grid gap-2">
+                    {requiredFirst(credentialFields)
+                      .filter((field) => !field.required)
+                      .map((field) => (
+                        <label
+                          key={field.name}
+                          className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
+                        >
+                          {field.label}
+                          <input
+                            type={field.secret ? "password" : "text"}
+                            value={creds[field.name] ?? ""}
+                            onChange={(e) => {
+                              setAccessValidated(false);
+                              setCreds((c) => ({
+                                ...c,
+                                [field.name]: e.target.value,
+                              }));
+                            }}
+                            className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                            placeholder={field.placeholder}
+                          />
+                        </label>
+                      ))}
+                  </div>
+                </details>
+              )}
+              {credentialFields.length === 0 && (
+                <div className="rounded-lg border border-line bg-slate-50 p-3 text-xs font-semibold text-muted">
+                  This connector uses ambient platform credentials.
+                </div>
+              )}
               {isSnowflake && !showSnowflakeScopeFields && (
                 <div className="mt-2 rounded-lg border border-line bg-slate-50 p-3">
                   <div className="text-xs font-black uppercase tracking-wide text-muted">
