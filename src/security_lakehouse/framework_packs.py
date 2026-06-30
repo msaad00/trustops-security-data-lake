@@ -13,10 +13,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from security_lakehouse.catalog import DEFAULT_CONTROL_CATALOG, load_control_catalog
+from security_lakehouse.catalog import DEFAULT_CONTROL_CATALOG
 from security_lakehouse.catalog_versions import (
     DEFAULT_BUNDLE_LOCK_PATH,
-    DEFAULT_CROSSWALK_PATH,
     write_bundle_lock,
 )
 from security_lakehouse.mappings import DEFAULT_MAPPINGS
@@ -26,7 +25,9 @@ JsonObject = dict[str, Any]
 REVIEWED_BY = "internal-trust-team"
 REVIEWED_DATE = "2026-06-30"
 
-SOC2_SOURCE = "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022"
+SOC2_SOURCE = (
+    "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022"
+)
 NIST_AI_RMF_SOURCE = "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10"
 
 # Expected full pack sizes (used by tests and coverage gates).

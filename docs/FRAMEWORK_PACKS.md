@@ -7,10 +7,10 @@ frameworks stay seed-and-expand.
 
 ## Full packs (100% ID coverage)
 
-| Pack | Framework ID | Controls | Official source |
-|------|--------------|----------|-----------------|
-| SOC 2 Common Criteria | `soc2` | **33** (CC1.1–CC9.2) | [AICPA TSC 2017/2022](https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022) |
-| NIST AI RMF 1.0 | `nist-ai-rmf` | **72** (all GOVERN/MAP/MEASURE/MANAGE subcategories) | [NIST AI RMF 1.0](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10) |
+| Pack                  | Framework ID  | Controls                                             | Official source                                                                                                                     |
+| --------------------- | ------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| SOC 2 Common Criteria | `soc2`        | **33** (CC1.1–CC9.2)                                 | [AICPA TSC 2017/2022](https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022) |
+| NIST AI RMF 1.0       | `nist-ai-rmf` | **72** (all GOVERN/MAP/MEASURE/MANAGE subcategories) | [NIST AI RMF 1.0](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10)                    |
 
 **Important:** 100% here means **every official criterion ID is seeded, mapped,
 and evaluable in TrustOps**. It does not mean certification, audit opinion, or
@@ -68,11 +68,11 @@ your connectors' evidence types.
 
 Pack-generated controls use deterministic rule aliases:
 
-| Risk domain | Default rule |
-|-------------|--------------|
+| Risk domain                                        | Default rule                                 |
+| -------------------------------------------------- | -------------------------------------------- |
 | identity, monitoring, controls-operations, ai-risk | `fail_when_open_violation_or_stale_evidence` |
-| vendor-risk | `fail_when_high_severity_open` |
-| governance, risk-management, ai-governance | `fail_when_missing_evidence` |
+| vendor-risk                                        | `fail_when_high_severity_open`               |
+| governance, risk-management, ai-governance         | `fail_when_missing_evidence`                 |
 
 Tune per control after sync by editing `evaluation_rule` in the catalog.
 

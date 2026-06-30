@@ -28,11 +28,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-27",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "identity_account",
-        "identity_user",
-        "iam_role"
-      ]
+      "asset_types": ["identity_account", "identity_user", "iam_role"]
     },
     {
       "control_id": "CIS-AWS-1.14",
@@ -59,10 +55,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-27",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "identity_account",
-        "identity_user"
-      ]
+      "asset_types": ["identity_account", "identity_user"]
     },
     {
       "control_id": "CIS-AWS-1.8",
@@ -89,10 +82,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-27",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "account_config"
-      ]
+      "asset_types": ["cloud_policy", "account_config"]
     },
     {
       "control_id": "EU-AI-ACT-Art.10",
@@ -119,10 +109,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.12",
@@ -149,10 +136,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.13",
@@ -179,10 +163,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.14",
@@ -209,10 +190,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.15",
@@ -239,10 +217,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.9",
@@ -269,10 +244,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "GDPR-Art.25",
@@ -299,11 +271,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "s3_bucket",
-        "container_image"
-      ]
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "GDPR-Art.28",
@@ -330,11 +298,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "repo",
-        "data_store"
-      ]
+      "asset_types": ["service", "repo", "data_store"]
     },
     {
       "control_id": "GDPR-Art.30",
@@ -361,11 +325,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "repo",
-        "data_store"
-      ]
+      "asset_types": ["service", "repo", "data_store"]
     },
     {
       "control_id": "GDPR-Art.32",
@@ -392,11 +352,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "s3_bucket",
-        "container_image"
-      ]
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "GDPR-Art.33",
@@ -423,11 +379,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "GDPR-Art.35",
@@ -454,11 +406,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "s3_bucket",
-        "container_image"
-      ]
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "HIPAA-164.308(a)(1)(ii)(A)",
@@ -485,11 +433,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "repo",
-        "data_store"
-      ]
+      "asset_types": ["service", "repo", "data_store"]
     },
     {
       "control_id": "HIPAA-164.308(a)(1)(ii)(B)",
@@ -516,11 +460,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "repo",
-        "data_store"
-      ]
+      "asset_types": ["service", "repo", "data_store"]
     },
     {
       "control_id": "HIPAA-164.308(a)(4)",
@@ -580,11 +520,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "s3_bucket",
-        "container_image"
-      ]
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "HIPAA-164.312(b)",
@@ -611,11 +547,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "HIPAA-164.312(e)",
@@ -642,11 +574,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "s3_bucket",
-        "container_image"
-      ]
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "ISO27001-A.5.15",
@@ -708,11 +636,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "ISO27001-A.8.16",
@@ -739,11 +663,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "ISO42001-6.1.3",
@@ -770,10 +690,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "ISO42001-8.1",
@@ -800,10 +717,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-1.1",
@@ -830,10 +744,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-1.2",
@@ -860,12 +771,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-1.3",
@@ -892,12 +798,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-1.4",
@@ -924,12 +825,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-1.5",
@@ -956,12 +852,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-1.6",
@@ -988,10 +879,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-1.7",
@@ -1018,12 +906,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-2.1",
@@ -1050,12 +933,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-2.2",
@@ -1082,12 +960,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-2.3",
@@ -1114,12 +987,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-3.1",
@@ -1146,12 +1014,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-3.2",
@@ -1178,12 +1041,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-4.1",
@@ -1210,12 +1068,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-4.2",
@@ -1242,12 +1095,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-4.3",
@@ -1274,12 +1122,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-5.1",
@@ -1306,12 +1149,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-5.2",
@@ -1338,12 +1176,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-6.1",
@@ -1370,12 +1203,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-6.2",
@@ -1402,12 +1230,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-1.1",
@@ -1434,12 +1257,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-1.2",
@@ -1466,12 +1284,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-1.3",
@@ -1498,12 +1311,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-1.4",
@@ -1530,12 +1338,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-2.1",
@@ -1562,12 +1365,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-2.2",
@@ -1594,12 +1392,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-2.3",
@@ -1626,12 +1419,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-2.4",
@@ -1658,12 +1446,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-3.1",
@@ -1690,12 +1473,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-3.2",
@@ -1722,12 +1500,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-4.1",
@@ -1754,12 +1527,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-4.2",
@@ -1786,12 +1554,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-4.3",
@@ -1818,10 +1581,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-1.1",
@@ -1848,12 +1608,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-1.2",
@@ -1880,12 +1635,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-1.3",
@@ -1912,12 +1662,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-1.4",
@@ -1944,12 +1689,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-1.5",
@@ -1976,11 +1716,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-23",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "cloud_resource"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "cloud_resource"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-1.6",
@@ -2007,12 +1743,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-2.1",
@@ -2039,12 +1770,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-2.2",
@@ -2071,12 +1797,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-2.3",
@@ -2103,12 +1824,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-3.1",
@@ -2135,12 +1851,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-3.2",
@@ -2167,12 +1878,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-3.3",
@@ -2199,12 +1905,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-3.4",
@@ -2231,12 +1932,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-3.5",
@@ -2263,12 +1959,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-4.1",
@@ -2295,12 +1986,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-4.2",
@@ -2327,12 +2013,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-5.1",
@@ -2359,12 +2040,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-5.2",
@@ -2391,12 +2067,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-1.1",
@@ -2423,12 +2094,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-1.2",
@@ -2455,12 +2121,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-1.3",
@@ -2487,12 +2148,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.1",
@@ -2519,12 +2175,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.10",
@@ -2551,12 +2202,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.11",
@@ -2583,12 +2229,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.12",
@@ -2615,12 +2256,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.13",
@@ -2647,12 +2283,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.2",
@@ -2679,12 +2310,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.3",
@@ -2711,12 +2337,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.4",
@@ -2743,10 +2364,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.5",
@@ -2773,12 +2391,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.6",
@@ -2805,12 +2418,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.7",
@@ -2837,10 +2445,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-23",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.8",
@@ -2867,12 +2472,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.9",
@@ -2899,12 +2499,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-3.1",
@@ -2931,12 +2526,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-3.2",
@@ -2963,12 +2553,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-3.3",
@@ -2995,12 +2580,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-4.1",
@@ -3027,12 +2607,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-4.2",
@@ -3059,12 +2634,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-4.3",
@@ -3091,12 +2661,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "PCI-DSS-10",
@@ -3123,11 +2688,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "PCI-DSS-11",
@@ -3154,11 +2715,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "container_image",
-        "host",
-        "service"
-      ]
+      "asset_types": ["container_image", "host", "service"]
     },
     {
       "control_id": "PCI-DSS-7",
@@ -3217,10 +2774,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC1.2",
@@ -3247,10 +2801,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC1.3",
@@ -3277,10 +2828,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC1.4",
@@ -3307,10 +2855,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC1.5",
@@ -3337,10 +2882,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC2.1",
@@ -3367,10 +2909,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC2.2",
@@ -3397,10 +2936,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC2.3",
@@ -3427,10 +2963,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC3.1",
@@ -3457,10 +2990,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC3.2",
@@ -3487,10 +3017,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC3.3",
@@ -3517,10 +3044,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC3.4",
@@ -3547,10 +3071,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC4.1",
@@ -3577,10 +3098,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC4.2",
@@ -3607,10 +3125,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC5.1",
@@ -3637,11 +3152,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "SOC2-CC5.2",
@@ -3668,11 +3179,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "SOC2-CC5.3",
@@ -3699,11 +3206,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "SOC2-CC6.1",
@@ -3989,11 +3492,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "SOC2-CC7.2",
@@ -4020,11 +3519,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-23",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "SOC2-CC7.3",
@@ -4051,11 +3546,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "SOC2-CC7.4",
@@ -4082,11 +3573,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "SOC2-CC7.5",
@@ -4113,11 +3600,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "SOC2-CC8.1",
@@ -4144,11 +3627,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "SOC2-CC9.1",
@@ -4175,10 +3654,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["service", "data_store"]
     },
     {
       "control_id": "SOC2-CC9.2",
@@ -4205,10 +3681,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["service", "data_store"]
     }
   ]
 }

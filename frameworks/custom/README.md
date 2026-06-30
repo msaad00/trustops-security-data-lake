@@ -6,9 +6,9 @@ them.
 
 ## Files
 
-| File | Purpose |
-|------|---------|
-| `example.registry.json` | Framework metadata (source URL, version, guardrails) |
+| File                    | Purpose                                                  |
+| ----------------------- | -------------------------------------------------------- |
+| `example.registry.json` | Framework metadata (source URL, version, guardrails)     |
 | `example.controls.json` | Control definitions with provenance and evaluation rules |
 
 See [Framework Packs](../docs/FRAMEWORK_PACKS.md) for the full workflow and

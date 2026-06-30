@@ -2,11 +2,7 @@
   "schema": "trustops.verified_article_ids.v1",
   "note": "Audit-verified, real control/article identifiers per framework. Any NEW mapping article_id must be added here, forcing human verification against the official source. Seeded from mappings/control_articles.json.",
   "framework_article_ids": {
-    "cis_aws": [
-      "1.10",
-      "1.14",
-      "1.8"
-    ],
+    "cis_aws": ["1.10", "1.14", "1.8"],
     "eu-ai-act-2024-1689": [
       "Art.10",
       "Art.12",
@@ -31,15 +27,8 @@
       "164.312(b)",
       "164.312(e)"
     ],
-    "iso-27001-2022": [
-      "A.5.15",
-      "A.5.30",
-      "A.8.16"
-    ],
-    "iso-42001-2023": [
-      "6.1.3",
-      "8.1"
-    ],
+    "iso-27001-2022": ["A.5.15", "A.5.30", "A.8.16"],
+    "iso-42001-2023": ["6.1.3", "8.1"],
     "nist-ai-rmf": [
       "GOVERN-1.1",
       "GOVERN-1.2",
@@ -114,11 +103,7 @@
       "MEASURE-4.2",
       "MEASURE-4.3"
     ],
-    "pci-dss-v4": [
-      "Req-10",
-      "Req-11",
-      "Req-7"
-    ],
+    "pci-dss-v4": ["Req-10", "Req-11", "Req-7"],
     "soc2": [
       "CC1.1",
       "CC1.2",
