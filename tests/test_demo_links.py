@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from urllib.parse import urlparse
+
 from security_lakehouse.demo_links import build_account_linking, build_demo_kit, build_share_links
 
 
@@ -30,7 +32,13 @@ def test_share_links_include_login_and_connect_when_hosted() -> None:
     assert "connect" in kinds
     assert "demo" in kinds
     assert "trust_share_active" in kinds
-    assert all(row["url"].startswith("https://trustops.example.test") for row in links if row["url"].startswith("http"))
+    for row in links:
+        url = row["url"]
+        if not url.startswith("http"):
+            continue
+        parsed = urlparse(url)
+        assert parsed.scheme == "https"
+        assert parsed.netloc == "trustops.example.test"
 
 
 def test_account_linking_deep_links_and_status() -> None:
