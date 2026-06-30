@@ -1,4 +1,4 @@
-# Shareable Demo (Drata / Vanta-style)
+# Shareable Demo (managed GRC-style)
 
 Use this guide when you want a **hosted link** evaluators can open, sign into, **link real accounts**, see **live ingestion**, and receive a **scoped trust share** — without exposing raw evidence or credentials.
 

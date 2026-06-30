@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { FrameworkBadge } from "@/components/framework/FrameworkBadge";
+import { resolveFrameworkId } from "@/lib/framework-visuals";
 import {
   Card,
   CardDescription,
@@ -46,8 +48,13 @@ function ControlRow({
         <Badge tone={toneForStatus(control.status)}>{control.status}</Badge>
       </div>
       <div className="mt-1 text-sm text-ink">{control.title}</div>
-      <div className="mt-2 flex flex-wrap gap-1.5">
-        <Badge>{control.framework}</Badge>
+      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+        <FrameworkBadge
+          frameworkId={resolveFrameworkId(control.framework)}
+          fallbackLabel={control.framework}
+          variant="compact"
+          size={28}
+        />
         <Badge>{control.owner}</Badge>
         <Badge tone={Number(control.risk_score) >= 80 ? "critical" : "default"}>
           risk {control.risk_score}

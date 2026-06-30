@@ -82,7 +82,7 @@ export default function DemoLandingPage() {
             <div className="flex items-center gap-2 text-brand">
               <ShieldCheck className="h-5 w-5" />
               <span className="text-sm font-black uppercase tracking-wide">
-                Drata / Vanta-style flow
+                Enterprise GRC-style flow
               </span>
             </div>
             <h2 className="mt-3 text-2xl font-black text-ink">
