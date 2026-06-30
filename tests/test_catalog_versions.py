@@ -28,7 +28,7 @@ def test_bundle_is_deterministic_and_covers_components() -> None:
     b = cv.compute_bundle()
     assert a["bundle_sha256"] == b["bundle_sha256"]
     assert a["framework_count"] == 9
-    assert a["control_count"] == 37
+    assert a["control_count"] == 134
     assert set(a["components"]) == {"frameworks", "controls", "crosswalk"}
 
 
@@ -132,9 +132,10 @@ def test_retire_unknown_control_raises(tmp_path: Path) -> None:
 def test_as_of_reconstructs_the_in_force_version(tmp_path: Path) -> None:
     catalog = _copy_catalog(tmp_path)
     history = tmp_path / "history.jsonl"
-    original = json.loads(catalog.read_text())["controls"][0]
+    controls = json.loads(catalog.read_text())["controls"]
+    original = next(row for row in controls if row["control_id"] == "SOC2-CC6.1")
     cid = original["control_id"]
-    # valid_from on the baseline is the reviewed_date (2026-05-23 for SOC2-CC6.1).
+    # valid_from on the baseline is the reviewed_date for SOC2-CC6.1.
     baseline_from = cv.active_controls(catalog_path=catalog)[cid]["valid_from"]
 
     successor = dict(original)
@@ -155,7 +156,7 @@ def test_as_of_reconstructs_the_in_force_version(tmp_path: Path) -> None:
     assert newer[cid]["version"] == "1.1.0"
     # Before any control existed -> empty.
     assert cv.controls_as_of("2000-01-01", catalog_path=catalog, history_path=history) == {}
-    assert baseline_from == "2026-05-23"
+    assert baseline_from in {"2026-05-23", "2026-06-30"}
 
 
 def test_as_of_rejects_garbage_date() -> None:

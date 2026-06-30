@@ -1,0 +1,34 @@
+{
+  "catalog_version": "2026-06-30",
+  "control_schema_version": "trustops.control.v2",
+  "scope": "custom_framework_example",
+  "controls": [
+    {
+      "control_id": "ACME-SEC-001",
+      "framework_id": "acme-internal",
+      "framework": "Acme Internal",
+      "title": "Production changes require approval and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering",
+      "evidence_requirement": "Change tickets and deployment audit evidence exist for production changes.",
+      "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
+      "frequency": "continuous",
+      "implementation_status": "implemented",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "valid_to": null,
+      "supersedes": null,
+      "superseded_by": null,
+      "change_reason": "Custom framework example",
+      "lifecycle_status": "active",
+      "official_source_ref": "acme-internal",
+      "framework_ref": "Acme SEC-001",
+      "source_url": "https://intranet.example.com/security/standard#SEC-001",
+      "mapping_rationale": "Maps Acme internal change-control requirement to deployment and ticket evidence.",
+      "reviewed_by": "security-platform",
+      "reviewed_date": "2026-06-30",
+      "signal_source": "silver/normalized_events.jsonl",
+      "asset_types": ["service", "repo"]
+    }
+  ]
+}

@@ -32,6 +32,8 @@ lake, cloud, or local boundary.
   ·
   <a href="docs/TRUSTOPS_85_PLAN.md"><strong>85% Plan</strong></a>
   ·
+  <a href="docs/FRAMEWORK_PACKS.md"><strong>Framework Packs</strong></a>
+  ·
   <a href="docs/FRAMEWORK_COVERAGE.md"><strong>Frameworks</strong></a>
   ·
   <a href="docs/api/AGENT_API.md"><strong>Agent API</strong></a>
@@ -59,11 +61,13 @@ controls, route risk, automate follow-up, and share proof safely.
 | **Trust center**             | Scoped internal, auditor, and customer-facing summaries with expiring shares and redaction policy.              | Sales engineering, auditors      |
 | **Headless agents**          | `/api/v1` envelopes, OpenAPI, Python SDK, MCP tools, persisted harness runs, approvals, and optional LangGraph. | CI, MCP clients, internal agents |
 
-Current catalog scope is explicit: **9 framework families**, **37 seeded
-controls**, **37 reviewed mappings**, **18 modeled asset types**, and **107
-control-to-asset applicability links**. Coverage means seeded repo coverage,
-not certification or full-framework audit coverage. See
-[Framework Coverage](docs/FRAMEWORK_COVERAGE.md).
+Current catalog scope is explicit: **9 framework families**, **134 seeded
+controls** (33 SOC 2 common criteria + 72 NIST AI RMF subcategories + seed
+packs for other frameworks), **134 reviewed mappings**, **18 modeled asset
+types**, and **107+ control-to-asset applicability links**. Coverage means
+seeded repo coverage with full ID packs for SOC 2 and NIST AI RMF — not
+certification or full-framework audit coverage. See
+[Framework Packs](docs/FRAMEWORK_PACKS.md) and [Framework Coverage](docs/FRAMEWORK_COVERAGE.md).
 
 ## Product Surfaces
 

@@ -1,18 +1,256 @@
 {
   "controls": [
     {
-      "control_id": "SOC2-CC6.1",
-      "framework": "SOC 2",
-      "title": "Logical access security controls are implemented",
-      "risk_domain": "identity",
-      "owner": "security-platform"
+      "control_id": "NIST-AI-RMF-GOVERN-1.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 1.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
     },
     {
-      "control_id": "SOC2-CC7.2",
-      "framework": "SOC 2",
-      "title": "Security events are monitored and evaluated",
-      "risk_domain": "monitoring",
-      "owner": "detection-engineering"
+      "control_id": "NIST-AI-RMF-GOVERN-1.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 1.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-1.3",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 1.3 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-1.4",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 1.4 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-1.5",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 1.5 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-1.6",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 1.6 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-1.7",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 1.7 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-2.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 2.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-2.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 2.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-2.3",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 2.3 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-3.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 3.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-3.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 3.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-4.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 4.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-4.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 4.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-4.3",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 4.3 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-5.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 5.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-5.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 5.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-6.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 6.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-6.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF GOVERN 6.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-1.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MANAGE 1.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-1.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MANAGE 1.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-1.3",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MANAGE 1.3 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-1.4",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MANAGE 1.4 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-2.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MANAGE 2.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-2.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MANAGE 2.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-2.3",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MANAGE 2.3 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-2.4",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MANAGE 2.4 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-3.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MANAGE 3.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-3.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MANAGE 3.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-4.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MANAGE 4.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-4.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MANAGE 4.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-4.3",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MANAGE 4.3 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-1.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MAP 1.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-1.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MAP 1.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-1.3",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MAP 1.3 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-1.4",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MAP 1.4 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
     },
     {
       "control_id": "NIST-AI-RMF-MAP-1.5",
@@ -22,11 +260,480 @@
       "owner": "ai-security"
     },
     {
+      "control_id": "NIST-AI-RMF-MAP-1.6",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MAP 1.6 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-2.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MAP 2.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-2.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MAP 2.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-2.3",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MAP 2.3 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-3.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MAP 3.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-3.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MAP 3.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-3.3",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MAP 3.3 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-3.4",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MAP 3.4 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-3.5",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MAP 3.5 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-4.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MAP 4.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-4.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MAP 4.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-5.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MAP 5.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-5.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MAP 5.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-1.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 1.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-1.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 1.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-1.3",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 1.3 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 2.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.10",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 2.10 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.11",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 2.11 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.12",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 2.12 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.13",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 2.13 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 2.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.3",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 2.3 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.4",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 2.4 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.5",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 2.5 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.6",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 2.6 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
       "control_id": "NIST-AI-RMF-MEASURE-2.7",
       "framework": "NIST AI RMF",
       "title": "AI system risk indicators are measured and tracked",
       "risk_domain": "ai-risk",
       "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.8",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 2.8 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.9",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 2.9 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-3.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 3.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-3.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 3.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-3.3",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 3.3 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-4.1",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 4.1 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-4.2",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 4.2 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-4.3",
+      "framework": "NIST AI RMF",
+      "title": "NIST AI RMF MEASURE 4.3 \u2014 assessed from AI governance and operational evidence",
+      "risk_domain": "ai-risk",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "SOC2-CC1.1",
+      "framework": "SOC 2",
+      "title": "Control environment demonstrates integrity and ethical values",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-CC1.2",
+      "framework": "SOC 2",
+      "title": "Board independence and oversight of internal control",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-CC1.3",
+      "framework": "SOC 2",
+      "title": "Management establishes structure, authority, and responsibility",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-CC1.4",
+      "framework": "SOC 2",
+      "title": "Commitment to competence is demonstrated",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-CC1.5",
+      "framework": "SOC 2",
+      "title": "Individuals are held accountable for internal control",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-CC2.1",
+      "framework": "SOC 2",
+      "title": "Quality information supports internal control objectives",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-CC2.2",
+      "framework": "SOC 2",
+      "title": "Internal control information is communicated internally",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-CC2.3",
+      "framework": "SOC 2",
+      "title": "Control matters are communicated to external parties when required",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-CC3.1",
+      "framework": "SOC 2",
+      "title": "Objectives are specified with sufficient clarity",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-CC3.2",
+      "framework": "SOC 2",
+      "title": "Risk to objectives is identified and analyzed",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-CC3.3",
+      "framework": "SOC 2",
+      "title": "Fraud risk is considered in risk assessment",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-CC3.4",
+      "framework": "SOC 2",
+      "title": "Changes that affect internal control are identified and assessed",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-CC4.1",
+      "framework": "SOC 2",
+      "title": "Ongoing and separate monitoring activities are performed",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-CC4.2",
+      "framework": "SOC 2",
+      "title": "Control deficiencies are evaluated and communicated",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-CC5.1",
+      "framework": "SOC 2",
+      "title": "Control activities are selected and developed",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "SOC2-CC5.2",
+      "framework": "SOC 2",
+      "title": "Technology general controls support objectives",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "SOC2-CC5.3",
+      "framework": "SOC 2",
+      "title": "Policies are deployed through procedures",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "SOC2-CC6.1",
+      "framework": "SOC 2",
+      "title": "Logical access security controls are implemented",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "SOC2-CC6.2",
+      "framework": "SOC 2",
+      "title": "User registration and authorization are controlled",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "SOC2-CC6.3",
+      "framework": "SOC 2",
+      "title": "Role-based access is provisioned and reviewed",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "SOC2-CC6.4",
+      "framework": "SOC 2",
+      "title": "Access is removed or adjusted on role change",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "SOC2-CC6.5",
+      "framework": "SOC 2",
+      "title": "Physical access to facilities and assets is restricted",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "SOC2-CC6.6",
+      "framework": "SOC 2",
+      "title": "External party access is authorized and monitored",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "SOC2-CC6.7",
+      "framework": "SOC 2",
+      "title": "Data transmission and movement are protected",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "SOC2-CC6.8",
+      "framework": "SOC 2",
+      "title": "Malware and endpoint protections are in place",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "SOC2-CC7.1",
+      "framework": "SOC 2",
+      "title": "Vulnerabilities are identified and remediated",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "SOC2-CC7.2",
+      "framework": "SOC 2",
+      "title": "Security events are monitored and evaluated",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "SOC2-CC7.3",
+      "framework": "SOC 2",
+      "title": "Security events are analyzed to identify anomalies",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "SOC2-CC7.4",
+      "framework": "SOC 2",
+      "title": "Security incidents are responded to and contained",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "SOC2-CC7.5",
+      "framework": "SOC 2",
+      "title": "Recovery and continuity activities are defined and tested",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "SOC2-CC8.1",
+      "framework": "SOC 2",
+      "title": "Changes to infrastructure and software are authorized and tested",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "SOC2-CC9.1",
+      "framework": "SOC 2",
+      "title": "Vendor and partner risks are assessed before engagement",
+      "risk_domain": "vendor-risk",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-CC9.2",
+      "framework": "SOC 2",
+      "title": "Vendor and partner relationships are monitored over time",
+      "risk_domain": "vendor-risk",
+      "owner": "grc"
     }
   ]
 }

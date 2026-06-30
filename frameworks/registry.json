@@ -10,7 +10,7 @@
       "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
       "source_sha256": null,
       "pulled_at": null,
-      "implementation_status": "implemented_limited_mapping",
+      "implementation_status": "implemented_full_pack",
       "copyright_guardrail": "Do not reproduce licensed criteria text. Store local control IDs, short internal titles, evidence requirements, and official source references only.",
       "sync_cadence_days": 30
     },
@@ -24,7 +24,7 @@
       "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
       "source_sha256": null,
       "pulled_at": null,
-      "implementation_status": "implemented_limited_mapping",
+      "implementation_status": "implemented_full_pack",
       "copyright_guardrail": "NIST AI RMF is public NIST guidance. Prefer citations to the official NIST publication page and avoid implying certification.",
       "sync_cadence_days": 90
     },

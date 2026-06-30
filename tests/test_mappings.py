@@ -34,7 +34,8 @@ def test_public_source_frameworks_have_reviewed_coverage_floor() -> None:
     catalog = load_control_catalog()
     mappings = load_control_article_mappings()
     coverage_floor = {
-        "nist-ai-rmf": 6,
+        "soc2": 33,
+        "nist-ai-rmf": 72,
         "hipaa-security-rule": 6,
         "gdpr-2016-679": 6,
         "eu-ai-act-2024-1689": 6,
