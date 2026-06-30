@@ -58,6 +58,12 @@ const ITEMS: RailItem[] = [
     group: "Trust",
   },
   {
+    href: "/deploy",
+    label: "Deploy",
+    Icon: BookOpen,
+    group: "Trust",
+  },
+  {
     href: "/trust-center",
     label: "Trust center",
     Icon: Sparkles,

@@ -37,8 +37,16 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 
 - [x] Shareable demo guide
 - [x] Markdown image CI validation
+- [x] OSS / self-hosted / hosted positioning + Vanta/Drata cost comparison (`docs/DEPLOYMENT_AND_PRICING.md`)
+- [x] Console `/deploy` deployment summary page
 - [ ] Commit demo PNG screenshots (`make demo-screenshots`)
 - [ ] Unified data model single-page diagram
 - [ ] Dark mode
+
+## P5 — Commercial hosted (future)
+
+- [ ] Published hosted pricing tiers
+- [ ] Self-serve signup and tenant lifecycle
+- [ ] Billing, usage limits, and SCIM
 
 See [TRUSTOPS_85_PLAN.md](docs/TRUSTOPS_85_PLAN.md) for the 85% self-hosted bar.
