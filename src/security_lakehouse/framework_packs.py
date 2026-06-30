@@ -35,6 +35,8 @@ from security_lakehouse.pack_data import (
 
 JsonObject = dict[str, Any]
 
+DEFAULT_VERIFIED_ARTICLE_IDS = Path(__file__).resolve().parents[2] / "frameworks" / "verified_article_ids.json"
+
 PACK_SCOPE = "framework_packs_full_soc2_nist_fedramp_cis_iso_plus_seed"
 
 REVIEWED_BY = "internal-trust-team"
@@ -444,6 +446,37 @@ def _write_json(path: Path, payload: JsonObject) -> None:
         handle.write("\n")
 
 
+def _regenerate_verified_article_ids(mappings_payload: JsonObject, *, path: Path) -> None:
+    """Rebuild the verified article allowlist from active mappings."""
+    framework_article_ids: dict[str, list[str]] = {}
+    for row in mappings_payload.get("mappings", []):
+        framework_id = str(row["framework_id"])
+        known = set(framework_article_ids.get(framework_id, []))
+        for article in row.get("articles", []):
+            article_id = str(article["article_id"])
+            if article_id not in known:
+                known.add(article_id)
+                framework_article_ids.setdefault(framework_id, []).append(article_id)
+    for framework_id, ids in framework_article_ids.items():
+        framework_article_ids[framework_id] = sorted(ids)
+
+    existing = _read_json(path) if path.is_file() else {}
+    payload = {
+        "schema": "trustops.verified_article_ids.v1",
+        "note": existing.get(
+            "note",
+            (
+                "Audit-verified, real control/article identifiers per framework. "
+                "Any NEW mapping article_id must be added here, forcing human verification "
+                "against the official source. Regenerated from mappings/control_articles.json "
+                "by frameworks sync-packs."
+            ),
+        ),
+        "framework_article_ids": dict(sorted(framework_article_ids.items())),
+    }
+    _write_json(path, payload)
+
+
 def sync_framework_packs(
     *,
     packs: list[str] | None = None,
@@ -496,6 +529,7 @@ def sync_framework_packs(
     bundle = None
     if write_bundle:
         bundle = write_bundle_lock(lock_path=DEFAULT_BUNDLE_LOCK_PATH)
+        _regenerate_verified_article_ids(mappings_payload, path=DEFAULT_VERIFIED_ARTICLE_IDS)
 
     framework_counts = {
         framework_id: sum(1 for row in catalog_payload["controls"] if row.get("framework_id") == framework_id)

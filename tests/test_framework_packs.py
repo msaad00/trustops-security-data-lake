@@ -22,6 +22,7 @@ from security_lakehouse.pack_data import (
     FEDRAMP_MODERATE_COUNT,
     ISO_27001_2022_ANNEX_A_COUNT,
     ISO_42001_2023_ANNEX_A_COUNT,
+    cis_aws_v3_requirements,
 )
 
 
@@ -55,7 +56,10 @@ def test_fedramp_pack_has_nist_moderate_baseline() -> None:
 def test_cis_aws_pack_has_all_v3_recommendations() -> None:
     specs = cis_aws_v3_specs()
     assert len(specs) == CIS_AWS_V3_COUNT
-    assert {spec.article_id for spec in specs} == {spec.article_id for spec in specs}
+    article_ids = {spec.article_id for spec in specs}
+    assert len(article_ids) == CIS_AWS_V3_COUNT
+    expected = {req_id for req_id, _title in cis_aws_v3_requirements()}
+    assert article_ids == expected
 
 
 def test_iso_packs_have_full_annex_a_counts() -> None:
@@ -72,6 +76,7 @@ def test_catalog_has_full_core_framework_packs() -> None:
         "fedramp-moderate": FEDRAMP_MODERATE_COUNT,
         "cis_aws": CIS_AWS_V3_COUNT,
         "iso-27001-2022": ISO_27001_2022_ANNEX_A_COUNT,
+        "iso-42001-2023": ISO_42001_2023_ANNEX_A_COUNT,
     }
     for framework_id, minimum in expectations.items():
         rows = [row for row in catalog.values() if row["framework_id"] == framework_id]
