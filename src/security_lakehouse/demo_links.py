@@ -8,14 +8,16 @@ from __future__ import annotations
 
 from typing import Any
 
+from security_lakehouse.connectors import load_connector_catalog
+
 # Connectors most teams link first in a live POC (read-only posture / evidence).
-RECOMMENDED_ACCOUNT_CONNECTORS: tuple[tuple[str, str, str], ...] = (
-    ("aws-posture", "AWS account", "Read-only IAM role or workload identity"),
-    ("azure-posture", "Azure subscription", "Reader role or federated workload identity"),
-    ("gcp-posture", "GCP project", "Read-only service account or WIF"),
-    ("snowflake-evidence-lake", "Snowflake evidence lake", "Key-pair service user on granted views"),
-    ("github-security", "GitHub organization", "GitHub App with security read scopes"),
-    ("okta-identity", "Okta directory", "Read-only API token for identity evidence"),
+RECOMMENDED_ACCOUNT_CONNECTOR_IDS: tuple[str, ...] = (
+    "aws-posture",
+    "azure-posture",
+    "gcp-posture",
+    "snowflake-evidence-lake",
+    "github-security",
+    "okta-identity",
 )
 
 
@@ -54,8 +56,12 @@ def build_account_linking(
 ) -> list[dict[str, Any]]:
     """Return recommended account connectors with live link status and deep-link URLs."""
     by_id = {str(row.get("connector_id") or ""): row for row in ingestion.get("connectors") or []}
+    catalog = load_connector_catalog()
     out: list[dict[str, Any]] = []
-    for connector_id, label, setup_hint in RECOMMENDED_ACCOUNT_CONNECTORS:
+    for connector_id in RECOMMENDED_ACCOUNT_CONNECTOR_IDS:
+        base = catalog.get(connector_id) or {}
+        label = str(base.get("vendor") or base.get("name") or connector_id)
+        setup_hint = str(base.get("setup_hint") or "")
         row = by_id.get(connector_id) or {}
         status = _account_link_status(row)
         latest_sync = row.get("latest_sync") or {}

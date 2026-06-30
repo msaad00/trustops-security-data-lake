@@ -340,6 +340,9 @@ export interface ConnectorRun {
 export interface ConnectorView {
   connector_id: string;
   name: string;
+  vendor?: string;
+  description?: string;
+  setup_hint?: string;
   category: string;
   collection_mode: string;
   access_boundary: string;

@@ -30,6 +30,12 @@ import type {
   ConnectorView,
   ProbePayload,
 } from "@/lib/api/types";
+import { ConnectorMark } from "@/components/connectors/ConnectorMark";
+import {
+  credentialFieldsFor,
+  scopeFieldsFor,
+  type ConnectorFieldDef,
+} from "@/lib/connector-forms";
 
 interface Props {
   connector: ConnectorView | null;
@@ -37,13 +43,7 @@ interface Props {
   onToast: (msg: string) => void;
 }
 
-interface FieldDef {
-  name: string;
-  label: string;
-  placeholder: string;
-  secret?: boolean;
-  required?: boolean;
-}
+type FieldDef = ConnectorFieldDef;
 
 interface SetupStep {
   label: string;
@@ -527,10 +527,11 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
     );
   }
 
-  const credentialFields =
-    CREDENTIAL_FIELDS[connector.connector_id] ??
-    fallbackFieldsFor(connector.credential_type);
-  const scopeFields = SCOPE_FIELDS[connector.connector_id] ?? [];
+  const credentialFields = credentialFieldsFor(
+    connector.connector_id,
+    connector.credential_type,
+  );
+  const scopeFields = scopeFieldsFor(connector.connector_id);
   const isSnowflake = connector.connector_id === "snowflake-evidence-lake";
   const usesDiscoveredReadScope =
     connector.connector_id === "clickhouse-telemetry-lake" || isSnowflake;
@@ -817,6 +818,37 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
       }
     >
       <div className="grid gap-5 text-sm">
+        <section className="rounded-xl border border-line bg-white p-4">
+          <ConnectorMark
+            connectorId={connector.connector_id}
+            name={connector.name}
+            category={connector.category}
+            size="lg"
+            showVendor
+          />
+          {(connector.description || connector.setup_hint) && (
+            <div className="mt-3 space-y-2 text-xs leading-5 text-muted">
+              {connector.description && (
+                <p className="text-sm text-ink">{connector.description}</p>
+              )}
+              {connector.setup_hint && (
+                <p>
+                  <span className="font-black uppercase tracking-wide text-muted">
+                    Connection:{" "}
+                  </span>
+                  {connector.setup_hint}
+                </p>
+              )}
+              <p>
+                <span className="font-black uppercase tracking-wide text-muted">
+                  Ingestion route:{" "}
+                </span>
+                {connector.default_route} · {connector.collection_mode.replace(/_/g, " ")}
+              </p>
+            </div>
+          )}
+        </section>
+
         <section className="rounded-xl border border-line bg-slate-50 p-3">
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone={isEnabled ? "ready" : "default"}>
@@ -916,6 +948,11 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                       className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
                       placeholder={field.placeholder}
                     />
+                    {field.hint && (
+                      <span className="font-normal normal-case tracking-normal text-muted">
+                        {field.hint}
+                      </span>
+                    )}
                   </label>
                 ))}
               {credentialFields.some((field) => !field.required) && (

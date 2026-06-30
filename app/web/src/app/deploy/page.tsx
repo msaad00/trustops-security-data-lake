@@ -6,6 +6,7 @@ import {
   Cloud,
   DollarSign,
   GitBranch,
+  Plug,
   Server,
   ShieldCheck,
 } from "lucide-react";
@@ -129,6 +130,25 @@ export default function DeployPage() {
               </div>
             ))}
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Plug className="h-5 w-5" />
+            Connectors &amp; ingestion
+          </CardTitle>
+          <CardDescription>
+            16 read-only connectors with vendor marks, setup hints, and live
+            ingestion into your evidence lake — AWS, Azure, GCP, GitHub, Okta,
+            Snowflake, and more.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button asChild variant="default">
+            <Link href="/connectors">Open connector registry</Link>
+          </Button>
         </CardContent>
       </Card>
 

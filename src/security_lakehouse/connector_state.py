@@ -256,6 +256,51 @@ def _missing_required_config(
         # same identity model as aws-posture and azure-posture.
         return ["project_id"] if not _has_value(credentials, "project_id") else []
 
+    if connector_id == "github-security":
+        missing: list[str] = []
+        if not (
+            _has_value(credentials, "credential_ref")
+            or _has_value(credentials, "token")
+        ):
+            missing.append("credential_ref")
+        if not _has_value(options, "repo"):
+            missing.append("repo")
+        return missing
+
+    if connector_id in {"okta-identity", "okta-system-log"}:
+        missing = []
+        if not _has_value(credentials, "org_url"):
+            missing.append("org_url")
+        if not (
+            _has_value(credentials, "credential_ref")
+            or _has_value(credentials, "token")
+        ):
+            missing.append("credential_ref")
+        return missing
+
+    if connector_id == "google-workspace-identity":
+        missing = []
+        if not _has_value(credentials, "customer_id"):
+            missing.append("customer_id")
+        if not (
+            _has_value(credentials, "credential_ref")
+            or _has_value(credentials, "token")
+        ):
+            missing.append("credential_ref")
+        return missing
+
+    if connector_id == "jira-ticketing":
+        missing = []
+        for field in ("base_url", "email"):
+            if not _has_value(credentials, field):
+                missing.append(field)
+        if not (
+            _has_value(credentials, "credential_ref")
+            or _has_value(credentials, "token")
+        ):
+            missing.append("credential_ref")
+        return missing
+
     if "token" in credential_type:
         return (
             ["credential_ref"]

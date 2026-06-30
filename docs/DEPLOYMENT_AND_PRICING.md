@@ -105,6 +105,7 @@ TrustOps separates **software** from **operations**:
 | Infrastructure | Your cluster + storage (~$150–$2k/mo at POC scale) | Included or pass-through | Included in SaaS |
 | Evidence storage | Your Snowflake / lake / PVC | Your boundary or dedicated tenant volume | Vendor-operated |
 | Integrations | Open connector catalog + your IaC | Same | Large managed marketplace |
+| Connector UX | Vendor marks, setup hints, ingestion strip | Polished marketplace tiles | Polished marketplace tiles |
 | Auditor / pen test | Same third-party cost | Same | Same |
 
 **Target:** managed hosted TrustOps at roughly **⅓–½** the annual platform TCO

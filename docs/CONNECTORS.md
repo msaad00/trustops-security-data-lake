@@ -34,6 +34,18 @@ Validate it with:
 security-lakehouse connectors validate
 ```
 
+Each catalog entry also carries **UX metadata** consumed by the console and demo kit:
+
+| Field | Purpose |
+| ----- | ------- |
+| `vendor` | Short vendor label (AWS, GitHub, Snowflake, …) |
+| `description` | What evidence the connector ingests |
+| `setup_hint` | Read-only connection guidance shown in `/connectors` and account-linking cards |
+
+Connection field definitions live in `app/web/src/lib/connector-forms.ts`; vendor
+marks use neutral text badges in `app/web/src/lib/connector-visuals.ts` (not
+official logos — see [THIRD_PARTY_ASSETS.md](THIRD_PARTY_ASSETS.md)).
+
 For live Azure, AWS, or Snowflake trials, use the least-privilege runbook in
 [`docs/LIVE_CLOUD_POC.md`](LIVE_CLOUD_POC.md). It keeps first-run access
 read-only and avoids passwords, human-scoped developer tokens, root keys, and
