@@ -132,11 +132,48 @@ def build_posture_review_graph() -> Any:
         raise RuntimeError("install trustops-security-data-lake[agents] to use LangGraph orchestration") from exc
 
     graph = StateGraph(AgentRunState)
+
+    def _route_after_gaps(state: AgentRunState) -> str:
+        gaps = state.get("evidence_gaps") or []
+        return "propose_actions" if gaps else "propose_actions"
+
     graph.add_node("load_posture", _load_posture_node)
     graph.add_node("load_evidence_gaps", _load_gaps_node)
     graph.add_node("propose_actions", _propose_actions_node)
     graph.set_entry_point("load_posture")
     graph.add_edge("load_posture", "load_evidence_gaps")
-    graph.add_edge("load_evidence_gaps", "propose_actions")
+    graph.add_conditional_edges("load_evidence_gaps", _route_after_gaps)
+    graph.add_edge("propose_actions", END)
+    return graph.compile()
+
+
+def _load_alerts_node(state: AgentRunState) -> AgentRunState:
+    from security_lakehouse.agents.soc import load_soc_alerts
+
+    return {
+        **state,
+        "alerts": load_soc_alerts(state["lake_dir"], role=state.get("role", "read_only")),
+    }
+
+
+def _propose_soc_actions_node(state: AgentRunState) -> AgentRunState:
+    from security_lakehouse.agents.soc import propose_soc_actions
+
+    decisions = propose_soc_actions(state.get("alerts") or [])
+    return {**state, "decisions": decisions}
+
+
+def build_soc_triage_graph() -> Any:
+    """Build the SOC triage LangGraph when the optional extra is installed."""
+    try:
+        from langgraph.graph import END, StateGraph
+    except ImportError as exc:  # pragma: no cover
+        raise RuntimeError("install trustops-security-data-lake[agents] to use LangGraph orchestration") from exc
+
+    graph = StateGraph(AgentRunState)
+    graph.add_node("load_alerts", _load_alerts_node)
+    graph.add_node("propose_actions", _propose_soc_actions_node)
+    graph.set_entry_point("load_alerts")
+    graph.add_edge("load_alerts", "propose_actions")
     graph.add_edge("propose_actions", END)
     return graph.compile()

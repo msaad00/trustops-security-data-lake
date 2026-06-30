@@ -88,6 +88,7 @@ def _read_optional_json(path: Path, lake: Path) -> JsonObject:
 
 def _connector_summary(row: JsonObject) -> JsonObject:
     latest_sync = _run_summary(row.get("last_sync") or {})
+    latest_probe = _run_summary(row.get("last_probe") or {})
     return {
         "connector_id": row.get("connector_id"),
         "name": row.get("name"),
@@ -101,6 +102,7 @@ def _connector_summary(row: JsonObject) -> JsonObject:
         "last_sync_at": row.get("last_sync_at"),
         "next_run_at": row.get("next_run_at"),
         "latest_sync": latest_sync,
+        "latest_probe": latest_probe,
         "last_error": latest_sync.get("error"),
     }
 

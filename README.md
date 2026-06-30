@@ -20,6 +20,8 @@ lake, cloud, or local boundary.
   ·
   <a href="docs/CONNECTORS.md"><strong>Connectors</strong></a>
   ·
+  <a href="docs/SHAREABLE_DEMO.md"><strong>Shareable Demo</strong></a>
+  ·
   <a href="docs/SHAREABLE_POC_HOSTING.md"><strong>Host A POC</strong></a>
   ·
   <a href="docs/RELEASE_READINESS.md"><strong>Release Readiness</strong></a>

@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   FileSearch,
+  Globe2,
   Layers,
   LayoutDashboard,
   LineChart,
@@ -41,6 +42,19 @@ const ITEMS: RailItem[] = [
     label: "Dashboard",
     Icon: LayoutDashboard,
     badge: "live",
+    group: "Trust",
+  },
+  {
+    href: "/poc",
+    label: "Launch",
+    Icon: Sparkles,
+    badge: "POC",
+    group: "Trust",
+  },
+  {
+    href: "/demo",
+    label: "Demo",
+    Icon: Globe2,
     group: "Trust",
   },
   {

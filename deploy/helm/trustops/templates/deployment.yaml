@@ -1,3 +1,6 @@
+{{- if and .Values.security.allowInsecureNoAuth (ne .Values.security.allowInsecureOverride "acknowledged") }}
+{{- fail "security.allowInsecureNoAuth requires security.allowInsecureOverride=acknowledged for hosted deployments" }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -44,6 +47,10 @@ spec:
             {{- if .Values.defaultTrustRole }}
             - name: TRUSTOPS_DEFAULT_ROLE
               value: {{ .Values.defaultTrustRole | quote }}
+            {{- end }}
+            {{- if .Values.security.allowInsecureNoAuth }}
+            - name: TRUSTOPS_ALLOW_INSECURE_NO_AUTH
+              value: "1"
             {{- end }}
             {{- with .Values.env }}
             {{- toYaml . | nindent 12 }}

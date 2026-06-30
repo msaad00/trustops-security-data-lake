@@ -39,6 +39,7 @@ from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from security_lakehouse import api_legacy, api_v1, remediation_guidance, tenancy, trust_share
+from security_lakehouse.demo_links import build_demo_kit
 from security_lakehouse.assessment import build_current_posture, write_assessment_snapshot
 from security_lakehouse.auth.dependencies import get_session, require_scope
 from security_lakehouse.auth.oidc import OIDCLoginError, build_oauth, complete_oidc_login, load_oidc_config
@@ -626,10 +627,19 @@ def _build_poc_readiness(
     any_access_ready = human_access_ready or headless_access_ready
     state = "ready" if blocking_ready else ("internal_ready" if source_ready and any_access_ready else "needs_setup")
     next_step = next((step for step in steps if step["status"] != "ready"), None)
+    demo_kit = build_demo_kit(
+        public_url=public_url or None,
+        sso_configured=sso_configured,
+        require_auth=bool(app.state.require_auth),
+        ingestion=ingestion,
+        active_share_count=len(active_shares),
+        shareable=state == "ready",
+    )
     return {
         "state": state,
         "shareable": state == "ready",
         "public_url": public_url or None,
+        "demo_kit": demo_kit,
         "workspace": {
             "tenant_id": identity.tenant_id,
             "workspace_id": identity.workspace_id or identity.tenant_id,
