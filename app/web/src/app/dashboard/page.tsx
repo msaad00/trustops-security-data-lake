@@ -82,7 +82,7 @@ export default function DashboardPage() {
           </h1>
           <p className="mt-1 max-w-[720px] text-sm leading-5 text-muted">
             Live readiness, risk, evidence freshness, and owner action in one
-            place — Drata/Vanta-style continuous compliance at a glance.
+            place — managed GRC-style continuous compliance at a glance.
           </p>
         </div>
         <div className="flex items-center gap-2">

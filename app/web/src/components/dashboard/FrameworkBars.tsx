@@ -46,7 +46,7 @@ export function FrameworkBars({
       <CardHeader>
         <CardTitle>Framework scoreboard</CardTitle>
         <CardDescription>
-          Per-program readiness — Vanta/Drata-style compliance bars with failing
+          Per-program readiness — managed GRC-style compliance bars with failing
           control overlay.
         </CardDescription>
       </CardHeader>

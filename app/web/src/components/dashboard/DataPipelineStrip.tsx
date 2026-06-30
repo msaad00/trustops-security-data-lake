@@ -46,7 +46,7 @@ export function DataPipelineStrip({ className }: { className?: string }) {
         <CardTitle className="text-base">Evidence data plane</CardTitle>
         <CardDescription>
           Bronze → silver → gold lakehouse with deterministic assessment marts
-          (Drata/Vanta-style continuous monitoring path).
+          (managed GRC-style continuous monitoring path).
         </CardDescription>
       </CardHeader>
       <div className="grid gap-0 sm:grid-cols-4">

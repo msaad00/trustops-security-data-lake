@@ -11,7 +11,7 @@ FedRAMP, CIS AWS, etc.) without shipping official certification logos. See
 `app/web/src/lib/framework-visuals.ts`, `FrameworkMark`, and `FrameworkBadge`.
 
 Shared KPI tiles use `KpiTile` with tone accents (default / ready / attention /
-critical / brand). Compliance rings and bar scoreboards mirror Drata/Vanta-style
+critical / brand). Compliance rings and bar scoreboards mirror managed GRC-style
 program dashboards on the trust command center.
 
 ## Out-Of-Box Views
