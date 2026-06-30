@@ -51,239 +51,8 @@ interface SetupStep {
   tone: "ready" | "attention" | "default";
 }
 
-const CREDENTIAL_FIELDS: Record<string, FieldDef[]> = {
-  "clickhouse-telemetry-lake": [
-    {
-      name: "host",
-      label: "ClickHouse host",
-      placeholder: "https://cluster.example.clickhouse.cloud:8443",
-      required: true,
-    },
-    {
-      name: "user",
-      label: "Read-only user",
-      placeholder: "trustops_reader",
-    },
-    {
-      name: "credential_ref",
-      label: "Scoped credential reference",
-      placeholder: "TRUSTOPS_CLICKHOUSE_TOKEN",
-      required: true,
-    },
-  ],
-  "snowflake-evidence-lake": [
-    {
-      name: "account",
-      label: "Snowflake account",
-      placeholder: "MJFAYEE-YS65534",
-      required: true,
-    },
-    {
-      name: "user",
-      label: "Service user",
-      placeholder: "TRUSTOPS_INGEST_SVC",
-      required: true,
-    },
-    {
-      name: "private_key_ref",
-      label: "Credential reference",
-      placeholder: "SNOWFLAKE_PRIVATE_KEY_FILE",
-      required: true,
-    },
-    {
-      name: "role",
-      label: "Read-only role (optional)",
-      placeholder: "TRUSTOPS_READER",
-    },
-    {
-      name: "private_key_file_pwd_ref",
-      label: "Key password env var (optional)",
-      placeholder: "SNOWFLAKE_PRIVATE_KEY_FILE_PWD",
-    },
-  ],
-  "aws-posture": [
-    {
-      name: "account_id",
-      label: "AWS account ID",
-      placeholder: "123456789012",
-      required: true,
-    },
-    {
-      name: "role_arn",
-      label: "Read-only role ARN (optional)",
-      placeholder: "arn:aws:iam::123456789012:role/TrustOpsPostureReadOnlyRole",
-    },
-    {
-      name: "external_id",
-      label: "External ID (optional, with role ARN)",
-      placeholder: "shared secret used in the role trust policy",
-    },
-  ],
-  "azure-posture": [
-    {
-      name: "subscription_id",
-      label: "Azure subscription ID",
-      placeholder: "00000000-0000-0000-0000-000000000000",
-      required: true,
-    },
-  ],
-  "gcp-posture": [
-    {
-      name: "project_id",
-      label: "GCP project ID",
-      placeholder: "my-project-123456",
-      required: true,
-    },
-  ],
-};
-
-const SCOPE_FIELDS: Record<string, FieldDef[]> = {
-  "aws-posture": [
-    {
-      name: "region",
-      label: "Region",
-      placeholder: "us-east-1",
-    },
-  ],
-  "snowflake-evidence-lake": [
-    {
-      name: "warehouse",
-      label: "Warehouse",
-      placeholder: "TRUSTOPS_READ_WH",
-      required: true,
-    },
-    {
-      name: "database",
-      label: "Database",
-      placeholder: "TRUSTOPS_SECURITY_LAKE",
-      required: true,
-    },
-    {
-      name: "schema",
-      label: "Schema",
-      placeholder: "EVIDENCE",
-      required: true,
-    },
-    {
-      name: "audit_events",
-      label: "Audit events view",
-      placeholder: "TRUSTOPS_AUDIT_EVENTS",
-      required: true,
-    },
-    {
-      name: "control_posture",
-      label: "Control posture view",
-      placeholder: "TRUSTOPS_CONTROL_POSTURE",
-      required: true,
-    },
-    {
-      name: "asset_risk",
-      label: "Asset risk view",
-      placeholder: "TRUSTOPS_ASSET_RISK",
-      required: true,
-    },
-    {
-      name: "evidence_bundles",
-      label: "Evidence bundles view",
-      placeholder: "TRUSTOPS_EVIDENCE_BUNDLES",
-      required: true,
-    },
-  ],
-};
-
-const fallbackFieldsFor = (credentialType: string): FieldDef[] => {
-  if (credentialType.includes("oauth"))
-    return [
-      {
-        name: "client_id",
-        label: "Client ID",
-        placeholder: "client id",
-        required: true,
-      },
-      {
-        name: "client_secret_ref",
-        label: "Client secret reference",
-        placeholder: "TRUSTOPS_CLIENT_SECRET",
-        required: true,
-      },
-      {
-        name: "refresh_token_ref",
-        label: "Refresh token reference",
-        placeholder: "TRUSTOPS_REFRESH_TOKEN",
-        required: true,
-      },
-    ];
-  if (credentialType.includes("key_pair"))
-    return [
-      {
-        name: "account",
-        label: "Account",
-        placeholder: "account",
-        required: true,
-      },
-      {
-        name: "user",
-        label: "User",
-        placeholder: "read-only user",
-        required: true,
-      },
-      {
-        name: "private_key",
-        label: "Private key reference",
-        placeholder: "TRUSTOPS_PRIVATE_KEY",
-        secret: true,
-        required: true,
-      },
-    ];
-  if (credentialType.includes("token"))
-    return [
-      {
-        name: "credential_ref",
-        label: "Scoped credential reference",
-        placeholder: "TRUSTOPS_SOURCE_TOKEN",
-        required: true,
-      },
-    ];
-  if (credentialType.includes("scoped_user"))
-    return [
-      {
-        name: "host",
-        label: "Host",
-        placeholder: "https://...",
-        required: true,
-      },
-      {
-        name: "user",
-        label: "Read-only user",
-        placeholder: "read-only user",
-      },
-      {
-        name: "token",
-        label: "Scoped credential reference",
-        placeholder: "TRUSTOPS_SOURCE_TOKEN",
-        secret: true,
-        required: true,
-      },
-    ];
-  if (credentialType.includes("local"))
-    return [
-      {
-        name: "lake_path",
-        label: "Lake path",
-        placeholder: "/path/to/lake",
-        required: true,
-      },
-    ];
-  return [
-    {
-      name: "api_key",
-      label: "API key reference",
-      placeholder: "TRUSTOPS_SOURCE_API_KEY",
-      secret: true,
-      required: true,
-    },
-  ];
-};
+const isRunnableConnector = (connector: ConnectorView) =>
+  Boolean(connector.is_implemented);
 
 const toneForResult = (r: string | undefined) =>
   r === "ok"
@@ -401,10 +170,12 @@ function LatestSyncProof({
   connector,
   syncing,
   onSync,
+  runnable,
 }: {
   connector: ConnectorView;
   syncing: boolean;
   onSync: () => void;
+  runnable: boolean;
 }) {
   const sync = connector.last_sync;
   const enabled = connector.state === "enabled";
@@ -418,20 +189,24 @@ function LatestSyncProof({
       : enabled
         ? "attention"
         : "default";
-  const title = ok
-    ? "Evidence sync complete"
-    : failed
-      ? "Latest sync failed"
-      : enabled
-        ? "Ready to sync evidence"
-        : "Enable before syncing";
-  const detail = ok
-    ? `${evidenceCount} evidence row(s) landed and posture surfaces will refresh.`
-    : failed
-      ? (sync?.error ?? "Review run history for the connector error.")
-      : enabled
-        ? "Run sync to land evidence, refresh posture, and update trust views."
-        : "Test access, enable the connector, then run the first sync.";
+  const title = !runnable
+    ? "Sync not available yet"
+    : ok
+      ? "Evidence sync complete"
+      : failed
+        ? "Latest sync failed"
+        : enabled
+          ? "Ready to sync evidence"
+          : "Enable before syncing";
+  const detail = !runnable
+    ? "This connector is an access contract only. Probes validate configuration; a collection adapter is required before evidence sync."
+    : ok
+      ? `${evidenceCount} evidence row(s) landed and posture surfaces will refresh.`
+      : failed
+        ? (sync?.error ?? "Review run history for the connector error.")
+        : enabled
+          ? "Run sync to land evidence, refresh posture, and update trust views."
+          : "Test access, enable the connector, then run the first sync.";
 
   return (
     <section className="rounded-xl border border-line bg-white p-3">
@@ -451,7 +226,7 @@ function LatestSyncProof({
         <Button
           variant={ok ? "default" : "primary"}
           onClick={onSync}
-          disabled={!enabled || syncing}
+          disabled={!enabled || syncing || !runnable}
         >
           {syncing ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -536,6 +311,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
   const usesDiscoveredReadScope =
     connector.connector_id === "clickhouse-telemetry-lake" || isSnowflake;
   const isEnabled = connector.state === "enabled";
+  const isRunnable = isRunnableConnector(connector);
   const missingCredentials = credentialFields
     .filter((field) => field.required && !(creds[field.name] ?? "").trim())
     .map((field) => field.label);
@@ -543,7 +319,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
     .filter((field) => field.required && !(options[field.name] ?? "").trim())
     .map((field) => field.label);
   const missingRequired = [...missingCredentials, ...missingScope];
-  const canEnable = missingRequired.length === 0;
+  const canEnable = missingRequired.length === 0 && isRunnable;
   const stagedCredentials = Object.fromEntries(
     Object.entries(creds).filter(([, value]) => value.trim() !== ""),
   );
@@ -604,15 +380,29 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
     },
     {
       label: "Sync",
-      detail: latestSyncOk
-        ? "Evidence landed"
-        : isEnabled
-          ? "Ready to sync"
-          : "Enable first",
-      tone: latestSyncOk ? "ready" : isEnabled ? "attention" : "default",
+      detail: !isRunnable
+        ? "Contract only"
+        : latestSyncOk
+          ? "Evidence landed"
+          : isEnabled
+            ? "Ready to sync"
+            : "Enable first",
+      tone: !isRunnable
+        ? "default"
+        : latestSyncOk
+          ? "ready"
+          : isEnabled
+            ? "attention"
+            : "default",
     },
   ];
   const enable = async () => {
+    if (!isRunnable) {
+      onToast(
+        "This connector is contract-only — sync adapter not shipped yet. Use Test connection to validate access.",
+      );
+      return;
+    }
     if (!canEnable) {
       onToast(
         `Required before enabling: ${actionableMissingRequired.join(", ")}.`,
@@ -776,7 +566,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                 <Button
                   variant="primary"
                   onClick={runSync}
-                  disabled={sync.isPending}
+                  disabled={sync.isPending || !isRunnable}
                 >
                   {sync.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -850,10 +640,31 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
           )}
         </section>
 
+        {!isRunnable && (
+          <section className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-950">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <div>
+                <div className="font-black uppercase tracking-wide">
+                  Access contract only
+                </div>
+                <p className="mt-1">
+                  Probes and discovery validate read-only scope. Evidence sync
+                  and enablement require a collection adapter — tracked in the
+                  connector catalog roadmap.
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
+
         <section className="rounded-xl border border-line bg-slate-50 p-3">
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone={isEnabled ? "ready" : "default"}>
               {connector.state}
+            </Badge>
+            <Badge tone={isRunnable ? "ready" : "attention"}>
+              {isRunnable ? "Runnable" : "Contract only"}
             </Badge>
             <Badge>{labelForStatus(connector.production_status)}</Badge>
             <Badge tone="info">
@@ -1256,6 +1067,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
           connector={connector}
           syncing={sync.isPending}
           onSync={runSync}
+          runnable={isRunnable}
         />
 
         <section>

@@ -96,6 +96,14 @@ def test_v1_connector_actions_require_connector_manage_scope(tmp_path: Path) -> 
     assert allowed.status_code == HTTPStatus.CREATED
     assert allowed.json()["meta"]["resource"] == "connector.discover"
 
+    contributor_token = _token_for_role(app, tmp_path, "contributor")
+    sync_denied = client.post(
+        "/api/v1/connectors/aws-posture/sync",
+        headers=_bearer(contributor_token),
+    )
+    assert sync_denied.status_code == HTTPStatus.FORBIDDEN
+    assert sync_denied.json()["errors"][0]["detail"] == "requires scope: connector_manage"
+
 
 def test_openapi_schema_documents_surface(tmp_path: Path) -> None:
     _seed_lake(tmp_path)
