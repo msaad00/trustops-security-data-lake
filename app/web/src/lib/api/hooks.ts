@@ -16,6 +16,7 @@ import type {
   Assessment,
   AssetRisk,
   AuthMethods,
+  AuthWhoami,
   ComplianceGraph,
   ConfigurePayload,
   ConnectorRun,
@@ -112,6 +113,16 @@ export function useAuthMethods(opts?: Opts<AuthMethods>) {
   return useQuery({
     queryKey: ["auth", "methods"],
     queryFn: api.authMethods,
+    staleTime: STALE,
+    retry: false,
+    ...opts,
+  });
+}
+
+export function useAuthWhoami(opts?: Opts<AuthWhoami>) {
+  return useQuery({
+    queryKey: ["auth", "whoami"],
+    queryFn: api.authWhoami,
     staleTime: STALE,
     retry: false,
     ...opts,

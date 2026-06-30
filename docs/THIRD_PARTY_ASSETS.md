@@ -22,6 +22,7 @@ actually holds that certification and the mark usage terms permit the display.
 | Official certification seals, regulator marks, and framework logos                                         | Not bundled                                    | Do not add until source, usage terms, attribution, owner, and review date are recorded here                        |
 | Product logos for integrated tools and cloud providers                                                     | Not bundled by default                         | Prefer neutral source labels unless an integration doc requires the mark and permitted-use terms are recorded here |
 | Connector source marks (AWS, GitHub, Okta, Snowflake, etc.)                                                | Generated in `connector-visuals.ts`            | Text abbreviations with vendor-recognizable accent colors — not official logos; see `ConnectorMark` component       |
+| Identity-provider marks (Okta, Entra ID, Google, SAML, API keys)                                           | Generated in `auth-visuals.ts`                 | Text abbreviations for login/access surfaces — not official IdP logos; see `AuthMark` component                      |
 
 ## Approved Official Assets
 

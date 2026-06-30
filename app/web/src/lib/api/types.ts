@@ -189,10 +189,26 @@ export interface CreateAgentRunPayload {
 }
 
 export interface AuthMethod {
-  id: "oidc" | "saml";
+  id: "oidc" | "saml" | "api_key";
   label: string;
   configured: boolean;
   login_url: string;
+  protocol?: string;
+  provider_kind?: string;
+  provider_label?: string;
+  setup_hint?: string;
+  issuer_host?: string;
+  tenant_slug?: string;
+  auto_provision?: boolean;
+  metadata_url?: string;
+}
+
+export interface AuthWhoami {
+  user_id: string;
+  tenant_id: string;
+  email: string;
+  role: string;
+  scopes: string[];
 }
 
 export interface AuthMethods {
