@@ -643,10 +643,9 @@ def _connectors_configure(args: argparse.Namespace) -> int:
 
     credentials = _json_object(args.credentials_json, flag="--credentials-json")
     options = _json_object(args.options_json, flag="--options-json")
-    options = {
+    cli_overrides = {
         key: value
         for key, value in {
-            **options,
             "sync_schedule": args.sync_schedule,
             "repo": args.repo,
             "fixture_dir": args.fixture_dir,
@@ -655,6 +654,7 @@ def _connectors_configure(args: argparse.Namespace) -> int:
         }.items()
         if value is not None
     }
+    options = {**options, **cli_overrides}
     error = configure_payload_error(
         connector_id=args.connector_id,
         state=args.state,

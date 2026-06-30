@@ -643,7 +643,7 @@ def test_connector_endpoints_round_trip(tmp_path: Path) -> None:
             server,
             "POST",
             "/api/connectors/github-security/probe",
-            body={"credentials": {"token": "abc"}, "options": {"org": "x"}},
+            body={"credentials": {"token": "abc"}, "options": {"repo": "x/repo"}},
         )
         assert status == HTTPStatus.CREATED
         assert body["run"]["result"] == "ok"
@@ -653,7 +653,7 @@ def test_connector_endpoints_round_trip(tmp_path: Path) -> None:
             server,
             "POST",
             "/api/connectors/github-security/configure",
-            body={"state": "enabled", "credentials": {"token": "abc"}, "options": {"org": "x"}},
+            body={"state": "enabled", "credentials": {"token": "abc"}, "options": {"repo": "x/repo"}},
         )
         assert status == HTTPStatus.CREATED
         assert body["event"]["state"] == "enabled"
@@ -717,7 +717,7 @@ def test_connector_configure_requires_matching_ok_probe(tmp_path: Path) -> None:
             server,
             "POST",
             "/api/connectors/github-security/configure",
-            body={"state": "enabled", "credentials": {"token": "abc"}, "options": {"org": "x"}},
+            body={"state": "enabled", "credentials": {"token": "abc"}, "options": {"repo": "x/repo"}},
         )
         assert status == HTTPStatus.BAD_REQUEST
         assert "Test connection" in body["reason"]
@@ -726,7 +726,7 @@ def test_connector_configure_requires_matching_ok_probe(tmp_path: Path) -> None:
             server,
             "POST",
             "/api/connectors/github-security/probe",
-            body={"credentials": {"token": "abc"}, "options": {"org": "x"}},
+            body={"credentials": {"token": "abc"}, "options": {"repo": "x/repo"}},
         )
         assert status == HTTPStatus.CREATED
         assert body["run"]["result"] == "ok"
@@ -735,7 +735,7 @@ def test_connector_configure_requires_matching_ok_probe(tmp_path: Path) -> None:
             server,
             "POST",
             "/api/connectors/github-security/configure",
-            body={"state": "enabled", "credentials": {"token": "different"}, "options": {"org": "x"}},
+            body={"state": "enabled", "credentials": {"token": "different"}, "options": {"repo": "x/repo"}},
         )
         assert status == HTTPStatus.BAD_REQUEST
         assert "exact credentials" in body["reason"]

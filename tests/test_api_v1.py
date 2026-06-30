@@ -394,7 +394,7 @@ def test_v1_connector_configure_requires_matching_ok_probe(tmp_path: Path) -> No
             server,
             "POST",
             "/api/v1/connectors/github-security/configure",
-            body={"state": "enabled", "credentials": {"token": "abc"}, "options": {"org": "x"}},
+            body={"state": "enabled", "credentials": {"token": "abc"}, "options": {"repo": "x/repo"}},
         )
         assert status == HTTPStatus.BAD_REQUEST
         assert body["meta"]["resource"] == "connector.configure"
@@ -404,7 +404,7 @@ def test_v1_connector_configure_requires_matching_ok_probe(tmp_path: Path) -> No
             server,
             "POST",
             "/api/v1/connectors/github-security/probe",
-            body={"credentials": {"token": "abc"}, "options": {"org": "x"}},
+            body={"credentials": {"token": "abc"}, "options": {"repo": "x/repo"}},
         )
         assert status == HTTPStatus.CREATED
         assert body["meta"]["resource"] == "connector.probe"
@@ -415,7 +415,7 @@ def test_v1_connector_configure_requires_matching_ok_probe(tmp_path: Path) -> No
             server,
             "POST",
             "/api/v1/connectors/github-security/configure",
-            body={"state": "enabled", "credentials": {"token": "abc"}, "options": {"org": "x"}},
+            body={"state": "enabled", "credentials": {"token": "abc"}, "options": {"repo": "x/repo"}},
         )
         assert status == HTTPStatus.CREATED
         assert body["meta"]["resource"] == "connector.configure"

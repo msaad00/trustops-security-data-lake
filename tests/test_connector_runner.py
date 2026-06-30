@@ -68,7 +68,7 @@ def test_connector_sync_upserts_stable_event_ids(tmp_path: Path) -> None:
 
 def test_connector_sync_cli_runs_fixture_connector(tmp_path: Path, capsys) -> None:  # type: ignore[no-untyped-def]
     credentials = json.dumps({"token": "fixture-read-token"})
-    options = json.dumps({"org": "acme"})
+    options = json.dumps({"repo": "acme/model-service"})
     probe = main(
         [
             "connectors",
@@ -200,7 +200,7 @@ def test_connector_configure_cli_rejects_enable_without_probe(tmp_path: Path, ca
             "--credentials-json",
             json.dumps({"token": "fixture-read-token"}),
             "--options-json",
-            json.dumps({"org": "acme"}),
+            json.dumps({"repo": "acme/model-service"}),
         ]
     )
 
@@ -221,7 +221,7 @@ def test_connector_configure_cli_requires_matching_probe(tmp_path: Path, capsys)
                 "--credentials-json",
                 json.dumps({"token": "fixture-read-token"}),
                 "--options-json",
-                json.dumps({"org": "acme"}),
+                json.dumps({"repo": "acme/model-service"}),
             ]
         )
         == 0
@@ -241,7 +241,7 @@ def test_connector_configure_cli_requires_matching_probe(tmp_path: Path, capsys)
             "--credentials-json",
             json.dumps({"token": "rotated-token"}),
             "--options-json",
-            json.dumps({"org": "acme"}),
+            json.dumps({"repo": "acme/model-service"}),
         ]
     )
 
