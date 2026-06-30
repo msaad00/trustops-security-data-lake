@@ -14,6 +14,8 @@ import { QueryState } from "@/components/QueryState";
 import { ConnectorDrawer } from "@/components/drawers/ConnectorDrawer";
 import { ConnectorMark } from "@/components/connectors/ConnectorMark";
 import { ConnectorIngestionStrip } from "@/components/connectors/ConnectorIngestionStrip";
+import { ConnectionCompareDiagram } from "@/components/diagrams/ConnectionCompareDiagram";
+import { IngestionPipelineDiagram } from "@/components/diagrams/IngestionPipelineDiagram";
 import { notify } from "@/lib/toast";
 import { useConnectors } from "@/lib/api/hooks";
 import type { ConnectorView } from "@/lib/api/types";
@@ -257,6 +259,10 @@ export default function ConnectorsPage() {
       />
 
       <ConnectorSetupRail />
+
+      <IngestionPipelineDiagram />
+
+      <ConnectionCompareDiagram />
 
       <ConnectorIngestionStrip />
 

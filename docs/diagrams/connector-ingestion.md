@@ -1,0 +1,105 @@
+# Connector Ingestion — Read-Only Connection Model
+
+How TrustOps (and typical Drata/Vanta-style GRC tools) connect to sources:
+**APIs and read-only roles**, not admin write access.
+
+## TrustOps ingestion loop
+
+```mermaid
+flowchart LR
+  subgraph Customer["Customer boundary"]
+    AWS["AWS IAM role<br/>read-only"]
+    GH["GitHub App<br/>security scopes"]
+    OKTA["Okta token<br/>directory read"]
+    SF["Snowflake views<br/>SELECT only"]
+  end
+
+  subgraph TrustOps["TrustOps runtime"]
+    DISC["Discover scope"]
+    PROBE["Probe access"]
+    SYNC["Sync scheduler"]
+    BRZ["Bronze raw"]
+    SLV["Silver facts"]
+    GLD["Gold posture"]
+  end
+
+  subgraph Surfaces["Work surfaces"]
+    UI["Console"]
+    API["/api/v1"]
+    TC["Trust center"]
+  end
+
+  AWS --> DISC
+  GH --> DISC
+  OKTA --> DISC
+  SF --> DISC
+  DISC --> PROBE --> SYNC --> BRZ --> SLV --> GLD
+  GLD --> UI
+  GLD --> API
+  GLD --> TC
+```
+
+## Drata / Vanta vs TrustOps (same connect, different storage)
+
+```mermaid
+flowchart TB
+  subgraph Sources["Sources (read-only)"]
+    S1["AWS cross-account role"]
+    S2["Azure Reader / app reg"]
+    S3["GitHub App OAuth"]
+    S4["IdP API token"]
+  end
+
+  subgraph SaaS["Typical GRC SaaS"]
+    PULL1["Vendor-managed pull"]
+    DB1["Vendor tenant DB"]
+    TEST1["Automated tests"]
+  end
+
+  subgraph TO["TrustOps"]
+    PULL2["Your scheduler / sync"]
+    LAKE["Your /lake + warehouse"]
+    TEST2["Deterministic tests"]
+  end
+
+  Sources --> PULL1 --> DB1 --> TEST1
+  Sources --> PULL2 --> LAKE --> TEST2
+```
+
+## Connection matrix
+
+| Source | Connection mechanism | Permissions style |
+| ------ | -------------------- | ----------------- |
+| AWS | Cross-account **IAM role** + External ID (or SSO profile) | `List*`, `Get*`, `Describe*` — no write |
+| Azure | App registration / **Reader** / workload identity | Subscription & IAM read |
+| GCP | Service account / WIF | Asset & IAM inventory read |
+| GitHub | **GitHub App** installation token | Security alert read scopes |
+| Okta | **API token** or OAuth | `okta.users.read`, policies read |
+| Google Workspace | OAuth bearer + customer ID | Directory read-only scopes |
+| Snowflake | Key-pair service user | `SELECT` on granted views only |
+
+## Lifecycle (probe-gated)
+
+```mermaid
+sequenceDiagram
+  participant Admin as Customer admin
+  participant TO as TrustOps
+  participant Src as Source API
+
+  Admin->>TO: Configure credential ref + scope
+  TO->>Src: Discover allowed objects
+  TO->>Src: Probe read access
+  Src-->>TO: ok + fingerprint
+  Admin->>TO: Enable connector
+  loop Scheduler
+    TO->>Src: Sync (read-only)
+    Src-->>TO: Evidence rows
+    TO->>TO: Materialize bronze/silver/gold
+  end
+```
+
+See also:
+
+- [CONTINUOUS_INGESTION.md](../CONTINUOUS_INGESTION.md)
+- [CONNECTORS.md](../CONNECTORS.md)
+- [Read-only connections SVG](../images/trustops-readonly-connections.svg)

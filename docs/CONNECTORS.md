@@ -102,6 +102,12 @@ and agents:
 4. enable only after the probe succeeds,
 5. sync manually or by schedule.
 
+<p align="center">
+  <img src="images/trustops-readonly-connections.svg" alt="Read-only connector model: AWS IAM role, GitHub App, Okta token, Snowflake SELECT into TrustOps ingestion" width="100%">
+</p>
+
+Mermaid diagrams: [connector-ingestion.md](diagrams/connector-ingestion.md)
+
 Do not paste passwords, human-scoped developer tokens, root keys, or private
 keys into TrustOps. Use SSO, an assumable role, OAuth, key-pair auth, or a
 secret-manager reference. TrustOps records a non-secret fingerprint so a later

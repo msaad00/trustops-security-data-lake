@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { AuthIdentityDiagram } from "@/components/diagrams/AuthIdentityDiagram";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { useAuthMethods, useAuthWhoami } from "@/lib/api/hooks";
@@ -78,6 +79,8 @@ export default function AuthPage() {
         description="OIDC, SAML, and API keys share one tenant, role, and audit boundary — the same identity model as Drata/Vanta hosted workspaces."
         actions={<Badge tone="ready">Server auth</Badge>}
       />
+
+      <AuthIdentityDiagram />
 
       <QueryState queries={[whoami]} label="session">
         {whoami.data && (

@@ -19,6 +19,12 @@ Snowflake/ClickHouse/DuckDB, or a tenant-scoped `/lake` volume on your cluster.
 TrustOps is not a hosted evidence warehouse that copies your cloud posture into
 an opaque SaaS database.
 
+<p align="center">
+  <img src="images/trustops-readonly-connections.svg" alt="Read-only connections vs vendor SaaS evidence boundary" width="92%">
+</p>
+
+Diagrams: [deployment-models.md](diagrams/deployment-models.md) · [connector-ingestion.md](diagrams/connector-ingestion.md)
+
 ```text
 Sources (AWS, Azure, GCP, GitHub, Okta, Snowflake, …)
   -> read-only connectors

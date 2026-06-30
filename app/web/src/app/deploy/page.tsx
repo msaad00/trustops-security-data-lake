@@ -20,6 +20,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { FlowStrip, type FlowStep } from "@/components/diagrams/FlowStrip";
 
 const MODELS = [
   {
@@ -67,6 +68,33 @@ const COMPARE_ROWS = [
     vanta: "Limited",
   },
 ] as const;
+
+const DEPLOY_FLOW: FlowStep[] = [
+  {
+    step: "01",
+    title: "Choose model",
+    detail: "OSS local, self-hosted Helm, or managed hosted workspace.",
+    tone: "brand",
+  },
+  {
+    step: "02",
+    title: "Mount SSO",
+    detail: "OIDC/SAML for humans; API keys for agents and CI.",
+    tone: "neutral",
+  },
+  {
+    step: "03",
+    title: "Link sources",
+    detail: "Read-only connectors — same pattern as Drata/Vanta.",
+    tone: "lake",
+  },
+  {
+    step: "04",
+    title: "Prove ingestion",
+    detail: "Probe, enable, sync into your evidence lake.",
+    tone: "assess",
+  },
+];
 
 export default function DeployPage() {
   return (
@@ -149,6 +177,18 @@ export default function DeployPage() {
           <Button asChild variant="default">
             <Link href="/connectors">Open connector registry</Link>
           </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Go-live path</CardTitle>
+          <CardDescription>
+            From zero to shareable POC — OSS license, your infra, your evidence.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <FlowStrip steps={DEPLOY_FLOW} />
         </CardContent>
       </Card>
 

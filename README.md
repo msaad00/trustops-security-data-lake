@@ -40,6 +40,10 @@ lake, cloud, or local boundary.
   ·
   <a href="docs/api/AGENT_API.md"><strong>Agent API</strong></a>
   ·
+  <a href="docs/VISUAL_SYSTEM.md"><strong>Visual System</strong></a>
+  ·
+  <a href="docs/diagrams/README.md"><strong>Diagrams</strong></a>
+  ·
   <a href="docs/SERVER_AUTH.md"><strong>Auth</strong></a>
 </p>
 
