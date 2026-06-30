@@ -4,6 +4,16 @@ The product should feel like an assessment console, not a report. The visual
 language should make current posture, violations, owners, evidence, and
 snapshots understandable for both humans and agents.
 
+## Framework visual identity
+
+Neutral **gradient marks** with Lucide icons identify each program (SOC 2, ISO,
+FedRAMP, CIS AWS, etc.) without shipping official certification logos. See
+`app/web/src/lib/framework-visuals.ts`, `FrameworkMark`, and `FrameworkBadge`.
+
+Shared KPI tiles use `KpiTile` with tone accents (default / ready / attention /
+critical / brand). Compliance rings and bar scoreboards mirror managed GRC-style
+program dashboards on the trust command center.
+
 ## Out-Of-Box Views
 
 | View              | Purpose                                                       |

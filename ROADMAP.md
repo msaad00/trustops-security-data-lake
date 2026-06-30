@@ -2,7 +2,7 @@
 
 Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as needed.
 
-## P0 — Shareable hosted demo (enterprise GRC-class entry)
+## P0 — Shareable hosted demo (managed GRC-class entry)
 
 - [x] Demo kit API (`demo_kit` on POC readiness) with copyable links
 - [x] `/console/demo/` evaluator landing

@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { FrameworkBadge } from "@/components/framework/FrameworkBadge";
+import { resolveFrameworkId } from "@/lib/framework-visuals";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -30,10 +31,12 @@ const FRAMEWORK_IDS: Record<string, string> = {
   "PCI DSS": "pci-dss-v4",
   GDPR: "gdpr-2016-679",
   "EU AI Act": "eu-ai-act-2024-1689",
+  FedRAMP: "fedramp-moderate",
+  "CIS AWS": "cis_aws",
 };
 
 function frameworkIdFor(label: string) {
-  return FRAMEWORK_IDS[label] ?? label.toLowerCase().replaceAll(" ", "-");
+  return resolveFrameworkId(FRAMEWORK_IDS[label] ?? label);
 }
 
 function frameworkLabel(framework: FrameworkView) {

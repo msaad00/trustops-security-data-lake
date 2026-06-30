@@ -1,7 +1,7 @@
 """Shareable demo and account-linking URLs for hosted POC workspaces.
 
 Operators set ``TRUSTOPS_PUBLIC_URL``; this module turns that base URL plus live
-connector state into copyable links similar to hosted GRC invite and connect flows.
+connector state into copyable links similar to managed GRC invite and connect flows.
 """
 
 from __future__ import annotations
@@ -33,7 +33,7 @@ def _console_path(path: str, *, public_url: str | None) -> str:
 
 
 def _account_link_status(connector: dict[str, Any]) -> str:
-    """Derive hosted GRC-style account linking state from connector runtime rows."""
+    """Derive managed-GRC-style account linking state from connector runtime rows."""
     state = str(connector.get("state") or "disabled")
     if state != "enabled":
         return "not_linked"

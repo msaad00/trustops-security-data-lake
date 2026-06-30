@@ -1,0 +1,183 @@
+/**
+ * Neutral framework visual identity (marks + accents).
+ * Not official logos — see docs/THIRD_PARTY_ASSETS.md.
+ */
+
+export type FrameworkVisual = {
+  label: string;
+  mark: string;
+  accent: string;
+  bg: string;
+  ring: string;
+  gradient: string;
+  /** Lucide icon name key for FrameworkMark */
+  icon: FrameworkIconKey;
+};
+
+export type FrameworkIconKey =
+  | "shield"
+  | "brain"
+  | "lock"
+  | "sparkles"
+  | "heart-pulse"
+  | "credit-card"
+  | "scale"
+  | "bot"
+  | "cloud"
+  | "landmark"
+  | "layers";
+
+export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
+  soc2: {
+    label: "SOC 2",
+    mark: "SOC",
+    accent: "#2563eb",
+    bg: "#eff6ff",
+    ring: "#bfdbfe",
+    gradient: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+    icon: "shield",
+  },
+  "nist-ai-rmf": {
+    label: "NIST AI RMF",
+    mark: "AI",
+    accent: "#7c3aed",
+    bg: "#f5f3ff",
+    ring: "#ddd6fe",
+    gradient: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
+    icon: "brain",
+  },
+  "iso-27001-2022": {
+    label: "ISO 27001",
+    mark: "ISO",
+    accent: "#0891b2",
+    bg: "#ecfeff",
+    ring: "#a5f3fc",
+    gradient: "linear-gradient(135deg, #06b6d4 0%, #0e7490 100%)",
+    icon: "lock",
+  },
+  "iso-42001-2023": {
+    label: "ISO 42001",
+    mark: "AIMS",
+    accent: "#0f766e",
+    bg: "#f0fdfa",
+    ring: "#99f6e4",
+    gradient: "linear-gradient(135deg, #14b8a6 0%, #0f766e 100%)",
+    icon: "sparkles",
+  },
+  "fedramp-moderate": {
+    label: "FedRAMP",
+    mark: "FR",
+    accent: "#1e40af",
+    bg: "#dbeafe",
+    ring: "#93c5fd",
+    gradient: "linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%)",
+    icon: "landmark",
+  },
+  cis_aws: {
+    label: "CIS AWS",
+    mark: "CIS",
+    accent: "#ea580c",
+    bg: "#fff7ed",
+    ring: "#fed7aa",
+    gradient: "linear-gradient(135deg, #f97316 0%, #c2410c 100%)",
+    icon: "cloud",
+  },
+  "hipaa-security-rule": {
+    label: "HIPAA",
+    mark: "HHS",
+    accent: "#059669",
+    bg: "#ecfdf5",
+    ring: "#a7f3d0",
+    gradient: "linear-gradient(135deg, #10b981 0%, #047857 100%)",
+    icon: "heart-pulse",
+  },
+  "pci-dss-v4": {
+    label: "PCI DSS",
+    mark: "PCI",
+    accent: "#d97706",
+    bg: "#fffbeb",
+    ring: "#fde68a",
+    gradient: "linear-gradient(135deg, #f59e0b 0%, #b45309 100%)",
+    icon: "credit-card",
+  },
+  "gdpr-2016-679": {
+    label: "GDPR",
+    mark: "EU",
+    accent: "#4338ca",
+    bg: "#eef2ff",
+    ring: "#c7d2fe",
+    gradient: "linear-gradient(135deg, #6366f1 0%, #3730a3 100%)",
+    icon: "scale",
+  },
+  "eu-ai-act-2024-1689": {
+    label: "EU AI Act",
+    mark: "EU AI",
+    accent: "#be123c",
+    bg: "#fff1f2",
+    ring: "#fecdd3",
+    gradient: "linear-gradient(135deg, #e11d48 0%, #9f1239 100%)",
+    icon: "bot",
+  },
+};
+
+const NAME_TO_ID: Record<string, string> = {
+  "SOC 2": "soc2",
+  "SOC 2 Trust Services Criteria": "soc2",
+  "NIST AI RMF": "nist-ai-rmf",
+  "NIST AI Risk Management Framework": "nist-ai-rmf",
+  "ISO 27001": "iso-27001-2022",
+  "ISO 27001:2022": "iso-27001-2022",
+  "ISO 42001": "iso-42001-2023",
+  "ISO 42001:2023": "iso-42001-2023",
+  FedRAMP: "fedramp-moderate",
+  "FedRAMP Moderate": "fedramp-moderate",
+  "CIS AWS Foundations Benchmark": "cis_aws",
+  "CIS AWS": "cis_aws",
+  HIPAA: "hipaa-security-rule",
+  "PCI DSS": "pci-dss-v4",
+  GDPR: "gdpr-2016-679",
+  "EU AI Act": "eu-ai-act-2024-1689",
+};
+
+export function resolveFrameworkId(
+  frameworkIdOrName: string | null | undefined,
+): string {
+  if (!frameworkIdOrName) return "unknown";
+  if (FRAMEWORK_VISUALS[frameworkIdOrName]) return frameworkIdOrName;
+  return NAME_TO_ID[frameworkIdOrName] ?? frameworkIdOrName.toLowerCase();
+}
+
+export function frameworkIdFromControlId(controlId: string): string {
+  const id = controlId.toUpperCase();
+  if (id.startsWith("SOC2-")) return "soc2";
+  if (id.startsWith("NIST-AI-RMF-")) return "nist-ai-rmf";
+  if (id.startsWith("ISO27001-")) return "iso-27001-2022";
+  if (id.startsWith("ISO42001-")) return "iso-42001-2023";
+  if (id.startsWith("FEDRAMP-")) return "fedramp-moderate";
+  if (id.startsWith("CIS-AWS-")) return "cis_aws";
+  if (id.startsWith("HIPAA-")) return "hipaa-security-rule";
+  if (id.startsWith("PCI-")) return "pci-dss-v4";
+  if (id.startsWith("GDPR-")) return "gdpr-2016-679";
+  if (id.startsWith("EU-AI-ACT-")) return "eu-ai-act-2024-1689";
+  return resolveFrameworkId(controlId.split("-")[0]);
+}
+
+export function frameworkVisual(
+  frameworkIdOrName: string | null | undefined,
+  fallbackLabel?: string,
+): FrameworkVisual & { frameworkId: string } {
+  const frameworkId = resolveFrameworkId(frameworkIdOrName);
+  const known = FRAMEWORK_VISUALS[frameworkId];
+  if (known) return { ...known, frameworkId };
+  const label = fallbackLabel ?? frameworkIdOrName ?? "Framework";
+  return {
+    frameworkId,
+    label,
+    mark: label.slice(0, 4).toUpperCase(),
+    accent: "#4f7cff",
+    bg: "#eef4ff",
+    ring: "#c7d7fe",
+    gradient: "linear-gradient(135deg, #4f7cff 0%, #2563eb 100%)",
+    icon: "layers",
+  };
+}

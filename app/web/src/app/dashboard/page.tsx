@@ -1,6 +1,12 @@
 "use client";
 
 import {
+  AlertTriangle,
+  ClipboardCheck,
+  Layers,
+  ShieldCheck,
+} from "lucide-react";
+import {
   useControlTests,
   useFrameworks,
   useIngestionStatus,
@@ -11,9 +17,13 @@ import { PostureRing } from "@/components/dashboard/PostureRing";
 import { ReadinessGrid } from "@/components/dashboard/ReadinessGrid";
 import { FixNext } from "@/components/dashboard/FixNext";
 import { EvidenceTrend } from "@/components/dashboard/EvidenceTrend";
+import { FrameworkBars } from "@/components/dashboard/FrameworkBars";
 import { ControlTestTable } from "@/components/dashboard/ControlTestTable";
 import { TrustLifecycle } from "@/components/dashboard/TrustLifecycle";
 import { IngestionStatusPanel } from "@/components/dashboard/IngestionStatusPanel";
+import { ComplianceOverview } from "@/components/dashboard/ComplianceOverview";
+import { DataPipelineStrip } from "@/components/dashboard/DataPipelineStrip";
+import { KpiTile } from "@/components/ui/KpiTile";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { QueryState } from "@/components/QueryState";
@@ -33,38 +43,6 @@ function stateCopy(state?: string) {
     return "Assign critical owners and refresh stale proof.";
   }
   return "Review gaps before the next trust share.";
-}
-
-function ExecutiveMetric({
-  label,
-  value,
-  detail,
-  tone = "default",
-}: {
-  label: string;
-  value: string | number;
-  detail: string;
-  tone?: "default" | "critical" | "attention" | "ready";
-}) {
-  const toneClass =
-    tone === "critical"
-      ? "text-rose-700"
-      : tone === "attention"
-        ? "text-amber-800"
-        : tone === "ready"
-          ? "text-emerald-700"
-          : "text-ink";
-  return (
-    <div className="min-w-0 rounded-lg border border-line bg-white p-3">
-      <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-        {label}
-      </div>
-      <div className={`mt-1 text-2xl font-black leading-none ${toneClass}`}>
-        {value}
-      </div>
-      <div className="mt-1 text-xs leading-4 text-muted">{detail}</div>
-    </div>
-  );
 }
 
 export default function DashboardPage() {
@@ -104,7 +82,7 @@ export default function DashboardPage() {
           </h1>
           <p className="mt-1 max-w-[720px] text-sm leading-5 text-muted">
             Live readiness, risk, evidence freshness, and owner action in one
-            place.
+            place — managed GRC-style continuous compliance at a glance.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -125,9 +103,9 @@ export default function DashboardPage() {
       </div>
 
       <QueryState queries={[posture]} label="posture">
-        <Card className="overflow-hidden">
+        <Card className="overflow-hidden border-line shadow-card">
           <div className="grid lg:grid-cols-[260px_minmax(0,1fr)]">
-            <div className="flex items-center gap-4 border-b border-line bg-panel p-4 lg:block lg:border-b-0 lg:border-r">
+            <div className="flex items-center gap-4 border-b border-line bg-gradient-to-b from-slate-50 to-white p-4 lg:block lg:border-b-0 lg:border-r">
               <PostureRing
                 score={p?.score ?? 0}
                 state={p?.state ?? "attention_required"}
@@ -138,7 +116,7 @@ export default function DashboardPage() {
                   Trust score
                 </div>
                 <p className="mt-1 text-xs leading-5 text-muted">
-                  Audit, customer, and security readiness.
+                  Weighted across frameworks, tests, and evidence freshness.
                 </p>
               </div>
             </div>
@@ -167,8 +145,9 @@ export default function DashboardPage() {
                   {p?.state === "ready" ? "shareable" : "internal review"}
                 </Badge>
               </div>
+              <ComplianceOverview frameworks={frameworks} />
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <ExecutiveMetric
+                <KpiTile
                   label="Framework readiness"
                   value={`${readyFrameworks} ready`}
                   detail={frameworkDetail}
@@ -178,8 +157,9 @@ export default function DashboardPage() {
                       ? "ready"
                       : "attention"
                   }
+                  icon={<Layers className="h-4 w-4" />}
                 />
-                <ExecutiveMetric
+                <KpiTile
                   label="Control tests"
                   value={p?.control_count ?? 0}
                   detail={`${p?.failed_control_test_count ?? 0} failing tests require work`}
@@ -188,8 +168,10 @@ export default function DashboardPage() {
                       ? "critical"
                       : "ready"
                   }
+                  icon={<ClipboardCheck className="h-4 w-4" />}
+                  delay={0.04}
                 />
-                <ExecutiveMetric
+                <KpiTile
                   label="Open risk"
                   value={`${p?.critical_violation_count ?? 0} critical`}
                   detail={`${p?.open_violation_count ?? 0} open findings need owners`}
@@ -200,8 +182,10 @@ export default function DashboardPage() {
                         ? "attention"
                         : "ready"
                   }
+                  icon={<AlertTriangle className="h-4 w-4" />}
+                  delay={0.08}
                 />
-                <ExecutiveMetric
+                <KpiTile
                   label="Evidence freshness"
                   value={`${p?.stale_evidence_count ?? 0} stale`}
                   detail={`${p?.stale_control_count ?? 0} controls need refreshed proof`}
@@ -211,6 +195,8 @@ export default function DashboardPage() {
                       ? "attention"
                       : "ready"
                   }
+                  icon={<ShieldCheck className="h-4 w-4" />}
+                  delay={0.12}
                 />
               </div>
             </div>
@@ -221,6 +207,8 @@ export default function DashboardPage() {
           <IngestionStatusPanel status={ingestion.data} />
         </QueryState>
 
+        <DataPipelineStrip />
+
         <ReadinessGrid
           frameworks={frameworks}
           catalog={registeredFrameworks.data ?? []}
@@ -230,6 +218,8 @@ export default function DashboardPage() {
           <FixNext violations={data?.violations ?? []} />
           <EvidenceTrend />
         </div>
+
+        <FrameworkBars frameworks={frameworks} />
 
         <ControlTestTable rows={tests.data ?? []} />
 

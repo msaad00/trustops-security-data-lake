@@ -8,6 +8,8 @@ import {
   useControlTests,
   usePosture,
 } from "@/lib/api/hooks";
+import { FrameworkBadge } from "@/components/framework/FrameworkBadge";
+import { resolveFrameworkId } from "@/lib/framework-visuals";
 import type { ControlPosture } from "@/lib/api/types";
 
 interface Props {
@@ -63,7 +65,14 @@ export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
           )}
           <dl className="grid grid-cols-[120px_1fr] gap-x-3 gap-y-1.5 text-sm">
             <dt className="text-muted">Framework</dt>
-            <dd className="font-extrabold">{control.framework}</dd>
+            <dd>
+              <FrameworkBadge
+                frameworkId={resolveFrameworkId(control.framework)}
+                fallbackLabel={control.framework}
+                variant="compact"
+                size={28}
+              />
+            </dd>
             <dt className="text-muted">Owner</dt>
             <dd className="font-extrabold">{control.owner}</dd>
             <dt className="text-muted">Status</dt>
