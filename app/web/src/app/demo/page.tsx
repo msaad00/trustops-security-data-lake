@@ -26,19 +26,22 @@ import { useAuthMethods, usePocReadiness } from "@/lib/api/hooks";
 const STEPS = [
   {
     title: "Sign in",
-    detail: "Use your company SSO or the workspace sign-in link your host shared.",
+    detail:
+      "Use your company SSO or the workspace sign-in link your host shared.",
     icon: LogIn,
     href: "/login",
   },
   {
     title: "Link accounts",
-    detail: "Connect AWS, Azure, GCP, Snowflake, GitHub, or Okta with read-only scope.",
+    detail:
+      "Connect AWS, Azure, GCP, Snowflake, GitHub, or Okta with read-only scope.",
     icon: Plug,
     href: "/connectors",
   },
   {
     title: "Prove ingestion",
-    detail: "Run probe, enable, and sync so posture updates from live evidence.",
+    detail:
+      "Run probe, enable, and sync so posture updates from live evidence.",
     icon: Cloud,
     href: "/connectors",
   },
@@ -86,9 +89,9 @@ export default function DemoLandingPage() {
               Link accounts, ingest evidence, share proof
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-              TrustOps keeps evidence in your boundary. Connect read-only sources,
-              evaluate controls deterministically, and share redacted trust links
-              without handing auditors raw lake access.
+              TrustOps keeps evidence in your boundary. Connect read-only
+              sources, evaluate controls deterministically, and share redacted
+              trust links without handing auditors raw lake access.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
               {loginUrl ? (

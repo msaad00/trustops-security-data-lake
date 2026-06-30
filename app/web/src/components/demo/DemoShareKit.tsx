@@ -83,7 +83,8 @@ function ShareLinkRow({ link }: { link: DemoShareLink }) {
 function AccountLinkRow({ row }: { row: DemoAccountLink }) {
   const href = row.connect_url.startsWith("http")
     ? row.connect_url
-    : row.connect_url.replace(/^\/console/, "") || `/connectors/?connect=${row.connector_id}`;
+    : row.connect_url.replace(/^\/console/, "") ||
+      `/connectors/?connect=${row.connector_id}`;
   return (
     <div className="grid gap-3 rounded-xl border border-line bg-white p-4 sm:grid-cols-[minmax(0,1fr)_auto]">
       <div className="min-w-0">
@@ -99,7 +100,11 @@ function AccountLinkRow({ row }: { row: DemoAccountLink }) {
         <p className="mt-1 text-xs leading-5 text-muted">{row.setup_hint}</p>
       </div>
       <div className="flex items-start sm:justify-end">
-        <Button asChild size="sm" variant={row.status === "not_linked" ? "primary" : "default"}>
+        <Button
+          asChild
+          size="sm"
+          variant={row.status === "not_linked" ? "primary" : "default"}
+        >
           <Link href={href}>
             <Plug className="h-4 w-4" />
             {row.status === "not_linked" ? "Link account" : "Review"}

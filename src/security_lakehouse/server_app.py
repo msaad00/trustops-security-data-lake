@@ -39,7 +39,6 @@ from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from security_lakehouse import api_legacy, api_v1, remediation_guidance, tenancy, trust_share
-from security_lakehouse.demo_links import build_demo_kit
 from security_lakehouse.assessment import build_current_posture, write_assessment_snapshot
 from security_lakehouse.auth.dependencies import get_session, require_scope
 from security_lakehouse.auth.oidc import OIDCLoginError, build_oauth, complete_oidc_login, load_oidc_config
@@ -64,6 +63,7 @@ from security_lakehouse.db import migrate, remediation, repository
 from security_lakehouse.db import tags as tags_db
 from security_lakehouse.db.base import DEFAULT_PAGE_LIMIT, clamp_limit, create_engine_for, session_factory
 from security_lakehouse.db.models import REMEDIATION_PRIORITIES, User
+from security_lakehouse.demo_links import build_demo_kit
 from security_lakehouse.ingestion_status import build_ingestion_status
 from security_lakehouse.io import resolve_path
 from security_lakehouse.services import NotFound, ValidationError

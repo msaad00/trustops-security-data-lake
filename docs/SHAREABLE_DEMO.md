@@ -4,14 +4,14 @@ Use this guide when you want a **hosted link** evaluators can open, sign into, *
 
 ## What you publish
 
-| Link | Audience | Purpose |
-|------|----------|---------|
-| `{PUBLIC_URL}/console/demo/` | Evaluators | Demo landing — sign in, connect accounts, view posture |
-| `{PUBLIC_URL}/console/poc/` | Operators | Launch checklist + copyable invite URLs |
-| `{PUBLIC_URL}/api/v1/auth/login` | Evaluators | Browser SSO entry |
-| `{PUBLIC_URL}/console/connectors/?connect=aws-posture` | Operators | Deep-link account linking |
-| `{PUBLIC_URL}/console/trust-center/` | Operators | Issue auditor/customer trust links |
-| `{PUBLIC_URL}/console/trust/{token}` | External reviewers | Redacted posture (token shown once at create) |
+| Link                                                   | Audience           | Purpose                                                |
+| ------------------------------------------------------ | ------------------ | ------------------------------------------------------ |
+| `{PUBLIC_URL}/console/demo/`                           | Evaluators         | Demo landing — sign in, connect accounts, view posture |
+| `{PUBLIC_URL}/console/poc/`                            | Operators          | Launch checklist + copyable invite URLs                |
+| `{PUBLIC_URL}/api/v1/auth/login`                       | Evaluators         | Browser SSO entry                                      |
+| `{PUBLIC_URL}/console/connectors/?connect=aws-posture` | Operators          | Deep-link account linking                              |
+| `{PUBLIC_URL}/console/trust-center/`                   | Operators          | Issue auditor/customer trust links                     |
+| `{PUBLIC_URL}/console/trust/{token}`                   | External reviewers | Redacted posture (token shown once at create)          |
 
 Set `TRUSTOPS_PUBLIC_URL` on the server (Helm `env` or process environment). The console **Launch** and **Demo** pages surface copyable links when this variable is set.
 
@@ -36,14 +36,14 @@ Connect → Discover scope → Test → Enable → Sync → Posture updates
 
 Recommended first links (deep-link from Launch page):
 
-| Connector | What it proves |
-|-----------|----------------|
-| `aws-posture` | Cloud IAM + config evidence |
-| `azure-posture` | Azure subscription posture |
-| `gcp-posture` | GCP org/project posture |
+| Connector                 | What it proves                  |
+| ------------------------- | ------------------------------- |
+| `aws-posture`             | Cloud IAM + config evidence     |
+| `azure-posture`           | Azure subscription posture      |
+| `gcp-posture`             | GCP org/project posture         |
 | `snowflake-evidence-lake` | Existing governed evidence lake |
-| `github-security` | Repo and supply-chain signals |
-| `okta-identity` | Identity directory evidence |
+| `github-security`         | Repo and supply-chain signals   |
+| `okta-identity`           | Identity directory evidence     |
 
 Status on the Launch page:
 
@@ -57,8 +57,16 @@ Status on the Launch page:
 
 ```json
 {
-  "share_links": [{ "kind": "workspace", "url": "https://...", "label": "..." }],
-  "account_linking": [{ "connector_id": "aws-posture", "status": "ingesting", "connect_url": "..." }],
+  "share_links": [
+    { "kind": "workspace", "url": "https://...", "label": "..." }
+  ],
+  "account_linking": [
+    {
+      "connector_id": "aws-posture",
+      "status": "ingesting",
+      "connect_url": "..."
+    }
+  ],
   "account_linking_summary": { "live_ingestion": 1 }
 }
 ```

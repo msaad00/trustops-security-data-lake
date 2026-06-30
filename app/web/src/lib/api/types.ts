@@ -222,12 +222,7 @@ export interface DemoAccountLink {
   label: string;
   setup_hint: string;
   status:
-    | "not_linked"
-    | "connected"
-    | "ingesting"
-    | "enabled"
-    | "error"
-    | string;
+    "not_linked" | "connected" | "ingesting" | "enabled" | "error" | string;
   enabled: boolean;
   evidence_count: number;
   last_sync_at: string | null;
