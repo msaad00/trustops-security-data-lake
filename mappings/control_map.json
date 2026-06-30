@@ -1,6 +1,3366 @@
 {
   "controls": [
     {
+      "control_id": "CIS-AWS-1.1",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Maintain current contact details",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.10",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure multi-factor authentication (MFA) is enabled for all IAM users that have a console password",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.11",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Do not setup access keys during initial user setup for all IAM users that have a console password",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.12",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure credentials unused for 45 days or greater are disabled",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.13",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure there is only one active access key available for any single IAM user",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.14",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure access keys are rotated every 90 days or less",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.15",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure IAM Users Receive Permissions Only Through Groups",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.16",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure IAM policies that allow full \"*:*\" administrative privileges are not attached",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.17",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure a support role has been created to manage incidents with AWS Support",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.18",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure IAM instance roles are used for AWS resource access from instances",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.19",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure that all the expired SSL/TLS certificates stored in AWS IAM are removed",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.2",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure security contact information is registered",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.20",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure that IAM Access analyzer is enabled for all regions",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.21",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure IAM users are managed centrally via identity federation or AWS Organizations for multi-account environments",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.22",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure access to AWSCloudShellFullAccess is restricted",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.3",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure security questions are registered in the AWS account",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.4",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure no 'root' user account access key exists",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.5",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure MFA is enabled for the 'root' user account",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.6",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure hardware MFA is enabled for the 'root' user account",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.7",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Eliminate use of the 'root' user for administrative and daily tasks",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.8",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure IAM password policy requires minimum length of 14 or greater",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-1.9",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure IAM password policy prevents password reuse",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-2.1.1",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure S3 Bucket Policy is set to deny HTTP requests",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-2.1.2",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure MFA Delete is enabled on S3 buckets",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-2.1.3",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure all data in Amazon S3 has been discovered, classified and secured when required.",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-2.1.4",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure that S3 Buckets are configured with 'Block public access (bucket settings)'",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-2.2.1",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure EBS Volume Encryption is Enabled in all Regions",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-2.3.1",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure that encryption is enabled for RDS Instances",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-2.3.2",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure Auto Minor Version Upgrade feature is Enabled for RDS Instances",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-2.3.3",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure that public access is not given to RDS Instance",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-2.4.1",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure that encryption is enabled for EFS file systems",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-3.1",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure CloudTrail is enabled in all regions",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-3.2",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure CloudTrail log file validation is enabled",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-3.3",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure AWS Config is enabled in all regions",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-3.4",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure S3 bucket access logging is enabled on the CloudTrail S3 bucket",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-3.5",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure CloudTrail logs are encrypted at rest using KMS CMKs",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-3.6",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure rotation for customer created symmetric CMKs is enabled",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-3.7",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure VPC flow logging is enabled in all VPCs",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-3.8",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure that Object-level logging for write events is enabled for S3 bucket",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-3.9",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure that Object-level logging for read events is enabled for S3 bucket",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-4.1",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure a log metric filter and alarm exist for unauthorized API calls",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-4.10",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure a log metric filter and alarm exist for security group changes",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-4.11",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure a log metric filter and alarm exist for changes to Network Access Control Lists (NACL)",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-4.12",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure a log metric filter and alarm exist for changes to network gateways",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-4.13",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure route table changes are monitored",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-4.14",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure a log metric filter and alarm exist for VPC changes",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-4.15",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure a log metric filter and alarm exists for AWS Organizations changes",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-4.16",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure AWS Security Hub is enabled",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-4.2",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure a log metric filter and alarm exist for Management Console sign-in without MFA",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-4.3",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure a log metric filter and alarm exist for usage of 'root' account",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-4.4",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure a log metric filter and alarm exist for IAM policy changes",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-4.5",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure a log metric filter and alarm exist for CloudTrail configuration changes",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-4.6",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure a log metric filter and alarm exist for AWS Management Console authentication failures",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-4.7",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure a log metric filter and alarm exist for disabling or scheduled deletion of customer created CMKs",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-4.8",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure a log metric filter and alarm exist for S3 bucket policy changes",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-4.9",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure a log metric filter and alarm exist for AWS Config configuration changes",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-AWS-5.1",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure no Network ACLs allow ingress from 0.0.0.0/0 to remote server administration ports",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-5.2",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure no security groups allow ingress from 0.0.0.0/0 to remote server administration ports",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-5.3",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure no security groups allow ingress from ::/0 to remote server administration ports",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-5.4",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure the default security group of every VPC restricts all traffic",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-5.5",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure routing tables for VPC peering are \"least access\"",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-AWS-5.6",
+      "framework": "CIS AWS Foundations Benchmark",
+      "title": "Ensure that EC2 Metadata Service only allows IMDSv2",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-11",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-11 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-11.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-11.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-12",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-12 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-14",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-14 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-17",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-17 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-17.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-17.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-17.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-17.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-17.3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-17.3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-17.4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-17.4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-18",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-18 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-18.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-18.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-18.3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-18.3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-19",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-19 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-19.5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-19.5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-2.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-2.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-2.13",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-2.13 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-2.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-2.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-2.3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-2.3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-2.4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-2.4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-2.5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-2.5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-20",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-20 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-20.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-20.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-20.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-20.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-21",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-21 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-22",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-22 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-6",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-6 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-6.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-6.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-6.10",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-6.10 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-6.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-6.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-6.5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-6.5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-6.7",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-6.7 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-6.9",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-6.9 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-7",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-7 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AC-8",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AC-8 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-AT-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AT-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-AT-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AT-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-AT-2.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AT-2.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-AT-2.3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AT-2.3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-AT-3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AT-3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-AT-4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AT-4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-AU-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AU-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-AU-11",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AU-11 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-AU-12",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AU-12 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-AU-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AU-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-AU-3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AU-3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-AU-3.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AU-3.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-AU-4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AU-4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-AU-5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AU-5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-AU-6",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AU-6 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-AU-6.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AU-6.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-AU-6.3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AU-6.3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-AU-7",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AU-7 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-AU-7.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AU-7.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-AU-8",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AU-8 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-AU-9",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AU-9 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-AU-9.4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate AU-9.4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CA-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CA-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-CA-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CA-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-CA-2.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CA-2.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-CA-3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CA-3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-CA-5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CA-5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-CA-6",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CA-6 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-CA-7",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CA-7 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-CA-7.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CA-7.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-CA-7.4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CA-7.4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-CA-9",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CA-9 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-CM-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-10",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-10 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-11",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-11 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-12",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-12 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-12.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-12.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-2.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-2.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-2.3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-2.3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-2.7",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-2.7 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-3.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-3.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-3.4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-3.4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-4.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-4.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-6",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-6 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-7",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-7 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-7.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-7.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-7.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-7.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-7.5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-7.5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-8",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-8 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-8.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-8.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-8.3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-8.3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CM-9",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CM-9 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-CP-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-10",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-10 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-10.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-10.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-2.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-2.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-2.3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-2.3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-2.8",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-2.8 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-4.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-4.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-6",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-6 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-6.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-6.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-6.3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-6.3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-7",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-7 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-7.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-7.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-7.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-7.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-7.3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-7.3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-8",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-8 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-8.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-8.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-8.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-8.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-9",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-9 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-9.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-9.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-CP-9.8",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate CP-9.8 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-IA-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-11",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-11 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-12",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-12 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-12.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-12.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-12.3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-12.3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-12.5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-12.5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-2.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-2.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-2.12",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-2.12 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-2.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-2.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-2.8",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-2.8 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-4.4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-4.4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-5.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-5.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-5.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-5.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-5.6",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-5.6 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-6",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-6 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-7",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-7 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-8",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-8 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-8.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-8.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-8.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-8.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IA-8.4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IA-8.4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-IR-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IR-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-IR-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IR-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-IR-3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IR-3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-IR-3.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IR-3.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-IR-4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IR-4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-IR-4.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IR-4.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-IR-5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IR-5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-IR-6",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IR-6 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-IR-6.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IR-6.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-IR-6.3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IR-6.3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-IR-7",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IR-7 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-IR-7.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IR-7.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-IR-8",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate IR-8 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-MA-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate MA-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-MA-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate MA-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-MA-3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate MA-3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-MA-3.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate MA-3.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-MA-3.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate MA-3.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-MA-3.3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate MA-3.3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-MA-4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate MA-4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-MA-5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate MA-5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-MA-6",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate MA-6 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-MP-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate MP-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-MP-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate MP-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-MP-3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate MP-3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-MP-4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate MP-4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-MP-5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate MP-5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-MP-6",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate MP-6 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-MP-7",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate MP-7 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-PE-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PE-10",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-10 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PE-11",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-11 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PE-12",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-12 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PE-13",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-13 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PE-13.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-13.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PE-14",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-14 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PE-15",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-15 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PE-16",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-16 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PE-17",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-17 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PE-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PE-3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PE-4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PE-5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PE-6",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-6 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PE-6.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-6.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PE-8",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-8 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PE-9",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PE-9 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-PL-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PL-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-PL-10",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PL-10 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-PL-11",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PL-11 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-PL-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PL-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-PL-4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PL-4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-PL-4.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PL-4.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-PL-8",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PL-8 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-PS-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PS-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-PS-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PS-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-PS-3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PS-3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-PS-4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PS-4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-PS-5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PS-5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-PS-6",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PS-6 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-PS-7",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PS-7 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-PS-8",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PS-8 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-PS-9",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate PS-9 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-RA-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate RA-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-RA-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate RA-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-RA-3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate RA-3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-RA-3.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate RA-3.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-RA-5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate RA-5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-RA-5.11",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate RA-5.11 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-RA-5.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate RA-5.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-RA-5.5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate RA-5.5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-RA-7",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate RA-7 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-RA-9",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate RA-9 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "risk-management",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-SA-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SA-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SA-10",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SA-10 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SA-11",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SA-11 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SA-15",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SA-15 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SA-15.3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SA-15.3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SA-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SA-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SA-22",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SA-22 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SA-3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SA-3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SA-4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SA-4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SA-4.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SA-4.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SA-4.10",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SA-4.10 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SA-4.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SA-4.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SA-4.9",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SA-4.9 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SA-5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SA-5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SA-8",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SA-8 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SA-9",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SA-9 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SA-9.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SA-9.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-10",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-10 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-12",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-12 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-13",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-13 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-15",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-15 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-17",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-17 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-18",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-18 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-20",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-20 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-21",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-21 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-22",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-22 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-23",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-23 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-28",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-28 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-28.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-28.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-39",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-39 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-7",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-7 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-7.3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-7.3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-7.4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-7.4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-7.5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-7.5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-7.7",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-7.7 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-7.8",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-7.8 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-8",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-8 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SC-8.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SC-8.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "FEDRAMP-SI-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SI-10",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-10 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SI-11",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-11 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SI-12",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-12 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SI-16",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-16 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SI-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SI-2.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-2.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SI-3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SI-4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SI-4.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-4.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SI-4.4",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-4.4 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SI-4.5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-4.5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SI-5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SI-7",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-7 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SI-7.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-7.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SI-7.7",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-7.7 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SI-8",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-8 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SI-8.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SI-8.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "FEDRAMP-SR-1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SR-1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "vendor-risk",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-SR-10",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SR-10 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "vendor-risk",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-SR-11",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SR-11 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "vendor-risk",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-SR-11.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SR-11.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "vendor-risk",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-SR-11.2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SR-11.2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "vendor-risk",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-SR-12",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SR-12 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "vendor-risk",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-SR-2",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SR-2 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "vendor-risk",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-SR-2.1",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SR-2.1 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "vendor-risk",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-SR-3",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SR-3 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "vendor-risk",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-SR-5",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SR-5 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "vendor-risk",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-SR-6",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SR-6 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "vendor-risk",
+      "owner": "grc"
+    },
+    {
+      "control_id": "FEDRAMP-SR-8",
+      "framework": "FedRAMP Moderate",
+      "title": "FedRAMP Moderate SR-8 \u2014 assessed from cloud posture and audit evidence",
+      "risk_domain": "vendor-risk",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.1",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.1 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.10",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.10 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.11",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.11 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.12",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.12 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.13",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.13 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.14",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.14 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.15",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.15 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.16",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.16 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.17",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.17 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.18",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.18 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.19",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.19 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.2",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.2 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.20",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.20 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.21",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.21 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.22",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.22 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.23",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.23 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.24",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.24 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.25",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.25 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.26",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.26 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.27",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.27 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.28",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.28 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.29",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.29 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.3",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.3 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.30",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.30 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.31",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.31 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.32",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.32 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.33",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.33 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.34",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.34 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.35",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.35 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.36",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.36 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.37",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.37 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.4",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.4 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.5",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.5 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.6",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.6 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.7",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.7 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.8",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.8 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.5.9",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.5.9 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.6.1",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.6.1 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.6.2",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.6.2 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.6.3",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.6.3 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.6.4",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.6.4 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.6.5",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.6.5 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.6.6",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.6.6 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.6.7",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.6.7 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.6.8",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.6.8 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "governance",
+      "owner": "grc"
+    },
+    {
+      "control_id": "ISO27001-A.7.1",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.7.1 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "ISO27001-A.7.10",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.7.10 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "ISO27001-A.7.11",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.7.11 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "ISO27001-A.7.12",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.7.12 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "ISO27001-A.7.13",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.7.13 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "ISO27001-A.7.14",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.7.14 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "ISO27001-A.7.2",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.7.2 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "ISO27001-A.7.3",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.7.3 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "ISO27001-A.7.4",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.7.4 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "ISO27001-A.7.5",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.7.5 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "ISO27001-A.7.6",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.7.6 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "ISO27001-A.7.7",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.7.7 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "ISO27001-A.7.8",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.7.8 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "ISO27001-A.7.9",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.7.9 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "change-management",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "ISO27001-A.8.1",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.1 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.10",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.10 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.11",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.11 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.12",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.12 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.13",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.13 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.14",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.14 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.15",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.15 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.16",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.16 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.17",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.17 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.18",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.18 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.19",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.19 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.2",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.2 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.20",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.20 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.21",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.21 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.22",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.22 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.23",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.23 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.24",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.24 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.25",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.25 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.26",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.26 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.27",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.27 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.28",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.28 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.29",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.29 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.3",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.3 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.30",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.30 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.31",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.31 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.32",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.32 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.33",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.33 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.34",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.34 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.4",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.4 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.5",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.5 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.6",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.6 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.7",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.7 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.8",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.8 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO27001-A.8.9",
+      "framework": "ISO 27001:2022",
+      "title": "ISO 27001:2022 A.8.9 \u2014 assessed from ISMS and security operations evidence",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "ISO42001-10.2",
+      "framework": "ISO 42001:2023",
+      "title": "Allocation of responsibilities",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-10.3",
+      "framework": "ISO 42001:2023",
+      "title": "Suppliers",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-10.4",
+      "framework": "ISO 42001:2023",
+      "title": "Customers",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-2.2",
+      "framework": "ISO 42001:2023",
+      "title": "AI policy",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-2.3",
+      "framework": "ISO 42001:2023",
+      "title": "Alignment with other organizational policies",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-2.4",
+      "framework": "ISO 42001:2023",
+      "title": "Review of the AI policy",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-3.2",
+      "framework": "ISO 42001:2023",
+      "title": "AI roles and responsibilities",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-3.3",
+      "framework": "ISO 42001:2023",
+      "title": "Reporting of concerns",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-4.2",
+      "framework": "ISO 42001:2023",
+      "title": "Resource documentation",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-4.3",
+      "framework": "ISO 42001:2023",
+      "title": "Data resources",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-4.4",
+      "framework": "ISO 42001:2023",
+      "title": "Tooling resources",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-4.5",
+      "framework": "ISO 42001:2023",
+      "title": "System and computing resources",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-4.6",
+      "framework": "ISO 42001:2023",
+      "title": "Human resources",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-5.2",
+      "framework": "ISO 42001:2023",
+      "title": "AI system impact assessment process",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-5.3",
+      "framework": "ISO 42001:2023",
+      "title": "Documentation of AI system impact assessments",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-5.4",
+      "framework": "ISO 42001:2023",
+      "title": "Assessing AI system impact on individuals or groups",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-5.5",
+      "framework": "ISO 42001:2023",
+      "title": "Assessing societal impacts of AI systems",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-6.1.2",
+      "framework": "ISO 42001:2023",
+      "title": "Objectives for responsible development of AI system",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-6.1.3",
+      "framework": "ISO 42001:2023",
+      "title": "Processes for responsible design and development of AI systems",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-6.2.2",
+      "framework": "ISO 42001:2023",
+      "title": "AI system requirements and specification",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-6.2.3",
+      "framework": "ISO 42001:2023",
+      "title": "Documentation of AI system design and development",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-6.2.4",
+      "framework": "ISO 42001:2023",
+      "title": "AI system verification and validation",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-6.2.5",
+      "framework": "ISO 42001:2023",
+      "title": "AI system deployment",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-6.2.6",
+      "framework": "ISO 42001:2023",
+      "title": "AI system operation and monitoring",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-6.2.7",
+      "framework": "ISO 42001:2023",
+      "title": "AI system technical documentation",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-6.2.8",
+      "framework": "ISO 42001:2023",
+      "title": "AI system recording of event logs",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-7.2",
+      "framework": "ISO 42001:2023",
+      "title": "Data for development and enhancement of AI system",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-7.3",
+      "framework": "ISO 42001:2023",
+      "title": "Acquisition of data",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-7.4",
+      "framework": "ISO 42001:2023",
+      "title": "Quality of data for AI systems",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-7.5",
+      "framework": "ISO 42001:2023",
+      "title": "Data provenance",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-7.6",
+      "framework": "ISO 42001:2023",
+      "title": "Data preparation",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-8.2",
+      "framework": "ISO 42001:2023",
+      "title": "System documentation and information for users",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-8.3",
+      "framework": "ISO 42001:2023",
+      "title": "External reporting",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-8.4",
+      "framework": "ISO 42001:2023",
+      "title": "Communication of incidents",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-8.5",
+      "framework": "ISO 42001:2023",
+      "title": "Information for interested parties",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-9.2",
+      "framework": "ISO 42001:2023",
+      "title": "Processes for responsible use of AI systems",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-9.3",
+      "framework": "ISO 42001:2023",
+      "title": "Objectives for responsible use of AI system",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "ISO42001-9.4",
+      "framework": "ISO 42001:2023",
+      "title": "Intended use of the AI system",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
       "control_id": "NIST-AI-RMF-GOVERN-1.1",
       "framework": "NIST AI RMF",
       "title": "NIST AI RMF GOVERN 1.1 \u2014 assessed from AI governance and operational evidence",

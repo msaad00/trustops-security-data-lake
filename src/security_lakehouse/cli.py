@@ -337,12 +337,14 @@ def _parser() -> argparse.ArgumentParser:
     frameworks_coverage.set_defaults(func=_frameworks_coverage)
     frameworks_sync_packs = frameworks_sub.add_parser(
         "sync-packs",
-        help="merge full SOC 2 common criteria and NIST AI RMF packs into the control catalog",
+        help="merge full framework packs (SOC 2, NIST AI RMF, FedRAMP, CIS AWS, ISO) into the control catalog",
     )
+    from security_lakehouse.framework_packs import PACK_BUILDERS
+
     frameworks_sync_packs.add_argument(
         "--pack",
         action="append",
-        choices=sorted(("soc2", "nist-ai-rmf")),
+        choices=sorted(PACK_BUILDERS),
         help="pack to sync (default: all full packs)",
     )
     frameworks_sync_packs.set_defaults(func=_frameworks_sync_packs)

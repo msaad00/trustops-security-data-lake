@@ -14,6 +14,9 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 
 - [x] SOC 2 common criteria full pack (33 controls)
 - [x] NIST AI RMF 1.0 full pack (72 subcategories)
+- [x] FedRAMP Moderate foundation pack (287 NIST SP 800-53 Rev 5 controls)
+- [x] CIS AWS Foundations v3.0 pack (62 recommendations)
+- [x] ISO/IEC 27001:2022 and ISO/IEC 42001:2023 Annex A packs
 - [x] `frameworks sync-packs` CLI + custom framework examples
 - [ ] Framework packs (SOC 2 Availability/Confidentiality/PI/Privacy TSC extensions)
 - [ ] Unified golden fixture (all 37 controls on dashboard)

@@ -1,4 +1,4 @@
-"""Full framework packs: SOC 2 TSC common criteria and NIST AI RMF 1.0.
+"""Full framework packs: SOC 2, NIST AI RMF, FedRAMP, CIS AWS, and ISO catalogs.
 
 Packs define every official criterion/subcategory ID with short internal titles
 (no licensed normative text). ``sync_framework_packs`` merges pack rows into the
@@ -19,8 +19,23 @@ from security_lakehouse.catalog_versions import (
     write_bundle_lock,
 )
 from security_lakehouse.mappings import DEFAULT_MAPPINGS
+from security_lakehouse.pack_data import (
+    CIS_AWS_SOURCE,
+    FEDRAMP_SOURCE,
+    ISO_27001_SOURCE,
+    ISO_42001_CONTROLS,
+    ISO_42001_SOURCE,
+    cis_aws_v3_requirements,
+    cis_section_risk_domain,
+    iso_27001_2022_annex_a_refs,
+    iso_27001_theme_risk_domain,
+    nist_800_53_rev5_moderate_ids,
+    nist_family_risk_domain,
+)
 
 JsonObject = dict[str, Any]
+
+PACK_SCOPE = "framework_packs_full_soc2_nist_fedramp_cis_iso_plus_seed"
 
 REVIEWED_BY = "internal-trust-team"
 REVIEWED_DATE = "2026-06-30"
@@ -233,9 +248,130 @@ def nist_ai_rmf_specs() -> list[PackControlSpec]:
     return specs
 
 
+def _normalize_nist_control_id(control_id: str) -> str:
+    return control_id.upper()
+
+
+def fedramp_moderate_specs() -> list[PackControlSpec]:
+    """FedRAMP Moderate foundation: NIST SP 800-53 Rev 5 Moderate baseline (287 controls)."""
+    specs: list[PackControlSpec] = []
+    for raw_id in nist_800_53_rev5_moderate_ids():
+        article_id = _normalize_nist_control_id(raw_id)
+        risk = nist_family_risk_domain(article_id)
+        owner = _soc2_owner(risk)
+        title = f"FedRAMP Moderate {article_id} — assessed from cloud posture and audit evidence"
+        specs.append(
+            PackControlSpec(
+                control_id=f"FEDRAMP-{article_id}",
+                framework_id="fedramp-moderate",
+                framework="FedRAMP Moderate",
+                framework_ref=f"FedRAMP Moderate {article_id}",
+                article_id=article_id,
+                title=title,
+                risk_domain=risk,
+                owner=owner,
+                evaluation_rule=_soc2_evaluation_rule(risk),
+                evidence_requirement=(
+                    f"Current evidence supports FedRAMP Moderate control {article_id} "
+                    "with reviewed mappings and fresh operational proof."
+                ),
+                asset_types=_soc2_assets(risk),
+                source_url=FEDRAMP_SOURCE,
+                official_source_ref="fedramp-moderate",
+            )
+        )
+    return specs
+
+
+def cis_aws_v3_specs() -> list[PackControlSpec]:
+    """All 62 CIS Amazon Web Services Foundations Benchmark v3.0.0 recommendations."""
+    specs: list[PackControlSpec] = []
+    for req_id, req_title in cis_aws_v3_requirements():
+        section = req_id.split(".", 1)[0]
+        risk = cis_section_risk_domain(section)
+        owner = _soc2_owner(risk)
+        specs.append(
+            PackControlSpec(
+                control_id=f"CIS-AWS-{req_id}",
+                framework_id="cis_aws",
+                framework="CIS AWS Foundations Benchmark",
+                framework_ref=f"CIS AWS Foundations {req_id}",
+                article_id=req_id,
+                title=req_title[:160],
+                risk_domain=risk,
+                owner=owner,
+                evaluation_rule=_soc2_evaluation_rule(risk),
+                evidence_requirement=(f"AWS posture evidence demonstrates CIS Foundations {req_id}: {req_title[:80]}"),
+                asset_types=("cloud_resource", "cloud_policy", "iam_role", "identity_account", "s3_bucket"),
+                source_url=CIS_AWS_SOURCE,
+                official_source_ref="cis_aws",
+            )
+        )
+    return specs
+
+
+def iso_27001_2022_specs() -> list[PackControlSpec]:
+    """All 93 ISO/IEC 27001:2022 Annex A controls."""
+    specs: list[PackControlSpec] = []
+    for ref in iso_27001_2022_annex_a_refs():
+        risk = iso_27001_theme_risk_domain(ref)
+        owner = _soc2_owner(risk)
+        title = f"ISO 27001:2022 {ref} — assessed from ISMS and security operations evidence"
+        specs.append(
+            PackControlSpec(
+                control_id=f"ISO27001-{ref}",
+                framework_id="iso-27001-2022",
+                framework="ISO 27001:2022",
+                framework_ref=f"ISO 27001:2022 {ref}",
+                article_id=ref,
+                title=title,
+                risk_domain=risk,
+                owner=owner,
+                evaluation_rule=_soc2_evaluation_rule(risk),
+                evidence_requirement=(
+                    f"Current evidence supports ISO 27001:2022 Annex A control {ref} "
+                    "with reviewed mappings and operational proof."
+                ),
+                asset_types=_soc2_assets(risk),
+                source_url=ISO_27001_SOURCE,
+                official_source_ref="iso-27001-2022",
+            )
+        )
+    return specs
+
+
+def iso_42001_2023_specs() -> list[PackControlSpec]:
+    """All 38 ISO/IEC 42001:2023 Annex A AI management controls."""
+    specs: list[PackControlSpec] = []
+    for ref, short_title in ISO_42001_CONTROLS:
+        article_id = ref.removeprefix("A.")
+        specs.append(
+            PackControlSpec(
+                control_id=f"ISO42001-{article_id}",
+                framework_id="iso-42001-2023",
+                framework="ISO 42001:2023",
+                framework_ref=f"ISO 42001:2023 {ref}",
+                article_id=article_id,
+                title=short_title,
+                risk_domain="ai-governance",
+                owner="ai-security",
+                evaluation_rule="fail_when_open_violation_or_stale_evidence",
+                evidence_requirement=(f"AI governance evidence supports ISO 42001:2023 control {ref} ({short_title})."),
+                asset_types=("ai_model", "ai_agent", "service", "data_store", "audit_log"),
+                source_url=ISO_42001_SOURCE,
+                official_source_ref="iso-42001-2023",
+            )
+        )
+    return specs
+
+
 PACK_BUILDERS = {
     "soc2": soc2_common_criteria_specs,
     "nist-ai-rmf": nist_ai_rmf_specs,
+    "fedramp-moderate": fedramp_moderate_specs,
+    "cis-aws": cis_aws_v3_specs,
+    "iso-27001-2022": iso_27001_2022_specs,
+    "iso-42001-2023": iso_42001_2023_specs,
 }
 
 
@@ -348,7 +484,7 @@ def sync_framework_packs(
 
     catalog_payload["controls"] = sorted(existing_controls.values(), key=lambda row: str(row["control_id"]))
     catalog_payload["catalog_version"] = REVIEWED_DATE
-    catalog_payload["scope"] = "framework_packs_soc2_nist_ai_rmf_full_plus_seed"
+    catalog_payload["scope"] = PACK_SCOPE
 
     mappings_payload["mappings"] = sorted(existing_mappings.values(), key=lambda row: str(row["control_id"]))
     control_map_payload["controls"] = sorted(existing_map.values(), key=lambda row: str(row["control_id"]))
@@ -361,14 +497,28 @@ def sync_framework_packs(
     if write_bundle:
         bundle = write_bundle_lock(lock_path=DEFAULT_BUNDLE_LOCK_PATH)
 
-    soc2_count = sum(1 for row in catalog_payload["controls"] if row.get("framework_id") == "soc2")
-    nist_count = sum(1 for row in catalog_payload["controls"] if row.get("framework_id") == "nist-ai-rmf")
+    framework_counts = {
+        framework_id: sum(1 for row in catalog_payload["controls"] if row.get("framework_id") == framework_id)
+        for framework_id in (
+            "soc2",
+            "nist-ai-rmf",
+            "fedramp-moderate",
+            "cis_aws",
+            "iso-27001-2022",
+            "iso-42001-2023",
+        )
+    }
     return {
         "packs": selected,
         "added_controls": added_controls,
         "added_mappings": added_mappings,
         "control_count": len(catalog_payload["controls"]),
-        "soc2_control_count": soc2_count,
-        "nist_ai_rmf_control_count": nist_count,
+        "soc2_control_count": framework_counts["soc2"],
+        "nist_ai_rmf_control_count": framework_counts["nist-ai-rmf"],
+        "fedramp_moderate_control_count": framework_counts["fedramp-moderate"],
+        "cis_aws_control_count": framework_counts["cis_aws"],
+        "iso_27001_control_count": framework_counts["iso-27001-2022"],
+        "iso_42001_control_count": framework_counts["iso-42001-2023"],
+        "framework_counts": framework_counts,
         "bundle_hash": bundle.get("components", {}).get("controls") if bundle else None,
     }

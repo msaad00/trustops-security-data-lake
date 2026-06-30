@@ -36,6 +36,7 @@ _FORMAT_PATTERNS: dict[str, str] = {
     "eu-ai-act-2024-1689": r"^Art\.\d+$",
     "iso-42001-2023": r"^\d+(\.\d+)*$",
     "cis_aws": r"^\d+(\.\d+)*$",
+    "fedramp-moderate": r"^[A-Z]{2}-\d",
 }
 
 
