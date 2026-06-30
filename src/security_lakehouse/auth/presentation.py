@@ -24,40 +24,74 @@ _SETUP_HINTS: dict[str, str] = {
     "api_key": "Create a scoped API key for agents, CI, and MCP — hashed server-side, shown once.",
 }
 
+_OIDC_PROVIDER_RULES: tuple[tuple[tuple[str, ...], str, str], ...] = (
+    (("okta.com",), "okta", "Okta"),
+    (
+        ("microsoftonline.com", "sts.windows.net"),
+        "azure_ad",
+        "Microsoft Entra ID",
+    ),
+    (("accounts.google.com", "google.com"), "google", "Google"),
+    (("auth0.com",), "auth0", "Auth0"),
+    (("onelogin.com",), "onelogin", "OneLogin"),
+)
+
+_SAML_PROVIDER_RULES: tuple[tuple[tuple[str, ...], str, str], ...] = (
+    (("okta.com",), "okta_saml", "Okta SAML"),
+    (
+        ("microsoftonline.com", "sts.windows.net", "microsoft.com"),
+        "azure_ad_saml",
+        "Microsoft Entra ID SAML",
+    ),
+    (("google.com",), "google_saml", "Google SAML"),
+    (("onelogin.com",), "onelogin_saml", "OneLogin SAML"),
+)
+
 
 def _host_from_url(url: str) -> str:
     parsed = urlparse(url)
-    if parsed.hostname:
-        return parsed.hostname.lower()
-    # Support host-like values without a URL scheme.
-    fallback = urlparse(f"//{url.strip().rstrip('/')}")
-    return (fallback.hostname or "").lower()
+    host = parsed.hostname
+    if not host:
+        # Support host-like values without a URL scheme.
+        fallback = urlparse(f"//{url.strip().rstrip('/')}")
+        host = fallback.hostname
+    if not host:
+        return ""
+    return host.lower().rstrip(".")
 
 
 def _host_matches_domain(host: str, domain: str) -> bool:
+    if not host:
+        return False
     normalized_host = host.lower().rstrip(".")
     normalized_domain = domain.lower().rstrip(".")
-    return normalized_host == normalized_domain or normalized_host.endswith(
-        f".{normalized_domain}"
-    )
+    return normalized_host == normalized_domain or normalized_host.endswith(f".{normalized_domain}")
+
+
+def _host_matches_any_domain(host: str, domains: tuple[str, ...]) -> bool:
+    return any(_host_matches_domain(host, domain) for domain in domains)
+
+
+def _match_provider(
+    hosts: tuple[str, ...],
+    rules: tuple[tuple[tuple[str, ...], str, str], ...],
+    *,
+    default_kind: str,
+    default_label: str,
+) -> tuple[str, str]:
+    for domains, kind, label in rules:
+        if any(_host_matches_any_domain(host, domains) for host in hosts if host):
+            return kind, label
+    return default_kind, default_label
 
 
 def _detect_from_host(host: str) -> tuple[str, str]:
-    if _host_matches_domain(host, "okta.com"):
-        return "okta", "Okta"
-    if _host_matches_domain(host, "microsoftonline.com") or _host_matches_domain(
-        host, "sts.windows.net"
-    ):
-        return "azure_ad", "Microsoft Entra ID"
-    if _host_matches_domain(host, "accounts.google.com") or _host_matches_domain(
-        host, "google.com"
-    ):
-        return "google", "Google"
-    if _host_matches_domain(host, "auth0.com"):
-        return "auth0", "Auth0"
-    if _host_matches_domain(host, "onelogin.com"):
-        return "onelogin", "OneLogin"
-    return "generic_oidc", "OIDC identity provider"
+    return _match_provider(
+        (host,),
+        _OIDC_PROVIDER_RULES,
+        default_kind="generic_oidc",
+        default_label="OIDC identity provider",
+    )
 
 
 def detect_oidc_provider(issuer: str) -> tuple[str, str]:
@@ -66,20 +100,12 @@ def detect_oidc_provider(issuer: str) -> tuple[str, str]:
 
 def detect_saml_provider(*, idp_sso_url: str, idp_entity_id: str) -> tuple[str, str]:
     hosts = (_host_from_url(idp_sso_url), _host_from_url(idp_entity_id))
-    if any(_host_matches_domain(h, "okta.com") for h in hosts):
-        return "okta_saml", "Okta SAML"
-    if any(
-        _host_matches_domain(h, "microsoftonline.com")
-        or _host_matches_domain(h, "sts.windows.net")
-        or _host_matches_domain(h, "microsoft.com")
-        for h in hosts
-    ):
-        return "azure_ad_saml", "Microsoft Entra ID SAML"
-    if any(_host_matches_domain(h, "google.com") for h in hosts):
-        return "google_saml", "Google SAML"
-    if any(_host_matches_domain(h, "onelogin.com") for h in hosts):
-        return "onelogin_saml", "OneLogin SAML"
-    return "generic_saml", "SAML identity provider"
+    return _match_provider(
+        hosts,
+        _SAML_PROVIDER_RULES,
+        default_kind="generic_saml",
+        default_label="SAML identity provider",
+    )
 
 
 def _method(
