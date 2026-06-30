@@ -11,6 +11,8 @@ import {
 import { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import type { ControlTest } from "@/lib/api/types";
+import { FrameworkMark } from "@/components/framework/FrameworkMark";
+import { frameworkIdFromControlId } from "@/lib/framework-visuals";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -30,6 +32,15 @@ export function ControlTestTable({ rows }: { rows: ControlTest[] }) {
   ]);
 
   const columns = [
+    helper.accessor("control_id", {
+      header: "Program",
+      cell: (info) => (
+        <FrameworkMark
+          frameworkId={frameworkIdFromControlId(info.getValue())}
+          size={32}
+        />
+      ),
+    }),
     helper.accessor("name", {
       header: "Test",
       cell: (info) => (

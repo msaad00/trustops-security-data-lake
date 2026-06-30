@@ -11,6 +11,7 @@ import {
   YAxis,
 } from "recharts";
 import type { FrameworkPosture } from "@/lib/api/types";
+import { frameworkVisual, resolveFrameworkId } from "@/lib/framework-visuals";
 import {
   Card,
   CardDescription,
@@ -29,19 +30,24 @@ export function FrameworkBars({
 }: {
   frameworks: FrameworkPosture[];
 }) {
-  const data = frameworks.map((f) => ({
-    name: f.framework,
-    score: Math.round(f.score),
-    fail: f.failing_control_count,
-    color: color(f.score),
-  }));
+  const data = frameworks.map((f) => {
+    const visual = frameworkVisual(resolveFrameworkId(f.framework), f.framework);
+    return {
+      name: visual.label,
+      score: Math.round(f.score),
+      fail: f.failing_control_count,
+      color: color(f.score),
+      accent: visual.accent,
+    };
+  });
 
   return (
     <Card className="overflow-hidden">
       <CardHeader>
-        <CardTitle>Framework readiness</CardTitle>
+        <CardTitle>Framework scoreboard</CardTitle>
         <CardDescription>
-          Weighted score per framework — control pass rate minus stale penalty.
+          Per-program readiness — Vanta/Drata-style compliance bars with failing
+          control overlay.
         </CardDescription>
       </CardHeader>
       <div className="h-[230px] w-full px-4 pb-4">
