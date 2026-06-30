@@ -60,3 +60,18 @@ def test_build_auth_methods_oidc_metadata() -> None:
     assert oidc["tenant_slug"] == "acme"
     assert oidc["auto_provision"] is True
     assert oidc["metadata_url"].endswith("/.well-known/openid-configuration")
+
+
+def test_detect_oidc_provider_rejects_spoof_domains() -> None:
+    kind, _ = detect_oidc_provider("https://evilokta.com/oauth2/default")
+    assert kind == "generic_oidc"
+    kind, _ = detect_oidc_provider("https://okta.com.evil.example/oauth2/default")
+    assert kind == "generic_oidc"
+
+
+def test_detect_saml_provider_rejects_spoof_domains() -> None:
+    kind, _ = detect_saml_provider(
+        idp_sso_url="https://notokta.com/sso/saml",
+        idp_entity_id="https://login.microsoftonline.com.evil/sso",
+    )
+    assert kind == "generic_saml"

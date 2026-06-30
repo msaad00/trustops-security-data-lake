@@ -27,20 +27,35 @@ _SETUP_HINTS: dict[str, str] = {
 
 def _host_from_url(url: str) -> str:
     parsed = urlparse(url)
-    return parsed.netloc or url.strip().rstrip("/")
+    if parsed.hostname:
+        return parsed.hostname.lower()
+    # Support host-like values without a URL scheme.
+    fallback = urlparse(f"//{url.strip().rstrip('/')}")
+    return (fallback.hostname or "").lower()
+
+
+def _host_matches_domain(host: str, domain: str) -> bool:
+    normalized_host = host.lower().rstrip(".")
+    normalized_domain = domain.lower().rstrip(".")
+    return normalized_host == normalized_domain or normalized_host.endswith(
+        f".{normalized_domain}"
+    )
 
 
 def _detect_from_host(host: str) -> tuple[str, str]:
-    lowered = host.lower()
-    if "okta.com" in lowered:
+    if _host_matches_domain(host, "okta.com"):
         return "okta", "Okta"
-    if "microsoftonline.com" in lowered or "sts.windows.net" in lowered:
+    if _host_matches_domain(host, "microsoftonline.com") or _host_matches_domain(
+        host, "sts.windows.net"
+    ):
         return "azure_ad", "Microsoft Entra ID"
-    if "accounts.google.com" in lowered or "google.com" in lowered:
+    if _host_matches_domain(host, "accounts.google.com") or _host_matches_domain(
+        host, "google.com"
+    ):
         return "google", "Google"
-    if "auth0.com" in lowered:
+    if _host_matches_domain(host, "auth0.com"):
         return "auth0", "Auth0"
-    if "onelogin.com" in lowered:
+    if _host_matches_domain(host, "onelogin.com"):
         return "onelogin", "OneLogin"
     return "generic_oidc", "OIDC identity provider"
 
@@ -50,14 +65,19 @@ def detect_oidc_provider(issuer: str) -> tuple[str, str]:
 
 
 def detect_saml_provider(*, idp_sso_url: str, idp_entity_id: str) -> tuple[str, str]:
-    host = f"{_host_from_url(idp_sso_url)} {_host_from_url(idp_entity_id)}".lower()
-    if "okta.com" in host:
+    hosts = (_host_from_url(idp_sso_url), _host_from_url(idp_entity_id))
+    if any(_host_matches_domain(h, "okta.com") for h in hosts):
         return "okta_saml", "Okta SAML"
-    if "microsoftonline.com" in host or "sts.windows.net" in host or "microsoft.com" in host:
+    if any(
+        _host_matches_domain(h, "microsoftonline.com")
+        or _host_matches_domain(h, "sts.windows.net")
+        or _host_matches_domain(h, "microsoft.com")
+        for h in hosts
+    ):
         return "azure_ad_saml", "Microsoft Entra ID SAML"
-    if "google.com" in host:
+    if any(_host_matches_domain(h, "google.com") for h in hosts):
         return "google_saml", "Google SAML"
-    if "onelogin.com" in host:
+    if any(_host_matches_domain(h, "onelogin.com") for h in hosts):
         return "onelogin_saml", "OneLogin SAML"
     return "generic_saml", "SAML identity provider"
 
