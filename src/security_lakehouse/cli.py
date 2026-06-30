@@ -335,6 +335,17 @@ def _parser() -> argparse.ArgumentParser:
     frameworks_coverage = frameworks_sub.add_parser("coverage", help="show the source-linked framework coverage ledger")
     frameworks_coverage.add_argument("--format", choices=["json", "markdown"], default="json", help="output format")
     frameworks_coverage.set_defaults(func=_frameworks_coverage)
+    frameworks_sync_packs = frameworks_sub.add_parser(
+        "sync-packs",
+        help="merge full SOC 2 common criteria and NIST AI RMF packs into the control catalog",
+    )
+    frameworks_sync_packs.add_argument(
+        "--pack",
+        action="append",
+        choices=sorted(("soc2", "nist-ai-rmf")),
+        help="pack to sync (default: all full packs)",
+    )
+    frameworks_sync_packs.set_defaults(func=_frameworks_sync_packs)
 
     scheduler = sub.add_parser("scheduler", help="trigger.cron workflow scheduler")
     scheduler_sub = scheduler.add_subparsers(dest="scheduler_command", required=True)
@@ -1315,6 +1326,14 @@ def _frameworks_readiness(_args: argparse.Namespace) -> int:
 
     rows = build_readiness_view()
     print(json.dumps({"count": len(rows), "frameworks": rows}, indent=2, sort_keys=True))
+    return 0
+
+
+def _frameworks_sync_packs(args: argparse.Namespace) -> int:
+    from security_lakehouse.framework_packs import sync_framework_packs
+
+    result = sync_framework_packs(packs=args.pack)
+    print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 
 

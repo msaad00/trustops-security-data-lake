@@ -1,0 +1,18 @@
+{
+  "frameworks": [
+    {
+      "framework_id": "acme-internal",
+      "name": "Acme Internal Security Standard",
+      "version": "2026.1",
+      "effective_date": "2026-01-01",
+      "superseded_by": null,
+      "official_source_name": "Acme Internal Security Standard",
+      "official_source_url": "https://intranet.example.com/security/standard",
+      "source_sha256": null,
+      "pulled_at": null,
+      "implementation_status": "custom",
+      "copyright_guardrail": "Customer-owned internal standard. Store control IDs and short internal titles only.",
+      "sync_cadence_days": 90
+    }
+  ]
+}

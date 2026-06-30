@@ -4,380 +4,44 @@
   "guardrail": "Article identifiers and titles are reproduced as auditable references; full regulatory text is not embedded \u2014 link out to the official source.",
   "mappings": [
     {
-      "control_id": "SOC2-CC6.1",
-      "framework_id": "soc2",
+      "control_id": "CIS-AWS-1.10",
+      "framework_id": "cis_aws",
       "articles": [
         {
-          "article_id": "CC6.1",
-          "title": "Logical and physical access controls",
-          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "article_id": "1.10",
+          "title": "MFA is enabled for all IAM users with a console password",
+          "official_source_url": "https://www.cisecurity.org/benchmark/amazon_web_services",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-23T00:00:00Z",
-          "rationale": "Direct mapping: control identifier matches the AICPA SOC 2 TSC CC6.1 criterion verbatim."
+          "reviewed_at": "2026-06-27T00:00:00Z",
+          "rationale": "The AWS connector raises an open finding for any console-password IAM user without an MFA device, gating purely programmatic identities out; that finding is the direct test for this recommendation."
         }
       ]
     },
     {
-      "control_id": "SOC2-CC7.2",
-      "framework_id": "soc2",
+      "control_id": "CIS-AWS-1.14",
+      "framework_id": "cis_aws",
       "articles": [
         {
-          "article_id": "CC7.2",
-          "title": "Monitoring controls (security monitoring + anomaly detection)",
-          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "article_id": "1.14",
+          "title": "Access keys are rotated every 90 days or less",
+          "official_source_url": "https://www.cisecurity.org/benchmark/amazon_web_services",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-23T00:00:00Z",
-          "rationale": "Direct mapping: control identifier matches the AICPA SOC 2 TSC CC7.2 criterion verbatim."
+          "reviewed_at": "2026-06-27T00:00:00Z",
+          "rationale": "The AWS connector raises an open access-key-hygiene finding when an active key is older than the 90-day rotation SLO (or more than one active key exists); that finding is the direct test for this recommendation."
         }
       ]
     },
     {
-      "control_id": "NIST-AI-RMF-MAP-1.5",
-      "framework_id": "nist-ai-rmf",
+      "control_id": "CIS-AWS-1.8",
+      "framework_id": "cis_aws",
       "articles": [
         {
-          "article_id": "MAP-1.5",
-          "title": "Organizational risk tolerance and AI system risks documented",
-          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "article_id": "1.8",
+          "title": "IAM password policy requires a minimum length of 14 or greater",
+          "official_source_url": "https://www.cisecurity.org/benchmark/amazon_web_services",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-23T00:00:00Z",
-          "rationale": "AI RMF 1.0 MAP function, category 1, subcategory 5: organizational risk tolerance documented."
-        }
-      ]
-    },
-    {
-      "control_id": "NIST-AI-RMF-MEASURE-2.7",
-      "framework_id": "nist-ai-rmf",
-      "articles": [
-        {
-          "article_id": "MEASURE-2.7",
-          "title": "AI system security and resilience measured (incl. runtime policy)",
-          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-23T00:00:00Z",
-          "rationale": "AI RMF 1.0 MEASURE function, category 2, subcategory 7: security and resilience of the AI system are evaluated and documented."
-        }
-      ]
-    },
-    {
-      "control_id": "NIST-AI-RMF-GOVERN-1.1",
-      "framework_id": "nist-ai-rmf",
-      "articles": [
-        {
-          "article_id": "GOVERN-1.1",
-          "title": "Legal, regulatory, and policy requirements are understood",
-          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-26T00:00:00Z",
-          "rationale": "Reviewed mapping to NIST AI RMF 1.0 GOVERN-1.1 for documenting applicable legal, regulatory, and policy context for AI risk management."
-        }
-      ]
-    },
-    {
-      "control_id": "NIST-AI-RMF-GOVERN-1.6",
-      "framework_id": "nist-ai-rmf",
-      "articles": [
-        {
-          "article_id": "GOVERN-1.6",
-          "title": "AI system inventory and risk prioritization are defined",
-          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-26T00:00:00Z",
-          "rationale": "Reviewed mapping to NIST AI RMF 1.0 GOVERN-1.6 for maintaining AI system inventory context and risk prioritization evidence."
-        }
-      ]
-    },
-    {
-      "control_id": "NIST-AI-RMF-MEASURE-2.4",
-      "framework_id": "nist-ai-rmf",
-      "articles": [
-        {
-          "article_id": "MEASURE-2.4",
-          "title": "AI system monitoring and measurement are performed",
-          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-26T00:00:00Z",
-          "rationale": "Reviewed mapping to NIST AI RMF 1.0 MEASURE-2.4 for ongoing measurement and monitoring evidence over AI system behavior."
-        }
-      ]
-    },
-    {
-      "control_id": "NIST-AI-RMF-MANAGE-4.3",
-      "framework_id": "nist-ai-rmf",
-      "articles": [
-        {
-          "article_id": "MANAGE-4.3",
-          "title": "AI incidents, errors, and risks are managed",
-          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-26T00:00:00Z",
-          "rationale": "Reviewed mapping to NIST AI RMF 1.0 MANAGE-4.3 for tracking AI incidents, errors, risk responses, and communication evidence."
-        }
-      ]
-    },
-    {
-      "control_id": "ISO27001-A.5.15",
-      "framework_id": "iso-27001-2022",
-      "articles": [
-        {
-          "article_id": "A.5.15",
-          "title": "Access control",
-          "official_source_url": "https://www.iso.org/standard/27001",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "Annex A control A.5.15 (Access control). ISO 27001:2022 reorganised the prior A.9 controls into the consolidated A.5.15."
-        }
-      ]
-    },
-    {
-      "control_id": "ISO27001-A.8.16",
-      "framework_id": "iso-27001-2022",
-      "articles": [
-        {
-          "article_id": "A.8.16",
-          "title": "Monitoring activities",
-          "official_source_url": "https://www.iso.org/standard/27001",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "Annex A control A.8.16 (Monitoring activities) \u2014 continuous detection of anomalous behaviour."
-        }
-      ]
-    },
-    {
-      "control_id": "ISO27001-A.5.30",
-      "framework_id": "iso-27001-2022",
-      "articles": [
-        {
-          "article_id": "A.5.30",
-          "title": "ICT readiness for business continuity",
-          "official_source_url": "https://www.iso.org/standard/27001",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "Annex A control A.5.30 \u2014 ICT continuity is planned, implemented, maintained, and tested."
-        }
-      ]
-    },
-    {
-      "control_id": "HIPAA-164.308(a)(4)",
-      "framework_id": "hipaa-security-rule",
-      "articles": [
-        {
-          "article_id": "164.308(a)(4)",
-          "title": "Information access management",
-          "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.308",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "45 CFR \u00a7164.308(a)(4) \u2014 Information access management standard."
-        }
-      ]
-    },
-    {
-      "control_id": "HIPAA-164.312(b)",
-      "framework_id": "hipaa-security-rule",
-      "articles": [
-        {
-          "article_id": "164.312(b)",
-          "title": "Audit controls",
-          "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.312",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "45 CFR \u00a7164.312(b) \u2014 Implement hardware, software, or procedural mechanisms that record and examine activity."
-        }
-      ]
-    },
-    {
-      "control_id": "HIPAA-164.312(e)",
-      "framework_id": "hipaa-security-rule",
-      "articles": [
-        {
-          "article_id": "164.312(e)",
-          "title": "Transmission security",
-          "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.312",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "45 CFR \u00a7164.312(e) \u2014 Guard against unauthorized access to ePHI transmitted over an electronic communications network."
-        }
-      ]
-    },
-    {
-      "control_id": "HIPAA-164.308(a)(1)(ii)(A)",
-      "framework_id": "hipaa-security-rule",
-      "articles": [
-        {
-          "article_id": "164.308(a)(1)(ii)(A)",
-          "title": "Risk analysis",
-          "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.308",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-26T00:00:00Z",
-          "rationale": "45 CFR \u00a7164.308(a)(1)(ii)(A) is mapped for risk-analysis evidence over electronic-PHI systems."
-        }
-      ]
-    },
-    {
-      "control_id": "HIPAA-164.308(a)(1)(ii)(B)",
-      "framework_id": "hipaa-security-rule",
-      "articles": [
-        {
-          "article_id": "164.308(a)(1)(ii)(B)",
-          "title": "Risk management",
-          "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.308",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-26T00:00:00Z",
-          "rationale": "45 CFR \u00a7164.308(a)(1)(ii)(B) is mapped for remediation and risk-reduction evidence after ePHI risks are identified."
-        }
-      ]
-    },
-    {
-      "control_id": "HIPAA-164.312(a)(2)(iv)",
-      "framework_id": "hipaa-security-rule",
-      "articles": [
-        {
-          "article_id": "164.312(a)(2)(iv)",
-          "title": "Encryption and decryption",
-          "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.312",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-26T00:00:00Z",
-          "rationale": "45 CFR \u00a7164.312(a)(2)(iv) is mapped for encryption and decryption evidence over electronic-PHI systems."
-        }
-      ]
-    },
-    {
-      "control_id": "PCI-DSS-7",
-      "framework_id": "pci-dss-v4",
-      "articles": [
-        {
-          "article_id": "Req-7",
-          "title": "Restrict access to system components and cardholder data by business need to know",
-          "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "PCI DSS v4.0 Requirement 7 \u2014 Restrict access by business need to know (sub-requirements 7.1\u20137.3)."
-        }
-      ]
-    },
-    {
-      "control_id": "PCI-DSS-10",
-      "framework_id": "pci-dss-v4",
-      "articles": [
-        {
-          "article_id": "Req-10",
-          "title": "Log and monitor all access to system components and cardholder data",
-          "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "PCI DSS v4.0 Requirement 10 \u2014 Log and monitor all access (sub-requirements 10.1\u201310.7)."
-        }
-      ]
-    },
-    {
-      "control_id": "PCI-DSS-11",
-      "framework_id": "pci-dss-v4",
-      "articles": [
-        {
-          "article_id": "Req-11",
-          "title": "Test security of systems and networks regularly",
-          "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "PCI DSS v4.0 Requirement 11 \u2014 Regular testing (sub-requirements 11.1\u201311.6, vulnerability scans + pen tests)."
-        }
-      ]
-    },
-    {
-      "control_id": "GDPR-Art.32",
-      "framework_id": "gdpr-2016-679",
-      "articles": [
-        {
-          "article_id": "Art.32",
-          "title": "Security of processing",
-          "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02016R0679-20160504#tocId41",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "GDPR Art. 32 \u2014 Controllers and processors implement appropriate technical and organisational measures."
-        }
-      ]
-    },
-    {
-      "control_id": "GDPR-Art.30",
-      "framework_id": "gdpr-2016-679",
-      "articles": [
-        {
-          "article_id": "Art.30",
-          "title": "Records of processing activities",
-          "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02016R0679-20160504#tocId39",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "GDPR Art. 30 \u2014 Each controller maintains a record of processing activities under its responsibility."
-        }
-      ]
-    },
-    {
-      "control_id": "GDPR-Art.33",
-      "framework_id": "gdpr-2016-679",
-      "articles": [
-        {
-          "article_id": "Art.33",
-          "title": "Notification of a personal data breach to the supervisory authority",
-          "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02016R0679-20160504#tocId42",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "GDPR Art. 33 \u2014 Notification within 72 hours of becoming aware of a personal data breach."
-        }
-      ]
-    },
-    {
-      "control_id": "GDPR-Art.25",
-      "framework_id": "gdpr-2016-679",
-      "articles": [
-        {
-          "article_id": "Art.25",
-          "title": "Data protection by design and by default",
-          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-26T00:00:00Z",
-          "rationale": "GDPR Article 25 is mapped for evidence that privacy controls and default settings are designed into personal-data systems."
-        }
-      ]
-    },
-    {
-      "control_id": "GDPR-Art.28",
-      "framework_id": "gdpr-2016-679",
-      "articles": [
-        {
-          "article_id": "Art.28",
-          "title": "Processor",
-          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-26T00:00:00Z",
-          "rationale": "GDPR Article 28 is mapped for processor inventory, agreement, and vendor-review evidence for personal-data processing."
-        }
-      ]
-    },
-    {
-      "control_id": "GDPR-Art.35",
-      "framework_id": "gdpr-2016-679",
-      "articles": [
-        {
-          "article_id": "Art.35",
-          "title": "Data protection impact assessment",
-          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-26T00:00:00Z",
-          "rationale": "GDPR Article 35 is mapped for DPIA evidence over high-risk processing activities and related remediation findings."
-        }
-      ]
-    },
-    {
-      "control_id": "EU-AI-ACT-Art.9",
-      "framework_id": "eu-ai-act-2024-1689",
-      "articles": [
-        {
-          "article_id": "Art.9",
-          "title": "Risk management system",
-          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "EU AI Act Art. 9 \u2014 Risk management system for high-risk AI systems must be established, implemented, documented and maintained."
+          "reviewed_at": "2026-06-27T00:00:00Z",
+          "rationale": "The AWS connector scores the account password policy against the benchmark length floor and raises an open config finding when it is weaker; that finding is the direct test for this recommendation."
         }
       ]
     },
@@ -452,6 +116,230 @@
       ]
     },
     {
+      "control_id": "EU-AI-ACT-Art.9",
+      "framework_id": "eu-ai-act-2024-1689",
+      "articles": [
+        {
+          "article_id": "Art.9",
+          "title": "Risk management system",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-24T00:00:00Z",
+          "rationale": "EU AI Act Art. 9 \u2014 Risk management system for high-risk AI systems must be established, implemented, documented and maintained."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.25",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "Art.25",
+          "title": "Data protection by design and by default",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-26T00:00:00Z",
+          "rationale": "GDPR Article 25 is mapped for evidence that privacy controls and default settings are designed into personal-data systems."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.28",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "Art.28",
+          "title": "Processor",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-26T00:00:00Z",
+          "rationale": "GDPR Article 28 is mapped for processor inventory, agreement, and vendor-review evidence for personal-data processing."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.30",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "Art.30",
+          "title": "Records of processing activities",
+          "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02016R0679-20160504#tocId39",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-24T00:00:00Z",
+          "rationale": "GDPR Art. 30 \u2014 Each controller maintains a record of processing activities under its responsibility."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.32",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "Art.32",
+          "title": "Security of processing",
+          "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02016R0679-20160504#tocId41",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-24T00:00:00Z",
+          "rationale": "GDPR Art. 32 \u2014 Controllers and processors implement appropriate technical and organisational measures."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.33",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "Art.33",
+          "title": "Notification of a personal data breach to the supervisory authority",
+          "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02016R0679-20160504#tocId42",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-24T00:00:00Z",
+          "rationale": "GDPR Art. 33 \u2014 Notification within 72 hours of becoming aware of a personal data breach."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.35",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "Art.35",
+          "title": "Data protection impact assessment",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-26T00:00:00Z",
+          "rationale": "GDPR Article 35 is mapped for DPIA evidence over high-risk processing activities and related remediation findings."
+        }
+      ]
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(1)(ii)(A)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.308(a)(1)(ii)(A)",
+          "title": "Risk analysis",
+          "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.308",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-26T00:00:00Z",
+          "rationale": "45 CFR \u00a7164.308(a)(1)(ii)(A) is mapped for risk-analysis evidence over electronic-PHI systems."
+        }
+      ]
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(1)(ii)(B)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.308(a)(1)(ii)(B)",
+          "title": "Risk management",
+          "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.308",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-26T00:00:00Z",
+          "rationale": "45 CFR \u00a7164.308(a)(1)(ii)(B) is mapped for remediation and risk-reduction evidence after ePHI risks are identified."
+        }
+      ]
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(4)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.308(a)(4)",
+          "title": "Information access management",
+          "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.308",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-24T00:00:00Z",
+          "rationale": "45 CFR \u00a7164.308(a)(4) \u2014 Information access management standard."
+        }
+      ]
+    },
+    {
+      "control_id": "HIPAA-164.312(a)(2)(iv)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.312(a)(2)(iv)",
+          "title": "Encryption and decryption",
+          "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.312",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-26T00:00:00Z",
+          "rationale": "45 CFR \u00a7164.312(a)(2)(iv) is mapped for encryption and decryption evidence over electronic-PHI systems."
+        }
+      ]
+    },
+    {
+      "control_id": "HIPAA-164.312(b)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.312(b)",
+          "title": "Audit controls",
+          "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.312",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-24T00:00:00Z",
+          "rationale": "45 CFR \u00a7164.312(b) \u2014 Implement hardware, software, or procedural mechanisms that record and examine activity."
+        }
+      ]
+    },
+    {
+      "control_id": "HIPAA-164.312(e)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.312(e)",
+          "title": "Transmission security",
+          "official_source_url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C/section-164.312",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-24T00:00:00Z",
+          "rationale": "45 CFR \u00a7164.312(e) \u2014 Guard against unauthorized access to ePHI transmitted over an electronic communications network."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27001-A.5.15",
+      "framework_id": "iso-27001-2022",
+      "articles": [
+        {
+          "article_id": "A.5.15",
+          "title": "Access control",
+          "official_source_url": "https://www.iso.org/standard/27001",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-24T00:00:00Z",
+          "rationale": "Annex A control A.5.15 (Access control). ISO 27001:2022 reorganised the prior A.9 controls into the consolidated A.5.15."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27001-A.5.30",
+      "framework_id": "iso-27001-2022",
+      "articles": [
+        {
+          "article_id": "A.5.30",
+          "title": "ICT readiness for business continuity",
+          "official_source_url": "https://www.iso.org/standard/27001",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-24T00:00:00Z",
+          "rationale": "Annex A control A.5.30 \u2014 ICT continuity is planned, implemented, maintained, and tested."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27001-A.8.16",
+      "framework_id": "iso-27001-2022",
+      "articles": [
+        {
+          "article_id": "A.8.16",
+          "title": "Monitoring activities",
+          "official_source_url": "https://www.iso.org/standard/27001",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-24T00:00:00Z",
+          "rationale": "Annex A control A.8.16 (Monitoring activities) \u2014 continuous detection of anomalous behaviour."
+        }
+      ]
+    },
+    {
       "control_id": "ISO42001-6.1.3",
       "framework_id": "iso-42001-2023",
       "articles": [
@@ -480,44 +368,1514 @@
       ]
     },
     {
-      "control_id": "CIS-AWS-1.8",
-      "framework_id": "cis_aws",
+      "control_id": "NIST-AI-RMF-GOVERN-1.1",
+      "framework_id": "nist-ai-rmf",
       "articles": [
         {
-          "article_id": "1.8",
-          "title": "IAM password policy requires a minimum length of 14 or greater",
-          "official_source_url": "https://www.cisecurity.org/benchmark/amazon_web_services",
+          "article_id": "GOVERN-1.1",
+          "title": "Legal, regulatory, and policy requirements are understood",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-27T00:00:00Z",
-          "rationale": "The AWS connector scores the account password policy against the benchmark length floor and raises an open config finding when it is weaker; that finding is the direct test for this recommendation."
+          "reviewed_at": "2026-05-26T00:00:00Z",
+          "rationale": "Reviewed mapping to NIST AI RMF 1.0 GOVERN-1.1 for documenting applicable legal, regulatory, and policy context for AI risk management."
         }
       ]
     },
     {
-      "control_id": "CIS-AWS-1.10",
-      "framework_id": "cis_aws",
+      "control_id": "NIST-AI-RMF-GOVERN-1.2",
+      "framework_id": "nist-ai-rmf",
       "articles": [
         {
-          "article_id": "1.10",
-          "title": "MFA is enabled for all IAM users with a console password",
-          "official_source_url": "https://www.cisecurity.org/benchmark/amazon_web_services",
+          "article_id": "GOVERN-1.2",
+          "title": "NIST AI RMF GOVERN 1.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-27T00:00:00Z",
-          "rationale": "The AWS connector raises an open finding for any console-password IAM user without an MFA device, gating purely programmatic identities out; that finding is the direct test for this recommendation."
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF GOVERN-1.2."
         }
       ]
     },
     {
-      "control_id": "CIS-AWS-1.14",
-      "framework_id": "cis_aws",
+      "control_id": "NIST-AI-RMF-GOVERN-1.3",
+      "framework_id": "nist-ai-rmf",
       "articles": [
         {
-          "article_id": "1.14",
-          "title": "Access keys are rotated every 90 days or less",
-          "official_source_url": "https://www.cisecurity.org/benchmark/amazon_web_services",
+          "article_id": "GOVERN-1.3",
+          "title": "NIST AI RMF GOVERN 1.3 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-27T00:00:00Z",
-          "rationale": "The AWS connector raises an open access-key-hygiene finding when an active key is older than the 90-day rotation SLO (or more than one active key exists); that finding is the direct test for this recommendation."
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF GOVERN-1.3."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-1.4",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "GOVERN-1.4",
+          "title": "NIST AI RMF GOVERN 1.4 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF GOVERN-1.4."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-1.5",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "GOVERN-1.5",
+          "title": "NIST AI RMF GOVERN 1.5 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF GOVERN-1.5."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-1.6",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "GOVERN-1.6",
+          "title": "AI system inventory and risk prioritization are defined",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-26T00:00:00Z",
+          "rationale": "Reviewed mapping to NIST AI RMF 1.0 GOVERN-1.6 for maintaining AI system inventory context and risk prioritization evidence."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-1.7",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "GOVERN-1.7",
+          "title": "NIST AI RMF GOVERN 1.7 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF GOVERN-1.7."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-2.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "GOVERN-2.1",
+          "title": "NIST AI RMF GOVERN 2.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF GOVERN-2.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-2.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "GOVERN-2.2",
+          "title": "NIST AI RMF GOVERN 2.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF GOVERN-2.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-2.3",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "GOVERN-2.3",
+          "title": "NIST AI RMF GOVERN 2.3 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF GOVERN-2.3."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-3.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "GOVERN-3.1",
+          "title": "NIST AI RMF GOVERN 3.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF GOVERN-3.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-3.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "GOVERN-3.2",
+          "title": "NIST AI RMF GOVERN 3.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF GOVERN-3.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-4.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "GOVERN-4.1",
+          "title": "NIST AI RMF GOVERN 4.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF GOVERN-4.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-4.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "GOVERN-4.2",
+          "title": "NIST AI RMF GOVERN 4.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF GOVERN-4.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-4.3",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "GOVERN-4.3",
+          "title": "NIST AI RMF GOVERN 4.3 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF GOVERN-4.3."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-5.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "GOVERN-5.1",
+          "title": "NIST AI RMF GOVERN 5.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF GOVERN-5.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-5.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "GOVERN-5.2",
+          "title": "NIST AI RMF GOVERN 5.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF GOVERN-5.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-6.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "GOVERN-6.1",
+          "title": "NIST AI RMF GOVERN 6.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF GOVERN-6.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-GOVERN-6.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "GOVERN-6.2",
+          "title": "NIST AI RMF GOVERN 6.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF GOVERN-6.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-1.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MANAGE-1.1",
+          "title": "NIST AI RMF MANAGE 1.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MANAGE-1.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-1.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MANAGE-1.2",
+          "title": "NIST AI RMF MANAGE 1.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MANAGE-1.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-1.3",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MANAGE-1.3",
+          "title": "NIST AI RMF MANAGE 1.3 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MANAGE-1.3."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-1.4",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MANAGE-1.4",
+          "title": "NIST AI RMF MANAGE 1.4 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MANAGE-1.4."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-2.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MANAGE-2.1",
+          "title": "NIST AI RMF MANAGE 2.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MANAGE-2.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-2.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MANAGE-2.2",
+          "title": "NIST AI RMF MANAGE 2.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MANAGE-2.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-2.3",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MANAGE-2.3",
+          "title": "NIST AI RMF MANAGE 2.3 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MANAGE-2.3."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-2.4",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MANAGE-2.4",
+          "title": "NIST AI RMF MANAGE 2.4 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MANAGE-2.4."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-3.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MANAGE-3.1",
+          "title": "NIST AI RMF MANAGE 3.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MANAGE-3.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-3.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MANAGE-3.2",
+          "title": "NIST AI RMF MANAGE 3.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MANAGE-3.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-4.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MANAGE-4.1",
+          "title": "NIST AI RMF MANAGE 4.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MANAGE-4.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-4.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MANAGE-4.2",
+          "title": "NIST AI RMF MANAGE 4.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MANAGE-4.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MANAGE-4.3",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MANAGE-4.3",
+          "title": "AI incidents, errors, and risks are managed",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-26T00:00:00Z",
+          "rationale": "Reviewed mapping to NIST AI RMF 1.0 MANAGE-4.3 for tracking AI incidents, errors, risk responses, and communication evidence."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-1.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-1.1",
+          "title": "NIST AI RMF MAP 1.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MAP-1.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-1.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-1.2",
+          "title": "NIST AI RMF MAP 1.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MAP-1.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-1.3",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-1.3",
+          "title": "NIST AI RMF MAP 1.3 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MAP-1.3."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-1.4",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-1.4",
+          "title": "NIST AI RMF MAP 1.4 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MAP-1.4."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-1.5",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-1.5",
+          "title": "Organizational risk tolerance and AI system risks documented",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-23T00:00:00Z",
+          "rationale": "AI RMF 1.0 MAP function, category 1, subcategory 5: organizational risk tolerance documented."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-1.6",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-1.6",
+          "title": "NIST AI RMF MAP 1.6 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MAP-1.6."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-2.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-2.1",
+          "title": "NIST AI RMF MAP 2.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MAP-2.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-2.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-2.2",
+          "title": "NIST AI RMF MAP 2.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MAP-2.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-2.3",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-2.3",
+          "title": "NIST AI RMF MAP 2.3 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MAP-2.3."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-3.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-3.1",
+          "title": "NIST AI RMF MAP 3.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MAP-3.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-3.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-3.2",
+          "title": "NIST AI RMF MAP 3.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MAP-3.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-3.3",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-3.3",
+          "title": "NIST AI RMF MAP 3.3 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MAP-3.3."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-3.4",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-3.4",
+          "title": "NIST AI RMF MAP 3.4 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MAP-3.4."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-3.5",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-3.5",
+          "title": "NIST AI RMF MAP 3.5 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MAP-3.5."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-4.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-4.1",
+          "title": "NIST AI RMF MAP 4.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MAP-4.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-4.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-4.2",
+          "title": "NIST AI RMF MAP 4.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MAP-4.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-5.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-5.1",
+          "title": "NIST AI RMF MAP 5.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MAP-5.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MAP-5.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MAP-5.2",
+          "title": "NIST AI RMF MAP 5.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MAP-5.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-1.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-1.1",
+          "title": "NIST AI RMF MEASURE 1.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-1.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-1.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-1.2",
+          "title": "NIST AI RMF MEASURE 1.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-1.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-1.3",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-1.3",
+          "title": "NIST AI RMF MEASURE 1.3 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-1.3."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-2.1",
+          "title": "NIST AI RMF MEASURE 2.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-2.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.10",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-2.10",
+          "title": "NIST AI RMF MEASURE 2.10 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-2.10."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.11",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-2.11",
+          "title": "NIST AI RMF MEASURE 2.11 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-2.11."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.12",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-2.12",
+          "title": "NIST AI RMF MEASURE 2.12 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-2.12."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.13",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-2.13",
+          "title": "NIST AI RMF MEASURE 2.13 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-2.13."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-2.2",
+          "title": "NIST AI RMF MEASURE 2.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-2.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.3",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-2.3",
+          "title": "NIST AI RMF MEASURE 2.3 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-2.3."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.4",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-2.4",
+          "title": "AI system monitoring and measurement are performed",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-26T00:00:00Z",
+          "rationale": "Reviewed mapping to NIST AI RMF 1.0 MEASURE-2.4 for ongoing measurement and monitoring evidence over AI system behavior."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.5",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-2.5",
+          "title": "NIST AI RMF MEASURE 2.5 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-2.5."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.6",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-2.6",
+          "title": "NIST AI RMF MEASURE 2.6 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-2.6."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.7",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-2.7",
+          "title": "AI system security and resilience measured (incl. runtime policy)",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-23T00:00:00Z",
+          "rationale": "AI RMF 1.0 MEASURE function, category 2, subcategory 7: security and resilience of the AI system are evaluated and documented."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.8",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-2.8",
+          "title": "NIST AI RMF MEASURE 2.8 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-2.8."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-2.9",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-2.9",
+          "title": "NIST AI RMF MEASURE 2.9 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-2.9."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-3.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-3.1",
+          "title": "NIST AI RMF MEASURE 3.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-3.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-3.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-3.2",
+          "title": "NIST AI RMF MEASURE 3.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-3.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-3.3",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-3.3",
+          "title": "NIST AI RMF MEASURE 3.3 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-3.3."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-4.1",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-4.1",
+          "title": "NIST AI RMF MEASURE 4.1 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-4.1."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-4.2",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-4.2",
+          "title": "NIST AI RMF MEASURE 4.2 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-4.2."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-AI-RMF-MEASURE-4.3",
+      "framework_id": "nist-ai-rmf",
+      "articles": [
+        {
+          "article_id": "MEASURE-4.3",
+          "title": "NIST AI RMF MEASURE 4.3 \u2014 assessed from AI governance and operational evidence",
+          "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST AI RMF MEASURE-4.3."
+        }
+      ]
+    },
+    {
+      "control_id": "PCI-DSS-10",
+      "framework_id": "pci-dss-v4",
+      "articles": [
+        {
+          "article_id": "Req-10",
+          "title": "Log and monitor all access to system components and cardholder data",
+          "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-24T00:00:00Z",
+          "rationale": "PCI DSS v4.0 Requirement 10 \u2014 Log and monitor all access (sub-requirements 10.1\u201310.7)."
+        }
+      ]
+    },
+    {
+      "control_id": "PCI-DSS-11",
+      "framework_id": "pci-dss-v4",
+      "articles": [
+        {
+          "article_id": "Req-11",
+          "title": "Test security of systems and networks regularly",
+          "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-24T00:00:00Z",
+          "rationale": "PCI DSS v4.0 Requirement 11 \u2014 Regular testing (sub-requirements 11.1\u201311.6, vulnerability scans + pen tests)."
+        }
+      ]
+    },
+    {
+      "control_id": "PCI-DSS-7",
+      "framework_id": "pci-dss-v4",
+      "articles": [
+        {
+          "article_id": "Req-7",
+          "title": "Restrict access to system components and cardholder data by business need to know",
+          "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-24T00:00:00Z",
+          "rationale": "PCI DSS v4.0 Requirement 7 \u2014 Restrict access by business need to know (sub-requirements 7.1\u20137.3)."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC1.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC1.1",
+          "title": "Control environment demonstrates integrity and ethical values",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC1.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC1.2",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC1.2",
+          "title": "Board independence and oversight of internal control",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC1.2."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC1.3",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC1.3",
+          "title": "Management establishes structure, authority, and responsibility",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC1.3."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC1.4",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC1.4",
+          "title": "Commitment to competence is demonstrated",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC1.4."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC1.5",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC1.5",
+          "title": "Individuals are held accountable for internal control",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC1.5."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC2.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC2.1",
+          "title": "Quality information supports internal control objectives",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC2.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC2.2",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC2.2",
+          "title": "Internal control information is communicated internally",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC2.2."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC2.3",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC2.3",
+          "title": "Control matters are communicated to external parties when required",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC2.3."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC3.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC3.1",
+          "title": "Objectives are specified with sufficient clarity",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC3.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC3.2",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC3.2",
+          "title": "Risk to objectives is identified and analyzed",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC3.2."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC3.3",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC3.3",
+          "title": "Fraud risk is considered in risk assessment",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC3.3."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC3.4",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC3.4",
+          "title": "Changes that affect internal control are identified and assessed",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC3.4."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC4.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC4.1",
+          "title": "Ongoing and separate monitoring activities are performed",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC4.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC4.2",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC4.2",
+          "title": "Control deficiencies are evaluated and communicated",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC4.2."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC5.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC5.1",
+          "title": "Control activities are selected and developed",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC5.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC5.2",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC5.2",
+          "title": "Technology general controls support objectives",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC5.2."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC5.3",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC5.3",
+          "title": "Policies are deployed through procedures",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC5.3."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC6.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC6.1",
+          "title": "Logical and physical access controls",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-23T00:00:00Z",
+          "rationale": "Direct mapping: control identifier matches the AICPA SOC 2 TSC CC6.1 criterion verbatim."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC6.2",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC6.2",
+          "title": "User registration and authorization are controlled",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC6.2."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC6.3",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC6.3",
+          "title": "Role-based access is provisioned and reviewed",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC6.3."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC6.4",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC6.4",
+          "title": "Access is removed or adjusted on role change",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC6.4."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC6.5",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC6.5",
+          "title": "Physical access to facilities and assets is restricted",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC6.5."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC6.6",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC6.6",
+          "title": "External party access is authorized and monitored",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC6.6."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC6.7",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC6.7",
+          "title": "Data transmission and movement are protected",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC6.7."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC6.8",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC6.8",
+          "title": "Malware and endpoint protections are in place",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC6.8."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC7.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC7.1",
+          "title": "Vulnerabilities are identified and remediated",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC7.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC7.2",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC7.2",
+          "title": "Monitoring controls (security monitoring + anomaly detection)",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-05-23T00:00:00Z",
+          "rationale": "Direct mapping: control identifier matches the AICPA SOC 2 TSC CC7.2 criterion verbatim."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC7.3",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC7.3",
+          "title": "Security events are analyzed to identify anomalies",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC7.3."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC7.4",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC7.4",
+          "title": "Security incidents are responded to and contained",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC7.4."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC7.5",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC7.5",
+          "title": "Recovery and continuity activities are defined and tested",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC7.5."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC8.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC8.1",
+          "title": "Changes to infrastructure and software are authorized and tested",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC8.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC9.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC9.1",
+          "title": "Vendor and partner risks are assessed before engagement",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC9.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-CC9.2",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "CC9.2",
+          "title": "Vendor and partner relationships are monitored over time",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 CC9.2."
         }
       ]
     }

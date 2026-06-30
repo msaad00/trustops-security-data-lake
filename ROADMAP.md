@@ -12,7 +12,10 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 
 ## P1 — Product depth
 
-- [ ] Framework packs (SOC 2 50+, ISO Annex A starter)
+- [x] SOC 2 common criteria full pack (33 controls)
+- [x] NIST AI RMF 1.0 full pack (72 subcategories)
+- [x] `frameworks sync-packs` CLI + custom framework examples
+- [ ] Framework packs (SOC 2 Availability/Confidentiality/PI/Privacy TSC extensions)
 - [ ] Unified golden fixture (all 37 controls on dashboard)
 - [ ] Executive PDF export from snapshots
 - [ ] Vendor risk questionnaire MVP

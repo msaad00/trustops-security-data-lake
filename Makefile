@@ -101,6 +101,9 @@ uv-sync:
 uv-lock:
 	uv lock
 
+framework-packs:
+	PYTHONPATH=src python -m security_lakehouse.cli frameworks sync-packs
+
 pre-commit-install:
 	uv run pre-commit install
 	uv run pre-commit install --hook-type commit-msg
