@@ -1,13 +1,13 @@
 {
   "schema_version": "trustops.catalog_bundle.v1",
   "as_of": null,
-  "framework_count": 9,
-  "control_count": 134,
-  "crosswalk_count": 134,
+  "framework_count": 10,
+  "control_count": 607,
+  "crosswalk_count": 607,
   "components": {
-    "frameworks": "e4d0a0ba0ef25857dbb40a30f94e8d6741a6c77da7c7d9db7a2c32a9607105d0",
-    "controls": "a179c82787b3989e5d59a63050d2928a30641ed823413b2b5563ba848eebdfff",
-    "crosswalk": "543fbb7b524b024b1d70fa616155e22236a569dd12c0e740d50d1ac013165028"
+    "frameworks": "12d13569aa9852562b11179aab2ad960999974c71da4747b5786a33349fa8148",
+    "controls": "c273540fd94d8f31415a6dd7f764bac233fe262c158cadb0925405e626587f33",
+    "crosswalk": "5382a98c5c4f794f47caefb17805c20200b00c546c8caca2306ba059300214f4"
   },
   "framework_versions": [
     {
@@ -21,6 +21,13 @@
       "framework_id": "eu-ai-act-2024-1689",
       "version": "Regulation (EU) 2024/1689",
       "effective_date": "2024-08-01",
+      "superseded_by": null,
+      "source_sha256": null
+    },
+    {
+      "framework_id": "fedramp-moderate",
+      "version": "FedRAMP Rev 5 / NIST SP 800-53B Moderate",
+      "effective_date": "2023-05-30",
       "superseded_by": null,
       "source_sha256": null
     },
@@ -76,10 +83,38 @@
   ],
   "control_versions": [
     {
+      "control_id": "CIS-AWS-1.1",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
       "control_id": "CIS-AWS-1.10",
       "framework_id": "cis_aws",
       "version": "1.0.0",
       "valid_from": "2026-06-27",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.11",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.12",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.13",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
       "lifecycle_status": "active"
     },
     {
@@ -90,10 +125,395 @@
       "lifecycle_status": "active"
     },
     {
+      "control_id": "CIS-AWS-1.15",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.16",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.17",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.18",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.19",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.2",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.20",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.21",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.22",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.3",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.4",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.5",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.6",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.7",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
       "control_id": "CIS-AWS-1.8",
       "framework_id": "cis_aws",
       "version": "1.0.0",
       "valid_from": "2026-06-27",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-1.9",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-2.1.1",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-2.1.2",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-2.1.3",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-2.1.4",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-2.2.1",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-2.3.1",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-2.3.2",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-2.3.3",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-2.4.1",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-3.1",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-3.2",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-3.3",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-3.4",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-3.5",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-3.6",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-3.7",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-3.8",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-3.9",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-4.1",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-4.10",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-4.11",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-4.12",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-4.13",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-4.14",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-4.15",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-4.16",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-4.2",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-4.3",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-4.4",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-4.5",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-4.6",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-4.7",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-4.8",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-4.9",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-5.1",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-5.2",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-5.3",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-5.4",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-5.5",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-AWS-5.6",
+      "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
       "lifecycle_status": "active"
     },
     {
@@ -136,6 +556,2015 @@
       "framework_id": "eu-ai-act-2024-1689",
       "version": "1.0.0",
       "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-11",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-11.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-12",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-14",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-17",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-17.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-17.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-17.3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-17.4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-18",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-18.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-18.3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-19",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-19.5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-2.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-2.13",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-2.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-2.3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-2.4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-2.5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-20",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-20.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-20.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-21",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-22",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-6",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-6.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-6.10",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-6.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-6.5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-6.7",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-6.9",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-7",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AC-8",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AT-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AT-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AT-2.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AT-2.3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AT-3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AT-4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AU-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AU-11",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AU-12",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AU-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AU-3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AU-3.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AU-4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AU-5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AU-6",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AU-6.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AU-6.3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AU-7",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AU-7.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AU-8",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AU-9",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-AU-9.4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CA-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CA-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CA-2.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CA-3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CA-5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CA-6",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CA-7",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CA-7.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CA-7.4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CA-9",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-10",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-11",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-12",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-12.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-2.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-2.3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-2.7",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-3.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-3.4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-4.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-6",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-7",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-7.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-7.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-7.5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-8",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-8.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-8.3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CM-9",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-10",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-10.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-2.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-2.3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-2.8",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-4.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-6",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-6.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-6.3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-7",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-7.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-7.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-7.3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-8",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-8.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-8.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-9",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-9.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-CP-9.8",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-11",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-12",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-12.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-12.3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-12.5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-2.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-2.12",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-2.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-2.8",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-4.4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-5.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-5.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-5.6",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-6",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-7",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-8",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-8.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-8.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IA-8.4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IR-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IR-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IR-3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IR-3.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IR-4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IR-4.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IR-5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IR-6",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IR-6.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IR-6.3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IR-7",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IR-7.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-IR-8",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-MA-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-MA-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-MA-3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-MA-3.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-MA-3.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-MA-3.3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-MA-4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-MA-5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-MA-6",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-MP-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-MP-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-MP-3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-MP-4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-MP-5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-MP-6",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-MP-7",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-10",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-11",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-12",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-13",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-13.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-14",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-15",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-16",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-17",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-6",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-6.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-8",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PE-9",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PL-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PL-10",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PL-11",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PL-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PL-4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PL-4.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PL-8",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PS-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PS-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PS-3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PS-4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PS-5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PS-6",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PS-7",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PS-8",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-PS-9",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-RA-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-RA-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-RA-3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-RA-3.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-RA-5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-RA-5.11",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-RA-5.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-RA-5.5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-RA-7",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-RA-9",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SA-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SA-10",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SA-11",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SA-15",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SA-15.3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SA-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SA-22",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SA-3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SA-4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SA-4.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SA-4.10",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SA-4.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SA-4.9",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SA-5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SA-8",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SA-9",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SA-9.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-10",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-12",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-13",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-15",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-17",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-18",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-20",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-21",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-22",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-23",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-28",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-28.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-39",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-7",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-7.3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-7.4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-7.5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-7.7",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-7.8",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-8",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SC-8.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-10",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-11",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-12",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-16",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-2.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-4.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-4.4",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-4.5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-7",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-7.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-7.7",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-8",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SI-8.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SR-1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SR-10",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SR-11",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SR-11.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SR-11.2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SR-12",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SR-2",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SR-2.1",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SR-3",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SR-5",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SR-6",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "FEDRAMP-SR-8",
+      "framework_id": "fedramp-moderate",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
       "lifecycle_status": "active"
     },
     {
@@ -223,10 +2652,164 @@
       "lifecycle_status": "active"
     },
     {
+      "control_id": "ISO27001-A.5.1",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.10",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.11",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.12",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.13",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.14",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
       "control_id": "ISO27001-A.5.15",
       "framework_id": "iso-27001-2022",
       "version": "1.0.0",
       "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.16",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.17",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.18",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.19",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.2",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.20",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.21",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.22",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.23",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.24",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.25",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.26",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.27",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.28",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.29",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.3",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
       "lifecycle_status": "active"
     },
     {
@@ -237,10 +2820,612 @@
       "lifecycle_status": "active"
     },
     {
+      "control_id": "ISO27001-A.5.31",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.32",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.33",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.34",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.35",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.36",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.37",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.4",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.5",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.6",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.7",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.8",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.5.9",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.6.1",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.6.2",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.6.3",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.6.4",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.6.5",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.6.6",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.6.7",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.6.8",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.7.1",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.7.10",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.7.11",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.7.12",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.7.13",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.7.14",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.7.2",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.7.3",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.7.4",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.7.5",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.7.6",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.7.7",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.7.8",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.7.9",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.1",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.10",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.11",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.12",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.13",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.14",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.15",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
       "control_id": "ISO27001-A.8.16",
       "framework_id": "iso-27001-2022",
       "version": "1.0.0",
       "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.17",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.18",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.19",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.2",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.20",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.21",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.22",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.23",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.24",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.25",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.26",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.27",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.28",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.29",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.3",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.30",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.31",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.32",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.33",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.34",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.4",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.5",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.6",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.7",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.8",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27001-A.8.9",
+      "framework_id": "iso-27001-2022",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-10.2",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-10.3",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-10.4",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-2.2",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-2.3",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-2.4",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-3.2",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-3.3",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-4.2",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-4.3",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-4.4",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-4.5",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-4.6",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-5.2",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-5.3",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-5.4",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-5.5",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-6.1.2",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
       "lifecycle_status": "active"
     },
     {
@@ -251,10 +3436,143 @@
       "lifecycle_status": "active"
     },
     {
+      "control_id": "ISO42001-6.2.2",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-6.2.3",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-6.2.4",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-6.2.5",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-6.2.6",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-6.2.7",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-6.2.8",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-7.2",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-7.3",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-7.4",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-7.5",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-7.6",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
       "control_id": "ISO42001-8.1",
       "framework_id": "iso-42001-2023",
       "version": "1.0.0",
       "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-8.2",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-8.3",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-8.4",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-8.5",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-9.2",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-9.3",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO42001-9.4",
+      "framework_id": "iso-42001-2023",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
       "lifecycle_status": "active"
     },
     {
@@ -1014,5 +4332,5 @@
       "lifecycle_status": "active"
     }
   ],
-  "bundle_sha256": "25dfc262dad35d1ef18d1cf288f9be8e76d8b54582868c3a3b1f8a8441cb925f"
+  "bundle_sha256": "945921462240893f2f7e79986929753a0ed9e97accc251bdc9f620cb198cf053"
 }

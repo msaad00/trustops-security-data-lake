@@ -8,11 +8,22 @@ from security_lakehouse.catalog import load_control_catalog
 from security_lakehouse.framework_packs import (
     NIST_AI_RMF_SUBCATEGORY_COUNT,
     SOC2_COMMON_CRITERIA_COUNT,
+    cis_aws_v3_specs,
+    fedramp_moderate_specs,
+    iso_27001_2022_specs,
+    iso_42001_2023_specs,
     nist_ai_rmf_specs,
     soc2_common_criteria_specs,
     sync_framework_packs,
 )
 from security_lakehouse.mappings import load_control_article_mappings
+from security_lakehouse.pack_data import (
+    CIS_AWS_V3_COUNT,
+    FEDRAMP_MODERATE_COUNT,
+    ISO_27001_2022_ANNEX_A_COUNT,
+    ISO_42001_2023_ANNEX_A_COUNT,
+    cis_aws_v3_requirements,
+)
 
 
 def test_soc2_pack_has_all_common_criteria() -> None:
@@ -35,15 +46,42 @@ def test_nist_ai_rmf_pack_has_all_subcategories() -> None:
     assert len(nist_ai_rmf_specs()) == NIST_AI_RMF_SUBCATEGORY_COUNT
 
 
-def test_catalog_has_full_soc2_and_nist_packs() -> None:
+def test_fedramp_pack_has_nist_moderate_baseline() -> None:
+    specs = fedramp_moderate_specs()
+    assert len(specs) == FEDRAMP_MODERATE_COUNT
+    assert specs[0].framework_id == "fedramp-moderate"
+    assert specs[0].control_id.startswith("FEDRAMP-")
+
+
+def test_cis_aws_pack_has_all_v3_recommendations() -> None:
+    specs = cis_aws_v3_specs()
+    assert len(specs) == CIS_AWS_V3_COUNT
+    article_ids = {spec.article_id for spec in specs}
+    assert len(article_ids) == CIS_AWS_V3_COUNT
+    expected = {req_id for req_id, _title in cis_aws_v3_requirements()}
+    assert article_ids == expected
+
+
+def test_iso_packs_have_full_annex_a_counts() -> None:
+    assert len(iso_27001_2022_specs()) == ISO_27001_2022_ANNEX_A_COUNT
+    assert len(iso_42001_2023_specs()) == ISO_42001_2023_ANNEX_A_COUNT
+
+
+def test_catalog_has_full_core_framework_packs() -> None:
     catalog = load_control_catalog()
     mappings = load_control_article_mappings()
-    soc2 = [row for row in catalog.values() if row["framework_id"] == "soc2"]
-    nist = [row for row in catalog.values() if row["framework_id"] == "nist-ai-rmf"]
-    assert len(soc2) == SOC2_COMMON_CRITERIA_COUNT
-    assert len(nist) == NIST_AI_RMF_SUBCATEGORY_COUNT
-    assert all(row["control_id"] in mappings for row in soc2)
-    assert all(row["control_id"] in mappings for row in nist)
+    expectations = {
+        "soc2": SOC2_COMMON_CRITERIA_COUNT,
+        "nist-ai-rmf": NIST_AI_RMF_SUBCATEGORY_COUNT,
+        "fedramp-moderate": FEDRAMP_MODERATE_COUNT,
+        "cis_aws": CIS_AWS_V3_COUNT,
+        "iso-27001-2022": ISO_27001_2022_ANNEX_A_COUNT,
+        "iso-42001-2023": ISO_42001_2023_ANNEX_A_COUNT,
+    }
+    for framework_id, minimum in expectations.items():
+        rows = [row for row in catalog.values() if row["framework_id"] == framework_id]
+        assert len(rows) >= minimum, framework_id
+        assert all(row["control_id"] in mappings for row in rows)
 
 
 def test_sync_packs_is_idempotent(tmp_path) -> None:

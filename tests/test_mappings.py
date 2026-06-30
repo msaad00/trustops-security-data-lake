@@ -36,6 +36,10 @@ def test_public_source_frameworks_have_reviewed_coverage_floor() -> None:
     coverage_floor = {
         "soc2": 33,
         "nist-ai-rmf": 72,
+        "fedramp-moderate": 287,
+        "cis_aws": 62,
+        "iso-27001-2022": 93,
+        "iso-42001-2023": 38,
         "hipaa-security-rule": 6,
         "gdpr-2016-679": 6,
         "eu-ai-act-2024-1689": 6,

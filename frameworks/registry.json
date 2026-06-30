@@ -38,8 +38,22 @@
       "official_source_url": "https://www.iso.org/standard/27001",
       "source_sha256": null,
       "pulled_at": null,
-      "implementation_status": "implemented_limited_mapping",
+      "implementation_status": "implemented_full_pack",
       "copyright_guardrail": "ISO standard text is licensed; reproduce only control identifiers and short internal titles. Customers must hold their own license for the official PDF.",
+      "sync_cadence_days": 90
+    },
+    {
+      "framework_id": "fedramp-moderate",
+      "name": "FedRAMP Moderate (NIST SP 800-53 Rev 5 Moderate baseline)",
+      "version": "FedRAMP Rev 5 / NIST SP 800-53B Moderate",
+      "effective_date": "2023-05-30",
+      "superseded_by": null,
+      "official_source_name": "NIST SP 800-53 Rev 5 Moderate baseline (FedRAMP Moderate foundation)",
+      "official_source_url": "https://csrc.nist.gov/publications/detail/sp/800-53b/final",
+      "source_sha256": null,
+      "pulled_at": null,
+      "implementation_status": "implemented_full_pack",
+      "copyright_guardrail": "NIST SP 800-53 is public-domain U.S. government work. Store control IDs and short internal titles only; FedRAMP overlays and parameter values are assessed separately.",
       "sync_cadence_days": 90
     },
     {
@@ -108,7 +122,7 @@
       "official_source_url": "https://www.iso.org/standard/42001",
       "source_sha256": null,
       "pulled_at": null,
-      "implementation_status": "implemented_limited_mapping",
+      "implementation_status": "implemented_full_pack",
       "copyright_guardrail": "ISO standard text is licensed; reproduce only clause identifiers and short internal titles. Customers must hold their own license for the official PDF.",
       "sync_cadence_days": 90
     },
@@ -122,7 +136,7 @@
       "official_source_url": "https://www.cisecurity.org/benchmark/amazon_web_services",
       "source_sha256": null,
       "pulled_at": null,
-      "implementation_status": "implemented_limited_mapping",
+      "implementation_status": "implemented_full_pack",
       "copyright_guardrail": "Do not reproduce licensed CIS recommendation text. Store local control IDs, short internal titles, evidence requirements, and official source references only.",
       "sync_cadence_days": 90
     }

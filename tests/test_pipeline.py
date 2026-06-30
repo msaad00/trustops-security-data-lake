@@ -44,6 +44,8 @@ def test_framework_registry_and_catalog_are_official_source_linked() -> None:
         "soc2",
         "nist-ai-rmf",
         "iso-27001-2022",
+        "fedramp-moderate",
+        "cis_aws",
         "hipaa-security-rule",
         "pci-dss-v4",
         "gdpr-2016-679",

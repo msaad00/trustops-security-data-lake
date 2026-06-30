@@ -42,17 +42,23 @@ def test_official_source_urls_are_https_and_not_dead() -> None:
     assert offenders == [], offenders
 
 
-def test_iso42001_operational_control_maps_to_clause_8_1() -> None:
-    # Clause 8.2 is "AI risk assessment" and 8.4 is "AI system impact assessment";
-    # the operational-controls control must map to 8.1 "Operational planning and control".
+def test_iso42001_clause_8_1_and_annex_a_pack_controls() -> None:
+    # Hand-authored ISO42001-8.1 maps to clause 8.1 (operational planning).
+    # The full Annex A pack adds ISO42001-8.2 for A.8.2 — not clause 8.2.
     mappings = json.loads(Path("mappings/control_articles.json").read_text())
     rows = mappings.get("mappings", mappings)
-    iso = next(r for r in rows if r["control_id"] == "ISO42001-8.1")
-    article = iso["articles"][0]
+    iso_81 = next(r for r in rows if r["control_id"] == "ISO42001-8.1")
+    article = iso_81["articles"][0]
     assert article["article_id"] == "8.1"
     assert article["title"] == "Operational planning and control"
 
+    iso_82 = next(r for r in rows if r["control_id"] == "ISO42001-8.2")
+    annex = iso_82["articles"][0]
+    assert annex["article_id"] == "8.2"
+    assert annex["title"] == "System documentation and information for users"
+
     catalog = json.loads(Path("controls/catalog.json").read_text())
     controls = catalog.get("controls", catalog)
-    assert any(c["control_id"] == "ISO42001-8.1" for c in controls)
-    assert not any(c["control_id"] == "ISO42001-8.2" for c in controls)
+    control_ids = {c["control_id"] for c in controls}
+    assert "ISO42001-8.1" in control_ids
+    assert "ISO42001-8.2" in control_ids

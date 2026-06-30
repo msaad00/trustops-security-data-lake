@@ -1,0 +1,254 @@
+{
+  "source": "CIS Amazon Web Services Foundations Benchmark v3.0.0",
+  "official_source_url": "https://www.cisecurity.org/benchmark/amazon_web_services",
+  "requirements": [
+    {
+      "id": "1.1",
+      "title": "Maintain current contact details"
+    },
+    {
+      "id": "1.2",
+      "title": "Ensure security contact information is registered"
+    },
+    {
+      "id": "1.3",
+      "title": "Ensure security questions are registered in the AWS account"
+    },
+    {
+      "id": "1.4",
+      "title": "Ensure no 'root' user account access key exists"
+    },
+    {
+      "id": "1.5",
+      "title": "Ensure MFA is enabled for the 'root' user account"
+    },
+    {
+      "id": "1.6",
+      "title": "Ensure hardware MFA is enabled for the 'root' user account"
+    },
+    {
+      "id": "1.7",
+      "title": "Eliminate use of the 'root' user for administrative and daily tasks"
+    },
+    {
+      "id": "1.8",
+      "title": "Ensure IAM password policy requires minimum length of 14 or greater"
+    },
+    {
+      "id": "1.9",
+      "title": "Ensure IAM password policy prevents password reuse"
+    },
+    {
+      "id": "1.10",
+      "title": "Ensure multi-factor authentication (MFA) is enabled for all IAM users that have a console password"
+    },
+    {
+      "id": "1.11",
+      "title": "Do not setup access keys during initial user setup for all IAM users that have a console password"
+    },
+    {
+      "id": "1.12",
+      "title": "Ensure credentials unused for 45 days or greater are disabled"
+    },
+    {
+      "id": "1.13",
+      "title": "Ensure there is only one active access key available for any single IAM user"
+    },
+    {
+      "id": "1.14",
+      "title": "Ensure access keys are rotated every 90 days or less"
+    },
+    {
+      "id": "1.15",
+      "title": "Ensure IAM Users Receive Permissions Only Through Groups"
+    },
+    {
+      "id": "1.16",
+      "title": "Ensure IAM policies that allow full \"*:*\" administrative privileges are not attached"
+    },
+    {
+      "id": "1.17",
+      "title": "Ensure a support role has been created to manage incidents with AWS Support"
+    },
+    {
+      "id": "1.18",
+      "title": "Ensure IAM instance roles are used for AWS resource access from instances"
+    },
+    {
+      "id": "1.19",
+      "title": "Ensure that all the expired SSL/TLS certificates stored in AWS IAM are removed"
+    },
+    {
+      "id": "1.20",
+      "title": "Ensure that IAM Access analyzer is enabled for all regions"
+    },
+    {
+      "id": "1.21",
+      "title": "Ensure IAM users are managed centrally via identity federation or AWS Organizations for multi-account environments"
+    },
+    {
+      "id": "1.22",
+      "title": "Ensure access to AWSCloudShellFullAccess is restricted"
+    },
+    {
+      "id": "2.1.1",
+      "title": "Ensure S3 Bucket Policy is set to deny HTTP requests"
+    },
+    {
+      "id": "2.1.2",
+      "title": "Ensure MFA Delete is enabled on S3 buckets"
+    },
+    {
+      "id": "2.1.3",
+      "title": "Ensure all data in Amazon S3 has been discovered, classified and secured when required."
+    },
+    {
+      "id": "2.1.4",
+      "title": "Ensure that S3 Buckets are configured with 'Block public access (bucket settings)'"
+    },
+    {
+      "id": "2.2.1",
+      "title": "Ensure EBS Volume Encryption is Enabled in all Regions"
+    },
+    {
+      "id": "2.3.1",
+      "title": "Ensure that encryption is enabled for RDS Instances"
+    },
+    {
+      "id": "2.3.2",
+      "title": "Ensure Auto Minor Version Upgrade feature is Enabled for RDS Instances"
+    },
+    {
+      "id": "2.3.3",
+      "title": "Ensure that public access is not given to RDS Instance"
+    },
+    {
+      "id": "2.4.1",
+      "title": "Ensure that encryption is enabled for EFS file systems"
+    },
+    {
+      "id": "3.1",
+      "title": "Ensure CloudTrail is enabled in all regions"
+    },
+    {
+      "id": "3.2",
+      "title": "Ensure CloudTrail log file validation is enabled"
+    },
+    {
+      "id": "3.3",
+      "title": "Ensure AWS Config is enabled in all regions"
+    },
+    {
+      "id": "3.4",
+      "title": "Ensure S3 bucket access logging is enabled on the CloudTrail S3 bucket"
+    },
+    {
+      "id": "3.5",
+      "title": "Ensure CloudTrail logs are encrypted at rest using KMS CMKs"
+    },
+    {
+      "id": "3.6",
+      "title": "Ensure rotation for customer created symmetric CMKs is enabled"
+    },
+    {
+      "id": "3.7",
+      "title": "Ensure VPC flow logging is enabled in all VPCs"
+    },
+    {
+      "id": "3.8",
+      "title": "Ensure that Object-level logging for write events is enabled for S3 bucket"
+    },
+    {
+      "id": "3.9",
+      "title": "Ensure that Object-level logging for read events is enabled for S3 bucket"
+    },
+    {
+      "id": "4.1",
+      "title": "Ensure a log metric filter and alarm exist for unauthorized API calls"
+    },
+    {
+      "id": "4.2",
+      "title": "Ensure a log metric filter and alarm exist for Management Console sign-in without MFA"
+    },
+    {
+      "id": "4.3",
+      "title": "Ensure a log metric filter and alarm exist for usage of 'root' account"
+    },
+    {
+      "id": "4.4",
+      "title": "Ensure a log metric filter and alarm exist for IAM policy changes"
+    },
+    {
+      "id": "4.5",
+      "title": "Ensure a log metric filter and alarm exist for CloudTrail configuration changes"
+    },
+    {
+      "id": "4.6",
+      "title": "Ensure a log metric filter and alarm exist for AWS Management Console authentication failures"
+    },
+    {
+      "id": "4.7",
+      "title": "Ensure a log metric filter and alarm exist for disabling or scheduled deletion of customer created CMKs"
+    },
+    {
+      "id": "4.8",
+      "title": "Ensure a log metric filter and alarm exist for S3 bucket policy changes"
+    },
+    {
+      "id": "4.9",
+      "title": "Ensure a log metric filter and alarm exist for AWS Config configuration changes"
+    },
+    {
+      "id": "4.10",
+      "title": "Ensure a log metric filter and alarm exist for security group changes"
+    },
+    {
+      "id": "4.11",
+      "title": "Ensure a log metric filter and alarm exist for changes to Network Access Control Lists (NACL)"
+    },
+    {
+      "id": "4.12",
+      "title": "Ensure a log metric filter and alarm exist for changes to network gateways"
+    },
+    {
+      "id": "4.13",
+      "title": "Ensure route table changes are monitored"
+    },
+    {
+      "id": "4.14",
+      "title": "Ensure a log metric filter and alarm exist for VPC changes"
+    },
+    {
+      "id": "4.15",
+      "title": "Ensure a log metric filter and alarm exists for AWS Organizations changes"
+    },
+    {
+      "id": "4.16",
+      "title": "Ensure AWS Security Hub is enabled"
+    },
+    {
+      "id": "5.1",
+      "title": "Ensure no Network ACLs allow ingress from 0.0.0.0/0 to remote server administration ports"
+    },
+    {
+      "id": "5.2",
+      "title": "Ensure no security groups allow ingress from 0.0.0.0/0 to remote server administration ports"
+    },
+    {
+      "id": "5.3",
+      "title": "Ensure no security groups allow ingress from ::/0 to remote server administration ports"
+    },
+    {
+      "id": "5.4",
+      "title": "Ensure the default security group of every VPC restricts all traffic"
+    },
+    {
+      "id": "5.5",
+      "title": "Ensure routing tables for VPC peering are \"least access\""
+    },
+    {
+      "id": "5.6",
+      "title": "Ensure that EC2 Metadata Service only allows IMDSv2"
+    }
+  ]
+}
