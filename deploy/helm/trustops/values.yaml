@@ -109,6 +109,12 @@ scheduler:
 # Optional: extra env vars (e.g. for SCIM / OIDC integration in future PRs).
 env: []
 
+# Production guard: never enable insecure no-auth on a shareable hosted URL.
+# Override only for local `helm template` experiments with an explicit token.
+security:
+  allowInsecureNoAuth: false
+  allowInsecureOverride: ""
+
 # Optional: extra volume mounts and volumes for customer-managed secrets such as
 # a Snowflake service-user private key. Keep secret contents in Kubernetes or an
 # external secret operator; TrustOps receives only the mounted file path.

@@ -27,6 +27,9 @@ validate-json:
 validate-generated:
 	PYTHONPATH=src python tools/validate_ci_artifacts.py --generated
 
+validate-doc-images:
+	PYTHONPATH=src python tools/validate_doc_images.py
+
 pipeline:
 	PYTHONPATH=src python -m security_lakehouse.cli pipeline run --raw data/raw/security_events.jsonl --out build/lakehouse
 
@@ -36,7 +39,7 @@ dashboard:
 api-smoke:
 	PYTHONPATH=src python tools/api_smoke.py
 
-smoke: validate validate-json pipeline validate-generated dashboard api-smoke test
+smoke: validate validate-json validate-doc-images pipeline validate-generated dashboard api-smoke test
 
 ci: diff-check compile lint format-check web-ci smoke
 
@@ -55,6 +58,9 @@ web-typecheck:
 
 web-build:
 	npm --prefix app/web run build
+
+demo-screenshots:
+	npm --prefix app/web run demo-screenshots
 
 web-ci: web-install web-typecheck web-build
 

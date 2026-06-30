@@ -209,10 +209,45 @@ export interface PocReadinessStep {
   blocking: boolean;
 }
 
+export interface DemoShareLink {
+  kind: string;
+  label: string;
+  description: string;
+  url: string;
+  audience: "internal" | "operator" | "evaluator" | string;
+}
+
+export interface DemoAccountLink {
+  connector_id: string;
+  label: string;
+  setup_hint: string;
+  status:
+    "not_linked" | "connected" | "ingesting" | "enabled" | "error" | string;
+  enabled: boolean;
+  evidence_count: number;
+  last_sync_at: string | null;
+  last_sync_result: string | null;
+  connect_url: string;
+}
+
+export interface DemoKit {
+  shareable: boolean;
+  public_url: string | null;
+  share_links: DemoShareLink[];
+  account_linking: DemoAccountLink[];
+  account_linking_summary: {
+    recommended: number;
+    connected_or_ingesting: number;
+    live_ingestion: number;
+  };
+  ingestion_proof: Record<string, unknown> | null;
+}
+
 export interface PocReadiness {
   state: "ready" | "internal_ready" | "needs_setup" | string;
   shareable: boolean;
   public_url: string | null;
+  demo_kit?: DemoKit;
   workspace: {
     tenant_id: string;
     workspace_id: string;

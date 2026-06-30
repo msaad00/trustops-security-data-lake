@@ -7,11 +7,11 @@ from typing import Any
 
 from security_lakehouse.agents.budgets import AgentBudgetPolicy
 from security_lakehouse.agents.evaluations import evaluate_soc_triage
-from security_lakehouse.agents.graphs import ModelClient
+from security_lakehouse.agents.graphs import ModelClient, build_soc_triage_graph
 from security_lakehouse.agents.model_client import ModelClientError, call_model_json
 from security_lakehouse.agents.model_contract import SOC_TRIAGE_TOOL_CALLS, build_model_context, validate_model_output
 from security_lakehouse.agents.providers import ModelProviderConfig, provider_from_env
-from security_lakehouse.agents.state import AgentDecision, AgentRunState
+from security_lakehouse.agents.state import AgentDecision, AgentOrchestrator, AgentRunState
 from security_lakehouse.agents.tools import assess_data_readiness
 from security_lakehouse.data_policy import redact_payload
 from security_lakehouse.io import read_jsonl
@@ -116,24 +116,31 @@ def run_soc_triage(
     provider: ModelProviderConfig | None = None,
     budget: AgentBudgetPolicy | None = None,
     model_client: ModelClient | None = None,
+    orchestrator: AgentOrchestrator = "sequential",
 ) -> AgentRunState:
     """Run a deterministic SOC triage harness with optional model assistance."""
+    if orchestrator not in {"sequential", "langgraph"}:
+        raise ValueError("soc_triage orchestrator must be 'sequential' or 'langgraph'")
     provider = provider or provider_from_env()
     budget = budget or AgentBudgetPolicy.from_env()
-    alerts = load_soc_alerts(lake_dir, role=role)
-    decisions = propose_soc_actions(alerts)
     state: AgentRunState = {
         "lake_dir": str(lake_dir),
         "role": role,
         "objective": objective,
         "mode": "rules_only",
+        "orchestrator": orchestrator,
         "model_provider": provider.public_dict(),
         "agent_budget": budget.public_dict(),
         "data_readiness": assess_data_readiness(lake_dir, role=role, harness="soc_triage"),
-        "alerts": alerts,
-        "decisions": decisions,
         "errors": [],
     }
+    if orchestrator == "langgraph":
+        state = dict(build_soc_triage_graph().invoke(state))
+        state["mode"] = "langgraph"
+        state["orchestrator"] = "langgraph"
+    else:
+        state["alerts"] = load_soc_alerts(lake_dir, role=role)
+        state["decisions"] = propose_soc_actions(state["alerts"])
     if provider.enabled:
         context = build_model_context(dict(state), provider, use_case="soc_triage", budget=budget)
         state["model_context"] = context

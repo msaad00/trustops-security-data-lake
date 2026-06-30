@@ -95,6 +95,10 @@ def test_poc_readiness_reports_launch_gates_without_secrets(tmp_path: Path, monk
     assert data["agents"]["runs"] == 1
     assert data["agents"]["latest_run_at"]
     assert raw_share_token not in json.dumps(data, sort_keys=True)
+    assert "demo_kit" in data
+    assert data["demo_kit"]["public_url"] == "https://trustops.example.test"
+    assert any(link["kind"] == "login" for link in data["demo_kit"]["share_links"])
+    assert len(data["demo_kit"]["account_linking"]) == 6
 
 
 def test_poc_readiness_is_in_resource_catalog() -> None:

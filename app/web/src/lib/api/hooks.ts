@@ -15,6 +15,7 @@ import type {
   AgentRun,
   Assessment,
   AssetRisk,
+  AuthMethods,
   ComplianceGraph,
   ConfigurePayload,
   ConnectorRun,
@@ -102,6 +103,16 @@ export function usePocReadiness(opts?: Opts<PocReadiness>) {
     queryFn: api.pocReadiness,
     staleTime: STALE,
     refetchInterval: LIVE,
+    retry: false,
+    ...opts,
+  });
+}
+
+export function useAuthMethods(opts?: Opts<AuthMethods>) {
+  return useQuery({
+    queryKey: ["auth", "methods"],
+    queryFn: api.authMethods,
+    staleTime: STALE,
     retry: false,
     ...opts,
   });

@@ -27,6 +27,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { DemoShareKit } from "@/components/demo/DemoShareKit";
 import { usePocReadiness } from "@/lib/api/hooks";
 import type { PocReadinessStep } from "@/lib/api/types";
 
@@ -510,6 +511,8 @@ export default function PocPage() {
             </Card>
           </div>
 
+          {data.demo_kit && <DemoShareKit kit={data.demo_kit} />}
+
           <div className="flex flex-wrap gap-2">
             <Button asChild variant="default">
               <Link href="/connectors">
@@ -533,6 +536,12 @@ export default function PocPage() {
               <Link href="/agents">
                 <Bot className="h-4 w-4" />
                 Run agent review
+              </Link>
+            </Button>
+            <Button asChild variant="default">
+              <Link href="/demo">
+                <Globe2 className="h-4 w-4" />
+                Demo landing
               </Link>
             </Button>
             {data.public_url && (

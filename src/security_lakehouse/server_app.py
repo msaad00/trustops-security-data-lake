@@ -63,6 +63,7 @@ from security_lakehouse.db import migrate, remediation, repository
 from security_lakehouse.db import tags as tags_db
 from security_lakehouse.db.base import DEFAULT_PAGE_LIMIT, clamp_limit, create_engine_for, session_factory
 from security_lakehouse.db.models import REMEDIATION_PRIORITIES, User
+from security_lakehouse.demo_links import build_demo_kit
 from security_lakehouse.ingestion_status import build_ingestion_status
 from security_lakehouse.io import resolve_path
 from security_lakehouse.services import NotFound, ValidationError
@@ -626,10 +627,19 @@ def _build_poc_readiness(
     any_access_ready = human_access_ready or headless_access_ready
     state = "ready" if blocking_ready else ("internal_ready" if source_ready and any_access_ready else "needs_setup")
     next_step = next((step for step in steps if step["status"] != "ready"), None)
+    demo_kit = build_demo_kit(
+        public_url=public_url or None,
+        sso_configured=sso_configured,
+        require_auth=bool(app.state.require_auth),
+        ingestion=ingestion,
+        active_share_count=len(active_shares),
+        shareable=state == "ready",
+    )
     return {
         "state": state,
         "shareable": state == "ready",
         "public_url": public_url or None,
+        "demo_kit": demo_kit,
         "workspace": {
             "tenant_id": identity.tenant_id,
             "workspace_id": identity.workspace_id or identity.tenant_id,

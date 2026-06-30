@@ -1,29 +1,38 @@
-# Agent Workflow
+# Agent Workflow (persisted harness)
 
 ```mermaid
 sequenceDiagram
-  participant User
-  participant Agent
-  participant CLI as security-lakehouse CLI
-  participant Lake as Lakehouse Artifacts
-  participant Mart as SQLite Mart
+  participant Operator as Operator / scheduler
+  participant API as /api/v1/agent-runs
+  participant Harness as Deterministic harness
+  participant Lake as Evidence lake
+  participant Model as Optional BYO model
+  participant Human as Human approver
 
-  User->>Agent: "Show audit gaps and top risks"
-  Agent->>CLI: pipeline run --raw data/raw/security_events.jsonl --out build/lakehouse
-  CLI->>Lake: write bronze/silver/gold JSON artifacts
-  CLI->>Mart: create analytics tables
-  Agent->>CLI: query --lake build/lakehouse "select * from control_posture..."
-  CLI->>Mart: read-only SQL
-  Mart-->>CLI: risk-ranked controls
-  CLI-->>Agent: JSON results
-  Agent-->>User: evidence-backed summary with file paths and next actions
+  Operator->>API: POST agent-runs (idempotency_key)
+  API->>Harness: posture_review or soc_triage
+  Harness->>Lake: load redacted posture / alerts / gaps
+  Harness->>Harness: propose approval-gated actions
+  opt LangGraph orchestrator
+    Harness->>Harness: load_posture → load_gaps → propose_actions
+  end
+  opt TRUSTOPS_AGENT_USE_MODEL=1
+    Harness->>Model: redacted context + tool manifest
+    Model-->>Harness: summary + validated tool calls (no writes)
+  end
+  Harness-->>API: evaluation + decisions + input_hash
+  Human->>API: POST decisions/{i}/approve
+  API->>Lake: audited write (task / evidence request / snapshot)
 ```
 
-Agents should answer from generated artifacts, not from memory. Every claim in
-an agent response should cite one of:
+Agents answer from generated lake artifacts and persisted run records. Every claim
+should cite posture, control tests, evidence refs, or a stored `input_hash`.
 
-- `build/lakehouse/gold/metrics.json`
-- `build/lakehouse/gold/control_posture.jsonl`
-- `build/lakehouse/gold/asset_risk.jsonl`
-- `build/lakehouse/mart/security_lakehouse.sqlite`
-- the raw evidence reference in `evidence_ref`
+Legacy CLI-only flow (local demos):
+
+```bash
+security-lakehouse agents posture-review --lake build/lakehouse --orchestrator langgraph
+security-lakehouse agents soc-triage --lake build/lakehouse --orchestrator langgraph
+```
+
+See [Agent Harness](AGENT_HARNESS.md) and [Shareable Demo](SHAREABLE_DEMO.md).

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Plug, RefreshCw, Search, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -173,6 +173,7 @@ function ConnectorRow({
 
 export default function ConnectorsPage() {
   const connectors = useConnectors();
+  const [connectId, setConnectId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [stateFilter, setStateFilter] = useState<
     "all" | "enabled" | "disabled"
@@ -180,6 +181,18 @@ export default function ConnectorsPage() {
   const [selected, setSelected] = useState<ConnectorView | null>(null);
 
   const data = connectors.data ?? [];
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    setConnectId(params.get("connect"));
+  }, []);
+
+  useEffect(() => {
+    if (!connectId || data.length === 0) return;
+    const match = data.find((c) => c.connector_id === connectId);
+    if (match) setSelected(match);
+  }, [connectId, data]);
 
   const filtered = useMemo(
     () =>
