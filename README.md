@@ -58,11 +58,11 @@ the [Changelog](CHANGELOG.md).
 
 TrustOps is **open source** and **deployment-flexible**:
 
-| Model | Cost | Boundary |
-| ----- | ---- | -------- |
-| **OSS local** | $0 software | Laptop or CI — fixtures and console in minutes |
-| **Self-hosted** | $0 license + your infra | Helm on your cluster; evidence in your VPC or warehouse |
-| **Managed hosted** | Target **⅓–½** of typical managed GRC platform TCO | Operator-run workspace; evidence stays tenant-scoped |
+| Model              | Cost                                               | Boundary                                                |
+| ------------------ | -------------------------------------------------- | ------------------------------------------------------- |
+| **OSS local**      | $0 software                                        | Laptop or CI — fixtures and console in minutes          |
+| **Self-hosted**    | $0 license + your infra                            | Helm on your cluster; evidence in your VPC or warehouse |
+| **Managed hosted** | Target **⅓–½** of typical managed GRC platform TCO | Operator-run workspace; evidence stays tenant-scoped    |
 
 Typical managed compliance platforms commonly quote **~$10k–$55k+/year** for platform fees (custom,
 sales-led, single- to multi-framework). TrustOps separates OSS software from

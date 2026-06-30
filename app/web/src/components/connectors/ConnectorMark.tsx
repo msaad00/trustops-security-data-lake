@@ -58,9 +58,7 @@ export function ConnectorMark({
       </span>
       {showVendor && (
         <span className="min-w-0 truncate">
-          <span
-            className={["block font-black text-ink", dim.vendor].join(" ")}
-          >
+          <span className={["block font-black text-ink", dim.vendor].join(" ")}>
             {name ?? visual.vendor}
           </span>
           <span className="block truncate text-[10px] text-muted">

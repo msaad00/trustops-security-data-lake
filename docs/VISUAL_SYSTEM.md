@@ -31,11 +31,11 @@ program dashboards on the trust command center.
 
 ## Marks (not official logos)
 
-| Family | Component | Policy |
-| ------ | --------- | ------ |
-| Frameworks | `FrameworkBadge` | Neutral text marks — SOC, ISO, PCI, … |
-| Connectors | `ConnectorMark` | Vendor-colored abbreviations — AWS, GH, OKTA, … |
-| Identity | `AuthMark` | IdP-colored abbreviations — Okta, Entra, SAML, KEY |
+| Family     | Component        | Policy                                             |
+| ---------- | ---------------- | -------------------------------------------------- |
+| Frameworks | `FrameworkBadge` | Neutral text marks — SOC, ISO, PCI, …              |
+| Connectors | `ConnectorMark`  | Vendor-colored abbreviations — AWS, GH, OKTA, …    |
+| Identity   | `AuthMark`       | IdP-colored abbreviations — Okta, Entra, SAML, KEY |
 
 See [THIRD_PARTY_ASSETS.md](THIRD_PARTY_ASSETS.md).
 

@@ -258,10 +258,7 @@ def _missing_required_config(
 
     if connector_id == "github-security":
         missing: list[str] = []
-        if not (
-            _has_value(credentials, "credential_ref")
-            or _has_value(credentials, "token")
-        ):
+        if not (_has_value(credentials, "credential_ref") or _has_value(credentials, "token")):
             missing.append("credential_ref")
         if not _has_value(options, "repo"):
             missing.append("repo")
@@ -271,10 +268,7 @@ def _missing_required_config(
         missing = []
         if not _has_value(credentials, "org_url"):
             missing.append("org_url")
-        if not (
-            _has_value(credentials, "credential_ref")
-            or _has_value(credentials, "token")
-        ):
+        if not (_has_value(credentials, "credential_ref") or _has_value(credentials, "token")):
             missing.append("credential_ref")
         return missing
 
@@ -282,10 +276,7 @@ def _missing_required_config(
         missing = []
         if not _has_value(credentials, "customer_id"):
             missing.append("customer_id")
-        if not (
-            _has_value(credentials, "credential_ref")
-            or _has_value(credentials, "token")
-        ):
+        if not (_has_value(credentials, "credential_ref") or _has_value(credentials, "token")):
             missing.append("credential_ref")
         return missing
 
@@ -294,10 +285,7 @@ def _missing_required_config(
         for field in ("base_url", "email"):
             if not _has_value(credentials, field):
                 missing.append(field)
-        if not (
-            _has_value(credentials, "credential_ref")
-            or _has_value(credentials, "token")
-        ):
+        if not (_has_value(credentials, "credential_ref") or _has_value(credentials, "token")):
             missing.append("credential_ref")
         return missing
 

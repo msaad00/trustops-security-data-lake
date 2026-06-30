@@ -65,16 +65,8 @@
       "collection_mode": "existing_lake_read",
       "access_boundary": "read_only_role",
       "credential_type": "cloud_iam_role",
-      "minimum_permissions": [
-        "LIST evidence prefix",
-        "GET evidence objects"
-      ],
-      "evidence_types": [
-        "sarif",
-        "json",
-        "attestation",
-        "audit_export"
-      ],
+      "minimum_permissions": ["LIST evidence prefix", "GET evidence objects"],
+      "evidence_types": ["sarif", "json", "attestation", "audit_export"],
       "default_route": "Snowflake",
       "freshness_slo_minutes": 120,
       "production_status": "supported_connector",
@@ -127,11 +119,7 @@
         "okta.userFactors.read",
         "okta.policies.read"
       ],
-      "evidence_types": [
-        "identity",
-        "mfa",
-        "policy"
-      ],
+      "evidence_types": ["identity", "mfa", "policy"],
       "default_route": "dual",
       "freshness_slo_minutes": 60,
       "is_implemented": true,
@@ -150,14 +138,8 @@
       "collection_mode": "direct_api_read",
       "access_boundary": "scoped_token",
       "credential_type": "okta_api_token",
-      "minimum_permissions": [
-        "okta.logs.read"
-      ],
-      "evidence_types": [
-        "auth_event",
-        "failed_login",
-        "session_event"
-      ],
+      "minimum_permissions": ["okta.logs.read"],
+      "evidence_types": ["auth_event", "failed_login", "session_event"],
       "default_route": "dual",
       "freshness_slo_minutes": 15,
       "production_status": "supported_connector",
@@ -183,12 +165,7 @@
         "iam:GetAccountPasswordPolicy",
         "iam:GetAccountSummary"
       ],
-      "evidence_types": [
-        "identity",
-        "config",
-        "mfa",
-        "access_key"
-      ],
+      "evidence_types": ["identity", "config", "mfa", "access_key"],
       "default_route": "dual",
       "freshness_slo_minutes": 360,
       "is_implemented": true,
@@ -213,12 +190,7 @@
         "read app assignments",
         "read access reviews"
       ],
-      "evidence_types": [
-        "user",
-        "group",
-        "assignment",
-        "access_review"
-      ],
+      "evidence_types": ["user", "group", "assignment", "access_review"],
       "default_route": "Snowflake",
       "freshness_slo_minutes": 240,
       "production_status": "supported_connector",
@@ -241,11 +213,7 @@
         "read issue status",
         "read issue labels"
       ],
-      "evidence_types": [
-        "remediation_ticket",
-        "owner_sla",
-        "exception"
-      ],
+      "evidence_types": ["remediation_ticket", "owner_sla", "exception"],
       "default_route": "Snowflake",
       "freshness_slo_minutes": 60,
       "production_status": "supported_connector",
@@ -263,15 +231,8 @@
       "collection_mode": "existing_lake_read",
       "access_boundary": "read_only_role",
       "credential_type": "read_only_service_account",
-      "minimum_permissions": [
-        "read alert index",
-        "read detection metadata"
-      ],
-      "evidence_types": [
-        "alert",
-        "detection",
-        "incident_signal"
-      ],
+      "minimum_permissions": ["read alert index", "read detection metadata"],
+      "evidence_types": ["alert", "detection", "incident_signal"],
       "default_route": "ClickHouse",
       "freshness_slo_minutes": 10,
       "production_status": "supported_connector",
@@ -293,11 +254,7 @@
         "read runtime event stream",
         "read policy decision logs"
       ],
-      "evidence_types": [
-        "tool_call",
-        "policy_decision",
-        "runtime_block"
-      ],
+      "evidence_types": ["tool_call", "policy_decision", "runtime_block"],
       "default_route": "ClickHouse",
       "freshness_slo_minutes": 5,
       "production_status": "supported_connector",
@@ -347,11 +304,7 @@
         "directory.groups.readonly",
         "directory.user.security.readonly"
       ],
-      "evidence_types": [
-        "identity",
-        "mfa",
-        "group"
-      ],
+      "evidence_types": ["identity", "mfa", "group"],
       "default_route": "dual",
       "freshness_slo_minutes": 240,
       "is_implemented": true,
@@ -375,11 +328,7 @@
         "iam.roles.list",
         "cloudasset.assets.listResource"
       ],
-      "evidence_types": [
-        "cloud",
-        "iam",
-        "posture"
-      ],
+      "evidence_types": ["cloud", "iam", "posture"],
       "default_route": "dual",
       "freshness_slo_minutes": 240,
       "is_implemented": true,
@@ -405,11 +354,7 @@
         "Microsoft.Authorization/policyAssignments/read",
         "Microsoft.Resources/subscriptions/resources/read"
       ],
-      "evidence_types": [
-        "cloud",
-        "iam",
-        "posture"
-      ],
+      "evidence_types": ["cloud", "iam", "posture"],
       "default_route": "dual",
       "freshness_slo_minutes": 240,
       "is_implemented": true,
@@ -433,10 +378,7 @@
         "read:jira-user",
         "read:project:jira"
       ],
-      "evidence_types": [
-        "workflow",
-        "ticket"
-      ],
+      "evidence_types": ["workflow", "ticket"],
       "default_route": "dual",
       "freshness_slo_minutes": 240,
       "is_implemented": true,

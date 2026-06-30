@@ -8,11 +8,11 @@ enterprise-GRC platform premiums.
 
 ## Deployment models
 
-| Model | Who runs it | Best for | What you pay |
-| ----- | ----------- | -------- | ------------ |
-| **OSS local** | You, on a laptop or CI runner | Contributors, evaluators, pipeline proofs | $0 software; your time |
-| **Self-hosted** | You, in your VPC / cluster | Teams that need data residency, custom connectors, and full control | $0 software license + your cloud/ops cost |
-| **Managed hosted** | TrustOps operator (or your MSP) on dedicated or shared infra | Teams that want a live URL fast without running Kubernetes | Platform fee — typically a **fraction of managed GRC SaaS** (see below) |
+| Model              | Who runs it                                                  | Best for                                                            | What you pay                                                            |
+| ------------------ | ------------------------------------------------------------ | ------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **OSS local**      | You, on a laptop or CI runner                                | Contributors, evaluators, pipeline proofs                           | $0 software; your time                                                  |
+| **Self-hosted**    | You, in your VPC / cluster                                   | Teams that need data residency, custom connectors, and full control | $0 software license + your cloud/ops cost                               |
+| **Managed hosted** | TrustOps operator (or your MSP) on dedicated or shared infra | Teams that want a live URL fast without running Kubernetes          | Platform fee — typically a **fraction of managed GRC SaaS** (see below) |
 
 Evidence stays in **your boundary** in every model: local files, customer-owned
 Snowflake/ClickHouse/DuckDB, or a tenant-scoped `/lake` volume on your cluster.
@@ -51,12 +51,12 @@ Production shape: Helm chart on EKS/AKS/GKE (or Docker Compose for small pilots)
 OIDC/SAML for humans, API keys for agents, persistent `/lake`, scheduler-driven
 connector syncs, and token-scoped trust-center links.
 
-| Component | Typical POC | Production hardening |
-| --------- | ----------- | -------------------- |
-| Runtime | Helm on a small managed cluster | Private nodes, workload identity, external secrets |
-| Auth | One tenant, OIDC/SAML | SCIM lifecycle, enforced SSO, least-privilege RBAC |
-| State | Encrypted PVC at `/lake` | Backup/restore, per-tenant prefixes |
-| Evidence | Read-only cloud/service identities | Customer IaC owns roles, grants, rotation |
+| Component | Typical POC                        | Production hardening                               |
+| --------- | ---------------------------------- | -------------------------------------------------- |
+| Runtime   | Helm on a small managed cluster    | Private nodes, workload identity, external secrets |
+| Auth      | One tenant, OIDC/SAML              | SCIM lifecycle, enforced SSO, least-privilege RBAC |
+| State     | Encrypted PVC at `/lake`           | Backup/restore, per-tenant prefixes                |
+| Evidence  | Read-only cloud/service identities | Customer IaC owns roles, grants, rotation          |
 
 Runbook: [Shareable POC Hosting](SHAREABLE_POC_HOSTING.md),
 [deploy/README.md](../deploy/README.md),
@@ -88,12 +88,12 @@ publish list prices.
 Public buyer reports and transaction aggregates commonly cite these **annual
 platform** bands for a single framework (e.g. SOC 2):
 
-| Segment | Typical managed GRC platform fee (est.) |
-| ------- | --------------------------------------- |
-| Startup (&lt;50 employees, 1 framework) | ~$10k–$28k / year |
-| Growth (50–200 employees, 1–2 frameworks) | ~$25k–$55k / year |
-| Mid-market / multi-framework | ~$50k–$110k+ / year |
-| Enterprise (500+, 4+ frameworks) | ~$100k–$250k+ / year |
+| Segment                                   | Typical managed GRC platform fee (est.) |
+| ----------------------------------------- | --------------------------------------- |
+| Startup (&lt;50 employees, 1 framework)   | ~$10k–$28k / year                       |
+| Growth (50–200 employees, 1–2 frameworks) | ~$25k–$55k / year                       |
+| Mid-market / multi-framework              | ~$50k–$110k+ / year                     |
+| Enterprise (500+, 4+ frameworks)          | ~$100k–$250k+ / year                    |
 
 Add-ons (trust center, vendor risk, extra frameworks, onboarding packages) and
 **10–50% year-over-year renewal increases** are common negotiation points.
@@ -104,14 +104,14 @@ engineering time often dominate year-one spend.
 
 TrustOps separates **software** from **operations**:
 
-| Cost line | Self-hosted TrustOps | Managed hosted TrustOps (target) | Typical managed GRC SaaS |
-| --------- | -------------------- | -------------------------------- | ------------------------ |
-| Software license | **$0** (OSS) | Platform fee | Custom quote |
-| Infrastructure | Your cluster + storage (~$150–$2k/mo at POC scale) | Included or pass-through | Included in SaaS |
-| Evidence storage | Your Snowflake / lake / PVC | Your boundary or dedicated tenant volume | Vendor-operated |
-| Integrations | Open connector catalog + your IaC | Same | Large managed marketplace |
-| Connector UX | Vendor marks, setup hints, ingestion strip | Polished marketplace tiles | Polished marketplace tiles |
-| Auditor / pen test | Same third-party cost | Same | Same |
+| Cost line          | Self-hosted TrustOps                               | Managed hosted TrustOps (target)         | Typical managed GRC SaaS   |
+| ------------------ | -------------------------------------------------- | ---------------------------------------- | -------------------------- |
+| Software license   | **$0** (OSS)                                       | Platform fee                             | Custom quote               |
+| Infrastructure     | Your cluster + storage (~$150–$2k/mo at POC scale) | Included or pass-through                 | Included in SaaS           |
+| Evidence storage   | Your Snowflake / lake / PVC                        | Your boundary or dedicated tenant volume | Vendor-operated            |
+| Integrations       | Open connector catalog + your IaC                  | Same                                     | Large managed marketplace  |
+| Connector UX       | Vendor marks, setup hints, ingestion strip         | Polished marketplace tiles               | Polished marketplace tiles |
+| Auditor / pen test | Same third-party cost                              | Same                                     | Same                       |
 
 **Target:** managed hosted TrustOps at roughly **⅓–½** the annual platform TCO
 of comparable managed GRC scope for teams that already have (or want) a
@@ -129,17 +129,17 @@ SaaS markup.
 
 ## Feature parity lens (honest)
 
-| Capability | TrustOps v0.2.0 | Managed GRC SaaS |
-| ---------- | --------------- | ---------------- |
-| Continuous control tests from live integrations | Yes (connectors + scheduler) | Yes |
-| Executive dashboard + framework readiness | Yes | Yes |
-| Trust center / customer sharing | Yes (scoped tokens) | Yes |
-| Policy/policy-template library | Partial (controls-as-code) | Extensive |
-| Auditor workflow / audit project management | Roadmap | Mature |
-| Vendor risk questionnaires | Roadmap | Mature |
-| Multi-tenant self-serve SaaS signup | Roadmap | Yes |
-| OSS + self-hosted | **Yes** | No |
-| Customer-owned evidence lake | **Yes** | Limited |
+| Capability                                      | TrustOps v0.2.0              | Managed GRC SaaS |
+| ----------------------------------------------- | ---------------------------- | ---------------- |
+| Continuous control tests from live integrations | Yes (connectors + scheduler) | Yes              |
+| Executive dashboard + framework readiness       | Yes                          | Yes              |
+| Trust center / customer sharing                 | Yes (scoped tokens)          | Yes              |
+| Policy/policy-template library                  | Partial (controls-as-code)   | Extensive        |
+| Auditor workflow / audit project management     | Roadmap                      | Mature           |
+| Vendor risk questionnaires                      | Roadmap                      | Mature           |
+| Multi-tenant self-serve SaaS signup             | Roadmap                      | Yes              |
+| OSS + self-hosted                               | **Yes**                      | No               |
+| Customer-owned evidence lake                    | **Yes**                      | Limited          |
 
 See [Release Readiness](RELEASE_READINESS.md) and [Product Walkthrough](PRODUCT_WALKTHROUGH.md)
 for shipped vs planned detail.
@@ -163,13 +163,13 @@ Replacing a managed GRC platform entirely on day one?
 
 ## Next steps
 
-| Goal | Doc |
-| ---- | --- |
-| Run locally in 5 minutes | [README.md](../README.md#run-locally) |
-| Host a shareable POC | [SHAREABLE_POC_HOSTING.md](SHAREABLE_POC_HOSTING.md) |
-| Evaluator demo script | [SHAREABLE_DEMO.md](SHAREABLE_DEMO.md) |
-| Framework packs (SOC 2, NIST AI RMF, custom) | [FRAMEWORK_PACKS.md](FRAMEWORK_PACKS.md) |
-| Architecture | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| Goal                                         | Doc                                                  |
+| -------------------------------------------- | ---------------------------------------------------- |
+| Run locally in 5 minutes                     | [README.md](../README.md#run-locally)                |
+| Host a shareable POC                         | [SHAREABLE_POC_HOSTING.md](SHAREABLE_POC_HOSTING.md) |
+| Evaluator demo script                        | [SHAREABLE_DEMO.md](SHAREABLE_DEMO.md)               |
+| Framework packs (SOC 2, NIST AI RMF, custom) | [FRAMEWORK_PACKS.md](FRAMEWORK_PACKS.md)             |
+| Architecture                                 | [ARCHITECTURE.md](ARCHITECTURE.md)                   |
 
 For hosted POC or enterprise self-hosted support inquiries, open a GitHub
 discussion or issue on the repository.

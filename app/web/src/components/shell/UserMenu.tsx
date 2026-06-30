@@ -36,8 +36,9 @@ export function UserMenu() {
     (auditor
       ? `${workspaceIdentity.orgName} · auditor`
       : workspaceIdentity.primaryLabel);
-  const avatar =
-    (whoami.data?.email?.[0] ?? workspaceIdentity.avatar).toUpperCase();
+  const avatar = (
+    whoami.data?.email?.[0] ?? workspaceIdentity.avatar
+  ).toUpperCase();
 
   const signOut = async () => {
     try {

@@ -24,9 +24,7 @@ function BrowserMethodCard({ method }: { method: AuthMethod }) {
             <Badge tone={method.configured ? "ready" : "attention"}>
               {method.configured ? "configured" : "not configured"}
             </Badge>
-            {method.protocol && (
-              <Badge tone="info">{method.protocol}</Badge>
-            )}
+            {method.protocol && <Badge tone="info">{method.protocol}</Badge>}
           </div>
           {method.issuer_host && (
             <p className="mt-1 truncate text-xs text-muted">
@@ -94,11 +92,7 @@ export default function LoginPage() {
             no parallel auth silo.
           </p>
           <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            {[
-              "Tenant scoped",
-              "RBAC enforced",
-              "Audit logged",
-            ].map((label) => (
+            {["Tenant scoped", "RBAC enforced", "Audit logged"].map((label) => (
               <div
                 key={label}
                 className="rounded-lg border border-white/15 bg-white/5 p-3 text-sm font-extrabold text-slate-100"

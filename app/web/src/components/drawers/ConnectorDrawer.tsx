@@ -843,7 +843,8 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                 <span className="font-black uppercase tracking-wide text-muted">
                   Ingestion route:{" "}
                 </span>
-                {connector.default_route} · {connector.collection_mode.replace(/_/g, " ")}
+                {connector.default_route} ·{" "}
+                {connector.collection_mode.replace(/_/g, " ")}
               </p>
             </div>
           )}

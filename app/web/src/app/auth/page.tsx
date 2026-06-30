@@ -36,7 +36,9 @@ function MethodRow({ method }: { method: AuthMethod }) {
           {method.protocol && <Badge tone="info">{method.protocol}</Badge>}
         </div>
         {method.setup_hint && (
-          <p className="mt-1 text-xs leading-5 text-muted">{method.setup_hint}</p>
+          <p className="mt-1 text-xs leading-5 text-muted">
+            {method.setup_hint}
+          </p>
         )}
         {method.issuer_host && (
           <p className="mt-1 truncate text-[11px] text-muted">
@@ -136,8 +138,8 @@ export default function AuthPage() {
             Login methods
           </CardTitle>
           <CardDescription>
-            Browser SSO uses your company IdP. API keys serve agents, CI, and MCP
-            clients with the same RBAC envelope.
+            Browser SSO uses your company IdP. API keys serve agents, CI, and
+            MCP clients with the same RBAC envelope.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3">

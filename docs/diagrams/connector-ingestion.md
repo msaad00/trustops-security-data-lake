@@ -68,15 +68,15 @@ flowchart TB
 
 ## Connection matrix
 
-| Source | Connection mechanism | Permissions style |
-| ------ | -------------------- | ----------------- |
-| AWS | Cross-account **IAM role** + External ID (or SSO profile) | `List*`, `Get*`, `Describe*` — no write |
-| Azure | App registration / **Reader** / workload identity | Subscription & IAM read |
-| GCP | Service account / WIF | Asset & IAM inventory read |
-| GitHub | **GitHub App** installation token | Security alert read scopes |
-| Okta | **API token** or OAuth | `okta.users.read`, policies read |
-| Google Workspace | OAuth bearer + customer ID | Directory read-only scopes |
-| Snowflake | Key-pair service user | `SELECT` on granted views only |
+| Source           | Connection mechanism                                      | Permissions style                       |
+| ---------------- | --------------------------------------------------------- | --------------------------------------- |
+| AWS              | Cross-account **IAM role** + External ID (or SSO profile) | `List*`, `Get*`, `Describe*` — no write |
+| Azure            | App registration / **Reader** / workload identity         | Subscription & IAM read                 |
+| GCP              | Service account / WIF                                     | Asset & IAM inventory read              |
+| GitHub           | **GitHub App** installation token                         | Security alert read scopes              |
+| Okta             | **API token** or OAuth                                    | `okta.users.read`, policies read        |
+| Google Workspace | OAuth bearer + customer ID                                | Directory read-only scopes              |
+| Snowflake        | Key-pair service user                                     | `SELECT` on granted views only          |
 
 ## Lifecycle (probe-gated)
 

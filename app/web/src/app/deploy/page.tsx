@@ -121,8 +121,9 @@ export default function DeployPage() {
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
               Link accounts, ingest evidence, evaluate controls, and share trust
               links — with deterministic tests over your evidence lake instead
-              of opaque SaaS storage. Managed hosted targets roughly one-third to
-              one-half the annual platform TCO of comparable managed GRC scope.
+              of opaque SaaS storage. Managed hosted targets roughly one-third
+              to one-half the annual platform TCO of comparable managed GRC
+              scope.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
               <Button asChild variant="primary">
@@ -198,8 +199,8 @@ export default function DeployPage() {
             Cost comparison (illustrative)
           </CardTitle>
           <CardDescription>
-            Managed GRC platforms use custom sales-led pricing. Ranges below are from
-            public buyer reports; TrustOps separates OSS software from ops.
+            Managed GRC platforms use custom sales-led pricing. Ranges below are
+            from public buyer reports; TrustOps separates OSS software from ops.
           </CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto">
