@@ -25,7 +25,10 @@
       "production_status": "primary_lake",
       "velocity": "low_current_state",
       "native_connector": true,
-      "data_shape": "current_state"
+      "data_shape": "current_state",
+      "vendor": "Snowflake",
+      "description": "Read-only SELECT on granted evidence views in your Snowflake security lake.",
+      "setup_hint": "Key-pair service user on warehouse, database, schema, and evidence views."
     },
     {
       "connector_id": "clickhouse-telemetry-lake",
@@ -50,7 +53,10 @@
       "production_status": "primary_lake",
       "velocity": "high_event_stream",
       "native_connector": true,
-      "data_shape": "event_log"
+      "data_shape": "event_log",
+      "vendor": "ClickHouse",
+      "description": "High-velocity telemetry and detection events from ClickHouse tables.",
+      "setup_hint": "Read-only user with SELECT on discovered evidence tables."
     },
     {
       "connector_id": "object-storage-evidence",
@@ -66,7 +72,10 @@
       "production_status": "supported_connector",
       "velocity": "low_current_state",
       "native_connector": true,
-      "data_shape": "current_state"
+      "data_shape": "current_state",
+      "vendor": "AWS S3",
+      "description": "SARIF, JSON, and attestation bundles from an object storage prefix.",
+      "setup_hint": "IAM role with LIST/GET on the evidence prefix only."
     },
     {
       "connector_id": "github-security",
@@ -93,7 +102,10 @@
       "production_status": "supported_connector",
       "velocity": "medium_api",
       "native_connector": false,
-      "data_shape": "event_log"
+      "data_shape": "event_log",
+      "vendor": "GitHub",
+      "description": "Code scanning, secret scanning, Dependabot, and repo metadata.",
+      "setup_hint": "GitHub App installation token with security read scopes."
     },
     {
       "connector_id": "okta-identity",
@@ -114,7 +126,10 @@
       "production_status": "supported_connector",
       "velocity": "low_current_state",
       "native_connector": false,
-      "data_shape": "current_state"
+      "data_shape": "current_state",
+      "vendor": "Okta",
+      "description": "Users, MFA factors, and MFA enrollment policies.",
+      "setup_hint": "Read-only API token plus Okta org URL."
     },
     {
       "connector_id": "okta-system-log",
@@ -130,7 +145,10 @@
       "production_status": "supported_connector",
       "velocity": "medium_api",
       "native_connector": false,
-      "data_shape": "event_log"
+      "data_shape": "event_log",
+      "vendor": "Okta",
+      "description": "Authentication and session events from Okta System Log.",
+      "setup_hint": "Read-only API token with okta.logs.read."
     },
     {
       "connector_id": "aws-posture",
@@ -154,7 +172,10 @@
       "production_status": "supported_connector",
       "velocity": "low_current_state",
       "native_connector": false,
-      "data_shape": "current_state"
+      "data_shape": "current_state",
+      "vendor": "AWS",
+      "description": "IAM users, MFA, access keys, and account password policy.",
+      "setup_hint": "Read-only IAM role or workload identity; optional cross-account assume-role."
     },
     {
       "connector_id": "identity-provider",
@@ -175,7 +196,10 @@
       "production_status": "supported_connector",
       "velocity": "medium_api",
       "native_connector": false,
-      "data_shape": "current_state"
+      "data_shape": "current_state",
+      "vendor": "Identity provider",
+      "description": "Users, groups, app assignments, and access reviews.",
+      "setup_hint": "OAuth client credentials with read-only directory scopes."
     },
     {
       "connector_id": "ticketing",
@@ -195,7 +219,10 @@
       "production_status": "supported_connector",
       "velocity": "medium_api",
       "native_connector": false,
-      "data_shape": "current_state"
+      "data_shape": "current_state",
+      "vendor": "Ticketing",
+      "description": "Remediation tickets, SLA metadata, and exception workflows.",
+      "setup_hint": "Project-scoped API token with read-only issue access."
     },
     {
       "connector_id": "siem-alerts",
@@ -211,7 +238,10 @@
       "production_status": "supported_connector",
       "velocity": "high_event_stream",
       "native_connector": false,
-      "data_shape": "event_log"
+      "data_shape": "event_log",
+      "vendor": "SIEM",
+      "description": "Alert and detection metadata from a SIEM index.",
+      "setup_hint": "Read-only service account on the alert index."
     },
     {
       "connector_id": "runtime-gateway",
@@ -230,7 +260,10 @@
       "production_status": "supported_connector",
       "velocity": "high_event_stream",
       "native_connector": false,
-      "data_shape": "event_log"
+      "data_shape": "event_log",
+      "vendor": "Runtime gateway",
+      "description": "Tool calls, policy decisions, and runtime blocks.",
+      "setup_hint": "Read-only access to runtime decision logs."
     },
     {
       "connector_id": "managed-local-evidence",
@@ -254,7 +287,10 @@
       "production_status": "local_demo",
       "velocity": "low_current_state",
       "native_connector": true,
-      "data_shape": "current_state"
+      "data_shape": "current_state",
+      "vendor": "Local",
+      "description": "Starter-mode evidence objects on local filesystem.",
+      "setup_hint": "Dedicated TrustOps output directory on the server volume."
     },
     {
       "connector_id": "google-workspace-identity",
@@ -275,7 +311,10 @@
       "production_status": "supported_connector",
       "velocity": "medium_api",
       "native_connector": false,
-      "data_shape": "current_state"
+      "data_shape": "current_state",
+      "vendor": "Google Workspace",
+      "description": "Directory users, groups, and MFA posture.",
+      "setup_hint": "Read-only OAuth token and Workspace customer ID."
     },
     {
       "connector_id": "gcp-posture",
@@ -296,7 +335,10 @@
       "production_status": "supported_connector",
       "velocity": "low_current_state",
       "native_connector": false,
-      "data_shape": "current_state"
+      "data_shape": "current_state",
+      "vendor": "Google Cloud",
+      "description": "Project IAM, roles, and Cloud Asset inventory.",
+      "setup_hint": "Read-only service account or workload identity federation."
     },
     {
       "connector_id": "azure-posture",
@@ -319,7 +361,10 @@
       "production_status": "supported_connector",
       "velocity": "low_current_state",
       "native_connector": false,
-      "data_shape": "current_state"
+      "data_shape": "current_state",
+      "vendor": "Microsoft Azure",
+      "description": "Subscription IAM, policy assignments, and resource inventory.",
+      "setup_hint": "Reader role or federated workload identity on the subscription."
     },
     {
       "connector_id": "jira-ticketing",
@@ -340,7 +385,10 @@
       "production_status": "supported_connector",
       "velocity": "medium_api",
       "native_connector": false,
-      "data_shape": "current_state"
+      "data_shape": "current_state",
+      "vendor": "Atlassian Jira",
+      "description": "Remediation and workflow tickets for control owners.",
+      "setup_hint": "Jira Cloud API token with read:jira-work scopes."
     }
   ]
 }

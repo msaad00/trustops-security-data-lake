@@ -42,6 +42,7 @@ from security_lakehouse import api_legacy, api_v1, remediation_guidance, tenancy
 from security_lakehouse.assessment import build_current_posture, write_assessment_snapshot
 from security_lakehouse.auth.dependencies import get_session, require_scope
 from security_lakehouse.auth.oidc import OIDCLoginError, build_oauth, complete_oidc_login, load_oidc_config
+from security_lakehouse.auth.presentation import build_auth_methods_payload
 from security_lakehouse.auth.rate_limit import RateLimitConfig, RateLimiter
 from security_lakehouse.auth.rbac import Identity, scopes_for_role
 from security_lakehouse.auth.request_audit import append_request_audit
@@ -1008,23 +1009,11 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         return JSONResponse(
             api_v1.envelope(
                 "auth.methods",
-                {
-                    "require_auth": bool(app.state.require_auth),
-                    "methods": [
-                        {
-                            "id": "oidc",
-                            "label": "OIDC SSO",
-                            "configured": app.state.oauth is not None,
-                            "login_url": "/api/v1/auth/login",
-                        },
-                        {
-                            "id": "saml",
-                            "label": "SAML SSO",
-                            "configured": app.state.saml_config is not None,
-                            "login_url": "/api/v1/auth/saml/login",
-                        },
-                    ],
-                },
+                build_auth_methods_payload(
+                    require_auth=bool(app.state.require_auth),
+                    oidc_config=app.state.oidc_config,
+                    saml_config=app.state.saml_config,
+                ),
             )
         )
 

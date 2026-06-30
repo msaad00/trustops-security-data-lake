@@ -22,6 +22,8 @@ lake, cloud, or local boundary.
   ·
   <a href="docs/SHAREABLE_DEMO.md"><strong>Shareable Demo</strong></a>
   ·
+  <a href="docs/DEPLOYMENT_AND_PRICING.md"><strong>Deploy &amp; Pricing</strong></a>
+  ·
   <a href="docs/SHAREABLE_POC_HOSTING.md"><strong>Host A POC</strong></a>
   ·
   <a href="docs/RELEASE_READINESS.md"><strong>Release Readiness</strong></a>
@@ -38,6 +40,10 @@ lake, cloud, or local boundary.
   ·
   <a href="docs/api/AGENT_API.md"><strong>Agent API</strong></a>
   ·
+  <a href="docs/VISUAL_SYSTEM.md"><strong>Visual System</strong></a>
+  ·
+  <a href="docs/diagrams/README.md"><strong>Diagrams</strong></a>
+  ·
   <a href="docs/SERVER_AUTH.md"><strong>Auth</strong></a>
 </p>
 
@@ -47,6 +53,25 @@ Current release: **0.2.0**, focused on invite-only hosted POC readiness. It is
 ready for local OSS demos and controlled self-hosted pilots; it is not yet a
 public self-serve SaaS. See [Release Readiness](docs/RELEASE_READINESS.md) and
 the [Changelog](CHANGELOG.md).
+
+## OSS, Self-Hosted, or Hosted
+
+TrustOps is **open source** and **deployment-flexible**:
+
+| Model              | Cost                                               | Boundary                                                |
+| ------------------ | -------------------------------------------------- | ------------------------------------------------------- |
+| **OSS local**      | $0 software                                        | Laptop or CI — fixtures and console in minutes          |
+| **Self-hosted**    | $0 license + your infra                            | Helm on your cluster; evidence in your VPC or warehouse |
+| **Managed hosted** | Target **⅓–½** of typical managed GRC platform TCO | Operator-run workspace; evidence stays tenant-scoped    |
+
+Typical managed compliance platforms commonly quote **~$10k–$55k+/year** for platform fees (custom,
+sales-led, single- to multi-framework). TrustOps separates OSS software from
+operations so you are not paying GRC SaaS markup for evidence storage you
+already own.
+
+Full comparison, Helm paths, and POC hosting:
+[Deployment and Pricing](docs/DEPLOYMENT_AND_PRICING.md).
+In the console, open **Deploy** (`/console/deploy/`) for a quick summary.
 
 TrustOps is built around one operating loop: collect evidence, evaluate
 controls, route risk, automate follow-up, and share proof safely.

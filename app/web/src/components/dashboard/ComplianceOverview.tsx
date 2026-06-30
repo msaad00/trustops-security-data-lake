@@ -51,7 +51,11 @@ function ComplianceRing({
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <FrameworkMark frameworkId={frameworkId} fallbackLabel={label} size={32} />
+          <FrameworkMark
+            frameworkId={frameworkId}
+            fallbackLabel={label}
+            size={32}
+          />
         </div>
       </div>
       <div className="text-center">
@@ -76,8 +80,7 @@ export function ComplianceOverview({
   const top = [...frameworks]
     .sort(
       (a, b) =>
-        a.score - b.score ||
-        b.failing_control_count - a.failing_control_count,
+        a.score - b.score || b.failing_control_count - a.failing_control_count,
     )
     .slice(0, 6);
 

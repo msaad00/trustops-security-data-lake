@@ -1,7 +1,12 @@
 "use client";
 
 import { Database, Layers, Sparkles, Table2 } from "lucide-react";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 const STAGES = [

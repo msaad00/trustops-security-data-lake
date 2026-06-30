@@ -41,12 +41,23 @@ export TRUSTOPS_SESSION_SECRET="replace-with-32-byte-random-secret"
 
 Endpoints:
 
-| Endpoint                    | Purpose                                           |
-| --------------------------- | ------------------------------------------------- |
-| `GET /api/v1/auth/methods`  | Discover configured browser login methods         |
-| `GET /api/v1/auth/login`    | Start OIDC login                                  |
-| `GET /api/v1/auth/callback` | Complete OIDC login and issue the browser session |
-| `POST /api/v1/auth/logout`  | Revoke the browser session                        |
+| Endpoint                    | Purpose                                                                                       |
+| --------------------------- | --------------------------------------------------------------------------------------------- |
+| `GET /api/v1/auth/methods`  | Discover configured browser login methods, IdP host, setup hints, and API-key headless access |
+| `GET /api/v1/auth/whoami`   | Current session user, tenant, role, and scopes                                                |
+| `GET /api/v1/auth/login`    | Start OIDC login                                                                              |
+| `GET /api/v1/auth/callback` | Complete OIDC login and issue the browser session                                             |
+| `POST /api/v1/auth/logout`  | Revoke the browser session                                                                    |
+
+The console **Access** page (`/console/auth/`) and sign-in page render the same
+`auth.methods` payload with neutral IdP marks (Okta, Entra ID, Google, SAML) —
+not official vendor logos. See [THIRD_PARTY_ASSETS.md](THIRD_PARTY_ASSETS.md).
+
+<p align="center">
+  <img src="images/trustops-identity-boundary.svg" alt="TrustOps identity boundary: OIDC, SAML, and API keys to tenant RBAC and audit" width="100%">
+</p>
+
+Mermaid diagrams: [auth-identity.md](diagrams/auth-identity.md)
 
 ## SAML
 

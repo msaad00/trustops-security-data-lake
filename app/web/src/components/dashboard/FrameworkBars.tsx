@@ -31,7 +31,10 @@ export function FrameworkBars({
   frameworks: FrameworkPosture[];
 }) {
   const data = frameworks.map((f) => {
-    const visual = frameworkVisual(resolveFrameworkId(f.framework), f.framework);
+    const visual = frameworkVisual(
+      resolveFrameworkId(f.framework),
+      f.framework,
+    );
     return {
       name: visual.label,
       score: Math.round(f.score),

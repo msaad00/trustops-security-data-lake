@@ -11,6 +11,7 @@ import type {
   Assessment,
   AssetRisk,
   AuthMethods,
+  AuthWhoami,
   ControlExceptionItem,
   EvidenceRequestItem,
   PostureMetricPoint,
@@ -132,6 +133,12 @@ export const api = {
   health: () => get<Health>("/healthz"),
   authMethods: () =>
     get<{ data: AuthMethods }>("/v1/auth/methods").then((body) => body.data),
+  authWhoami: () =>
+    get<{ data: AuthWhoami }>("/v1/auth/whoami").then((body) => body.data),
+  authLogout: () =>
+    post<{ data: { ok: boolean } }>("/v1/auth/logout", {}).then(
+      (body) => body.data,
+    ),
   pocReadiness: () =>
     get<{ data: PocReadiness }>("/v1/platform/poc-readiness").then(
       (body) => body.data,

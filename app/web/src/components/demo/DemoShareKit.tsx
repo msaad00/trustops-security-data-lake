@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ClipboardCopy, ExternalLink, Link2, Plug } from "lucide-react";
+import { ConnectorMark } from "@/components/connectors/ConnectorMark";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -89,6 +90,7 @@ function AccountLinkRow({ row }: { row: DemoAccountLink }) {
     <div className="grid gap-3 rounded-xl border border-line bg-white p-4 sm:grid-cols-[minmax(0,1fr)_auto]">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
+          <ConnectorMark connectorId={row.connector_id} size="sm" />
           <span className="text-sm font-black text-ink">{row.label}</span>
           <Badge tone={accountStatusTone(row.status)}>
             {accountStatusLabel(row.status)}

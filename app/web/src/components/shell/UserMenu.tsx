@@ -2,6 +2,7 @@
 
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Building2,
   ChevronDown,
@@ -13,6 +14,8 @@ import {
   Sun,
   User,
 } from "lucide-react";
+import { api } from "@/lib/api/client";
+import { useAuthWhoami } from "@/lib/api/hooks";
 import { useAuditorMode } from "@/lib/state/auditor";
 import { usePersistentState } from "@/lib/state/preferences";
 import { workspaceIdentity } from "@/lib/workspace";
@@ -20,31 +23,46 @@ import { workspaceIdentity } from "@/lib/workspace";
 type Theme = "light" | "dark" | "system";
 
 export function UserMenu() {
+  const router = useRouter();
   const auditor = useAuditorMode();
+  const whoami = useAuthWhoami();
   const [theme, setTheme] = usePersistentState<Theme>(
     "trustops:theme",
     "system",
   );
+
+  const sessionLabel =
+    whoami.data?.email ??
+    (auditor
+      ? `${workspaceIdentity.orgName} · auditor`
+      : workspaceIdentity.primaryLabel);
+  const avatar = (
+    whoami.data?.email?.[0] ?? workspaceIdentity.avatar
+  ).toUpperCase();
+
+  const signOut = async () => {
+    try {
+      await api.authLogout();
+    } catch {
+      // Still clear the browser session cookie client-side when possible.
+    }
+    router.push("/login");
+    router.refresh();
+  };
 
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
         <button
           type="button"
-          aria-label={
-            auditor
-              ? `${workspaceIdentity.orgName} · auditor — account menu`
-              : `${workspaceIdentity.primaryLabel} — account menu`
-          }
+          aria-label={`${sessionLabel} — account menu`}
           className="inline-flex items-center gap-2 rounded-lg border border-[#27364a] bg-[#101926] px-3 py-2 text-sm font-extrabold text-[#d9e4f2] hover:bg-[#152030] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-rail"
         >
           <span className="grid h-6 w-6 place-items-center rounded-full bg-gradient-to-br from-brand to-brand-cyan text-[11px] text-white">
-            {workspaceIdentity.avatar}
+            {avatar}
           </span>
           <span className="hidden max-w-[190px] truncate 2xl:inline">
-            {auditor
-              ? `${workspaceIdentity.orgName} · auditor`
-              : workspaceIdentity.primaryLabel}
+            {sessionLabel}
           </span>
           <ChevronDown className="h-3.5 w-3.5 opacity-60" />
         </button>
@@ -55,6 +73,23 @@ export function UserMenu() {
           sideOffset={6}
           className="z-[60] grid min-w-[240px] gap-0.5 rounded-xl border border-line bg-white p-1.5 shadow-hero"
         >
+          {whoami.data && (
+            <>
+              <DropdownMenu.Label className="px-2 py-2 text-[10px] font-black uppercase tracking-wider text-muted">
+                Signed in
+              </DropdownMenu.Label>
+              <DropdownMenu.Item className="grid cursor-default grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none">
+                <User className="h-4 w-4 text-muted" />
+                <span className="min-w-0 truncate text-ink">
+                  {whoami.data.email}
+                  <span className="block text-[10px] font-bold text-muted">
+                    {whoami.data.role}
+                  </span>
+                </span>
+              </DropdownMenu.Item>
+              <DropdownMenu.Separator className="my-1 h-px bg-line" />
+            </>
+          )}
           <DropdownMenu.Label className="px-2 py-2 text-[10px] font-black uppercase tracking-wider text-muted">
             Organization
           </DropdownMenu.Label>
@@ -99,9 +134,14 @@ export function UserMenu() {
           <DropdownMenu.Label className="px-2 py-1 text-[10px] font-black uppercase tracking-wider text-muted">
             You
           </DropdownMenu.Label>
-          <DropdownMenu.Item className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm text-ink outline-none data-[highlighted]:bg-slate-50">
-            <User className="h-4 w-4 text-muted" />
-            Profile
+          <DropdownMenu.Item asChild>
+            <Link
+              href="/auth"
+              className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm text-ink outline-none data-[highlighted]:bg-slate-50"
+            >
+              <User className="h-4 w-4 text-muted" />
+              Access &amp; SSO
+            </Link>
           </DropdownMenu.Item>
           <DropdownMenu.Item asChild>
             <Link
@@ -116,7 +156,10 @@ export function UserMenu() {
             <Settings className="h-4 w-4 text-muted" />
             Settings
           </DropdownMenu.Item>
-          <DropdownMenu.Item className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm text-ink outline-none data-[highlighted]:bg-slate-50">
+          <DropdownMenu.Item
+            className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm text-ink outline-none data-[highlighted]:bg-slate-50"
+            onSelect={() => void signOut()}
+          >
             <LogOut className="h-4 w-4 text-muted" />
             Sign out
           </DropdownMenu.Item>

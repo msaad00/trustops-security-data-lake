@@ -150,6 +150,7 @@ def test_login_501_when_oidc_unconfigured(app_env) -> None:
 def test_auth_methods_reports_configured_login_surfaces(app_env) -> None:
     app, client = app_env
     app.state.oauth = object()
+    app.state.oidc_config = _config()
     app.state.saml_config = _saml_config()
 
     resp = client.get("/api/v1/auth/methods")
@@ -157,18 +158,14 @@ def test_auth_methods_reports_configured_login_surfaces(app_env) -> None:
     body = resp.json()["data"]
     assert body["require_auth"] is True
     methods = {method["id"]: method for method in body["methods"]}
-    assert methods["oidc"] == {
-        "id": "oidc",
-        "label": "OIDC SSO",
-        "configured": True,
-        "login_url": "/api/v1/auth/login",
-    }
-    assert methods["saml"] == {
-        "id": "saml",
-        "label": "SAML SSO",
-        "configured": True,
-        "login_url": "/api/v1/auth/saml/login",
-    }
+    assert methods["oidc"]["configured"] is True
+    assert methods["oidc"]["login_url"] == "/api/v1/auth/login"
+    assert methods["oidc"]["protocol"] == "OIDC"
+    assert methods["saml"]["configured"] is True
+    assert methods["saml"]["login_url"] == "/api/v1/auth/saml/login"
+    assert methods["saml"]["protocol"] == "SAML 2.0"
+    assert methods["api_key"]["configured"] is True
+    assert methods["api_key"]["login_url"] == "/api/v1/auth/keys"
 
 
 def test_load_saml_config_rejects_partial_environment(monkeypatch) -> None:

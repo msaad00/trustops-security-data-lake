@@ -18,6 +18,10 @@ const LABEL: Record<string, string> = {
   crosswalk: "Crosswalk",
   "trust-center": "Trust center",
   agents: "Agent API",
+  auth: "Access",
+  deploy: "Deploy",
+  demo: "Demo",
+  poc: "Launch",
 };
 
 export function Breadcrumbs() {

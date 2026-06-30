@@ -15,6 +15,7 @@ import {
   Layers,
   LayoutDashboard,
   LineChart,
+  KeyRound,
   ListChecks,
   Network,
   Plug,
@@ -55,6 +56,12 @@ const ITEMS: RailItem[] = [
     href: "/demo",
     label: "Demo",
     Icon: Globe2,
+    group: "Trust",
+  },
+  {
+    href: "/deploy",
+    label: "Deploy",
+    Icon: BookOpen,
     group: "Trust",
   },
   {
@@ -106,6 +113,12 @@ const ITEMS: RailItem[] = [
     href: "/access-reviews",
     label: "Access reviews",
     Icon: UserCheck,
+    group: "Review",
+  },
+  {
+    href: "/auth",
+    label: "Access",
+    Icon: KeyRound,
     group: "Review",
   },
   { href: "/graph", label: "Graph", Icon: Network, group: "Review" },

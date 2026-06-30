@@ -174,18 +174,27 @@ def run_connector_sync(
     write_mode = _write_mode(connector_id)
     try:
         config = _require_enabled(lake, connector_id)
+        credentials = dict(config.get("credentials") or {})
+        options = dict(config.get("options") or {})
+        effective_repo = repo or str(options.get("repo") or "").strip() or None
+        effective_fixture = fixture_dir or options.get("fixture_dir")
+        effective_token_env = token_env
+        if token_env == DEFAULT_TOKEN_ENV:
+            ref = str(credentials.get("credential_ref") or options.get("token_env") or "").strip()
+            if ref:
+                effective_token_env = ref
         # Append/event-log connectors resume from their last high-water cursor so
         # a sync only needs to fetch what is new; snapshot connectors always pull
         # the full current state, so they carry no watermark.
         since = read_watermark(lake, connector_id) if write_mode == "append" else None
         rows = _collect(
             connector_id,
-            repo=repo,
-            fixture_dir=fixture_dir,
-            token_env=token_env,
+            repo=effective_repo,
+            fixture_dir=effective_fixture,
+            token_env=effective_token_env,
             since=since,
-            credentials=dict(config.get("credentials") or {}),
-            options=dict(config.get("options") or {}),
+            credentials=credentials,
+            options=options,
         )
         raw_path = lake / CONNECTOR_RAW_FILE
         _upsert_raw_events(raw_path, rows, connector_id=connector_id, write_mode=write_mode)
@@ -346,14 +355,23 @@ ConnectorBuilder = Callable[[SyncInputs], list[dict[str, Any]]]
 
 
 def _build_github(inputs: SyncInputs) -> list[dict[str, Any]]:
-    if not inputs.repo:
-        raise ValueError("github-security sync requires --repo")
+    effective_repo = (inputs.repo or str(inputs.options.get("repo") or "")).strip()
+    if not effective_repo:
+        raise ValueError("github-security sync requires options.repo (owner/name)")
     token_env = GITHUB_APP_INSTALLATION_TOKEN_ENV if inputs.token_env == DEFAULT_TOKEN_ENV else inputs.token_env
-    return sync_repo_governance(inputs.repo, fixture_dir=inputs.fixture_dir, token_env=token_env)
+    cred_ref = str(inputs.credentials.get("credential_ref") or "").strip()
+    if cred_ref:
+        token_env = cred_ref
+    return sync_repo_governance(effective_repo, fixture_dir=inputs.fixture_dir, token_env=token_env)
 
 
 def _build_okta(inputs: SyncInputs) -> list[dict[str, Any]]:
-    return _collect_okta(fixture_dir=inputs.fixture_dir, token_env=inputs.token_env, env=inputs.env)
+    return _collect_okta(
+        fixture_dir=inputs.fixture_dir,
+        token_env=inputs.token_env,
+        env=inputs.env,
+        credentials=inputs.credentials,
+    )
 
 
 def _build_aws(inputs: SyncInputs) -> list[dict[str, Any]]:
@@ -365,6 +383,7 @@ def _build_google_workspace(inputs: SyncInputs) -> list[dict[str, Any]]:
         fixture_dir=inputs.fixture_dir,
         token_env=inputs.token_env,
         env=inputs.env,
+        credentials=inputs.credentials,
     )
 
 
@@ -377,7 +396,12 @@ def _build_azure(inputs: SyncInputs) -> list[dict[str, Any]]:
 
 
 def _build_jira(inputs: SyncInputs) -> list[dict[str, Any]]:
-    return _collect_jira(fixture_dir=inputs.fixture_dir, token_env=inputs.token_env, env=inputs.env)
+    return _collect_jira(
+        fixture_dir=inputs.fixture_dir,
+        token_env=inputs.token_env,
+        env=inputs.env,
+        credentials=inputs.credentials,
+    )
 
 
 def _build_snowflake(inputs: SyncInputs) -> list[dict[str, Any]]:
@@ -442,17 +466,20 @@ def _collect_okta(
     fixture_dir: str | Path | None,
     token_env: str,
     env: dict[str, str],
+    credentials: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     client: OktaClient | OktaFixtureClient
+    creds = credentials or {}
     if fixture_dir:
         client = OktaFixtureClient(fixture_dir)
     else:
-        org_url = env.get(OKTA_ORG_URL_ENV)
-        token = _resolve_provider_token(token_env, "OKTA_API_TOKEN", env)
+        org_url = str(env.get(OKTA_ORG_URL_ENV) or creds.get("org_url") or "").strip()
+        effective_token_env = str(creds.get("credential_ref") or token_env)
+        token = _resolve_provider_token(effective_token_env, "OKTA_API_TOKEN", env)
         if not org_url or not token:
             raise ValueError(
                 "okta-identity sync requires --fixture-dir, or "
-                f"{OKTA_ORG_URL_ENV} plus a read-only API token (OKTA_API_TOKEN or --token-env)"
+                f"{OKTA_ORG_URL_ENV}/org_url plus a read-only API token (OKTA_API_TOKEN or --token-env)"
             )
         netguard.assert_url_is_public(org_url, label="okta org url")
         client = OktaClient(org_url, token=token)
@@ -489,17 +516,20 @@ def _collect_google_workspace(
     fixture_dir: str | Path | None,
     token_env: str,
     env: dict[str, str],
+    credentials: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     client: GoogleWorkspaceClient | GoogleWorkspaceFixtureClient
+    creds = credentials or {}
     if fixture_dir:
         client = GoogleWorkspaceFixtureClient(fixture_dir)
     else:
-        customer_id = env.get(GOOGLE_WORKSPACE_CUSTOMER_ID_ENV)
-        access_token = _resolve_provider_token(token_env, "GOOGLE_WORKSPACE_ACCESS_TOKEN", env)
+        customer_id = str(env.get(GOOGLE_WORKSPACE_CUSTOMER_ID_ENV) or creds.get("customer_id") or "").strip()
+        effective_token_env = str(creds.get("credential_ref") or token_env)
+        access_token = _resolve_provider_token(effective_token_env, "GOOGLE_WORKSPACE_ACCESS_TOKEN", env)
         if not customer_id or not access_token:
             raise ValueError(
                 "google-workspace-identity sync requires --fixture-dir, or "
-                f"{GOOGLE_WORKSPACE_CUSTOMER_ID_ENV} plus a read-only OAuth token "
+                f"{GOOGLE_WORKSPACE_CUSTOMER_ID_ENV}/customer_id plus a read-only OAuth token "
                 "(GOOGLE_WORKSPACE_ACCESS_TOKEN or --token-env)"
             )
         client = GoogleWorkspaceClient(customer_id, access_token=access_token)
@@ -563,18 +593,21 @@ def _collect_jira(
     fixture_dir: str | Path | None,
     token_env: str,
     env: dict[str, str],
+    credentials: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     client: JiraClient | JiraFixtureClient
+    creds = credentials or {}
     if fixture_dir:
         client = JiraFixtureClient(fixture_dir)
     else:
-        base_url = env.get(JIRA_BASE_URL_ENV)
-        email = env.get(JIRA_EMAIL_ENV)
-        token = _resolve_provider_token(token_env, "JIRA_API_TOKEN", env)
+        base_url = str(env.get(JIRA_BASE_URL_ENV) or creds.get("base_url") or "").strip()
+        email = str(env.get(JIRA_EMAIL_ENV) or creds.get("email") or "").strip()
+        effective_token_env = str(creds.get("credential_ref") or token_env)
+        token = _resolve_provider_token(effective_token_env, "JIRA_API_TOKEN", env)
         if not base_url or not email or not token:
             raise ValueError(
                 "jira-ticketing sync requires --fixture-dir, or "
-                f"{JIRA_BASE_URL_ENV} plus {JIRA_EMAIL_ENV} and a read-only API token "
+                f"{JIRA_BASE_URL_ENV}/base_url plus {JIRA_EMAIL_ENV}/email and a read-only API token "
                 "(JIRA_API_TOKEN or --token-env)"
             )
         netguard.assert_url_is_public(base_url, label="jira base url")

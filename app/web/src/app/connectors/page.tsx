@@ -12,6 +12,10 @@ import {
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { ConnectorDrawer } from "@/components/drawers/ConnectorDrawer";
+import { ConnectorMark } from "@/components/connectors/ConnectorMark";
+import { ConnectorIngestionStrip } from "@/components/connectors/ConnectorIngestionStrip";
+import { ConnectionCompareDiagram } from "@/components/diagrams/ConnectionCompareDiagram";
+import { IngestionPipelineDiagram } from "@/components/diagrams/IngestionPipelineDiagram";
 import { notify } from "@/lib/toast";
 import { useConnectors } from "@/lib/api/hooks";
 import type { ConnectorView } from "@/lib/api/types";
@@ -135,8 +139,13 @@ function ConnectorRow({
       onClick={onSelect}
       className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 rounded-xl border border-line bg-white p-4 text-left transition-colors hover:border-brand hover:shadow-card"
     >
-      <span className="grid h-10 w-10 place-items-center rounded-lg bg-gradient-to-br from-brand to-brand-cyan font-black text-white">
-        {connector.name.slice(0, 1)}
+      <span className="grid h-10 w-10 place-items-center rounded-lg">
+        <ConnectorMark
+          connectorId={connector.connector_id}
+          name={connector.name}
+          category={connector.category}
+          size="md"
+        />
       </span>
       <span className="min-w-0">
         <span className="flex flex-wrap items-center gap-2">
@@ -148,10 +157,16 @@ function ConnectorRow({
           </Badge>
         </span>
         <span className="mt-1 block truncate text-xs text-muted">
+          {connector.vendor ?? connector.category} ·{" "}
           {connector.collection_mode.replace(/_/g, " ")} ·{" "}
           {connector.access_boundary.replace(/_/g, " ")} · freshness{" "}
           {connector.freshness_slo_minutes}m SLO
         </span>
+        {connector.setup_hint && (
+          <span className="mt-0.5 block truncate text-[11px] text-muted">
+            {connector.setup_hint}
+          </span>
+        )}
       </span>
       <span className="text-right">
         {probe ? (
@@ -244,6 +259,12 @@ export default function ConnectorsPage() {
       />
 
       <ConnectorSetupRail />
+
+      <IngestionPipelineDiagram />
+
+      <ConnectionCompareDiagram />
+
+      <ConnectorIngestionStrip />
 
       <div className="flex min-w-0 flex-wrap items-center gap-2 rounded-xl border border-line bg-white p-2.5 shadow-card">
         <div className="relative min-w-[260px] flex-1">
