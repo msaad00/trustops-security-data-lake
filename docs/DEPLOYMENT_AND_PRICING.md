@@ -1,7 +1,7 @@
 # Deployment and Pricing
 
 TrustOps is an **open-source trust operations platform** you can run yourself or
-have managed for you. The product goal is Drata/Vanta-class continuous compliance
+have managed for you. The product goal is enterprise-grade continuous compliance
 — evidence ingestion, control tests, posture dashboards, trust-center sharing,
 and agent APIs — without locking evidence in a vendor silo or paying
 enterprise-GRC platform premiums.
@@ -12,7 +12,7 @@ enterprise-GRC platform premiums.
 | ----- | ----------- | -------- | ------------ |
 | **OSS local** | You, on a laptop or CI runner | Contributors, evaluators, pipeline proofs | $0 software; your time |
 | **Self-hosted** | You, in your VPC / cluster | Teams that need data residency, custom connectors, and full control | $0 software license + your cloud/ops cost |
-| **Managed hosted** | TrustOps operator (or your MSP) on dedicated or shared infra | Teams that want a live URL fast without running Kubernetes | Platform fee — typically a **fraction of Vanta/Drata** (see below) |
+| **Managed hosted** | TrustOps operator (or your MSP) on dedicated or shared infra | Teams that want a live URL fast without running Kubernetes | Platform fee — typically a **fraction of managed GRC SaaS** (see below) |
 
 Evidence stays in **your boundary** in every model: local files, customer-owned
 Snowflake/ClickHouse/DuckDB, or a tenant-scoped `/lake` volume on your cluster.
@@ -78,19 +78,18 @@ billing, and deeper connector UX. See [ROADMAP.md](../ROADMAP.md).
 
 Evaluator flow: [Shareable Demo](SHAREABLE_DEMO.md).
 
-## How TrustOps compares to Vanta and Drata
+## How TrustOps compares to managed GRC SaaS
 
-Vanta and Drata are excellent **managed compliance automation** products. They
-optimize for speed-to-audit with polished onboarding, policy templates, auditor
-workflows, and large integration marketplaces. Pricing is **custom and
-sales-led** — neither publishes list prices.
+Leading **managed compliance automation** platforms optimize for speed-to-audit
+with polished onboarding, policy templates, auditor workflows, and large
+integration marketplaces. Pricing is typically **custom and sales-led** — few
+publish list prices.
 
-Public buyer reports and transaction aggregates (Vendr, SOC2 auditor guides,
-2025–2026) commonly cite these **annual platform** bands for a single framework
-(e.g. SOC 2):
+Public buyer reports and transaction aggregates commonly cite these **annual
+platform** bands for a single framework (e.g. SOC 2):
 
-| Segment | Typical Vanta / Drata platform fee (est.) |
-| ------- | ----------------------------------------- |
+| Segment | Typical managed GRC platform fee (est.) |
+| ------- | --------------------------------------- |
 | Startup (&lt;50 employees, 1 framework) | ~$10k–$28k / year |
 | Growth (50–200 employees, 1–2 frameworks) | ~$25k–$55k / year |
 | Mid-market / multi-framework | ~$50k–$110k+ / year |
@@ -105,8 +104,8 @@ engineering time often dominate year-one spend.
 
 TrustOps separates **software** from **operations**:
 
-| Cost line | Self-hosted TrustOps | Managed hosted TrustOps (target) | Typical Vanta / Drata |
-| --------- | -------------------- | -------------------------------- | --------------------- |
+| Cost line | Self-hosted TrustOps | Managed hosted TrustOps (target) | Typical managed GRC SaaS |
+| --------- | -------------------- | -------------------------------- | ------------------------ |
 | Software license | **$0** (OSS) | Platform fee | Custom quote |
 | Infrastructure | Your cluster + storage (~$150–$2k/mo at POC scale) | Included or pass-through | Included in SaaS |
 | Evidence storage | Your Snowflake / lake / PVC | Your boundary or dedicated tenant volume | Vendor-operated |
@@ -115,11 +114,11 @@ TrustOps separates **software** from **operations**:
 | Auditor / pen test | Same third-party cost | Same | Same |
 
 **Target:** managed hosted TrustOps at roughly **⅓–½** the annual platform TCO
-of comparable Vanta/Drata scope for teams that already have (or want) a
+of comparable managed GRC scope for teams that already have (or want) a
 customer-owned evidence lake. Exact hosted tiers will be published when billing
 ships; contact the operator for POC/hosted quotes today.
 
-**When Vanta/Drata is the better fit:** you want fully managed compliance
+**When managed GRC SaaS is the better fit:** you want fully managed compliance
 program operations, auditor marketplace, and policy content out of the box with
 minimal platform engineering.
 
@@ -130,8 +129,8 @@ SaaS markup.
 
 ## Feature parity lens (honest)
 
-| Capability | TrustOps v0.2.0 | Vanta / Drata |
-| ---------- | --------------- | ------------- |
+| Capability | TrustOps v0.2.0 | Managed GRC SaaS |
+| ---------- | --------------- | ---------------- |
 | Continuous control tests from live integrations | Yes (connectors + scheduler) | Yes |
 | Executive dashboard + framework readiness | Yes | Yes |
 | Trust center / customer sharing | Yes (scoped tokens) | Yes |
@@ -157,7 +156,7 @@ Want a live demo link for evaluators this week?
 Already centralize security evidence in Snowflake or a SIEM lake?
   -> Existing-lake read mode + TrustOps assessment on top
 
-Replacing Vanta/Drata entirely on day one?
+Replacing a managed GRC platform entirely on day one?
   -> Plan a phased migration: connectors + control parity first, auditor
      workflows and policy content second
 ```

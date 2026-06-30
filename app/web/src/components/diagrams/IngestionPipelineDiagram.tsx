@@ -43,7 +43,7 @@ export function IngestionPipelineDiagram() {
           Continuous ingestion path
         </span>
         <span className="text-[11px] font-bold text-muted">
-          Same loop as Drata/Vanta — evidence stays in your lake
+          Same loop as enterprise GRC platforms — evidence stays in your lake
         </span>
       </div>
       <FlowStrip steps={STEPS} />

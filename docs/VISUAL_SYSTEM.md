@@ -15,7 +15,7 @@ snapshots understandable for both humans and agents.
 | Data model        | assets, evidence, controls, tests, violations, snapshots      |
 | Lake routing      | Snowflake governed evidence, ClickHouse telemetry analytics   |
 | Agent console     | API routes, skills, allowed actions, snapshot controls        |
-| Connectors        | vendor marks, ingestion pipeline, Drata/Vanta compare strip   |
+| Connectors        | vendor marks, ingestion pipeline, managed GRC compare strip   |
 | Access / auth     | IdP marks, identity flow, session + RBAC                      |
 | Deploy            | OSS / self-hosted / hosted models + go-live flow              |
 

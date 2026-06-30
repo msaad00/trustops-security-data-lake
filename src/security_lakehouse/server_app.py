@@ -41,6 +41,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from security_lakehouse import api_legacy, api_v1, remediation_guidance, tenancy, trust_share
 from security_lakehouse.assessment import build_current_posture, write_assessment_snapshot
 from security_lakehouse.auth.dependencies import get_session, require_scope
+from security_lakehouse.auth.oidc import OIDCLoginError, build_oauth, complete_oidc_login, load_oidc_config
 from security_lakehouse.auth.presentation import build_auth_methods_payload
 from security_lakehouse.auth.rate_limit import RateLimitConfig, RateLimiter
 from security_lakehouse.auth.rbac import Identity, scopes_for_role

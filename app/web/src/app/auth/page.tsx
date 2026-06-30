@@ -76,7 +76,7 @@ export default function AuthPage() {
       <PageHeader
         eyebrow="Access"
         title="Authentication"
-        description="OIDC, SAML, and API keys share one tenant, role, and audit boundary — the same identity model as Drata/Vanta hosted workspaces."
+        description="OIDC, SAML, and API keys share one tenant, role, and audit boundary — the same identity model as hosted enterprise GRC workspaces."
         actions={<Badge tone="ready">Server auth</Badge>}
       />
 

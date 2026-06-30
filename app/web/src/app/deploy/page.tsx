@@ -40,7 +40,7 @@ const MODELS = [
   {
     title: "Managed hosted",
     detail:
-      "Operator-run workspace URL with SSO and connectors — target ⅓–½ of Vanta/Drata platform TCO.",
+      "Operator-run workspace URL with SSO and connectors — target ⅓–½ of typical managed GRC platform TCO.",
     icon: Cloud,
     badge: "POC today",
   },
@@ -50,22 +50,22 @@ const COMPARE_ROWS = [
   {
     line: "Annual platform fee (est., 1 framework)",
     trustops: "Self-hosted: $0 license",
-    vanta: "~$10k–$28k",
+    managedGrc: "~$10k–$28k",
   },
   {
     line: "Evidence ownership",
     trustops: "Your lake / warehouse",
-    vanta: "Vendor-operated",
+    managedGrc: "Vendor-operated",
   },
   {
     line: "Self-host / air-gap",
     trustops: "Yes",
-    vanta: "No",
+    managedGrc: "No",
   },
   {
     line: "Controls-as-code + agent API",
     trustops: "Yes",
-    vanta: "Limited",
+    managedGrc: "Limited",
   },
 ] as const;
 
@@ -85,7 +85,7 @@ const DEPLOY_FLOW: FlowStep[] = [
   {
     step: "03",
     title: "Link sources",
-    detail: "Read-only connectors — same pattern as Drata/Vanta.",
+    detail: "Read-only connectors — same pattern as enterprise GRC platforms.",
     tone: "lake",
   },
   {
@@ -112,18 +112,17 @@ export default function DeployPage() {
             <div className="flex items-center gap-2 text-brand">
               <ShieldCheck className="h-5 w-5" />
               <span className="text-sm font-black uppercase tracking-wide">
-                Drata / Vanta alternative
+                Enterprise GRC alternative
               </span>
             </div>
             <h2 className="mt-3 text-2xl font-black text-ink">
-              Same loop, fraction of the platform cost
+              Same loop, lower platform cost
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
               Link accounts, ingest evidence, evaluate controls, and share trust
               links — with deterministic tests over your evidence lake instead
               of opaque SaaS storage. Managed hosted targets roughly one-third to
-              one-half the annual platform TCO of comparable Vanta or Drata
-              scope.
+              one-half the annual platform TCO of comparable managed GRC scope.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
               <Button asChild variant="primary">
@@ -199,7 +198,7 @@ export default function DeployPage() {
             Cost comparison (illustrative)
           </CardTitle>
           <CardDescription>
-            Vanta and Drata use custom sales-led pricing. Ranges below are from
+            Managed GRC platforms use custom sales-led pricing. Ranges below are from
             public buyer reports; TrustOps separates OSS software from ops.
           </CardDescription>
         </CardHeader>
@@ -209,7 +208,7 @@ export default function DeployPage() {
               <tr className="border-b border-line text-xs font-black uppercase tracking-wide text-muted">
                 <th className="py-2 pr-4">Line item</th>
                 <th className="py-2 pr-4">TrustOps</th>
-                <th className="py-2">Vanta / Drata (est.)</th>
+                <th className="py-2">Managed GRC SaaS (est.)</th>
               </tr>
             </thead>
             <tbody>
@@ -217,7 +216,7 @@ export default function DeployPage() {
                 <tr key={row.line} className="border-b border-line/60">
                   <td className="py-3 pr-4 font-medium text-ink">{row.line}</td>
                   <td className="py-3 pr-4 text-brand">{row.trustops}</td>
-                  <td className="py-3 text-muted">{row.vanta}</td>
+                  <td className="py-3 text-muted">{row.managedGrc}</td>
                 </tr>
               ))}
             </tbody>

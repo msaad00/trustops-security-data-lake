@@ -70,7 +70,7 @@ export function ConnectionCompareDiagram() {
       <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center">
         <Column
           eyebrow="Typical GRC SaaS"
-          title="Drata / Vanta"
+          title="Managed GRC SaaS"
           steps={SAAS_STEPS}
           accent="vendor"
         />

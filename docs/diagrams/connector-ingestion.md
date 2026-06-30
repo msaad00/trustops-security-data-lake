@@ -1,6 +1,6 @@
 # Connector Ingestion — Read-Only Connection Model
 
-How TrustOps (and typical Drata/Vanta-style GRC tools) connect to sources:
+How TrustOps (and typical enterprise GRC tools) connect to sources:
 **APIs and read-only roles**, not admin write access.
 
 ## TrustOps ingestion loop
@@ -39,7 +39,7 @@ flowchart LR
   GLD --> TC
 ```
 
-## Drata / Vanta vs TrustOps (same connect, different storage)
+## Managed GRC SaaS vs TrustOps (same connect, different storage)
 
 ```mermaid
 flowchart TB

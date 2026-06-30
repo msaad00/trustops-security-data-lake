@@ -2,7 +2,7 @@
 
 Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as needed.
 
-## P0 — Shareable hosted demo (Drata/Vanta-class entry)
+## P0 — Shareable hosted demo (enterprise GRC-class entry)
 
 - [x] Demo kit API (`demo_kit` on POC readiness) with copyable links
 - [x] `/console/demo/` evaluator landing
@@ -37,7 +37,7 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 
 - [x] Shareable demo guide
 - [x] Markdown image CI validation
-- [x] OSS / self-hosted / hosted positioning + Vanta/Drata cost comparison (`docs/DEPLOYMENT_AND_PRICING.md`)
+- [x] OSS / self-hosted / hosted positioning (`docs/DEPLOYMENT_AND_PRICING.md`)
 - [x] Console `/deploy` deployment summary page
 - [x] Connector + auth flow diagrams (mermaid, SVG, console strips)
 - [ ] Commit demo PNG screenshots (`make demo-screenshots`)

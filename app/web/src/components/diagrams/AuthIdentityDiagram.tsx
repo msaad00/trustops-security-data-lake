@@ -30,7 +30,7 @@ const STEPS: FlowStep[] = [
   {
     step: "05",
     title: "Audit every request",
-    detail: "Actor, tenant, route, decision — same boundary as Drata/Vanta SSO.",
+    detail: "Actor, tenant, route, decision — same boundary as hosted SSO workspaces.",
     tone: "share",
   },
 ];

@@ -1,5 +1,5 @@
 /**
- * Neutral vendor marks for connector sources (Drata/Vanta-style integration tiles).
+ * Neutral vendor marks for connector sources (enterprise GRC-style integration tiles).
  *
  * These are text marks with vendor-recognizable accent colors — not official
  * product logos. See docs/THIRD_PARTY_ASSETS.md.

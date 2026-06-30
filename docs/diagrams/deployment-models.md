@@ -42,12 +42,12 @@ quadrantChart
   x-axis Low vendor lock-in --> High vendor lock-in
   y-axis Low platform fee --> High platform fee
   quadrant-1 Premium managed
-  quadrant-2 Typical Drata/Vanta
+  quadrant-2 Typical managed GRC SaaS
   quadrant-3 OSS self-hosted
   quadrant-4 Hosted alternative
   TrustOps self-hosted: [0.2, 0.15]
   TrustOps managed target: [0.35, 0.35]
-  Drata/Vanta SaaS: [0.85, 0.8]
+  Managed GRC SaaS: [0.85, 0.8]
 ```
 
 See [DEPLOYMENT_AND_PRICING.md](../DEPLOYMENT_AND_PRICING.md).

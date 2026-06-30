@@ -2,7 +2,7 @@
 
 TrustOps ships **framework packs** — complete criterion/subcategory catalogs with
 reviewed mappings, evidence requirements, and evaluation rules. Packs are the
-fastest path to Drata/Vanta-style **100% framework ID coverage** while other
+fastest path to managed GRC-style **100% framework ID coverage** while other
 frameworks stay seed-and-expand.
 
 ## Full packs (100% ID coverage)

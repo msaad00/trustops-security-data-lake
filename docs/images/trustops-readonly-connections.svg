@@ -12,7 +12,7 @@
   <rect width="1200" height="520" fill="#eef3f8"/>
   <rect x="36" y="28" width="1128" height="464" rx="22" fill="#fff" stroke="#d7e0ec"/>
 
-  <text x="72" y="78" class="t" font-size="28" font-weight="850">Read-only connections (Drata/Vanta-class)</text>
+  <text x="72" y="78" class="t" font-size="28" font-weight="850">Read-only connections (enterprise GRC)</text>
   <text x="72" y="108" class="m" font-size="15">APIs, cross-account IAM roles, and scoped tokens  no admin or write access.</text>
 
   <!-- Sources -->

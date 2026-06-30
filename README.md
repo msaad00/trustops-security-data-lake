@@ -62,9 +62,9 @@ TrustOps is **open source** and **deployment-flexible**:
 | ----- | ---- | -------- |
 | **OSS local** | $0 software | Laptop or CI — fixtures and console in minutes |
 | **Self-hosted** | $0 license + your infra | Helm on your cluster; evidence in your VPC or warehouse |
-| **Managed hosted** | Target **⅓–½** of Vanta/Drata platform TCO | Operator-run workspace; evidence stays tenant-scoped |
+| **Managed hosted** | Target **⅓–½** of typical managed GRC platform TCO | Operator-run workspace; evidence stays tenant-scoped |
 
-Vanta and Drata commonly quote **~$10k–$55k+/year** for platform fees (custom,
+Typical managed compliance platforms commonly quote **~$10k–$55k+/year** for platform fees (custom,
 sales-led, single- to multi-framework). TrustOps separates OSS software from
 operations so you are not paying GRC SaaS markup for evidence storage you
 already own.
