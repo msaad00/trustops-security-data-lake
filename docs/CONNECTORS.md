@@ -64,10 +64,11 @@ security-lakehouse connectors list
 
 ## Connector Runner
 
-TrustOps currently has 15 connector contracts. Eight are executable runners:
-seven direct source/API runners plus the Snowflake existing-lake reader. The
-remaining entries describe read-only lake contracts or managed evidence
-boundaries.
+TrustOps currently has **16 connector contracts**. **Eight** are executable
+runners (seven direct source/API runners plus the Snowflake existing-lake
+reader). The remaining entries are read-only access contracts or managed
+evidence boundaries — probes validate configuration but **sync is not available**
+until a collection adapter ships.
 
 | Connector ID                | Source                  | Runner status                 |
 | --------------------------- | ----------------------- | ----------------------------- |
@@ -79,12 +80,13 @@ boundaries.
 | `azure-posture`             | Azure IAM/posture       | executable                    |
 | `jira-ticketing`            | Jira tickets/workflows  | executable                    |
 | `snowflake-evidence-lake`   | governed evidence lake  | executable existing-lake read |
-| `clickhouse-telemetry-lake` | telemetry analytics     | read-only lake contract       |
-| `object-storage-evidence`   | object evidence store   | read-only lake contract       |
-| `siem-alerts`               | SIEM/detection exports  | read-only lake contract       |
-| `runtime-gateway`           | runtime policy events   | read-only lake contract       |
-| `identity-provider`         | generic identity source | contract, no direct runner    |
-| `ticketing`                 | generic ticketing       | contract, no direct runner    |
+| `clickhouse-telemetry-lake` | telemetry analytics     | **contract only** (no sync)   |
+| `okta-system-log`           | Okta System Log API     | **contract only** (no sync)   |
+| `object-storage-evidence`   | object evidence store   | **contract only** (no sync)   |
+| `siem-alerts`               | SIEM/detection exports  | **contract only** (no sync)   |
+| `runtime-gateway`           | runtime policy events   | **contract only** (no sync)   |
+| `identity-provider`         | generic identity source | **contract only** (no sync)   |
+| `ticketing`                 | generic ticketing       | **contract only** (no sync)   |
 | `managed-local-evidence`    | local starter evidence  | managed evidence object       |
 
 Every executable runner writes valid raw evidence into:
@@ -332,10 +334,10 @@ A common misread is "Okta is high-volume, so stream it." Okta actually exposes
 **two sources at very different velocities**, and most access _controls_ read the
 slow one:
 
-| Source            | data_shape      | velocity            | freshness | ingestion                                                         | feeds                                              |
-| ----------------- | --------------- | ------------------- | --------- | ----------------------------------------------------------------- | -------------------------------------------------- |
-| `okta-identity`   | `current_state` | `low_current_state` | 1h        | scheduled pull                                                    | MFA-coverage, orphaned/terminated-account controls |
-| `okta-system-log` | `event_log`     | `medium_api`        | 15m       | watermarked custom pull (cursor + 429 backoff + idempotent merge) | failed-login / auth-anomaly controls (e.g. AC-7)   |
+| Source            | data_shape      | velocity            | freshness | ingestion                                                           | feeds                                              |
+| ----------------- | --------------- | ------------------- | --------- | ------------------------------------------------------------------- | -------------------------------------------------- |
+| `okta-identity`   | `current_state` | `low_current_state` | 1h        | scheduled pull                                                      | MFA-coverage, orphaned/terminated-account controls |
+| `okta-system-log` | `event_log`     | `medium_api`        | 15m       | **contract only** — incremental pull planned (cursor + 429 backoff) | failed-login / auth-anomaly controls (e.g. AC-7)   |
 
 The current-state source (users, factors, policies) changes slowly, so an hourly
 scheduled pull is correct and cheapest. The System Log is event-shaped and needs

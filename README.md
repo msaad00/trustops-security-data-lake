@@ -89,7 +89,7 @@ controls, route risk, automate follow-up, and share proof safely.
 Current catalog scope is explicit: **10 framework families**, **607 seeded
 controls** (full packs for SOC 2, NIST AI RMF, FedRAMP Moderate foundation,
 CIS AWS, ISO 27001, and ISO 42001; seed packs for HIPAA, GDPR, EU AI Act,
-PCI), **607 reviewed mappings**, **18 modeled asset types**, and **2000+**
+PCI), **607 reviewed mappings**, **18 modeled asset types**, and **2032**
 control-to-asset applicability links. Coverage means seeded repo coverage with
 full ID packs for the frameworks above — not certification or full-framework
 audit coverage. See
@@ -130,10 +130,10 @@ customer-owned lake or local store, evaluated by the deterministic core, then
 exposed through product surfaces and guarded actions. The assessment core is the
 source of truth; nothing downstream can rewrite a control verdict.
 
-| 1. Sources                                                                             | 2. Ingest                                                                                 | 3. Materialize                                                                                                  | 4. Assess                                                                                  | 5. Operate and share                                                                     |
-| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| Cloud: AWS, Azure, GCP<br>Identity: Okta, Google<br>Code, tickets, runtime, AI systems | Pull or receive raw facts with scoped role, key-pair, OAuth, webhook, or service identity | Store trusted bronze/silver/gold views in Snowflake, ClickHouse, DuckDB, SQLite, object storage, or local files | Controls-as-code computes pass/fail/stale/missing, scores, findings, assets, and snapshots | Console dashboards<br>API, SDK, MCP<br>Workflows, trust-center shares, evidence requests |
-| Source systems stay read-only                                                          | Ingest is idempotent and retry-safe                                                       | Storage is pluggable; customers keep evidence in their own infrastructure                                       | The deterministic core owns verdicts                                                       | Human approval gates for writes; append-only audit records every action                  |
+| 1. Sources                                                                             | 2. Ingest                                                                                        | 3. Materialize                                                                                                  | 4. Assess                                                                                  | 5. Operate and share                                                                     |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| Cloud: AWS, Azure, GCP<br>Identity: Okta, Google<br>Code, tickets, runtime, AI systems | Pull raw facts with scoped role, key-pair, OAuth, or service identity (inbound webhooks planned) | Store trusted bronze/silver/gold views in Snowflake, ClickHouse, DuckDB, SQLite, object storage, or local files | Controls-as-code computes pass/fail/stale/missing, scores, findings, assets, and snapshots | Console dashboards<br>API, SDK, MCP<br>Workflows, trust-center shares, evidence requests |
+| Source systems stay read-only                                                          | Ingest is idempotent and retry-safe                                                              | Storage is pluggable; customers keep evidence in their own infrastructure                                       | The deterministic core owns verdicts                                                       | Human approval gates for writes; append-only audit records every action                  |
 
 ```text
 Read-only sources
@@ -146,8 +146,8 @@ Read-only sources
 **Terms.**
 
 - **Ingest** means read-only evidence collection. It can pull from cloud APIs,
-  receive webhooks, or read an existing lake, but it should not decide control
-  status.
+  read an existing lake, or (planned) receive inbound webhooks — it should not
+  decide control status.
 - **Materialize** means writing queryable evidence and posture views into the
   selected store, such as Snowflake today, DuckDB/local files for self-hosted
   use, or ClickHouse for telemetry analytics.

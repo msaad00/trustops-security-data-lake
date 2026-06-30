@@ -150,6 +150,8 @@ def required_post_scope(path: str) -> str:
         return "connector_manage"
     if _connector_action(path, "probe") is not None:
         return "connector_manage"
+    if _connector_action(path, "sync") is not None:
+        return "connector_manage"
     return "write"
 
 

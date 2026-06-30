@@ -20,6 +20,9 @@ import { notify } from "@/lib/toast";
 import { useConnectors } from "@/lib/api/hooks";
 import type { ConnectorView } from "@/lib/api/types";
 
+const isRunnableConnector = (connector: ConnectorView) =>
+  Boolean(connector.is_implemented);
+
 const toneForStatus = (status: string) =>
   status === "primary_lake"
     ? "ready"
@@ -133,11 +136,16 @@ function ConnectorRow({
 }) {
   const probe = connector.last_probe;
   const health = syncHealth(connector);
+  const runnable = isRunnableConnector(connector);
   return (
     <button
       type="button"
       onClick={onSelect}
-      className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 rounded-xl border border-line bg-white p-4 text-left transition-colors hover:border-brand hover:shadow-card"
+      className={`grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 rounded-xl border bg-white p-4 text-left transition-colors hover:border-brand hover:shadow-card ${
+        runnable
+          ? "border-line"
+          : "border-dashed border-amber-200/80 bg-amber-50/30"
+      }`}
     >
       <span className="grid h-10 w-10 place-items-center rounded-lg">
         <ConnectorMark
@@ -151,6 +159,9 @@ function ConnectorRow({
         <span className="flex flex-wrap items-center gap-2">
           <span className="truncate font-black text-ink">{connector.name}</span>
           <Badge tone={toneForState(connector.state)}>{connector.state}</Badge>
+          <Badge tone={runnable ? "ready" : "attention"}>
+            {runnable ? "Runnable" : "Contract only"}
+          </Badge>
           {health && <Badge tone={health.tone}>{health.label}</Badge>}
           <Badge tone={toneForStatus(connector.production_status)}>
             {labelForStatus(connector.production_status)}
@@ -193,6 +204,9 @@ export default function ConnectorsPage() {
   const [stateFilter, setStateFilter] = useState<
     "all" | "enabled" | "disabled"
   >("all");
+  const [runnerFilter, setRunnerFilter] = useState<
+    "all" | "runnable" | "contract"
+  >("all");
   const [selected, setSelected] = useState<ConnectorView | null>(null);
 
   const data = connectors.data ?? [];
@@ -213,14 +227,18 @@ export default function ConnectorsPage() {
     () =>
       data.filter((c) => {
         if (stateFilter !== "all" && c.state !== stateFilter) return false;
+        if (runnerFilter === "runnable" && !isRunnableConnector(c))
+          return false;
+        if (runnerFilter === "contract" && isRunnableConnector(c)) return false;
         if (!query) return true;
         return JSON.stringify(c).toLowerCase().includes(query.toLowerCase());
       }),
-    [data, query, stateFilter],
+    [data, query, stateFilter, runnerFilter],
   );
 
   const totals = {
     total: data.length,
+    runnable: data.filter((c) => isRunnableConnector(c)).length,
     enabled: data.filter((c) => c.state === "enabled").length,
     primary: data.filter((c) => c.production_status === "primary_lake").length,
     unhealthy: data.filter((c) => {
@@ -243,7 +261,7 @@ export default function ConnectorsPage() {
           <>
             <span className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-black text-slate-600">
               <Plug className="mr-1 inline h-3 w-3" /> {totals.enabled}/
-              {totals.total} enabled
+              {totals.total} enabled · {totals.runnable} runnable
             </span>
             {totals.unhealthy > 0 && (
               <span className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-black text-rose-700">
@@ -285,6 +303,17 @@ export default function ConnectorsPage() {
           <option value="enabled">Enabled</option>
           <option value="disabled">Disabled</option>
         </select>
+        <select
+          value={runnerFilter}
+          onChange={(e) =>
+            setRunnerFilter(e.target.value as typeof runnerFilter)
+          }
+          className="min-w-[160px] rounded-lg border border-line bg-white px-3 py-2.5 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand"
+        >
+          <option value="all">All runners</option>
+          <option value="runnable">Runnable (8)</option>
+          <option value="contract">Contract only</option>
+        </select>
       </div>
 
       <QueryState queries={connectors} label="connectors">
@@ -292,7 +321,8 @@ export default function ConnectorsPage() {
           <CardHeader>
             <CardTitle>{filtered.length} connectors</CardTitle>
             <CardDescription>
-              Click a row to connect, test, enable, sync, or disable a source.
+              Runnable connectors support probe, enable, and sync. Contract-only
+              entries validate access boundaries before adapters ship.
             </CardDescription>
           </CardHeader>
           <div className="grid gap-2 p-4 pt-0">

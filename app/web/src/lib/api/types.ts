@@ -369,6 +369,8 @@ export interface ConnectorView {
   freshness_slo_minutes: number;
   production_status:
     "primary_lake" | "supported_connector" | "local_demo" | string;
+  /** Access contract only when false — sync is unavailable. */
+  is_implemented?: boolean;
   state: ConnectorState;
   configured_at: string | null;
   credential_fingerprint: string | null;
