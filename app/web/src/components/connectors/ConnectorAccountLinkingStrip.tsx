@@ -35,7 +35,10 @@ function accountStatus(connector: ConnectorView | undefined) {
   if (connector.last_probe?.result === "ok") {
     return { label: "connected", tone: "info" as const };
   }
-  if (connector.last_sync?.result === "error" || connector.last_probe?.result === "error") {
+  if (
+    connector.last_sync?.result === "error" ||
+    connector.last_probe?.result === "error"
+  ) {
     return { label: "error", tone: "critical" as const };
   }
   return { label: "enabled", tone: "info" as const };

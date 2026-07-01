@@ -70,7 +70,9 @@ function syncHealth(connector: ConnectorView): Health | null {
   const successAt =
     connector.last_sync_at ??
     connector.last_successful_sync?.occurred_at ??
-    (connector.last_sync?.result === "ok" ? connector.last_sync.occurred_at : null);
+    (connector.last_sync?.result === "ok"
+      ? connector.last_sync.occurred_at
+      : null);
   if (!successAt) {
     if (connector.last_sync?.result === "error") {
       return { label: "last sync failed", tone: "attention" };
