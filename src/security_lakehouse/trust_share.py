@@ -24,6 +24,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse import tenancy
 from security_lakehouse.data_policy import SENSITIVITY_LEVELS, normalize_sensitivity
 
 ALLOWED_ROLES = {"auditor"}
@@ -135,6 +136,52 @@ def list_shares(lake_dir: str | Path, *, include_revoked: bool = False) -> list[
         row["expired"] = bool(row.get("expires_at") and row["expires_at"] < now)
     rows.sort(key=lambda r: str(r.get("created_at") or ""), reverse=True)
     return rows
+
+
+def lake_search_paths(
+    root: str | Path,
+    *,
+    tenant_ids: list[str] | None = None,
+    bound_tenant: str | None = None,
+) -> list[Path]:
+    """Return lake directories to search for a trust share token (newest tenants first)."""
+    root_path = Path(root)
+    paths: list[Path] = []
+    seen: set[Path] = set()
+
+    def _add(candidate: Path) -> None:
+        resolved = candidate.resolve()
+        if resolved in seen:
+            return
+        seen.add(resolved)
+        paths.append(candidate)
+
+    if bound_tenant is not None and tenancy.is_flat_lake(root_path):
+        _add(tenancy.tenant_lake(root_path, bound_tenant, bound_tenant=bound_tenant))
+    for tenant_id in sorted(tenant_ids or [], reverse=True):
+        _add(tenancy.tenant_lake(root_path, tenant_id, bound_tenant=bound_tenant))
+    if tenancy.is_flat_lake(root_path):
+        _add(root_path)
+    return paths
+
+
+def resolve_share_from_root(
+    root: str | Path,
+    token: str,
+    *,
+    tenant_ids: list[str] | None = None,
+    bound_tenant: str | None = None,
+) -> tuple[dict[str, Any], Path] | None:
+    """Resolve a token against tenant-scoped lakes under ``root``.
+
+    Returns the live share record and the lake directory that owns it, or
+    ``None`` when the token is unknown, revoked, or expired in every candidate.
+    """
+    for lake_dir in lake_search_paths(root, tenant_ids=tenant_ids, bound_tenant=bound_tenant):
+        share = resolve_share(lake_dir, token)
+        if share is not None:
+            return share, lake_dir
+    return None
 
 
 def resolve_share(lake_dir: str | Path, token: str) -> dict[str, Any] | None:

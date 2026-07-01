@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any
 
 from security_lakehouse.connectors import load_connector_catalog
+from security_lakehouse.public_url import normalize_public_url
 
 # Connectors most teams link first in a live POC (read-only posture / evidence).
 RECOMMENDED_ACCOUNT_CONNECTOR_IDS: tuple[str, ...] = (
@@ -87,8 +88,10 @@ def build_share_links(
     sso_configured: bool,
     require_auth: bool,
     active_share_count: int,
+    login_path: str = "/api/v1/auth/login",
 ) -> list[dict[str, Any]]:
     """Return copyable workspace links for operators and evaluators."""
+    public_url = normalize_public_url(public_url)
     links: list[dict[str, Any]] = []
     if public_url:
         links.append(
@@ -124,7 +127,7 @@ def build_share_links(
                     "kind": "login",
                     "label": "Sign-in link",
                     "description": "Browser SSO entry for evaluators and workspace members.",
-                    "url": f"{public_url.rstrip('/')}/api/v1/auth/login",
+                    "url": f"{public_url.rstrip('/')}{login_path}",
                     "audience": "evaluator",
                 }
             )
@@ -178,8 +181,10 @@ def build_demo_kit(
     ingestion: dict[str, Any],
     active_share_count: int,
     shareable: bool,
+    login_path: str = "/api/v1/auth/login",
 ) -> dict[str, Any]:
     """Bundle share URLs and account-linking status for the hosted demo experience."""
+    public_url = normalize_public_url(public_url)
     account_linking = build_account_linking(ingestion, public_url=public_url)
     linked = [row for row in account_linking if row["status"] in {"connected", "ingesting"}]
     ingesting = [row for row in account_linking if row["status"] == "ingesting"]
@@ -191,6 +196,7 @@ def build_demo_kit(
             sso_configured=sso_configured,
             require_auth=require_auth,
             active_share_count=active_share_count,
+            login_path=login_path,
         ),
         "account_linking": account_linking,
         "account_linking_summary": {

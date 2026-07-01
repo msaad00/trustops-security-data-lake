@@ -78,16 +78,20 @@ def complete_oidc_login(
     *,
     config: OIDCConfig,
     email: str,
+    email_verified: bool | None = None,
     idp: str = "oidc",
     now: datetime | None = None,
 ) -> tuple[User, str]:
     """Map a verified SSO email to a local user + browser session token.
 
-    Raises :class:`OIDCLoginError` when the tenant is unknown or the user is not
-    provisioned (and auto-provisioning is disabled).
+    Raises :class:`OIDCLoginError` when the tenant is unknown, the email is not
+    verified by the identity provider, or the user is not provisioned (and
+    auto-provisioning is disabled).
     """
     if not email:
         raise OIDCLoginError("identity provider returned no email")
+    if email_verified is not True:
+        raise OIDCLoginError("identity provider email is not verified")
     tenant = repository.get_tenant_by_slug(session, slug=config.tenant_slug)
     if tenant is None:
         raise OIDCLoginError(f"OIDC tenant {config.tenant_slug!r} does not exist")

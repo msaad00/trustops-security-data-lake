@@ -96,7 +96,26 @@ def test_complete_oidc_login_requires_provisioned_user(tmp_path: Path) -> None:
     with session_scope(app.state.sessionmaker) as session:
         create_tenant(session, slug="acme", name="Acme")
         with pytest.raises(OIDCLoginError):
-            complete_oidc_login(session, config=_config(auto_provision=False), email="new@acme.test")
+            complete_oidc_login(
+                session,
+                config=_config(auto_provision=False),
+                email="new@acme.test",
+                email_verified=True,
+            )
+
+
+def test_complete_oidc_login_rejects_unverified_email(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path)
+    with session_scope(app.state.sessionmaker) as session:
+        create_tenant(session, slug="acme", name="Acme")
+        with pytest.raises(OIDCLoginError, match="not verified"):
+            complete_oidc_login(
+                session,
+                config=_config(auto_provision=True),
+                email="new@acme.test",
+                email_verified=False,
+            )
 
 
 def test_complete_oidc_login_auto_provisions(tmp_path: Path) -> None:
@@ -104,7 +123,12 @@ def test_complete_oidc_login_auto_provisions(tmp_path: Path) -> None:
     app = create_app(tmp_path)
     with session_scope(app.state.sessionmaker) as session:
         create_tenant(session, slug="acme", name="Acme")
-        user, token = complete_oidc_login(session, config=_config(auto_provision=True), email="new@acme.test")
+        user, token = complete_oidc_login(
+            session,
+            config=_config(auto_provision=True),
+            email="new@acme.test",
+            email_verified=True,
+        )
         assert user.email == "new@acme.test"
         assert user.role == "read_only"
         assert repository.resolve_user_session(session, token).is_active()
@@ -114,7 +138,12 @@ def test_complete_oidc_login_unknown_tenant(tmp_path: Path) -> None:
     _seed_lake(tmp_path)
     app = create_app(tmp_path)
     with session_scope(app.state.sessionmaker) as session, pytest.raises(OIDCLoginError):
-        complete_oidc_login(session, config=_config(tenant_slug="ghost", auto_provision=True), email="x@y.test")
+        complete_oidc_login(
+            session,
+            config=_config(tenant_slug="ghost", auto_provision=True),
+            email="x@y.test",
+            email_verified=True,
+        )
 
 
 def test_session_cookie_authenticates(app_env) -> None:
