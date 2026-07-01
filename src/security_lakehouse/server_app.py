@@ -299,9 +299,7 @@ def _production_env_blocked() -> bool:
 
 def _assert_insecure_allowed() -> None:
     if _insecure_requested() and _production_env_blocked():
-        raise RuntimeError(
-            "TRUSTOPS_ALLOW_INSECURE_NO_AUTH is forbidden when TRUSTOPS_ENV is production or staging"
-        )
+        raise RuntimeError("TRUSTOPS_ALLOW_INSECURE_NO_AUTH is forbidden when TRUSTOPS_ENV is production or staging")
     if _insecure_requested():
         logging.getLogger(__name__).warning(
             "TRUSTOPS_ALLOW_INSECURE_NO_AUTH is enabled: every request runs as synthetic admin"
@@ -555,7 +553,11 @@ def _build_poc_readiness(
         or os.environ.get("TRUSTOPS_APP_URL")
     )
     sso_configured = app.state.oauth is not None or app.state.saml_config is not None
-    login_path = "/api/v1/auth/saml/login" if app.state.saml_config is not None and app.state.oauth is None else "/api/v1/auth/login"
+    login_path = (
+        "/api/v1/auth/saml/login"
+        if app.state.saml_config is not None and app.state.oauth is None
+        else "/api/v1/auth/login"
+    )
     keys = repository.list_api_keys(session, tenant_id=identity.tenant_id)
     active_keys = [key for key in keys if key.is_active(now=now)]
     role_counts = {

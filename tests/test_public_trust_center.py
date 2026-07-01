@@ -62,7 +62,10 @@ def test_public_trust_resolves_tenant_scoped_share(tmp_path: Path) -> None:
     client = TestClient(app)
 
     assert client.get(f"/api/public/trust/{share['token']}").status_code == 200
-    assert client.get("/api/public/trust/trust_does_not_exist", headers={"Authorization": f"Bearer {token}"}).status_code == 404
+    assert (
+        client.get("/api/public/trust/trust_does_not_exist", headers={"Authorization": f"Bearer {token}"}).status_code
+        == 404
+    )
 
 
 def test_public_trust_returns_redacted_posture(tmp_path: Path) -> None:
