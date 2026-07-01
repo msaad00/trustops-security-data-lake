@@ -326,7 +326,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
   const stagedOptions = Object.fromEntries(
     Object.entries(options).filter(([, value]) => value.trim() !== ""),
   );
-  const canTestAccess = isEnabled || canEnable;
+  const canTestAccess = isEnabled || missingRequired.length === 0;
   const canDiscover = isEnabled || missingCredentials.length === 0;
   const discoveryMetadata = discoveryRun?.metadata;
   const showSnowflakeScopeFields =
@@ -347,8 +347,12 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
       : null;
   const latestError = (runs.data ?? []).find((run) => run.error);
   const latestProbeOk =
-    connector.last_probe?.result === "ok" || accessValidated || isEnabled;
-  const latestSyncOk = connector.last_sync?.result === "ok";
+    connector.last_probe?.result === "ok" ||
+    connector.last_probe?.result === "skipped" ||
+    accessValidated;
+  const latestSyncOk =
+    connector.last_successful_sync?.result === "ok" ||
+    connector.last_sync?.result === "ok";
   const scopeReady = scopeFields.length === 0 || missingScope.length === 0;
   const needsDiscovery =
     usesDiscoveredReadScope &&
@@ -1092,7 +1096,13 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                   actor <b className="text-ink">{r.actor}</b>
                   {r.duration_ms !== null && <> · {r.duration_ms} ms</>}
                   {r.evidence_count !== null && (
-                    <> · {r.evidence_count} evidence types</>
+                    <>
+                      {" "}
+                      ·{" "}
+                      {r.kind === "sync"
+                        ? `${r.evidence_count} evidence row(s)`
+                        : `${r.evidence_count} object(s)`}
+                    </>
                   )}
                 </div>
                 {r.error && <div className="mt-1 text-rose-700">{r.error}</div>}

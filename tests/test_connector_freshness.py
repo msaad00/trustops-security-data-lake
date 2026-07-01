@@ -66,6 +66,15 @@ def test_failed_sync_does_not_count_as_synced(tmp_path: Path) -> None:
     assert entry["freshness_state"] == "never_synced"
 
 
+def test_failed_sync_after_success_keeps_freshness(tmp_path: Path) -> None:
+    append_run_event(tmp_path, connector_id=CONNECTOR_ID, kind="sync", result="ok")
+    append_run_event(tmp_path, connector_id=CONNECTOR_ID, kind="sync", result="error")
+    entry = _view_entry(tmp_path)
+    assert entry["freshness_state"] == "fresh"
+    assert entry["last_sync"]["result"] == "error"
+    assert entry["last_successful_sync"]["result"] == "ok"
+
+
 def test_evaluate_freshness_boundary_and_ordering() -> None:
     now = datetime(2026, 6, 1, 12, 0, 0, tzinfo=UTC)
     base = {"freshness_slo_minutes": 60}

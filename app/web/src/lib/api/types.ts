@@ -377,6 +377,10 @@ export interface ConnectorView {
   configured_options: Record<string, unknown>;
   last_probe: ConnectorRun | null;
   last_sync: ConnectorRun | null;
+  last_successful_sync?: ConnectorRun | null;
+  freshness_state?: "fresh" | "stale" | "never_synced" | string;
+  last_sync_at?: string | null;
+  next_run_at?: string | null;
 }
 
 export interface IngestionAction {
@@ -398,6 +402,7 @@ export interface IngestionStatus {
     enabled_connectors: number;
     failed_connectors: number;
     never_synced_connectors: number;
+    silent_connectors?: number;
     evidence_count: number;
     source_count: number;
     stale_evidence: number;
@@ -457,6 +462,23 @@ export interface IngestionStatus {
     recommended_actions: IngestionAction[];
   };
   recommended_actions: IngestionAction[];
+  health?: {
+    evaluated_at: string;
+    summary: {
+      healthy: number;
+      degraded: number;
+      silent: number;
+      never_succeeded: number;
+      enabled: number;
+      unhealthy: number;
+    };
+    connectors: Array<{
+      connector_id: string;
+      health: string;
+      last_success_at: string | null;
+      seconds_since_success: number | null;
+    }>;
+  };
 }
 
 export interface ConfigurePayload {

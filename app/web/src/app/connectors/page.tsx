@@ -14,6 +14,7 @@ import { QueryState } from "@/components/QueryState";
 import { ConnectorDrawer } from "@/components/drawers/ConnectorDrawer";
 import { ConnectorMark } from "@/components/connectors/ConnectorMark";
 import { ConnectorIngestionStrip } from "@/components/connectors/ConnectorIngestionStrip";
+import { ConnectorAccountLinkingStrip } from "@/components/connectors/ConnectorAccountLinkingStrip";
 import { ConnectionCompareDiagram } from "@/components/diagrams/ConnectionCompareDiagram";
 import { IngestionPipelineDiagram } from "@/components/diagrams/IngestionPipelineDiagram";
 import { notify } from "@/lib/toast";
@@ -52,11 +53,33 @@ type Health = {
 
 function syncHealth(connector: ConnectorView): Health | null {
   if (connector.state !== "enabled") return null;
-  const sync = connector.last_sync;
-  if (!sync || sync.result !== "ok" || !sync.occurred_at) {
+
+  const freshness = connector.freshness_state;
+  if (freshness === "fresh") return { label: "healthy", tone: "ready" };
+  if (freshness === "stale") return { label: "stale sync", tone: "attention" };
+  if (freshness === "never_synced") {
+    const failedAttempt =
+      connector.last_sync?.result === "error" &&
+      connector.last_successful_sync?.result === "ok";
+    if (failedAttempt) {
+      return { label: "last sync failed", tone: "attention" };
+    }
     return { label: "never synced", tone: "attention" };
   }
-  const ageMinutes = (Date.now() - Date.parse(sync.occurred_at)) / 60000;
+
+  const successAt =
+    connector.last_sync_at ??
+    connector.last_successful_sync?.occurred_at ??
+    (connector.last_sync?.result === "ok"
+      ? connector.last_sync.occurred_at
+      : null);
+  if (!successAt) {
+    if (connector.last_sync?.result === "error") {
+      return { label: "last sync failed", tone: "attention" };
+    }
+    return { label: "never synced", tone: "attention" };
+  }
+  const ageMinutes = (Date.now() - Date.parse(successAt)) / 60000;
   const slo = connector.freshness_slo_minutes || 1440;
   if (ageMinutes <= slo) return { label: "healthy", tone: "ready" };
   if (ageMinutes <= slo * 3) return { label: "stale sync", tone: "attention" };
@@ -284,6 +307,8 @@ export default function ConnectorsPage() {
 
       <ConnectorIngestionStrip />
 
+      <ConnectorAccountLinkingStrip />
+
       <div className="flex min-w-0 flex-wrap items-center gap-2 rounded-xl border border-line bg-white p-2.5 shadow-card">
         <div className="relative min-w-[260px] flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
@@ -328,7 +353,9 @@ export default function ConnectorsPage() {
           <div className="grid gap-2 p-4 pt-0">
             {filtered.length === 0 && (
               <div className="rounded-lg border border-dashed border-line p-4 text-sm text-muted">
-                No connectors match the current filter.
+                {totals.enabled === 0
+                  ? "No connectors enabled yet. Use Link accounts above or pick a connector to connect, test, and sync."
+                  : "No connectors match the current filter."}
               </div>
             )}
             {filtered.map((c) => (

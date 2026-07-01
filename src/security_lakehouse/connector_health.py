@@ -24,20 +24,16 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from security_lakehouse.connector_state import DEFAULT_FRESHNESS_SLO_MINUTES, build_catalog_view, list_runs
+from security_lakehouse.connector_state import (
+    DEFAULT_FRESHNESS_SLO_MINUTES,
+    build_catalog_view,
+    latest_successful_run,
+)
 from security_lakehouse.models import parse_event_time, utc_iso
 
 # How many freshness-SLO windows a connector can miss before it is "silent"
 # rather than merely "degraded".
 SILENT_SLO_FACTOR = 3
-
-
-def _latest_successful_sync(lake_dir: str | Path, connector_id: str) -> dict[str, Any] | None:
-    """The most recent ``sync`` run with ``result == "ok"`` for a connector."""
-    for run in list_runs(lake_dir, connector_id):  # newest first
-        if run.get("kind") == "sync" and run.get("result") == "ok":
-            return run
-    return None
 
 
 def evaluate_connector_health(
@@ -81,7 +77,7 @@ def build_connector_health(lake_dir: str | Path, *, now: datetime | None = None)
             slo = int(row.get("freshness_slo_minutes") or DEFAULT_FRESHNESS_SLO_MINUTES)
         except (TypeError, ValueError):
             slo = DEFAULT_FRESHNESS_SLO_MINUTES
-        success = _latest_successful_sync(lake_dir, connector_id) if enabled else None
+        success = latest_successful_run(lake_dir, connector_id, kind="sync") if enabled else None
         last_success_at = parse_event_time(str(success["occurred_at"])) if success else None
         connectors.append(
             evaluate_connector_health(
