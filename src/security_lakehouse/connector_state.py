@@ -593,6 +593,19 @@ def latest_run(lake_dir: str | Path, connector_id: str, *, kind: str | None = No
     return max(rows, key=lambda r: str(r.get("occurred_at") or ""))
 
 
+def latest_successful_run(
+    lake_dir: str | Path,
+    connector_id: str,
+    *,
+    kind: str = "sync",
+) -> dict[str, Any] | None:
+    """Return the newest run of ``kind`` whose ``result`` is ``ok``."""
+    for run in list_runs(lake_dir, connector_id):
+        if run.get("kind") == kind and run.get("result") == "ok":
+            return run
+    return None
+
+
 def list_runs(
     lake_dir: str | Path,
     connector_id: str | None = None,
@@ -664,7 +677,8 @@ def build_catalog_view(lake_dir: str | Path) -> list[dict[str, Any]]:
     for connector_id, base in catalog.items():
         config = latest_config(lake_dir, connector_id)
         probe = latest_run(lake_dir, connector_id, kind="probe")
-        sync = latest_run(lake_dir, connector_id, kind="sync")
+        sync_attempt = latest_run(lake_dir, connector_id, kind="sync")
+        sync_success = latest_successful_run(lake_dir, connector_id, kind="sync")
         out.append(
             {
                 **base,
@@ -673,8 +687,9 @@ def build_catalog_view(lake_dir: str | Path) -> list[dict[str, Any]]:
                 "credential_fingerprint": (config or {}).get("credential_fingerprint"),
                 "configured_options": (config or {}).get("options") or {},
                 "last_probe": probe,
-                "last_sync": sync,
-                **_evaluate_freshness(base, sync),
+                "last_sync": sync_attempt,
+                "last_successful_sync": sync_success,
+                **_evaluate_freshness(base, sync_success),
             }
         )
     out.sort(

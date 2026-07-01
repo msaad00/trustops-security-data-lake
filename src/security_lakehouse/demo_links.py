@@ -38,7 +38,7 @@ def _account_link_status(connector: dict[str, Any]) -> str:
     state = str(connector.get("state") or "disabled")
     if state != "enabled":
         return "not_linked"
-    latest_sync = connector.get("latest_sync") or {}
+    latest_sync = connector.get("latest_successful_sync") or connector.get("latest_sync") or {}
     sync_result = str(latest_sync.get("result") or "")
     if sync_result == "ok":
         return "ingesting"
@@ -65,7 +65,7 @@ def build_account_linking(
         setup_hint = str(base.get("setup_hint") or "")
         row = by_id.get(connector_id) or {}
         status = _account_link_status(row)
-        latest_sync = row.get("latest_sync") or {}
+        latest_success = row.get("latest_successful_sync") or row.get("latest_sync") or {}
         out.append(
             {
                 "connector_id": connector_id,
@@ -73,9 +73,9 @@ def build_account_linking(
                 "setup_hint": setup_hint,
                 "status": status,
                 "enabled": str(row.get("state") or "") == "enabled",
-                "evidence_count": int(latest_sync.get("evidence_count") or 0),
-                "last_sync_at": latest_sync.get("occurred_at"),
-                "last_sync_result": latest_sync.get("result"),
+                "evidence_count": int(latest_success.get("evidence_count") or 0),
+                "last_sync_at": latest_success.get("occurred_at"),
+                "last_sync_result": latest_success.get("result"),
                 "connect_url": _console_path(f"/connectors/?connect={connector_id}", public_url=public_url),
             }
         )

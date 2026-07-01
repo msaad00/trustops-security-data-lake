@@ -49,6 +49,12 @@ export function ConnectorIngestionStrip() {
                   <AlertTriangle className="h-3 w-3" />
                   {ingestion.data.summary.never_synced_connectors} never synced
                 </span>
+                {(ingestion.data.summary.silent_connectors ?? 0) > 0 && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-2 py-0.5 text-rose-700">
+                    <AlertTriangle className="h-3 w-3" />
+                    {ingestion.data.summary.silent_connectors} silent
+                  </span>
+                )}
                 <span className="inline-flex items-center gap-1 rounded-full border border-line bg-white px-2 py-0.5">
                   <Database className="h-3 w-3" />
                   {ingestion.data.summary.evidence_count} ingested

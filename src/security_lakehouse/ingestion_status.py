@@ -103,6 +103,7 @@ def _connector_summary(row: JsonObject) -> JsonObject:
         "next_run_at": row.get("next_run_at"),
         "latest_sync": latest_sync,
         "latest_probe": latest_probe,
+        "last_successful_sync": _run_summary(row.get("last_successful_sync") or {}),
         "last_error": latest_sync.get("error"),
     }
 
