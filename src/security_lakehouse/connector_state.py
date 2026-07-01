@@ -543,7 +543,7 @@ def run_discovery(
         options=options,
     )
     selectors = [item for item in metadata.get("selectors", []) if isinstance(item, dict)]
-    record = append_run_event(
+    return append_run_event(
         lake_dir,
         connector_id=connector_id,
         kind="discover",
@@ -551,12 +551,8 @@ def run_discovery(
         actor=actor,
         duration_ms=max(0, round((time.perf_counter() - started) * 1000)),
         evidence_count=len(selectors),
+        metadata=metadata,
     )
-    # Discovery metadata is returned to the caller for setup UX, but not written
-    # to the append-only run log. Run history records that discovery happened;
-    # persisted connector config remains the durable source for selected scope.
-    record["metadata"] = metadata
-    return record
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -821,6 +817,7 @@ def run_probe(
             actor=actor,
             error="access contract validated; no collection adapter is implemented for this connector yet",
             access_fingerprint=staged_access_fingerprint,
+            metadata={"probe_mode": "contract_only"},
         )
     if connector_id == SNOWFLAKE_CONNECTOR_ID:
         if has_staged_payload:
@@ -867,7 +864,7 @@ def run_probe(
             duration_ms=12,
             evidence_count=len(probe.get("views", [])),
             access_fingerprint=staged_access_fingerprint,
-            metadata=probe,
+            metadata={**probe, "probe_mode": "live"},
         )
 
     # Adapter available and the access contract is valid. The generic probe
@@ -880,4 +877,5 @@ def run_probe(
         actor=actor,
         duration_ms=12,
         access_fingerprint=staged_access_fingerprint,
+        metadata={"probe_mode": "config_only"},
     )

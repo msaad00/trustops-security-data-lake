@@ -112,6 +112,7 @@ def test_probe_without_adapter_is_skipped_not_fabricated(tmp_path: Path) -> None
     assert rec["result"] == "skipped"
     assert rec["evidence_count"] is None
     assert "no collection adapter" in rec["error"]
+    assert rec["metadata"]["probe_mode"] == "contract_only"
 
 
 def test_probe_validates_staged_payload_without_enabling(tmp_path: Path) -> None:
@@ -127,6 +128,7 @@ def test_probe_validates_staged_payload_without_enabling(tmp_path: Path) -> None
     assert rec["result"] == "skipped"
     assert rec["evidence_count"] is None
     assert "no collection adapter" in rec["error"]
+    assert rec["metadata"]["probe_mode"] == "contract_only"
     assert latest_config(tmp_path, "clickhouse-telemetry-lake") is None
 
 
@@ -141,6 +143,17 @@ def test_probe_rejects_incomplete_staged_payload(tmp_path: Path) -> None:
     assert "missing required connector configuration" in rec["error"]
     assert "credential_ref" in rec["error"]
     assert latest_config(tmp_path, "clickhouse-telemetry-lake") is None
+
+
+def test_runnable_probe_marks_config_only_mode(tmp_path: Path) -> None:
+    rec = run_probe(
+        tmp_path,
+        connector_id="github-security",
+        credentials={"credential_ref": "GITHUB_TOKEN"},
+        options={"repo": "acme/platform"},
+    )
+    assert rec["result"] == "ok"
+    assert rec["metadata"]["probe_mode"] == "config_only"
 
 
 def test_snowflake_probe_reads_selected_scope_before_enable(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -177,6 +190,7 @@ def test_snowflake_probe_reads_selected_scope_before_enable(tmp_path: Path, monk
 
     assert rec["result"] == "ok"
     assert rec["evidence_count"] == 4
+    assert rec["metadata"]["probe_mode"] == "live"
     assert rec["metadata"]["context"]["role"] == "TRUSTOPS_READER"
     assert rec["metadata"]["views"][0]["row_count"] == 2
     assert rec["access_fingerprint"]
@@ -280,6 +294,8 @@ def test_discovery_returns_selectable_snowflake_scope_without_enable(tmp_path: P
     assert {"kind": "database", "name": "TRUSTOPS_SECURITY_LAKE", "required": True, "selected": True} in selectors
     assert {"kind": "view", "name": "TRUSTOPS_AUDIT_EVENTS", "required": True, "purpose": "audit_events"} in selectors
     assert latest_config(tmp_path, "snowflake-evidence-lake") is None
+    persisted = list_runs(tmp_path, "snowflake-evidence-lake", limit=1)[0]
+    assert persisted["metadata"]["selection_mode"] == "curated_views"
 
 
 def test_discovery_uses_live_snowflake_scope_when_credentials_resolve(
@@ -841,7 +857,7 @@ def test_connector_discover_route_returns_scope_candidates(tmp_path: Path) -> No
         status, body = _request(server, "GET", "/api/connectors/aws-posture/runs")
         assert status == HTTPStatus.OK
         assert body["runs"][0]["kind"] == "discover"
-        assert body["runs"][0]["metadata"] == {}
+        assert body["runs"][0]["metadata"]["selection_mode"] == "account"
     finally:
         server.shutdown()
 

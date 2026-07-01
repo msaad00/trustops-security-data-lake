@@ -239,6 +239,17 @@ export const CONNECTOR_SCOPE_FIELDS: Record<string, ConnectorFieldDef[]> = {
   ],
 };
 
+export const SYNC_SCHEDULE_FIELD: ConnectorFieldDef = {
+  name: "sync_schedule",
+  label: "Sync schedule",
+  placeholder: "@hourly",
+  hint: "Optional: @hourly, @daily, every 15m, every 6h. Leave empty for manual sync only.",
+};
+
+export function schedulerFieldsFor(isRunnable: boolean): ConnectorFieldDef[] {
+  return isRunnable ? [SYNC_SCHEDULE_FIELD] : [];
+}
+
 export function fallbackCredentialFields(
   credentialType: string,
 ): ConnectorFieldDef[] {

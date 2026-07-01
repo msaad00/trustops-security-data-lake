@@ -33,6 +33,7 @@ import type {
 import { ConnectorMark } from "@/components/connectors/ConnectorMark";
 import {
   credentialFieldsFor,
+  schedulerFieldsFor,
   scopeFieldsFor,
   type ConnectorFieldDef,
 } from "@/lib/connector-forms";
@@ -53,6 +54,41 @@ interface SetupStep {
 
 const isRunnableConnector = (connector: ConnectorView) =>
   Boolean(connector.is_implemented);
+
+function probeToastMessage(run: ConnectorRun, isEnabled: boolean): string {
+  if (run.result === "ok") {
+    const mode = run.metadata?.probe_mode;
+    if (mode === "live") {
+      return isEnabled
+        ? "Live connection verified."
+        : "Live connection verified. You can enable this connector.";
+    }
+    if (mode === "config_only") {
+      return isEnabled
+        ? "Configuration validated (probe does not call the vendor API)."
+        : "Configuration validated. Enable when ready; sync performs live collection.";
+    }
+    return isEnabled
+      ? "Probe ok."
+      : "Access test passed. You can enable this connector.";
+  }
+  if (run.result === "skipped") {
+    return `Contract validated: ${run.error ?? "probe skipped"}`;
+  }
+  return `Probe error: ${run.error ?? "see history"}`;
+}
+
+function validateStepDetail(
+  connector: ConnectorView,
+  latestProbeOk: boolean,
+): string {
+  if (!latestProbeOk) return "Run test";
+  const mode = connector.last_probe?.metadata?.probe_mode;
+  if (mode === "live") return "Live connection verified";
+  if (mode === "config_only") return "Configuration validated";
+  if (mode === "contract_only") return "Contract validated";
+  return "Connection checked";
+}
 
 const toneForResult = (r: string | undefined) =>
   r === "ok"
@@ -294,6 +330,21 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
     );
   }, [connector?.connector_id, connector?.configured_options]);
 
+  useEffect(() => {
+    if (!connector?.connector_id || !runs.data?.length) return;
+    const latestDiscover = runs.data.find(
+      (run) =>
+        run.kind === "discover" &&
+        run.result === "ok" &&
+        run.metadata &&
+        typeof run.metadata === "object" &&
+        Object.keys(run.metadata).length > 0,
+    );
+    if (latestDiscover) {
+      setDiscoveryRun(latestDiscover);
+    }
+  }, [connector?.connector_id, runs.data]);
+
   if (!connector) {
     return (
       <Drawer open={false} onOpenChange={() => undefined} title="Connector">
@@ -307,6 +358,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
     connector.credential_type,
   );
   const scopeFields = scopeFieldsFor(connector.connector_id);
+  const schedulerFields = schedulerFieldsFor(isRunnableConnector(connector));
   const isSnowflake = connector.connector_id === "snowflake-evidence-lake";
   const usesDiscoveredReadScope =
     connector.connector_id === "clickhouse-telemetry-lake" || isSnowflake;
@@ -379,7 +431,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
     },
     {
       label: "Validate",
-      detail: latestProbeOk ? "Connection checked" : "Run test",
+      detail: validateStepDetail(connector, latestProbeOk),
       tone: latestProbeOk ? "ready" : "default",
     },
     {
@@ -456,15 +508,7 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
       });
       const validated = run.result === "ok";
       setAccessValidated(validated);
-      onToast(
-        run.result === "ok"
-          ? isEnabled
-            ? "Probe ok."
-            : "Access test passed. You can enable this connector."
-          : run.result === "skipped"
-            ? `No live probe yet: ${run.error ?? "probe skipped"}`
-            : `Probe error: ${run.error ?? "see history"}`,
-      );
+      onToast(probeToastMessage(run, isEnabled));
     } catch (err) {
       setAccessValidated(false);
       onToast(`Probe failed: ${(err as Error).message}`);
@@ -975,6 +1019,43 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
                   )}
                 </div>
               )}
+              {schedulerFields.length > 0 && (
+                <div className="mt-2 border-t border-line pt-3">
+                  <div className="text-xs font-black uppercase tracking-wide text-muted">
+                    Scheduled sync
+                  </div>
+                  <div className="mt-1 text-xs font-semibold text-muted">
+                    Optional interval for the in-process scheduler. Leave empty
+                    to sync manually from the console or API.
+                  </div>
+                  <div className="mt-2 grid gap-2">
+                    {schedulerFields.map((field) => (
+                      <label
+                        key={field.name}
+                        className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
+                      >
+                        {field.label}
+                        <input
+                          value={options[field.name] ?? ""}
+                          onChange={(e) =>
+                            setOptions((current) => ({
+                              ...current,
+                              [field.name]: e.target.value,
+                            }))
+                          }
+                          placeholder={field.placeholder}
+                          className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                        />
+                        {field.hint && (
+                          <span className="font-normal normal-case tracking-normal text-muted">
+                            {field.hint}
+                          </span>
+                        )}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
               {usesDiscoveredReadScope && !isSnowflake && (
                 <div className="mt-2 rounded-lg border border-line bg-slate-50 p-3">
                   <div className="text-xs font-black uppercase tracking-wide text-muted">
@@ -1006,8 +1087,9 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
             )}
             {canEnable && !isEnabled && !accessValidated && (
               <div className="mt-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-900">
-                Test connection before enabling. The probe validates required
-                fields without persisting raw credentials.
+                Test connection before enabling. Snowflake runs a live probe;
+                other runnable connectors validate configuration only until
+                sync.
               </div>
             )}
             {discoveryRun?.metadata && (
