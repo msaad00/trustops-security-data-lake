@@ -382,7 +382,8 @@ def test_v1_connector_discovery_is_enveloped_and_history_safe(tmp_path: Path) ->
         assert body["meta"]["connector_id"] == "aws-posture"
         assert body["meta"]["count"] == 1
         assert body["data"][0]["kind"] == "discover"
-        assert body["data"][0]["metadata"] == {}
+        assert body["data"][0]["metadata"]["selection_mode"] == "account"
+        assert body["data"][0]["metadata"]["selectors"][0]["name"] == "123456789012"
     finally:
         server.shutdown()
 
