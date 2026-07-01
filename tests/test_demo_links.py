@@ -32,6 +32,8 @@ def test_share_links_include_login_and_connect_when_hosted() -> None:
     assert "connect" in kinds
     assert "demo" in kinds
     assert "trust_share_active" in kinds
+    login = next(row for row in links if row["kind"] == "login")
+    assert login["url"] == "https://trustops.example.test/api/v1/auth/login"
     for row in links:
         url = row["url"]
         if not url.startswith("http"):
@@ -39,6 +41,29 @@ def test_share_links_include_login_and_connect_when_hosted() -> None:
         parsed = urlparse(url)
         assert parsed.scheme == "https"
         assert parsed.netloc == "trustops.example.test"
+
+
+def test_share_links_use_saml_login_when_configured() -> None:
+    links = build_share_links(
+        public_url="https://trustops.example.test",
+        sso_configured=True,
+        require_auth=True,
+        active_share_count=0,
+        login_path="/api/v1/auth/saml/login",
+    )
+    login = next(row for row in links if row["kind"] == "login")
+    assert login["url"] == "https://trustops.example.test/api/v1/auth/saml/login"
+
+
+def test_share_links_reject_unsafe_public_url() -> None:
+    links = build_share_links(
+        public_url="javascript:alert(1)",
+        sso_configured=True,
+        require_auth=True,
+        active_share_count=0,
+    )
+    assert links[0]["kind"] == "workspace"
+    assert links[0]["description"].startswith("Set TRUSTOPS_PUBLIC_URL")
 
 
 def test_account_linking_deep_links_and_status() -> None:

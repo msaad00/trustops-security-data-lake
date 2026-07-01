@@ -19,7 +19,9 @@ pytest.importorskip("httpx")
 
 from fastapi.testclient import TestClient  # noqa: E402
 
-from security_lakehouse import trust_share  # noqa: E402
+from security_lakehouse import tenancy, trust_share  # noqa: E402
+from security_lakehouse.db.base import session_scope  # noqa: E402
+from security_lakehouse.db.repository import create_api_key, create_tenant, create_user  # noqa: E402
 from security_lakehouse.server_app import create_app  # noqa: E402
 from test_api_v1 import _seed_lake  # noqa: E402
 
@@ -43,6 +45,27 @@ def _walk_keys(payload: object) -> set[str]:
         for item in payload:
             found |= _walk_keys(item)
     return found
+
+
+def test_public_trust_resolves_tenant_scoped_share(tmp_path: Path) -> None:
+    """Multi-tenant shares live under tenants/<id>; the public route must find them."""
+    app = create_app(tmp_path, require_auth=True)
+    with session_scope(app.state.sessionmaker) as session:
+        tenant = create_tenant(session, slug="acme", name="Acme")
+        user = create_user(session, tenant_id=tenant.id, email="u@acme.test", role="admin")
+        _key, token = create_api_key(session, tenant_id=tenant.id, user_id=user.id)
+
+    tenant_lake = tmp_path / tenancy.TENANTS_DIRNAME / tenant.id
+    tenant_lake.mkdir(parents=True)
+    _seed_lake(tenant_lake)
+    share = trust_share.create_share(tenant_lake, role="auditor", expires_in_hours=24)
+    client = TestClient(app)
+
+    assert client.get(f"/api/public/trust/{share['token']}").status_code == 200
+    assert (
+        client.get("/api/public/trust/trust_does_not_exist", headers={"Authorization": f"Bearer {token}"}).status_code
+        == 404
+    )
 
 
 def test_public_trust_returns_redacted_posture(tmp_path: Path) -> None:

@@ -18,9 +18,9 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import logging
 import math
 import os
-import secrets
 import uuid
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime, timedelta
@@ -67,6 +67,7 @@ from security_lakehouse.db.models import REMEDIATION_PRIORITIES, User
 from security_lakehouse.demo_links import build_demo_kit
 from security_lakehouse.ingestion_status import build_ingestion_status
 from security_lakehouse.io import resolve_path
+from security_lakehouse.public_url import normalize_public_url
 from security_lakehouse.services import NotFound, ValidationError
 from security_lakehouse.services import access_reviews as access_review_services
 from security_lakehouse.services import grc as grc_services
@@ -289,6 +290,20 @@ def _page_meta(limit: int, offset: int, count: int) -> dict[str, int]:
 
 def _insecure_requested() -> bool:
     return os.environ.get("TRUSTOPS_ALLOW_INSECURE_NO_AUTH", "").lower() in {"1", "true", "yes"}
+
+
+def _production_env_blocked() -> bool:
+    env = os.environ.get("TRUSTOPS_ENV", "").strip().lower()
+    return env in {"production", "prod", "staging"}
+
+
+def _assert_insecure_allowed() -> None:
+    if _insecure_requested() and _production_env_blocked():
+        raise RuntimeError("TRUSTOPS_ALLOW_INSECURE_NO_AUTH is forbidden when TRUSTOPS_ENV is production or staging")
+    if _insecure_requested():
+        logging.getLogger(__name__).warning(
+            "TRUSTOPS_ALLOW_INSECURE_NO_AUTH is enabled: every request runs as synthetic admin"
+        )
 
 
 def _redact_payload(payload: object, identity: Identity) -> object:
@@ -532,13 +547,17 @@ def _build_poc_readiness(
 ) -> dict[str, object]:
     """Return the tenant's readiness to host a shareable POC."""
     now = datetime.now(UTC)
-    public_url = (
+    public_url = normalize_public_url(
         os.environ.get("TRUSTOPS_PUBLIC_URL")
         or os.environ.get("TRUSTOPS_BASE_URL")
         or os.environ.get("TRUSTOPS_APP_URL")
-        or ""
-    ).rstrip("/")
+    )
     sso_configured = app.state.oauth is not None or app.state.saml_config is not None
+    login_path = (
+        "/api/v1/auth/saml/login"
+        if app.state.saml_config is not None and app.state.oauth is None
+        else "/api/v1/auth/login"
+    )
     keys = repository.list_api_keys(session, tenant_id=identity.tenant_id)
     active_keys = [key for key in keys if key.is_active(now=now)]
     role_counts = {
@@ -629,17 +648,18 @@ def _build_poc_readiness(
     state = "ready" if blocking_ready else ("internal_ready" if source_ready and any_access_ready else "needs_setup")
     next_step = next((step for step in steps if step["status"] != "ready"), None)
     demo_kit = build_demo_kit(
-        public_url=public_url or None,
+        public_url=public_url,
         sso_configured=sso_configured,
         require_auth=bool(app.state.require_auth),
         ingestion=ingestion,
         active_share_count=len(active_shares),
         shareable=state == "ready",
+        login_path=login_path,
     )
     return {
         "state": state,
         "shareable": state == "ready",
-        "public_url": public_url or None,
+        "public_url": public_url,
         "demo_kit": demo_kit,
         "workspace": {
             "tenant_id": identity.tenant_id,
@@ -730,6 +750,7 @@ async def posture_event_stream(lake: Path, request: Request, *, interval: float 
 
 def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     """Build the server-mode ASGI app bound to a security data lake directory."""
+    _assert_insecure_allowed()
     lake = resolve_path(lake_dir)
     dashboard = lake / "console.html"
     render_dashboard(lake, dashboard)
@@ -787,7 +808,9 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     if app.state.oidc_config is not None:
         from starlette.middleware.sessions import SessionMiddleware
 
-        secret = os.environ.get("TRUSTOPS_SESSION_SECRET") or secrets.token_hex(32)
+        secret = os.environ.get("TRUSTOPS_SESSION_SECRET", "").strip()
+        if not secret:
+            raise RuntimeError("TRUSTOPS_SESSION_SECRET is required when OIDC SSO is configured")
         app.add_middleware(SessionMiddleware, secret_key=secret, same_site="lax", https_only=_COOKIE_SECURE)
         app.state.oauth = build_oauth(app.state.oidc_config)
 
@@ -870,10 +893,22 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     # request-audit middleware records the access as anonymous public.
     @app.get("/api/public/trust/{token}", tags=["discovery"])
     def public_trust(token: str) -> JSONResponse:
-        share = trust_share.resolve_share(lake, token)
-        if share is None:
+        if app.state.require_auth:
+            with app.state.sessionmaker() as session:
+                tenant_ids = repository.list_tenant_ids(session)
+        else:
+            tenant_ids = []
+        bound = tenancy.resolve_bound_tenant(lake, require_auth=app.state.require_auth, tenant_ids=tenant_ids)
+        resolved = trust_share.resolve_share_from_root(
+            lake,
+            token,
+            tenant_ids=tenant_ids,
+            bound_tenant=bound,
+        )
+        if resolved is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not found")
-        return JSONResponse(_public_trust_summary(lake, share))
+        share, tenant_lake = resolved
+        return JSONResponse(_public_trust_summary(tenant_lake, share))
 
     @app.get("/api/v1", tags=["discovery"])
     def v1_index(_identity: Identity = Depends(_require_read)) -> JSONResponse:
@@ -914,8 +949,14 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         except Exception:  # noqa: BLE001 - authlib surfaces several OAuth error types
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="OIDC token exchange failed") from None
         email = (token.get("userinfo") or {}).get("email", "")
+        email_verified = (token.get("userinfo") or {}).get("email_verified")
         try:
-            _user, sess_token = complete_oidc_login(session, config=app.state.oidc_config, email=email)
+            _user, sess_token = complete_oidc_login(
+                session,
+                config=app.state.oidc_config,
+                email=email,
+                email_verified=email_verified,
+            )
         except OIDCLoginError:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="OIDC login rejected") from None
         session.commit()
