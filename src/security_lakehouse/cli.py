@@ -298,6 +298,16 @@ def _parser() -> argparse.ArgumentParser:
     fixtures_load.add_argument("--company", required=True, help="company directory under mockup_companies/")
     fixtures_load.add_argument("--out", required=True, help="security data lake output directory")
     fixtures_load.set_defaults(func=_fixtures_load)
+    fixtures_write_golden = fixtures_sub.add_parser(
+        "write-golden",
+        help="regenerate mockup_companies/golden/raw/security_events.jsonl (37 dashboard controls)",
+    )
+    fixtures_write_golden.add_argument(
+        "--root",
+        default=None,
+        help="mockup_companies root (default: repository mockup_companies/)",
+    )
+    fixtures_write_golden.set_defaults(func=_fixtures_write_golden)
 
     repo = sub.add_parser("repo", help="public repository audit commands")
     repo_sub = repo.add_subparsers(dest="repo_command", required=True)
@@ -1278,6 +1288,28 @@ def _fixtures_load(args: argparse.Namespace) -> int:
                 "company": fixture.company,
                 "loaded_from": str(fixture.raw_path),
                 **result.__dict__,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+def _fixtures_write_golden(args: argparse.Namespace) -> int:
+    from pathlib import Path
+
+    from security_lakehouse.golden_fixture import golden_fixture_summary, write_golden_fixture
+
+    root = Path(args.root) if args.root else None
+    path = write_golden_fixture(root=root)
+    summary = golden_fixture_summary()
+    print(
+        json.dumps(
+            {
+                "written": str(path),
+                "event_count": summary["control_count"],
+                **summary,
             },
             indent=2,
             sort_keys=True,
