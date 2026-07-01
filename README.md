@@ -224,7 +224,7 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev,server]"
 
-security-lakehouse fixtures load --company fintech --out build/lakehouse
+security-lakehouse fixtures load --company golden --out build/lakehouse
 security-lakehouse db upgrade --lake build/lakehouse
 security-lakehouse serve \
   --lake build/lakehouse \

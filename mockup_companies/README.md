@@ -8,14 +8,15 @@ like real connector output. Load one with the CLI:
 
 ```bash
 security-lakehouse fixtures list
-security-lakehouse fixtures load --company saas --out build/lakehouse-saas
-security-lakehouse serve --lake build/lakehouse-saas
+security-lakehouse fixtures load --company golden --out build/lakehouse
+security-lakehouse serve --lake build/lakehouse
 ```
 
 The shipped companies are:
 
 | Company      | Profile                                                                                                   |
 | ------------ | --------------------------------------------------------------------------------------------------------- |
+| `golden`     | **Canonical demo** — all 33 SOC 2 common criteria + 4 NIST AI RMF controls (37 total) on the dashboard.   |
 | `saas`       | Mid-size SaaS company — typical SOC 2 surface (IAM, GitHub, AWS, Okta, Jira).                             |
 | `ai_lab`     | AI/ML lab — model registry + runtime inference + MCP server evidence in addition to the SaaS baseline.    |
 | `fintech`    | Payments + ledger workload — KMS keys, audit log retention, payments egress controls, dependency scanner. |

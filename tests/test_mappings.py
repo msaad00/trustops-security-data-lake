@@ -78,7 +78,7 @@ def test_reviewed_crosswalk_surfaces_cross_framework_domains() -> None:
 
 def test_fintech_and_healthcare_fixtures_ship_and_validate() -> None:
     fixtures = {f.company: f for f in list_fixtures()}
-    assert {"fintech", "healthcare"}.issubset(fixtures.keys())
+    assert {"fintech", "healthcare", "golden"}.issubset(fixtures.keys())
     catalog = set(load_control_catalog().keys())
     for fixture in fixtures.values():
         for control_id in fixture.controls:
