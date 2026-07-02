@@ -956,7 +956,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
                 admin_consent=False,
             )
         return RedirectResponse(
-            url=azure_callback_redirect(session_id=session_id, public_url=public_url),
+            url=azure_callback_redirect(session_id=session_id, public_url=None),
             status_code=status.HTTP_302_FOUND,
         )
 
