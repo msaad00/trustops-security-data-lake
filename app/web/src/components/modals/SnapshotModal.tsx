@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Camera, Loader2 } from "lucide-react";
+import { Camera, Download, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
@@ -40,6 +40,19 @@ export function SnapshotModal({ open, onClose, onToast }: Props) {
     } catch (err) {
       onToast(`Snapshot failed: ${(err as Error).message}`);
     }
+  };
+
+  const downloadPdf = () => {
+    const snapshotId = last?.snapshot_id;
+    if (!snapshotId) {
+      onToast("No snapshot available to export");
+      return;
+    }
+    window.open(
+      `/api/v1/snapshots/${encodeURIComponent(snapshotId)}/export.pdf`,
+      "_blank",
+      "noopener,noreferrer",
+    );
   };
 
   return (
@@ -111,6 +124,15 @@ export function SnapshotModal({ open, onClose, onToast }: Props) {
                 open {last.open_violation_count ?? 0} · critical{" "}
                 {last.critical_violation_count ?? 0}
               </div>
+              <Button
+                type="button"
+                variant="default"
+                className="mt-2 w-full"
+                onClick={downloadPdf}
+              >
+                <Download className="h-4 w-4" />
+                Download executive PDF
+              </Button>
             </div>
           ) : (
             <div className="mt-1.5 text-xs text-muted">

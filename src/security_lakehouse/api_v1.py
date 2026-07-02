@@ -79,6 +79,7 @@ def list_snapshots(lake_dir: str | Path) -> list[JsonObject]:
         posture = payload.get("posture") or {}
         out.append(
             {
+                "snapshot_id": path.stem,
                 "snapshot_path": str(path),
                 "evaluated_at": payload.get("evaluated_at"),
                 "reason": payload.get("snapshot_reason") or "manual",
@@ -491,6 +492,16 @@ def resource_catalog() -> list[JsonObject]:
             "path": "/api/v1/snapshots/integrity",
             "kind": "singleton",
             "methods": ["GET"],
+        }
+    )
+    catalog.append(
+        {
+            "resource": "snapshots.export",
+            "path": "/api/v1/snapshots/{snapshot_id}/export.pdf",
+            "kind": "action",
+            "methods": ["GET"],
+            "scopes": ["read"],
+            "path_params": ["snapshot_id"],
         }
     )
     catalog.append(

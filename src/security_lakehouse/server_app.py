@@ -1966,6 +1966,31 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         _status, body = api_v1.handle_get(f"/api/v1/frameworks/{framework_id}/detail", {}, lake_for(identity))
         return JSONResponse(_redact_payload(body, identity), status_code=int(_status))
 
+    @app.get("/api/v1/snapshots/{snapshot_id}/export.pdf", tags=["assessment"])
+    def snapshot_export_pdf(snapshot_id: str, identity: Identity = Depends(_require_read)) -> Response:
+        from security_lakehouse.assessment import load_snapshot, safe_snapshot_export_filename
+        from security_lakehouse.reporting.executive_pdf import render_executive_pdf
+
+        lake = lake_for(identity)
+        try:
+            assessment = load_snapshot(lake, snapshot_id)
+        except (FileNotFoundError, json.JSONDecodeError, OSError):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="snapshot not found") from None
+        try:
+            pdf_bytes = render_executive_pdf(assessment)
+        except RuntimeError as exc:
+            raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail=str(exc)) from exc
+        filename = safe_snapshot_export_filename(snapshot_id)
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="{filename}"',
+                "Cache-Control": "no-store",
+                "X-Content-Type-Options": "nosniff",
+            },
+        )
+
     # --- versioned data surface (authenticated) ---
     @app.get("/api/v1/{rest:path}")
     def v1_get(rest: str, request: Request, identity: Identity = Depends(_require_read)) -> JSONResponse:
