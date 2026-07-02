@@ -1,0 +1,101 @@
+{
+  "schema_version": "trustops.policy_template.v1",
+  "templates": [
+    {
+      "template_id": "information-security-policy",
+      "title": "Information Security Policy",
+      "category": "governance",
+      "framework_ids": ["soc2", "iso27001"],
+      "related_control_ids": ["SOC2-CC1.1", "SOC2-CC1.2", "SOC2-CC1.3"],
+      "owner_role": "security_admin",
+      "review_cadence_days": 365,
+      "variables": ["company_name", "policy_owner", "effective_date"],
+      "summary": "Umbrella security policy establishing management intent, roles, and review cadence.",
+      "body_markdown": "# Information Security Policy\n\n**Organization:** {{company_name}}\n**Policy owner:** {{policy_owner}}\n**Effective date:** {{effective_date}}\n\n## Purpose\n\n{{company_name}} establishes this policy to protect information assets, meet customer and regulatory obligations, and maintain a documented security program.\n\n## Scope\n\nThis policy applies to all workforce members, contractors, and systems that process {{company_name}} data.\n\n## Management commitment\n\nManagement approves security objectives, allocates resources, and reviews program effectiveness at least annually.\n\n## Roles and responsibilities\n\n- **Policy owner** maintains this document and coordinates annual review.\n- **Security team** implements technical and administrative safeguards.\n- **System owners** ensure controls operate within their environments.\n\n## Review\n\nThis policy is reviewed at least annually and after material changes to business or regulatory scope."
+    },
+    {
+      "template_id": "acceptable-use-policy",
+      "title": "Acceptable Use Policy",
+      "category": "workforce",
+      "framework_ids": ["soc2"],
+      "related_control_ids": ["SOC2-CC1.4", "SOC2-CC1.5"],
+      "owner_role": "security_admin",
+      "review_cadence_days": 365,
+      "variables": ["company_name", "policy_owner", "effective_date"],
+      "summary": "Defines acceptable and prohibited use of company systems and data.",
+      "body_markdown": "# Acceptable Use Policy\n\n**Organization:** {{company_name}}\n**Policy owner:** {{policy_owner}}\n**Effective date:** {{effective_date}}\n\n## Acceptable use\n\nWorkforce members may use {{company_name}} systems only for authorized business purposes and must protect credentials and customer data.\n\n## Prohibited activities\n\n- Unauthorized access, sharing, or exfiltration of data\n- Circumventing security controls or monitoring\n- Installing unapproved software on managed devices\n\n## Enforcement\n\nViolations may result in access revocation, disciplinary action, or termination."
+    },
+    {
+      "template_id": "access-control-policy",
+      "title": "Access Control Policy",
+      "category": "access",
+      "framework_ids": ["soc2"],
+      "related_control_ids": ["SOC2-CC6.1", "SOC2-CC6.2", "SOC2-CC6.3"],
+      "owner_role": "security_admin",
+      "review_cadence_days": 365,
+      "variables": ["company_name", "policy_owner", "effective_date"],
+      "summary": "Provisioning, MFA, privileged access, and periodic access review requirements.",
+      "body_markdown": "# Access Control Policy\n\n**Organization:** {{company_name}}\n**Policy owner:** {{policy_owner}}\n**Effective date:** {{effective_date}}\n\n## Principles\n\nAccess is granted on least privilege, approved by managers, and removed when no longer required.\n\n## Requirements\n\n- Unique accounts for all users; shared credentials are prohibited.\n- MFA is required for workforce access to production and administrative systems.\n- Privileged access is limited, logged, and reviewed quarterly.\n- Access reviews are performed at least quarterly for critical systems."
+    },
+    {
+      "template_id": "incident-response-plan",
+      "title": "Incident Response Plan",
+      "category": "operations",
+      "framework_ids": ["soc2"],
+      "related_control_ids": ["SOC2-CC7.3", "SOC2-CC7.4"],
+      "owner_role": "security_admin",
+      "review_cadence_days": 365,
+      "variables": ["company_name", "policy_owner", "effective_date", "security_contact"],
+      "summary": "Detection, containment, notification, and post-incident review procedures.",
+      "body_markdown": "# Incident Response Plan\n\n**Organization:** {{company_name}}\n**Policy owner:** {{policy_owner}}\n**Effective date:** {{effective_date}}\n**Security contact:** {{security_contact}}\n\n## Phases\n\n1. **Detect & triage** — alerts and reports are routed to {{security_contact}}.\n2. **Contain** — isolate affected systems and preserve evidence.\n3. **Eradicate & recover** — remove threat and restore services.\n4. **Notify** — customers and regulators per contractual and legal obligations.\n5. **Post-incident review** — document root cause and corrective actions within 10 business days.\n\n## Testing\n\nTabletop exercises are conducted at least annually."
+    },
+    {
+      "template_id": "change-management-policy",
+      "title": "Change Management Policy",
+      "category": "operations",
+      "framework_ids": ["soc2"],
+      "related_control_ids": ["SOC2-CC8.1"],
+      "owner_role": "security_admin",
+      "review_cadence_days": 365,
+      "variables": ["company_name", "policy_owner", "effective_date"],
+      "summary": "Change approval, testing, and emergency change procedures for production systems.",
+      "body_markdown": "# Change Management Policy\n\n**Organization:** {{company_name}}\n**Policy owner:** {{policy_owner}}\n**Effective date:** {{effective_date}}\n\n## Standard changes\n\nProduction changes require a ticket, peer review, and rollback plan. Security-impacting changes require security team approval.\n\n## Emergency changes\n\nEmergency changes may bypass standard approval but must be documented and reviewed within one business day.\n\n## Segregation\n\nDevelopers do not deploy directly to production without an approved change record."
+    },
+    {
+      "template_id": "data-classification-policy",
+      "title": "Data Classification & Handling Policy",
+      "category": "data",
+      "framework_ids": ["soc2"],
+      "related_control_ids": ["SOC2-CC6.7"],
+      "owner_role": "security_admin",
+      "review_cadence_days": 365,
+      "variables": ["company_name", "policy_owner", "effective_date"],
+      "summary": "Classification tiers, encryption, retention, and secure disposal requirements.",
+      "body_markdown": "# Data Classification & Handling Policy\n\n**Organization:** {{company_name}}\n**Policy owner:** {{policy_owner}}\n**Effective date:** {{effective_date}}\n\n## Classification tiers\n\n- **Public** — approved for external release\n- **Internal** — workforce use only\n- **Confidential** — customer or regulated data; encryption in transit and at rest required\n- **Restricted** — credentials, keys, and highly sensitive PII\n\n## Handling\n\nConfidential and restricted data must not be stored on unapproved devices or transmitted without encryption."
+    },
+    {
+      "template_id": "vendor-management-policy",
+      "title": "Vendor Management Policy",
+      "category": "third_party",
+      "framework_ids": ["soc2"],
+      "related_control_ids": ["SOC2-CC9.2"],
+      "owner_role": "security_admin",
+      "review_cadence_days": 365,
+      "variables": ["company_name", "policy_owner", "effective_date"],
+      "summary": "Third-party risk assessment, contractual security requirements, and ongoing monitoring.",
+      "body_markdown": "# Vendor Management Policy\n\n**Organization:** {{company_name}}\n**Policy owner:** {{policy_owner}}\n**Effective date:** {{effective_date}}\n\n## Due diligence\n\nVendors with access to confidential data undergo security review before contract execution, including questionnaires and evidence of SOC 2 or equivalent controls where applicable.\n\n## Contracts\n\nAgreements include confidentiality, breach notification, subprocessors, and right-to-audit clauses.\n\n## Ongoing monitoring\n\nCritical vendors are re-assessed at least annually."
+    },
+    {
+      "template_id": "business-continuity-plan",
+      "title": "Business Continuity Plan",
+      "category": "resilience",
+      "framework_ids": ["soc2"],
+      "related_control_ids": ["SOC2-CC9.1"],
+      "owner_role": "security_admin",
+      "review_cadence_days": 365,
+      "variables": ["company_name", "policy_owner", "effective_date"],
+      "summary": "Recovery objectives, backup strategy, and continuity testing for critical services.",
+      "body_markdown": "# Business Continuity Plan\n\n**Organization:** {{company_name}}\n**Policy owner:** {{policy_owner}}\n**Effective date:** {{effective_date}}\n\n## Objectives\n\nCritical services target recovery within defined RTO/RPO documented per system.\n\n## Backups\n\nProduction data is backed up on a defined schedule, encrypted, and restore-tested at least annually.\n\n## Testing\n\nContinuity procedures are exercised at least annually with documented results."
+    }
+  ]
+}

@@ -116,6 +116,12 @@ const ITEMS: RailItem[] = [
     group: "Review",
   },
   {
+    href: "/policies",
+    label: "Policies",
+    Icon: BookOpen,
+    group: "Review",
+  },
+  {
     href: "/auth",
     label: "Access",
     Icon: KeyRound,

@@ -480,3 +480,34 @@ class AccessReviewItem(Base):
     )
 
     campaign: Mapped[AccessReviewCampaign] = relationship(back_populates="items")
+
+
+POLICY_DOCUMENT_STATUSES = frozenset({"draft", "published", "archived"})
+
+
+class PolicyDocument(Base):
+    """A tenant policy document adopted from a bundled template (GRC policy pillar)."""
+
+    __tablename__ = "policy_documents"
+    __table_args__ = (Index("ix_policy_documents_tenant_status", "tenant_id", "status"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    template_id: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="draft")
+    content: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    variables_json: Mapped[str] = mapped_column(Text, nullable=False, default="{}")
+    related_control_ids_json: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
+    owner: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    created_by: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
+    published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    review_due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

@@ -45,6 +45,8 @@ import type {
   ControlExceptionItem,
   CreateAgentRunPayload,
   Risk,
+  PolicyDocument,
+  PolicyTemplateSummary,
 } from "./types";
 
 const STALE = 15_000;
@@ -960,5 +962,78 @@ export function useControlRemediation(controlId: string | null) {
     queryFn: () => api.controlRemediation(controlId as string),
     enabled: Boolean(controlId),
     staleTime: 60_000,
+  });
+}
+
+export function usePolicyTemplates() {
+  return useQuery({
+    queryKey: ["policy-templates"],
+    queryFn: () => api.policyTemplates(),
+    staleTime: STALE,
+  });
+}
+
+export function usePolicies(query = "") {
+  return useQuery({
+    queryKey: ["policies", query],
+    queryFn: () => api.policies(query),
+    staleTime: STALE,
+    refetchInterval: LIVE,
+  });
+}
+
+export function usePolicy(id: string | null) {
+  return useQuery({
+    queryKey: ["policy", id],
+    queryFn: () => api.policy(id as string),
+    enabled: Boolean(id),
+    staleTime: STALE,
+  });
+}
+
+export function usePolicyCoverage() {
+  return useQuery({
+    queryKey: ["policy-coverage"],
+    queryFn: () => api.policyCoverage(),
+    staleTime: STALE,
+  });
+}
+
+export function useAdoptPolicyMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: {
+      template_id: string;
+      variables?: Record<string, string>;
+      owner?: string;
+    }) => api.adoptPolicy(payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["policies"] });
+      qc.invalidateQueries({ queryKey: ["policy-coverage"] });
+    },
+  });
+}
+
+export function useUpdatePolicyMutation(policyId: string | null) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: Parameters<typeof api.updatePolicy>[1]) =>
+      api.updatePolicy(policyId as string, payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["policies"] });
+      qc.invalidateQueries({ queryKey: ["policy", policyId] });
+    },
+  });
+}
+
+export function usePublishPolicyMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.publishPolicy(id),
+    onSuccess: (_data, id) => {
+      qc.invalidateQueries({ queryKey: ["policies"] });
+      qc.invalidateQueries({ queryKey: ["policy", id] });
+      qc.invalidateQueries({ queryKey: ["policy-coverage"] });
+    },
   });
 }

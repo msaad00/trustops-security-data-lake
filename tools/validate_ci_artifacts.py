@@ -20,6 +20,7 @@ JSON_FILES = [
     "mappings/control_map.json",
     "connectors/catalog.json",
     "programs/catalog.json",
+    "policy_templates/catalog.json",
 ]
 
 
