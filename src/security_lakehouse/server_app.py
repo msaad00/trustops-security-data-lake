@@ -1918,7 +1918,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
 
     @app.get("/api/v1/snapshots/{snapshot_id}/export.pdf", tags=["assessment"])
     def snapshot_export_pdf(snapshot_id: str, identity: Identity = Depends(_require_read)) -> Response:
-        from security_lakehouse.assessment import load_snapshot
+        from security_lakehouse.assessment import load_snapshot, safe_snapshot_export_filename
         from security_lakehouse.reporting.executive_pdf import render_executive_pdf
 
         lake = lake_for(identity)
@@ -1930,8 +1930,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             pdf_bytes = render_executive_pdf(assessment)
         except RuntimeError as exc:
             raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail=str(exc)) from exc
-        safe_id = snapshot_id.replace('"', "")[:80]
-        filename = f"trustops-executive-{safe_id}.pdf"
+        filename = safe_snapshot_export_filename(snapshot_id)
         return Response(
             content=pdf_bytes,
             media_type="application/pdf",

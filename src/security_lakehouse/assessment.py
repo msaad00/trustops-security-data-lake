@@ -269,7 +269,7 @@ def list_snapshot_times(lake_dir: str | Path) -> list[str]:
     return [payload.get("evaluated_at") for _ts, payload, _path in _iter_snapshots(lake_dir)]
 
 
-_SNAPSHOT_ID_RE = re.compile(r"^[A-Za-z0-9._-]+$")
+_SNAPSHOT_ID_RE = re.compile(r"^[A-Za-z0-9._+=,@:-]+$")
 
 
 def _is_safe_snapshot_token(token: str) -> bool:
@@ -282,24 +282,42 @@ def _is_safe_snapshot_token(token: str) -> bool:
     return bool(_SNAPSHOT_ID_RE.fullmatch(token))
 
 
+def normalize_snapshot_id(snapshot_id: str) -> str | None:
+    """Return a safe snapshot id token, or ``None`` when the input is unsafe."""
+    token = snapshot_id.strip()
+    if not _is_safe_snapshot_token(token):
+        return None
+    return token
+
+
+def safe_snapshot_export_filename(snapshot_id: str) -> str:
+    """Build a header-safe PDF attachment filename from a snapshot id."""
+    token = normalize_snapshot_id(snapshot_id) or "snapshot"
+    stem = re.sub(r"[^A-Za-z0-9._-]", "", token)[:80] or "snapshot"
+    return f"trustops-executive-{stem}.pdf"
+
+
 def resolve_snapshot_path(lake_dir: str | Path, snapshot_id: str) -> Path | None:
     """Resolve a snapshot file by filename stem or ``assessment_hash`` prefix."""
-    snapshots_dir = (Path(lake_dir) / "gold" / "snapshots").resolve()
-    token = snapshot_id.strip()
-    if not snapshots_dir.is_dir() or not _is_safe_snapshot_token(token):
+    snapshots_dir = Path(lake_dir) / "gold" / "snapshots"
+    if not snapshots_dir.is_dir():
         return None
-
-    direct = (snapshots_dir / token).resolve()
-    if direct.is_file() and (direct == snapshots_dir or snapshots_dir in direct.parents):
-        return direct
-
-    stem_path = (snapshots_dir / f"{token}.json").resolve()
-    if stem_path.is_file() and (stem_path == snapshots_dir or snapshots_dir in stem_path.parents):
-        return stem_path
+    token = normalize_snapshot_id(snapshot_id)
+    if token is None:
+        return None
+    resolved_dir = snapshots_dir.resolve()
     for path in snapshots_dir.glob("assessment-*.json"):
+        try:
+            path.resolve().relative_to(resolved_dir)
+        except ValueError:
+            continue
         if path.stem == token:
             return path
     for path in snapshots_dir.glob("assessment-*.json"):
+        try:
+            path.resolve().relative_to(resolved_dir)
+        except ValueError:
+            continue
         try:
             payload = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):

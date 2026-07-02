@@ -118,12 +118,13 @@ class _Handler(BaseHTTPRequestHandler):
                 status=HTTPStatus.NOT_IMPLEMENTED,
             )
             return
-        safe_id = snapshot_id.replace("\r", "").replace("\n", "").replace('"', "")[:80]
+        from security_lakehouse.assessment import safe_snapshot_export_filename
+
         self._send_bytes(
             pdf_bytes,
             content_type="application/pdf",
             headers={
-                "Content-Disposition": f'attachment; filename="trustops-executive-{safe_id}.pdf"',
+                "Content-Disposition": f'attachment; filename="{safe_snapshot_export_filename(snapshot_id)}"',
             },
         )
 

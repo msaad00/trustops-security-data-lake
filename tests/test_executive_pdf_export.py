@@ -6,10 +6,11 @@ import json
 from http import HTTPStatus
 from pathlib import Path
 
-from security_lakehouse.assessment import load_snapshot, resolve_snapshot_path, write_assessment_snapshot
-from security_lakehouse.reporting.executive_pdf import render_executive_pdf
 from tests.test_api_v1 import _request, _spin
 from tests.test_pipeline import RAW, run_pipeline
+
+from security_lakehouse.assessment import load_snapshot, resolve_snapshot_path, write_assessment_snapshot
+from security_lakehouse.reporting.executive_pdf import render_executive_pdf
 
 
 def test_render_executive_pdf_produces_valid_pdf(tmp_path: Path) -> None:
@@ -35,6 +36,12 @@ def test_resolve_snapshot_path_by_stem_and_hash_prefix(tmp_path: Path) -> None:
     assert resolve_snapshot_path(tmp_path / "lake", "assessment-test") == snapshot
     assert resolve_snapshot_path(tmp_path / "lake", digest[:12]) == snapshot
     assert load_snapshot(tmp_path / "lake", "assessment-test")["assessment_hash"] == digest
+
+
+def test_resolve_snapshot_path_rejects_unsafe_ids(tmp_path: Path) -> None:
+    run_pipeline(RAW, tmp_path / "lake")
+    assert resolve_snapshot_path(tmp_path / "lake", "../etc/passwd") is None
+    assert resolve_snapshot_path(tmp_path / "lake", "assessment/../../secret") is None
 
 
 def test_v1_snapshot_pdf_export_endpoint(tmp_path: Path) -> None:

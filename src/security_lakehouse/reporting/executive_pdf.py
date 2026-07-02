@@ -17,7 +17,7 @@ def render_executive_pdf(assessment: dict[str, Any], *, org_name: str = "TrustOp
         from reportlab.lib.pagesizes import letter
         from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
         from reportlab.lib.units import inch
-        from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+        from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
     except ImportError as exc:  # pragma: no cover - exercised when server extra missing
         raise RuntimeError(_PDF_UNAVAILABLE) from exc
 
