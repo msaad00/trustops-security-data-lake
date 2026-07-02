@@ -27,6 +27,7 @@ from datetime import UTC, datetime, timedelta
 from http import HTTPStatus
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.concurrency import run_in_threadpool
@@ -928,7 +929,6 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         admin_consent: str | None = None,
     ) -> RedirectResponse:
         from security_lakehouse.cloud_linking import (
-            azure_callback_redirect,
             get_cloud_link_session,
             normalize_link_session_id,
             record_azure_consent,
@@ -953,8 +953,9 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
                 azure_tenant_id=azure_tenant or "unknown",
                 admin_consent=False,
             )
+        redirect_path = f"/console/connectors/?connect=azure-posture&link_session={quote(session_id)}"
         return RedirectResponse(
-            url=azure_callback_redirect(session_id=session_id, public_url=None),
+            url=redirect_path,
             status_code=status.HTTP_302_FOUND,
         )
 
