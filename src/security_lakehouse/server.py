@@ -52,6 +52,11 @@ class _Handler(BaseHTTPRequestHandler):
 
     server_version = "TrustOpsAssessment/0.1"
 
+    @staticmethod
+    def _safe_header_value(value: str) -> str:
+        """Return a header-safe value by removing CR/LF characters."""
+        return str(value).replace("\r", "").replace("\n", "")
+
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
         if self.web_dist is not None and self._serve_from_dist(parsed.path):
@@ -120,7 +125,7 @@ class _Handler(BaseHTTPRequestHandler):
         )
         location = azure_callback_redirect(session_id=session_id, public_url=public_url)
         self.send_response(int(HTTPStatus.FOUND))
-        self.send_header("location", location)
+        self.send_header("location", self._safe_header_value(location))
         self.send_header("cache-control", "no-store")
         self.end_headers()
 
