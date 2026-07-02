@@ -253,7 +253,7 @@ function AssessmentDetail({ assessmentId }: { assessmentId: string }) {
       {!locked ? (
         <div className="flex flex-wrap gap-2">
           <Button
-            variant="secondary"
+            variant="default"
             disabled={update.isPending || !Object.keys(draftResponses).length}
             onClick={() => {
               const payload: Record<string, { answer: string }> = {};
