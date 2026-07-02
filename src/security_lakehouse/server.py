@@ -4,11 +4,10 @@ from __future__ import annotations
 
 import json
 import mimetypes
-import os
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, quote, urlparse
 
 from security_lakehouse import api_legacy, api_v1
 from security_lakehouse.dashboard import render_dashboard
@@ -99,17 +98,14 @@ class _Handler(BaseHTTPRequestHandler):
 
     def _handle_azure_link_callback(self, query: dict[str, list[str]]) -> None:
         from security_lakehouse.cloud_linking import (
-            azure_callback_redirect,
             get_cloud_link_session,
             normalize_link_session_id,
             record_azure_consent,
         )
-        from security_lakehouse.public_url import normalize_public_url
 
         session_id = normalize_link_session_id((query.get("state") or [""])[0])
         azure_tenant = (query.get("tenant") or [""])[0].strip()
         admin_consent = (query.get("admin_consent") or [""])[0]
-        public_url = normalize_public_url(os.environ.get("TRUSTOPS_PUBLIC_URL"))
         if not session_id or get_cloud_link_session(self.lake_dir, session_id) is None:
             self._send_json(
                 api_v1.error_envelope("bad_request", "invalid cloud link session", resource="connector.link.callback"),
@@ -123,9 +119,9 @@ class _Handler(BaseHTTPRequestHandler):
             azure_tenant_id=azure_tenant or "unknown",
             admin_consent=consented,
         )
-        location = azure_callback_redirect(session_id=session_id, public_url=public_url)
+        redirect_path = f"/console/connectors/?connect=azure-posture&link_session={quote(session_id)}"
         self.send_response(int(HTTPStatus.FOUND))
-        self.send_header("location", self._safe_header_value(location))
+        self.send_header("location", self._safe_header_value(redirect_path))
         self.send_header("cache-control", "no-store")
         self.end_headers()
 

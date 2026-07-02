@@ -191,7 +191,10 @@ def start_cloud_link(
 
 
 def get_cloud_link_session(lake_dir: str | Path, session_id: str) -> dict[str, Any] | None:
-    row = _load_sessions(lake_dir)["sessions"].get(session_id)
+    token = normalize_link_session_id(session_id)
+    if token is None:
+        return None
+    row = _load_sessions(lake_dir)["sessions"].get(token)
     return row if isinstance(row, dict) else None
 
 
@@ -203,8 +206,11 @@ def record_azure_consent(
     admin_consent: bool,
 ) -> dict[str, Any]:
     """Persist Azure admin-consent callback metadata on a link session."""
+    token = normalize_link_session_id(session_id)
+    if token is None:
+        raise KeyError("cloud link session not found")
     store = _load_sessions(lake_dir)
-    session = store["sessions"].get(session_id)
+    session = store["sessions"].get(token)
     if not isinstance(session, dict):
         raise KeyError("cloud link session not found")
     if session.get("connector_id") != "azure-posture":
@@ -213,7 +219,7 @@ def record_azure_consent(
     session["admin_consent"] = admin_consent
     session["status"] = "consented" if admin_consent else "consent_denied"
     session["consented_at"] = utc_iso(datetime.now(UTC))
-    store["sessions"][session_id] = session
+    store["sessions"][token] = session
     _save_sessions(lake_dir, store)
     return session
 
@@ -228,7 +234,10 @@ def complete_cloud_link(
     subscription_id: str | None = None,
 ) -> dict[str, Any]:
     """Finalize a cloud-link session by staging connector credentials."""
-    session = get_cloud_link_session(lake_dir, session_id)
+    token = normalize_link_session_id(session_id)
+    if token is None:
+        raise KeyError("cloud link session not found")
+    session = get_cloud_link_session(lake_dir, token)
     if session is None:
         raise KeyError("cloud link session not found")
     if session.get("connector_id") != connector_id:
@@ -263,11 +272,11 @@ def complete_cloud_link(
         options=options,
     )
     store = _load_sessions(lake_dir)
-    linked = store["sessions"].get(session_id)
+    linked = store["sessions"].get(token)
     if isinstance(linked, dict):
         linked["status"] = "completed"
         linked["completed_at"] = utc_iso(datetime.now(UTC))
         linked["configure_event"] = record.get("occurred_at")
-        store["sessions"][session_id] = linked
+        store["sessions"][token] = linked
         _save_sessions(lake_dir, store)
     return {"session": linked or session, "configure": record}

@@ -919,9 +919,9 @@ def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tup
         return HTTPStatus.CREATED, envelope("connector.link.start", session)
     link_complete = _connector_link_action(path, "complete")
     if link_complete is not None:
-        from security_lakehouse.cloud_linking import complete_cloud_link
+        from security_lakehouse.cloud_linking import complete_cloud_link, normalize_link_session_id
 
-        session_id = str(payload.get("session_id") or "").strip()
+        session_id = normalize_link_session_id(str(payload.get("session_id") or ""))
         if not session_id:
             return HTTPStatus.BAD_REQUEST, error_envelope(
                 "bad_request", "session_id is required", resource="connector.link.complete"
