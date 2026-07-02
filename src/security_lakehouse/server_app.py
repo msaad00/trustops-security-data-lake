@@ -31,7 +31,7 @@ from typing import Any
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import func, select
@@ -1915,6 +1915,32 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     def v1_framework_detail(framework_id: str, identity: Identity = Depends(_require_read)) -> JSONResponse:
         _status, body = api_v1.handle_get(f"/api/v1/frameworks/{framework_id}/detail", {}, lake_for(identity))
         return JSONResponse(_redact_payload(body, identity), status_code=int(_status))
+
+    @app.get("/api/v1/snapshots/{snapshot_id}/export.pdf", tags=["assessment"])
+    def snapshot_export_pdf(snapshot_id: str, identity: Identity = Depends(_require_read)) -> Response:
+        from security_lakehouse.assessment import load_snapshot
+        from security_lakehouse.reporting.executive_pdf import render_executive_pdf
+
+        lake = lake_for(identity)
+        try:
+            assessment = load_snapshot(lake, snapshot_id)
+        except (FileNotFoundError, json.JSONDecodeError, OSError):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="snapshot not found") from None
+        try:
+            pdf_bytes = render_executive_pdf(assessment)
+        except RuntimeError as exc:
+            raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail=str(exc)) from exc
+        safe_id = snapshot_id.replace('"', "")[:80]
+        filename = f"trustops-executive-{safe_id}.pdf"
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="{filename}"',
+                "Cache-Control": "no-store",
+                "X-Content-Type-Options": "nosniff",
+            },
+        )
 
     # --- versioned data surface (authenticated) ---
     @app.get("/api/v1/{rest:path}")

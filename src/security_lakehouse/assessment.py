@@ -268,6 +268,40 @@ def list_snapshot_times(lake_dir: str | Path) -> list[str]:
     return [payload.get("evaluated_at") for _ts, payload, _path in _iter_snapshots(lake_dir)]
 
 
+def resolve_snapshot_path(lake_dir: str | Path, snapshot_id: str) -> Path | None:
+    """Resolve a snapshot file by filename stem or ``assessment_hash`` prefix."""
+    snapshots_dir = Path(lake_dir) / "gold" / "snapshots"
+    if not snapshots_dir.is_dir() or not snapshot_id.strip():
+        return None
+    token = snapshot_id.strip()
+    direct = snapshots_dir / token
+    if direct.is_file():
+        return direct
+    stem_path = snapshots_dir / f"{token}.json"
+    if stem_path.is_file():
+        return stem_path
+    for path in snapshots_dir.glob("assessment-*.json"):
+        if path.stem == token:
+            return path
+    for path in snapshots_dir.glob("assessment-*.json"):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        digest = payload.get("assessment_hash")
+        if isinstance(digest, str) and (digest == token or digest.startswith(token)):
+            return path
+    return None
+
+
+def load_snapshot(lake_dir: str | Path, snapshot_id: str) -> dict[str, Any]:
+    """Load a point-in-time snapshot payload by id."""
+    path = resolve_snapshot_path(lake_dir, snapshot_id)
+    if path is None:
+        raise FileNotFoundError(f"snapshot not found: {snapshot_id}")
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def posture_as_of(lake_dir: str | Path, *, as_of: str | datetime) -> dict[str, Any]:
     """Return the posture from the most recent snapshot at/before ``as_of``.
 

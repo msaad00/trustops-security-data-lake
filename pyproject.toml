@@ -23,6 +23,7 @@ server = [
     "authlib>=1.3",
     "itsdangerous>=2.2",
     "python3-saml>=1.16",
+    "reportlab>=4.2",
 ]
 dev = [
     "jsonschema>=4.23",
@@ -41,6 +42,7 @@ dev = [
     "authlib>=1.3",
     "itsdangerous>=2.2",
     "python3-saml>=1.16",
+    "reportlab>=4.2",
     # Snowflake sink load-path tests (write_pandas dataframe build).
     "pandas>=2.0",
 ]
