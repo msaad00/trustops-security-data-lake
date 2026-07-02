@@ -1,8 +1,10 @@
-"""One-click AWS/Azure account linking for managed-GRC-style connector onboarding.
+"""One-click AWS/Azure/GCP account linking for managed-GRC-style connector onboarding.
 
 AWS linking issues a tenant-scoped external ID and a CloudFormation quick-create
 URL against the read-only posture role template in ``deploy/aws/``. Azure linking
 builds an admin-consent URL when ``TRUSTOPS_AZURE_LINK_CLIENT_ID`` is set.
+GCP linking serves the Terraform reader template in ``deploy/gcp/`` plus a
+copy-paste apply command with optional Workload Identity binding.
 """
 
 from __future__ import annotations
@@ -21,9 +23,11 @@ from security_lakehouse.io import read_json, write_json
 from security_lakehouse.models import utc_iso
 from security_lakehouse.public_url import normalize_public_url
 
-CLOUD_LINK_CONNECTORS = frozenset({"aws-posture", "azure-posture"})
+CLOUD_LINK_CONNECTORS = frozenset({"aws-posture", "azure-posture", "gcp-posture"})
 AWS_ROLE_NAME_DEFAULT = "TrustOpsPostureReadOnlyRole"
 AWS_TEMPLATE_REL = Path("deploy/aws/trustops-posture-readonly-role.yaml")
+GCP_TEMPLATE_REL = Path("deploy/gcp/trustops-posture-reader.tf")
+_GCP_PROJECT_ID_RE = re.compile(r"^[a-z][a-z0-9-]{4,28}[a-z0-9]$")
 SESSIONS_FILE = Path("gold") / "connectors" / "cloud_link_sessions.json"
 _LINK_SESSION_ID_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 
@@ -66,12 +70,45 @@ def aws_template_bytes() -> bytes:
     return path.read_bytes()
 
 
+def gcp_template_bytes() -> bytes:
+    """Return the packaged GCP Terraform template."""
+    path = Path(__file__).resolve().parents[2] / GCP_TEMPLATE_REL
+    if not path.is_file():
+        raise FileNotFoundError(f"GCP link template is missing: {path}")
+    return path.read_bytes()
+
+
 def _aws_trusted_principal() -> str:
     return str(os.environ.get("TRUSTOPS_AWS_LINK_PRINCIPAL") or "").strip()
 
 
 def _azure_link_client_id() -> str:
     return str(os.environ.get("TRUSTOPS_AZURE_LINK_CLIENT_ID") or "").strip()
+
+
+def _gcp_wif_member() -> str:
+    return str(os.environ.get("TRUSTOPS_GCP_WIF_MEMBER") or "").strip()
+
+
+def valid_gcp_project_id(project_id: str) -> bool:
+    token = project_id.strip()
+    return bool(token and _GCP_PROJECT_ID_RE.fullmatch(token))
+
+
+def gcp_template_url(public_url: str | None) -> str | None:
+    base = _public_base(public_url)
+    if not base:
+        return None
+    return f"{base}/api/v1/connectors/gcp-posture/link/template.tf"
+
+
+def gcp_deploy_command(*, project_id: str = "YOUR_PROJECT_ID", wif_member: str | None = None) -> str:
+    """Return a copy-paste Terraform apply command for the GCP reader identity."""
+    member = (wif_member or _gcp_wif_member()).strip()
+    apply = f'terraform -chdir=deploy/gcp apply -auto-approve -var="project_id={project_id}"'
+    if member:
+        apply += f' -var="workload_identity_member={member}"'
+    return f"terraform -chdir=deploy/gcp init && {apply}"
 
 
 def _public_base(public_url: str | None) -> str | None:
@@ -225,6 +262,12 @@ def start_cloud_link(
         session["manual_template_path"] = str(AWS_TEMPLATE_REL)
     if connector_id == "azure-posture":
         session["consent_url"] = azure_consent_url(session_id=session_id, public_url=public_url)
+    if connector_id == "gcp-posture":
+        wif_member = _gcp_wif_member()
+        session["template_url"] = gcp_template_url(public_url)
+        session["manual_template_path"] = str(GCP_TEMPLATE_REL)
+        session["deploy_command"] = gcp_deploy_command(wif_member=wif_member or None)
+        session["workload_identity_member"] = wif_member or None
     store = _load_sessions(lake_dir)
     store["sessions"][session_id] = session
     _save_sessions(lake_dir, store)
@@ -273,6 +316,7 @@ def complete_cloud_link(
     actor: str,
     account_id: str | None = None,
     subscription_id: str | None = None,
+    project_id: str | None = None,
 ) -> dict[str, Any]:
     """Finalize a cloud-link session by staging connector credentials."""
     token = resolve_cloud_link_session_id(lake_dir, session_id)
@@ -302,6 +346,10 @@ def complete_cloud_link(
         azure_tenant = str(session.get("azure_tenant_id") or "").strip()
         if azure_tenant:
             options["azure_tenant_id"] = azure_tenant
+    elif connector_id == "gcp-posture":
+        if not project_id or not valid_gcp_project_id(str(project_id)):
+            raise ValueError("project_id must be a valid GCP project id")
+        credentials = {"project_id": str(project_id).strip()}
     else:
         raise ValueError(f"cloud linking is not supported for {connector_id}")
     record = append_config_event(

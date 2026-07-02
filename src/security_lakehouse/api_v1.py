@@ -972,6 +972,7 @@ def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tup
                 actor=str(payload.get("actor") or "console"),
                 account_id=str(payload.get("account_id") or "").strip() or None,
                 subscription_id=str(payload.get("subscription_id") or "").strip() or None,
+                project_id=str(payload.get("project_id") or "").strip() or None,
             )
         except KeyError:
             return HTTPStatus.NOT_FOUND, error_envelope(

@@ -305,16 +305,19 @@ export function useCloudLinkCompleteMutation() {
       sessionId,
       accountId,
       subscriptionId,
+      projectId,
     }: {
       id: string;
       sessionId: string;
       accountId?: string;
       subscriptionId?: string;
+      projectId?: string;
     }) =>
       api.completeCloudLink(id, {
         session_id: sessionId,
         account_id: accountId,
         subscription_id: subscriptionId,
+        project_id: projectId,
       }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["connectors"] }),
   });
