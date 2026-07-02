@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from collections import defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -268,17 +269,32 @@ def list_snapshot_times(lake_dir: str | Path) -> list[str]:
     return [payload.get("evaluated_at") for _ts, payload, _path in _iter_snapshots(lake_dir)]
 
 
+_SNAPSHOT_ID_RE = re.compile(r"^[A-Za-z0-9._-]+$")
+
+
+def _is_safe_snapshot_token(token: str) -> bool:
+    if not token or token in {".", ".."}:
+        return False
+    if Path(token).is_absolute():
+        return False
+    if "/" in token or "\\" in token:
+        return False
+    return bool(_SNAPSHOT_ID_RE.fullmatch(token))
+
+
 def resolve_snapshot_path(lake_dir: str | Path, snapshot_id: str) -> Path | None:
     """Resolve a snapshot file by filename stem or ``assessment_hash`` prefix."""
-    snapshots_dir = Path(lake_dir) / "gold" / "snapshots"
-    if not snapshots_dir.is_dir() or not snapshot_id.strip():
-        return None
+    snapshots_dir = (Path(lake_dir) / "gold" / "snapshots").resolve()
     token = snapshot_id.strip()
-    direct = snapshots_dir / token
-    if direct.is_file():
+    if not snapshots_dir.is_dir() or not _is_safe_snapshot_token(token):
+        return None
+
+    direct = (snapshots_dir / token).resolve()
+    if direct.is_file() and (direct == snapshots_dir or snapshots_dir in direct.parents):
         return direct
-    stem_path = snapshots_dir / f"{token}.json"
-    if stem_path.is_file():
+
+    stem_path = (snapshots_dir / f"{token}.json").resolve()
+    if stem_path.is_file() and (stem_path == snapshots_dir or snapshots_dir in stem_path.parents):
         return stem_path
     for path in snapshots_dir.glob("assessment-*.json"):
         if path.stem == token:
