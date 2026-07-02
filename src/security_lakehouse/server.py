@@ -91,8 +91,42 @@ class _Handler(BaseHTTPRequestHandler):
         The contract itself lives in :mod:`security_lakehouse.api_v1` so the
         stdlib server and the optional FastAPI server stay byte-for-byte equal.
         """
+        export_prefix = "/api/v1/snapshots/"
+        if path.endswith("/export.pdf") and path.startswith(export_prefix):
+            snapshot_id = path[len(export_prefix) : -len("/export.pdf")]
+            self._handle_snapshot_pdf_export(snapshot_id)
+            return
         status, body = api_v1.handle_get(path, query, self.lake_dir)
         self._send_json(body, status=status)
+
+    def _handle_snapshot_pdf_export(self, snapshot_id: str) -> None:
+        from security_lakehouse.assessment import load_snapshot
+        from security_lakehouse.reporting.executive_pdf import render_executive_pdf
+
+        try:
+            assessment = load_snapshot(self.lake_dir, snapshot_id)
+            pdf_bytes = render_executive_pdf(assessment)
+        except FileNotFoundError:
+            self._send_json(
+                api_v1.error_envelope("not_found", "snapshot not found", resource="snapshots.export"),
+                status=HTTPStatus.NOT_FOUND,
+            )
+            return
+        except RuntimeError as exc:
+            self._send_json(
+                api_v1.error_envelope("not_implemented", str(exc), resource="snapshots.export"),
+                status=HTTPStatus.NOT_IMPLEMENTED,
+            )
+            return
+        from security_lakehouse.assessment import safe_snapshot_export_filename
+
+        self._send_bytes(
+            pdf_bytes,
+            content_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="{safe_snapshot_export_filename(snapshot_id)}"',
+            },
+        )
 
     def _handle_v1_post(self, path: str) -> None:
         body = self._read_json_body()
@@ -181,6 +215,7 @@ class _Handler(BaseHTTPRequestHandler):
         *,
         status: HTTPStatus = HTTPStatus.OK,
         content_type: str,
+        headers: dict[str, str] | None = None,
     ) -> None:
         self.send_response(int(status))
         self.send_header("content-type", content_type)
@@ -188,5 +223,10 @@ class _Handler(BaseHTTPRequestHandler):
         self.send_header("cache-control", "no-store")
         self.send_header("x-content-type-options", "nosniff")
         self.send_header("access-control-allow-origin", "http://127.0.0.1")
+        if headers:
+            for key, value in headers.items():
+                safe_key = key.replace("\r", "").replace("\n", "")
+                safe_value = value.replace("\r", "").replace("\n", "")
+                self.send_header(safe_key, safe_value)
         self.end_headers()
         self.wfile.write(body)

@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from collections import defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -266,6 +267,73 @@ def _iter_snapshots(lake_dir: str | Path) -> list[tuple[datetime, dict[str, Any]
 def list_snapshot_times(lake_dir: str | Path) -> list[str]:
     """Return the ``evaluated_at`` timestamps of all snapshots, oldest-first."""
     return [payload.get("evaluated_at") for _ts, payload, _path in _iter_snapshots(lake_dir)]
+
+
+_SNAPSHOT_ID_RE = re.compile(r"^[A-Za-z0-9._+=,@:-]+$")
+
+
+def _is_safe_snapshot_token(token: str) -> bool:
+    if not token or token in {".", ".."}:
+        return False
+    if Path(token).is_absolute():
+        return False
+    if "/" in token or "\\" in token:
+        return False
+    return bool(_SNAPSHOT_ID_RE.fullmatch(token))
+
+
+def normalize_snapshot_id(snapshot_id: str) -> str | None:
+    """Return a safe snapshot id token, or ``None`` when the input is unsafe."""
+    token = snapshot_id.strip()
+    if not _is_safe_snapshot_token(token):
+        return None
+    return token
+
+
+def safe_snapshot_export_filename(snapshot_id: str) -> str:
+    """Build a header-safe PDF attachment filename from a snapshot id."""
+    token = normalize_snapshot_id(snapshot_id) or "snapshot"
+    stem = re.sub(r"[^A-Za-z0-9._-]", "", token)[:80] or "snapshot"
+    return f"trustops-executive-{stem}.pdf"
+
+
+def resolve_snapshot_path(lake_dir: str | Path, snapshot_id: str) -> Path | None:
+    """Resolve a snapshot file by filename stem or ``assessment_hash`` prefix."""
+    snapshots_dir = Path(lake_dir) / "gold" / "snapshots"
+    if not snapshots_dir.is_dir():
+        return None
+    token = normalize_snapshot_id(snapshot_id)
+    if token is None:
+        return None
+    resolved_dir = snapshots_dir.resolve()
+    for path in snapshots_dir.glob("assessment-*.json"):
+        try:
+            path.resolve().relative_to(resolved_dir)
+        except ValueError:
+            continue
+        if path.stem == token:
+            return path
+    for path in snapshots_dir.glob("assessment-*.json"):
+        try:
+            path.resolve().relative_to(resolved_dir)
+        except ValueError:
+            continue
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        digest = payload.get("assessment_hash")
+        if isinstance(digest, str) and (digest == token or digest.startswith(token)):
+            return path
+    return None
+
+
+def load_snapshot(lake_dir: str | Path, snapshot_id: str) -> dict[str, Any]:
+    """Load a point-in-time snapshot payload by id."""
+    path = resolve_snapshot_path(lake_dir, snapshot_id)
+    if path is None:
+        raise FileNotFoundError(f"snapshot not found: {snapshot_id}")
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def posture_as_of(lake_dir: str | Path, *, as_of: str | datetime) -> dict[str, Any]:

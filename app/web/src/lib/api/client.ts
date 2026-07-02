@@ -469,6 +469,7 @@ export const api = {
 };
 
 export interface SnapshotSummary {
+  snapshot_id: string;
   snapshot_path: string;
   evaluated_at: string;
   reason: string;
