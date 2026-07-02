@@ -14,7 +14,11 @@ import {
   usePublishPolicyMutation,
   useUpdatePolicyMutation,
 } from "@/lib/api/hooks";
-import type { PolicyDocument, PolicyDocumentStatus, PolicyTemplateSummary } from "@/lib/api/types";
+import type {
+  PolicyDocument,
+  PolicyDocumentStatus,
+  PolicyTemplateSummary,
+} from "@/lib/api/types";
 
 const inputClass =
   "rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand";
@@ -98,7 +102,8 @@ function PolicyDetail({ documentId }: { documentId: string }) {
         </CardTitle>
       </CardHeader>
       <p className="text-xs text-muted">
-        Template {doc.template_id} · updated {new Date(doc.updated_at).toLocaleDateString()}
+        Template {doc.template_id} · updated{" "}
+        {new Date(doc.updated_at).toLocaleDateString()}
       </p>
       <textarea
         className="min-h-64 w-full rounded-lg border border-line bg-white p-3 font-mono text-xs"
@@ -142,7 +147,9 @@ function PolicyRow({
       type="button"
       onClick={onSelect}
       className={`w-full rounded-lg border px-3 py-3 text-left text-sm transition ${
-        selected ? "border-brand bg-brand/5" : "border-line hover:border-brand/30"
+        selected
+          ? "border-brand bg-brand/5"
+          : "border-line hover:border-brand/30"
       }`}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -186,7 +193,8 @@ export default function PoliciesPage() {
             >
               <p className="font-medium text-ink">{template.title}</p>
               <p className="text-xs text-muted">
-                {template.category} · {template.related_control_ids.length} controls
+                {template.category} · {template.related_control_ids.length}{" "}
+                controls
               </p>
               <p className="mt-1 text-xs text-muted">{template.summary}</p>
             </div>
@@ -239,12 +247,16 @@ export default function PoliciesPage() {
                     key={row.control_id}
                     className="rounded-lg border border-line px-3 py-2 text-sm"
                   >
-                    <span className="font-medium text-ink">{row.control_id}</span>
+                    <span className="font-medium text-ink">
+                      {row.control_id}
+                    </span>
                     <span className="ml-2 text-xs text-muted">{row.title}</span>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-muted">No policy coverage gaps detected.</p>
+                <p className="text-sm text-muted">
+                  No policy coverage gaps detected.
+                </p>
               )}
             </div>
           </Card>

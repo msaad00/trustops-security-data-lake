@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from security_lakehouse.policy_templates import (
     get_policy_template,
     list_policy_templates,

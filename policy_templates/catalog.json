@@ -45,7 +45,12 @@
       "related_control_ids": ["SOC2-CC7.3", "SOC2-CC7.4"],
       "owner_role": "security_admin",
       "review_cadence_days": 365,
-      "variables": ["company_name", "policy_owner", "effective_date", "security_contact"],
+      "variables": [
+        "company_name",
+        "policy_owner",
+        "effective_date",
+        "security_contact"
+      ],
       "summary": "Detection, containment, notification, and post-incident review procedures.",
       "body_markdown": "# Incident Response Plan\n\n**Organization:** {{company_name}}\n**Policy owner:** {{policy_owner}}\n**Effective date:** {{effective_date}}\n**Security contact:** {{security_contact}}\n\n## Phases\n\n1. **Detect & triage** — alerts and reports are routed to {{security_contact}}.\n2. **Contain** — isolate affected systems and preserve evidence.\n3. **Eradicate & recover** — remove threat and restore services.\n4. **Notify** — customers and regulators per contractual and legal obligations.\n5. **Post-incident review** — document root cause and corrective actions within 10 business days.\n\n## Testing\n\nTabletop exercises are conducted at least annually."
     },
