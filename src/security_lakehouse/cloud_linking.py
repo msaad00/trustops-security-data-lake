@@ -148,6 +148,47 @@ def azure_callback_redirect(*, session_id: str, public_url: str | None) -> str:
     return path
 
 
+def issue_cloud_link_redirect_token(lake_dir: str | Path, *, session_id: str) -> str:
+    """Create a server-owned token that the browser can use to complete linking.
+
+    Azure returns the original ``state`` value to the callback. Even after
+    validation, some static analyzers conservatively treat that value as
+    user-controlled when it is echoed into a redirect URL. The console does not
+    need the original state value; it only needs a token that resolves back to
+    the pending session. Generate that token here so redirects carry only
+    server-minted data.
+    """
+
+    token = normalize_link_session_id(session_id)
+    if token is None:
+        raise KeyError("cloud link session not found")
+    store = _load_sessions(lake_dir)
+    session = store["sessions"].get(token)
+    if not isinstance(session, dict):
+        raise KeyError("cloud link session not found")
+    redirect_token = secrets.token_urlsafe(18)
+    session["redirect_token"] = redirect_token
+    session["redirect_token_issued_at"] = utc_iso(datetime.now(UTC))
+    store["sessions"][token] = session
+    _save_sessions(lake_dir, store)
+    return redirect_token
+
+
+def resolve_cloud_link_session_id(lake_dir: str | Path, session_id: str) -> str | None:
+    """Resolve an original session id or browser redirect token to a session id."""
+
+    token = normalize_link_session_id(session_id)
+    if token is None:
+        return None
+    store = _load_sessions(lake_dir)
+    if isinstance(store["sessions"].get(token), dict):
+        return token
+    for original_id, session in store["sessions"].items():
+        if isinstance(session, dict) and session.get("redirect_token") == token:
+            return str(original_id)
+    return None
+
+
 def start_cloud_link(
     lake_dir: str | Path,
     connector_id: str,
@@ -191,7 +232,7 @@ def start_cloud_link(
 
 
 def get_cloud_link_session(lake_dir: str | Path, session_id: str) -> dict[str, Any] | None:
-    token = normalize_link_session_id(session_id)
+    token = resolve_cloud_link_session_id(lake_dir, session_id)
     if token is None:
         return None
     row = _load_sessions(lake_dir)["sessions"].get(token)
@@ -234,7 +275,7 @@ def complete_cloud_link(
     subscription_id: str | None = None,
 ) -> dict[str, Any]:
     """Finalize a cloud-link session by staging connector credentials."""
-    token = normalize_link_session_id(session_id)
+    token = resolve_cloud_link_session_id(lake_dir, session_id)
     if token is None:
         raise KeyError("cloud link session not found")
     session = get_cloud_link_session(lake_dir, token)

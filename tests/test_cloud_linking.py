@@ -16,8 +16,10 @@ from security_lakehouse.cloud_linking import (
     azure_consent_url,
     complete_cloud_link,
     get_cloud_link_session,
+    issue_cloud_link_redirect_token,
     normalize_link_session_id,
     record_azure_consent,
+    resolve_cloud_link_session_id,
     start_cloud_link,
 )
 
@@ -109,6 +111,35 @@ def test_azure_consent_callback_and_complete(tmp_path: Path, monkeypatch: pytest
         tmp_path,
         "azure-posture",
         session_id=session["session_id"],
+        actor="test",
+        subscription_id="sub-guid",
+    )
+    configure = result["configure"]
+    assert configure["credentials"]["subscription_id"] == "sub-guid"
+    assert configure["options"]["azure_tenant_id"] == "tenant-guid"
+
+
+def test_azure_consent_can_complete_with_server_redirect_token(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("TRUSTOPS_AZURE_LINK_CLIENT_ID", "azure-client-id")
+    session = start_cloud_link(tmp_path, "azure-posture", tenant_id="tenant-a")
+    record_azure_consent(
+        tmp_path,
+        session_id=session["session_id"],
+        azure_tenant_id="tenant-guid",
+        admin_consent=True,
+    )
+
+    redirect_token = issue_cloud_link_redirect_token(tmp_path, session_id=session["session_id"])
+    assert redirect_token != session["session_id"]
+    assert resolve_cloud_link_session_id(tmp_path, redirect_token) == session["session_id"]
+    redirect_url = azure_callback_redirect(session_id=redirect_token, public_url="https://demo.example.com")
+    params = parse_qs(urlparse(redirect_url).query)
+    assert params["link_session"] == [redirect_token]
+
+    result = complete_cloud_link(
+        tmp_path,
+        "azure-posture",
+        session_id=redirect_token,
         actor="test",
         subscription_id="sub-guid",
     )

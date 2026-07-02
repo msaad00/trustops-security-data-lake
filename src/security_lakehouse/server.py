@@ -7,7 +7,7 @@ import mimetypes
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, quote, urlparse
+from urllib.parse import parse_qs, urlparse
 
 from security_lakehouse import api_legacy, api_v1
 from security_lakehouse.dashboard import render_dashboard
@@ -98,7 +98,9 @@ class _Handler(BaseHTTPRequestHandler):
 
     def _handle_azure_link_callback(self, query: dict[str, list[str]]) -> None:
         from security_lakehouse.cloud_linking import (
+            azure_callback_redirect,
             get_cloud_link_session,
+            issue_cloud_link_redirect_token,
             normalize_link_session_id,
             record_azure_consent,
         )
@@ -119,7 +121,8 @@ class _Handler(BaseHTTPRequestHandler):
             azure_tenant_id=azure_tenant or "unknown",
             admin_consent=consented,
         )
-        redirect_path = f"/console/connectors/?connect=azure-posture&link_session={quote(session_id)}"
+        redirect_token = issue_cloud_link_redirect_token(self.lake_dir, session_id=session_id)
+        redirect_path = azure_callback_redirect(session_id=redirect_token, public_url=None)
         self.send_response(int(HTTPStatus.FOUND))
         self.send_header("location", self._safe_header_value(redirect_path))
         self.send_header("cache-control", "no-store")
