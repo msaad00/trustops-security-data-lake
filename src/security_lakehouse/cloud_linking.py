@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import secrets
 from datetime import UTC, datetime
 from pathlib import Path
@@ -24,6 +25,7 @@ CLOUD_LINK_CONNECTORS = frozenset({"aws-posture", "azure-posture"})
 AWS_ROLE_NAME_DEFAULT = "TrustOpsPostureReadOnlyRole"
 AWS_TEMPLATE_REL = Path("deploy/aws/trustops-posture-readonly-role.yaml")
 SESSIONS_FILE = Path("gold") / "connectors" / "cloud_link_sessions.json"
+_LINK_SESSION_ID_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 
 
 def _sessions_path(lake_dir: str | Path) -> Path:
@@ -126,9 +128,21 @@ def azure_consent_url(*, session_id: str, public_url: str | None) -> str | None:
     return f"https://login.microsoftonline.com/common/adminconsent?{params}"
 
 
+def normalize_link_session_id(session_id: str) -> str | None:
+    """Return a callback-safe cloud-link session id, or ``None`` when invalid."""
+    token = session_id.strip()
+    if not token or not _LINK_SESSION_ID_RE.fullmatch(token):
+        return None
+    return token
+
+
 def azure_callback_redirect(*, session_id: str, public_url: str | None) -> str:
+    token = normalize_link_session_id(session_id)
     base = _public_base(public_url)
-    path = f"/console/connectors/?connect=azure-posture&link_session={quote(session_id)}"
+    if token is None:
+        path = "/console/connectors/?connect=azure-posture"
+        return f"{base}{path}" if base else path
+    path = f"/console/connectors/?connect=azure-posture&link_session={quote(token)}"
     if base:
         return f"{base}{path}"
     return path

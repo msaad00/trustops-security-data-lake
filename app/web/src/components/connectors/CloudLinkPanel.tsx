@@ -81,11 +81,17 @@ export function CloudLinkPanel({
       const result = await complete.mutateAsync({
         id: connector.connector_id,
         sessionId: session.session_id,
-        accountId: connector.connector_id === "aws-posture" ? accountId : undefined,
+        accountId:
+          connector.connector_id === "aws-posture" ? accountId : undefined,
         subscriptionId:
-          connector.connector_id === "azure-posture" ? subscriptionId : undefined,
+          connector.connector_id === "azure-posture"
+            ? subscriptionId
+            : undefined,
       });
-      const creds = (result.configure?.credentials ?? {}) as Record<string, string>;
+      const creds = (result.configure?.credentials ?? {}) as Record<
+        string,
+        string
+      >;
       onLinked(creds);
       onToast("Account linked — credentials staged for test connection");
     } catch (err) {
@@ -138,7 +144,13 @@ export function CloudLinkPanel({
             <Button
               type="button"
               variant="default"
-              onClick={() => window.open(session.quick_create_url!, "_blank", "noopener,noreferrer")}
+              onClick={() =>
+                window.open(
+                  session.quick_create_url!,
+                  "_blank",
+                  "noopener,noreferrer",
+                )
+              }
             >
               <ExternalLink className="h-4 w-4" />
               Launch AWS CloudFormation
@@ -148,7 +160,13 @@ export function CloudLinkPanel({
             <Button
               type="button"
               variant="default"
-              onClick={() => window.open(session.consent_url!, "_blank", "noopener,noreferrer")}
+              onClick={() =>
+                window.open(
+                  session.consent_url!,
+                  "_blank",
+                  "noopener,noreferrer",
+                )
+              }
             >
               <ExternalLink className="h-4 w-4" />
               Grant Azure admin consent
@@ -157,8 +175,8 @@ export function CloudLinkPanel({
           {session.template_url && !session.quick_create_url && (
             <p className="text-xs text-muted">
               Set <code>TRUSTOPS_PUBLIC_URL</code> and{" "}
-              <code>TRUSTOPS_AWS_LINK_PRINCIPAL</code> for a one-click stack URL.
-              Manual template: <code>{session.manual_template_path}</code>
+              <code>TRUSTOPS_AWS_LINK_PRINCIPAL</code> for a one-click stack
+              URL. Manual template: <code>{session.manual_template_path}</code>
             </p>
           )}
           {connector.connector_id === "aws-posture" && (

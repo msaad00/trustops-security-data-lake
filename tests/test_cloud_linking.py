@@ -2,29 +2,45 @@
 
 from __future__ import annotations
 
-import json
 from http import HTTPStatus
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 import pytest
+from tests.test_api_v1 import _request, _spin
 
 from security_lakehouse.cloud_linking import (
     aws_quick_create_url,
     aws_template_bytes,
+    azure_callback_redirect,
     azure_consent_url,
     complete_cloud_link,
     get_cloud_link_session,
+    normalize_link_session_id,
     record_azure_consent,
     start_cloud_link,
 )
-from tests.test_api_v1 import _request, _spin
 
 
 def test_aws_template_bytes_is_packaged() -> None:
     body = aws_template_bytes()
     assert b"TrustOpsPostureReadOnlyRole" in body
     assert b"TrustedPrincipalArn" in body
+
+
+def test_normalize_link_session_id_rejects_unsafe_tokens() -> None:
+    assert normalize_link_session_id("valid-session_01") == "valid-session_01"
+    assert normalize_link_session_id("bad\r\nsession") is None
+    assert normalize_link_session_id("../../etc/passwd") is None
+
+
+def test_azure_callback_redirect_ignores_unsafe_session_ids() -> None:
+    url = azure_callback_redirect(
+        session_id="bad\r\nsession",
+        public_url="https://demo.example.com",
+    )
+    assert url == "https://demo.example.com/console/connectors/?connect=azure-posture"
+    assert "link_session" not in url
 
 
 def test_aws_quick_create_url_includes_external_id(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -52,9 +68,7 @@ def test_azure_consent_url_when_client_id_configured(monkeypatch: pytest.MonkeyP
     assert "state=sess-1" in url
 
 
-def test_start_and_complete_aws_cloud_link_stages_connector(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_start_and_complete_aws_cloud_link_stages_connector(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("TRUSTOPS_AWS_LINK_PRINCIPAL", "arn:aws:iam::111122223333:role/TrustOpsLink")
     monkeypatch.setenv("TRUSTOPS_PUBLIC_URL", "https://demo.example.com")
     session = start_cloud_link(tmp_path, "aws-posture", tenant_id="tenant-a")

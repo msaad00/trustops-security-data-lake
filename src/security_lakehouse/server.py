@@ -96,11 +96,12 @@ class _Handler(BaseHTTPRequestHandler):
         from security_lakehouse.cloud_linking import (
             azure_callback_redirect,
             get_cloud_link_session,
+            normalize_link_session_id,
             record_azure_consent,
         )
         from security_lakehouse.public_url import normalize_public_url
 
-        session_id = (query.get("state") or [""])[0].strip()
+        session_id = normalize_link_session_id((query.get("state") or [""])[0])
         azure_tenant = (query.get("tenant") or [""])[0].strip()
         admin_consent = (query.get("admin_consent") or [""])[0]
         public_url = normalize_public_url(os.environ.get("TRUSTOPS_PUBLIC_URL"))
