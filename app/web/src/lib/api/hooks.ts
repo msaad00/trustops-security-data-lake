@@ -276,6 +276,47 @@ export function useConfigureMutation() {
   });
 }
 
+export function useCloudLinkStartMutation() {
+  return useMutation({
+    mutationFn: ({
+      id,
+      publicUrl,
+      tenantId,
+    }: {
+      id: string;
+      publicUrl?: string;
+      tenantId?: string;
+    }) =>
+      api.startCloudLink(id, {
+        public_url: publicUrl,
+        tenant_id: tenantId,
+      }),
+  });
+}
+
+export function useCloudLinkCompleteMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      sessionId,
+      accountId,
+      subscriptionId,
+    }: {
+      id: string;
+      sessionId: string;
+      accountId?: string;
+      subscriptionId?: string;
+    }) =>
+      api.completeCloudLink(id, {
+        session_id: sessionId,
+        account_id: accountId,
+        subscription_id: subscriptionId,
+      }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["connectors"] }),
+  });
+}
+
 export function useProbeMutation() {
   const qc = useQueryClient();
   return useMutation({

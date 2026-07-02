@@ -279,6 +279,26 @@ export const api = {
       `/v1/connectors/${encodeURIComponent(id)}/discover`,
       payload,
     ).then((body) => ({ run: body.data })),
+  startCloudLink: (
+    id: string,
+    payload: { public_url?: string; tenant_id?: string } = {},
+  ) =>
+    post<{ data: CloudLinkSession }>(
+      `/v1/connectors/${encodeURIComponent(id)}/link/start`,
+      payload,
+    ).then((body) => body.data),
+  completeCloudLink: (
+    id: string,
+    payload: {
+      session_id: string;
+      account_id?: string;
+      subscription_id?: string;
+    },
+  ) =>
+    post<{ data: CloudLinkCompleteResult }>(
+      `/v1/connectors/${encodeURIComponent(id)}/link/complete`,
+      payload,
+    ).then((body) => body.data),
   connectorRuns: (id: string) =>
     get<{ data: ConnectorRun[]; meta: { connector_id: string } }>(
       `/v1/connectors/${encodeURIComponent(id)}/runs`,
@@ -477,6 +497,24 @@ export interface SnapshotSummary {
   posture_score: number | null;
   open_violation_count: number | null;
   critical_violation_count: number | null;
+}
+
+export interface CloudLinkSession {
+  session_id: string;
+  connector_id: string;
+  status: string;
+  external_id?: string | null;
+  quick_create_url?: string | null;
+  template_url?: string | null;
+  consent_url?: string | null;
+  manual_template_path?: string | null;
+  azure_tenant_id?: string | null;
+  role_name?: string | null;
+}
+
+export interface CloudLinkCompleteResult {
+  session: CloudLinkSession;
+  configure: Record<string, unknown>;
 }
 
 export function bootstrapAssessment(): Assessment | null {
