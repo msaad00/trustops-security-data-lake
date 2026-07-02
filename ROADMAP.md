@@ -8,7 +8,7 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 - [x] `/console/demo/` evaluator landing
 - [x] Account-linking deep links (`/connectors/?connect=`)
 - [ ] Hosted invite flow with email/SCIM (commercial SaaS)
-- [ ] One-click AWS/Azure consent (OAuth-style cloud linking)
+- [x] One-click AWS/Azure consent (OAuth-style cloud linking)
 
 ## P1 — Product depth
 

@@ -31,7 +31,7 @@ from typing import Any
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import func, select
@@ -909,6 +909,55 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not found")
         share, tenant_lake = resolved
         return JSONResponse(_public_trust_summary(tenant_lake, share))
+
+    @app.get("/api/v1/connectors/aws-posture/link/template.yaml", tags=["connectors"])
+    def aws_link_template() -> Response:
+        from security_lakehouse.cloud_linking import aws_template_bytes
+
+        return Response(
+            content=aws_template_bytes(),
+            media_type="application/x-yaml",
+            headers={"Cache-Control": "public, max-age=300"},
+        )
+
+    @app.get("/api/v1/connectors/azure-posture/link/callback", tags=["connectors"])
+    def azure_link_callback(
+        request: Request,
+        state: str = "",
+        tenant: str = "",
+        admin_consent: str | None = None,
+    ) -> RedirectResponse:
+        from security_lakehouse.cloud_linking import (
+            azure_callback_redirect,
+            get_cloud_link_session,
+            record_azure_consent,
+        )
+        from security_lakehouse.public_url import normalize_public_url
+
+        public_url = normalize_public_url(os.environ.get("TRUSTOPS_PUBLIC_URL"))
+        session_id = (state or "").strip()
+        if not session_id or get_cloud_link_session(lake, session_id) is None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="invalid cloud link session")
+        consented = str(admin_consent or "").lower() in {"true", "1", "yes"}
+        azure_tenant = (tenant or "").strip()
+        if consented and azure_tenant:
+            record_azure_consent(
+                lake,
+                session_id=session_id,
+                azure_tenant_id=azure_tenant,
+                admin_consent=True,
+            )
+        elif session_id:
+            record_azure_consent(
+                lake,
+                session_id=session_id,
+                azure_tenant_id=azure_tenant or "unknown",
+                admin_consent=False,
+            )
+        return RedirectResponse(
+            url=azure_callback_redirect(session_id=session_id, public_url=public_url),
+            status_code=status.HTTP_302_FOUND,
+        )
 
     @app.get("/api/v1", tags=["discovery"])
     def v1_index(_identity: Identity = Depends(_require_read)) -> JSONResponse:
