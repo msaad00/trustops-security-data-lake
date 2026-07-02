@@ -1023,6 +1023,57 @@ export interface AccessReviewCoverage {
   decisions: Record<AccessReviewDecision, number>;
 }
 
+export type VendorRiskLevel = "low" | "medium" | "high" | "critical";
+export type VendorAssessmentStatus =
+  "draft" | "in_review" | "completed" | "rejected";
+export type VendorAnswer = "yes" | "partial" | "no" | "na";
+
+export interface VendorQuestionnaireTemplateSummary {
+  template_id: string;
+  name: string;
+  description?: string;
+  control_ids: string[];
+  question_count: number;
+}
+
+export interface VendorQuestionnaireQuestion {
+  question_id: string;
+  prompt: string;
+  response_type: string;
+  weight: number;
+  required: boolean;
+  section_id?: string;
+  section_title?: string;
+}
+
+export interface VendorQuestionnaireSection {
+  section_id: string;
+  title: string;
+  questions: VendorQuestionnaireQuestion[];
+}
+
+export interface VendorQuestionnaireTemplate extends VendorQuestionnaireTemplateSummary {
+  sections: VendorQuestionnaireSection[];
+}
+
+export interface VendorAssessment {
+  id: string;
+  vendor_name: string;
+  template_id: string;
+  status: VendorAssessmentStatus;
+  control_id: string | null;
+  owner: string;
+  responses: Record<string, { answer?: VendorAnswer } | VendorAnswer | string>;
+  score: number | null;
+  risk_level: VendorRiskLevel | null;
+  due_at: string | null;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  completed_at: string | null;
+  template?: VendorQuestionnaireTemplate;
+}
+
 export interface ControlRemediation {
   control_id: string;
   risk_domain: string | null;
