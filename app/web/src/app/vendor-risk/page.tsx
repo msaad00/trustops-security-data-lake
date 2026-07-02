@@ -192,9 +192,7 @@ function AssessmentDetail({ assessmentId }: { assessmentId: string }) {
   }, [assessment?.template?.sections]);
 
   if (!assessment) {
-    return (
-      <Card className="p-5 text-sm text-muted">Loading assessment…</Card>
-    );
+    return <Card className="p-5 text-sm text-muted">Loading assessment…</Card>;
   }
 
   const locked = assessment.status === "completed";
@@ -208,7 +206,9 @@ function AssessmentDetail({ assessmentId }: { assessmentId: string }) {
       <CardHeader className="p-0">
         <CardTitle className="flex flex-wrap items-center gap-2">
           {assessment.vendor_name}
-          <Badge tone={STATUS_TONE[assessment.status]}>{assessment.status}</Badge>
+          <Badge tone={STATUS_TONE[assessment.status]}>
+            {assessment.status}
+          </Badge>
           {assessment.risk_level ? (
             <Badge tone={RISK_TONE[assessment.risk_level]}>
               {assessment.risk_level} risk
@@ -295,7 +295,9 @@ function AssessmentRow({
       type="button"
       onClick={onSelect}
       className={`w-full rounded-lg border px-3 py-3 text-left text-sm transition ${
-        selected ? "border-brand bg-brand/5" : "border-line hover:border-brand/30"
+        selected
+          ? "border-brand bg-brand/5"
+          : "border-line hover:border-brand/30"
       }`}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -349,9 +351,7 @@ export default function VendorRiskPage() {
                 {template.template_id} · {template.question_count} questions
               </p>
             </div>
-          )) ?? (
-            <p className="text-sm text-muted">Loading templates…</p>
-          )}
+          )) ?? <p className="text-sm text-muted">Loading templates…</p>}
         </div>
       </Card>
 

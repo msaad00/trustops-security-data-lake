@@ -26,11 +26,7 @@ def test_catalog_lists_soc2_template() -> None:
 
 
 def test_all_yes_scores_low_risk(template: dict) -> None:
-    responses = {
-        q["question_id"]: {"answer": "yes"}
-        for section in template["sections"]
-        for q in section["questions"]
-    }
+    responses = {q["question_id"]: {"answer": "yes"} for section in template["sections"] for q in section["questions"]}
     scored = score_vendor_responses(template, responses)
     assert scored["score"] == 100.0
     assert scored["risk_level"] == "low"

@@ -78,9 +78,7 @@ def test_assessment_lifecycle(env) -> None:
     assert detail["template"]["template_id"] == "soc2-vendor-standard"
 
     yes = {
-        q["question_id"]: {"answer": "yes"}
-        for section in detail["template"]["sections"]
-        for q in section["questions"]
+        q["question_id"]: {"answer": "yes"} for section in detail["template"]["sections"] for q in section["questions"]
     }
     saved = client.patch(
         f"/api/v1/vendor-assessments/{aid}",
