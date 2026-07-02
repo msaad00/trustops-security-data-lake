@@ -118,7 +118,7 @@ class _Handler(BaseHTTPRequestHandler):
                 status=HTTPStatus.NOT_IMPLEMENTED,
             )
             return
-        safe_id = snapshot_id.replace('"', "")[:80]
+        safe_id = snapshot_id.replace("\r", "").replace("\n", "").replace('"', "")[:80]
         self._send_bytes(
             pdf_bytes,
             content_type="application/pdf",
@@ -224,6 +224,8 @@ class _Handler(BaseHTTPRequestHandler):
         self.send_header("access-control-allow-origin", "http://127.0.0.1")
         if headers:
             for key, value in headers.items():
-                self.send_header(key, value)
+                safe_key = key.replace("\r", "").replace("\n", "")
+                safe_value = value.replace("\r", "").replace("\n", "")
+                self.send_header(safe_key, safe_value)
         self.end_headers()
         self.wfile.write(body)
