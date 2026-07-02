@@ -933,9 +933,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             normalize_link_session_id,
             record_azure_consent,
         )
-        from security_lakehouse.public_url import normalize_public_url
 
-        public_url = normalize_public_url(os.environ.get("TRUSTOPS_PUBLIC_URL"))
         session_id = normalize_link_session_id(state or "")
         if session_id is None or get_cloud_link_session(lake, session_id) is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="invalid cloud link session")
