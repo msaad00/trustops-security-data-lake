@@ -41,6 +41,7 @@ import type {
   IngestionStatus,
   NormalizedEvent,
   PocReadiness,
+  AuditReadiness,
   PolicyDocument,
   PolicyTemplate,
   PolicyTemplateSummary,
@@ -149,6 +150,10 @@ export const api = {
     ),
   pocReadiness: () =>
     get<{ data: PocReadiness }>("/v1/platform/poc-readiness").then(
+      (body) => body.data,
+    ),
+  auditReadiness: () =>
+    get<{ data: AuditReadiness }>("/v1/platform/audit-readiness").then(
       (body) => body.data,
     ),
   remediationTasks: (query = "") =>

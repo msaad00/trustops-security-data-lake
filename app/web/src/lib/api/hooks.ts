@@ -14,6 +14,7 @@ import type {
   AccessReviewStatus,
   AgentRun,
   Assessment,
+  AuditReadiness,
   AssetRisk,
   AuthMethods,
   AuthWhoami,
@@ -107,6 +108,17 @@ export function usePocReadiness(opts?: Opts<PocReadiness>) {
   return useQuery({
     queryKey: ["platform", "poc-readiness"],
     queryFn: api.pocReadiness,
+    staleTime: STALE,
+    refetchInterval: LIVE,
+    retry: false,
+    ...opts,
+  });
+}
+
+export function useAuditReadiness(opts?: Opts<AuditReadiness>) {
+  return useQuery({
+    queryKey: ["platform", "audit-readiness"],
+    queryFn: api.auditReadiness,
     staleTime: STALE,
     refetchInterval: LIVE,
     retry: false,

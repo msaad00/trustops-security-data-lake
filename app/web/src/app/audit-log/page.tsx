@@ -38,7 +38,7 @@ const CATEGORY_TONE: Record<
 function Row({ entry }: { entry: AuditLogEntry }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="rounded-xl border border-line bg-white">
+    <div className="rounded-xl border border-line bg-surface">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -65,8 +65,8 @@ function Row({ entry }: { entry: AuditLogEntry }) {
         {entry.result && <Badge>{entry.result}</Badge>}
       </button>
       {open && (
-        <div className="border-t border-line bg-slate-50/40 p-3">
-          <pre className="overflow-auto rounded bg-white p-3 font-mono text-[11px] text-ink">
+        <div className="border-t border-line bg-surfaceMuted/40 p-3">
+          <pre className="overflow-auto rounded bg-surface p-3 font-mono text-[11px] text-ink">
             {JSON.stringify(entry.payload, null, 2)}
           </pre>
         </div>

@@ -1,0 +1,230 @@
+"""Vanta/Drata-style audit readiness aggregation for console and API."""
+
+from __future__ import annotations
+
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Any
+
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
+
+from security_lakehouse import trust_share
+from security_lakehouse.assessment import _iter_snapshots, build_current_posture
+from security_lakehouse.db import agent_runs as agent_runs_db
+from security_lakehouse.db import remediation
+from security_lakehouse.ingestion_status import build_ingestion_status
+from security_lakehouse.io import read_jsonl
+from security_lakehouse.services import access_reviews as access_review_services
+
+
+def _parity_checklist(*, posture_score: int, frameworks_ready: int, framework_total: int) -> list[dict[str, Any]]:
+    """Honest Vanta/Drata workflow parity — what TrustOps covers today vs gaps."""
+    return [
+        {
+            "id": "continuous_controls",
+            "label": "Continuous control tests",
+            "vanta_drata": True,
+            "trustops": True,
+            "note": "Deterministic tests over live connector evidence",
+        },
+        {
+            "id": "framework_mapping",
+            "label": "SOC 2 / ISO / NIST framework packs",
+            "vanta_drata": True,
+            "trustops": framework_total > 0,
+            "note": f"{framework_total} registered framework(s)",
+        },
+        {
+            "id": "evidence_collection",
+            "label": "Automated evidence collection",
+            "vanta_drata": True,
+            "trustops": True,
+            "note": "Read-only connectors + lake pipeline",
+        },
+        {
+            "id": "auditor_portal",
+            "label": "Auditor read-only portal",
+            "vanta_drata": True,
+            "trustops": True,
+            "note": "Trust-center shares + auditor role redaction",
+        },
+        {
+            "id": "access_reviews",
+            "label": "Access review campaigns",
+            "vanta_drata": True,
+            "trustops": True,
+            "note": "Certify / revoke / flag with audit trail",
+        },
+        {
+            "id": "evidence_requests",
+            "label": "Evidence requests to owners",
+            "vanta_drata": True,
+            "trustops": True,
+            "note": "Remediation evidence-request workflow",
+        },
+        {
+            "id": "policy_library",
+            "label": "Policy template library",
+            "vanta_drata": True,
+            "trustops": True,
+            "note": "Bundled templates + adopt/publish MVP",
+        },
+        {
+            "id": "point_in_time",
+            "label": "Point-in-time audit snapshot",
+            "vanta_drata": True,
+            "trustops": posture_score > 0,
+            "note": "Assessment snapshots with hash chain",
+        },
+        {
+            "id": "personnel_tracking",
+            "label": "Personnel / HR onboarding",
+            "vanta_drata": True,
+            "trustops": False,
+            "note": "Roadmap — use access reviews + IdP connector today",
+        },
+        {
+            "id": "auditor_marketplace",
+            "label": "Auditor marketplace",
+            "vanta_drata": True,
+            "trustops": False,
+            "note": "Bring your own auditor; trust shares for evidence",
+        },
+    ]
+
+
+def build_audit_readiness(
+    *,
+    lake: Path,
+    session: Session,
+    tenant_id: str,
+) -> dict[str, Any]:
+    """Aggregate audit-room metrics comparable to Vanta/Drata audit centers."""
+    posture_payload = build_current_posture(lake)
+    posture = posture_payload.get("posture") or {}
+    frameworks = posture_payload.get("frameworks") or []
+    violations = posture_payload.get("violations") or []
+    control_tests = read_jsonl(lake / "gold" / "control_tests.jsonl", missing_ok=True)
+
+    passing = sum(1 for row in control_tests if str(row.get("result", "")).lower() in {"pass", "ready"})
+    failing = sum(1 for row in control_tests if str(row.get("result", "")).lower() == "fail")
+    total_tests = len(control_tests)
+
+    framework_total = len(frameworks)
+    frameworks_ready = sum(1 for row in frameworks if int(row.get("score") or 0) >= 85)
+    posture_score = int(posture.get("score") or 0)
+
+    open_evidence = remediation.list_evidence_requests(session, tenant_id=tenant_id, status="open", limit=500)
+    campaigns = access_review_services.list_campaigns(session, tenant_id=tenant_id, limit=50)
+    active_reviews = [row for row in campaigns if row.get("status") == "active"]
+    completed_reviews = [row for row in campaigns if row.get("status") == "completed"]
+
+    ingestion = build_ingestion_status(lake)
+    summary = ingestion.get("summary") or {}
+    active_shares = [share for share in trust_share.list_shares(lake) if not share.get("expired")]
+    auditor_shares = [share for share in active_shares if str(share.get("role") or "") == "auditor"]
+
+    agent_runs = agent_runs_db.list_agent_runs(session, tenant_id=tenant_id, limit=20)
+    pending_decisions = sum(
+        1
+        for row in agent_runs
+        for decision in agent_runs_db.agent_run_decisions(row)
+        if decision.get("status") == "proposed"
+    )
+
+    snapshot_rows = _iter_snapshots(lake)
+    latest_snapshot = snapshot_rows[-1][1] if snapshot_rows else None
+
+    gaps: list[dict[str, str]] = []
+    if int(summary.get("enabled_connectors") or 0) == 0:
+        gaps.append({"id": "connectors", "label": "Connect at least one evidence source", "href": "/console/connectors"})
+    if failing > 0:
+        gaps.append({"id": "failing_controls", "label": f"{failing} control test(s) failing", "href": "/console/controls"})
+    if open_evidence:
+        gaps.append(
+            {
+                "id": "evidence_requests",
+                "label": f"{len(open_evidence)} open evidence request(s)",
+                "href": "/console/remediation",
+            }
+        )
+    if not active_reviews:
+        gaps.append(
+            {
+                "id": "access_review",
+                "label": "No active access review campaign",
+                "href": "/console/access-reviews",
+            }
+        )
+    if not auditor_shares:
+        gaps.append(
+            {
+                "id": "auditor_share",
+                "label": "Create an auditor trust-center share",
+                "href": "/console/trust-center",
+            }
+        )
+
+    parity = _parity_checklist(
+        posture_score=posture_score,
+        frameworks_ready=frameworks_ready,
+        framework_total=framework_total,
+    )
+    parity_score = round(100 * sum(1 for row in parity if row["trustops"]) / max(len(parity), 1))
+
+    audit_score = round(
+        (
+            posture_score * 0.4
+            + (100 * passing / total_tests if total_tests else 0) * 0.3
+            + (100 * frameworks_ready / framework_total if framework_total else 0) * 0.2
+            + parity_score * 0.1
+        )
+    )
+
+    state = "audit_ready" if audit_score >= 85 and not gaps else ("on_track" if audit_score >= 60 else "needs_work")
+
+    return {
+        "state": state,
+        "audit_score": audit_score,
+        "evaluated_at": datetime.now(UTC).isoformat(),
+        "posture": {
+            "score": posture_score,
+            "open_violations": len(violations),
+            "frameworks_ready": frameworks_ready,
+            "frameworks_total": framework_total,
+        },
+        "control_tests": {
+            "passing": passing,
+            "failing": failing,
+            "total": total_tests,
+        },
+        "evidence_requests": {"open": len(open_evidence)},
+        "access_reviews": {
+            "active": len(active_reviews),
+            "completed": len(completed_reviews),
+        },
+        "trust_shares": {
+            "active": len(active_shares),
+            "auditor": len(auditor_shares),
+        },
+        "connectors": {
+            "enabled": int(summary.get("enabled_connectors") or 0),
+            "failed": int(summary.get("failed_connectors") or 0),
+            "evidence_count": int(summary.get("evidence_count") or 0),
+        },
+        "snapshots": {
+            "latest_hash": latest_snapshot.get("assessment_hash") if latest_snapshot else None,
+            "latest_at": latest_snapshot.get("evaluated_at") if latest_snapshot else None,
+            "count": len(snapshot_rows),
+        },
+        "agents": {"pending_decisions": pending_decisions},
+        "gaps": gaps,
+        "parity": {
+            "score": parity_score,
+            "checklist": parity,
+        },
+    }
+
+
+__all__ = ["build_audit_readiness"]

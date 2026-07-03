@@ -11,6 +11,7 @@ import {
   Building2,
   ChevronLeft,
   ChevronRight,
+  ClipboardCheck,
   FileSearch,
   Globe2,
   Layers,
@@ -144,6 +145,12 @@ const ITEMS: RailItem[] = [
   },
   { href: "/graph", label: "Graph", Icon: Network, group: "Review" },
   { href: "/insights", label: "Insights", Icon: LineChart, group: "Review" },
+  {
+    href: "/audit-room",
+    label: "Audit room",
+    Icon: ClipboardCheck,
+    group: "Review",
+  },
   { href: "/audit-log", label: "Audit log", Icon: Activity, group: "Review" },
   {
     href: "/agents",
