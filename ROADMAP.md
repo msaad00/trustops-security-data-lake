@@ -7,6 +7,7 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 - [x] Demo kit API (`demo_kit` on POC readiness) with copyable links
 - [x] `/console/demo/` evaluator landing
 - [x] Account-linking deep links (`/connectors/?connect=`)
+- [x] First-run onboarding wizard (`/console/onboarding/`)
 - [ ] Hosted invite flow with email/SCIM (commercial SaaS)
 - [x] One-click AWS/Azure/GCP cloud linking (OAuth-style / Terraform reader)
 

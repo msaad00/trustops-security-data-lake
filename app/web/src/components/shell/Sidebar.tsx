@@ -23,6 +23,7 @@ import {
   ShieldAlert,
   ShieldCheck,
   Sparkles,
+  Rocket,
   UserCheck,
   Zap,
 } from "lucide-react";
@@ -44,6 +45,13 @@ const ITEMS: RailItem[] = [
     label: "Dashboard",
     Icon: LayoutDashboard,
     badge: "live",
+    group: "Trust",
+  },
+  {
+    href: "/onboarding",
+    label: "Onboarding",
+    Icon: Rocket,
+    badge: "start",
     group: "Trust",
   },
   {
