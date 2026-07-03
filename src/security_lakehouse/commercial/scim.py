@@ -30,7 +30,9 @@ def scim_config() -> dict[str, Any]:
 
 
 def scim_not_implemented_detail() -> str:
-    return "SCIM provisioning is a commercial hosted feature; enable TRUSTOPS_COMMERCIAL_HOSTED and TRUSTOPS_SCIM_ENABLED"
+    return (
+        "SCIM provisioning is a commercial hosted feature; enable TRUSTOPS_COMMERCIAL_HOSTED and TRUSTOPS_SCIM_ENABLED"
+    )
 
 
 __all__ = ["scim_config", "scim_enabled", "scim_not_implemented_detail"]

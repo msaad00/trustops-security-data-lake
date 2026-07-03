@@ -10,7 +10,12 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from security_lakehouse.commercial.email import EmailDelivery, EmailMessage, commercial_hosted_enabled, email_delivery_from_env
+from security_lakehouse.commercial.email import (
+    EmailDelivery,
+    EmailMessage,
+    commercial_hosted_enabled,
+    email_delivery_from_env,
+)
 from security_lakehouse.db.models import TenantInvite, User
 
 INVITE_TTL_HOURS = 168  # 7 days

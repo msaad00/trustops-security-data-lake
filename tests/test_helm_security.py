@@ -47,8 +47,8 @@ def test_ingress_passes_with_session_secret() -> None:
     result = _helm_template(
         [
             "ingress.enabled=true",
-            'env[0].name=TRUSTOPS_SESSION_SECRET',
-            'env[0].value=super-secret-for-tests',
+            "env[0].name=TRUSTOPS_SESSION_SECRET",
+            "env[0].value=super-secret-for-tests",
         ]
     )
     assert result.returncode == 0

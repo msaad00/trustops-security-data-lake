@@ -23,11 +23,11 @@ export TRUSTOPS_SCIM_BEARER_TOKEN=<operator-issued-secret>
 
 ## Invite API
 
-| Method | Path | Auth | Description |
-| ------ | ---- | ---- | ----------- |
-| `GET` | `/api/v1/invites` | `auth_admin` | List tenant invites |
-| `POST` | `/api/v1/invites` | `auth_admin` | Create invite + send email |
-| `POST` | `/api/v1/invites/accept` | none (token body) | Accept pending invite |
+| Method | Path                     | Auth              | Description                |
+| ------ | ------------------------ | ----------------- | -------------------------- |
+| `GET`  | `/api/v1/invites`        | `auth_admin`      | List tenant invites        |
+| `POST` | `/api/v1/invites`        | `auth_admin`      | Create invite + send email |
+| `POST` | `/api/v1/invites/accept` | none (token body) | Accept pending invite      |
 
 Create body:
 
@@ -45,17 +45,17 @@ When `TRUSTOPS_COMMERCIAL_HOSTED` is unset, invite routes return **501 Not Imple
 
 ## Email delivery
 
-| `TRUSTOPS_EMAIL_PROVIDER` | Behavior |
-| ------------------------- | -------- |
-| `log` (default) | Log `{to, subject}` at INFO — safe for dev |
-| other | Extend `security_lakehouse.commercial.email` with SES/SendGrid |
+| `TRUSTOPS_EMAIL_PROVIDER` | Behavior                                                       |
+| ------------------------- | -------------------------------------------------------------- |
+| `log` (default)           | Log `{to, subject}` at INFO — safe for dev                     |
+| other                     | Extend `security_lakehouse.commercial.email` with SES/SendGrid |
 
 ## SCIM
 
-| Method | Path | When disabled | When enabled |
-| ------ | ---- | ------------- | ------------ |
-| `GET` | `/api/v1/platform/scim` | config stub | `enabled: true` |
-| `GET/POST` | `/api/v1/scim/v2/*` | **501** | empty Users list (managed SaaS extends) |
+| Method     | Path                    | When disabled | When enabled                            |
+| ---------- | ----------------------- | ------------- | --------------------------------------- |
+| `GET`      | `/api/v1/platform/scim` | config stub   | `enabled: true`                         |
+| `GET/POST` | `/api/v1/scim/v2/*`     | **501**       | empty Users list (managed SaaS extends) |
 
 ## Database
 

@@ -12,11 +12,11 @@ connector sync  →  raw/bronze/silver/gold JSONL  →  single-writer materializ
 scheduler tick  →  workflow runs, connector state
 ```
 
-| Deployment | `replicaCount` | Lake mount | Safe? |
-| ---------- | -------------: | ---------- | ----- |
-| Default self-hosted | 1 | RWO PVC read-write | Yes |
-| Auditor portal | 2+ | RWO **read-only** on replicas | Yes (read APIs only) |
-| Multi-writer API | 2+ | RWO read-write | **No** — corrupts JSONL |
+| Deployment          | `replicaCount` | Lake mount                    | Safe?                   |
+| ------------------- | -------------: | ----------------------------- | ----------------------- |
+| Default self-hosted |              1 | RWO PVC read-write            | Yes                     |
+| Auditor portal      |             2+ | RWO **read-only** on replicas | Yes (read APIs only)    |
+| Multi-writer API    |             2+ | RWO read-write                | **No** — corrupts JSONL |
 
 Helm blocks `replicaCount > 1` with a ReadWriteOnce lake unless `lake.readOnly: true`.
 
@@ -62,22 +62,22 @@ flowchart TB
 
 SQLite (`server/app.db` on the lake PVC) is single-file and not HA. For production:
 
-| Mode | Guidance |
-| ---- | -------- |
-| **SQLite** | Single pod only; backup via [BACKUP_RESTORE.md](BACKUP_RESTORE.md) |
-| **Postgres primary** | Set `TRUSTOPS_DATABASE_URL`; one writer pod runs migrations |
-| **Read replicas** | Point read-only API pods at `TRUSTOPS_DATABASE_READ_URL` (future); writer uses primary URL |
+| Mode                 | Guidance                                                                                   |
+| -------------------- | ------------------------------------------------------------------------------------------ |
+| **SQLite**           | Single pod only; backup via [BACKUP_RESTORE.md](BACKUP_RESTORE.md)                         |
+| **Postgres primary** | Set `TRUSTOPS_DATABASE_URL`; one writer pod runs migrations                                |
+| **Read replicas**    | Point read-only API pods at `TRUSTOPS_DATABASE_READ_URL` (future); writer uses primary URL |
 
 Today the server uses one SQLAlchemy URL. Split read/write URLs are on the roadmap; until then run **one writer API** against Postgres primary.
 
 ## Shared state caveats
 
-| Mechanism | Single-node today | Multi-replica note |
-| --------- | ----------------- | ------------------ |
-| Rate limiting | In-process | Per-pod buckets; use ingress rate limits or Redis (future) |
-| Session cookies | Postgres/SQLite | Sticky sessions or shared session store |
-| Scheduler | CronJob → lake | Must not run on read-only replicas |
-| Idempotency keys | DB | Safe across replicas when all use same Postgres |
+| Mechanism        | Single-node today | Multi-replica note                                         |
+| ---------------- | ----------------- | ---------------------------------------------------------- |
+| Rate limiting    | In-process        | Per-pod buckets; use ingress rate limits or Redis (future) |
+| Session cookies  | Postgres/SQLite   | Sticky sessions or shared session store                    |
+| Scheduler        | CronJob → lake    | Must not run on read-only replicas                         |
+| Idempotency keys | DB                | Safe across replicas when all use same Postgres            |
 
 ## Example: auditor read pool
 

@@ -94,14 +94,14 @@ erDiagram
 
 ## Zone summary
 
-| Zone | Storage | Writer | Primary consumers |
-| ---- | ------- | ------ | ----------------- |
-| **Raw / bronze** | `raw/`, `bronze/*.jsonl` | Connector sync (single writer) | Pipeline replay |
-| **Silver** | `silver/normalized_events.jsonl` | Pipeline | Assessment, SOC harness |
-| **Gold** | `gold/*.jsonl`, `current_posture.json` | Pipeline + assessment | Console, `/api/v1`, PDF export |
-| **Snapshots** | `gold/snapshots/`, ledger | Assessment API | Audit, trust center point-in-time |
-| **App DB** | `server/app.db` or Postgres | Server mode API | Auth, remediation, agents, invites |
-| **Marts** | `mart/*.sqlite`, `*.duckdb` | Pipeline | Analytics CLI, optional BI |
+| Zone             | Storage                                | Writer                         | Primary consumers                  |
+| ---------------- | -------------------------------------- | ------------------------------ | ---------------------------------- |
+| **Raw / bronze** | `raw/`, `bronze/*.jsonl`               | Connector sync (single writer) | Pipeline replay                    |
+| **Silver**       | `silver/normalized_events.jsonl`       | Pipeline                       | Assessment, SOC harness            |
+| **Gold**         | `gold/*.jsonl`, `current_posture.json` | Pipeline + assessment          | Console, `/api/v1`, PDF export     |
+| **Snapshots**    | `gold/snapshots/`, ledger              | Assessment API                 | Audit, trust center point-in-time  |
+| **App DB**       | `server/app.db` or Postgres            | Server mode API                | Auth, remediation, agents, invites |
+| **Marts**        | `mart/*.sqlite`, `*.duckdb`            | Pipeline                       | Analytics CLI, optional BI         |
 
 ## Read paths
 

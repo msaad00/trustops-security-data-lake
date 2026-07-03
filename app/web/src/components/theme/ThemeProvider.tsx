@@ -56,7 +56,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const next = theme === "system" ? (systemPrefersDark() ? "dark" : "light") : theme;
+    const next =
+      theme === "system" ? (systemPrefersDark() ? "dark" : "light") : theme;
     setResolved(next);
     applyThemeClass(next);
 
@@ -71,9 +72,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return () => mq.removeEventListener("change", onChange);
   }, [theme]);
 
-  const value = useMemo(() => ({ theme, setTheme, resolved }), [theme, setTheme, resolved]);
+  const value = useMemo(
+    () => ({ theme, setTheme, resolved }),
+    [theme, setTheme, resolved],
+  );
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 }
 
 export function useTheme() {
