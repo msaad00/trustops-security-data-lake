@@ -8,9 +8,7 @@ import threading
 from http.server import ThreadingHTTPServer
 from pathlib import Path
 
-import pytest
 import yaml
-
 from tests.test_api_v1 import _Handler, _seed_lake
 
 
@@ -32,11 +30,11 @@ def _spin(lake: Path) -> ThreadingHTTPServer:
 
 
 def _run_gate(
-  lake: Path,
-  *,
-  min_score: str = "0",
-  max_critical: str = "0",
-  max_open: str = "-1",
+    lake: Path,
+    *,
+    min_score: str = "0",
+    max_critical: str = "0",
+    max_open: str = "-1",
 ) -> subprocess.CompletedProcess[str]:
     server = _spin(lake)
     host, port = server.server_address
