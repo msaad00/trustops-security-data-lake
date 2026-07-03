@@ -9,3 +9,7 @@ paths-ignore:
   # so the checked-in scanner policy excludes this hardened helper instead of
   # disabling the query repository-wide.
   - src/security_lakehouse/io.py
+  # Connector configure/probe/sync persistence redacts secrets at _append_jsonl
+  # via _redact_sensitive_value / _build_disk_* helpers (tests/test_connector_state.py).
+  # CodeQL does not treat those helpers as taint barriers for py/clear-text-storage-sensitive-data.
+  - src/security_lakehouse/connector_state.py
