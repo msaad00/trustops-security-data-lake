@@ -6,9 +6,10 @@ import contextlib
 import json
 import os
 import tempfile
-from collections.abc import Iterable
+from collections import Counter
+from collections.abc import Callable, Iterable, Iterator
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeVar
 
 
 def resolve_path(path: str | Path, *, base_dir: str | Path | None = None) -> Path:
@@ -40,30 +41,124 @@ def resolve_path(path: str | Path, *, base_dir: str | Path | None = None) -> Pat
     return target
 
 
+def _iter_jsonl_lines(
+    path: str | Path,
+    *,
+    missing_ok: bool = False,
+    base_dir: str | Path | None = None,
+) -> Iterator[tuple[int, str]]:
+    """Yield ``(line_no, stripped_line)`` from a JSONL file without loading it whole."""
+    target = resolve_path(path, base_dir=base_dir)
+    # lgtm[py/path-injection]
+    if missing_ok and not target.exists():
+        return
+    # lgtm[py/path-injection]
+    with target.open(encoding="utf-8") as handle:
+        for line_no, line in enumerate(handle, start=1):
+            stripped = line.strip()
+            if stripped:
+                yield line_no, stripped
+
+
+def _parse_jsonl_line(path: str | Path, line_no: int, stripped: str) -> dict[str, Any]:
+    try:
+        item = json.loads(stripped)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"{path}:{line_no}: invalid JSON: {exc}") from exc
+    if not isinstance(item, dict):
+        raise ValueError(f"{path}:{line_no}: expected JSON object")
+    return item
+
+
+def iter_jsonl(
+    path: str | Path,
+    *,
+    missing_ok: bool = False,
+    base_dir: str | Path | None = None,
+) -> Iterator[dict[str, Any]]:
+    """Stream JSON objects from a JSONL file one row at a time."""
+    for line_no, stripped in _iter_jsonl_lines(path, missing_ok=missing_ok, base_dir=base_dir):
+        yield _parse_jsonl_line(path, line_no, stripped)
+
+
 def read_jsonl(
     path: str | Path,
     *,
     missing_ok: bool = False,
     base_dir: str | Path | None = None,
 ) -> list[dict[str, Any]]:
-    target = resolve_path(path, base_dir=base_dir)
-    # lgtm[py/path-injection]
-    if missing_ok and not target.exists():
-        return []
-    rows: list[dict[str, Any]] = []
-    # lgtm[py/path-injection]
-    for line_no, line in enumerate(target.read_text(encoding="utf-8").splitlines(), start=1):
-        stripped = line.strip()
-        if not stripped:
-            continue
-        try:
-            item = json.loads(stripped)
-        except json.JSONDecodeError as exc:
-            raise ValueError(f"{path}:{line_no}: invalid JSON: {exc}") from exc
-        if not isinstance(item, dict):
-            raise ValueError(f"{path}:{line_no}: expected JSON object")
-        rows.append(item)
-    return rows
+    return list(iter_jsonl(path, missing_ok=missing_ok, base_dir=base_dir))
+
+
+def count_jsonl(
+    path: str | Path,
+    *,
+    missing_ok: bool = False,
+    base_dir: str | Path | None = None,
+) -> int:
+    """Count non-empty JSONL rows without parsing each object."""
+    return sum(1 for _line_no, _line in _iter_jsonl_lines(path, missing_ok=missing_ok, base_dir=base_dir))
+
+
+T = TypeVar("T")
+
+
+def jsonl_field_counts(
+    path: str | Path,
+    field: str,
+    *,
+    missing_ok: bool = False,
+    base_dir: str | Path | None = None,
+    default: str = "unknown",
+) -> Counter[str]:
+    """Count occurrences of ``row[field]`` while streaming a JSONL file."""
+    counts: Counter[str] = Counter()
+    for row in iter_jsonl(path, missing_ok=missing_ok, base_dir=base_dir):
+        counts[str(row.get(field) or default)] += 1
+    return counts
+
+
+def iter_jsonl_batches(
+    path: str | Path,
+    batch_size: int,
+    *,
+    missing_ok: bool = False,
+    base_dir: str | Path | None = None,
+) -> Iterator[list[dict[str, Any]]]:
+    """Yield fixed-size batches from a JSONL file for chunked processing."""
+    if batch_size < 1:
+        raise ValueError("batch_size must be >= 1")
+    batch: list[dict[str, Any]] = []
+    for row in iter_jsonl(path, missing_ok=missing_ok, base_dir=base_dir):
+        batch.append(row)
+        if len(batch) >= batch_size:
+            yield batch
+            batch = []
+    if batch:
+        yield batch
+
+
+def write_jsonl_from_iterable(
+    path: str | Path,
+    rows: Iterable[dict[str, Any]],
+    *,
+    base_dir: str | Path | None = None,
+    on_progress: Callable[[int], None] | None = None,
+) -> int:
+    """Write rows from a generator/iterator; returns rows written."""
+    output = resolve_path(path, base_dir=base_dir)
+    written = 0
+
+    def _chunks() -> Iterator[str]:
+        nonlocal written
+        for row in rows:
+            written += 1
+            if on_progress is not None:
+                on_progress(written)
+            yield json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n"
+
+    _atomic_write(output, _chunks())
+    return written
 
 
 def _atomic_write(output: Path, text_chunks: Iterable[str]) -> None:

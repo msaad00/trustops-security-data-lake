@@ -21,6 +21,7 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 - [x] `frameworks sync-packs` CLI + custom framework examples
 - [x] Framework packs (SOC 2 Availability/Confidentiality/PI/Privacy TSC extensions)
 - [x] Unified golden fixture (all 37 controls on dashboard)
+- [x] Audit-scale synthetic data + streaming IO + capped violation rollups (`docs/AUDIT_SCALE.md`)
 - [x] Executive PDF export from snapshots
 - [x] Vendor risk questionnaire MVP
 - [x] Policy template library MVP (bundled templates + adopt/publish)
