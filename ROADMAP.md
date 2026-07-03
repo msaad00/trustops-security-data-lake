@@ -30,12 +30,12 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 
 - [x] LangGraph for SOC triage harness
 - [x] GitHub Action posture gate
-- [ ] MCP cookbook for evidence requests + approvals
+- [x] MCP cookbook for evidence requests + approvals
 
 ## P3 — Operations
 
-- [ ] Backup/restore runbook for `/lake` + app DB
-- [ ] OpenTelemetry dashboards for connector sync
+- [x] Backup/restore runbook for `/lake` + app DB
+- [x] OpenTelemetry dashboards for connector sync
 - [ ] Helm guard: block insecure auth without explicit override
 - [ ] HA guidance (read replicas + single writer)
 

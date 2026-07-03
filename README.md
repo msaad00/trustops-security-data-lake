@@ -337,7 +337,8 @@ trustops-mcp
 
 MCP tools can list/create/get persisted agent runs and approve stored decisions
 through the authenticated `/api/v1/agent-runs` contract. See
-[Agent Harness](docs/AGENT_HARNESS.md).
+[Agent Harness](docs/AGENT_HARNESS.md) and the
+[MCP evidence + approvals cookbook](docs/cookbook/MCP_EVIDENCE_AND_APPROVALS.md).
 
 ## Security And Trust Model
 
