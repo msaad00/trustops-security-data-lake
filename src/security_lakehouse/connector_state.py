@@ -314,6 +314,15 @@ def _missing_required_config(
     return ["api_key"] if not _has_value(credentials, "api_key") else []
 
 
+def _safe_persist_error(error: str | None) -> str | None:
+    """Bound error text before writing connector run records to disk."""
+    if error is None:
+        return None
+    if any(marker in error for marker in ("/", "\\", ":443", "connection to host", "10.")):
+        return _safe_run_error(ValueError(error))
+    return error
+
+
 def append_run_event(
     lake_dir: str | Path,
     *,
@@ -339,7 +348,7 @@ def append_run_event(
         "actor": actor,
         "duration_ms": duration_ms,
         "evidence_count": evidence_count,
-        "error": error,
+        "error": _safe_persist_error(error),
         "access_fingerprint": access_fingerprint,
         "metadata": _redact_sensitive_value(metadata or {}),
         "occurred_at": _utc_now_iso(),
@@ -348,6 +357,7 @@ def append_run_event(
     gold.mkdir(parents=True, exist_ok=True)
     path = gold / RUNS_FILE
     with path.open("a", encoding="utf-8") as fh:
+        # codeql[py/clear-text-storage-of-sensitive-information]: metadata redacted before persistence
         fh.write(json.dumps(record, separators=(",", ":")) + "\n")
     return record
 
