@@ -22,6 +22,11 @@ Before sending the URL, run the gate in
 source sync, posture, integrity, workflow run, agent review, trust share, and
 secret-redaction checks all need to pass.
 
+For production operations, see the
+[backup and restore runbook](../docs/runbooks/BACKUP_RESTORE.md) for the lake
+PVC at `/lake` and the application-state database (`server/app.db` or
+`TRUSTOPS_DATABASE_URL`).
+
 ## Container image
 
 The repo ships a multi-stage `Dockerfile` at the root. Build locally:
