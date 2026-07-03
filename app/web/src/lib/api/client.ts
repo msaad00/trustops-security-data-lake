@@ -48,6 +48,10 @@ import type {
   TriagePayload,
   TrustShare,
   VerifyResult,
+  VendorAssessment,
+  VendorAssessmentStatus,
+  VendorQuestionnaireTemplate,
+  VendorQuestionnaireTemplateSummary,
   Violation,
   Workflow,
   WorkflowEdge,
@@ -482,6 +486,53 @@ export const api = {
     get<{ data: AccessReviewCoverage[] }>("/v1/access-reviews/coverage").then(
       (b) => b.data,
     ),
+  vendorQuestionnaires: () =>
+    get<{ data: VendorQuestionnaireTemplateSummary[] }>(
+      "/v1/vendor-questionnaires",
+    ).then((b) => b.data),
+  vendorQuestionnaire: (templateId: string) =>
+    get<{ data: VendorQuestionnaireTemplate }>(
+      `/v1/vendor-questionnaires/${encodeURIComponent(templateId)}`,
+    ).then((b) => b.data),
+  vendorAssessments: (query = "") =>
+    get<{ data: VendorAssessment[] }>(`/v1/vendor-assessments${query}`).then(
+      (b) => b.data,
+    ),
+  createVendorAssessment: (payload: {
+    vendor_name: string;
+    template_id: string;
+    owner?: string;
+    control_id?: string | null;
+    due_at?: string | null;
+  }) =>
+    post<{ data: VendorAssessment }>("/v1/vendor-assessments", payload).then(
+      (b) => b.data,
+    ),
+  vendorAssessment: (id: string) =>
+    get<{ data: VendorAssessment }>(
+      `/v1/vendor-assessments/${encodeURIComponent(id)}`,
+    ).then((b) => b.data),
+  updateVendorAssessment: (
+    id: string,
+    payload: Partial<{
+      vendor_name: string;
+      owner: string;
+      control_id: string | null;
+      due_at: string | null;
+      responses: Record<string, { answer: string }>;
+      status: VendorAssessmentStatus;
+    }>,
+  ) =>
+    mutate<{ data: VendorAssessment }>(
+      `/v1/vendor-assessments/${encodeURIComponent(id)}`,
+      "PATCH",
+      payload,
+    ).then((b) => b.data),
+  submitVendorAssessment: (id: string) =>
+    post<{ data: VendorAssessment }>(
+      `/v1/vendor-assessments/${encodeURIComponent(id)}/submit`,
+      {},
+    ).then((b) => b.data),
   controlRemediation: (controlId: string) =>
     get<{ data: ControlRemediation }>(
       `/v1/controls/${encodeURIComponent(controlId)}/remediation`,

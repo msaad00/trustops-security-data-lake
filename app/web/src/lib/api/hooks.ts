@@ -45,6 +45,9 @@ import type {
   ControlExceptionItem,
   CreateAgentRunPayload,
   Risk,
+  VendorAssessment,
+  VendorAssessmentStatus,
+  VendorQuestionnaireTemplateSummary,
 } from "./types";
 
 const STALE = 15_000;
@@ -1001,5 +1004,67 @@ export function useControlRemediation(controlId: string | null) {
     queryFn: () => api.controlRemediation(controlId as string),
     enabled: Boolean(controlId),
     staleTime: 60_000,
+  });
+}
+
+export function useVendorQuestionnaires() {
+  return useQuery({
+    queryKey: ["vendor-questionnaires"],
+    queryFn: () => api.vendorQuestionnaires(),
+    staleTime: STALE,
+  });
+}
+
+export function useVendorAssessments(query = "") {
+  return useQuery({
+    queryKey: ["vendor-assessments", query],
+    queryFn: () => api.vendorAssessments(query),
+    staleTime: STALE,
+    refetchInterval: LIVE,
+  });
+}
+
+export function useVendorAssessment(id: string | null) {
+  return useQuery({
+    queryKey: ["vendor-assessment", id],
+    queryFn: () => api.vendorAssessment(id as string),
+    enabled: Boolean(id),
+    staleTime: STALE,
+  });
+}
+
+export function useCreateVendorAssessmentMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: {
+      vendor_name: string;
+      template_id: string;
+      owner?: string;
+      control_id?: string | null;
+    }) => api.createVendorAssessment(payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["vendor-assessments"] }),
+  });
+}
+
+export function useUpdateVendorAssessmentMutation(assessmentId: string | null) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: Parameters<typeof api.updateVendorAssessment>[1]) =>
+      api.updateVendorAssessment(assessmentId as string, payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["vendor-assessments"] });
+      qc.invalidateQueries({ queryKey: ["vendor-assessment", assessmentId] });
+    },
+  });
+}
+
+export function useSubmitVendorAssessmentMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.submitVendorAssessment(id),
+    onSuccess: (_data, id) => {
+      qc.invalidateQueries({ queryKey: ["vendor-assessments"] });
+      qc.invalidateQueries({ queryKey: ["vendor-assessment", id] });
+    },
   });
 }
