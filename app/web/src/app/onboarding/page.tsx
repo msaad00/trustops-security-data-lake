@@ -100,7 +100,9 @@ export default function OnboardingPage() {
                     </Link>
                   </Button>
                 ) : (
-                  <Badge tone="attention">Configure in deployment settings</Badge>
+                  <Badge tone="attention">
+                    Configure in deployment settings
+                  </Badge>
                 )}
               </CardContent>
             </Card>
@@ -133,9 +135,7 @@ export default function OnboardingPage() {
                         <Badge tone={ready ? "ready" : "attention"}>
                           {ready ? "done" : "todo"}
                         </Badge>
-                        {!step.blocking && (
-                          <Badge tone="info">optional</Badge>
-                        )}
+                        {!step.blocking && <Badge tone="info">optional</Badge>}
                       </div>
                       <p className="mt-1 text-sm text-muted">{step.detail}</p>
                     </div>
