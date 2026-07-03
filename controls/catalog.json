@@ -61,11 +61,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-27",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "identity_account",
-        "identity_user",
-        "iam_role"
-      ]
+      "asset_types": ["identity_account", "identity_user", "iam_role"]
     },
     {
       "control_id": "CIS-AWS-1.11",
@@ -191,10 +187,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-27",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "identity_account",
-        "identity_user"
-      ]
+      "asset_types": ["identity_account", "identity_user"]
     },
     {
       "control_id": "CIS-AWS-1.15",
@@ -683,10 +676,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-27",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "account_config"
-      ]
+      "asset_types": ["cloud_policy", "account_config"]
     },
     {
       "control_id": "CIS-AWS-1.9",
@@ -2066,10 +2056,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.12",
@@ -2096,10 +2083,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.13",
@@ -2126,10 +2110,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.14",
@@ -2156,10 +2137,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.15",
@@ -2186,10 +2164,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "EU-AI-ACT-Art.9",
@@ -2216,10 +2191,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "FEDRAMP-AC-1",
@@ -3494,10 +3466,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-AT-2",
@@ -3524,10 +3493,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-AT-2.2",
@@ -3554,10 +3520,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-AT-2.3",
@@ -3584,10 +3547,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-AT-3",
@@ -3614,10 +3574,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-AT-4",
@@ -3644,10 +3601,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-AU-1",
@@ -3674,11 +3628,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-AU-11",
@@ -3705,11 +3655,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-AU-12",
@@ -3736,11 +3682,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-AU-2",
@@ -3767,11 +3709,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-AU-3",
@@ -3798,11 +3736,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-AU-3.1",
@@ -3829,11 +3763,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-AU-4",
@@ -3860,11 +3790,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-AU-5",
@@ -3891,11 +3817,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-AU-6",
@@ -3922,11 +3844,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-AU-6.1",
@@ -3953,11 +3871,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-AU-6.3",
@@ -3984,11 +3898,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-AU-7",
@@ -4015,11 +3925,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-AU-7.1",
@@ -4046,11 +3952,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-AU-8",
@@ -4077,11 +3979,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-AU-9",
@@ -4108,11 +4006,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-AU-9.4",
@@ -4139,11 +4033,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-CA-1",
@@ -4170,10 +4060,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-CA-2",
@@ -4200,10 +4087,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-CA-2.1",
@@ -4230,10 +4114,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-CA-3",
@@ -4260,10 +4141,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-CA-5",
@@ -4290,10 +4168,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-CA-6",
@@ -4320,10 +4195,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-CA-7",
@@ -4350,10 +4222,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-CA-7.1",
@@ -4380,10 +4249,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-CA-7.4",
@@ -4410,10 +4276,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-CA-9",
@@ -4440,10 +4303,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-CM-1",
@@ -4470,11 +4330,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-10",
@@ -4501,11 +4357,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-11",
@@ -4532,11 +4384,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-12",
@@ -4563,11 +4411,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-12.1",
@@ -4594,11 +4438,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-2",
@@ -4625,11 +4465,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-2.2",
@@ -4656,11 +4492,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-2.3",
@@ -4687,11 +4519,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-2.7",
@@ -4718,11 +4546,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-3",
@@ -4749,11 +4573,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-3.2",
@@ -4780,11 +4600,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-3.4",
@@ -4811,11 +4627,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-4",
@@ -4842,11 +4654,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-4.2",
@@ -4873,11 +4681,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-5",
@@ -4904,11 +4708,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-6",
@@ -4935,11 +4735,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-7",
@@ -4966,11 +4762,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-7.1",
@@ -4997,11 +4789,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-7.2",
@@ -5028,11 +4816,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-7.5",
@@ -5059,11 +4843,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-8",
@@ -5090,11 +4870,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-8.1",
@@ -5121,11 +4897,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-8.3",
@@ -5152,11 +4924,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CM-9",
@@ -5183,11 +4951,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-CP-1",
@@ -5214,11 +4978,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-10",
@@ -5245,11 +5005,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-10.2",
@@ -5276,11 +5032,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-2",
@@ -5307,11 +5059,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-2.1",
@@ -5338,11 +5086,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-2.3",
@@ -5369,11 +5113,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-2.8",
@@ -5400,11 +5140,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-3",
@@ -5431,11 +5167,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-4",
@@ -5462,11 +5194,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-4.1",
@@ -5493,11 +5221,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-6",
@@ -5524,11 +5248,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-6.1",
@@ -5555,11 +5275,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-6.3",
@@ -5586,11 +5302,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-7",
@@ -5617,11 +5329,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-7.1",
@@ -5648,11 +5356,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-7.2",
@@ -5679,11 +5383,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-7.3",
@@ -5710,11 +5410,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-8",
@@ -5741,11 +5437,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-8.1",
@@ -5772,11 +5464,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-8.2",
@@ -5803,11 +5491,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-9",
@@ -5834,11 +5518,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-9.1",
@@ -5865,11 +5545,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-CP-9.8",
@@ -5896,11 +5572,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-IA-1",
@@ -6695,11 +6367,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-IR-2",
@@ -6726,11 +6394,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-IR-3",
@@ -6757,11 +6421,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-IR-3.2",
@@ -6788,11 +6448,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-IR-4",
@@ -6819,11 +6475,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-IR-4.1",
@@ -6850,11 +6502,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-IR-5",
@@ -6881,11 +6529,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-IR-6",
@@ -6912,11 +6556,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-IR-6.1",
@@ -6943,11 +6583,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-IR-6.3",
@@ -6974,11 +6610,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-IR-7",
@@ -7005,11 +6637,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-IR-7.1",
@@ -7036,11 +6664,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-IR-8",
@@ -7067,11 +6691,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-MA-1",
@@ -7098,11 +6718,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-MA-2",
@@ -7129,11 +6745,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-MA-3",
@@ -7160,11 +6772,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-MA-3.1",
@@ -7191,11 +6799,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-MA-3.2",
@@ -7222,11 +6826,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-MA-3.3",
@@ -7253,11 +6853,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-MA-4",
@@ -7284,11 +6880,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-MA-5",
@@ -7315,11 +6907,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-MA-6",
@@ -7346,11 +6934,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-MP-1",
@@ -7377,11 +6961,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-MP-2",
@@ -7408,11 +6988,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-MP-3",
@@ -7439,11 +7015,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-MP-4",
@@ -7470,11 +7042,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-MP-5",
@@ -7501,11 +7069,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-MP-6",
@@ -7532,11 +7096,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-MP-7",
@@ -7563,11 +7123,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-PE-1",
@@ -7594,11 +7150,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PE-10",
@@ -7625,11 +7177,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PE-11",
@@ -7656,11 +7204,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PE-12",
@@ -7687,11 +7231,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PE-13",
@@ -7718,11 +7258,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PE-13.1",
@@ -7749,11 +7285,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PE-14",
@@ -7780,11 +7312,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PE-15",
@@ -7811,11 +7339,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PE-16",
@@ -7842,11 +7366,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PE-17",
@@ -7873,11 +7393,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PE-2",
@@ -7904,11 +7420,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PE-3",
@@ -7935,11 +7447,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PE-4",
@@ -7966,11 +7474,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PE-5",
@@ -7997,11 +7501,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PE-6",
@@ -8028,11 +7528,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PE-6.1",
@@ -8059,11 +7555,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PE-8",
@@ -8090,11 +7582,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PE-9",
@@ -8121,11 +7609,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "FEDRAMP-PL-1",
@@ -8152,10 +7636,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-PL-10",
@@ -8182,10 +7663,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-PL-11",
@@ -8212,10 +7690,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-PL-2",
@@ -8242,10 +7717,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-PL-4",
@@ -8272,10 +7744,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-PL-4.1",
@@ -8302,10 +7771,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-PL-8",
@@ -8332,10 +7798,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-PS-1",
@@ -8362,10 +7825,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-PS-2",
@@ -8392,10 +7852,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-PS-3",
@@ -8422,10 +7879,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-PS-4",
@@ -8452,10 +7906,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-PS-5",
@@ -8482,10 +7933,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-PS-6",
@@ -8512,10 +7960,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-PS-7",
@@ -8542,10 +7987,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-PS-8",
@@ -8572,10 +8014,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-PS-9",
@@ -8602,10 +8041,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-RA-1",
@@ -8632,10 +8068,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-RA-2",
@@ -8662,10 +8095,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-RA-3",
@@ -8692,10 +8122,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-RA-3.1",
@@ -8722,10 +8149,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-RA-5",
@@ -8752,10 +8176,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-RA-5.11",
@@ -8782,10 +8203,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-RA-5.2",
@@ -8812,10 +8230,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-RA-5.5",
@@ -8842,10 +8257,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-RA-7",
@@ -8872,10 +8284,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-RA-9",
@@ -8902,10 +8311,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "FEDRAMP-SA-1",
@@ -8932,11 +8338,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SA-10",
@@ -8963,11 +8365,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SA-11",
@@ -8994,11 +8392,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SA-15",
@@ -9025,11 +8419,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SA-15.3",
@@ -9056,11 +8446,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SA-2",
@@ -9087,11 +8473,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SA-22",
@@ -9118,11 +8500,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SA-3",
@@ -9149,11 +8527,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SA-4",
@@ -9180,11 +8554,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SA-4.1",
@@ -9211,11 +8581,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SA-4.10",
@@ -9242,11 +8608,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SA-4.2",
@@ -9273,11 +8635,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SA-4.9",
@@ -9304,11 +8662,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SA-5",
@@ -9335,11 +8689,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SA-8",
@@ -9366,11 +8716,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SA-9",
@@ -9397,11 +8743,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SA-9.2",
@@ -9428,11 +8770,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-1",
@@ -9459,11 +8797,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-10",
@@ -9490,11 +8824,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-12",
@@ -9521,11 +8851,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-13",
@@ -9552,11 +8878,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-15",
@@ -9583,11 +8905,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-17",
@@ -9614,11 +8932,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-18",
@@ -9645,11 +8959,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-2",
@@ -9676,11 +8986,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-20",
@@ -9707,11 +9013,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-21",
@@ -9738,11 +9040,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-22",
@@ -9769,11 +9067,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-23",
@@ -9800,11 +9094,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-28",
@@ -9831,11 +9121,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-28.1",
@@ -9862,11 +9148,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-39",
@@ -9893,11 +9175,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-4",
@@ -9924,11 +9202,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-5",
@@ -9955,11 +9229,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-7",
@@ -9986,11 +9256,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-7.3",
@@ -10017,11 +9283,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-7.4",
@@ -10048,11 +9310,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-7.5",
@@ -10079,11 +9337,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-7.7",
@@ -10110,11 +9364,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-7.8",
@@ -10141,11 +9391,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-8",
@@ -10172,11 +9418,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SC-8.1",
@@ -10203,11 +9445,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "FEDRAMP-SI-1",
@@ -10234,11 +9472,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SI-10",
@@ -10265,11 +9499,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SI-11",
@@ -10296,11 +9526,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SI-12",
@@ -10327,11 +9553,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SI-16",
@@ -10358,11 +9580,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SI-2",
@@ -10389,11 +9607,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SI-2.2",
@@ -10420,11 +9634,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SI-3",
@@ -10451,11 +9661,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SI-4",
@@ -10482,11 +9688,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SI-4.2",
@@ -10513,11 +9715,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SI-4.4",
@@ -10544,11 +9742,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SI-4.5",
@@ -10575,11 +9769,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SI-5",
@@ -10606,11 +9796,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SI-7",
@@ -10637,11 +9823,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SI-7.1",
@@ -10668,11 +9850,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SI-7.7",
@@ -10699,11 +9877,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SI-8",
@@ -10730,11 +9904,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SI-8.2",
@@ -10761,11 +9931,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "FEDRAMP-SR-1",
@@ -10792,10 +9958,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["service", "data_store"]
     },
     {
       "control_id": "FEDRAMP-SR-10",
@@ -10822,10 +9985,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["service", "data_store"]
     },
     {
       "control_id": "FEDRAMP-SR-11",
@@ -10852,10 +10012,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["service", "data_store"]
     },
     {
       "control_id": "FEDRAMP-SR-11.1",
@@ -10882,10 +10039,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["service", "data_store"]
     },
     {
       "control_id": "FEDRAMP-SR-11.2",
@@ -10912,10 +10066,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["service", "data_store"]
     },
     {
       "control_id": "FEDRAMP-SR-12",
@@ -10942,10 +10093,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["service", "data_store"]
     },
     {
       "control_id": "FEDRAMP-SR-2",
@@ -10972,10 +10120,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["service", "data_store"]
     },
     {
       "control_id": "FEDRAMP-SR-2.1",
@@ -11002,10 +10147,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["service", "data_store"]
     },
     {
       "control_id": "FEDRAMP-SR-3",
@@ -11032,10 +10174,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["service", "data_store"]
     },
     {
       "control_id": "FEDRAMP-SR-5",
@@ -11062,10 +10201,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["service", "data_store"]
     },
     {
       "control_id": "FEDRAMP-SR-6",
@@ -11092,10 +10228,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["service", "data_store"]
     },
     {
       "control_id": "FEDRAMP-SR-8",
@@ -11122,10 +10255,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["service", "data_store"]
     },
     {
       "control_id": "GDPR-Art.25",
@@ -11152,11 +10282,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "s3_bucket",
-        "container_image"
-      ]
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "GDPR-Art.28",
@@ -11183,11 +10309,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "repo",
-        "data_store"
-      ]
+      "asset_types": ["service", "repo", "data_store"]
     },
     {
       "control_id": "GDPR-Art.30",
@@ -11214,11 +10336,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "repo",
-        "data_store"
-      ]
+      "asset_types": ["service", "repo", "data_store"]
     },
     {
       "control_id": "GDPR-Art.32",
@@ -11245,11 +10363,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "s3_bucket",
-        "container_image"
-      ]
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "GDPR-Art.33",
@@ -11276,11 +10390,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "GDPR-Art.35",
@@ -11307,11 +10417,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "s3_bucket",
-        "container_image"
-      ]
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "HIPAA-164.308(a)(1)(ii)(A)",
@@ -11338,11 +10444,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "repo",
-        "data_store"
-      ]
+      "asset_types": ["service", "repo", "data_store"]
     },
     {
       "control_id": "HIPAA-164.308(a)(1)(ii)(B)",
@@ -11369,11 +10471,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "repo",
-        "data_store"
-      ]
+      "asset_types": ["service", "repo", "data_store"]
     },
     {
       "control_id": "HIPAA-164.308(a)(4)",
@@ -11433,11 +10531,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "s3_bucket",
-        "container_image"
-      ]
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "HIPAA-164.312(b)",
@@ -11464,11 +10558,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "HIPAA-164.312(e)",
@@ -11495,11 +10585,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "s3_bucket",
-        "container_image"
-      ]
+      "asset_types": ["data_store", "s3_bucket", "container_image"]
     },
     {
       "control_id": "ISO27001-A.5.1",
@@ -11526,10 +10612,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.10",
@@ -11556,10 +10639,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.11",
@@ -11586,10 +10666,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.12",
@@ -11616,10 +10693,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.13",
@@ -11646,10 +10720,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.14",
@@ -11676,10 +10747,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.15",
@@ -11741,10 +10809,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.17",
@@ -11771,10 +10836,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.18",
@@ -11801,10 +10863,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.19",
@@ -11831,10 +10890,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.2",
@@ -11861,10 +10917,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.20",
@@ -11891,10 +10944,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.21",
@@ -11921,10 +10971,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.22",
@@ -11951,10 +10998,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.23",
@@ -11981,10 +11025,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.24",
@@ -12011,10 +11052,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.25",
@@ -12041,10 +11079,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.26",
@@ -12071,10 +11106,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.27",
@@ -12101,10 +11133,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.28",
@@ -12131,10 +11160,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.29",
@@ -12161,10 +11187,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.3",
@@ -12191,10 +11214,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.30",
@@ -12221,11 +11241,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "ISO27001-A.5.31",
@@ -12252,10 +11268,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.32",
@@ -12282,10 +11295,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.33",
@@ -12312,10 +11322,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.34",
@@ -12342,10 +11349,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.35",
@@ -12372,10 +11376,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.36",
@@ -12402,10 +11403,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.37",
@@ -12432,10 +11430,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.4",
@@ -12462,10 +11457,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.5",
@@ -12492,10 +11484,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.6",
@@ -12522,10 +11511,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.7",
@@ -12552,10 +11538,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.8",
@@ -12582,10 +11565,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.5.9",
@@ -12612,10 +11592,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.6.1",
@@ -12642,10 +11619,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.6.2",
@@ -12672,10 +11646,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.6.3",
@@ -12702,10 +11673,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.6.4",
@@ -12732,10 +11700,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.6.5",
@@ -12762,10 +11727,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.6.6",
@@ -12792,10 +11754,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.6.7",
@@ -12822,10 +11781,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.6.8",
@@ -12852,10 +11808,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "ISO27001-A.7.1",
@@ -12882,11 +11835,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "ISO27001-A.7.10",
@@ -12913,11 +11862,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "ISO27001-A.7.11",
@@ -12944,11 +11889,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "ISO27001-A.7.12",
@@ -12975,11 +11916,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "ISO27001-A.7.13",
@@ -13006,11 +11943,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "ISO27001-A.7.14",
@@ -13037,11 +11970,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "ISO27001-A.7.2",
@@ -13068,11 +11997,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "ISO27001-A.7.3",
@@ -13099,11 +12024,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "ISO27001-A.7.4",
@@ -13130,11 +12051,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "ISO27001-A.7.5",
@@ -13161,11 +12078,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "ISO27001-A.7.6",
@@ -13192,11 +12105,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "ISO27001-A.7.7",
@@ -13223,11 +12132,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "ISO27001-A.7.8",
@@ -13254,11 +12159,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "ISO27001-A.7.9",
@@ -13285,11 +12186,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "ISO27001-A.8.1",
@@ -13316,11 +12213,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.10",
@@ -13347,11 +12240,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.11",
@@ -13378,11 +12267,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.12",
@@ -13409,11 +12294,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.13",
@@ -13440,11 +12321,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.14",
@@ -13471,11 +12348,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.15",
@@ -13502,11 +12375,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.16",
@@ -13533,11 +12402,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "ISO27001-A.8.17",
@@ -13564,11 +12429,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.18",
@@ -13595,11 +12456,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.19",
@@ -13626,11 +12483,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.2",
@@ -13657,11 +12510,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.20",
@@ -13688,11 +12537,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.21",
@@ -13719,11 +12564,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.22",
@@ -13750,11 +12591,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.23",
@@ -13781,11 +12618,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.24",
@@ -13812,11 +12645,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.25",
@@ -13843,11 +12672,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.26",
@@ -13874,11 +12699,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.27",
@@ -13905,11 +12726,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.28",
@@ -13936,11 +12753,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.29",
@@ -13967,11 +12780,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.3",
@@ -13998,11 +12807,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.30",
@@ -14029,11 +12834,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.31",
@@ -14060,11 +12861,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.32",
@@ -14091,11 +12888,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.33",
@@ -14122,11 +12915,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.34",
@@ -14153,11 +12942,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.4",
@@ -14184,11 +12969,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.5",
@@ -14215,11 +12996,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.6",
@@ -14246,11 +13023,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.7",
@@ -14277,11 +13050,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.8",
@@ -14308,11 +13077,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO27001-A.8.9",
@@ -14339,11 +13104,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "ISO42001-10.2",
@@ -14964,10 +13725,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "ISO42001-6.2.2",
@@ -15390,10 +14148,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "ISO42001-8.2",
@@ -15651,10 +14406,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-1.2",
@@ -15681,12 +14433,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-1.3",
@@ -15713,12 +14460,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-1.4",
@@ -15745,12 +14487,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-1.5",
@@ -15777,12 +14514,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-1.6",
@@ -15809,10 +14541,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-1.7",
@@ -15839,12 +14568,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-2.1",
@@ -15871,12 +14595,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-2.2",
@@ -15903,12 +14622,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-2.3",
@@ -15935,12 +14649,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-3.1",
@@ -15967,12 +14676,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-3.2",
@@ -15999,12 +14703,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-4.1",
@@ -16031,12 +14730,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-4.2",
@@ -16063,12 +14757,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-4.3",
@@ -16095,12 +14784,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-5.1",
@@ -16127,12 +14811,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-5.2",
@@ -16159,12 +14838,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-6.1",
@@ -16191,12 +14865,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-GOVERN-6.2",
@@ -16223,12 +14892,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-1.1",
@@ -16255,12 +14919,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-1.2",
@@ -16287,12 +14946,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-1.3",
@@ -16319,12 +14973,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-1.4",
@@ -16351,12 +15000,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-2.1",
@@ -16383,12 +15027,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-2.2",
@@ -16415,12 +15054,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-2.3",
@@ -16447,12 +15081,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-2.4",
@@ -16479,12 +15108,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-3.1",
@@ -16511,12 +15135,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-3.2",
@@ -16543,12 +15162,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-4.1",
@@ -16575,12 +15189,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-4.2",
@@ -16607,12 +15216,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MANAGE-4.3",
@@ -16639,10 +15243,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-1.1",
@@ -16669,12 +15270,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-1.2",
@@ -16701,12 +15297,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-1.3",
@@ -16733,12 +15324,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-1.4",
@@ -16765,12 +15351,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-1.5",
@@ -16797,11 +15378,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-23",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "cloud_resource"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "cloud_resource"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-1.6",
@@ -16828,12 +15405,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-2.1",
@@ -16860,12 +15432,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-2.2",
@@ -16892,12 +15459,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-2.3",
@@ -16924,12 +15486,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-3.1",
@@ -16956,12 +15513,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-3.2",
@@ -16988,12 +15540,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-3.3",
@@ -17020,12 +15567,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-3.4",
@@ -17052,12 +15594,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-3.5",
@@ -17084,12 +15621,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-4.1",
@@ -17116,12 +15648,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-4.2",
@@ -17148,12 +15675,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-5.1",
@@ -17180,12 +15702,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MAP-5.2",
@@ -17212,12 +15729,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-1.1",
@@ -17244,12 +15756,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-1.2",
@@ -17276,12 +15783,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-1.3",
@@ -17308,12 +15810,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.1",
@@ -17340,12 +15837,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.10",
@@ -17372,12 +15864,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.11",
@@ -17404,12 +15891,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.12",
@@ -17436,12 +15918,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.13",
@@ -17468,12 +15945,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.2",
@@ -17500,12 +15972,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.3",
@@ -17532,12 +15999,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.4",
@@ -17564,10 +16026,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-26",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.5",
@@ -17594,12 +16053,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.6",
@@ -17626,12 +16080,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.7",
@@ -17658,10 +16107,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-23",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent"
-      ]
+      "asset_types": ["ai_model", "ai_agent"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.8",
@@ -17688,12 +16134,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-2.9",
@@ -17720,12 +16161,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-3.1",
@@ -17752,12 +16188,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-3.2",
@@ -17784,12 +16215,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-3.3",
@@ -17816,12 +16242,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-4.1",
@@ -17848,12 +16269,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-4.2",
@@ -17880,12 +16296,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "NIST-AI-RMF-MEASURE-4.3",
@@ -17912,12 +16323,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "ai_model",
-        "ai_agent",
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["ai_model", "ai_agent", "service", "data_store"]
     },
     {
       "control_id": "PCI-DSS-10",
@@ -17944,11 +16350,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "PCI-DSS-11",
@@ -17975,11 +16377,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-24",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "container_image",
-        "host",
-        "service"
-      ]
+      "asset_types": ["container_image", "host", "service"]
     },
     {
       "control_id": "PCI-DSS-7",
@@ -18038,12 +16436,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "host",
-        "data_store",
-        "cloud_resource"
-      ]
+      "asset_types": ["service", "host", "data_store", "cloud_resource"]
     },
     {
       "control_id": "SOC2-A1.2",
@@ -18070,12 +16463,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "host",
-        "data_store",
-        "cloud_resource"
-      ]
+      "asset_types": ["service", "host", "data_store", "cloud_resource"]
     },
     {
       "control_id": "SOC2-A1.3",
@@ -18102,12 +16490,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "host",
-        "data_store",
-        "cloud_resource"
-      ]
+      "asset_types": ["service", "host", "data_store", "cloud_resource"]
     },
     {
       "control_id": "SOC2-C1.1",
@@ -18134,12 +16517,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "s3_bucket",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["data_store", "s3_bucket", "cloud_resource", "service"]
     },
     {
       "control_id": "SOC2-C1.2",
@@ -18166,12 +16544,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "s3_bucket",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["data_store", "s3_bucket", "cloud_resource", "service"]
     },
     {
       "control_id": "SOC2-CC1.1",
@@ -18198,10 +16571,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC1.2",
@@ -18228,10 +16598,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC1.3",
@@ -18258,10 +16625,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC1.4",
@@ -18288,10 +16652,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC1.5",
@@ -18318,10 +16679,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC2.1",
@@ -18348,10 +16706,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC2.2",
@@ -18378,10 +16733,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC2.3",
@@ -18408,10 +16760,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC3.1",
@@ -18438,10 +16787,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC3.2",
@@ -18468,10 +16814,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC3.3",
@@ -18498,10 +16841,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC3.4",
@@ -18528,10 +16868,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC4.1",
@@ -18558,10 +16895,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC4.2",
@@ -18588,10 +16922,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log"
-      ]
+      "asset_types": ["service", "audit_log"]
     },
     {
       "control_id": "SOC2-CC5.1",
@@ -18618,11 +16949,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "SOC2-CC5.2",
@@ -18649,11 +16976,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "SOC2-CC5.3",
@@ -18680,11 +17003,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "cloud_policy",
-        "cloud_resource",
-        "service"
-      ]
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     },
     {
       "control_id": "SOC2-CC6.1",
@@ -18970,11 +17289,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "SOC2-CC7.2",
@@ -19001,11 +17316,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-05-23",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "SOC2-CC7.3",
@@ -19032,11 +17343,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "SOC2-CC7.4",
@@ -19063,11 +17370,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "SOC2-CC7.5",
@@ -19094,11 +17397,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "audit_log",
-        "service",
-        "host"
-      ]
+      "asset_types": ["audit_log", "service", "host"]
     },
     {
       "control_id": "SOC2-CC8.1",
@@ -19125,11 +17424,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "repo",
-        "service",
-        "container_image"
-      ]
+      "asset_types": ["repo", "service", "container_image"]
     },
     {
       "control_id": "SOC2-CC9.1",
@@ -19156,10 +17451,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["service", "data_store"]
     },
     {
       "control_id": "SOC2-CC9.2",
@@ -19186,10 +17478,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "data_store"
-      ]
+      "asset_types": ["service", "data_store"]
     },
     {
       "control_id": "SOC2-P1.1",
@@ -19216,12 +17505,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-P2.1",
@@ -19248,12 +17532,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-P3.1",
@@ -19280,12 +17559,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-P3.2",
@@ -19312,12 +17586,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-P4.1",
@@ -19344,12 +17613,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-P4.2",
@@ -19376,12 +17640,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-P4.3",
@@ -19408,12 +17667,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-P5.1",
@@ -19440,12 +17694,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-P5.2",
@@ -19472,12 +17721,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-P6.1",
@@ -19504,12 +17748,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-P6.2",
@@ -19536,12 +17775,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-P6.3",
@@ -19568,12 +17802,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-P6.4",
@@ -19600,12 +17829,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-P6.5",
@@ -19632,12 +17856,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-P6.6",
@@ -19664,12 +17883,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-P6.7",
@@ -19696,12 +17910,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-P7.1",
@@ -19728,12 +17937,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-P8.1",
@@ -19760,12 +17964,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "data_store",
-        "service",
-        "identity_user",
-        "audit_log"
-      ]
+      "asset_types": ["data_store", "service", "identity_user", "audit_log"]
     },
     {
       "control_id": "SOC2-PI1.1",
@@ -19792,11 +17991,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log",
-        "data_store"
-      ]
+      "asset_types": ["service", "audit_log", "data_store"]
     },
     {
       "control_id": "SOC2-PI1.2",
@@ -19823,11 +18018,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log",
-        "data_store"
-      ]
+      "asset_types": ["service", "audit_log", "data_store"]
     },
     {
       "control_id": "SOC2-PI1.3",
@@ -19854,11 +18045,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log",
-        "data_store"
-      ]
+      "asset_types": ["service", "audit_log", "data_store"]
     },
     {
       "control_id": "SOC2-PI1.4",
@@ -19885,11 +18072,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log",
-        "data_store"
-      ]
+      "asset_types": ["service", "audit_log", "data_store"]
     },
     {
       "control_id": "SOC2-PI1.5",
@@ -19916,11 +18099,7 @@
       "reviewed_by": "internal-trust-team",
       "reviewed_date": "2026-06-30",
       "signal_source": "silver/normalized_events.jsonl",
-      "asset_types": [
-        "service",
-        "audit_log",
-        "data_store"
-      ]
+      "asset_types": ["service", "audit_log", "data_store"]
     }
   ]
 }
