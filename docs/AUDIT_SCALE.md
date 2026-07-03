@@ -1,0 +1,65 @@
+# Audit-scale ingestion, evaluation, and synthetic data
+
+TrustOps ships a **POC-scale Python lake path** (~10–70 events in fixtures) and a **production-scale warehouse path** (Snowflake / ClickHouse). This document summarizes the audit of the local path, synthetic data for load testing, and throughput enhancements added for million-finding evaluation.
+
+## Audit findings (synthesis)
+
+| Layer | POC behavior today | Million-finding risk | Mitigation in this repo |
+|-------|-------------------|----------------------|-------------------------|
+| **Raw JSONL** | Full-file read on upsert/sync | Single file grows without bound | Streaming `iter_jsonl` / `count_jsonl`; warehouse sinks for prod |
+| **Pipeline** | Full rebuild per `materialize=True` sync | Replays entire raw lake each tick | `manifest.json` `row_counts`; benchmark CLI to measure throughput |
+| **Silver → violations** | O(events × controls_per_event) in memory | Multi-million finding rows | `build_violations(..., max_violations=N)` + `violation_summary` totals |
+| **Posture API** | Embeds all open violations | Payload size / latency | Auto-cap at 10k violations when silver > 100k; framework rollups from gold control posture |
+| **Ingestion status** | Loaded full silver for counts | Status endpoint latency | Manifest-backed counts + streaming field histograms |
+| **Synthetic fixtures** | Golden = 37 events | No load-test data | `fixtures synthesize-scale` CLI (millions, streaming write) |
+
+**Recommendation above ~100k events:** project findings with `benchmark plan`, generate synthetic lakes with `fixtures synthesize-scale`, measure pipeline with `benchmark pipeline`, and route auditor analytics to **Snowflake/ClickHouse** marts (`deploy/snowflake/schema.sql`, `deploy/clickhouse/schema.sql`) instead of expanding in-process JSONL.
+
+## Synthetic data (audit-scale)
+
+Generate reproducible raw evidence without live connectors:
+
+```bash
+# Project cardinality before generating
+security-lakehouse benchmark plan --events 1000000 --controls-per-event 3 --open-ratio 0.12
+
+# Stream 1M events (~360k findings at defaults) to disk
+security-lakehouse fixtures synthesize-scale \
+  --count 1000000 \
+  --out /tmp/audit-scale/raw.jsonl \
+  --controls-per-event 3 \
+  --open-ratio 0.12 \
+  --seed 42
+
+# Materialize lake + timing
+security-lakehouse benchmark pipeline --raw /tmp/audit-scale/raw.jsonl --out /tmp/audit-scale/lake
+```
+
+Controls are sampled from the active catalog (635 controls after TSC extensions). Each open event fans out to `controls_per_event` findings during evaluation.
+
+## Latency and throughput enhancements
+
+### Streaming IO (`security_lakehouse.io`)
+
+- `iter_jsonl` — line-at-a-time reads (no full-file `read_text`)
+- `count_jsonl` — row counts without JSON parse
+- `jsonl_field_counts` — histogram one field while streaming
+- `iter_jsonl_batches` — chunked processing hook for future incremental pipeline stages
+- `write_jsonl_from_iterable` — generator-friendly writes for synthesis
+
+### Capped violation rollups (`security_lakehouse.assessment`)
+
+- `build_violations(events=..., max_violations=N)` returns `(rows, summary)`
+- `violation_summary` carries `total_count`, `severity_counts`, and `truncated`
+- `write_current_posture` auto-applies `max_violations=10000` when silver > 100k
+- Framework scores use gold `control_posture` aggregates when violations are truncated
+
+### Manifest row counts (`manifest.json`)
+
+After each pipeline run, `row_counts` records bronze/silver/gold cardinalities so `ingestion/status` avoids full-file scans.
+
+## Related docs
+
+- [CONTINUOUS_INGESTION.md](CONTINUOUS_INGESTION.md) — connector loop and watermarks
+- [HERO_DATA_LAKES.md](HERO_DATA_LAKES.md) — warehouse-native rollups at production scale
+- [FRAMEWORK_COVERAGE.md](FRAMEWORK_COVERAGE.md) — active control catalog size
