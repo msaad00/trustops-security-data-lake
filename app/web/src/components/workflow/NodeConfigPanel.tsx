@@ -21,7 +21,7 @@ interface Props {
   spec: ActionSpec | null;
   /** Per-node result from the last workflow run, if any. */
   lastResult?: {
-    result: "ok" | "error";
+    result: "ok" | "error" | "skipped";
     output?: Record<string, unknown>;
     error?: string;
   } | null;

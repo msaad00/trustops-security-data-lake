@@ -30,6 +30,7 @@ import {
   GitFork,
   Loader2,
   Play,
+  Shield,
   Zap,
 } from "lucide-react";
 import type { ActionSpec, WorkflowNode, WorkflowRun } from "@/lib/api/types";
@@ -41,10 +42,10 @@ import { cn } from "@/lib/utils";
 
 interface NodeData extends Record<string, unknown> {
   label: string;
-  kind: "trigger" | "check" | "action";
+  kind: "trigger" | "check" | "gate" | "action";
   node_type: string;
   params: Record<string, unknown>;
-  runResult?: "ok" | "error" | null;
+  runResult?: "ok" | "error" | "skipped" | null;
   runPending?: boolean;
 }
 
@@ -78,6 +79,15 @@ const KIND_STYLE: Record<NonNullable<NodeData["kind"]>, KindStyle> = {
     badgeFg: "#92400e",
     ring: "rgba(245,158,11,0.35)",
     Icon: GitFork,
+  },
+  gate: {
+    border: "#8b5cf6",
+    borderSelected: "#6d28d9",
+    bg: "#f5f3ff",
+    badgeBg: "#ede9fe",
+    badgeFg: "#5b21b6",
+    ring: "rgba(139,92,246,0.35)",
+    Icon: Shield,
   },
   action: {
     border: "#10b981",
@@ -512,6 +522,7 @@ export function WorkflowCanvas({
               {
                 trigger: "#3b82f6",
                 check: "#f59e0b",
+                gate: "#8b5cf6",
                 action: "#10b981",
               }[kind] ?? "#94a3b8"
             );

@@ -40,8 +40,12 @@ from security_lakehouse.trust_share import create_share, list_shares, revoke_sha
 from security_lakehouse.verification import verify_event
 from security_lakehouse.workflows import (
     action_catalog,
+    approve_workflow_run,
     get_workflow,
+    get_workflow_run,
     list_workflows,
+    reject_workflow_run,
+    retry_workflow_run,
     run_action,
     run_workflow,
     save_workflow,
@@ -76,6 +80,16 @@ def _workflow_get_match(path: str) -> str | None:
     return rest
 
 
+def _workflow_run_id_match(path: str) -> str | None:
+    prefix = "/api/workflows/runs/"
+    if not path.startswith(prefix):
+        return None
+    rest = path[len(prefix) :].strip("/")
+    if not rest or "/" in rest:
+        return None
+    return rest
+
+
 def required_post_scope(path: str) -> str:
     """Return the RBAC scope required to mutate a legacy console route."""
     if path == "/api/snapshots":
@@ -99,6 +113,12 @@ def required_post_scope(path: str) -> str:
     workflow_run = _suffix_match(path, "/api/workflows/", "/run")
     if workflow_run is not None and workflow_run != "actions":
         return "workflow_run"
+    if _suffix_match(path, "/api/workflows/runs/", "/retry") is not None:
+        return "workflow_run"
+    if _suffix_match(path, "/api/workflows/runs/", "/approve") is not None:
+        return "workflow_manage"
+    if _suffix_match(path, "/api/workflows/runs/", "/reject") is not None:
+        return "workflow_manage"
     if path == "/api/trust-shares":
         return "snapshot"
     if _suffix_match(path, "/api/trust-shares/", "/revoke") is not None:
@@ -182,6 +202,12 @@ def handle_get(path: str, query: Query, lake_dir: str | Path) -> tuple[HTTPStatu
         return HTTPStatus.OK, {"count": len(rows), "workflows": rows}
     if path == "/api/workflows/actions":
         return HTTPStatus.OK, {"actions": action_catalog()}
+    workflow_run_id = _workflow_run_id_match(path)
+    if workflow_run_id is not None:
+        run = get_workflow_run(lake, workflow_run_id)
+        if run is None:
+            return HTTPStatus.NOT_FOUND, {"error": "not_found"}
+        return HTTPStatus.OK, {"run": run}
     workflow_get = _workflow_get_match(path)
     if workflow_get is not None:
         workflow = get_workflow(lake, workflow_get)
@@ -329,7 +355,43 @@ def handle_post(path: str, body: Body, lake_dir: str | Path, *, role: str = "") 
     workflow_run = _suffix_match(path, "/api/workflows/", "/run")
     if workflow_run is not None and workflow_run != "actions":
         try:
-            run = run_workflow(lake, workflow_id=workflow_run, actor=str(body.get("actor") or "console"))
+            run = run_workflow(
+                lake,
+                workflow_id=workflow_run,
+                actor=str(body.get("actor") or "console"),
+                dry_run=bool(body.get("dry_run")),
+            )
+        except ValueError:
+            return HTTPStatus.BAD_REQUEST, {"error": "bad_request", "reason": "invalid request"}
+        return HTTPStatus.CREATED, {"run": run}
+    workflow_retry = _suffix_match(path, "/api/workflows/runs/", "/retry")
+    if workflow_retry is not None:
+        try:
+            run = retry_workflow_run(lake, run_id=workflow_retry, actor=str(body.get("actor") or "console"))
+        except ValueError:
+            return HTTPStatus.BAD_REQUEST, {"error": "bad_request", "reason": "invalid request"}
+        return HTTPStatus.CREATED, {"run": run}
+    workflow_approve = _suffix_match(path, "/api/workflows/runs/", "/approve")
+    if workflow_approve is not None:
+        try:
+            run = approve_workflow_run(
+                lake,
+                run_id=workflow_approve,
+                actor=str(body.get("actor") or "console"),
+                note=str(body.get("note") or ""),
+            )
+        except ValueError:
+            return HTTPStatus.BAD_REQUEST, {"error": "bad_request", "reason": "invalid request"}
+        return HTTPStatus.CREATED, {"run": run}
+    workflow_reject = _suffix_match(path, "/api/workflows/runs/", "/reject")
+    if workflow_reject is not None:
+        try:
+            run = reject_workflow_run(
+                lake,
+                run_id=workflow_reject,
+                actor=str(body.get("actor") or "console"),
+                note=str(body.get("note") or ""),
+            )
         except ValueError:
             return HTTPStatus.BAD_REQUEST, {"error": "bad_request", "reason": "invalid request"}
         return HTTPStatus.CREATED, {"run": run}

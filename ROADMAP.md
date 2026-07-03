@@ -31,6 +31,7 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 - [x] LangGraph for SOC triage harness
 - [x] GitHub Action posture gate
 - [x] MCP cookbook for evidence requests + approvals
+- [x] Workflow operating loop (run inspector, dry-run preview, approval gate, retries)
 
 ## P3 — Operations
 

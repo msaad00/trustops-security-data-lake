@@ -327,6 +327,8 @@ export const api = {
     get<{ workflow_id: string; runs: WorkflowRun[] }>(
       `/workflows/${encodeURIComponent(id)}/runs`,
     ),
+  workflowRun: (runId: string) =>
+    get<{ run: WorkflowRun }>(`/workflows/runs/${encodeURIComponent(runId)}`),
   actionCatalog: () => get<{ actions: ActionSpec[] }>("/workflows/actions"),
   saveWorkflow: (payload: {
     workflow_id?: string;
@@ -335,8 +337,26 @@ export const api = {
     nodes: WorkflowNode[];
     edges: WorkflowEdge[];
   }) => post<{ workflow: Workflow }>("/workflows", payload),
-  runWorkflow: (id: string) =>
-    post<{ run: WorkflowRun }>(`/workflows/${encodeURIComponent(id)}/run`, {}),
+  runWorkflow: (id: string, payload: { dry_run?: boolean } = {}) =>
+    post<{ run: WorkflowRun }>(
+      `/workflows/${encodeURIComponent(id)}/run`,
+      payload,
+    ),
+  retryWorkflowRun: (runId: string) =>
+    post<{ run: WorkflowRun }>(
+      `/workflows/runs/${encodeURIComponent(runId)}/retry`,
+      {},
+    ),
+  approveWorkflowRun: (runId: string, note = "") =>
+    post<{ run: WorkflowRun }>(
+      `/workflows/runs/${encodeURIComponent(runId)}/approve`,
+      { note },
+    ),
+  rejectWorkflowRun: (runId: string, note = "") =>
+    post<{ run: WorkflowRun }>(
+      `/workflows/runs/${encodeURIComponent(runId)}/reject`,
+      { note },
+    ),
   testAction: (node_type: string, params: Record<string, unknown>) =>
     post<{ output: Record<string, unknown> }>("/workflows/actions/run", {
       node_type,
