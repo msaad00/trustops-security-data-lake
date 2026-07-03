@@ -104,7 +104,9 @@ export default function PricingPage() {
               </div>
               <CardDescription>{tier.tagline}</CardDescription>
               <div className="pt-1">
-                <span className="text-2xl font-black text-ink">{tier.price}</span>
+                <span className="text-2xl font-black text-ink">
+                  {tier.price}
+                </span>
                 <span className="text-sm text-muted">{tier.period}</span>
               </div>
               <div className="flex flex-wrap gap-1.5 pt-1">
@@ -134,7 +136,9 @@ export default function PricingPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Compare to managed GRC SaaS</CardTitle>
+          <CardTitle className="text-base">
+            Compare to managed GRC SaaS
+          </CardTitle>
           <CardDescription>
             Typical SOC 2 platform fees run ~$10k–$28k/year for startups and
             $50k–$110k+ for mid-market multi-framework programs — before

@@ -21,9 +21,7 @@ def tenant_usage(session: Session, *, tenant_id: str) -> dict[str, int]:
     users = session.scalar(select(func.count()).select_from(User).where(User.tenant_id == tenant_id)) or 0
     api_keys = (
         session.scalar(
-            select(func.count())
-            .select_from(ApiKey)
-            .where(ApiKey.tenant_id == tenant_id, ApiKey.revoked_at.is_(None))
+            select(func.count()).select_from(ApiKey).where(ApiKey.tenant_id == tenant_id, ApiKey.revoked_at.is_(None))
         )
         or 0
     )
@@ -80,8 +78,7 @@ def assert_within_limit(session: Session, *, tenant: Tenant, resource: str, delt
         raise ValueError(f"unknown usage resource {resource!r}")
     if usage[resource] + delta > limits[key]:
         raise UsageLimitError(
-            f"plan {summary['plan_tier']} limit exceeded for {resource}: "
-            f"{usage[resource] + delta} > {limits[key]}"
+            f"plan {summary['plan_tier']} limit exceeded for {resource}: {usage[resource] + delta} > {limits[key]}"
         )
 
 
