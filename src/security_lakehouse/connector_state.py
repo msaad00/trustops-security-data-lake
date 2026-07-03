@@ -60,7 +60,8 @@ def _redact_sensitive_value(value: Any) -> Any:
                 out[key] = val
             elif any(sensitive in key_l for sensitive in SENSITIVE_FIELD_NAMES):
                 if isinstance(val, str) and val:
-                    out[key] = "***" + hashlib.sha256(val.encode("utf-8")).hexdigest()[:8]
+                    marker = hashlib.pbkdf2_hmac("sha256", val.encode("utf-8"), _ACCESS_FINGERPRINT_KEY, 600_000)
+                    out[key] = "***" + marker.hex()[:8]
                 else:
                     out[key] = None
             else:
