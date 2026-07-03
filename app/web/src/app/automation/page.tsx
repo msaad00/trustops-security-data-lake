@@ -23,6 +23,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { notify } from "@/lib/toast";
 import { ActionPalette } from "@/components/workflow/ActionPalette";
 import { NodeConfigPanel } from "@/components/workflow/NodeConfigPanel";
+import { RunInspectorDrawer } from "@/components/workflow/RunInspectorDrawer";
 import { TemplateGallery } from "@/components/workflow/TemplateGallery";
 import {
   WorkflowCanvas,
@@ -31,6 +32,9 @@ import {
 } from "@/components/workflow/WorkflowCanvas";
 import {
   useActionCatalog,
+  useApproveWorkflowRun,
+  useRejectWorkflowRun,
+  useRetryWorkflowRun,
   useRunWorkflow,
   useSaveWorkflow,
   useWorkflowRuns,
@@ -320,6 +324,9 @@ export default function AutomationPage() {
   const catalog = useActionCatalog();
   const save = useSaveWorkflow();
   const run = useRunWorkflow();
+  const retryRun = useRetryWorkflowRun();
+  const approveRun = useApproveWorkflowRun();
+  const rejectRun = useRejectWorkflowRun();
   const [activeId, setActiveId] = useState<string>(NEW_WORKFLOW_ID);
   const [editor, setEditor] = useState<Editor>(() => starterEditor());
   const [selectedNode, setSelectedNode] = useState<string | null>(() =>
@@ -488,20 +495,20 @@ export default function AutomationPage() {
     await saveCurrentWorkflow({ announce: true });
   };
 
-  const execute = async () => {
+  const execute = async (dryRun = false) => {
     const workflowId =
       editor.workflow_id ?? (await saveCurrentWorkflow({ announce: false }));
     if (!workflowId) {
       return;
     }
     try {
-      const { run: result } = await run.mutateAsync(workflowId);
+      const { run: result } = await run.mutateAsync({ id: workflowId, dry_run: dryRun });
       setLastRun(result);
       flash(
-        `Run ${result.result.toUpperCase()} — ${result.node_results.length} nodes executed.`,
+        `${dryRun ? "Preview" : "Run"} ${result.result.toUpperCase()} — ${result.node_results.length} nodes executed.`,
       );
     } catch (err) {
-      flash(`Run failed: ${(err as Error).message}`);
+      flash(`${dryRun ? "Preview" : "Run"} failed: ${(err as Error).message}`);
     }
   };
 
@@ -573,8 +580,17 @@ export default function AutomationPage() {
                   Save
                 </Button>
                 <Button
+                  variant="default"
+                  onClick={() => execute(true)}
+                  disabled={
+                    run.isPending || save.isPending || editor.nodes.length === 0
+                  }
+                >
+                  Preview
+                </Button>
+                <Button
                   variant="primary"
-                  onClick={execute}
+                  onClick={() => execute(false)}
                   disabled={
                     run.isPending || save.isPending || editor.nodes.length === 0
                   }
@@ -670,7 +686,7 @@ export default function AutomationPage() {
           ) : (
             (runs.data ?? []).slice(0, 10).map((r) => (
               <button
-                key={r.started_at + r.actor}
+                key={r.run_id ?? r.started_at + r.actor}
                 type="button"
                 onClick={() => setLastRun(r)}
                 className="grid w-full gap-1 rounded-lg border border-line bg-white p-3 text-left text-xs hover:border-brand"
@@ -679,18 +695,74 @@ export default function AutomationPage() {
                   <span className="font-black">
                     v{r.workflow_version} · {r.node_results.length} nodes
                   </span>
-                  <Badge tone={r.result === "ok" ? "ready" : "critical"}>
+                  <Badge
+                    tone={
+                      r.result === "ok"
+                        ? "ready"
+                        : r.result === "awaiting_approval"
+                          ? "attention"
+                          : "critical"
+                    }
+                  >
                     {r.result}
                   </Badge>
                 </div>
                 <div className="text-muted">
                   actor <b className="text-ink">{r.actor}</b> · {r.started_at}
+                  {r.run_id ? (
+                    <>
+                      {" "}
+                      · <code>{r.run_id.slice(0, 8)}</code>
+                    </>
+                  ) : null}
                 </div>
               </button>
             ))
           )}
         </div>
       </Card>
+
+      {lastRun ? (
+        <RunInspectorDrawer
+          run={lastRun}
+          auditor={auditor}
+          onClose={() => setLastRun(null)}
+          busy={
+            retryRun.isPending || approveRun.isPending || rejectRun.isPending
+          }
+          onRetry={
+            lastRun.run_id
+              ? async () => {
+                  const { run: next } = await retryRun.mutateAsync(lastRun.run_id!);
+                  setLastRun(next);
+                  flash(`Retry ${next.result.toUpperCase()}.`);
+                }
+              : undefined
+          }
+          onApprove={
+            lastRun.run_id
+              ? async () => {
+                  const { run: next } = await approveRun.mutateAsync({
+                    runId: lastRun.run_id!,
+                  });
+                  setLastRun(next);
+                  flash(`Approved — run ${next.result.toUpperCase()}.`);
+                }
+              : undefined
+          }
+          onReject={
+            lastRun.run_id
+              ? async () => {
+                  const { run: next } = await rejectRun.mutateAsync({
+                    runId: lastRun.run_id!,
+                  });
+                  setLastRun(next);
+                  flash("Run rejected.");
+                }
+              : undefined
+          }
+        />
+      ) : null}
 
       <TemplateGallery
         open={templatesOpen}

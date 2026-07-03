@@ -601,7 +601,7 @@ export interface FrameworkDetail {
 
 // --- Workflows --------------------------------------------------------------
 
-export type ActionKind = "trigger" | "check" | "action";
+export type ActionKind = "trigger" | "check" | "gate" | "action";
 
 export interface ActionSchemaField {
   type: "string" | "number" | "boolean";
@@ -655,19 +655,28 @@ export interface WorkflowRunNode {
   node_id: string;
   node_type: string;
   params: Record<string, unknown>;
-  result: "ok" | "error";
+  result: "ok" | "error" | "skipped";
   output?: Record<string, unknown>;
   error?: string;
+  reason?: string;
 }
 
 export interface WorkflowRun {
+  run_id?: string;
   workflow_id: string;
   workflow_version: number;
   actor: string;
-  result: "ok" | "error";
+  dry_run?: boolean;
+  status?: "ok" | "error" | "awaiting_approval" | "rejected";
+  result: "ok" | "error" | "awaiting_approval" | "rejected";
   started_at: string;
   finished_at: string;
+  pending_node_id?: string;
   node_results: WorkflowRunNode[];
+  resumed_from_run_id?: string;
+  rejected_from_run_id?: string;
+  approval_note?: string;
+  rejection_note?: string;
 }
 
 // --- Trust shares -----------------------------------------------------------

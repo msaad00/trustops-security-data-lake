@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Cpu, GitFork, GripVertical, Search, Zap } from "lucide-react";
+import { Cpu, GitFork, GripVertical, Search, Shield, Zap } from "lucide-react";
 import {
   Card,
   CardDescription,
@@ -16,7 +16,7 @@ interface Props {
   onAdd: (spec: ActionSpec) => void;
 }
 
-const KIND_ORDER: ActionSpec["kind"][] = ["trigger", "check", "action"];
+const KIND_ORDER: ActionSpec["kind"][] = ["trigger", "check", "gate", "action"];
 
 const KIND_META: Record<
   ActionSpec["kind"],
@@ -47,6 +47,15 @@ const KIND_META: Record<
     pillBg: "bg-amber-50",
     pillFg: "text-amber-700",
     borderHover: "hover:border-amber-400",
+  },
+  gate: {
+    label: "Gates",
+    Icon: Shield,
+    iconBg: "bg-violet-50",
+    iconFg: "text-violet-600",
+    pillBg: "bg-violet-50",
+    pillFg: "text-violet-700",
+    borderHover: "hover:border-violet-400",
   },
   action: {
     label: "Actions",

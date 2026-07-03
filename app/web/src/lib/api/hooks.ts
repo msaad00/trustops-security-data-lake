@@ -448,9 +448,48 @@ export function useSaveWorkflow() {
 export function useRunWorkflow() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: api.runWorkflow,
-    onSuccess: (_data, id) => {
-      qc.invalidateQueries({ queryKey: ["workflow-runs", id] });
+    mutationFn: ({ id, dry_run }: { id: string; dry_run?: boolean }) =>
+      api.runWorkflow(id, { dry_run }),
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["workflow-runs", vars.id] });
+    },
+  });
+}
+
+export function useRetryWorkflowRun() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: api.retryWorkflowRun,
+    onSuccess: (data) => {
+      qc.invalidateQueries({
+        queryKey: ["workflow-runs", data.run.workflow_id],
+      });
+    },
+  });
+}
+
+export function useApproveWorkflowRun() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ runId, note }: { runId: string; note?: string }) =>
+      api.approveWorkflowRun(runId, note),
+    onSuccess: (data) => {
+      qc.invalidateQueries({
+        queryKey: ["workflow-runs", data.run.workflow_id],
+      });
+    },
+  });
+}
+
+export function useRejectWorkflowRun() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ runId, note }: { runId: string; note?: string }) =>
+      api.rejectWorkflowRun(runId, note),
+    onSuccess: (data) => {
+      qc.invalidateQueries({
+        queryKey: ["workflow-runs", data.run.workflow_id],
+      });
     },
   });
 }

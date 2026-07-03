@@ -57,6 +57,7 @@ import re
 import time
 import urllib.error
 import urllib.request
+import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -95,6 +96,24 @@ def _evidence_changed(_lake: Path, params: dict[str, Any], *, dry_run: bool = Fa
 
 def _cron(_lake: Path, params: dict[str, Any], *, dry_run: bool = False) -> dict[str, Any]:
     return {"trigger_kind": "cron", "schedule": params.get("schedule") or "@hourly"}
+
+
+def _gate_approval(_lake: Path, params: dict[str, Any], *, dry_run: bool = False) -> dict[str, Any]:
+    title = str(params.get("title") or "Approval required")
+    assignee = str(params.get("assignee") or "")
+    if dry_run:
+        return {
+            "dry_run": True,
+            "would": "pause workflow for human approval before downstream actions",
+            "title": title,
+            "assignee": assignee,
+        }
+    return {
+        "awaiting_approval": True,
+        "title": title,
+        "assignee": assignee,
+        "passed": True,
+    }
 
 
 def _check_evidence_exists(lake: Path, params: dict[str, Any], *, dry_run: bool = False) -> dict[str, Any]:
@@ -596,6 +615,22 @@ ACTION_LIBRARY: dict[str, dict[str, Any]] = {
             "confidence_score": "number",
         },
         "handler": _check_control_pass,
+    },
+    "gate.approval": {
+        "kind": "gate",
+        "label": "Approval gate",
+        "description": "Pauses the workflow until an operator approves or rejects downstream actions.",
+        "input_schema": {
+            "title": {"type": "string", "label": "Approval title", "default": "Approval required"},
+            "assignee": {"type": "string", "label": "Assignee (optional)", "optional": True},
+        },
+        "output_schema": {
+            "awaiting_approval": "boolean",
+            "title": "string",
+            "assignee": "string",
+            "passed": "boolean",
+        },
+        "handler": _gate_approval,
     },
     "action.snapshot": {
         "kind": "action",
@@ -1117,32 +1152,14 @@ def _node_failure_reason(exc: Exception) -> str:
     return f"node execution failed ({type(exc).__name__})"
 
 
-def run_workflow(
-    lake_dir: str | Path,
-    *,
-    workflow_id: str,
-    actor: str = "console",
-    dry_run: bool = False,
-) -> dict[str, Any]:
-    """Execute every node in a workflow (topological order) and persist the run.
+def _append_run_record(lake_dir: str | Path, run: dict[str, Any]) -> None:
+    with (_gold(lake_dir) / RUNS_FILE).open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(run, separators=(",", ":")) + "\n")
 
-    Variable references ``{{nodeId.output.field}}`` in params are substituted
-    from upstream node outputs before each action runs. Edges with
-    ``condition: "passed"|"failed"`` — or an expression such as
-    ``"output.matched_count > 0"`` (see :func:`_evaluate_expression`) — gate the
-    target node based on the parent node's output.
 
-    When ``dry_run=True`` the whole DAG is previewed safely: read-only checks and
-    triggers run for real (so branching is realistic), but side-effecting actions
-    (snapshot, assign_owner, webhook, slack, jira) skip their side effect and
-    return a ``{"dry_run": True, "would": ...}`` preview instead. The persisted
-    run record is marked ``dry_run: true``.
-    """
-    if actor not in _RUN_ACTORS:
-        actor = "console"
-    workflow = get_workflow(lake_dir, workflow_id)
-    if workflow is None:
-        raise ValueError(f"unknown workflow_id {workflow_id!r}")
+def _workflow_execution_state(
+    workflow: dict[str, Any],
+) -> tuple[dict[str, dict[str, Any]], dict[str, list[dict[str, Any]]], dict[str, list[str]], list[str]]:
     nodes_by_id = {str(n.get("id")): n for n in workflow["nodes"]}
     edges: list[dict[str, Any]] = list(workflow.get("edges") or [])
     parents: dict[str, list[dict[str, Any]]] = {nid: [] for nid in nodes_by_id}
@@ -1154,24 +1171,38 @@ def run_workflow(
             incoming[dst].append(src)
             parents[dst].append(edge)
     order = _topo_sort(nodes_by_id, incoming)
-    started_at = _utc_now_iso()
-    node_results: list[dict[str, Any]] = []
-    outputs_by_node: dict[str, dict[str, Any]] = {}
-    results_by_node: dict[str, dict[str, Any]] = {}
-    # Per-branch failure isolation: a node that errors (or is skipped because an
-    # upstream node never completed) only blocks its *downstream descendants*.
-    # Independent parallel branches keep running, instead of aborting the whole
-    # DAG on the first error.
-    any_failed = False
-    failed_nodes: set[str] = set()
-    blocked: set[str] = set()
+    return nodes_by_id, parents, incoming, order
+
+
+def _execute_workflow_nodes(
+    lake_dir: str | Path,
+    workflow: dict[str, Any],
+    *,
+    dry_run: bool,
+    start_after_node_id: str | None = None,
+    initial_outputs: dict[str, dict[str, Any]] | None = None,
+    initial_results: dict[str, dict[str, Any]] | None = None,
+    initial_node_results: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    nodes_by_id, parents, _incoming, order = _workflow_execution_state(workflow)
+    node_results: list[dict[str, Any]] = list(initial_node_results or [])
+    outputs_by_node = dict(initial_outputs or {})
+    results_by_node = dict(initial_results or {})
+    any_failed = any(entry.get("result") == "error" for entry in node_results)
+    failed_nodes = {entry["node_id"] for entry in node_results if entry.get("result") == "error"}
+    blocked = {entry["node_id"] for entry in node_results if entry.get("result") == "skipped"}
+    started = start_after_node_id is None
+    awaiting_approval = False
+    pending_node_id: str | None = None
+
     for node_id in order:
+        if not started:
+            if node_id == start_after_node_id:
+                started = True
+            continue
         node = nodes_by_id[node_id]
         node_type = str(node.get("node_type") or "")
         raw_params = node.get("params") or {}
-        # Branch isolation gate (runs before the edge-condition gate): if any
-        # parent errored or was itself blocked, this node cannot run. Skip it
-        # and mark it blocked so its own descendants skip too.
         skip_reason: str | None = None
         for edge in parents.get(node_id, []):
             parent_id = str(edge.get("source"))
@@ -1179,9 +1210,6 @@ def run_workflow(
                 skip_reason = f"upstream node {parent_id} did not complete"
                 blocked.add(node_id)
                 break
-        # Gate on incoming edge conditions: skip the node if *any* parent
-        # edge declines (failed condition with the parent's `passed=true`,
-        # or vice versa). This is how conditional edges flow.
         if skip_reason is None:
             for edge in parents.get(node_id, []):
                 parent_id = str(edge.get("source"))
@@ -1212,27 +1240,90 @@ def run_workflow(
             result_entry["result"] = "ok"
             result_entry["output"] = output
             outputs_by_node[node_id] = output
-        except Exception as exc:  # noqa: BLE001 - failure is logged as a safe category, never raw text
+            if node_type == "gate.approval" and not dry_run and bool(output.get("awaiting_approval")):
+                awaiting_approval = True
+                pending_node_id = node_id
+                node_results.append(result_entry)
+                results_by_node[node_id] = result_entry
+                for remaining_id in order[order.index(node_id) + 1 :]:
+                    remaining = nodes_by_id[remaining_id]
+                    skipped = {
+                        "node_id": remaining_id,
+                        "node_type": str(remaining.get("node_type") or ""),
+                        "params": remaining.get("params") or {},
+                        "result": "skipped",
+                        "reason": f"awaiting approval at {node_id}",
+                    }
+                    node_results.append(skipped)
+                    results_by_node[remaining_id] = skipped
+                    blocked.add(remaining_id)
+                break
+        except Exception as exc:  # noqa: BLE001
             any_failed = True
             failed_nodes.add(node_id)
             result_entry["result"] = "error"
             result_entry["error"] = _node_failure_reason(exc)
         node_results.append(result_entry)
         results_by_node[node_id] = result_entry
-        # No break: a node failure only blocks its descendants (handled by the
-        # branch-isolation gate above); independent branches keep running.
+
+    return {
+        "node_results": node_results,
+        "any_failed": any_failed,
+        "awaiting_approval": awaiting_approval,
+        "pending_node_id": pending_node_id,
+    }
+
+
+def run_workflow(
+    lake_dir: str | Path,
+    *,
+    workflow_id: str,
+    actor: str = "console",
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Execute every node in a workflow (topological order) and persist the run.
+
+    Variable references ``{{nodeId.output.field}}`` in params are substituted
+    from upstream node outputs before each action runs. Edges with
+    ``condition: "passed"|"failed"`` — or an expression such as
+    ``"output.matched_count > 0"`` (see :func:`_evaluate_expression`) — gate the
+    target node based on the parent node's output.
+
+    When ``dry_run=True`` the whole DAG is previewed safely: read-only checks and
+    triggers run for real (so branching is realistic), but side-effecting actions
+    (snapshot, assign_owner, webhook, slack, jira) skip their side effect and
+    return a ``{"dry_run": True, "would": ...}`` preview instead. The persisted
+    run record is marked ``dry_run: true``.
+    """
+    if actor not in _RUN_ACTORS:
+        actor = "console"
+    workflow = get_workflow(lake_dir, workflow_id)
+    if workflow is None:
+        raise ValueError(f"unknown workflow_id {workflow_id!r}")
+    started_at = _utc_now_iso()
+    execution = _execute_workflow_nodes(lake_dir, workflow, dry_run=dry_run)
+    node_results = execution["node_results"]
+    if execution["awaiting_approval"]:
+        result = "awaiting_approval"
+    elif execution["any_failed"]:
+        result = "error"
+    else:
+        result = "ok"
     run = {
+        "run_id": str(uuid.uuid4()),
         "workflow_id": workflow_id,
         "workflow_version": workflow["version"],
         "actor": actor,
         "dry_run": dry_run,
-        "result": "error" if any_failed else "ok",
+        "status": result,
+        "result": result,
         "started_at": started_at,
         "finished_at": _utc_now_iso(),
         "node_results": node_results,
     }
-    with (_gold(lake_dir) / RUNS_FILE).open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps(run, separators=(",", ":")) + "\n")
+    if execution["pending_node_id"]:
+        run["pending_node_id"] = execution["pending_node_id"]
+    _append_run_record(lake_dir, run)
     return run
 
 
@@ -1242,6 +1333,136 @@ def list_runs(lake_dir: str | Path, workflow_id: str | None = None, *, limit: in
         rows = [r for r in rows if r.get("workflow_id") == workflow_id]
     rows.sort(key=lambda r: str(r.get("started_at") or ""), reverse=True)
     return rows[:limit]
+
+
+def get_workflow_run(lake_dir: str | Path, run_id: str) -> dict[str, Any] | None:
+    for row in reversed(_read_log(_gold(lake_dir) / RUNS_FILE)):
+        if str(row.get("run_id") or "") == run_id:
+            return row
+    return None
+
+
+def retry_workflow_run(
+    lake_dir: str | Path,
+    *,
+    run_id: str,
+    actor: str = "console",
+) -> dict[str, Any]:
+    prior = get_workflow_run(lake_dir, run_id)
+    if prior is None:
+        raise ValueError(f"unknown run_id {run_id!r}")
+    return run_workflow(lake_dir, workflow_id=str(prior["workflow_id"]), actor=actor, dry_run=bool(prior.get("dry_run")))
+
+
+def approve_workflow_run(
+    lake_dir: str | Path,
+    *,
+    run_id: str,
+    actor: str = "console",
+    note: str = "",
+) -> dict[str, Any]:
+    prior = get_workflow_run(lake_dir, run_id)
+    if prior is None:
+        raise ValueError(f"unknown run_id {run_id!r}")
+    status = str(prior.get("status") or prior.get("result") or "")
+    if status != "awaiting_approval":
+        raise ValueError("run is not awaiting approval")
+    pending_node_id = str(prior.get("pending_node_id") or "")
+    if not pending_node_id:
+        raise ValueError("run is missing pending_node_id")
+    workflow = get_workflow(lake_dir, str(prior["workflow_id"]))
+    if workflow is None:
+        raise ValueError("workflow no longer exists")
+    outputs_by_node: dict[str, dict[str, Any]] = {}
+    results_by_node: dict[str, dict[str, Any]] = {}
+    for entry in prior.get("node_results") or []:
+        node_id = str(entry.get("node_id") or "")
+        results_by_node[node_id] = entry
+        if entry.get("result") == "ok" and isinstance(entry.get("output"), dict):
+            outputs_by_node[node_id] = entry["output"]
+    if pending_node_id in results_by_node:
+        gate_output = dict(results_by_node[pending_node_id].get("output") or {})
+        gate_output["approved"] = True
+        gate_output["approved_by"] = actor
+        gate_output["approval_note"] = note
+        gate_output["awaiting_approval"] = False
+        results_by_node[pending_node_id]["output"] = gate_output
+        outputs_by_node[pending_node_id] = gate_output
+    prior_results = []
+    for entry in prior.get("node_results") or []:
+        node_id = str(entry.get("node_id") or "")
+        if node_id == pending_node_id:
+            prior_results.append(results_by_node[pending_node_id])
+        elif str(entry.get("reason") or "").startswith("awaiting approval"):
+            continue
+        else:
+            prior_results.append(entry)
+    started_at = _utc_now_iso()
+    execution = _execute_workflow_nodes(
+        lake_dir,
+        workflow,
+        dry_run=False,
+        start_after_node_id=pending_node_id,
+        initial_outputs=outputs_by_node,
+        initial_results=results_by_node,
+        initial_node_results=prior_results,
+    )
+    node_results = execution["node_results"]
+    if execution["awaiting_approval"]:
+        result = "awaiting_approval"
+    elif execution["any_failed"]:
+        result = "error"
+    else:
+        result = "ok"
+    run = {
+        "run_id": str(uuid.uuid4()),
+        "workflow_id": prior["workflow_id"],
+        "workflow_version": workflow["version"],
+        "actor": actor,
+        "dry_run": False,
+        "status": result,
+        "result": result,
+        "started_at": started_at,
+        "finished_at": _utc_now_iso(),
+        "node_results": node_results,
+        "resumed_from_run_id": run_id,
+        "approval_note": note,
+    }
+    if execution["pending_node_id"]:
+        run["pending_node_id"] = execution["pending_node_id"]
+    _append_run_record(lake_dir, run)
+    return run
+
+
+def reject_workflow_run(
+    lake_dir: str | Path,
+    *,
+    run_id: str,
+    actor: str = "console",
+    note: str = "",
+) -> dict[str, Any]:
+    prior = get_workflow_run(lake_dir, run_id)
+    if prior is None:
+        raise ValueError(f"unknown run_id {run_id!r}")
+    status = str(prior.get("status") or prior.get("result") or "")
+    if status != "awaiting_approval":
+        raise ValueError("run is not awaiting approval")
+    run = {
+        "run_id": str(uuid.uuid4()),
+        "workflow_id": prior["workflow_id"],
+        "workflow_version": prior.get("workflow_version"),
+        "actor": actor,
+        "dry_run": False,
+        "status": "rejected",
+        "result": "rejected",
+        "started_at": _utc_now_iso(),
+        "finished_at": _utc_now_iso(),
+        "node_results": list(prior.get("node_results") or []),
+        "rejected_from_run_id": run_id,
+        "rejection_note": note,
+    }
+    _append_run_record(lake_dir, run)
+    return run
 
 
 def _topo_sort(nodes_by_id: dict[str, dict], incoming: dict[str, list[str]]) -> list[str]:

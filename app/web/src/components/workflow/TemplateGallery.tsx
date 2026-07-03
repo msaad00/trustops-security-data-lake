@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, Cpu, GitFork, LayoutTemplate, X, Zap } from "lucide-react";
+import { ArrowRight, Cpu, GitFork, LayoutTemplate, Shield, X, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
@@ -22,12 +22,14 @@ const KIND_CHIP: Record<
 > = {
   trigger: { bg: "bg-blue-50", fg: "text-blue-700", Icon: Zap },
   check: { bg: "bg-amber-50", fg: "text-amber-700", Icon: GitFork },
+  gate: { bg: "bg-violet-50", fg: "text-violet-700", Icon: Shield },
   action: { bg: "bg-emerald-50", fg: "text-emerald-700", Icon: Cpu },
 };
 
 function guessKind(node_type: string): ActionKind {
   if (node_type.startsWith("trigger.")) return "trigger";
   if (node_type.startsWith("check.")) return "check";
+  if (node_type.startsWith("gate.")) return "gate";
   return "action";
 }
 

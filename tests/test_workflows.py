@@ -19,9 +19,13 @@ from security_lakehouse.tracking import append_event as append_triage
 from security_lakehouse.trust_share import create_share, list_shares, revoke_share
 from security_lakehouse.workflows import (
     action_catalog,
+    approve_workflow_run,
     get_workflow,
+    get_workflow_run,
     list_runs,
     list_workflows,
+    reject_workflow_run,
+    retry_workflow_run,
     run_action,
     run_workflow,
     save_workflow,
@@ -116,6 +120,7 @@ def test_action_catalog_includes_all_nodes() -> None:
         "trigger.cron",
         "check.evidence_exists",
         "check.control_pass",
+        "gate.approval",
         "action.snapshot",
         "action.assign_owner",
         "action.webhook",
@@ -123,7 +128,7 @@ def test_action_catalog_includes_all_nodes() -> None:
         "action.jira",
     }
     for action in catalog:
-        assert action["kind"] in {"trigger", "check", "action"}
+        assert action["kind"] in {"trigger", "check", "gate", "action"}
         assert action["input_schema"]
         assert action["output_schema"]
 
@@ -398,7 +403,7 @@ def test_workflow_endpoints_round_trip(tmp_path: Path) -> None:
     try:
         status, body = _request(server, "GET", "/api/workflows/actions")
         assert status == HTTPStatus.OK
-        assert len(body["actions"]) == 9
+        assert len(body["actions"]) == 10
 
         nodes, edges = _trivial_dag()
         status, body = _request(
@@ -480,5 +485,74 @@ def test_auditor_role_blocks_workflow_post(tmp_path: Path) -> None:
         )
         assert status == HTTPStatus.FORBIDDEN
         assert body["error"] == "forbidden"
+    finally:
+        server.shutdown()
+
+
+def test_workflow_run_has_run_id_and_dry_run_flag(tmp_path: Path) -> None:
+    _bootstrap_silver(tmp_path)
+    nodes, edges = _trivial_dag()
+    saved = save_workflow(tmp_path, workflow_id="dry-run", name="dry", description="", nodes=nodes, edges=edges)
+    preview = run_workflow(tmp_path, workflow_id=saved["workflow_id"], dry_run=True)
+    assert preview["run_id"]
+    assert preview["dry_run"] is True
+    live = run_workflow(tmp_path, workflow_id=saved["workflow_id"], dry_run=False)
+    assert live["run_id"]
+    assert live["dry_run"] is False
+    fetched = get_workflow_run(tmp_path, live["run_id"])
+    assert fetched is not None
+    assert fetched["workflow_id"] == saved["workflow_id"]
+
+
+def test_workflow_approval_gate_pause_and_resume(tmp_path: Path) -> None:
+    _bootstrap_silver(tmp_path)
+    nodes = [
+        {"id": "t1", "node_type": "trigger.cron", "params": {"schedule": "@hourly"}},
+        {"id": "g1", "node_type": "gate.approval", "params": {"title": "Ship it"}},
+        {"id": "c1", "node_type": "check.evidence_exists", "params": {"control_id": "SOC2-CC6.1", "minimum": 1}},
+    ]
+    edges = [
+        {"source": "t1", "target": "g1", "condition": "always"},
+        {"source": "g1", "target": "c1", "condition": "always"},
+    ]
+    saved = save_workflow(tmp_path, workflow_id="approval-flow", name="approval", description="", nodes=nodes, edges=edges)
+    paused = run_workflow(tmp_path, workflow_id=saved["workflow_id"])
+    assert paused["result"] == "awaiting_approval"
+    assert paused["pending_node_id"] == "g1"
+    check = next(row for row in paused["node_results"] if row["node_id"] == "c1")
+    assert check["result"] == "skipped"
+    resumed = approve_workflow_run(tmp_path, run_id=paused["run_id"], actor="console", note="ok")
+    assert resumed["result"] == "ok"
+    check_after = next(row for row in resumed["node_results"] if row["node_id"] == "c1")
+    assert check_after["result"] == "ok"
+
+
+def test_workflow_retry_and_http_inspector(tmp_path: Path) -> None:
+    _bootstrap_silver(tmp_path)
+    nodes, edges = _trivial_dag()
+    saved = save_workflow(tmp_path, workflow_id="retry-me", name="retry", description="", nodes=nodes, edges=edges)
+    first = run_workflow(tmp_path, workflow_id=saved["workflow_id"])
+    retried = retry_workflow_run(tmp_path, run_id=first["run_id"])
+    assert retried["workflow_id"] == saved["workflow_id"]
+    assert retried["run_id"] != first["run_id"]
+
+    server = _spin_handler(tmp_path)
+    try:
+        status, body = _request(server, "GET", f"/api/workflows/runs/{first['run_id']}")
+        assert status == HTTPStatus.OK
+        assert body["run"]["run_id"] == first["run_id"]
+
+        status, body = _request(
+            server,
+            "POST",
+            f"/api/workflows/{saved['workflow_id']}/run",
+            body={"dry_run": True},
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["run"]["dry_run"] is True
+
+        status, body = _request(server, "POST", f"/api/workflows/runs/{first['run_id']}/retry", body={})
+        assert status == HTTPStatus.CREATED
+        assert body["run"]["workflow_id"] == saved["workflow_id"]
     finally:
         server.shutdown()
