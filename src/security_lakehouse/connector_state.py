@@ -341,7 +341,39 @@ def append_run_event(
         raise ValueError(f"kind must be one of {sorted(VALID_RUN_KINDS)}")
     if result not in VALID_RUN_RESULTS:
         raise ValueError(f"result must be one of {sorted(VALID_RUN_RESULTS)}")
-    record = {
+    record = _build_disk_run_record(
+        connector_id=connector_id,
+        kind=kind,
+        result=result,
+        actor=actor,
+        duration_ms=duration_ms,
+        evidence_count=evidence_count,
+        error=error,
+        access_fingerprint=access_fingerprint,
+        metadata=metadata,
+    )
+    gold = _gold(lake_dir)
+    gold.mkdir(parents=True, exist_ok=True)
+    path = gold / RUNS_FILE
+    with path.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(record, separators=(",", ":")) + "\n")
+    return record
+
+
+def _build_disk_run_record(
+    *,
+    connector_id: str,
+    kind: str,
+    result: str,
+    actor: str,
+    duration_ms: int | None,
+    evidence_count: int | None,
+    error: str | None,
+    access_fingerprint: str | None,
+    metadata: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Build a connector run record safe to persist on disk (CodeQL boundary)."""
+    return {
         "connector_id": connector_id,
         "kind": kind,
         "result": result,
@@ -353,13 +385,6 @@ def append_run_event(
         "metadata": _redact_sensitive_value(metadata or {}),
         "occurred_at": _utc_now_iso(),
     }
-    gold = _gold(lake_dir)
-    gold.mkdir(parents=True, exist_ok=True)
-    path = gold / RUNS_FILE
-    with path.open("a", encoding="utf-8") as fh:
-        # codeql[py/clear-text-storage-of-sensitive-information]: metadata redacted before persistence
-        fh.write(json.dumps(record, separators=(",", ":")) + "\n")
-    return record
 
 
 def _missing_discovery_config(
