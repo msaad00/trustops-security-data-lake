@@ -50,22 +50,33 @@ def _gold(lake_dir: str | Path) -> Path:
     return Path(lake_dir) / "gold"
 
 
+def _redact_sensitive_value(value: Any) -> Any:
+    """Recursively redact secret-like keys before persisting connector state."""
+    if isinstance(value, dict):
+        out: dict[str, Any] = {}
+        for key, val in value.items():
+            key_l = key.lower()
+            if key_l.endswith(_SECRET_REFERENCE_SUFFIXES):
+                out[key] = val
+            elif any(sensitive in key_l for sensitive in SENSITIVE_FIELD_NAMES):
+                if isinstance(val, str) and val:
+                    marker = hashlib.pbkdf2_hmac("sha256", val.encode("utf-8"), _ACCESS_FINGERPRINT_KEY, 600_000)
+                    out[key] = "***" + marker.hex()[:8]
+                else:
+                    out[key] = None
+            else:
+                out[key] = _redact_sensitive_value(val)
+        return out
+    if isinstance(value, list):
+        return [_redact_sensitive_value(item) for item in value]
+    return value
+
+
 def _redact_credentials(payload: dict[str, Any] | None) -> dict[str, Any]:
     if not payload:
         return {}
-    out: dict[str, Any] = {}
-    for key, value in payload.items():
-        key_l = key.lower()
-        if key_l.endswith(_SECRET_REFERENCE_SUFFIXES):
-            out[key] = value
-        elif any(sensitive in key_l for sensitive in SENSITIVE_FIELD_NAMES):
-            if isinstance(value, str) and value:
-                out[key] = "***" + hashlib.sha256(value.encode("utf-8")).hexdigest()[:8]
-            else:
-                out[key] = None
-        else:
-            out[key] = value
-    return out
+    redacted = _redact_sensitive_value(payload)
+    return redacted if isinstance(redacted, dict) else {}
 
 
 def _access_fingerprint(credentials: dict[str, Any] | None, options: dict[str, Any] | None) -> str:
@@ -92,6 +103,13 @@ def _utc_now_iso() -> str:
     return datetime.now(UTC).isoformat().replace("+00:00", "Z")
 
 
+def _append_jsonl(path: Path, record: dict[str, Any]) -> None:
+    """Append one JSON object as a line to a gold-zone JSONL file."""
+    with path.open("a", encoding="utf-8") as fh:
+        # lgtm[py/clear-text-storage-sensitive-data] record is sanitized before this write
+        fh.write(json.dumps(record, separators=(",", ":")) + "\n")
+
+
 def append_config_event(
     lake_dir: str | Path,
     *,
@@ -109,21 +127,37 @@ def append_config_event(
     catalog = load_connector_catalog()
     if connector_id not in catalog:
         raise ValueError(f"unknown connector_id {connector_id!r}")
-    record = {
+    record = _build_disk_config_record(
+        connector_id=connector_id,
+        state=state,
+        actor=actor or "anonymous",
+        credentials=credentials,
+        options=options,
+    )
+    gold = _gold(lake_dir)
+    gold.mkdir(parents=True, exist_ok=True)
+    _append_jsonl(gold / CONFIG_FILE, record)
+    return record
+
+
+def _build_disk_config_record(
+    *,
+    connector_id: str,
+    state: str,
+    actor: str,
+    credentials: dict[str, Any] | None,
+    options: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Build a connector config event safe to persist on disk (CodeQL boundary)."""
+    return {
         "connector_id": connector_id,
         "state": state,
-        "actor": actor or "anonymous",
+        "actor": actor,
         "credentials": _redact_credentials(credentials),
-        "options": options or {},
+        "options": _redact_sensitive_value({k: v for k, v in (options or {}).items() if k != "raw"}),
         "credential_fingerprint": _access_fingerprint(credentials, options),
         "occurred_at": _utc_now_iso(),
     }
-    gold = _gold(lake_dir)
-    gold.mkdir(parents=True, exist_ok=True)
-    path = gold / CONFIG_FILE
-    with path.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps(record, separators=(",", ":")) + "\n")
-    return record
 
 
 def validate_configure_payload(
@@ -304,6 +338,15 @@ def _missing_required_config(
     return ["api_key"] if not _has_value(credentials, "api_key") else []
 
 
+def _safe_persist_error(error: str | None) -> str | None:
+    """Bound error text before writing connector run records to disk."""
+    if error is None:
+        return None
+    if any(marker in error for marker in ("/", "\\", ":443", "connection to host", "10.")):
+        return _safe_run_error(ValueError(error))
+    return error
+
+
 def append_run_event(
     lake_dir: str | Path,
     *,
@@ -322,24 +365,48 @@ def append_run_event(
         raise ValueError(f"kind must be one of {sorted(VALID_RUN_KINDS)}")
     if result not in VALID_RUN_RESULTS:
         raise ValueError(f"result must be one of {sorted(VALID_RUN_RESULTS)}")
-    record = {
+    record = _build_disk_run_record(
+        connector_id=connector_id,
+        kind=kind,
+        result=result,
+        actor=actor,
+        duration_ms=duration_ms,
+        evidence_count=evidence_count,
+        error=error,
+        access_fingerprint=access_fingerprint,
+        metadata=metadata,
+    )
+    gold = _gold(lake_dir)
+    gold.mkdir(parents=True, exist_ok=True)
+    _append_jsonl(gold / RUNS_FILE, record)
+    return record
+
+
+def _build_disk_run_record(
+    *,
+    connector_id: str,
+    kind: str,
+    result: str,
+    actor: str,
+    duration_ms: int | None,
+    evidence_count: int | None,
+    error: str | None,
+    access_fingerprint: str | None,
+    metadata: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Build a connector run record safe to persist on disk (CodeQL boundary)."""
+    return {
         "connector_id": connector_id,
         "kind": kind,
         "result": result,
         "actor": actor,
         "duration_ms": duration_ms,
         "evidence_count": evidence_count,
-        "error": error,
+        "error": _safe_persist_error(error),
         "access_fingerprint": access_fingerprint,
-        "metadata": metadata or {},
+        "metadata": _redact_sensitive_value(metadata or {}),
         "occurred_at": _utc_now_iso(),
     }
-    gold = _gold(lake_dir)
-    gold.mkdir(parents=True, exist_ok=True)
-    path = gold / RUNS_FILE
-    with path.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps(record, separators=(",", ":")) + "\n")
-    return record
 
 
 def _missing_discovery_config(

@@ -59,6 +59,39 @@ def test_configure_records_state_and_redacts_credentials(tmp_path: Path) -> None
     assert record["credential_fingerprint"] != "source_connector_secret"
 
 
+def test_configure_strips_raw_from_persisted_options(tmp_path: Path) -> None:
+    append_config_event(
+        tmp_path,
+        connector_id="github-security",
+        state="enabled",
+        actor="alice",
+        credentials={"token": "secret-token-value", "username": "alice"},
+        options={"org": "acme", "raw": {"token": "secret-token-value"}},
+    )
+    persisted = (tmp_path / "gold" / "connector_config.jsonl").read_text(encoding="utf-8")
+    assert '"raw"' not in persisted
+    assert "secret-token-value" not in persisted
+
+
+def test_staged_probe_does_not_persist_raw_credentials_in_runs_jsonl(tmp_path: Path) -> None:
+    append_config_event(
+        tmp_path,
+        connector_id="github-security",
+        state="disabled",
+        actor="alice",
+        credentials={"token": "probe-secret-token", "username": "alice"},
+        options={"org": "acme"},
+    )
+    run_probe(
+        tmp_path,
+        connector_id="github-security",
+        credentials={"token": "probe-secret-token", "username": "alice"},
+        options={"org": "acme"},
+    )
+    persisted = (tmp_path / "gold" / "connector_runs.jsonl").read_text(encoding="utf-8")
+    assert "probe-secret-token" not in persisted
+
+
 def test_access_fingerprint_changes_with_secret_rotation() -> None:
     first = _access_fingerprint({"token": "abc"}, {"org": "x"})
     same = _access_fingerprint({"token": "abc"}, {"org": "x"})
