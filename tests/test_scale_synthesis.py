@@ -5,10 +5,14 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
 from security_lakehouse.assessment import build_current_posture, build_violations
-from security_lakehouse.io import count_jsonl, iter_jsonl, iter_jsonl_batches, jsonl_field_counts, write_jsonl_from_iterable
+from security_lakehouse.io import (
+    count_jsonl,
+    iter_jsonl,
+    iter_jsonl_batches,
+    jsonl_field_counts,
+    write_jsonl_from_iterable,
+)
 from security_lakehouse.pipeline import run_pipeline
 from security_lakehouse.scale_synthesis import (
     audit_scale_plan,
