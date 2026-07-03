@@ -129,17 +129,17 @@ SaaS markup.
 
 ## Feature parity lens (honest)
 
-| Capability                                      | TrustOps v0.2.0              | Managed GRC SaaS |
-| ----------------------------------------------- | ---------------------------- | ---------------- |
-| Continuous control tests from live integrations | Yes (connectors + scheduler) | Yes              |
-| Executive dashboard + framework readiness       | Yes                          | Yes              |
-| Trust center / customer sharing                 | Yes (scoped tokens)          | Yes              |
-| Policy/policy-template library                  | Partial (controls-as-code)   | Extensive        |
-| Auditor workflow / audit project management     | Roadmap                      | Mature           |
-| Vendor risk questionnaires                      | Roadmap                      | Mature           |
-| Multi-tenant self-serve SaaS signup             | Roadmap                      | Yes              |
-| OSS + self-hosted                               | **Yes**                      | No               |
-| Customer-owned evidence lake                    | **Yes**                      | Limited          |
+| Capability                                      | TrustOps v0.2.0                           | Managed GRC SaaS |
+| ----------------------------------------------- | ----------------------------------------- | ---------------- |
+| Continuous control tests from live integrations | Yes (connectors + scheduler)              | Yes              |
+| Executive dashboard + framework readiness       | Yes                                       | Yes              |
+| Trust center / customer sharing                 | Yes (scoped tokens)                       | Yes              |
+| Policy/policy-template library                  | MVP (8 bundled templates + adopt/publish) | Extensive        |
+| Auditor workflow / audit project management     | Roadmap                                   | Mature           |
+| Vendor risk questionnaires                      | Roadmap                                   | Mature           |
+| Multi-tenant self-serve SaaS signup             | Roadmap                                   | Yes              |
+| OSS + self-hosted                               | **Yes**                                   | No               |
+| Customer-owned evidence lake                    | **Yes**                                   | Limited          |
 
 See [Release Readiness](RELEASE_READINESS.md) and [Product Walkthrough](PRODUCT_WALKTHROUGH.md)
 for shipped vs planned detail.

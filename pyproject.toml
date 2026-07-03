@@ -109,6 +109,7 @@ where = ["src"]
 "frameworks" = ["frameworks/registry.json", "frameworks/verified_article_ids.json"]
 "mappings" = ["mappings/control_articles.json", "mappings/control_map.json", "mappings/remediation_guidance.json"]
 "programs" = ["programs/catalog.json", "programs/vendor_questionnaires.json"]
+"policy_templates" = ["policy_templates/catalog.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

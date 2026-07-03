@@ -41,6 +41,10 @@ import type {
   IngestionStatus,
   NormalizedEvent,
   PocReadiness,
+  PolicyDocument,
+  PolicyTemplate,
+  PolicyTemplateSummary,
+  PolicyCoverage,
   SavedView,
   SnapshotResponse,
   Tag,
@@ -484,6 +488,50 @@ export const api = {
     ).then((b) => b.data),
   accessReviewCoverage: () =>
     get<{ data: AccessReviewCoverage[] }>("/v1/access-reviews/coverage").then(
+      (b) => b.data,
+    ),
+  policyTemplates: () =>
+    get<{ data: PolicyTemplateSummary[] }>("/v1/policy-templates").then(
+      (b) => b.data,
+    ),
+  policyTemplate: (templateId: string) =>
+    get<{ data: PolicyTemplate }>(
+      `/v1/policy-templates/${encodeURIComponent(templateId)}`,
+    ).then((b) => b.data),
+  policies: (query = "") =>
+    get<{ data: PolicyDocument[] }>(`/v1/policies${query}`).then((b) => b.data),
+  adoptPolicy: (payload: {
+    template_id: string;
+    variables?: Record<string, string>;
+    owner?: string;
+  }) =>
+    post<{ data: PolicyDocument }>("/v1/policies", payload).then((b) => b.data),
+  policy: (id: string) =>
+    get<{ data: PolicyDocument }>(
+      `/v1/policies/${encodeURIComponent(id)}`,
+    ).then((b) => b.data),
+  updatePolicy: (
+    id: string,
+    payload: Partial<{
+      title: string;
+      content: string;
+      owner: string;
+      variables: Record<string, string>;
+      status: string;
+    }>,
+  ) =>
+    mutate<{ data: PolicyDocument }>(
+      `/v1/policies/${encodeURIComponent(id)}`,
+      "PATCH",
+      payload,
+    ).then((b) => b.data),
+  publishPolicy: (id: string) =>
+    post<{ data: PolicyDocument }>(
+      `/v1/policies/${encodeURIComponent(id)}/publish`,
+      {},
+    ).then((b) => b.data),
+  policyCoverage: () =>
+    get<{ data: PolicyCoverage[] }>("/v1/policies/coverage").then(
       (b) => b.data,
     ),
   vendorQuestionnaires: () =>

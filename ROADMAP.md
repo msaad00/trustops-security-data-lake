@@ -22,6 +22,7 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 - [x] Unified golden fixture (all 37 controls on dashboard)
 - [x] Executive PDF export from snapshots
 - [x] Vendor risk questionnaire MVP
+- [x] Policy template library MVP (bundled templates + adopt/publish)
 
 ## P2 — Agent-native moat
 

@@ -45,6 +45,8 @@ import type {
   ControlExceptionItem,
   CreateAgentRunPayload,
   Risk,
+  PolicyDocument,
+  PolicyTemplateSummary,
   VendorAssessment,
   VendorAssessmentStatus,
   VendorQuestionnaireTemplateSummary,
@@ -1007,11 +1009,28 @@ export function useControlRemediation(controlId: string | null) {
   });
 }
 
+export function usePolicyTemplates() {
+  return useQuery({
+    queryKey: ["policy-templates"],
+    queryFn: () => api.policyTemplates(),
+    staleTime: STALE,
+  });
+}
+
 export function useVendorQuestionnaires() {
   return useQuery({
     queryKey: ["vendor-questionnaires"],
     queryFn: () => api.vendorQuestionnaires(),
     staleTime: STALE,
+  });
+}
+
+export function usePolicies(query = "") {
+  return useQuery({
+    queryKey: ["policies", query],
+    queryFn: () => api.policies(query),
+    staleTime: STALE,
+    refetchInterval: LIVE,
   });
 }
 
@@ -1024,12 +1043,44 @@ export function useVendorAssessments(query = "") {
   });
 }
 
+export function usePolicy(id: string | null) {
+  return useQuery({
+    queryKey: ["policy", id],
+    queryFn: () => api.policy(id as string),
+    enabled: Boolean(id),
+    staleTime: STALE,
+  });
+}
+
 export function useVendorAssessment(id: string | null) {
   return useQuery({
     queryKey: ["vendor-assessment", id],
     queryFn: () => api.vendorAssessment(id as string),
     enabled: Boolean(id),
     staleTime: STALE,
+  });
+}
+
+export function usePolicyCoverage() {
+  return useQuery({
+    queryKey: ["policy-coverage"],
+    queryFn: () => api.policyCoverage(),
+    staleTime: STALE,
+  });
+}
+
+export function useAdoptPolicyMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: {
+      template_id: string;
+      variables?: Record<string, string>;
+      owner?: string;
+    }) => api.adoptPolicy(payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["policies"] });
+      qc.invalidateQueries({ queryKey: ["policy-coverage"] });
+    },
   });
 }
 
@@ -1046,6 +1097,18 @@ export function useCreateVendorAssessmentMutation() {
   });
 }
 
+export function useUpdatePolicyMutation(policyId: string | null) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: Parameters<typeof api.updatePolicy>[1]) =>
+      api.updatePolicy(policyId as string, payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["policies"] });
+      qc.invalidateQueries({ queryKey: ["policy", policyId] });
+    },
+  });
+}
+
 export function useUpdateVendorAssessmentMutation(assessmentId: string | null) {
   const qc = useQueryClient();
   return useMutation({
@@ -1054,6 +1117,18 @@ export function useUpdateVendorAssessmentMutation(assessmentId: string | null) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["vendor-assessments"] });
       qc.invalidateQueries({ queryKey: ["vendor-assessment", assessmentId] });
+    },
+  });
+}
+
+export function usePublishPolicyMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.publishPolicy(id),
+    onSuccess: (_data, id) => {
+      qc.invalidateQueries({ queryKey: ["policies"] });
+      qc.invalidateQueries({ queryKey: ["policy", id] });
+      qc.invalidateQueries({ queryKey: ["policy-coverage"] });
     },
   });
 }

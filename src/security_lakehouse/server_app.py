@@ -71,6 +71,7 @@ from security_lakehouse.public_url import normalize_public_url
 from security_lakehouse.services import NotFound, ValidationError
 from security_lakehouse.services import access_reviews as access_review_services
 from security_lakehouse.services import grc as grc_services
+from security_lakehouse.services import policy_documents as policy_document_services
 from security_lakehouse.services import vendor_risk as vendor_risk_services
 from security_lakehouse.web import web_dist_dir, web_dist_index
 
@@ -195,6 +196,20 @@ class UpdateRiskRequest(_StrictModel):
     control_id: str | None = None
     asset_id: str | None = None
     due_at: str | None = None
+
+
+class AdoptPolicyTemplateRequest(_StrictModel):
+    template_id: str
+    variables: dict[str, Any] = {}
+    owner: str = ""
+
+
+class UpdatePolicyDocumentRequest(_StrictModel):
+    title: str | None = None
+    content: str | None = None
+    owner: str | None = None
+    variables: dict[str, Any] | None = None
+    status: str | None = None
 
 
 class CreateCampaignRequest(_StrictModel):
@@ -1621,6 +1636,111 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         except NotFound as exc:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
         return JSONResponse(api_v1.envelope("risks", result))
+
+    # --- policy templates + documents (GRC) ---
+    @app.get("/api/v1/policy-templates")
+    def list_policy_templates(identity: Identity = Depends(_require_read)) -> JSONResponse:
+        data = policy_document_services.list_templates()
+        return JSONResponse(
+            api_v1.envelope("policy-templates", _redact_payload(data, identity), meta={"count": len(data)})
+        )
+
+    @app.get("/api/v1/policy-templates/{template_id}")
+    def get_policy_template(template_id: str, identity: Identity = Depends(_require_read)) -> JSONResponse:
+        try:
+            data = policy_document_services.get_template(template_id)
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("policy-templates", _redact_payload(data, identity)))
+
+    @app.get("/api/v1/policies/coverage")
+    def policy_coverage(
+        identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        data = policy_document_services.control_coverage(session, identity.tenant_id)
+        return JSONResponse(
+            api_v1.envelope("policies.coverage", _redact_payload(data, identity), meta={"count": len(data)})
+        )
+
+    @app.get("/api/v1/policies")
+    def list_policies(
+        request: Request, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        params = _params(request)
+        limit, offset = _pagination(params)
+        data = policy_document_services.list_documents(
+            session,
+            identity.tenant_id,
+            status=params.get("status"),
+            limit=limit,
+            offset=offset,
+        )
+        return JSONResponse(
+            api_v1.envelope("policies", _redact_payload(data, identity), meta=_page_meta(limit, offset, len(data)))
+        )
+
+    @app.post("/api/v1/policies", status_code=status.HTTP_201_CREATED)
+    def adopt_policy(
+        body: AdoptPolicyTemplateRequest,
+        identity: Identity = Depends(_require_control_manage),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        try:
+            document = policy_document_services.adopt_template(
+                session,
+                identity.tenant_id,
+                template_id=body.template_id,
+                variables=body.variables,
+                owner=body.owner,
+                created_by=identity.email,
+            )
+        except ValidationError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("policies", document), status_code=status.HTTP_201_CREATED)
+
+    @app.get("/api/v1/policies/{document_id}")
+    def get_policy(
+        document_id: str, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        try:
+            data = policy_document_services.get_document(session, identity.tenant_id, document_id)
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("policies", _redact_payload(data, identity)))
+
+    @app.patch("/api/v1/policies/{document_id}")
+    def update_policy(
+        document_id: str,
+        body: UpdatePolicyDocumentRequest,
+        identity: Identity = Depends(_require_control_manage),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        try:
+            document = policy_document_services.update_document(
+                session,
+                identity.tenant_id,
+                document_id,
+                changes=body.model_dump(exclude_unset=True),
+            )
+        except ValidationError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("policies", document))
+
+    @app.post("/api/v1/policies/{document_id}/publish")
+    def publish_policy(
+        document_id: str,
+        identity: Identity = Depends(_require_control_manage),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        try:
+            document = policy_document_services.publish_document(session, identity.tenant_id, document_id)
+        except ValidationError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("policies", document))
 
     # --- access reviews (GRC) ---
     @app.get("/api/v1/access-reviews")
