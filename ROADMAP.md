@@ -8,7 +8,7 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 - [x] `/console/demo/` evaluator landing
 - [x] Account-linking deep links (`/connectors/?connect=`)
 - [x] First-run onboarding wizard (`/console/onboarding/`)
-- [ ] Hosted invite flow with email/SCIM (commercial SaaS)
+- [x] Hosted invite flow with email/SCIM (commercial SaaS)
 - [x] One-click AWS/Azure/GCP cloud linking (OAuth-style / Terraform reader)
 
 ## P1 — Product depth
@@ -37,8 +37,8 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 
 - [x] Backup/restore runbook for `/lake` + app DB
 - [x] OpenTelemetry dashboards for connector sync
-- [ ] Helm guard: block insecure auth without explicit override
-- [ ] HA guidance (read replicas + single writer)
+- [x] Helm guard: block insecure auth without explicit override
+- [x] HA guidance (read replicas + single writer)
 
 ## P4 — Documentation & design
 
@@ -48,8 +48,8 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 - [x] Console `/deploy` deployment summary page
 - [x] Connector + auth flow diagrams (mermaid, SVG, console strips)
 - [x] Commit demo PNG screenshots (`make demo-screenshots`)
-- [ ] Unified data model single-page diagram
-- [ ] Dark mode
+- [x] Unified data model single-page diagram
+- [x] Dark mode
 
 ## P5 — Commercial hosted (future)
 

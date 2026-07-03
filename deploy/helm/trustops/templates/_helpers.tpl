@@ -61,3 +61,21 @@ Image reference (repository:tag, defaulting tag to appVersion).
 {{- $tag := default .Chart.AppVersion .Values.image.tag -}}
 {{- printf "%s:%s" .Values.image.repository $tag -}}
 {{- end -}}
+
+{{/*
+Return "true" when Helm values configure an authentication path (OIDC, SAML,
+API-only insecure override with acknowledgement, or explicit auth secret).
+*/}}
+{{- define "trustops.authConfigured" -}}
+{{- if and .Values.security.allowInsecureNoAuth (eq .Values.security.allowInsecureOverride "acknowledged") -}}
+true
+{{- else -}}
+{{- $found := false -}}
+{{- range .Values.env -}}
+{{- if or (eq .name "TRUSTOPS_OIDC_CLIENT_ID") (eq .name "TRUSTOPS_SAML_IDP_METADATA_URL") (eq .name "TRUSTOPS_SESSION_SECRET") -}}
+{{- $found = true -}}
+{{- end -}}
+{{- end -}}
+{{- if $found -}}true{{- else -}}false{{- end -}}
+{{- end -}}
+{{- end -}}

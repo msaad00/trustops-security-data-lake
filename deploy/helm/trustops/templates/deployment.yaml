@@ -1,6 +1,15 @@
 {{- if and .Values.security.allowInsecureNoAuth (ne .Values.security.allowInsecureOverride "acknowledged") }}
 {{- fail "security.allowInsecureNoAuth requires security.allowInsecureOverride=acknowledged for hosted deployments" }}
 {{- end }}
+{{- if and .Values.security.requireAuthentication (not (eq (include "trustops.authConfigured" .) "true")) }}
+{{- fail "security.requireAuthentication: set TRUSTOPS_OIDC_CLIENT_ID, TRUSTOPS_SAML_IDP_METADATA_URL, or TRUSTOPS_SESSION_SECRET in env[], or use allowInsecureNoAuth with allowInsecureOverride=acknowledged" }}
+{{- end }}
+{{- if and .Values.ingress.enabled (not (eq (include "trustops.authConfigured" .) "true")) }}
+{{- fail "ingress.enabled requires authentication env (OIDC/SAML/session) or documented allowInsecureNoAuth override" }}
+{{- end }}
+{{- if and (gt (int .Values.replicaCount) 1) (not .Values.lake.readOnly) .Values.lake.persistence.enabled (eq .Values.lake.persistence.accessMode "ReadWriteOnce") }}
+{{- fail "replicaCount > 1 with ReadWriteOnce lake requires lake.readOnly=true — see docs/runbooks/HA_READ_REPLICAS.md" }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

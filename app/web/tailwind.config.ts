@@ -2,15 +2,18 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: ["./src/**/*.{ts,tsx}"],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
-        ink: "#101623",
-        muted: "#667085",
-        line: "#d9e1ec",
-        panel: "#f8fafc",
-        rail: "#0b1218",
-        railLine: "#243244",
+        ink: "var(--color-ink)",
+        muted: "var(--color-muted)",
+        line: "var(--color-line)",
+        panel: "var(--color-panel)",
+        rail: "var(--color-rail)",
+        railLine: "var(--color-rail-line)",
+        surface: "var(--color-surface)",
+        surfaceMuted: "var(--color-surface-muted)",
         brand: {
           DEFAULT: "#4f7cff",
           cyan: "#30c7d2",

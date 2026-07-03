@@ -131,6 +131,16 @@ class CreateKeyRequest(_StrictModel):
     expires_in_days: int | None = None
 
 
+class CreateInviteRequest(_StrictModel):
+    email: str
+    role: str = "contributor"
+
+
+class AcceptInviteRequest(_StrictModel):
+    token: str
+    display_name: str = ""
+
+
 class CreateTaskRequest(_StrictModel):
     title: str
     description: str = ""
@@ -1251,6 +1261,90 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="key not found or already revoked")
         session.commit()
         return JSONResponse(api_v1.envelope("auth.keys", {"id": key_id, "revoked": True}))
+
+    # --- commercial hosted: invites + SCIM scaffold ---
+    @app.get("/api/v1/invites", tags=["commercial"])
+    def list_invites_route(
+        request: Request,
+        identity: Identity = Depends(_require_admin),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        from security_lakehouse.commercial import invites as invite_services
+
+        params = _params(request)
+        limit_raw = (params.get("limit") or ["100"])[0]
+        try:
+            limit = int(limit_raw)
+        except ValueError:
+            limit = 100
+        rows = invite_services.list_invites(session, tenant_id=identity.tenant_id, limit=limit)
+        data = [invite_services.invite_to_dict(row) for row in rows]
+        return JSONResponse(api_v1.envelope("invites", data, meta={"count": len(data)}))
+
+    @app.post("/api/v1/invites", status_code=status.HTTP_201_CREATED, tags=["commercial"])
+    def create_invite_route(
+        body: CreateInviteRequest,
+        identity: Identity = Depends(_require_admin),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        from security_lakehouse.commercial import invites as invite_services
+
+        try:
+            row, _token = invite_services.create_invite(
+                session,
+                tenant_id=identity.tenant_id,
+                email=body.email,
+                role=body.role,
+                invited_by=identity.email,
+            )
+        except ValueError as exc:
+            detail = str(exc)
+            code = (
+                status.HTTP_501_NOT_IMPLEMENTED
+                if "TRUSTOPS_COMMERCIAL_HOSTED" in detail
+                else status.HTTP_400_BAD_REQUEST
+            )
+            raise HTTPException(status_code=code, detail=detail) from exc
+        session.commit()
+        return JSONResponse(
+            api_v1.envelope("invites", invite_services.invite_to_dict(row)),
+            status_code=status.HTTP_201_CREATED,
+        )
+
+    @app.post("/api/v1/invites/accept", tags=["commercial"])
+    def accept_invite_route(body: AcceptInviteRequest, session: Session = Depends(get_session)) -> JSONResponse:
+        from security_lakehouse.commercial import invites as invite_services
+
+        try:
+            data = invite_services.accept_invite(session, token=body.token, display_name=body.display_name)
+        except ValueError as exc:
+            detail = str(exc)
+            if "TRUSTOPS_COMMERCIAL_HOSTED" in detail:
+                raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail=detail) from exc
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail) from exc
+        session.commit()
+        return JSONResponse(api_v1.envelope("invites.accept", data))
+
+    @app.get("/api/v1/platform/scim", tags=["commercial"])
+    def scim_platform_config(identity: Identity = Depends(_require_admin)) -> JSONResponse:
+        from security_lakehouse.commercial import scim as scim_services
+
+        return JSONResponse(api_v1.envelope("platform.scim", scim_services.scim_config()))
+
+    @app.get("/api/v1/scim/v2/ServiceProviderConfig", tags=["commercial"])
+    @app.get("/api/v1/scim/v2/Users", tags=["commercial"])
+    @app.post("/api/v1/scim/v2/Users", tags=["commercial"])
+    def scim_not_implemented() -> JSONResponse:
+        from security_lakehouse.commercial import scim as scim_services
+
+        if scim_services.scim_enabled():
+            return JSONResponse(
+                api_v1.envelope("scim", {"resources": [], "totalResults": 0}),
+            )
+        return JSONResponse(
+            api_v1.error_envelope("not_implemented", scim_services.scim_not_implemented_detail()),
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        )
 
     @app.get("/api/v1/platform/poc-readiness")
     def poc_readiness(
