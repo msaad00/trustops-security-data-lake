@@ -502,7 +502,10 @@ export default function AutomationPage() {
       return;
     }
     try {
-      const { run: result } = await run.mutateAsync({ id: workflowId, dry_run: dryRun });
+      const { run: result } = await run.mutateAsync({
+        id: workflowId,
+        dry_run: dryRun,
+      });
       setLastRun(result);
       flash(
         `${dryRun ? "Preview" : "Run"} ${result.result.toUpperCase()} — ${result.node_results.length} nodes executed.`,
@@ -733,7 +736,9 @@ export default function AutomationPage() {
           onRetry={
             lastRun.run_id
               ? async () => {
-                  const { run: next } = await retryRun.mutateAsync(lastRun.run_id!);
+                  const { run: next } = await retryRun.mutateAsync(
+                    lastRun.run_id!,
+                  );
                   setLastRun(next);
                   flash(`Retry ${next.result.toUpperCase()}.`);
                 }

@@ -71,7 +71,12 @@ export function RunInspectorDrawer({
           <div className="flex flex-wrap gap-2">
             {run.result === "awaiting_approval" && onApprove && onReject && (
               <>
-                <Button variant="primary" size="sm" disabled={busy} onClick={onApprove}>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  disabled={busy}
+                  onClick={onApprove}
+                >
                   {busy ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
@@ -79,13 +84,23 @@ export function RunInspectorDrawer({
                   )}{" "}
                   Approve
                 </Button>
-                <Button variant="default" size="sm" disabled={busy} onClick={onReject}>
+                <Button
+                  variant="default"
+                  size="sm"
+                  disabled={busy}
+                  onClick={onReject}
+                >
                   <XCircle className="h-4 w-4" /> Reject
                 </Button>
               </>
             )}
             {run.result === "error" && onRetry && (
-              <Button variant="default" size="sm" disabled={busy} onClick={onRetry}>
+              <Button
+                variant="default"
+                size="sm"
+                disabled={busy}
+                onClick={onRetry}
+              >
                 {busy ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (

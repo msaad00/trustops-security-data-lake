@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, Cpu, GitFork, LayoutTemplate, Shield, X, Zap } from "lucide-react";
+import {
+  ArrowRight,
+  Cpu,
+  GitFork,
+  LayoutTemplate,
+  Shield,
+  X,
+  Zap,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";

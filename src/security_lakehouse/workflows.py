@@ -1351,7 +1351,9 @@ def retry_workflow_run(
     prior = get_workflow_run(lake_dir, run_id)
     if prior is None:
         raise ValueError(f"unknown run_id {run_id!r}")
-    return run_workflow(lake_dir, workflow_id=str(prior["workflow_id"]), actor=actor, dry_run=bool(prior.get("dry_run")))
+    return run_workflow(
+        lake_dir, workflow_id=str(prior["workflow_id"]), actor=actor, dry_run=bool(prior.get("dry_run"))
+    )
 
 
 def approve_workflow_run(

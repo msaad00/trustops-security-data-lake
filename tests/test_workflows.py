@@ -515,7 +515,9 @@ def test_workflow_approval_gate_pause_and_resume(tmp_path: Path) -> None:
         {"source": "t1", "target": "g1", "condition": "always"},
         {"source": "g1", "target": "c1", "condition": "always"},
     ]
-    saved = save_workflow(tmp_path, workflow_id="approval-flow", name="approval", description="", nodes=nodes, edges=edges)
+    saved = save_workflow(
+        tmp_path, workflow_id="approval-flow", name="approval", description="", nodes=nodes, edges=edges
+    )
     paused = run_workflow(tmp_path, workflow_id=saved["workflow_id"])
     assert paused["result"] == "awaiting_approval"
     assert paused["pending_node_id"] == "g1"
