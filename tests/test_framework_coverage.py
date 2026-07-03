@@ -17,16 +17,16 @@ def test_framework_coverage_ledger_counts_seeded_mappings(capsys) -> None:
     summary = framework_coverage_summary(rows, applicability)
 
     assert summary["framework_count"] == 10
-    assert summary["seeded_control_count"] == 607
-    assert summary["reviewed_mapping_count"] == 607
+    assert summary["seeded_control_count"] == 635
+    assert summary["reviewed_mapping_count"] == 635
     assert summary["missing_mapping_count"] == 0
     assert summary["seeded_mapping_coverage_pct"] == 100.0
     assert summary["asset_type_count"] == 18
-    assert summary["control_asset_applicability_link_count"] == 2032
+    assert summary["control_asset_applicability_link_count"] == 2139
     assert summary["official_logo_count"] == 0
     assert summary["certification_seal_count"] == 0
     assert all(row["asset_policy"].startswith("neutral label") for row in rows)
-    assert applicability[0] == {"asset_type": "service", "applicable_control_count": 452}
+    assert applicability[0] == {"asset_type": "service", "applicable_control_count": 480}
 
     assert main(["frameworks", "coverage"]) == 0
     out = json.loads(capsys.readouterr().out)
@@ -39,9 +39,9 @@ def test_framework_coverage_markdown_is_source_linked_not_logo_based() -> None:
 
     assert "Seeded mapping coverage: 100.0%" in markdown
     assert "Asset types modeled: 18" in markdown
-    assert "Control-to-asset applicability links: 2032" in markdown
+    assert "Control-to-asset applicability links: 2139" in markdown
     assert "## Control-To-Asset Applicability" in markdown
-    assert "| `service` | 452 |" in markdown
+    assert "| `service` | 480 |" in markdown
     assert "Official source" in markdown
     assert "official logo" not in markdown.lower()
     assert "certification seal" not in markdown.lower()

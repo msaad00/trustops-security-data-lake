@@ -34,7 +34,7 @@ def test_public_source_frameworks_have_reviewed_coverage_floor() -> None:
     catalog = load_control_catalog()
     mappings = load_control_article_mappings()
     coverage_floor = {
-        "soc2": 33,
+        "soc2": 61,
         "nist-ai-rmf": 72,
         "fedramp-moderate": 287,
         "cis_aws": 62,

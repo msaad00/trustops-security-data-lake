@@ -49,6 +49,8 @@ NIST_AI_RMF_SOURCE = "https://www.nist.gov/publications/artificial-intelligence-
 
 # Expected full pack sizes (used by tests and coverage gates).
 SOC2_COMMON_CRITERIA_COUNT = 33
+SOC2_TSC_EXTENSION_COUNT = 28
+SOC2_FULL_PACK_COUNT = SOC2_COMMON_CRITERIA_COUNT + SOC2_TSC_EXTENSION_COUNT
 NIST_AI_RMF_SUBCATEGORY_COUNT = 72
 
 
@@ -71,6 +73,14 @@ class PackControlSpec:
 
 def _soc2_risk_domain(cc: str) -> str:
     series = cc.split(".")[0]
+    if series.startswith("A"):
+        return "availability"
+    if series.startswith("C"):
+        return "confidentiality"
+    if series.startswith("PI"):
+        return "processing-integrity"
+    if series.startswith("P") and not series.startswith("PI"):
+        return "privacy"
     return {
         "CC1": "governance",
         "CC2": "governance",
@@ -93,6 +103,10 @@ def _soc2_owner(risk_domain: str) -> str:
         "monitoring": "detection-engineering",
         "change-management": "platform-engineering",
         "vendor-risk": "grc",
+        "availability": "platform-engineering",
+        "confidentiality": "security-platform",
+        "processing-integrity": "platform-engineering",
+        "privacy": "grc",
     }.get(risk_domain, "security-platform")
 
 
@@ -105,14 +119,25 @@ def _soc2_assets(risk_domain: str) -> tuple[str, ...]:
         "monitoring": ("audit_log", "service", "host"),
         "change-management": ("repo", "service", "container_image"),
         "vendor-risk": ("service", "data_store"),
+        "availability": ("service", "host", "data_store", "cloud_resource"),
+        "confidentiality": ("data_store", "s3_bucket", "cloud_resource", "service"),
+        "processing-integrity": ("service", "audit_log", "data_store"),
+        "privacy": ("data_store", "service", "identity_user", "audit_log"),
     }
     return mapping.get(risk_domain, ("service",))
 
 
 def _soc2_evaluation_rule(risk_domain: str) -> str:
-    if risk_domain in {"identity", "monitoring", "controls-operations"}:
+    if risk_domain in {
+        "identity",
+        "monitoring",
+        "controls-operations",
+        "availability",
+        "confidentiality",
+        "processing-integrity",
+    }:
         return "fail_when_open_violation_or_stale_evidence"
-    if risk_domain == "vendor-risk":
+    if risk_domain in {"vendor-risk", "privacy"}:
         return "fail_when_high_severity_open"
     return "fail_when_missing_evidence"
 
@@ -170,29 +195,87 @@ def soc2_common_criteria_specs() -> list[PackControlSpec]:
     ]
     specs: list[PackControlSpec] = []
     for cc in order:
-        risk = _soc2_risk_domain(cc)
-        owner = _soc2_owner(risk)
         title = _SOC2_TITLES[cc]
-        specs.append(
-            PackControlSpec(
-                control_id=f"SOC2-{cc}",
-                framework_id="soc2",
-                framework="SOC 2",
-                framework_ref=f"SOC 2 {cc}",
-                article_id=cc,
-                title=title,
-                risk_domain=risk,
-                owner=owner,
-                evaluation_rule=_soc2_evaluation_rule(risk),
-                evidence_requirement=(
-                    f"Current evidence demonstrates {title.lower()} with no open high-risk failure or stale proof."
-                ),
-                asset_types=_soc2_assets(risk),
-                source_url=SOC2_SOURCE,
-                official_source_ref="soc2",
-            )
-        )
+        specs.append(_soc2_pack_spec(cc, title))
     return specs
+
+
+def _soc2_pack_spec(article_id: str, title: str) -> PackControlSpec:
+    risk = _soc2_risk_domain(article_id)
+    owner = _soc2_owner(risk)
+    return PackControlSpec(
+        control_id=f"SOC2-{article_id}",
+        framework_id="soc2",
+        framework="SOC 2",
+        framework_ref=f"SOC 2 {article_id}",
+        article_id=article_id,
+        title=title,
+        risk_domain=risk,
+        owner=owner,
+        evaluation_rule=_soc2_evaluation_rule(risk),
+        evidence_requirement=(
+            f"Current evidence demonstrates {title.lower()} with no open high-risk failure or stale proof."
+        ),
+        asset_types=_soc2_assets(risk),
+        source_url=SOC2_SOURCE,
+        official_source_ref="soc2",
+    )
+
+
+# Short internal titles — not AICPA licensed criterion text.
+_SOC2_TSC_TITLES: dict[str, str] = {
+    "A1.1": "Capacity and performance are monitored against availability commitments",
+    "A1.2": "Environmental protections and backup processes support availability objectives",
+    "A1.3": "Recovery procedures are established, maintained, and tested",
+    "C1.1": "Confidential information is identified and protected",
+    "C1.2": "Confidential information is disposed of securely",
+    "PI1.1": "Processing specifications define complete and accurate processing objectives",
+    "PI1.2": "System inputs are complete, accurate, and authorized",
+    "PI1.3": "System processing is complete, accurate, timely, and authorized",
+    "PI1.4": "System outputs are complete, accurate, and timely",
+    "PI1.5": "Stored inputs, processing items, and outputs remain complete and accurate",
+    "P1.1": "Privacy notice communicates objectives and practices to data subjects",
+    "P2.1": "Choice, explicit consent, and documented implicit consent for personal information",
+    "P3.1": "Personal information collection is limited to identified objectives",
+    "P3.2": "Collection methods are communicated and consented where required",
+    "P4.1": "Personal information use is limited to identified objectives",
+    "P4.2": "Personal information retention aligns with objectives and legal requirements",
+    "P4.3": "Personal information disposal is secure and documented",
+    "P5.1": "Data subjects can access their personal information",
+    "P5.2": "Data subject access requests are fulfilled in a timely manner",
+    "P6.1": "Personal information disclosure is authorized and logged",
+    "P6.2": "Third-party disclosures comply with privacy commitments",
+    "P6.3": "Data subjects are notified of privacy practices and changes",
+    "P6.4": "Breach and incident notification procedures exist and are tested",
+    "P6.5": "Cross-border disclosure requirements are met",
+    "P6.6": "Government and legal disclosure requests are controlled",
+    "P6.7": "Disclosure to third parties is monitored over time",
+    "P7.1": "Personal information quality is maintained and corrected",
+    "P8.1": "Privacy compliance is monitored and enforced",
+}
+
+
+def soc2_tsc_extension_specs() -> list[PackControlSpec]:
+    """SOC 2 supplemental TSC: Availability, Confidentiality, Processing Integrity, Privacy."""
+    order = [
+        *(f"A1.{i}" for i in range(1, 4)),
+        *(f"C1.{i}" for i in range(1, 3)),
+        *(f"PI1.{i}" for i in range(1, 6)),
+        "P1.1",
+        "P2.1",
+        *(f"P3.{i}" for i in range(1, 3)),
+        *(f"P4.{i}" for i in range(1, 4)),
+        *(f"P5.{i}" for i in range(1, 3)),
+        *(f"P6.{i}" for i in range(1, 8)),
+        "P7.1",
+        "P8.1",
+    ]
+    return [_soc2_pack_spec(article_id, _SOC2_TSC_TITLES[article_id]) for article_id in order]
+
+
+def soc2_full_pack_specs() -> list[PackControlSpec]:
+    """All 61 SOC 2 criteria: 33 common criteria plus 28 supplemental TSC extensions."""
+    return soc2_common_criteria_specs() + soc2_tsc_extension_specs()
 
 
 def _nist_function_blocks() -> list[tuple[str, list[tuple[int, int]]]]:
@@ -368,7 +451,7 @@ def iso_42001_2023_specs() -> list[PackControlSpec]:
 
 
 PACK_BUILDERS = {
-    "soc2": soc2_common_criteria_specs,
+    "soc2": soc2_full_pack_specs,
     "nist-ai-rmf": nist_ai_rmf_specs,
     "fedramp-moderate": fedramp_moderate_specs,
     "cis-aws": cis_aws_v3_specs,
