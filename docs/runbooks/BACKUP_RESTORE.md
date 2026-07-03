@@ -20,14 +20,14 @@ sync with posture and evidence.
 
 ## What To Back Up
 
-| Path / object                         | Contents                                              | RPO guidance        |
-| ------------------------------------- | ----------------------------------------------------- | ------------------- |
-| `$TRUSTOPS_LAKE/bronze/`              | Immutable raw evidence replay                         | Same as lake        |
-| `$TRUSTOPS_LAKE/silver/`              | Normalized evidence facts                             | Same as lake        |
-| `$TRUSTOPS_LAKE/gold/`                | Posture, controls, snapshots, connector state, workflows | Same as lake     |
-| `$TRUSTOPS_LAKE/gold/connector_runs.jsonl` | Probe/sync/discover run history                  | Same as lake        |
-| `$TRUSTOPS_LAKE/server/app.db`        | Tenants, users, API keys, tasks, evidence requests, agent runs | Same as DB backup |
-| Kubernetes Secret refs                | Session secret, OIDC, Snowflake key mounts            | Independent secret-manager backup |
+| Path / object                              | Contents                                                       | RPO guidance                      |
+| ------------------------------------------ | -------------------------------------------------------------- | --------------------------------- |
+| `$TRUSTOPS_LAKE/bronze/`                   | Immutable raw evidence replay                                  | Same as lake                      |
+| `$TRUSTOPS_LAKE/silver/`                   | Normalized evidence facts                                      | Same as lake                      |
+| `$TRUSTOPS_LAKE/gold/`                     | Posture, controls, snapshots, connector state, workflows       | Same as lake                      |
+| `$TRUSTOPS_LAKE/gold/connector_runs.jsonl` | Probe/sync/discover run history                                | Same as lake                      |
+| `$TRUSTOPS_LAKE/server/app.db`             | Tenants, users, API keys, tasks, evidence requests, agent runs | Same as DB backup                 |
+| Kubernetes Secret refs                     | Session secret, OIDC, Snowflake key mounts                     | Independent secret-manager backup |
 
 Catalog files (`controls/`, `connectors/`, `frameworks/`) ship inside the
 container image (`TRUSTOPS_DATA_DIR=/opt/trustops-data`). You do not need to

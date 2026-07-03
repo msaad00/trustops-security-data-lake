@@ -16,15 +16,15 @@ scheduler tick / manual sync
 
 ## Primary Data Sources
 
-| Source                              | Path / route                              | Use for                              |
-| ----------------------------------- | ----------------------------------------- | ------------------------------------ |
-| Connector run log                   | `$TRUSTOPS_LAKE/gold/connector_runs.jsonl` | sync/probe/discover history       |
-| Connector config log                | `$TRUSTOPS_LAKE/gold/connector_config.jsonl` | enable/disable, scope changes     |
-| Scheduler state                     | `$TRUSTOPS_LAKE/gold/scheduler_state.jsonl` | last cron fire times           |
-| Per-connector runs API              | `GET /api/v1/connectors/{connector_id}/runs` | paginated run history          |
-| Ingestion summary API               | `GET /api/v1/ingestion/status`            | fleet health, recommended actions |
-| Evidence freshness API              | `GET /api/v1/evidence/freshness?status=stale,expired,missing` | SLO breaches |
-| Kubernetes scheduler                | CronJob `{release}-scheduler`             | tick failures, job backlog         |
+| Source                 | Path / route                                                  | Use for                           |
+| ---------------------- | ------------------------------------------------------------- | --------------------------------- |
+| Connector run log      | `$TRUSTOPS_LAKE/gold/connector_runs.jsonl`                    | sync/probe/discover history       |
+| Connector config log   | `$TRUSTOPS_LAKE/gold/connector_config.jsonl`                  | enable/disable, scope changes     |
+| Scheduler state        | `$TRUSTOPS_LAKE/gold/scheduler_state.jsonl`                   | last cron fire times              |
+| Per-connector runs API | `GET /api/v1/connectors/{connector_id}/runs`                  | paginated run history             |
+| Ingestion summary API  | `GET /api/v1/ingestion/status`                                | fleet health, recommended actions |
+| Evidence freshness API | `GET /api/v1/evidence/freshness?status=stale,expired,missing` | SLO breaches                      |
+| Kubernetes scheduler   | CronJob `{release}-scheduler`                                 | tick failures, job backlog        |
 
 Each run row in `gold/connector_runs.jsonl` includes:
 
@@ -87,26 +87,26 @@ Build these panels from API polling, log scraping, or a future OTel exporter.
 
 ### Fleet summary (single stat / gauge)
 
-| Metric                         | Source field                                              | Alert when        |
-| ------------------------------ | --------------------------------------------------------- | ----------------- |
-| Ingestion state                | `ingestion.status.state`                                  | not `healthy`     |
-| Enabled connectors             | `ingestion.status.summary.enabled_connectors`             | —                 |
-| Failed connectors              | `ingestion.status.summary.failed_connectors`              | > 0               |
-| Never synced (enabled)         | `ingestion.status.summary.never_synced_connectors`        | > 0               |
-| Silent connectors (past SLO)   | `ingestion.status.summary.silent_connectors`              | > 0               |
-| Stale evidence rows            | `ingestion.status.summary.stale_evidence`                 | trending up       |
+| Metric                       | Source field                                       | Alert when    |
+| ---------------------------- | -------------------------------------------------- | ------------- |
+| Ingestion state              | `ingestion.status.state`                           | not `healthy` |
+| Enabled connectors           | `ingestion.status.summary.enabled_connectors`      | —             |
+| Failed connectors            | `ingestion.status.summary.failed_connectors`       | > 0           |
+| Never synced (enabled)       | `ingestion.status.summary.never_synced_connectors` | > 0           |
+| Silent connectors (past SLO) | `ingestion.status.summary.silent_connectors`       | > 0           |
+| Stale evidence rows          | `ingestion.status.summary.stale_evidence`          | trending up   |
 
 ### Per-connector sync table
 
-| Column            | Derivation                                      |
-| ----------------- | ----------------------------------------------- |
-| connector_id      | run row / catalog                               |
+| Column            | Derivation                                           |
+| ----------------- | ---------------------------------------------------- |
+| connector_id      | run row / catalog                                    |
 | freshness_state   | `fresh` / `stale` / `never_synced` from catalog view |
-| last_sync_at      | latest `kind=sync, result=ok` `occurred_at`     |
-| last_result       | latest sync `result`                            |
-| duration_ms       | latest ok sync                                  |
-| evidence_count    | latest ok sync                                  |
-| freshness_slo_min | connector catalog `freshness_slo_minutes`       |
+| last_sync_at      | latest `kind=sync, result=ok` `occurred_at`          |
+| last_result       | latest sync `result`                                 |
+| duration_ms       | latest ok sync                                       |
+| evidence_count    | latest ok sync                                       |
+| freshness_slo_min | connector catalog `freshness_slo_minutes`            |
 
 Freshness compares the last successful sync timestamp against each connector's
 `freshness_slo_minutes` (default 1440). A connector is **silent** when enabled
@@ -114,12 +114,12 @@ but has no successful sync within its SLO.
 
 ### Time series (from `connector_runs.jsonl` or OTel)
 
-| Series                              | Labels                          | Aggregation   |
-| ----------------------------------- | ------------------------------- | ------------- |
-| `trustops_connector_sync_total`     | `connector_id`, `result`        | counter       |
-| `trustops_connector_sync_duration_ms` | `connector_id`, `result`      | histogram     |
-| `trustops_connector_sync_evidence_count` | `connector_id`               | gauge (last)  |
-| `trustops_scheduler_tick_total`     | `result`                        | counter       |
+| Series                                   | Labels                   | Aggregation  |
+| ---------------------------------------- | ------------------------ | ------------ |
+| `trustops_connector_sync_total`          | `connector_id`, `result` | counter      |
+| `trustops_connector_sync_duration_ms`    | `connector_id`, `result` | histogram    |
+| `trustops_connector_sync_evidence_count` | `connector_id`           | gauge (last) |
+| `trustops_scheduler_tick_total`          | `result`                 | counter      |
 
 Example PromQL-style queries once exported:
 
@@ -135,13 +135,13 @@ histogram_quantile(0.95,
 
 ## Alert Rules
 
-| Alert                         | Condition                                                         | Runbook action                                      |
-| ----------------------------- | ----------------------------------------------------------------- | --------------------------------------------------- |
-| ConnectorSyncFailed           | latest `kind=sync` has `result=error`                             | Inspect sanitized `error`; re-probe; check secrets  |
-| ConnectorSilent               | enabled + `freshness_state=stale` or `never_synced`               | Run manual sync; verify scheduler CronJob           |
-| SchedulerJobFailed            | Kubernetes Job `Failed` for `{release}-scheduler`                 | Check pod logs; verify PVC mount and `TRUSTOPS_LAKE` |
-| IngestionDegraded             | `ingestion.status.state` in `degraded`, `blocked`                 | Follow `recommended_actions` in status payload      |
-| EvidenceFreshnessSLOBreach    | `stale_evidence` count increases                                  | Identify sources via `/api/v1/evidence/freshness`   |
+| Alert                      | Condition                                           | Runbook action                                       |
+| -------------------------- | --------------------------------------------------- | ---------------------------------------------------- |
+| ConnectorSyncFailed        | latest `kind=sync` has `result=error`               | Inspect sanitized `error`; re-probe; check secrets   |
+| ConnectorSilent            | enabled + `freshness_state=stale` or `never_synced` | Run manual sync; verify scheduler CronJob            |
+| SchedulerJobFailed         | Kubernetes Job `Failed` for `{release}-scheduler`   | Check pod logs; verify PVC mount and `TRUSTOPS_LAKE` |
+| IngestionDegraded          | `ingestion.status.state` in `degraded`, `blocked`   | Follow `recommended_actions` in status payload       |
+| EvidenceFreshnessSLOBreach | `stale_evidence` count increases                    | Identify sources via `/api/v1/evidence/freshness`    |
 
 ## OpenTelemetry Integration (Guidance)
 
@@ -174,12 +174,12 @@ echo "trustops_ingestion_state{state=\"$STATE\"} 1"
 
 When instrumented, export from the API and scheduler processes:
 
-| OTel metric / span                     | Trigger                          |
-| -------------------------------------- | -------------------------------- |
-| `trustops.connector.sync` span         | each `run_connector_sync`        |
-| `trustops.connector.probe` span        | each probe                       |
-| `trustops.scheduler.tick` span         | each `scheduler tick`            |
-| Attributes: `connector_id`, `tenant_id`, `result`, `evidence_count` | |
+| OTel metric / span                                                  | Trigger                   |
+| ------------------------------------------------------------------- | ------------------------- |
+| `trustops.connector.sync` span                                      | each `run_connector_sync` |
+| `trustops.connector.probe` span                                     | each probe                |
+| `trustops.scheduler.tick` span                                      | each `scheduler tick`     |
+| Attributes: `connector_id`, `tenant_id`, `result`, `evidence_count` |                           |
 
 Use `TRUSTOPS_OTEL_EXPORTER_OTLP_ENDPOINT` (planned) or standard
 `OTEL_EXPORTER_OTLP_ENDPOINT` with resource attributes:

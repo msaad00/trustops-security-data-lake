@@ -16,9 +16,9 @@ redacted posture + gaps
 The MCP server is `trustops-mcp` (`security_lakehouse.mcp_server`). It exposes
 two transport surfaces:
 
-| Surface              | Env vars                              | Tools                                                                 |
-| -------------------- | ------------------------------------- | --------------------------------------------------------------------- |
-| Local lake reads     | `TRUSTOPS_LAKE` (default `./lake`)    | `get_posture`, `list_controls`, `list_evidence`, `create_snapshot`, … |
+| Surface              | Env vars                               | Tools                                                                            |
+| -------------------- | -------------------------------------- | -------------------------------------------------------------------------------- |
+| Local lake reads     | `TRUSTOPS_LAKE` (default `./lake`)     | `get_posture`, `list_controls`, `list_evidence`, `create_snapshot`, …            |
 | Authenticated server | `TRUSTOPS_API_URL`, `TRUSTOPS_API_KEY` | `list_agent_runs`, `create_agent_run`, `get_agent_run`, `approve_agent_decision` |
 
 Evidence-request approvals are **server-backed**. They call the same
@@ -163,12 +163,12 @@ Or open `/console/remediation/` in the TrustOps console.
 
 ## RBAC And Scopes
 
-| Action                         | Minimum role / scope                          |
-| ------------------------------ | --------------------------------------------- |
-| `create_agent_run`             | write scope (e.g. `contributor`, `security_admin`) |
-| `get_agent_run`, `list_agent_runs` | read scope                                |
-| `approve_agent_decision`       | write scope                                   |
-| `create_snapshot` (local MCP)  | lake write access                             |
+| Action                             | Minimum role / scope                               |
+| ---------------------------------- | -------------------------------------------------- |
+| `create_agent_run`                 | write scope (e.g. `contributor`, `security_admin`) |
+| `get_agent_run`, `list_agent_runs` | read scope                                         |
+| `approve_agent_decision`           | write scope                                        |
+| `create_snapshot` (local MCP)      | lake write access                                  |
 
 `read_only` keys can inspect runs but receive `403 Forbidden` on approve.
 
