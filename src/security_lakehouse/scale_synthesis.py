@@ -61,11 +61,7 @@ def synthesize_audit_event(
 
     status = rng.choice(_OPEN_STATUSES) if rng.random() < open_ratio else rng.choice(_PASS_STATUSES)
     severity = (
-        "critical"
-        if status in _OPEN_STATUSES and index % 17 == 0
-        else "high"
-        if status in _OPEN_STATUSES
-        else "info"
+        "critical" if status in _OPEN_STATUSES and index % 17 == 0 else "high" if status in _OPEN_STATUSES else "info"
     )
     event_time = base_time + timedelta(seconds=index)
     collected = event_time + timedelta(seconds=1)

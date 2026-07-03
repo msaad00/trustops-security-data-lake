@@ -70,8 +70,12 @@ def build_current_posture(
     open_violations = [item for item in violations if item["state"] == "open"]
     severity_counts = violation_summary.get("severity_counts") or {}
     open_violation_count = int(violation_summary.get("total_count") or len(open_violations))
-    critical_violation_count = int(severity_counts.get("critical") or sum(1 for item in open_violations if item["severity"] == "critical"))
-    high_violation_count = int(severity_counts.get("high") or sum(1 for item in open_violations if item["severity"] == "high"))
+    critical_violation_count = int(
+        severity_counts.get("critical") or sum(1 for item in open_violations if item["severity"] == "critical")
+    )
+    high_violation_count = int(
+        severity_counts.get("high") or sum(1 for item in open_violations if item["severity"] == "high")
+    )
     failed_control_tests = [item for item in control_tests if str(item.get("result", "")).lower() == "fail"]
     warning_control_tests = [item for item in control_tests if str(item.get("result", "")).lower() == "warn"]
     posture_score = _weighted_posture_score(framework_scores)
@@ -509,7 +513,9 @@ def _build_violations_capped(
             "low": low,
         },
     }
-    return sorted(retained, key=lambda item: (-int(item["severity_score"]), item["control_id"], item["event_id"])), summary
+    return sorted(
+        retained, key=lambda item: (-int(item["severity_score"]), item["control_id"], item["event_id"])
+    ), summary
 
 
 def _framework_scores_from_controls(

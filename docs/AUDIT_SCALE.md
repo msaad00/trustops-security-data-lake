@@ -4,14 +4,14 @@ TrustOps ships a **POC-scale Python lake path** (~10–70 events in fixtures) an
 
 ## Audit findings (synthesis)
 
-| Layer | POC behavior today | Million-finding risk | Mitigation in this repo |
-|-------|-------------------|----------------------|-------------------------|
-| **Raw JSONL** | Full-file read on upsert/sync | Single file grows without bound | Streaming `iter_jsonl` / `count_jsonl`; warehouse sinks for prod |
-| **Pipeline** | Full rebuild per `materialize=True` sync | Replays entire raw lake each tick | `manifest.json` `row_counts`; benchmark CLI to measure throughput |
-| **Silver → violations** | O(events × controls_per_event) in memory | Multi-million finding rows | `build_violations(..., max_violations=N)` + `violation_summary` totals |
-| **Posture API** | Embeds all open violations | Payload size / latency | Auto-cap at 10k violations when silver > 100k; framework rollups from gold control posture |
-| **Ingestion status** | Loaded full silver for counts | Status endpoint latency | Manifest-backed counts + streaming field histograms |
-| **Synthetic fixtures** | Golden = 37 events | No load-test data | `fixtures synthesize-scale` CLI (millions, streaming write) |
+| Layer                   | POC behavior today                       | Million-finding risk              | Mitigation in this repo                                                                    |
+| ----------------------- | ---------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------ |
+| **Raw JSONL**           | Full-file read on upsert/sync            | Single file grows without bound   | Streaming `iter_jsonl` / `count_jsonl`; warehouse sinks for prod                           |
+| **Pipeline**            | Full rebuild per `materialize=True` sync | Replays entire raw lake each tick | `manifest.json` `row_counts`; benchmark CLI to measure throughput                          |
+| **Silver → violations** | O(events × controls_per_event) in memory | Multi-million finding rows        | `build_violations(..., max_violations=N)` + `violation_summary` totals                     |
+| **Posture API**         | Embeds all open violations               | Payload size / latency            | Auto-cap at 10k violations when silver > 100k; framework rollups from gold control posture |
+| **Ingestion status**    | Loaded full silver for counts            | Status endpoint latency           | Manifest-backed counts + streaming field histograms                                        |
+| **Synthetic fixtures**  | Golden = 37 events                       | No load-test data                 | `fixtures synthesize-scale` CLI (millions, streaming write)                                |
 
 **Recommendation above ~100k events:** project findings with `benchmark plan`, generate synthetic lakes with `fixtures synthesize-scale`, measure pipeline with `benchmark pipeline`, and route auditor analytics to **Snowflake/ClickHouse** marts (`deploy/snowflake/schema.sql`, `deploy/clickhouse/schema.sql`) instead of expanding in-process JSONL.
 
