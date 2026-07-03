@@ -17,19 +17,14 @@ import {
 import { api } from "@/lib/api/client";
 import { useAuthWhoami } from "@/lib/api/hooks";
 import { useAuditorMode } from "@/lib/state/auditor";
-import { usePersistentState } from "@/lib/state/preferences";
+import { useTheme, type ThemeMode } from "@/components/theme/ThemeProvider";
 import { workspaceIdentity } from "@/lib/workspace";
-
-type Theme = "light" | "dark" | "system";
 
 export function UserMenu() {
   const router = useRouter();
   const auditor = useAuditorMode();
   const whoami = useAuthWhoami();
-  const [theme, setTheme] = usePersistentState<Theme>(
-    "trustops:theme",
-    "system",
-  );
+  const { theme, setTheme } = useTheme();
 
   const sessionLabel =
     whoami.data?.email ??
@@ -71,7 +66,7 @@ export function UserMenu() {
         <DropdownMenu.Content
           align="end"
           sideOffset={6}
-          className="z-[60] grid min-w-[240px] gap-0.5 rounded-xl border border-line bg-white p-1.5 shadow-hero"
+          className="z-[60] grid min-w-[240px] gap-0.5 rounded-xl border border-line bg-surface p-1.5 shadow-hero"
         >
           {whoami.data && (
             <>
@@ -93,7 +88,7 @@ export function UserMenu() {
           <DropdownMenu.Label className="px-2 py-2 text-[10px] font-black uppercase tracking-wider text-muted">
             Organization
           </DropdownMenu.Label>
-          <DropdownMenu.Item className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-[highlighted]:bg-slate-50">
+          <DropdownMenu.Item className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-[highlighted]:bg-surfaceMuted">
             <Building2 className="h-4 w-4 text-muted" />
             <span className="truncate text-ink">
               {workspaceIdentity.orgName} — {workspaceIdentity.environmentName}
@@ -102,7 +97,7 @@ export function UserMenu() {
               active
             </span>
           </DropdownMenu.Item>
-          <DropdownMenu.Item className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted outline-none data-[highlighted]:bg-slate-50">
+          <DropdownMenu.Item className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted outline-none data-[highlighted]:bg-surfaceMuted">
             <Building2 className="h-4 w-4" />
             {workspaceIdentity.secondaryLabel}
           </DropdownMenu.Item>
@@ -115,12 +110,12 @@ export function UserMenu() {
               <button
                 key={mode}
                 type="button"
-                onClick={() => setTheme(mode)}
+                onClick={() => setTheme(mode as ThemeMode)}
                 className={[
                   "inline-flex items-center justify-center gap-1 rounded-md border px-2 py-1.5 text-[11px] font-extrabold",
                   theme === mode
-                    ? "border-ink bg-ink text-white"
-                    : "border-line bg-white text-muted hover:bg-slate-50",
+                    ? "border-ink bg-ink text-panel"
+                    : "border-line bg-surface text-muted hover:bg-surfaceMuted",
                 ].join(" ")}
               >
                 {mode === "light" && <Sun className="h-3 w-3" />}
@@ -137,7 +132,7 @@ export function UserMenu() {
           <DropdownMenu.Item asChild>
             <Link
               href="/auth"
-              className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm text-ink outline-none data-[highlighted]:bg-slate-50"
+              className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm text-ink outline-none data-[highlighted]:bg-surfaceMuted"
             >
               <User className="h-4 w-4 text-muted" />
               Access &amp; SSO
@@ -146,18 +141,18 @@ export function UserMenu() {
           <DropdownMenu.Item asChild>
             <Link
               href="/poc"
-              className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm text-ink outline-none data-[highlighted]:bg-slate-50"
+              className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm text-ink outline-none data-[highlighted]:bg-surfaceMuted"
             >
               <Rocket className="h-4 w-4 text-muted" />
               POC readiness
             </Link>
           </DropdownMenu.Item>
-          <DropdownMenu.Item className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm text-ink outline-none data-[highlighted]:bg-slate-50">
+          <DropdownMenu.Item className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm text-ink outline-none data-[highlighted]:bg-surfaceMuted">
             <Settings className="h-4 w-4 text-muted" />
             Settings
           </DropdownMenu.Item>
           <DropdownMenu.Item
-            className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm text-ink outline-none data-[highlighted]:bg-slate-50"
+            className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-md px-2 py-1.5 text-sm text-ink outline-none data-[highlighted]:bg-surfaceMuted"
             onSelect={() => void signOut()}
           >
             <LogOut className="h-4 w-4 text-muted" />

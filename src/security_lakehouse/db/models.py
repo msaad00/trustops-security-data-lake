@@ -42,6 +42,9 @@ ACCESS_REVIEW_DECISIONS = ("pending", "certified", "revoked", "flagged")
 AGENT_RUN_HARNESSES = ("posture_review", "soc_triage")
 AGENT_RUN_STATUSES = ("completed", "failed")
 
+# Commercial hosted workspace invites.
+INVITE_STATUSES = ("pending", "accepted", "revoked", "expired")
+
 
 def _uuid() -> str:
     return str(uuid.uuid4())
@@ -92,6 +95,32 @@ class User(Base):
     tenant: Mapped[Tenant] = relationship(back_populates="users")
     api_keys: Mapped[list[ApiKey]] = relationship(back_populates="user", cascade="all, delete-orphan")
     sessions: Mapped[list[UserSession]] = relationship(back_populates="user", cascade="all, delete-orphan")
+
+
+class TenantInvite(Base):
+    """Email invite to join a tenant (commercial hosted)."""
+
+    __tablename__ = "tenant_invites"
+    __table_args__ = (
+        UniqueConstraint("tenant_id", "email", "status", name="uq_tenant_invites_pending_email"),
+        Index("ix_tenant_invites_token_hash", "token_hash"),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    email: Mapped[str] = mapped_column(String(320), nullable=False)
+    role: Mapped[str] = mapped_column(String(32), nullable=False, default="contributor")
+    token_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="pending")
+    invited_by: Mapped[str] = mapped_column(String(320), nullable=False, default="")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    accepted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    accepted_user_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
 
 
 class ApiKey(Base):

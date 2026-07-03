@@ -27,6 +27,12 @@ For production operations, see the
 PVC at `/lake` and the application-state database (`server/app.db` or
 `TRUSTOPS_DATABASE_URL`).
 
+For HA deployments (read replicas + single writer), see
+[HA read replicas](../docs/runbooks/HA_READ_REPLICAS.md).
+
+Commercial hosted invite/SCIM scaffolding is documented in
+[COMMERCIAL_HOSTED.md](../docs/COMMERCIAL_HOSTED.md).
+
 ## Container image
 
 The repo ships a multi-stage `Dockerfile` at the root. Build locally:
@@ -61,6 +67,7 @@ Key value groups:
 - `serviceAccount.annotations` — bind an IRSA role (EKS) or Workload Identity (GKE) here for read-only access to the customer evidence bucket.
 - `scheduler` — opt-in CronJob that runs `security-lakehouse scheduler tick` to fire `trigger.cron` workflows. Disable with `scheduler.enabled=false` if you drive it from an external scheduler.
 - `defaultTrustRole` — set to `auditor` for the Trust Center deployment so it serves the redacted projection by default.
+- `security` — production guards: `requireAuthentication`, `allowInsecureNoAuth` (requires `allowInsecureOverride=acknowledged`), ingress auth enforcement, and multi-replica + RWO lake checks. See [HA read replicas](../docs/runbooks/HA_READ_REPLICAS.md).
 - `extraVolumes` / `extraVolumeMounts` — mount customer-managed secrets such as
   a Snowflake service-user private key into both the API pod and scheduler
   CronJob. TrustOps should receive only a file path such as

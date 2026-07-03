@@ -3,14 +3,36 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-ink: #101623;
+    --color-muted: #667085;
+    --color-line: #d9e1ec;
+    --color-panel: #f8fafc;
+    --color-rail: #0b1218;
+    --color-rail-line: #243244;
+    --color-surface: #ffffff;
+    --color-surface-muted: #f1f5f9;
+  }
+
+  .dark {
+    --color-ink: #e8eef5;
+    --color-muted: #94a3b8;
+    --color-line: #334155;
+    --color-panel: #0f172a;
+    --color-rail: #020617;
+    --color-rail-line: #1e293b;
+    --color-surface: #1e293b;
+    --color-surface-muted: #334155;
+  }
+
   html,
   body {
     height: 100%;
   }
   body {
     font-family: theme(fontFamily.sans);
-    color: theme(colors.ink);
-    background: theme(colors.panel);
+    color: var(--color-ink);
+    background: var(--color-panel);
   }
   code {
     font-family: theme(fontFamily.mono);
