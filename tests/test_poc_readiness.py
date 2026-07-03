@@ -99,6 +99,11 @@ def test_poc_readiness_reports_launch_gates_without_secrets(tmp_path: Path, monk
     assert data["demo_kit"]["public_url"] == "https://trustops.example.test"
     assert any(link["kind"] == "login" for link in data["demo_kit"]["share_links"])
     assert len(data["demo_kit"]["account_linking"]) == 6
+    onboarding = data["onboarding"]
+    assert onboarding["blocking_total"] >= 3
+    assert onboarding["progress_percent"] >= 0
+    assert onboarding["current_step_id"]
+    assert any(step.get("console_href") == "/connectors?onboarding=1" for step in onboarding["steps"])
 
 
 def test_poc_readiness_is_in_resource_catalog() -> None:

@@ -223,6 +223,15 @@ export interface PocReadinessStep {
   detail: string;
   href: string | null;
   blocking: boolean;
+  console_href?: string | null;
+}
+
+export interface OnboardingProgress {
+  progress_percent: number;
+  completed_blocking: number;
+  blocking_total: number;
+  current_step_id: string | null;
+  steps: PocReadinessStep[];
 }
 
 export interface DemoShareLink {
@@ -300,6 +309,7 @@ export interface PocReadiness {
   };
   steps: PocReadinessStep[];
   next_step: PocReadinessStep | null;
+  onboarding?: OnboardingProgress;
 }
 
 export interface SnapshotResponse {

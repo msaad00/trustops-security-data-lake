@@ -571,6 +571,23 @@ def _poc_step(
     }
 
 
+def _onboarding_console_href(href: str | None) -> str | None:
+    """Map admin console paths to workbench routes for the guided onboarding flow."""
+    if not href:
+        return None
+    if href == "/console/connectors":
+        return "/connectors?onboarding=1"
+    if href == "/console/trust-center":
+        return "/trust-center?onboarding=1"
+    if href == "/console/agents":
+        return "/agents?onboarding=1"
+    if href == "/console/login":
+        return "/auth?onboarding=1"
+    if href.startswith("/console/"):
+        return href.removeprefix("/console")
+    return href
+
+
 def _build_poc_readiness(
     *,
     app: FastAPI,
@@ -680,6 +697,11 @@ def _build_poc_readiness(
     any_access_ready = human_access_ready or headless_access_ready
     state = "ready" if blocking_ready else ("internal_ready" if source_ready and any_access_ready else "needs_setup")
     next_step = next((step for step in steps if step["status"] != "ready"), None)
+    blocking_steps = [step for step in steps if step["blocking"]]
+    completed_blocking = sum(1 for step in blocking_steps if step["status"] == "ready")
+    onboarding_steps = [
+        {**step, "console_href": _onboarding_console_href(str(step.get("href") or "") or None)} for step in steps
+    ]
     demo_kit = build_demo_kit(
         public_url=public_url,
         sso_configured=sso_configured,
@@ -730,6 +752,13 @@ def _build_poc_readiness(
         },
         "steps": steps,
         "next_step": next_step,
+        "onboarding": {
+            "progress_percent": int(round(100 * completed_blocking / len(blocking_steps))) if blocking_steps else 100,
+            "completed_blocking": completed_blocking,
+            "blocking_total": len(blocking_steps),
+            "current_step_id": next_step["id"] if next_step else None,
+            "steps": onboarding_steps,
+        },
     }
 
 
