@@ -103,6 +103,13 @@ def _utc_now_iso() -> str:
     return datetime.now(UTC).isoformat().replace("+00:00", "Z")
 
 
+def _append_jsonl(path: Path, record: dict[str, Any]) -> None:
+    """Append one JSON object as a line to a gold-zone JSONL file."""
+    with path.open("a", encoding="utf-8") as fh:
+        # lgtm[py/clear-text-storage-sensitive-data] record is sanitized before this write
+        fh.write(json.dumps(record, separators=(",", ":")) + "\n")
+
+
 def append_config_event(
     lake_dir: str | Path,
     *,
@@ -120,21 +127,37 @@ def append_config_event(
     catalog = load_connector_catalog()
     if connector_id not in catalog:
         raise ValueError(f"unknown connector_id {connector_id!r}")
-    record = {
+    record = _build_disk_config_record(
+        connector_id=connector_id,
+        state=state,
+        actor=actor or "anonymous",
+        credentials=credentials,
+        options=options,
+    )
+    gold = _gold(lake_dir)
+    gold.mkdir(parents=True, exist_ok=True)
+    _append_jsonl(gold / CONFIG_FILE, record)
+    return record
+
+
+def _build_disk_config_record(
+    *,
+    connector_id: str,
+    state: str,
+    actor: str,
+    credentials: dict[str, Any] | None,
+    options: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Build a connector config event safe to persist on disk (CodeQL boundary)."""
+    return {
         "connector_id": connector_id,
         "state": state,
-        "actor": actor or "anonymous",
+        "actor": actor,
         "credentials": _redact_credentials(credentials),
         "options": _redact_sensitive_value({k: v for k, v in (options or {}).items() if k != "raw"}),
         "credential_fingerprint": _access_fingerprint(credentials, options),
         "occurred_at": _utc_now_iso(),
     }
-    gold = _gold(lake_dir)
-    gold.mkdir(parents=True, exist_ok=True)
-    path = gold / CONFIG_FILE
-    with path.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps(record, separators=(",", ":")) + "\n")
-    return record
 
 
 def validate_configure_payload(
@@ -355,9 +378,7 @@ def append_run_event(
     )
     gold = _gold(lake_dir)
     gold.mkdir(parents=True, exist_ok=True)
-    path = gold / RUNS_FILE
-    with path.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps(record, separators=(",", ":")) + "\n")
+    _append_jsonl(gold / RUNS_FILE, record)
     return record
 
 
