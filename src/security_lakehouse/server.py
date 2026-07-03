@@ -71,6 +71,11 @@ class _Handler(BaseHTTPRequestHandler):
 
             self._send_bytes(aws_template_bytes(), content_type="application/x-yaml")
             return
+        if parsed.path == "/api/v1/connectors/gcp-posture/link/template.tf":
+            from security_lakehouse.cloud_linking import gcp_template_bytes
+
+            self._send_bytes(gcp_template_bytes(), content_type="text/plain; charset=utf-8")
+            return
         if parsed.path.startswith("/api/v1/connectors/azure-posture/link/callback"):
             self._handle_azure_link_callback(parse_qs(parsed.query))
             return

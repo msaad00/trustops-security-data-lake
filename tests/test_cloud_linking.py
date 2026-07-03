@@ -15,12 +15,15 @@ from security_lakehouse.cloud_linking import (
     azure_callback_redirect,
     azure_consent_url,
     complete_cloud_link,
+    gcp_deploy_command,
+    gcp_template_bytes,
     get_cloud_link_session,
     issue_cloud_link_redirect_token,
     normalize_link_session_id,
     record_azure_consent,
     resolve_cloud_link_session_id,
     start_cloud_link,
+    valid_gcp_project_id,
 )
 
 
@@ -28,6 +31,25 @@ def test_aws_template_bytes_is_packaged() -> None:
     body = aws_template_bytes()
     assert b"TrustOpsPostureReadOnlyRole" in body
     assert b"TrustedPrincipalArn" in body
+
+
+def test_gcp_template_bytes_is_packaged() -> None:
+    body = gcp_template_bytes()
+    assert b"trustops-posture-reader" in body
+    assert b"workload_identity_member" in body
+
+
+def test_valid_gcp_project_id() -> None:
+    assert valid_gcp_project_id("my-gcp-project")
+    assert not valid_gcp_project_id("bad project")
+    assert not valid_gcp_project_id("x")
+
+
+def test_gcp_deploy_command_includes_wif_member(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("TRUSTOPS_GCP_WIF_MEMBER", "serviceAccount:demo.svc.id.goog[ns/sa]")
+    cmd = gcp_deploy_command(project_id="demo-project")
+    assert "demo-project" in cmd
+    assert "workload_identity_member=serviceAccount:demo.svc.id.goog[ns/sa]" in cmd
 
 
 def test_normalize_link_session_id_rejects_unsafe_tokens() -> None:
@@ -148,6 +170,27 @@ def test_azure_consent_can_complete_with_server_redirect_token(tmp_path: Path, m
     assert configure["options"]["azure_tenant_id"] == "tenant-guid"
 
 
+def test_start_and_complete_gcp_cloud_link_stages_connector(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("TRUSTOPS_PUBLIC_URL", "https://demo.example.com")
+    monkeypatch.setenv("TRUSTOPS_GCP_WIF_MEMBER", "serviceAccount:demo.svc.id.goog[ns/sa]")
+    session = start_cloud_link(tmp_path, "gcp-posture", tenant_id="tenant-a")
+    assert session["template_url"]
+    assert session["deploy_command"]
+    assert session["workload_identity_member"]
+
+    result = complete_cloud_link(
+        tmp_path,
+        "gcp-posture",
+        session_id=session["session_id"],
+        actor="test",
+        project_id="my-gcp-project",
+    )
+    configure = result["configure"]
+    assert configure["connector_id"] == "gcp-posture"
+    assert configure["state"] == "disabled"
+    assert configure["credentials"]["project_id"] == "my-gcp-project"
+
+
 def test_v1_cloud_link_start_and_complete_api(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("TRUSTOPS_AWS_LINK_PRINCIPAL", "arn:aws:iam::111122223333:role/TrustOpsLink")
     monkeypatch.setenv("TRUSTOPS_PUBLIC_URL", "https://demo.example.com")
@@ -200,5 +243,22 @@ def test_aws_template_endpoint_serves_yaml(tmp_path: Path) -> None:
         conn.close()
         assert resp.status == HTTPStatus.OK
         assert b"TrustOpsPostureReadOnlyRole" in raw
+    finally:
+        server.shutdown()
+
+
+def test_gcp_template_endpoint_serves_tf(tmp_path: Path) -> None:
+    server = _spin(tmp_path)
+    try:
+        import http.client
+
+        host, port = server.server_address
+        conn = http.client.HTTPConnection(host, port, timeout=30)
+        conn.request("GET", "/api/v1/connectors/gcp-posture/link/template.tf")
+        resp = conn.getresponse()
+        raw = resp.read()
+        conn.close()
+        assert resp.status == HTTPStatus.OK
+        assert b"trustops-posture-reader" in raw
     finally:
         server.shutdown()

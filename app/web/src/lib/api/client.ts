@@ -301,6 +301,7 @@ export const api = {
       session_id: string;
       account_id?: string;
       subscription_id?: string;
+      project_id?: string;
     },
   ) =>
     post<{ data: CloudLinkCompleteResult }>(
@@ -609,6 +610,8 @@ export interface CloudLinkSession {
   manual_template_path?: string | null;
   azure_tenant_id?: string | null;
   role_name?: string | null;
+  deploy_command?: string | null;
+  workload_identity_member?: string | null;
 }
 
 export interface CloudLinkCompleteResult {

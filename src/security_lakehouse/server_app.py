@@ -953,6 +953,16 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             headers={"Cache-Control": "public, max-age=300"},
         )
 
+    @app.get("/api/v1/connectors/gcp-posture/link/template.tf", tags=["connectors"])
+    def gcp_link_template() -> Response:
+        from security_lakehouse.cloud_linking import gcp_template_bytes
+
+        return Response(
+            content=gcp_template_bytes(),
+            media_type="text/plain; charset=utf-8",
+            headers={"Cache-Control": "public, max-age=300"},
+        )
+
     @app.get("/api/v1/connectors/azure-posture/link/callback", tags=["connectors"])
     def azure_link_callback(
         request: Request,

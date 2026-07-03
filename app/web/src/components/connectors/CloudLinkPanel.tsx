@@ -1,29 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ExternalLink, Link2, Loader2 } from "lucide-react";
+import { Copy, ExternalLink, Link2, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   useCloudLinkCompleteMutation,
   useCloudLinkStartMutation,
 } from "@/lib/api/hooks";
+import type { CloudLinkSession } from "@/lib/api/client";
 import type { ConnectorView } from "@/lib/api/types";
 
-const CLOUD_LINK_IDS = new Set(["aws-posture", "azure-posture"]);
-
-export interface CloudLinkSession {
-  session_id: string;
-  connector_id: string;
-  status: string;
-  external_id?: string | null;
-  quick_create_url?: string | null;
-  template_url?: string | null;
-  consent_url?: string | null;
-  manual_template_path?: string | null;
-  azure_tenant_id?: string | null;
-  role_name?: string | null;
-}
+const CLOUD_LINK_IDS = new Set(["aws-posture", "azure-posture", "gcp-posture"]);
 
 interface Props {
   connector: ConnectorView;
@@ -34,6 +22,16 @@ interface Props {
 
 export function supportsCloudLink(connectorId: string) {
   return CLOUD_LINK_IDS.has(connectorId);
+}
+
+function linkDescription(connectorId: string): string {
+  if (connectorId === "aws-posture") {
+    return "Launch the read-only CloudFormation stack, then enter your AWS account ID to stage the assume-role connector.";
+  }
+  if (connectorId === "azure-posture") {
+    return "Grant admin consent for the TrustOps Azure app, then enter the subscription ID to stage the connector.";
+  }
+  return "Apply the read-only Terraform reader identity in your GCP project, then enter the project ID to stage the connector.";
 }
 
 export function CloudLinkPanel({
@@ -47,6 +45,7 @@ export function CloudLinkPanel({
   const [session, setSession] = useState<CloudLinkSession | null>(null);
   const [accountId, setAccountId] = useState("");
   const [subscriptionId, setSubscriptionId] = useState("");
+  const [projectId, setProjectId] = useState("");
 
   useEffect(() => {
     if (!linkSessionId || session?.session_id === linkSessionId) return;
@@ -87,6 +86,8 @@ export function CloudLinkPanel({
           connector.connector_id === "azure-posture"
             ? subscriptionId
             : undefined,
+        projectId:
+          connector.connector_id === "gcp-posture" ? projectId : undefined,
       });
       const creds = (result.configure?.credentials ?? {}) as Record<
         string,
@@ -96,6 +97,16 @@ export function CloudLinkPanel({
       onToast("Account linked — credentials staged for test connection");
     } catch (err) {
       onToast(`Complete link failed: ${(err as Error).message}`);
+    }
+  };
+
+  const copyDeployCommand = async () => {
+    if (!session?.deploy_command) return;
+    try {
+      await navigator.clipboard.writeText(session.deploy_command);
+      onToast("Deploy command copied");
+    } catch {
+      onToast("Could not copy deploy command");
     }
   };
 
@@ -111,9 +122,7 @@ export function CloudLinkPanel({
         <Badge tone="info">Vanta-style</Badge>
       </div>
       <p className="mt-2 text-xs font-semibold text-muted">
-        {connector.connector_id === "aws-posture"
-          ? "Launch the read-only CloudFormation stack, then enter your AWS account ID to stage the assume-role connector."
-          : "Grant admin consent for the TrustOps Azure app, then enter the subscription ID to stage the connector."}
+        {linkDescription(connector.connector_id)}
       </p>
       {!session ? (
         <Button
@@ -172,13 +181,60 @@ export function CloudLinkPanel({
               Grant Azure admin consent
             </Button>
           )}
-          {session.template_url && !session.quick_create_url && (
-            <p className="text-xs text-muted">
-              Set <code>TRUSTOPS_PUBLIC_URL</code> and{" "}
-              <code>TRUSTOPS_AWS_LINK_PRINCIPAL</code> for a one-click stack
-              URL. Manual template: <code>{session.manual_template_path}</code>
-            </p>
+          {connector.connector_id === "gcp-posture" && session.template_url && (
+            <Button
+              type="button"
+              variant="default"
+              onClick={() =>
+                window.open(
+                  session.template_url!,
+                  "_blank",
+                  "noopener,noreferrer",
+                )
+              }
+            >
+              <ExternalLink className="h-4 w-4" />
+              Download Terraform template
+            </Button>
           )}
+          {connector.connector_id === "gcp-posture" &&
+            session.deploy_command && (
+              <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
+                Terraform deploy command
+                <div className="flex gap-2">
+                  <code className="min-w-0 flex-1 break-all rounded-lg border border-line bg-white px-2 py-1.5 text-xs text-ink">
+                    {session.deploy_command}
+                  </code>
+                  <Button
+                    type="button"
+                    variant="default"
+                    className="shrink-0"
+                    onClick={copyDeployCommand}
+                  >
+                    <Copy className="h-4 w-4" />
+                    Copy
+                  </Button>
+                </div>
+              </label>
+            )}
+          {session.template_url &&
+            !session.quick_create_url &&
+            connector.connector_id === "aws-posture" && (
+              <p className="text-xs text-muted">
+                Set <code>TRUSTOPS_PUBLIC_URL</code> and{" "}
+                <code>TRUSTOPS_AWS_LINK_PRINCIPAL</code> for a one-click stack
+                URL. Manual template:{" "}
+                <code>{session.manual_template_path}</code>
+              </p>
+            )}
+          {connector.connector_id === "gcp-posture" &&
+            !session.workload_identity_member && (
+              <p className="text-xs text-muted">
+                Set <code>TRUSTOPS_GCP_WIF_MEMBER</code> to include Workload
+                Identity in the deploy command. Manual template:{" "}
+                <code>{session.manual_template_path}</code>
+              </p>
+            )}
           {connector.connector_id === "aws-posture" && (
             <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
               AWS account ID
@@ -197,6 +253,17 @@ export function CloudLinkPanel({
                 value={subscriptionId}
                 onChange={(e) => setSubscriptionId(e.target.value)}
                 placeholder="00000000-0000-0000-0000-000000000000"
+                className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+              />
+            </label>
+          )}
+          {connector.connector_id === "gcp-posture" && (
+            <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
+              GCP project ID
+              <input
+                value={projectId}
+                onChange={(e) => setProjectId(e.target.value)}
+                placeholder="my-gcp-project"
                 className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </label>
