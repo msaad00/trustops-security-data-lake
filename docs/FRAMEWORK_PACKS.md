@@ -7,14 +7,15 @@ frameworks stay seed-and-expand.
 
 ## Full packs (100% ID coverage)
 
-| Pack                        | Framework ID          | Controls                                             | Official source                                                                                                                     |
-| --------------------------- | --------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| SOC 2 Common Criteria       | `soc2`                | **33** (CC1.1–CC9.2)                                 | [AICPA TSC 2017/2022](https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022) |
-| NIST AI RMF 1.0             | `nist-ai-rmf`         | **72** (all GOVERN/MAP/MEASURE/MANAGE subcategories) | [NIST AI RMF 1.0](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10)                    |
-| FedRAMP Moderate foundation | `fedramp-moderate`    | **287** (NIST SP 800-53 Rev 5 Moderate baseline)     | [NIST SP 800-53B](https://csrc.nist.gov/publications/detail/sp/800-53b/final)                                                       |
-| CIS AWS Foundations v3.0    | `cis-aws` / `cis_aws` | **62** recommendations                               | [CIS AWS Benchmark](https://www.cisecurity.org/benchmark/amazon_web_services)                                                       |
-| ISO/IEC 27001:2022 Annex A  | `iso-27001-2022`      | **93** controls                                      | [ISO/IEC 27001:2022](https://www.iso.org/standard/27001)                                                                            |
-| ISO/IEC 42001:2023 Annex A  | `iso-42001-2023`      | **38** AI controls                                   | [ISO/IEC 42001:2023](https://www.iso.org/standard/42001)                                                                            |
+| Pack                        | Framework ID          | Controls                                                | Official source                                                                                                                     |
+| --------------------------- | --------------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| SOC 2 Common Criteria       | `soc2`                | **33** (CC1.1–CC9.2)                                    | [AICPA TSC 2017/2022](https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022) |
+| SOC 2 TSC extensions        | `soc2`                | **28** supplemental (A1, C1, PI1, P1–P8) — **61 total** | same                                                                                                                                |
+| NIST AI RMF 1.0             | `nist-ai-rmf`         | **72** (all GOVERN/MAP/MEASURE/MANAGE subcategories)    | [NIST AI RMF 1.0](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10)                    |
+| FedRAMP Moderate foundation | `fedramp-moderate`    | **287** (NIST SP 800-53 Rev 5 Moderate baseline)        | [NIST SP 800-53B](https://csrc.nist.gov/publications/detail/sp/800-53b/final)                                                       |
+| CIS AWS Foundations v3.0    | `cis-aws` / `cis_aws` | **62** recommendations                                  | [CIS AWS Benchmark](https://www.cisecurity.org/benchmark/amazon_web_services)                                                       |
+| ISO/IEC 27001:2022 Annex A  | `iso-27001-2022`      | **93** controls                                         | [ISO/IEC 27001:2022](https://www.iso.org/standard/27001)                                                                            |
+| ISO/IEC 42001:2023 Annex A  | `iso-42001-2023`      | **38** AI controls                                      | [ISO/IEC 42001:2023](https://www.iso.org/standard/42001)                                                                            |
 
 **Important:** 100% here means **every official criterion ID is seeded, mapped,
 and evaluable in TrustOps**. It does not mean certification, audit opinion, or

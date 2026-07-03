@@ -8040,6 +8040,76 @@
       ]
     },
     {
+      "control_id": "SOC2-A1.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "A1.1",
+          "title": "Capacity and performance are monitored against availability commitments",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 A1.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-A1.2",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "A1.2",
+          "title": "Environmental protections and backup processes support availability objectives",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 A1.2."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-A1.3",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "A1.3",
+          "title": "Recovery procedures are established, maintained, and tested",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 A1.3."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-C1.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "C1.1",
+          "title": "Confidential information is identified and protected",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 C1.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-C1.2",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "C1.2",
+          "title": "Confidential information is disposed of securely",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 C1.2."
+        }
+      ]
+    },
+    {
       "control_id": "SOC2-CC1.1",
       "framework_id": "soc2",
       "articles": [
@@ -8498,6 +8568,328 @@
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
           "rationale": "Pack mapping to SOC 2 CC9.2."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P1.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P1.1",
+          "title": "Privacy notice communicates objectives and practices to data subjects",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P1.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P2.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P2.1",
+          "title": "Choice and consent for personal information collection and use",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P2.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P3.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P3.1",
+          "title": "Personal information collection is limited to identified objectives",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P3.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P3.2",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P3.2",
+          "title": "Collection methods are communicated and consented where required",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P3.2."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P4.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P4.1",
+          "title": "Personal information use is limited to identified objectives",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P4.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P4.2",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P4.2",
+          "title": "Personal information retention aligns with objectives and legal requirements",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P4.2."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P4.3",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P4.3",
+          "title": "Personal information disposal is secure and documented",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P4.3."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P5.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P5.1",
+          "title": "Data subjects can access their personal information",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P5.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P5.2",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P5.2",
+          "title": "Data subject access requests are fulfilled in a timely manner",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P5.2."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P6.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P6.1",
+          "title": "Personal information disclosure is authorized and logged",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P6.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P6.2",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P6.2",
+          "title": "Third-party disclosures comply with privacy commitments",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P6.2."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P6.3",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P6.3",
+          "title": "Data subjects are notified of privacy practices and changes",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P6.3."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P6.4",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P6.4",
+          "title": "Breach and incident notification procedures exist and are tested",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P6.4."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P6.5",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P6.5",
+          "title": "Cross-border disclosure requirements are met",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P6.5."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P6.6",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P6.6",
+          "title": "Government and legal disclosure requests are controlled",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P6.6."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P6.7",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P6.7",
+          "title": "Disclosure to third parties is monitored over time",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P6.7."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P7.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P7.1",
+          "title": "Personal information quality is maintained and corrected",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P7.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-P8.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "P8.1",
+          "title": "Privacy compliance is monitored and enforced",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 P8.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-PI1.1",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "PI1.1",
+          "title": "Processing specifications define complete and accurate processing objectives",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 PI1.1."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-PI1.2",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "PI1.2",
+          "title": "System inputs are complete, accurate, and authorized",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 PI1.2."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-PI1.3",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "PI1.3",
+          "title": "System processing is complete, accurate, timely, and authorized",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 PI1.3."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-PI1.4",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "PI1.4",
+          "title": "System outputs are complete, accurate, and timely",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 PI1.4."
+        }
+      ]
+    },
+    {
+      "control_id": "SOC2-PI1.5",
+      "framework_id": "soc2",
+      "articles": [
+        {
+          "article_id": "PI1.5",
+          "title": "Stored inputs, processing items, and outputs remain complete and accurate",
+          "official_source_url": "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to SOC 2 PI1.5."
         }
       ]
     }

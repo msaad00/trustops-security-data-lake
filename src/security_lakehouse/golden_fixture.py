@@ -45,7 +45,7 @@ _STATUSES = ("passed", "open", "passed", "open", "blocked", "passed", "open", "p
 def golden_control_ids() -> list[str]:
     """Return the 37 control IDs the golden fixture is designed to populate."""
     catalog = load_control_catalog()
-    soc2 = sorted(control_id for control_id in catalog if control_id.startswith("SOC2-"))
+    soc2 = sorted(control_id for control_id in catalog if control_id.startswith("SOC2-CC"))
     missing = [control_id for control_id in GOLDEN_NIST_CONTROLS if control_id not in catalog]
     if missing:
         raise ValueError(f"golden fixture references unknown controls: {missing}")

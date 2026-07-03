@@ -2,12 +2,12 @@
   "schema_version": "trustops.catalog_bundle.v1",
   "as_of": null,
   "framework_count": 10,
-  "control_count": 607,
-  "crosswalk_count": 607,
+  "control_count": 635,
+  "crosswalk_count": 635,
   "components": {
     "frameworks": "12d13569aa9852562b11179aab2ad960999974c71da4747b5786a33349fa8148",
-    "controls": "c273540fd94d8f31415a6dd7f764bac233fe262c158cadb0925405e626587f33",
-    "crosswalk": "5382a98c5c4f794f47caefb17805c20200b00c546c8caca2306ba059300214f4"
+    "controls": "1c47e0984c5f9055aa4c776405660597d0c70ec3df2631328496b9a4b2c11935",
+    "crosswalk": "c00c6d073a4c47e72195e120c8da8939a1539c900edfe62035fea0a49dfcb1d6"
   },
   "framework_versions": [
     {
@@ -4101,6 +4101,41 @@
       "lifecycle_status": "active"
     },
     {
+      "control_id": "SOC2-A1.1",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-A1.2",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-A1.3",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-C1.1",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-C1.2",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
       "control_id": "SOC2-CC1.1",
       "framework_id": "soc2",
       "version": "1.0.0",
@@ -4330,7 +4365,168 @@
       "version": "1.0.0",
       "valid_from": "2026-06-30",
       "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P1.1",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P2.1",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P3.1",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P3.2",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P4.1",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P4.2",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P4.3",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P5.1",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P5.2",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P6.1",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P6.2",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P6.3",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P6.4",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P6.5",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P6.6",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P6.7",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P7.1",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-P8.1",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-PI1.1",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-PI1.2",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-PI1.3",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-PI1.4",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "SOC2-PI1.5",
+      "framework_id": "soc2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
     }
   ],
-  "bundle_sha256": "945921462240893f2f7e79986929753a0ed9e97accc251bdc9f620cb198cf053"
+  "bundle_sha256": "9e38cb2b069e472c347f333f433ab9b74c6aec3ccb504e394cd0fa21e1916b6a"
 }

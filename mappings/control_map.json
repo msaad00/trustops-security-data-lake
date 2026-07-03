@@ -3865,6 +3865,41 @@
       "owner": "ai-security"
     },
     {
+      "control_id": "SOC2-A1.1",
+      "framework": "SOC 2",
+      "title": "Capacity and performance are monitored against availability commitments",
+      "risk_domain": "availability",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "SOC2-A1.2",
+      "framework": "SOC 2",
+      "title": "Environmental protections and backup processes support availability objectives",
+      "risk_domain": "availability",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "SOC2-A1.3",
+      "framework": "SOC 2",
+      "title": "Recovery procedures are established, maintained, and tested",
+      "risk_domain": "availability",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "SOC2-C1.1",
+      "framework": "SOC 2",
+      "title": "Confidential information is identified and protected",
+      "risk_domain": "confidentiality",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "SOC2-C1.2",
+      "framework": "SOC 2",
+      "title": "Confidential information is disposed of securely",
+      "risk_domain": "confidentiality",
+      "owner": "security-platform"
+    },
+    {
       "control_id": "SOC2-CC1.1",
       "framework": "SOC 2",
       "title": "Control environment demonstrates integrity and ethical values",
@@ -4094,6 +4129,167 @@
       "title": "Vendor and partner relationships are monitored over time",
       "risk_domain": "vendor-risk",
       "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P1.1",
+      "framework": "SOC 2",
+      "title": "Privacy notice communicates objectives and practices to data subjects",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P2.1",
+      "framework": "SOC 2",
+      "title": "Choice and consent for personal information collection and use",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P3.1",
+      "framework": "SOC 2",
+      "title": "Personal information collection is limited to identified objectives",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P3.2",
+      "framework": "SOC 2",
+      "title": "Collection methods are communicated and consented where required",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P4.1",
+      "framework": "SOC 2",
+      "title": "Personal information use is limited to identified objectives",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P4.2",
+      "framework": "SOC 2",
+      "title": "Personal information retention aligns with objectives and legal requirements",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P4.3",
+      "framework": "SOC 2",
+      "title": "Personal information disposal is secure and documented",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P5.1",
+      "framework": "SOC 2",
+      "title": "Data subjects can access their personal information",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P5.2",
+      "framework": "SOC 2",
+      "title": "Data subject access requests are fulfilled in a timely manner",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P6.1",
+      "framework": "SOC 2",
+      "title": "Personal information disclosure is authorized and logged",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P6.2",
+      "framework": "SOC 2",
+      "title": "Third-party disclosures comply with privacy commitments",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P6.3",
+      "framework": "SOC 2",
+      "title": "Data subjects are notified of privacy practices and changes",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P6.4",
+      "framework": "SOC 2",
+      "title": "Breach and incident notification procedures exist and are tested",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P6.5",
+      "framework": "SOC 2",
+      "title": "Cross-border disclosure requirements are met",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P6.6",
+      "framework": "SOC 2",
+      "title": "Government and legal disclosure requests are controlled",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P6.7",
+      "framework": "SOC 2",
+      "title": "Disclosure to third parties is monitored over time",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P7.1",
+      "framework": "SOC 2",
+      "title": "Personal information quality is maintained and corrected",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-P8.1",
+      "framework": "SOC 2",
+      "title": "Privacy compliance is monitored and enforced",
+      "risk_domain": "privacy",
+      "owner": "grc"
+    },
+    {
+      "control_id": "SOC2-PI1.1",
+      "framework": "SOC 2",
+      "title": "Processing specifications define complete and accurate processing objectives",
+      "risk_domain": "processing-integrity",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "SOC2-PI1.2",
+      "framework": "SOC 2",
+      "title": "System inputs are complete, accurate, and authorized",
+      "risk_domain": "processing-integrity",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "SOC2-PI1.3",
+      "framework": "SOC 2",
+      "title": "System processing is complete, accurate, timely, and authorized",
+      "risk_domain": "processing-integrity",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "SOC2-PI1.4",
+      "framework": "SOC 2",
+      "title": "System outputs are complete, accurate, and timely",
+      "risk_domain": "processing-integrity",
+      "owner": "platform-engineering"
+    },
+    {
+      "control_id": "SOC2-PI1.5",
+      "framework": "SOC 2",
+      "title": "Stored inputs, processing items, and outputs remain complete and accurate",
+      "risk_domain": "processing-integrity",
+      "owner": "platform-engineering"
     }
   ]
 }

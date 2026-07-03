@@ -8,12 +8,16 @@ from security_lakehouse.catalog import load_control_catalog
 from security_lakehouse.framework_packs import (
     NIST_AI_RMF_SUBCATEGORY_COUNT,
     SOC2_COMMON_CRITERIA_COUNT,
+    SOC2_FULL_PACK_COUNT,
+    SOC2_TSC_EXTENSION_COUNT,
     cis_aws_v3_specs,
     fedramp_moderate_specs,
     iso_27001_2022_specs,
     iso_42001_2023_specs,
     nist_ai_rmf_specs,
     soc2_common_criteria_specs,
+    soc2_full_pack_specs,
+    soc2_tsc_extension_specs,
     sync_framework_packs,
 )
 from security_lakehouse.mappings import load_control_article_mappings
@@ -40,6 +44,28 @@ def test_soc2_pack_has_all_common_criteria() -> None:
         "CC8.1",
         *(f"CC9.{i}" for i in range(1, 3)),
     }
+
+
+def test_soc2_pack_has_tsc_extensions() -> None:
+    specs = soc2_tsc_extension_specs()
+    assert len(specs) == SOC2_TSC_EXTENSION_COUNT
+    assert {spec.article_id for spec in specs} == {
+        *(f"A1.{i}" for i in range(1, 4)),
+        *(f"C1.{i}" for i in range(1, 3)),
+        *(f"PI1.{i}" for i in range(1, 6)),
+        "P1.1",
+        "P2.1",
+        *(f"P3.{i}" for i in range(1, 3)),
+        *(f"P4.{i}" for i in range(1, 4)),
+        *(f"P5.{i}" for i in range(1, 3)),
+        *(f"P6.{i}" for i in range(1, 8)),
+        "P7.1",
+        "P8.1",
+    }
+
+
+def test_soc2_full_pack_has_all_sixty_one_criteria() -> None:
+    assert len(soc2_full_pack_specs()) == SOC2_FULL_PACK_COUNT
 
 
 def test_nist_ai_rmf_pack_has_all_subcategories() -> None:
@@ -71,7 +97,7 @@ def test_catalog_has_full_core_framework_packs() -> None:
     catalog = load_control_catalog()
     mappings = load_control_article_mappings()
     expectations = {
-        "soc2": SOC2_COMMON_CRITERIA_COUNT,
+        "soc2": SOC2_FULL_PACK_COUNT,
         "nist-ai-rmf": NIST_AI_RMF_SUBCATEGORY_COUNT,
         "fedramp-moderate": FEDRAMP_MODERATE_COUNT,
         "cis_aws": CIS_AWS_V3_COUNT,
@@ -118,5 +144,5 @@ def test_sync_packs_is_idempotent(tmp_path) -> None:
         control_map_path=map_copy,
         write_bundle=False,
     )
-    assert first["added_controls"] == 33
+    assert first["added_controls"] == SOC2_FULL_PACK_COUNT
     assert second["added_controls"] == 0
