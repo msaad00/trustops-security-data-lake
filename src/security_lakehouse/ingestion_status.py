@@ -9,7 +9,7 @@ from typing import Any
 
 from security_lakehouse.connector_health import build_connector_health
 from security_lakehouse.connector_state import build_catalog_view, list_runs
-from security_lakehouse.io import read_json, read_jsonl
+from security_lakehouse.io import count_jsonl, jsonl_field_counts, read_json, read_jsonl
 
 JsonObject = dict[str, Any]
 
@@ -20,13 +20,12 @@ def build_ingestion_status(lake_dir: str | Path) -> JsonObject:
     connectors = [_connector_summary(row) for row in build_catalog_view(lake)]
     enabled = [row for row in connectors if row["state"] == "enabled"]
     latest_runs = list_runs(lake, limit=25)
-    evidence_rows = read_jsonl(lake / "silver" / "normalized_events.jsonl", missing_ok=True, base_dir=lake)
-    freshness_rows = read_jsonl(lake / "gold" / "evidence_freshness.jsonl", missing_ok=True, base_dir=lake)
+    evidence_count = _silver_evidence_count(lake)
+    source_counts = _silver_source_counts(lake)
+    stale_count = _stale_evidence_count(lake)
     current_posture = _read_optional_json(lake / "gold" / "current_posture.json", lake)
     integrity = _read_optional_json(lake / "gold" / "evidence_integrity.json", lake)
     proof = _latest_live_cloud_proof(lake)
-    source_counts = Counter(str(row.get("source") or "unknown") for row in evidence_rows)
-    stale_count = sum(1 for row in freshness_rows if str(row.get("status") or "") in {"stale", "expired", "missing"})
     failed_connectors = [
         row for row in connectors if row.get("latest_sync", {}).get("result") == "error" or row.get("last_error")
     ]
@@ -35,7 +34,7 @@ def build_ingestion_status(lake_dir: str | Path) -> JsonObject:
     silent_count = int(health["summary"]["silent"]) + int(health["summary"]["never_succeeded"])
     state = _overall_state(
         enabled=enabled,
-        evidence_count=len(evidence_rows),
+        evidence_count=evidence_count,
         failed_connectors=failed_connectors,
         never_synced=never_synced,
         stale_count=stale_count,
@@ -48,7 +47,7 @@ def build_ingestion_status(lake_dir: str | Path) -> JsonObject:
             "enabled_connectors": len(enabled),
             "failed_connectors": len(failed_connectors),
             "never_synced_connectors": len(never_synced),
-            "evidence_count": len(evidence_rows),
+            "evidence_count": evidence_count,
             "source_count": len(source_counts),
             "stale_evidence": stale_count,
             "silent_connectors": silent_count,
@@ -122,7 +121,40 @@ def _run_summary(row: JsonObject) -> JsonObject:
     }
 
 
+def _manifest_row_counts(lake: Path) -> dict[str, int]:
+    manifest = _read_optional_json(lake / "manifest.json", lake)
+    row_counts = manifest.get("row_counts")
+    if isinstance(row_counts, dict):
+        return {str(key): int(value) for key, value in row_counts.items() if isinstance(value, (int, float))}
+    return {}
+
+
+def _silver_evidence_count(lake: Path) -> int:
+    counts = _manifest_row_counts(lake)
+    if "silver" in counts:
+        return counts["silver"]
+    return count_jsonl(lake / "silver" / "normalized_events.jsonl", missing_ok=True, base_dir=lake)
+
+
+def _silver_source_counts(lake: Path) -> Counter[str]:
+    return jsonl_field_counts(
+        lake / "silver" / "normalized_events.jsonl",
+        "source",
+        missing_ok=True,
+        base_dir=lake,
+    )
+
+
+def _stale_evidence_count(lake: Path) -> int:
+    return sum(
+        1
+        for row in read_jsonl(lake / "gold" / "evidence_freshness.jsonl", missing_ok=True, base_dir=lake)
+        if str(row.get("status") or "") in {"stale", "expired", "missing"}
+    )
+
+
 def _pipeline_artifacts(lake: Path) -> list[JsonObject]:
+    manifest_counts = _manifest_row_counts(lake)
     artifacts = [
         ("raw_events", lake / "raw" / "connector_events.jsonl"),
         ("bronze_events", lake / "bronze" / "raw_events.jsonl"),
@@ -133,9 +165,24 @@ def _pipeline_artifacts(lake: Path) -> list[JsonObject]:
         ("evidence_freshness", lake / "gold" / "evidence_freshness.jsonl"),
         ("workflow_runs", lake / "gold" / "workflow_runs.jsonl"),
     ]
+    manifest_keys = {
+        "raw_events": "raw",
+        "bronze_events": "bronze",
+        "normalized_events": "silver",
+        "control_posture": "gold_control_posture",
+        "control_tests": "gold_control_tests",
+        "asset_risk": "gold_asset_risk",
+        "evidence_freshness": "gold_evidence_freshness",
+    }
     out = []
     for name, path in artifacts:
-        count = len(read_jsonl(path, missing_ok=True, base_dir=lake)) if path.suffix == ".jsonl" else None
+        count = None
+        if path.suffix == ".jsonl":
+            manifest_key = manifest_keys.get(name)
+            if manifest_key and manifest_key in manifest_counts:
+                count = manifest_counts[manifest_key]
+            else:
+                count = count_jsonl(path, missing_ok=True, base_dir=lake)
         out.append({"name": name, "path": str(path), "exists": path.is_file(), "row_count": count})
     return out
 

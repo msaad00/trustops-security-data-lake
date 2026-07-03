@@ -308,6 +308,48 @@ def _parser() -> argparse.ArgumentParser:
         help="mockup_companies root (default: repository mockup_companies/)",
     )
     fixtures_write_golden.set_defaults(func=_fixtures_write_golden)
+    fixtures_synthesize = fixtures_sub.add_parser(
+        "synthesize-scale",
+        help="stream synthetic audit-scale raw evidence (millions of events)",
+    )
+    fixtures_synthesize.add_argument("--count", type=int, required=True, help="number of raw events to generate")
+    fixtures_synthesize.add_argument("--out", required=True, help="output JSONL path")
+    fixtures_synthesize.add_argument("--tenant-id", default="audit-scale", help="tenant id stamped on each event")
+    fixtures_synthesize.add_argument(
+        "--controls-per-event",
+        type=int,
+        default=2,
+        help="how many catalog controls to attach per event (finding fan-out multiplier)",
+    )
+    fixtures_synthesize.add_argument(
+        "--open-ratio",
+        type=float,
+        default=0.12,
+        help="fraction of events with open/failed/blocked/noncompliant status",
+    )
+    fixtures_synthesize.add_argument(
+        "--framework-prefix",
+        default=None,
+        help="optional control id prefix filter (e.g. SOC2-CC)",
+    )
+    fixtures_synthesize.add_argument("--seed", type=int, default=42, help="random seed for reproducible lakes")
+    fixtures_synthesize.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+    fixtures_synthesize.set_defaults(func=_fixtures_synthesize_scale)
+
+    benchmark = sub.add_parser("benchmark", help="throughput and latency benchmarks")
+    benchmark_sub = benchmark.add_subparsers(dest="benchmark_command", required=True)
+    benchmark_plan = benchmark_sub.add_parser("plan", help="project finding cardinality for an event volume")
+    benchmark_plan.add_argument("--events", type=int, required=True, help="projected raw event count")
+    benchmark_plan.add_argument("--controls-per-event", type=int, default=2)
+    benchmark_plan.add_argument("--open-ratio", type=float, default=0.12)
+    benchmark_plan.add_argument("--json", action="store_true")
+    benchmark_plan.set_defaults(func=_benchmark_plan)
+    benchmark_pipeline = benchmark_sub.add_parser("pipeline", help="time a full lake pipeline run")
+    benchmark_pipeline.add_argument("--raw", required=True, help="raw evidence JSONL input path")
+    benchmark_pipeline.add_argument("--out", required=True, help="lake output directory")
+    benchmark_pipeline.add_argument("--tenant-id", default="audit-scale")
+    benchmark_pipeline.add_argument("--json", action="store_true")
+    benchmark_pipeline.set_defaults(func=_benchmark_pipeline)
 
     repo = sub.add_parser("repo", help="public repository audit commands")
     repo_sub = repo.add_subparsers(dest="repo_command", required=True)
@@ -1293,6 +1335,48 @@ def _fixtures_load(args: argparse.Namespace) -> int:
             sort_keys=True,
         )
     )
+    return 0
+
+
+def _fixtures_synthesize_scale(args: argparse.Namespace) -> int:
+    from security_lakehouse.scale_synthesis import audit_scale_plan, write_audit_scale_fixture
+
+    plan = audit_scale_plan(
+        args.count,
+        controls_per_event=args.controls_per_event,
+        open_ratio=args.open_ratio,
+    )
+    result = write_audit_scale_fixture(
+        args.out,
+        args.count,
+        tenant_id=args.tenant_id,
+        controls_per_event=args.controls_per_event,
+        open_ratio=args.open_ratio,
+        framework_prefix=args.framework_prefix,
+        seed=args.seed,
+    )
+    payload = {"plan": plan, **result}
+    print(json.dumps(payload, indent=2, sort_keys=True) if args.json else json.dumps(payload, sort_keys=True))
+    return 0
+
+
+def _benchmark_plan(args: argparse.Namespace) -> int:
+    from security_lakehouse.scale_synthesis import audit_scale_plan
+
+    payload = audit_scale_plan(
+        args.events,
+        controls_per_event=args.controls_per_event,
+        open_ratio=args.open_ratio,
+    )
+    print(json.dumps(payload, indent=2, sort_keys=True) if args.json else json.dumps(payload, sort_keys=True))
+    return 0
+
+
+def _benchmark_pipeline(args: argparse.Namespace) -> int:
+    from security_lakehouse.scale_synthesis import benchmark_pipeline
+
+    payload = benchmark_pipeline(args.raw, args.out, tenant_id=args.tenant_id)
+    print(json.dumps(payload, indent=2, sort_keys=True) if args.json else json.dumps(payload, sort_keys=True))
     return 0
 
 

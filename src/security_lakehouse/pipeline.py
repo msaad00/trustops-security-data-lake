@@ -132,6 +132,15 @@ def run_pipeline(
         out / "manifest.json",
         {
             "raw_path": str(raw_path),
+            "row_counts": {
+                "raw": len(raw_rows),
+                "bronze": len(bronze_rows),
+                "silver": len(silver_rows),
+                "gold_control_posture": len(control_rows),
+                "gold_control_tests": len(control_test_rows),
+                "gold_evidence_freshness": len(evidence_freshness_rows),
+                "gold_asset_risk": len(asset_rows),
+            },
             "zones": {
                 "bronze": str(bronze_dir / "raw_events.jsonl"),
                 "silver": str(silver_dir / "normalized_events.jsonl"),

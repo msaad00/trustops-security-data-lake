@@ -11,9 +11,11 @@ those artifacts into product-level assessment state:
 from __future__ import annotations
 
 import hashlib
+import heapq
 import json
 import re
 from collections import defaultdict
+from collections.abc import Iterable
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -23,8 +25,8 @@ from security_lakehouse.evidence_freshness import (
     stale_control_ids,
     summarize_source_freshness,
 )
-from security_lakehouse.io import append_jsonl, read_jsonl, write_json
-from security_lakehouse.models import utc_iso
+from security_lakehouse.io import append_jsonl, iter_jsonl, read_jsonl, write_json
+from security_lakehouse.models import SEVERITY_SCORE, utc_iso
 
 VIOLATION_STATUSES = {"open", "failed", "blocked", "noncompliant"}
 
@@ -39,15 +41,20 @@ def build_current_posture(
     *,
     freshness_days: int = 7,
     now: datetime | None = None,
+    max_violations: int | None = None,
 ) -> dict[str, Any]:
-    """Build the continuously refreshed compliance posture from lake artifacts."""
+    """Build the continuously refreshed compliance posture from lake artifacts.
+
+    When ``max_violations`` is set, only the highest-severity violations are
+    retained in the payload while aggregate counts still reflect the full lake.
+    """
     lake = Path(lake_dir)
     evaluated_at = now or datetime.now(UTC)
     events = read_jsonl(lake / "silver" / "normalized_events.jsonl", missing_ok=True)
     controls = read_jsonl(lake / "gold" / "control_posture.jsonl", missing_ok=True)
     control_tests = read_jsonl(lake / "gold" / "control_tests.jsonl", missing_ok=True)
     assets = read_jsonl(lake / "gold" / "asset_risk.jsonl", missing_ok=True)
-    violations = _build_violations(events)
+    violations, violation_summary = build_violations(events, max_violations=max_violations)
     evidence_freshness = build_evidence_freshness(
         events,
         now=evaluated_at,
@@ -55,13 +62,24 @@ def build_current_posture(
     )
     stale_controls = stale_control_ids(evidence_freshness)
     stale_evidence = [row for row in evidence_freshness if row["status"] in {"stale", "expired", "missing"}]
-    framework_scores = _framework_scores(controls, violations, stale_controls)
+    framework_scores = (
+        _framework_scores_from_controls(controls, stale_controls)
+        if violation_summary.get("truncated")
+        else _framework_scores(controls, violations, stale_controls)
+    )
     open_violations = [item for item in violations if item["state"] == "open"]
-    critical_violations = [item for item in open_violations if item["severity"] == "critical"]
-    high_violations = [item for item in open_violations if item["severity"] == "high"]
+    severity_counts = violation_summary.get("severity_counts") or {}
+    open_violation_count = int(violation_summary.get("total_count") or len(open_violations))
+    critical_violation_count = int(
+        severity_counts.get("critical") or sum(1 for item in open_violations if item["severity"] == "critical")
+    )
+    high_violation_count = int(
+        severity_counts.get("high") or sum(1 for item in open_violations if item["severity"] == "high")
+    )
     failed_control_tests = [item for item in control_tests if str(item.get("result", "")).lower() == "fail"]
     warning_control_tests = [item for item in control_tests if str(item.get("result", "")).lower() == "warn"]
     posture_score = _weighted_posture_score(framework_scores)
+    critical_for_state = critical_violation_count > 0
     assessment = {
         "schema_version": "trustops.assessment.v1",
         "assessment_type": "current_posture",
@@ -69,13 +87,13 @@ def build_current_posture(
         "freshness_days": freshness_days,
         "posture": {
             "score": posture_score,
-            "state": _posture_state(posture_score, critical_violations, stale_controls),
+            "state": _posture_state(posture_score, critical_for_state, stale_controls),
             "framework_count": len(framework_scores),
             "control_count": len(controls),
             "asset_count": len(assets),
-            "open_violation_count": len(open_violations),
-            "critical_violation_count": len(critical_violations),
-            "high_violation_count": len(high_violations),
+            "open_violation_count": open_violation_count,
+            "critical_violation_count": critical_violation_count,
+            "high_violation_count": high_violation_count,
             "failed_control_test_count": len(failed_control_tests),
             "warning_control_test_count": len(warning_control_tests),
             "stale_control_count": len(stale_controls),
@@ -83,6 +101,7 @@ def build_current_posture(
         },
         "frameworks": framework_scores,
         "violations": open_violations,
+        "violation_summary": violation_summary,
         "top_risk_assets": assets[:10],
         "stale_controls": sorted(stale_controls),
         "evidence_freshness": {
@@ -96,11 +115,18 @@ def build_current_posture(
     return assessment
 
 
-def write_current_posture(lake_dir: str | Path, *, freshness_days: int = 7) -> Path:
+def write_current_posture(lake_dir: str | Path, *, freshness_days: int = 7, max_violations: int | None = None) -> Path:
     """Write current posture into the gold zone."""
     lake = Path(lake_dir)
     output = lake / "gold" / "current_posture.json"
-    write_json(output, build_current_posture(lake, freshness_days=freshness_days))
+    cap = max_violations
+    if cap is None:
+        from security_lakehouse.io import count_jsonl
+
+        silver_count = count_jsonl(lake / "silver" / "normalized_events.jsonl", missing_ok=True, base_dir=lake)
+        if silver_count > 100_000:
+            cap = 10_000
+    write_json(output, build_current_posture(lake, freshness_days=freshness_days, max_violations=cap))
     return output
 
 
@@ -394,31 +420,142 @@ def posture_as_of(lake_dir: str | Path, *, as_of: str | datetime) -> dict[str, A
     }
 
 
+def build_violations(
+    events: list[dict[str, Any]] | None = None,
+    *,
+    events_path: str | Path | None = None,
+    max_violations: int | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Build violation rows plus aggregate counts for audit-scale lakes.
+
+    Pass either an in-memory ``events`` list or an ``events_path`` JSONL file.
+    When ``max_violations`` is set, only the top-severity rows are returned but
+    summary counts cover the full input.
+    """
+    if events is None and events_path is None:
+        raise ValueError("events or events_path is required")
+    if events is not None and events_path is not None:
+        raise ValueError("pass only one of events or events_path")
+
+    iterator = iter(events or []) if events is not None else iter_jsonl(events_path)  # type: ignore[arg-type]
+    return _build_violations_capped(iterator, max_violations=max_violations)
+
+
 def _build_violations(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    violations: list[dict[str, Any]] = []
+    violations, _summary = _build_violations_capped(iter(events), max_violations=None)
+    return violations
+
+
+def _build_violations_capped(
+    events: Iterable[dict[str, Any]],
+    *,
+    max_violations: int | None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    total = 0
+    critical = 0
+    high = 0
+    medium = 0
+    low = 0
+    retained: list[dict[str, Any]] = []
+    heap: list[tuple[tuple[int, str, str], dict[str, Any]]] = []
+
     for event in events:
         if event["status"] not in VIOLATION_STATUSES:
             continue
         for control_id in event["control_ids"]:
-            violations.append(
-                {
-                    "violation_id": f"{control_id}:{event['event_id']}",
-                    "control_id": control_id,
-                    "event_id": event["event_id"],
-                    "asset_id": event["asset_id"],
-                    "asset_owner": event["asset_owner"],
-                    "environment": event["environment"],
-                    "source": event["source"],
-                    "event_type": event["event_type"],
-                    "severity": event["severity"],
-                    "severity_score": event["severity_score"],
-                    "state": "open",
-                    "evidence_ref": event["evidence_ref"],
-                    "raw_sha256": event["raw_sha256"],
-                    "detected_at": event["event_time"],
-                }
-            )
-    return sorted(violations, key=lambda item: (-int(item["severity_score"]), item["control_id"], item["event_id"]))
+            total += 1
+            severity = str(event["severity"])
+            if severity == "critical":
+                critical += 1
+            elif severity == "high":
+                high += 1
+            elif severity == "medium":
+                medium += 1
+            else:
+                low += 1
+            row = {
+                "violation_id": f"{control_id}:{event['event_id']}",
+                "control_id": control_id,
+                "event_id": event["event_id"],
+                "asset_id": event["asset_id"],
+                "asset_owner": event["asset_owner"],
+                "environment": event["environment"],
+                "source": event["source"],
+                "event_type": event["event_type"],
+                "severity": event["severity"],
+                "severity_score": event["severity_score"],
+                "state": "open",
+                "evidence_ref": event["evidence_ref"],
+                "raw_sha256": event["raw_sha256"],
+                "detected_at": event["event_time"],
+            }
+            if max_violations is None:
+                retained.append(row)
+                continue
+            key = (int(row["severity_score"]), row["control_id"], row["event_id"])
+            if len(heap) < max_violations:
+                heapq.heappush(heap, (key, row))
+            elif key > heap[0][0]:
+                heapq.heapreplace(heap, (key, row))
+
+    if max_violations is not None:
+        retained = [item[1] for item in heap]
+
+    summary = {
+        "total_count": total,
+        "returned_count": len(retained),
+        "truncated": max_violations is not None and total > len(retained),
+        "max_violations": max_violations,
+        "severity_counts": {
+            "critical": critical,
+            "high": high,
+            "medium": medium,
+            "low": low,
+        },
+    }
+    return sorted(
+        retained, key=lambda item: (-int(item["severity_score"]), item["control_id"], item["event_id"])
+    ), summary
+
+
+def _framework_scores_from_controls(
+    controls: list[dict[str, Any]],
+    stale_controls: set[str],
+) -> list[dict[str, Any]]:
+    """Framework rollups from gold control posture rows (audit-scale safe)."""
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for control in controls:
+        grouped[control["framework"]].append(control)
+
+    rows: list[dict[str, Any]] = []
+    for framework, framework_controls in grouped.items():
+        total = len(framework_controls)
+        failing = [control for control in framework_controls if control["status"] == "fail"]
+        stale = [control for control in framework_controls if control["control_id"] in stale_controls]
+        open_events = sum(int(control.get("open_event_count") or 0) for control in framework_controls)
+        risk_penalty = sum(min(int(control.get("risk_score") or 0), 100) for control in failing)
+        max_penalty = max(1, total * 100)
+        score = max(0, round(100 - ((risk_penalty / max_penalty) * 100) - (len(stale) * 5), 2))
+        rows.append(
+            {
+                "framework": framework,
+                "score": score,
+                "state": "ready" if not failing and not stale else "attention_required",
+                "control_count": total,
+                "failing_control_count": len(failing),
+                "violation_count": open_events,
+                "stale_control_count": len(stale),
+                "critical_violation_count": sum(
+                    1 for control in failing if int(control.get("risk_score") or 0) >= SEVERITY_SCORE["critical"]
+                ),
+                "high_violation_count": sum(
+                    1
+                    for control in failing
+                    if SEVERITY_SCORE["high"] <= int(control.get("risk_score") or 0) < SEVERITY_SCORE["critical"]
+                ),
+            }
+        )
+    return sorted(rows, key=lambda item: (float(item["score"]), item["framework"]))
 
 
 def _framework_scores(
@@ -471,8 +608,8 @@ def _weighted_posture_score(frameworks: list[dict[str, Any]]) -> float:
     return round(total / controls, 2)
 
 
-def _posture_state(score: float, critical_violations: list[dict[str, Any]], stale_controls: set[str]) -> str:
-    if critical_violations:
+def _posture_state(score: float, critical_violations: bool | list[dict[str, Any]], stale_controls: set[str]) -> str:
+    if critical_violations if isinstance(critical_violations, bool) else critical_violations:
         return "critical"
     if score < 75 or stale_controls:
         return "attention_required"
