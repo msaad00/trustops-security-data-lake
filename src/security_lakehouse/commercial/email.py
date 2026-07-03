@@ -20,7 +20,8 @@ class EmailMessage:
 
 
 class EmailDelivery(Protocol):
-    def send(self, message: EmailMessage) -> None: ...
+    def send(self, message: EmailMessage) -> None:
+        pass
 
 
 class LogEmailDelivery:
