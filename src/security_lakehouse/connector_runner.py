@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from security_lakehouse import netguard
-from security_lakehouse.connector_state import append_run_event, latest_config
+from security_lakehouse.connector_state import _safe_run_error, append_run_event, latest_config
 from security_lakehouse.connectors import load_connector_catalog
 from security_lakehouse.connectors_aws import (
     AWSClient,
@@ -229,7 +229,7 @@ def run_connector_sync(
             result="error",
             actor=actor,
             duration_ms=_duration_ms(start),
-            error=str(exc),
+            error=_safe_run_error(exc),
         )
         raise ConnectorSyncError(str(exc), run=run) from exc
 

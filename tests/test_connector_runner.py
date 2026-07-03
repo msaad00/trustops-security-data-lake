@@ -28,6 +28,32 @@ def test_connector_sync_requires_enabled_connector(tmp_path: Path) -> None:
     assert latest_run(tmp_path, "github-security", kind="sync")["result"] == "error"
 
 
+def test_connector_sync_persists_sanitized_error_not_raw_exception(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    append_config_event(tmp_path, connector_id="github-security", state="enabled", actor="alice")
+
+    def boom(*args, **kwargs):  # type: ignore[no-untyped-def]
+        raise ValueError("connection to host 10.0.0.5 failed: /etc/secret/key unreadable")
+
+    monkeypatch.setattr(
+        "security_lakehouse.connector_runner._collect",
+        boom,
+    )
+    with pytest.raises(ConnectorSyncError):
+        run_connector_sync(
+            tmp_path,
+            connector_id="github-security",
+            repo="acme/model-service",
+            fixture_dir=FIXTURE,
+        )
+    run = latest_run(tmp_path, "github-security", kind="sync")
+    assert run["error"] == "ValueError"
+    persisted = (tmp_path / "gold" / "connector_runs.jsonl").read_text(encoding="utf-8")
+    assert "/etc/secret/key" not in persisted
+    assert "10.0.0.5" not in persisted
+
+
 def test_github_connector_sync_writes_raw_and_materializes_lake(tmp_path: Path) -> None:
     append_config_event(tmp_path, connector_id="github-security", state="enabled", actor="alice")
     result = run_connector_sync(

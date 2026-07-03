@@ -50,22 +50,32 @@ def _gold(lake_dir: str | Path) -> Path:
     return Path(lake_dir) / "gold"
 
 
+def _redact_sensitive_value(value: Any) -> Any:
+    """Recursively redact secret-like keys before persisting connector state."""
+    if isinstance(value, dict):
+        out: dict[str, Any] = {}
+        for key, val in value.items():
+            key_l = key.lower()
+            if key_l.endswith(_SECRET_REFERENCE_SUFFIXES):
+                out[key] = val
+            elif any(sensitive in key_l for sensitive in SENSITIVE_FIELD_NAMES):
+                if isinstance(val, str) and val:
+                    out[key] = "***" + hashlib.sha256(val.encode("utf-8")).hexdigest()[:8]
+                else:
+                    out[key] = None
+            else:
+                out[key] = _redact_sensitive_value(val)
+        return out
+    if isinstance(value, list):
+        return [_redact_sensitive_value(item) for item in value]
+    return value
+
+
 def _redact_credentials(payload: dict[str, Any] | None) -> dict[str, Any]:
     if not payload:
         return {}
-    out: dict[str, Any] = {}
-    for key, value in payload.items():
-        key_l = key.lower()
-        if key_l.endswith(_SECRET_REFERENCE_SUFFIXES):
-            out[key] = value
-        elif any(sensitive in key_l for sensitive in SENSITIVE_FIELD_NAMES):
-            if isinstance(value, str) and value:
-                out[key] = "***" + hashlib.sha256(value.encode("utf-8")).hexdigest()[:8]
-            else:
-                out[key] = None
-        else:
-            out[key] = value
-    return out
+    redacted = _redact_sensitive_value(payload)
+    return redacted if isinstance(redacted, dict) else {}
 
 
 def _access_fingerprint(credentials: dict[str, Any] | None, options: dict[str, Any] | None) -> str:
@@ -114,7 +124,7 @@ def append_config_event(
         "state": state,
         "actor": actor or "anonymous",
         "credentials": _redact_credentials(credentials),
-        "options": options or {},
+        "options": _redact_sensitive_value({k: v for k, v in (options or {}).items() if k != "raw"}),
         "credential_fingerprint": _access_fingerprint(credentials, options),
         "occurred_at": _utc_now_iso(),
     }
@@ -331,7 +341,7 @@ def append_run_event(
         "evidence_count": evidence_count,
         "error": error,
         "access_fingerprint": access_fingerprint,
-        "metadata": metadata or {},
+        "metadata": _redact_sensitive_value(metadata or {}),
         "occurred_at": _utc_now_iso(),
     }
     gold = _gold(lake_dir)
