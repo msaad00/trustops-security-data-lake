@@ -52,6 +52,10 @@ import type {
   TriagePayload,
   TrustShare,
   VerifyResult,
+  VendorAssessment,
+  VendorAssessmentStatus,
+  VendorQuestionnaireTemplate,
+  VendorQuestionnaireTemplateSummary,
   Violation,
   Workflow,
   WorkflowEdge,
@@ -283,6 +287,26 @@ export const api = {
       `/v1/connectors/${encodeURIComponent(id)}/discover`,
       payload,
     ).then((body) => ({ run: body.data })),
+  startCloudLink: (
+    id: string,
+    payload: { public_url?: string; tenant_id?: string } = {},
+  ) =>
+    post<{ data: CloudLinkSession }>(
+      `/v1/connectors/${encodeURIComponent(id)}/link/start`,
+      payload,
+    ).then((body) => body.data),
+  completeCloudLink: (
+    id: string,
+    payload: {
+      session_id: string;
+      account_id?: string;
+      subscription_id?: string;
+    },
+  ) =>
+    post<{ data: CloudLinkCompleteResult }>(
+      `/v1/connectors/${encodeURIComponent(id)}/link/complete`,
+      payload,
+    ).then((body) => body.data),
   connectorRuns: (id: string) =>
     get<{ data: ConnectorRun[]; meta: { connector_id: string } }>(
       `/v1/connectors/${encodeURIComponent(id)}/runs`,
@@ -510,6 +534,53 @@ export const api = {
     get<{ data: PolicyCoverage[] }>("/v1/policies/coverage").then(
       (b) => b.data,
     ),
+  vendorQuestionnaires: () =>
+    get<{ data: VendorQuestionnaireTemplateSummary[] }>(
+      "/v1/vendor-questionnaires",
+    ).then((b) => b.data),
+  vendorQuestionnaire: (templateId: string) =>
+    get<{ data: VendorQuestionnaireTemplate }>(
+      `/v1/vendor-questionnaires/${encodeURIComponent(templateId)}`,
+    ).then((b) => b.data),
+  vendorAssessments: (query = "") =>
+    get<{ data: VendorAssessment[] }>(`/v1/vendor-assessments${query}`).then(
+      (b) => b.data,
+    ),
+  createVendorAssessment: (payload: {
+    vendor_name: string;
+    template_id: string;
+    owner?: string;
+    control_id?: string | null;
+    due_at?: string | null;
+  }) =>
+    post<{ data: VendorAssessment }>("/v1/vendor-assessments", payload).then(
+      (b) => b.data,
+    ),
+  vendorAssessment: (id: string) =>
+    get<{ data: VendorAssessment }>(
+      `/v1/vendor-assessments/${encodeURIComponent(id)}`,
+    ).then((b) => b.data),
+  updateVendorAssessment: (
+    id: string,
+    payload: Partial<{
+      vendor_name: string;
+      owner: string;
+      control_id: string | null;
+      due_at: string | null;
+      responses: Record<string, { answer: string }>;
+      status: VendorAssessmentStatus;
+    }>,
+  ) =>
+    mutate<{ data: VendorAssessment }>(
+      `/v1/vendor-assessments/${encodeURIComponent(id)}`,
+      "PATCH",
+      payload,
+    ).then((b) => b.data),
+  submitVendorAssessment: (id: string) =>
+    post<{ data: VendorAssessment }>(
+      `/v1/vendor-assessments/${encodeURIComponent(id)}/submit`,
+      {},
+    ).then((b) => b.data),
   controlRemediation: (controlId: string) =>
     get<{ data: ControlRemediation }>(
       `/v1/controls/${encodeURIComponent(controlId)}/remediation`,
@@ -525,6 +596,24 @@ export interface SnapshotSummary {
   posture_score: number | null;
   open_violation_count: number | null;
   critical_violation_count: number | null;
+}
+
+export interface CloudLinkSession {
+  session_id: string;
+  connector_id: string;
+  status: string;
+  external_id?: string | null;
+  quick_create_url?: string | null;
+  template_url?: string | null;
+  consent_url?: string | null;
+  manual_template_path?: string | null;
+  azure_tenant_id?: string | null;
+  role_name?: string | null;
+}
+
+export interface CloudLinkCompleteResult {
+  session: CloudLinkSession;
+  configure: Record<string, unknown>;
 }
 
 export function bootstrapAssessment(): Assessment | null {

@@ -72,6 +72,7 @@ from security_lakehouse.services import NotFound, ValidationError
 from security_lakehouse.services import access_reviews as access_review_services
 from security_lakehouse.services import grc as grc_services
 from security_lakehouse.services import policy_documents as policy_document_services
+from security_lakehouse.services import vendor_risk as vendor_risk_services
 from security_lakehouse.web import web_dist_dir, web_dist_index
 
 _COOKIE_SECURE = os.environ.get("TRUSTOPS_COOKIE_SECURE", "true").lower() in {"1", "true", "yes", "on"}
@@ -221,6 +222,23 @@ class CreateCampaignRequest(_StrictModel):
 
 class CampaignStatusRequest(_StrictModel):
     status: str
+
+
+class CreateVendorAssessmentRequest(_StrictModel):
+    vendor_name: str
+    template_id: str
+    owner: str = ""
+    control_id: str | None = None
+    due_at: str | None = None
+
+
+class UpdateVendorAssessmentRequest(_StrictModel):
+    vendor_name: str | None = None
+    owner: str | None = None
+    control_id: str | None = None
+    due_at: str | None = None
+    responses: dict[str, Any] | None = None
+    status: str | None = None
 
 
 class AddReviewItemRequest(_StrictModel):
@@ -924,6 +942,57 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not found")
         share, tenant_lake = resolved
         return JSONResponse(_public_trust_summary(tenant_lake, share))
+
+    @app.get("/api/v1/connectors/aws-posture/link/template.yaml", tags=["connectors"])
+    def aws_link_template() -> Response:
+        from security_lakehouse.cloud_linking import aws_template_bytes
+
+        return Response(
+            content=aws_template_bytes(),
+            media_type="application/x-yaml",
+            headers={"Cache-Control": "public, max-age=300"},
+        )
+
+    @app.get("/api/v1/connectors/azure-posture/link/callback", tags=["connectors"])
+    def azure_link_callback(
+        request: Request,
+        state: str = "",
+        tenant: str = "",
+        admin_consent: str | None = None,
+    ) -> RedirectResponse:
+        from security_lakehouse.cloud_linking import (
+            azure_callback_redirect,
+            get_cloud_link_session,
+            issue_cloud_link_redirect_token,
+            normalize_link_session_id,
+            record_azure_consent,
+        )
+
+        session_id = normalize_link_session_id(state or "")
+        if session_id is None or get_cloud_link_session(lake, session_id) is None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="invalid cloud link session")
+        consented = str(admin_consent or "").lower() in {"true", "1", "yes"}
+        azure_tenant = (tenant or "").strip()
+        if consented and azure_tenant:
+            record_azure_consent(
+                lake,
+                session_id=session_id,
+                azure_tenant_id=azure_tenant,
+                admin_consent=True,
+            )
+        elif session_id:
+            record_azure_consent(
+                lake,
+                session_id=session_id,
+                azure_tenant_id=azure_tenant or "unknown",
+                admin_consent=False,
+            )
+        redirect_token = issue_cloud_link_redirect_token(lake, session_id=session_id)
+        redirect_path = azure_callback_redirect(session_id=redirect_token, public_url=None)
+        return RedirectResponse(
+            url=redirect_path,
+            status_code=status.HTTP_302_FOUND,
+        )
 
     @app.get("/api/v1", tags=["discovery"])
     def v1_index(_identity: Identity = Depends(_require_read)) -> JSONResponse:
@@ -1833,6 +1902,106 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         except NotFound as exc:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
         return JSONResponse(api_v1.envelope("access-reviews.items", _redact_payload(item, identity)))
+
+    # --- vendor risk questionnaires (GRC) ---
+    @app.get("/api/v1/vendor-questionnaires")
+    def list_vendor_questionnaires(identity: Identity = Depends(_require_read)) -> JSONResponse:
+        data = vendor_risk_services.list_templates()
+        return JSONResponse(
+            api_v1.envelope("vendor-questionnaires", _redact_payload(data, identity), meta={"count": len(data)})
+        )
+
+    @app.get("/api/v1/vendor-questionnaires/{template_id}")
+    def get_vendor_questionnaire(template_id: str, identity: Identity = Depends(_require_read)) -> JSONResponse:
+        try:
+            data = vendor_risk_services.get_template(template_id)
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("vendor-questionnaires", _redact_payload(data, identity)))
+
+    @app.get("/api/v1/vendor-assessments")
+    def list_vendor_assessments(
+        request: Request, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        params = _params(request)
+        limit, offset = _pagination(params)
+        data = vendor_risk_services.list_assessments(
+            session,
+            identity.tenant_id,
+            status=params.get("status"),
+            limit=limit,
+            offset=offset,
+        )
+        return JSONResponse(
+            api_v1.envelope(
+                "vendor-assessments", _redact_payload(data, identity), meta=_page_meta(limit, offset, len(data))
+            )
+        )
+
+    @app.post("/api/v1/vendor-assessments", status_code=status.HTTP_201_CREATED)
+    def create_vendor_assessment(
+        body: CreateVendorAssessmentRequest,
+        identity: Identity = Depends(_require_control_manage),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        try:
+            assessment = vendor_risk_services.create_assessment(
+                session,
+                identity.tenant_id,
+                vendor_name=body.vendor_name,
+                template_id=body.template_id,
+                owner=body.owner,
+                control_id=body.control_id,
+                due_at=_parse_dt(body.due_at),
+                created_by=identity.email,
+            )
+        except ValidationError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("vendor-assessments", assessment), status_code=status.HTTP_201_CREATED)
+
+    @app.get("/api/v1/vendor-assessments/{assessment_id}")
+    def get_vendor_assessment(
+        assessment_id: str, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        try:
+            data = vendor_risk_services.get_assessment(session, identity.tenant_id, assessment_id)
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("vendor-assessments", _redact_payload(data, identity)))
+
+    @app.patch("/api/v1/vendor-assessments/{assessment_id}")
+    def update_vendor_assessment(
+        assessment_id: str,
+        body: UpdateVendorAssessmentRequest,
+        identity: Identity = Depends(_require_control_manage),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        changes = body.model_dump(exclude_unset=True)
+        if "due_at" in changes:
+            changes["due_at"] = _parse_dt(changes["due_at"])
+        try:
+            assessment = vendor_risk_services.update_assessment(
+                session, identity.tenant_id, assessment_id, changes=changes
+            )
+        except ValidationError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("vendor-assessments", assessment))
+
+    @app.post("/api/v1/vendor-assessments/{assessment_id}/submit")
+    def submit_vendor_assessment(
+        assessment_id: str,
+        identity: Identity = Depends(_require_control_manage),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        try:
+            assessment = vendor_risk_services.submit_assessment(session, identity.tenant_id, assessment_id)
+        except ValidationError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("vendor-assessments", assessment))
 
     # --- remediation guidance ---
     @app.get("/api/v1/controls/{control_id}/remediation")

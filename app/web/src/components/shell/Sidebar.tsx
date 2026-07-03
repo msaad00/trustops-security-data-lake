@@ -8,6 +8,7 @@ import {
   AlertOctagon,
   Bot,
   BookOpen,
+  Building2,
   ChevronLeft,
   ChevronRight,
   FileSearch,
@@ -119,6 +120,12 @@ const ITEMS: RailItem[] = [
     href: "/policies",
     label: "Policies",
     Icon: BookOpen,
+    group: "Review",
+  },
+  {
+    href: "/vendor-risk",
+    label: "Vendor risk",
+    Icon: Building2,
     group: "Review",
   },
   {

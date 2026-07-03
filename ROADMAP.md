@@ -8,7 +8,7 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 - [x] `/console/demo/` evaluator landing
 - [x] Account-linking deep links (`/connectors/?connect=`)
 - [ ] Hosted invite flow with email/SCIM (commercial SaaS)
-- [ ] One-click AWS/Azure consent (OAuth-style cloud linking)
+- [x] One-click AWS/Azure consent (OAuth-style cloud linking)
 
 ## P1 — Product depth
 
@@ -21,7 +21,7 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 - [ ] Framework packs (SOC 2 Availability/Confidentiality/PI/Privacy TSC extensions)
 - [x] Unified golden fixture (all 37 controls on dashboard)
 - [x] Executive PDF export from snapshots
-- [ ] Vendor risk questionnaire MVP
+- [x] Vendor risk questionnaire MVP
 - [x] Policy template library MVP (bundled templates + adopt/publish)
 
 ## P2 — Agent-native moat

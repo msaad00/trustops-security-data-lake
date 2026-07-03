@@ -223,6 +223,7 @@ function ConnectorRow({
 export default function ConnectorsPage() {
   const connectors = useConnectors();
   const [connectId, setConnectId] = useState<string | null>(null);
+  const [linkSessionId, setLinkSessionId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [stateFilter, setStateFilter] = useState<
     "all" | "enabled" | "disabled"
@@ -238,6 +239,7 @@ export default function ConnectorsPage() {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     setConnectId(params.get("connect"));
+    setLinkSessionId(params.get("link_session"));
   }, []);
 
   useEffect(() => {
@@ -371,6 +373,7 @@ export default function ConnectorsPage() {
 
       <ConnectorDrawer
         connector={selectedLive}
+        linkSessionId={linkSessionId}
         onClose={() => setSelected(null)}
         onToast={notify.success}
       />

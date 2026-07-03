@@ -31,6 +31,7 @@ import type {
   ProbePayload,
 } from "@/lib/api/types";
 import { ConnectorMark } from "@/components/connectors/ConnectorMark";
+import { CloudLinkPanel } from "@/components/connectors/CloudLinkPanel";
 import {
   credentialFieldsFor,
   schedulerFieldsFor,
@@ -40,6 +41,7 @@ import {
 
 interface Props {
   connector: ConnectorView | null;
+  linkSessionId?: string | null;
   onClose: () => void;
   onToast: (msg: string) => void;
 }
@@ -304,7 +306,12 @@ function LatestSyncProof({
   );
 }
 
-export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
+export function ConnectorDrawer({
+  connector,
+  linkSessionId,
+  onClose,
+  onToast,
+}: Props) {
   const auditor = useAuditorMode();
   const configure = useConfigureMutation();
   const discover = useDiscoverMutation();
@@ -772,6 +779,18 @@ export function ConnectorDrawer({ connector, onClose, onToast }: Props) {
             </div>
           </div>
         </details>
+
+        {!auditor && connector && (
+          <CloudLinkPanel
+            connector={connector}
+            linkSessionId={linkSessionId}
+            onLinked={(linked) => {
+              setAccessValidated(false);
+              setCreds((current) => ({ ...current, ...linked }));
+            }}
+            onToast={onToast}
+          />
+        )}
 
         {!auditor && (
           <section className="rounded-xl border border-line p-3">

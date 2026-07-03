@@ -141,6 +141,10 @@ def _connector_action(path: str, action: str) -> str | None:
     return _suffix_match(path, "/api/v1/connectors/", f"/{action}")
 
 
+def _connector_link_action(path: str, suffix: str) -> str | None:
+    return _suffix_match(path, "/api/v1/connectors/", f"/link/{suffix}")
+
+
 def required_post_scope(path: str) -> str:
     """Return the RBAC scope required to mutate a v1 route."""
     if path == "/api/v1/snapshots":
@@ -152,6 +156,10 @@ def required_post_scope(path: str) -> str:
     if _connector_action(path, "probe") is not None:
         return "connector_manage"
     if _connector_action(path, "sync") is not None:
+        return "connector_manage"
+    if _connector_link_action(path, "start") is not None:
+        return "connector_manage"
+    if _connector_link_action(path, "complete") is not None:
         return "connector_manage"
     return "write"
 
@@ -352,6 +360,44 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "path_params": ["item_id"],
     },
     {
+        "resource": "vendor-questionnaires",
+        "path": "/api/v1/vendor-questionnaires",
+        "kind": "collection",
+        "methods": ["GET"],
+        "scopes": ["read"],
+    },
+    {
+        "resource": "vendor-questionnaires",
+        "path": "/api/v1/vendor-questionnaires/{template_id}",
+        "kind": "singleton",
+        "methods": ["GET"],
+        "scopes": ["read"],
+        "path_params": ["template_id"],
+    },
+    {
+        "resource": "vendor-assessments",
+        "path": "/api/v1/vendor-assessments",
+        "kind": "collection",
+        "methods": ["GET", "POST"],
+        "scopes": ["read", "control_manage"],
+    },
+    {
+        "resource": "vendor-assessments",
+        "path": "/api/v1/vendor-assessments/{assessment_id}",
+        "kind": "singleton",
+        "methods": ["GET", "PATCH"],
+        "scopes": ["read", "control_manage"],
+        "path_params": ["assessment_id"],
+    },
+    {
+        "resource": "vendor-assessments",
+        "path": "/api/v1/vendor-assessments/{assessment_id}/submit",
+        "kind": "singleton",
+        "methods": ["POST"],
+        "scopes": ["control_manage"],
+        "path_params": ["assessment_id"],
+    },
+    {
         "resource": "tags",
         "path": "/api/v1/tags",
         "kind": "collection",
@@ -482,6 +528,22 @@ def resource_catalog() -> list[JsonObject]:
             {
                 "resource": "connector.sync",
                 "path": "/api/v1/connectors/{connector_id}/sync",
+                "kind": "action",
+                "methods": ["POST"],
+                "scopes": ["connector_manage"],
+                "path_params": ["connector_id"],
+            },
+            {
+                "resource": "connector.link.start",
+                "path": "/api/v1/connectors/{connector_id}/link/start",
+                "kind": "action",
+                "methods": ["POST"],
+                "scopes": ["connector_manage"],
+                "path_params": ["connector_id"],
+            },
+            {
+                "resource": "connector.link.complete",
+                "path": "/api/v1/connectors/{connector_id}/link/complete",
                 "kind": "action",
                 "methods": ["POST"],
                 "scopes": ["connector_manage"],
@@ -922,4 +984,45 @@ def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tup
                 "run": result.run,
             },
         )
+    link_start = _connector_link_action(path, "start")
+    if link_start is not None:
+        from security_lakehouse.cloud_linking import start_cloud_link
+
+        public_url = str(payload.get("public_url") or "").strip() or None
+        tenant_id = str(payload.get("tenant_id") or "default")
+        try:
+            session = start_cloud_link(
+                lake,
+                link_start,
+                tenant_id=tenant_id,
+                public_url=public_url,
+            )
+        except ValueError as exc:
+            return HTTPStatus.BAD_REQUEST, error_envelope("bad_request", str(exc), resource="connector.link.start")
+        return HTTPStatus.CREATED, envelope("connector.link.start", session)
+    link_complete = _connector_link_action(path, "complete")
+    if link_complete is not None:
+        from security_lakehouse.cloud_linking import complete_cloud_link, normalize_link_session_id
+
+        session_id = normalize_link_session_id(str(payload.get("session_id") or ""))
+        if not session_id:
+            return HTTPStatus.BAD_REQUEST, error_envelope(
+                "bad_request", "session_id is required", resource="connector.link.complete"
+            )
+        try:
+            result = complete_cloud_link(
+                lake,
+                link_complete,
+                session_id=session_id,
+                actor=str(payload.get("actor") or "console"),
+                account_id=str(payload.get("account_id") or "").strip() or None,
+                subscription_id=str(payload.get("subscription_id") or "").strip() or None,
+            )
+        except KeyError:
+            return HTTPStatus.NOT_FOUND, error_envelope(
+                "not_found", "cloud link session not found", resource="connector.link.complete"
+            )
+        except ValueError as exc:
+            return HTTPStatus.BAD_REQUEST, error_envelope("bad_request", str(exc), resource="connector.link.complete")
+        return HTTPStatus.CREATED, envelope("connector.link.complete", result)
     return HTTPStatus.NOT_FOUND, error_envelope("not_found", f"unknown route {path}")

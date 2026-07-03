@@ -51,6 +51,11 @@ class _Handler(BaseHTTPRequestHandler):
 
     server_version = "TrustOpsAssessment/0.1"
 
+    @staticmethod
+    def _safe_header_value(value: str) -> str:
+        """Return a header-safe value by removing CR/LF characters."""
+        return str(value).replace("\r", "").replace("\n", "")
+
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
         if self.web_dist is not None and self._serve_from_dist(parsed.path):
@@ -60,6 +65,14 @@ class _Handler(BaseHTTPRequestHandler):
             return
         if parsed.path == "/api/healthz":
             self._send_json({"ok": True, "service": "trustops-assessment"})
+            return
+        if parsed.path == "/api/v1/connectors/aws-posture/link/template.yaml":
+            from security_lakehouse.cloud_linking import aws_template_bytes
+
+            self._send_bytes(aws_template_bytes(), content_type="application/x-yaml")
+            return
+        if parsed.path.startswith("/api/v1/connectors/azure-posture/link/callback"):
+            self._handle_azure_link_callback(parse_qs(parsed.query))
             return
         if parsed.path == "/api/v1" or parsed.path.startswith("/api/v1/"):
             self._handle_v1_get(parsed.path, parse_qs(parsed.query))
@@ -82,6 +95,38 @@ class _Handler(BaseHTTPRequestHandler):
             request_body = {**request_body, "idempotency_key": self.headers["Idempotency-Key"]}
         status, body = api_legacy.handle_post(parsed.path, request_body, self.lake_dir, role=self._role())
         self._send_json(body, status=status)
+
+    def _handle_azure_link_callback(self, query: dict[str, list[str]]) -> None:
+        from security_lakehouse.cloud_linking import (
+            azure_callback_redirect,
+            get_cloud_link_session,
+            issue_cloud_link_redirect_token,
+            normalize_link_session_id,
+            record_azure_consent,
+        )
+
+        session_id = normalize_link_session_id((query.get("state") or [""])[0])
+        azure_tenant = (query.get("tenant") or [""])[0].strip()
+        admin_consent = (query.get("admin_consent") or [""])[0]
+        if not session_id or get_cloud_link_session(self.lake_dir, session_id) is None:
+            self._send_json(
+                api_v1.error_envelope("bad_request", "invalid cloud link session", resource="connector.link.callback"),
+                status=HTTPStatus.BAD_REQUEST,
+            )
+            return
+        consented = str(admin_consent).lower() in {"true", "1", "yes"}
+        record_azure_consent(
+            self.lake_dir,
+            session_id=session_id,
+            azure_tenant_id=azure_tenant or "unknown",
+            admin_consent=consented,
+        )
+        redirect_token = issue_cloud_link_redirect_token(self.lake_dir, session_id=session_id)
+        redirect_path = azure_callback_redirect(session_id=redirect_token, public_url=None)
+        self.send_response(int(HTTPStatus.FOUND))
+        self.send_header("location", self._safe_header_value(redirect_path))
+        self.send_header("cache-control", "no-store")
+        self.end_headers()
 
     def _handle_v1_get(self, path: str, query: dict[str, list[str]]) -> None:
         """Versioned API surface for headless clients.

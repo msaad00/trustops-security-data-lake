@@ -1,0 +1,101 @@
+{
+  "schema_version": "trustops.vendor_questionnaire.v1",
+  "templates": [
+    {
+      "template_id": "soc2-vendor-standard",
+      "name": "SOC 2 Vendor Due Diligence",
+      "description": "Standard third-party diligence questionnaire aligned to SOC 2 CC9 vendor-risk controls.",
+      "control_ids": ["SOC2-CC9.2", "ISO27001-A.5.19"],
+      "sections": [
+        {
+          "section_id": "program",
+          "title": "Security program",
+          "questions": [
+            {
+              "question_id": "soc2-report",
+              "prompt": "Does the vendor provide a current SOC 2 Type II report (or equivalent)?",
+              "response_type": "yes_no_partial",
+              "weight": 15,
+              "required": true
+            },
+            {
+              "question_id": "security-policy",
+              "prompt": "Is a written information security policy reviewed at least annually?",
+              "response_type": "yes_no_partial",
+              "weight": 10,
+              "required": true
+            },
+            {
+              "question_id": "risk-assessment",
+              "prompt": "Does the vendor perform periodic enterprise risk assessments?",
+              "response_type": "yes_no_partial",
+              "weight": 10,
+              "required": true
+            }
+          ]
+        },
+        {
+          "section_id": "access",
+          "title": "Access and data handling",
+          "questions": [
+            {
+              "question_id": "mfa",
+              "prompt": "Is MFA enforced for workforce access to production systems?",
+              "response_type": "yes_no_partial",
+              "weight": 15,
+              "required": true
+            },
+            {
+              "question_id": "encryption-transit",
+              "prompt": "Is customer data encrypted in transit with modern TLS?",
+              "response_type": "yes_no_partial",
+              "weight": 10,
+              "required": true
+            },
+            {
+              "question_id": "encryption-rest",
+              "prompt": "Is customer data encrypted at rest?",
+              "response_type": "yes_no_partial",
+              "weight": 10,
+              "required": true
+            },
+            {
+              "question_id": "data-retention",
+              "prompt": "Is there a documented data retention and deletion policy?",
+              "response_type": "yes_no_partial",
+              "weight": 8,
+              "required": true
+            }
+          ]
+        },
+        {
+          "section_id": "operations",
+          "title": "Operations and incident response",
+          "questions": [
+            {
+              "question_id": "incident-response",
+              "prompt": "Does the vendor maintain a tested incident response plan?",
+              "response_type": "yes_no_partial",
+              "weight": 12,
+              "required": true
+            },
+            {
+              "question_id": "breach-notification",
+              "prompt": "Will the vendor notify you within 72 hours of a confirmed breach?",
+              "response_type": "yes_no_partial",
+              "weight": 10,
+              "required": true
+            },
+            {
+              "question_id": "subprocessors",
+              "prompt": "Are subprocessors disclosed and subject to equivalent controls?",
+              "response_type": "yes_no_partial",
+              "weight": 10,
+              "required": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

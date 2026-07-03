@@ -11,7 +11,7 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Index, String, Text, UniqueConstraint, func
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Index, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from security_lakehouse.db.base import Base
@@ -511,3 +511,35 @@ class PolicyDocument(Base):
     )
     published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     review_due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+VENDOR_ASSESSMENT_STATUSES = frozenset({"draft", "in_review", "completed", "rejected"})
+
+
+class VendorAssessment(Base):
+    """A third-party vendor diligence questionnaire instance (GRC vendor-risk pillar)."""
+
+    __tablename__ = "vendor_assessments"
+    __table_args__ = (Index("ix_vendor_assessments_tenant_status", "tenant_id", "status"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    vendor_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    template_id: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="draft")
+    control_id: Mapped[str | None] = mapped_column(String(128), nullable=True, index=True)
+    owner: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    responses_json: Mapped[str] = mapped_column(Text, nullable=False, default="{}")
+    score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    risk_level: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_by: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
