@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from security_lakehouse.agents.budgets import AgentBudgetPolicy
+from security_lakehouse.agents.checkpoints import invoke_with_checkpoint, memory_checkpointer
 from security_lakehouse.agents.evaluations import evaluate_soc_triage
 from security_lakehouse.agents.graphs import ModelClient, build_soc_triage_graph
 from security_lakehouse.agents.model_client import ModelClientError, call_model_json
@@ -117,6 +118,8 @@ def run_soc_triage(
     budget: AgentBudgetPolicy | None = None,
     model_client: ModelClient | None = None,
     orchestrator: AgentOrchestrator = "sequential",
+    checkpoint_thread_id: str | None = None,
+    resume: bool = False,
 ) -> AgentRunState:
     """Run a deterministic SOC triage harness with optional model assistance."""
     if orchestrator not in {"sequential", "langgraph"}:
@@ -135,7 +138,14 @@ def run_soc_triage(
         "errors": [],
     }
     if orchestrator == "langgraph":
-        state = dict(build_soc_triage_graph().invoke(state))
+        state = dict(
+            invoke_with_checkpoint(
+                build_soc_triage_graph(checkpointer=memory_checkpointer() if checkpoint_thread_id else None),
+                state,
+                thread_id=checkpoint_thread_id,
+                resume=resume,
+            )
+        )
         state["mode"] = "langgraph"
         state["orchestrator"] = "langgraph"
     else:

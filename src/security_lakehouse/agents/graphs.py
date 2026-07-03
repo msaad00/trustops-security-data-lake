@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from security_lakehouse.agents.budgets import AgentBudgetPolicy
+from security_lakehouse.agents.checkpoints import invoke_with_checkpoint, memory_checkpointer
 from security_lakehouse.agents.evaluations import evaluate_posture_review
 from security_lakehouse.agents.model_client import ModelClientError, call_model_json
 from security_lakehouse.agents.model_contract import (
@@ -76,6 +77,10 @@ def _propose_actions_node(state: AgentRunState) -> AgentRunState:
     return {**state, "decisions": decisions}
 
 
+def _finalize_no_gaps_node(state: AgentRunState) -> AgentRunState:
+    return {**state, "decisions": []}
+
+
 def run_posture_review(
     lake_dir: str | Path,
     *,
@@ -85,6 +90,8 @@ def run_posture_review(
     budget: AgentBudgetPolicy | None = None,
     model_client: ModelClient | None = None,
     orchestrator: AgentOrchestrator = "sequential",
+    checkpoint_thread_id: str | None = None,
+    resume: bool = False,
 ) -> AgentRunState:
     """Run the posture-review harness without requiring LangGraph or an LLM."""
     provider = provider or provider_from_env()
@@ -100,7 +107,14 @@ def run_posture_review(
         orchestrator=orchestrator,
     )
     if orchestrator == "langgraph":
-        state = dict(build_posture_review_graph().invoke(state))
+        state = dict(
+            invoke_with_checkpoint(
+                build_posture_review_graph(checkpointer=memory_checkpointer() if checkpoint_thread_id else None),
+                state,
+                thread_id=checkpoint_thread_id,
+                resume=resume,
+            )
+        )
         state["mode"] = "langgraph"
         state["orchestrator"] = "langgraph"
     else:
@@ -124,7 +138,7 @@ def run_posture_review(
     return state
 
 
-def build_posture_review_graph() -> Any:
+def build_posture_review_graph(*, checkpointer: Any | None = None) -> Any:
     """Build a LangGraph StateGraph when the optional extra is installed."""
     try:
         from langgraph.graph import END, StateGraph
@@ -135,16 +149,22 @@ def build_posture_review_graph() -> Any:
 
     def _route_after_gaps(state: AgentRunState) -> str:
         gaps = state.get("evidence_gaps") or []
-        return "propose_actions" if gaps else "propose_actions"
+        return "propose_actions" if gaps else "finalize_no_gaps"
 
     graph.add_node("load_posture", _load_posture_node)
     graph.add_node("load_evidence_gaps", _load_gaps_node)
     graph.add_node("propose_actions", _propose_actions_node)
+    graph.add_node("finalize_no_gaps", _finalize_no_gaps_node)
     graph.set_entry_point("load_posture")
     graph.add_edge("load_posture", "load_evidence_gaps")
-    graph.add_conditional_edges("load_evidence_gaps", _route_after_gaps)
+    graph.add_conditional_edges(
+        "load_evidence_gaps",
+        _route_after_gaps,
+        {"propose_actions": "propose_actions", "finalize_no_gaps": "finalize_no_gaps"},
+    )
     graph.add_edge("propose_actions", END)
-    return graph.compile()
+    graph.add_edge("finalize_no_gaps", END)
+    return graph.compile(checkpointer=checkpointer) if checkpointer is not None else graph.compile()
 
 
 def _load_alerts_node(state: AgentRunState) -> AgentRunState:
@@ -163,7 +183,7 @@ def _propose_soc_actions_node(state: AgentRunState) -> AgentRunState:
     return {**state, "decisions": decisions}
 
 
-def build_soc_triage_graph() -> Any:
+def build_soc_triage_graph(*, checkpointer: Any | None = None) -> Any:
     """Build the SOC triage LangGraph when the optional extra is installed."""
     try:
         from langgraph.graph import END, StateGraph
@@ -176,4 +196,4 @@ def build_soc_triage_graph() -> Any:
     graph.set_entry_point("load_alerts")
     graph.add_edge("load_alerts", "propose_actions")
     graph.add_edge("propose_actions", END)
-    return graph.compile()
+    return graph.compile(checkpointer=checkpointer) if checkpointer is not None else graph.compile()

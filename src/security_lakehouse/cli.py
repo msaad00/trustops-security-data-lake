@@ -553,6 +553,16 @@ def _parser() -> argparse.ArgumentParser:
         default=None,
         help="maximum model output tokens requested from the provider",
     )
+    agents_review.add_argument(
+        "--checkpoint-thread",
+        default=None,
+        help="LangGraph MemorySaver thread id (enables checkpoint/resume for long reviews)",
+    )
+    agents_review.add_argument(
+        "--resume",
+        action="store_true",
+        help="resume a prior LangGraph checkpoint for --checkpoint-thread",
+    )
     agents_review.set_defaults(func=_agents_posture_review)
     agents_soc = agents_sub.add_parser(
         "soc-triage",
@@ -602,6 +612,16 @@ def _parser() -> argparse.ArgumentParser:
         type=int,
         default=None,
         help="maximum model output tokens requested from the provider",
+    )
+    agents_soc.add_argument(
+        "--checkpoint-thread",
+        default=None,
+        help="LangGraph MemorySaver thread id (enables checkpoint/resume for long SOC reviews)",
+    )
+    agents_soc.add_argument(
+        "--resume",
+        action="store_true",
+        help="resume a prior LangGraph checkpoint for --checkpoint-thread",
     )
     agents_soc.set_defaults(func=_agents_soc_triage)
 
@@ -1535,6 +1555,8 @@ def _agents_posture_review(args: argparse.Namespace) -> int:
             provider=_agent_provider_from_args(args),
             budget=_agent_budget_from_args(args),
             orchestrator=args.orchestrator,
+            checkpoint_thread_id=args.checkpoint_thread,
+            resume=bool(args.resume),
         )
     )
     decisions = state.get("decisions") or []
@@ -1586,6 +1608,8 @@ def _agents_soc_triage(args: argparse.Namespace) -> int:
             provider=_agent_provider_from_args(args),
             budget=_agent_budget_from_args(args),
             orchestrator=args.orchestrator,
+            checkpoint_thread_id=args.checkpoint_thread,
+            resume=bool(args.resume),
         )
     )
     decisions = state.get("decisions") or []

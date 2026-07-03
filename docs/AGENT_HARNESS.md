@@ -37,7 +37,39 @@ The first harness lives under `security_lakehouse.agents`:
 - `graphs.py` runs the first posture-review flow sequentially or through a
   LangGraph graph when `trustops-security-data-lake[agents]` is installed.
 
-## Provider defaults
+## LangGraph orchestration (optional)
+
+LangGraph is **orchestration only** in TrustOps:
+
+| What LangGraph does                                                                                             | What it does **not** do                                            |
+| --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Orders deterministic harness nodes (`load_posture`, `load_evidence_gaps`, `propose_actions`, SOC `load_alerts`) | Call LangChain chat models or own compliance truth                 |
+| Optional `MemorySaver` checkpoints when `--checkpoint-thread` is set                                            | Replace RBAC, redaction, evaluation, or approvals                  |
+| Same node functions as the sequential runner                                                                    | Persist checkpoints across server restarts (in-process only today) |
+
+**No LangChain dependency.** TrustOps uses the optional `langgraph` extra only.
+Models run through `model_client.py` (urllib / boto3 / vertex / cortex) **after**
+the graph finishes — never inside graph nodes.
+
+**No durable checkpoints yet** beyond in-memory `MemorySaver` keyed by
+`--checkpoint-thread` (or API `idempotency_key` when `orchestrator=langgraph`).
+Use this for long SOC reviews that may retry mid-graph; production resume across
+restarts needs a pluggable checkpointer (future).
+
+Both harnesses accept `--orchestrator langgraph`:
+
+```bash
+security-lakehouse agents posture-review --lake ./lake --orchestrator langgraph
+security-lakehouse agents soc-triage --lake ./lake --orchestrator langgraph \
+  --checkpoint-thread soc-review-2026-07-03 --resume
+```
+
+Posture review skips `propose_actions` when evidence gaps are empty (graph routes
+to `finalize_no_gaps` instead of emitting spurious requests).
+
+Do **not** add `langchain` as a direct dependency unless a future integration
+requires LangChain-specific adapters. Prefer TrustOps `model_client` and typed
+tool contracts.
 
 No model is required. If no provider is configured, the harness runs in
 `rules_only` mode.
@@ -189,7 +221,7 @@ results.
 Run the SOC harness locally:
 
 ```bash
-security-lakehouse agents soc-triage --lake ./lake --role read_only
+security-lakehouse agents soc-triage --lake ./lake --role read_only --orchestrator langgraph
 ```
 
 Configuring a provider still does not call a model unless `--use-model` or
