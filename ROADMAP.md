@@ -47,7 +47,7 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 - [x] OSS / self-hosted / hosted positioning (`docs/DEPLOYMENT_AND_PRICING.md`)
 - [x] Console `/deploy` deployment summary page
 - [x] Connector + auth flow diagrams (mermaid, SVG, console strips)
-- [ ] Commit demo PNG screenshots (`make demo-screenshots`)
+- [x] Commit demo PNG screenshots (`make demo-screenshots`)
 - [ ] Unified data model single-page diagram
 - [ ] Dark mode
 
