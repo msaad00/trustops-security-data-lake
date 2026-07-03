@@ -181,7 +181,9 @@ def test_agent_run_api_langgraph_orchestrator_requires_extra(env) -> None:
     }
 
 
-def test_agent_run_api_rejects_langgraph_for_soc_triage(env) -> None:
+def test_agent_run_api_accepts_langgraph_for_soc_triage_when_installed(env) -> None:
+    if importlib.util.find_spec("langgraph") is None:
+        pytest.skip("LangGraph optional extra not installed")
     _app, client, tokens = env
 
     created = client.post(
@@ -190,11 +192,8 @@ def test_agent_run_api_rejects_langgraph_for_soc_triage(env) -> None:
         headers=_bearer(tokens["contributor"]),
     )
 
-    assert created.status_code == HTTPStatus.BAD_REQUEST
-    assert created.json()["errors"][0] == {
-        "code": "bad_request",
-        "detail": "soc_triage only supports the sequential orchestrator",
-    }
+    assert created.status_code == HTTPStatus.CREATED
+    assert created.json()["data"]["harness"] == "soc_triage"
 
 
 def test_agent_run_approval_executes_evidence_request_once(env) -> None:

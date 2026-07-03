@@ -145,11 +145,10 @@ def run_and_persist_agent(
         raise ValueError(f"harness must be one of {list(AGENT_RUN_HARNESSES)}, got {harness!r}")
     if orchestrator not in {"sequential", "langgraph"}:
         raise ValueError("orchestrator must be 'sequential' or 'langgraph'")
-    if harness != "posture_review" and orchestrator != "sequential":
-        raise ValueError(f"{harness} only supports the sequential orchestrator")
     if orchestrator == "langgraph" and importlib.util.find_spec("langgraph") is None:
         raise ValueError("langgraph orchestrator requires trustops-security-data-lake[agents]")
     safe_orchestrator: AgentOrchestrator = "langgraph" if orchestrator == "langgraph" else "sequential"
+    checkpoint_thread_id = idempotency_key if safe_orchestrator == "langgraph" and idempotency_key else None
     if idempotency_key:
         existing = get_agent_run_by_idempotency_key(session, tenant_id=tenant_id, idempotency_key=idempotency_key)
         if existing is not None:
@@ -180,10 +179,21 @@ def run_and_persist_agent(
                     provider=provider,
                     budget=budget,
                     orchestrator=safe_orchestrator,
+                    checkpoint_thread_id=checkpoint_thread_id,
                 )
             )
         else:
-            state = dict(run_soc_triage(safe_lake, role=role, objective=objective, provider=provider, budget=budget))
+            state = dict(
+                run_soc_triage(
+                    safe_lake,
+                    role=role,
+                    objective=objective,
+                    provider=provider,
+                    budget=budget,
+                    orchestrator=safe_orchestrator,
+                    checkpoint_thread_id=checkpoint_thread_id,
+                )
+            )
     except Exception as exc:  # noqa: BLE001 - persisted failure must be generic and inspectable
         status = "failed"
         state = {

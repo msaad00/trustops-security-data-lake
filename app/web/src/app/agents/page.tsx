@@ -393,8 +393,7 @@ export default function AgentsPage() {
   const runHarness = async (harness: "posture_review" | "soc_triage") => {
     const spec = HARNESS_COPY[harness];
     const budget = BUDGETS[budgetProfile];
-    const safeOrchestrator =
-      harness === "posture_review" ? orchestrator : "sequential";
+    const safeOrchestrator = orchestrator;
     try {
       const run = await createRun.mutateAsync({
         harness,
@@ -613,7 +612,7 @@ export default function AgentsPage() {
                     <span className="block truncate text-xs font-bold text-muted">
                       {harness === "posture_review"
                         ? `${orchestrator} · ${useModel ? "model assisted" : "rules only"}`
-                        : `sequential · ${useModel ? "model assisted" : "rules only"}`}
+                        : `${orchestrator} · ${useModel ? "model assisted" : "rules only"}`}
                     </span>
                   </span>
                 </Button>

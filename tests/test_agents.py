@@ -205,6 +205,37 @@ def test_posture_review_langgraph_orchestrator_is_explicit(tmp_path: Path) -> No
     assert state["evaluation"]["ok"] is True
 
 
+def test_posture_review_langgraph_skips_proposals_without_gaps(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+
+    if importlib.util.find_spec("langgraph") is None:
+        with pytest.raises(RuntimeError, match="install trustops-security-data-lake\\[agents\\]"):
+            run_posture_review(tmp_path, role="read_only", orchestrator="langgraph")
+        return
+
+    state = run_posture_review(tmp_path, role="read_only", orchestrator="langgraph")
+
+    assert state["mode"] == "langgraph"
+    assert state["decisions"] == []
+    assert state["evaluation"]["ok"] is True
+
+
+def test_soc_triage_langgraph_orchestrator_is_explicit(tmp_path: Path) -> None:
+    _seed_soc_alerts(tmp_path)
+
+    if importlib.util.find_spec("langgraph") is None:
+        with pytest.raises(RuntimeError, match="install trustops-security-data-lake\\[agents\\]"):
+            run_soc_triage(tmp_path, role="read_only", orchestrator="langgraph")
+        return
+
+    state = run_soc_triage(tmp_path, role="read_only", orchestrator="langgraph")
+
+    assert state["mode"] == "langgraph"
+    assert state["orchestrator"] == "langgraph"
+    assert state["decisions"]
+    assert state["evaluation"]["ok"] is True
+
+
 def test_provider_configured_without_use_model_stays_deterministic(tmp_path: Path) -> None:
     _seed_gap(tmp_path)
     provider = ModelProviderConfig(provider="ollama", model="llama3.1", base_url="http://127.0.0.1:11434")
