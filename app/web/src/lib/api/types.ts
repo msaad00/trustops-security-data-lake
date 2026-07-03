@@ -1023,6 +1023,53 @@ export interface AccessReviewCoverage {
   decisions: Record<AccessReviewDecision, number>;
 }
 
+export type PolicyDocumentStatus = "draft" | "published" | "archived";
+
+export interface PolicyTemplateSummary {
+  template_id: string;
+  title: string;
+  category?: string;
+  framework_ids: string[];
+  related_control_ids: string[];
+  owner_role?: string;
+  review_cadence_days?: number;
+  summary?: string;
+  variables: string[];
+}
+
+export interface PolicyTemplate extends PolicyTemplateSummary {
+  body_markdown: string;
+}
+
+export interface PolicyDocument {
+  id: string;
+  template_id: string;
+  title: string;
+  status: PolicyDocumentStatus;
+  content: string;
+  variables: Record<string, string>;
+  related_control_ids: string[];
+  owner: string;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  published_at: string | null;
+  review_due_at: string | null;
+}
+
+export interface PolicyCoverage {
+  control_id: string;
+  framework: string | null;
+  title: string | null;
+  template_ids: string[];
+  published: boolean;
+  current: boolean;
+  document_id: string | null;
+  document_title: string | null;
+  published_at: string | null;
+  review_due_at: string | null;
+}
+
 export type VendorRiskLevel = "low" | "medium" | "high" | "critical";
 export type VendorAssessmentStatus =
   "draft" | "in_review" | "completed" | "rejected";

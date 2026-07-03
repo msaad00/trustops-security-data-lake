@@ -34,6 +34,7 @@ COPY controls/ ./controls/
 COPY frameworks/ ./frameworks/
 COPY mappings/ ./mappings/
 COPY programs/ ./programs/
+COPY policy_templates/ ./policy_templates/
 # Bring the static export into the package tree before install so wheel
 # package-data picks it up.
 COPY --from=web-build /src/security_lakehouse/web/dist/ ./src/security_lakehouse/web/dist/
@@ -70,6 +71,7 @@ COPY controls/ /opt/trustops-data/controls/
 COPY connectors/ /opt/trustops-data/connectors/
 COPY mappings/ /opt/trustops-data/mappings/
 COPY programs/ /opt/trustops-data/programs/
+COPY policy_templates/ /opt/trustops-data/policy_templates/
 
 USER trustops
 WORKDIR /home/trustops

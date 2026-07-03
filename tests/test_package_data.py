@@ -22,6 +22,7 @@ def test_wheel_data_files_include_runtime_catalogs() -> None:
             "mappings/remediation_guidance.json",
         ],
         "programs": ["programs/catalog.json", "programs/vendor_questionnaires.json"],
+        "policy_templates": ["policy_templates/catalog.json"],
     }
     assert data_files == expected
 
