@@ -27,7 +27,7 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 ## P2 — Agent-native moat
 
 - [x] LangGraph for SOC triage harness
-- [ ] GitHub Action posture gate
+- [x] GitHub Action posture gate
 - [ ] MCP cookbook for evidence requests + approvals
 
 ## P3 — Operations
