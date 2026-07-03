@@ -53,8 +53,8 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 
 ## P5 — Commercial hosted (future)
 
-- [ ] Published hosted pricing tiers
-- [ ] Self-serve signup and tenant lifecycle
-- [ ] Billing, usage limits, and SCIM
+- [x] Published hosted pricing tiers
+- [x] Self-serve signup and tenant lifecycle
+- [x] Billing, usage limits, and SCIM
 
 See [TRUSTOPS_85_PLAN.md](docs/TRUSTOPS_85_PLAN.md) for the 85% self-hosted bar.
