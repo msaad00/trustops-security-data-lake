@@ -43,6 +43,8 @@ changes. Audit rows carry stable `event_id` and UTC `occurred_at`.
 `GET /api/v1/audit-log` returns a unified activity envelope for SIEM export,
 compliance archives, and auditor packages — no UI scrape required.
 
+MCP tools: `list_audit_log` (lake-backed) and `get_audit_readiness` (server API).
+
 ### Point-in-time snapshots
 
 Assessment snapshots with hash chain support auditor sign-off and drift detection

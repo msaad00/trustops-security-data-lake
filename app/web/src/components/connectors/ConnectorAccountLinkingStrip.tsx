@@ -106,8 +106,8 @@ export function ConnectorAccountLinkingStrip() {
             <CardTitle>Link accounts</CardTitle>
           </div>
           <CardDescription>
-            Connect read-only cloud, identity, and evidence-lake sources first —
-            the same onboarding path managed GRC tools use for account linking.
+            Connect read-only cloud, identity, and evidence-lake sources — probe,
+            enable, then sync.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3">

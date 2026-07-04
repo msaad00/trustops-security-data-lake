@@ -28,18 +28,13 @@ export function FlowStrip({
   return (
     <div
       className={cn(
-        "grid gap-2 lg:grid-cols-[repeat(var(--flow-cols),minmax(0,1fr))]",
+        "flex min-w-0 flex-col gap-2 lg:flex-row lg:items-stretch",
         className,
       )}
-      style={{ ["--flow-cols" as string]: steps.length }}
     >
       {steps.map((item, index) => (
-        <div key={item.step} className="relative min-w-0">
-          <div
-            className={cn(
-              "grid h-full min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-3 rounded-xl border border-line bg-white p-3 shadow-card",
-            )}
-          >
+        <div key={item.step} className="flex min-w-0 flex-1 items-stretch gap-2">
+          <div className="grid min-h-0 min-w-0 flex-1 grid-cols-[auto_minmax(0,1fr)] gap-3 overflow-hidden rounded-xl border border-line bg-white p-3 shadow-card">
             <span
               className={cn(
                 "grid h-9 w-9 shrink-0 place-items-center rounded-lg text-[10px] font-black ring-1",
@@ -48,18 +43,18 @@ export function FlowStrip({
             >
               {item.step}
             </span>
-            <span className="min-w-0">
+            <span className="min-w-0 overflow-hidden">
               <span className="block truncate text-sm font-black text-ink">
                 {item.title}
               </span>
-              <span className="mt-0.5 block text-xs leading-5 text-muted">
+              <span className="mt-0.5 line-clamp-2 text-xs leading-5 text-muted">
                 {item.detail}
               </span>
             </span>
           </div>
           {index < steps.length - 1 && (
             <ArrowRight
-              className="absolute -right-3 top-1/2 z-10 hidden h-4 w-4 -translate-y-1/2 text-muted lg:block"
+              className="hidden shrink-0 self-center text-muted lg:block lg:h-4 lg:w-4"
               aria-hidden
             />
           )}
