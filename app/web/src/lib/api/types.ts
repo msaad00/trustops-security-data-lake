@@ -900,6 +900,11 @@ export interface GraphNode {
   risk_score?: number;
   event_count?: number;
   path_count?: number;
+  evidence_id?: string;
+  evidence_ref?: string;
+  control_ids?: string[];
+  event_type?: string;
+  provider?: string;
 }
 
 export interface GraphEdge {
