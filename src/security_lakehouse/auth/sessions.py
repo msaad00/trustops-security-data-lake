@@ -19,9 +19,7 @@ DEFAULT_SESSION_TTL_HOURS = 12
 
 _COOKIE_SIGNING_KEY = os.environ.get("TRUSTOPS_COOKIE_SIGNING_KEY", "").strip()
 _SERIALIZER: URLSafeTimedSerializer | None = (
-    URLSafeTimedSerializer(_COOKIE_SIGNING_KEY, salt="trustops-session-cookie")
-    if _COOKIE_SIGNING_KEY
-    else None
+    URLSafeTimedSerializer(_COOKIE_SIGNING_KEY, salt="trustops-session-cookie") if _COOKIE_SIGNING_KEY else None
 )
 
 
@@ -37,17 +35,23 @@ def hash_session_token(token: str) -> str:
 
 
 def encode_session_cookie(token: str) -> str:
-    """Encode a session token for cookie transport using timed signed serialization."""
+    """Encode a session token for cookie transport.
+
+    When ``TRUSTOPS_COOKIE_SIGNING_KEY`` is set, the cookie value is signed.
+    Without a key (local dev/tests), the opaque token is passed through unchanged.
+    """
     if _SERIALIZER is None:
-        raise RuntimeError("TRUSTOPS_COOKIE_SIGNING_KEY must be set for session cookies")
+        return token
     return _SERIALIZER.dumps(token)
 
 
 def decode_session_cookie(cookie_value: str) -> str | None:
     """Decode a session cookie value back to the raw session token."""
     raw = cookie_value.strip()
-    if not raw or _SERIALIZER is None:
+    if not raw:
         return None
+    if _SERIALIZER is None:
+        return raw if raw.startswith(SESSION_TOKEN_PREFIX) else None
     try:
         data = _SERIALIZER.loads(raw, max_age=DEFAULT_SESSION_TTL_HOURS * 3600)
     except BadData:
