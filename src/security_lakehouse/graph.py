@@ -368,7 +368,7 @@ def build_repository_graph(lake_dir: str | Path) -> dict[str, Any]:
         entity = event.get("entity") or {}
         attributes = event.get("attributes") or {}
         repo_id = str(entity.get("asset_id") or attributes.get("repo_asset_id") or "repository:unknown")
-        repo_label = str(entity.get("repo") or repo_id.removeprefix("github:repo:"))
+        repo_label = str(entity.get("repo") or repo_id.split(":", 2)[-1] if ":" in repo_id else repo_id)
         add_node(
             repo_id,
             "repository",
@@ -376,6 +376,7 @@ def build_repository_graph(lake_dir: str | Path) -> dict[str, Any]:
             subtitle=str(entity.get("asset_owner") or entity.get("owner") or "repository"),
             owner=entity.get("asset_owner") or entity.get("owner"),
             environment=entity.get("environment"),
+            provider=entity.get("provider") or attributes.get("source_health", {}).get("provider"),
         )
 
         event_type = str(event.get("event_type") or "repository.unknown")
@@ -388,6 +389,10 @@ def build_repository_graph(lake_dir: str | Path) -> dict[str, Any]:
             event_type.replace("repository.", ""),
             subtitle=str(event.get("status") or "observed"),
             event_count=1,
+            evidence_id=evidence.get("evidence_id") or evidence_id,
+            evidence_ref=evidence.get("evidence_ref"),
+            control_ids=[str(c) for c in event.get("controls") or []],
+            event_type=event_type,
         )
         add_edge(repo_id, evidence_node, "has_evidence")
 
