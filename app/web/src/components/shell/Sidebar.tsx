@@ -26,6 +26,7 @@ import {
   Rocket,
   UserCheck,
   Zap,
+  DollarSign,
 } from "lucide-react";
 import { SidebarFooter } from "./SidebarFooter";
 import { cn } from "@/lib/utils";
@@ -71,6 +72,12 @@ const ITEMS: RailItem[] = [
     href: "/deploy",
     label: "Deploy",
     Icon: BookOpen,
+    group: "Trust",
+  },
+  {
+    href: "/pricing",
+    label: "Pricing",
+    Icon: DollarSign,
     group: "Trust",
   },
   {

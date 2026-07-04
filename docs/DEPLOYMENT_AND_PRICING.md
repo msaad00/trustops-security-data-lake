@@ -73,8 +73,9 @@ ownership of the evidence lake or warehouse projections.
 auth, live connectors, demo kit, trust shares. Operators bootstrap tenants
 manually.
 
-**Roadmap for commercial hosted:** self-serve signup, SCIM, usage limits,
-billing, and deeper connector UX. See [ROADMAP.md](../ROADMAP.md).
+**Roadmap for commercial hosted:** self-serve signup (scaffold), SCIM, usage limits,
+and published pricing tiers. Billing/invoicing integration is operator-managed until
+a later release. See [HOSTED_PRICING.md](HOSTED_PRICING.md) and [ROADMAP.md](../ROADMAP.md).
 
 Evaluator flow: [Shareable Demo](SHAREABLE_DEMO.md).
 
@@ -137,7 +138,7 @@ SaaS markup.
 | Policy/policy-template library                  | MVP (8 bundled templates + adopt/publish) | Extensive        |
 | Auditor workflow / audit project management     | Roadmap                                   | Mature           |
 | Vendor risk questionnaires                      | Roadmap                                   | Mature           |
-| Multi-tenant self-serve SaaS signup             | Roadmap                                   | Yes              |
+| Multi-tenant self-serve SaaS signup             | Scaffold (gated env)                      | Yes              |
 | OSS + self-hosted                               | **Yes**                                   | No               |
 | Customer-owned evidence lake                    | **Yes**                                   | Limited          |
 

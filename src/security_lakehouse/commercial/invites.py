@@ -16,7 +16,8 @@ from security_lakehouse.commercial.email import (
     commercial_hosted_enabled,
     email_delivery_from_env,
 )
-from security_lakehouse.db.models import TenantInvite, User
+from security_lakehouse.commercial.limits import assert_within_limit
+from security_lakehouse.db.models import Tenant, TenantInvite, User
 
 INVITE_TTL_HOURS = 168  # 7 days
 
@@ -46,6 +47,10 @@ def create_invite(
     normalized = email.strip().lower()
     if not normalized:
         raise ValueError("email is required")
+    tenant = session.get(Tenant, tenant_id)
+    if tenant is None:
+        raise ValueError("tenant not found")
+    assert_within_limit(session, tenant=tenant, resource="invites_pending")
     token = secrets.token_urlsafe(32)
     moment = datetime.now(UTC)
     row = TenantInvite(
@@ -100,6 +105,10 @@ def accept_invite(
         raise ValueError("invite not found")
     if row.status != "pending":
         raise ValueError(f"invite is {row.status}")
+    tenant = session.get(Tenant, row.tenant_id)
+    if tenant is None:
+        raise ValueError("tenant not found")
+    assert_within_limit(session, tenant=tenant, resource="users")
     now = datetime.now(UTC)
     expires = row.expires_at.replace(tzinfo=UTC) if row.expires_at.tzinfo is None else row.expires_at.astimezone(UTC)
     if expires < now:

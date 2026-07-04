@@ -3,8 +3,8 @@
 TrustOps OSS/self-hosted builds include **scaffolding** for managed SaaS capabilities:
 tenant email invites, outbound mail adapters, and SCIM 2.0 provisioning hooks.
 
-Full billing, self-serve signup, and production SCIM are commercial-only; enable the
-scaffold locally to validate integration contracts before a hosted rollout.
+Full Stripe/invoicing billing is operator-managed in v0.2.x; this doc covers
+pricing tiers, self-serve signup scaffold, usage limits, invites, email, and SCIM hooks.
 
 ## Enable hosted mode
 
@@ -12,6 +12,13 @@ scaffold locally to validate integration contracts before a hosted rollout.
 export TRUSTOPS_COMMERCIAL_HOSTED=1
 export TRUSTOPS_PUBLIC_URL=https://trustops.example.com
 export TRUSTOPS_EMAIL_PROVIDER=log   # default: log-only (no SMTP)
+```
+
+Self-serve workspace creation:
+
+```bash
+export TRUSTOPS_SELF_SERVE_SIGNUP=1
+export TRUSTOPS_SIGNUP_SECRET=<optional-abuse-guard>
 ```
 
 Optional SCIM (returns empty collections when enabled; full provisioning in managed SaaS):
@@ -43,6 +50,16 @@ Accept body:
 
 When `TRUSTOPS_COMMERCIAL_HOSTED` is unset, invite routes return **501 Not Implemented**.
 
+## Pricing and signup
+
+| Method | Path                       | Auth                                | Description                  |
+| ------ | -------------------------- | ----------------------------------- | ---------------------------- |
+| `GET`  | `/api/v1/platform/pricing` | none                                | Published tier list + limits |
+| `POST` | `/api/v1/signup`           | optional `X-TrustOps-Signup-Secret` | Create tenant + admin user   |
+| `GET`  | `/api/v1/platform/usage`   | `auth_admin`                        | Plan tier, usage vs limits   |
+
+See [HOSTED_PRICING.md](HOSTED_PRICING.md) for tier details and console `/console/pricing/`.
+
 ## Email delivery
 
 | `TRUSTOPS_EMAIL_PROVIDER` | Behavior                                                       |
@@ -59,13 +76,16 @@ When `TRUSTOPS_COMMERCIAL_HOSTED` is unset, invite routes return **501 Not Imple
 
 ## Database
 
-Migration `0012_tenant_invites` adds the `tenant_invites` table. Run:
+Migration `0012_tenant_invites` adds the `tenant_invites` table.
+Migration `0013_tenant_plan_tier` adds `tenants.plan_tier` for hosted limits.
 
 ```bash
 security-lakehouse db migrate --lake build/lakehouse
 ```
 
 ## Related docs
+
+- [Hosted pricing tiers](HOSTED_PRICING.md)
 
 - [HA read replicas](../runbooks/HA_READ_REPLICAS.md) — single-writer lake + read replicas
 - [Deployment and pricing](DEPLOYMENT_AND_PRICING.md) — OSS vs hosted positioning
