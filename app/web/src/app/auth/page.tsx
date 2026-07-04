@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/card";
 import { AuthIdentityDiagram } from "@/components/diagrams/AuthIdentityDiagram";
 import { ApiKeysPanel } from "@/components/auth/ApiKeysPanel";
+import { InvitesPanel } from "@/components/auth/InvitesPanel";
+import { UsersPanel } from "@/components/auth/UsersPanel";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { useAuthMethods, useAuthWhoami } from "@/lib/api/hooks";
@@ -159,6 +161,12 @@ export default function AuthPage() {
           </div>
         </CardContent>
       </Card>
+
+      <div id="users">
+        <UsersPanel />
+      </div>
+
+      <InvitesPanel />
 
       <div id="api-keys">
         <ApiKeysPanel />

@@ -134,6 +134,39 @@ def test_complete_oidc_login_auto_provisions(tmp_path: Path) -> None:
         assert repository.resolve_user_session(session, token).is_active()
 
 
+def test_complete_oidc_login_maps_idp_groups_to_role(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("TRUSTOPS_IDP_SYNC_ROLE_ON_LOGIN", "1")
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path)
+    cfg = OIDCConfig(
+        issuer="https://idp.test",
+        client_id="cid",
+        client_secret="sec",
+        tenant_slug="acme",
+        auto_provision=True,
+        default_role="read_only",
+        role_map={"TrustOps-Admins": "admin"},
+    )
+    with session_scope(app.state.sessionmaker) as session:
+        create_tenant(session, slug="acme", name="Acme")
+        user, _token = complete_oidc_login(
+            session,
+            config=cfg,
+            email="mapped@acme.test",
+            email_verified=True,
+            idp_claim_values=["TrustOps-Admins"],
+        )
+        assert user.role == "admin"
+        user2, _token2 = complete_oidc_login(
+            session,
+            config=cfg,
+            email="mapped@acme.test",
+            email_verified=True,
+            idp_claim_values=["Staff"],
+        )
+        assert user2.role == "read_only"
+
+
 def test_complete_oidc_login_unknown_tenant(tmp_path: Path) -> None:
     _seed_lake(tmp_path)
     app = create_app(tmp_path)
@@ -194,7 +227,7 @@ def test_auth_methods_reports_configured_login_surfaces(app_env) -> None:
     assert methods["saml"]["login_url"] == "/api/v1/auth/saml/login"
     assert methods["saml"]["protocol"] == "SAML 2.0"
     assert methods["api_key"]["configured"] is True
-    assert methods["api_key"]["login_url"] == "/api/v1/auth/keys"
+    assert methods["api_key"]["login_url"] == "/api/v1/auth/session-from-key"
 
 
 def test_load_saml_config_rejects_partial_environment(monkeypatch) -> None:

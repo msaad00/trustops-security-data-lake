@@ -18,8 +18,12 @@ import type {
   AssetRisk,
   AuthMethods,
   AuthApiKey,
+  AuthUser,
   AuthWhoami,
   CreateAuthKeyPayload,
+  CreateInvitePayload,
+  TenantInvite,
+  UpdateAuthUserPayload,
   ComplianceGraph,
   ConfigurePayload,
   ConnectorRun,
@@ -174,6 +178,63 @@ export function useRevokeAuthKeyMutation() {
     mutationFn: (keyId: string) => api.revokeAuthKey(keyId),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["auth", "keys"] });
+    },
+  });
+}
+
+export function useAuthUsers(opts?: Opts<AuthUser[]>) {
+  return useQuery({
+    queryKey: ["auth", "users"],
+    queryFn: api.authUsers,
+    staleTime: STALE,
+    retry: false,
+    ...opts,
+  });
+}
+
+export function useUpdateAuthUserMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      userId,
+      payload,
+    }: {
+      userId: string;
+      payload: UpdateAuthUserPayload;
+    }) => api.updateAuthUser(userId, payload),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["auth", "users"] });
+      void qc.invalidateQueries({ queryKey: ["auth", "whoami"] });
+    },
+  });
+}
+
+export function useSessionFromKeyMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (apiKey: string) => api.sessionFromKey(apiKey),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["auth", "whoami"] });
+    },
+  });
+}
+
+export function useInvites(opts?: Opts<TenantInvite[]>) {
+  return useQuery({
+    queryKey: ["invites"],
+    queryFn: api.invites,
+    staleTime: STALE,
+    retry: false,
+    ...opts,
+  });
+}
+
+export function useCreateInviteMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: CreateInvitePayload) => api.createInvite(payload),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["invites"] });
     },
   });
 }

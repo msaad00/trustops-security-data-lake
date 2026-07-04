@@ -114,3 +114,40 @@ def test_scim_config_for_admin(env, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("TRUSTOPS_SCIM_ENABLED", "1")
     resp2 = client.get("/api/v1/platform/scim", headers=_bearer(tokens["admin"]))
     assert resp2.json()["data"]["enabled"] is True
+
+
+def test_scim_users_when_enabled(env, monkeypatch: pytest.MonkeyPatch) -> None:
+    client, tokens = env
+    monkeypatch.setenv("TRUSTOPS_SCIM_ENABLED", "1")
+    monkeypatch.setenv("TRUSTOPS_SCIM_BEARER_TOKEN", "scim-test-token")
+    monkeypatch.setenv("TRUSTOPS_SCIM_TENANT_SLUG", "acme")
+    scim_auth = {"Authorization": "Bearer scim-test-token"}
+
+    listed = client.get("/api/v1/scim/v2/Users", headers=scim_auth)
+    assert listed.status_code == HTTPStatus.OK
+    assert listed.json()["data"]["totalResults"] >= 2
+
+    created = client.post(
+        "/api/v1/scim/v2/Users",
+        headers=scim_auth,
+        json={
+            "schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],
+            "userName": "scim-new@acme.test",
+            "active": True,
+            "trustopsRole": "contributor",
+        },
+    )
+    assert created.status_code == HTTPStatus.CREATED
+    assert created.json()["data"]["userName"] == "scim-new@acme.test"
+
+    user_id = created.json()["data"]["id"]
+    patched = client.patch(
+        f"/api/v1/scim/v2/Users/{user_id}",
+        headers=scim_auth,
+        json={
+            "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+            "Operations": [{"op": "replace", "path": "active", "value": False}],
+        },
+    )
+    assert patched.status_code == HTTPStatus.OK
+    assert patched.json()["data"]["active"] is False

@@ -134,7 +134,14 @@ def find_or_provision_user(
         return user
     if not auto_provision:
         return None
-    return create_user(session, tenant_id=tenant_id, email=email, role=default_role)
+    local_part = email.split("@", 1)[0] if "@" in email else email
+    return create_user(
+        session,
+        tenant_id=tenant_id,
+        email=email,
+        role=default_role,
+        display_name=local_part,
+    )
 
 
 def create_user_session(

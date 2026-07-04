@@ -12,9 +12,13 @@ import type {
   AssetRisk,
   AuthMethods,
   AuthApiKey,
+  AuthUser,
   AuthWhoami,
   CreatedAuthApiKey,
   CreateAuthKeyPayload,
+  CreateInvitePayload,
+  TenantInvite,
+  UpdateAuthUserPayload,
   ControlExceptionItem,
   EvidenceRequestItem,
   PostureMetricPoint,
@@ -160,6 +164,28 @@ export const api = {
       `/v1/auth/keys/${encodeURIComponent(keyId)}`,
       "DELETE",
     ).then((body) => body.data),
+  authUsers: () =>
+    get<{ data: AuthUser[]; meta?: { count?: number } }>("/v1/auth/users").then(
+      (body) => body.data,
+    ),
+  updateAuthUser: (userId: string, payload: UpdateAuthUserPayload) =>
+    mutate<{ data: AuthUser }>(
+      `/v1/auth/users/${encodeURIComponent(userId)}`,
+      "PATCH",
+      payload,
+    ).then((body) => body.data),
+  sessionFromKey: (apiKey: string) =>
+    post<{ data: AuthWhoami }>("/v1/auth/session-from-key", {
+      api_key: apiKey,
+    }).then((body) => body.data),
+  invites: () =>
+    get<{ data: TenantInvite[]; meta?: { count?: number } }>("/v1/invites").then(
+      (body) => body.data,
+    ),
+  createInvite: (payload: CreateInvitePayload) =>
+    post<{ data: TenantInvite }>("/v1/invites", payload).then(
+      (body) => body.data,
+    ),
   authLogout: () =>
     post<{ data: { ok: boolean } }>("/v1/auth/logout", {}).then(
       (body) => body.data,

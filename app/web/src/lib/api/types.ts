@@ -236,6 +236,38 @@ export interface CreatedAuthApiKey {
   token: string;
 }
 
+export interface AuthUser {
+  id: string;
+  email: string;
+  display_name: string;
+  role: string;
+  is_active: boolean;
+  created_at: string | null;
+}
+
+export interface UpdateAuthUserPayload {
+  role?: string;
+  is_active?: boolean;
+  display_name?: string;
+}
+
+export interface TenantInvite {
+  id: string;
+  tenant_id: string;
+  email: string;
+  role: string;
+  status: string;
+  invited_by: string;
+  created_at: string | null;
+  expires_at: string | null;
+  accepted_at: string | null;
+}
+
+export interface CreateInvitePayload {
+  email: string;
+  role?: string;
+}
+
 export interface AuthMethods {
   require_auth: boolean;
   methods: AuthMethod[];

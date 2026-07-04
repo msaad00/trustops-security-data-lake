@@ -58,6 +58,8 @@ class SAMLConfig:
     auto_provision: bool = False
     default_role: str = "read_only"
     name_id_format: str = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+    role_attribute: str = "groups"
+    role_map: dict[str, str] | None = None
 
     def settings(self) -> dict[str, Any]:
         """Return OneLogin python3-saml settings."""
@@ -103,12 +105,19 @@ class SAMLConfig:
 
 def load_saml_config() -> SAMLConfig | None:
     """Build SAML config from the environment, or ``None`` when disabled."""
+    from security_lakehouse.auth.idp_roles import load_role_map
+
     present = {name for name in _REQUIRED_ENV if os.environ.get(name)}
     if not present:
         return None
     missing = sorted(_REQUIRED_ENV - present)
     if missing:
         raise SAMLConfigError(f"incomplete SAML configuration; missing: {', '.join(missing)}")
+    role_map: dict[str, str] = {}
+    try:
+        role_map = load_role_map("TRUSTOPS_SAML_ROLE_MAP")
+    except ValueError:
+        role_map = {}
     return SAMLConfig(
         sp_entity_id=os.environ["TRUSTOPS_SAML_SP_ENTITY_ID"],
         acs_url=os.environ["TRUSTOPS_SAML_ACS_URL"],
@@ -123,6 +132,8 @@ def load_saml_config() -> SAMLConfig | None:
             "TRUSTOPS_SAML_NAME_ID_FORMAT",
             "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
         ),
+        role_attribute=os.environ.get("TRUSTOPS_SAML_ROLE_ATTRIBUTE", "groups"),
+        role_map=role_map,
     )
 
 
@@ -168,28 +179,56 @@ def email_from_saml_assertion(auth: Any) -> str:
     return str(name_id or "")
 
 
+def groups_from_saml_assertion(auth: Any, *, attribute_name: str) -> list[str]:
+    """Extract IdP group/role attribute values from a SAML assertion."""
+    attributes = auth.get_attributes() or {}
+    values = attributes.get(attribute_name)
+    if not values:
+        return []
+    if isinstance(values, list):
+        return [str(item).strip() for item in values if str(item).strip()]
+    return [str(values).strip()] if str(values).strip() else []
+
+
 def complete_saml_login(
     session: Session,
     *,
     config: SAMLConfig,
     email: str,
     now: datetime | None = None,
+    idp_claim_values: list[str] | None = None,
 ) -> tuple[User, str]:
     """Map a verified SAML email to a local user + browser session token."""
+    from security_lakehouse.auth.idp_roles import resolve_role_from_claims, sync_role_on_login_enabled
+
     if not email:
         raise SAMLLoginError("identity provider returned no email")
     tenant = repository.get_tenant_by_slug(session, slug=config.tenant_slug)
     if tenant is None:
         raise SAMLLoginError(f"SAML tenant {config.tenant_slug!r} does not exist")
+    mapped_role = config.default_role
+    if config.role_map and idp_claim_values:
+        mapped_role = resolve_role_from_claims(
+            idp_claim_values,
+            role_map=config.role_map,
+            default_role=config.default_role,
+        )
     user = repository.find_or_provision_user(
         session,
         tenant_id=tenant.id,
         email=email,
         auto_provision=config.auto_provision,
-        default_role=config.default_role,
+        default_role=mapped_role,
     )
     if user is None:
         raise SAMLLoginError(f"no provisioned user for {email!r} and auto-provisioning is disabled")
+    if (
+        config.role_map
+        and idp_claim_values
+        and sync_role_on_login_enabled()
+        and mapped_role != user.role
+    ):
+        user.role = mapped_role
     if not user.is_active:
         raise SAMLLoginError(f"user {email!r} is disabled")
     _row, token = repository.create_user_session(session, tenant_id=tenant.id, user_id=user.id, idp="saml", now=now)

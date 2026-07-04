@@ -1,13 +1,15 @@
 "use client";
 
-import { KeyRound, LogIn, ShieldCheck, Terminal } from "lucide-react";
+import { useState } from "react";
+import { KeyRound, Loader2, LogIn, ShieldCheck, Terminal } from "lucide-react";
 import { AuthMark } from "@/components/auth/AuthMark";
 import { TrustOpsLogo } from "@/components/brand/TrustOpsLogo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuthMethods } from "@/lib/api/hooks";
+import { useAuthMethods, useSessionFromKeyMutation } from "@/lib/api/hooks";
 import type { AuthMethod } from "@/lib/api/types";
+import { notify } from "@/lib/toast";
 
 function BrowserMethodCard({ method }: { method: AuthMethod }) {
   return (
@@ -69,6 +71,8 @@ function BrowserMethodCard({ method }: { method: AuthMethod }) {
 
 export default function LoginPage() {
   const auth = useAuthMethods();
+  const sessionFromKey = useSessionFromKeyMutation();
+  const [apiKey, setApiKey] = useState("");
   const data = auth.data;
   const browserMethods =
     data?.methods.filter(
@@ -76,6 +80,28 @@ export default function LoginPage() {
     ) ?? [];
   const configured = browserMethods.filter((method) => method.configured);
   const apiKeyMethod = data?.methods.find((method) => method.id === "api_key");
+
+  const redirectAfterLogin = () => {
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get("return_to");
+    if (!raw || !raw.startsWith("/console")) return "/console/dashboard";
+    return raw;
+  };
+
+  const submitApiKey = async () => {
+    const token = apiKey.trim();
+    if (!token) {
+      notify.error("Paste your API key");
+      return;
+    }
+    try {
+      await sessionFromKey.mutateAsync(token);
+      notify.success("Signed in with API key");
+      window.location.assign(redirectAfterLogin());
+    } catch (err) {
+      notify.error(String((err as Error).message));
+    }
+  };
 
   return (
     <section className="grid min-h-screen place-items-center p-6">
@@ -138,8 +164,8 @@ export default function LoginPage() {
                       No browser SSO provider is configured.
                     </div>
                     <p className="mt-1 text-sm leading-6 text-muted">
-                      Mount OIDC or SAML environment variables on the server.
-                      Agents and CI can still authenticate with API keys.
+                      Mount OIDC or SAML environment variables on the server, or
+                      sign in below with an API key.
                     </p>
                   </div>
                 </div>
@@ -152,17 +178,42 @@ export default function LoginPage() {
             )}
 
             {apiKeyMethod && (
-              <div className="rounded-xl border border-dashed border-line bg-panel p-4">
+              <div
+                id="api-key"
+                className="rounded-xl border border-dashed border-line bg-panel p-4"
+              >
                 <div className="flex items-center gap-2 text-sm font-black text-ink">
                   <KeyRound className="h-4 w-4 text-brand" />
-                  Headless access
+                  Sign in with API key
                 </div>
                 <p className="mt-2 text-xs leading-5 text-muted">
                   {apiKeyMethod.setup_hint}
                 </p>
-                <code className="mt-2 block truncate rounded-md bg-white px-2 py-1 text-[11px] text-ink">
-                  POST {apiKeyMethod.login_url}
-                </code>
+                <label className="mt-3 grid gap-1.5 text-xs font-black uppercase tracking-wide text-muted">
+                  Bearer token
+                  <input
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    type="password"
+                    autoComplete="off"
+                    placeholder="tops_…"
+                    className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                  />
+                </label>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="mt-3"
+                  disabled={sessionFromKey.isPending}
+                  onClick={submitApiKey}
+                >
+                  {sessionFromKey.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <KeyRound className="h-4 w-4" />
+                  )}
+                  Open console session
+                </Button>
               </div>
             )}
 
