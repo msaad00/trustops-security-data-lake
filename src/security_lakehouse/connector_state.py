@@ -290,7 +290,7 @@ def _missing_required_config(
         # same identity model as aws-posture and azure-posture.
         return ["project_id"] if not _has_value(credentials, "project_id") else []
 
-    if connector_id == "github-security":
+    if connector_id in {"github-security", "gitlab-security"}:
         missing: list[str] = []
         if not (_has_value(credentials, "credential_ref") or _has_value(credentials, "token")):
             missing.append("credential_ref")

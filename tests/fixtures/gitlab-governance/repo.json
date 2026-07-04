@@ -1,0 +1,7 @@
+{
+  "default_branch": "main",
+  "full_name": "acme/private-agent-api",
+  "name": "model-service",
+  "private": true,
+  "visibility": "private"
+}

@@ -22,6 +22,7 @@ from security_lakehouse.validation import validate_raw_events
 REAL_ADAPTERS = {
     "snowflake-evidence-lake",
     "github-security",
+    "gitlab-security",
     "okta-identity",
     "aws-posture",
     "google-workspace-identity",
@@ -187,6 +188,7 @@ def test_unknown_connector_id_raises_no_runner_registered(tmp_path: Path) -> Non
     ("connector_id", "fixture", "extra"),
     [
         ("github-security", "github-governance", {"repo": "acme/model-service"}),
+        ("gitlab-security", "gitlab-governance", {"repo": "acme/private-agent-api"}),
         ("snowflake-evidence-lake", "snowflake", {}),
         ("okta-identity", "okta", {}),
         ("aws-posture", "aws", {}),
