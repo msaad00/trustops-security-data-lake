@@ -63,6 +63,6 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 - [x] Headless architecture guide (`docs/HEADLESS_GRC.md`)
 - [ ] Unified v1 audit-log with stable event IDs (#339)
 - [ ] Audit readiness API and audit room (#340)
-- [ ] MCP/API resource catalog parity for platform endpoints
+- [ ] MCP/API resource catalog parity for platform endpoints (partial: MCP tools added)
 
 See [TRUSTOPS_85_PLAN.md](docs/TRUSTOPS_85_PLAN.md) for the 85% self-hosted bar.

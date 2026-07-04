@@ -30,12 +30,14 @@ EXPECTED_TOOLS = {
     "list_assets",
     "list_violations",
     "list_snapshots",
+    "list_audit_log",
     "list_frameworks",
     "describe_api",
     "list_agent_runs",
     "create_agent_run",
     "get_agent_run",
     "approve_agent_decision",
+    "get_audit_readiness",
 }
 
 
@@ -155,6 +157,30 @@ def test_describe_api_lists_resources(tmp_path):
     paths = {row["path"] for row in catalog}
     assert "/api/v1/posture/current" in paths
     assert "/api/v1/controls" in paths
+    assert "/api/v1/audit-log" in paths
+    assert "/api/v1/platform/audit-readiness" in paths
+
+
+def test_list_audit_log_returns_entries(tmp_path):
+    server = _seeded_server(tmp_path)
+    entries = call_tool(server, "list_audit_log", limit=10)
+    assert isinstance(entries, list)
+    if entries:
+        assert "event_id" in entries[0]
+        assert "occurred_at" in entries[0]
+
+
+def test_get_audit_readiness_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/platform/audit-readiness"
+        return {"data": {"audit_score": 88, "state": "audit_ready"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "get_audit_readiness")
+    assert result["data"]["audit_score"] == 88
 
 
 def test_mcp_agent_run_tools_call_authenticated_api(tmp_path, monkeypatch):

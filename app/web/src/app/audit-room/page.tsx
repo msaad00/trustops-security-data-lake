@@ -44,7 +44,7 @@ export default function AuditRoomPage() {
       <PageHeader
         eyebrow="Audit center"
         title="Audit readiness room"
-        description="Vanta/Drata-style audit parity — continuous controls, evidence, access reviews, auditor shares, and point-in-time snapshots in one view."
+        description="Continuous controls, evidence, access reviews, auditor shares, and point-in-time snapshots — same data via API for headless automation."
       />
 
       <QueryState queries={audit} label="audit readiness">
@@ -63,7 +63,7 @@ export default function AuditRoomPage() {
               <KpiTile
                 label="Audit score"
                 value={`${audit.data.audit_score}%`}
-                detail="Weighted posture, tests, frameworks, parity"
+                detail="Weighted posture, tests, frameworks, workflow coverage"
               />
               <KpiTile
                 label="Control tests"
@@ -76,9 +76,9 @@ export default function AuditRoomPage() {
                 detail={`${audit.data.posture.score}% posture`}
               />
               <KpiTile
-                label="Parity vs Vanta/Drata"
-                value={`${audit.data.parity.score}%`}
-                detail="Workflow checklist coverage"
+                label="Workflow coverage"
+                value={`${audit.data.workflow_coverage.score}%`}
+                detail="Audit-center checklist"
               />
             </div>
 
@@ -173,20 +173,20 @@ export default function AuditRoomPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  Vanta / Drata workflow parity
+                  Audit workflow checklist
                 </CardTitle>
                 <CardDescription>
-                  Honest checklist — green when TrustOps ships equivalent
-                  workflow today.
+                  Capabilities shipped today vs roadmap gaps — also available
+                  via API.
                 </CardDescription>
               </CardHeader>
               <CardContent className="grid gap-2">
-                {audit.data.parity.checklist.map((row) => (
+                {audit.data.workflow_coverage.checklist.map((row) => (
                   <div
                     key={row.id}
                     className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3 rounded-lg border border-line bg-surface px-3 py-2"
                   >
-                    {row.trustops ? (
+                    {row.shipped ? (
                       <CheckCircle2 className="mt-0.5 h-4 w-4 text-brand-green" />
                     ) : (
                       <CircleAlert className="mt-0.5 h-4 w-4 text-muted" />
@@ -197,8 +197,8 @@ export default function AuditRoomPage() {
                       </div>
                       <div className="text-xs text-muted">{row.note}</div>
                     </div>
-                    <Badge tone={row.trustops ? "ready" : "default"}>
-                      {row.trustops ? "parity" : "gap"}
+                    <Badge tone={row.shipped ? "ready" : "default"}>
+                      {row.shipped ? "shipped" : "gap"}
                     </Badge>
                   </div>
                 ))}
@@ -220,11 +220,11 @@ export default function AuditRoomPage() {
               </Button>
               <Button asChild variant="default">
                 <a
-                  href="https://github.com/msaad00/trustops-security-data-lake/blob/main/docs/COMPETITIVE_AUDIT_PARITY.md"
+                  href="https://github.com/msaad00/trustops-security-data-lake/blob/main/docs/AUDIT_READINESS.md"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Full parity doc
+                  Audit readiness doc
                   <ExternalLink className="h-4 w-4" />
                 </a>
               </Button>

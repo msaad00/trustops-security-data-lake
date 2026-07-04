@@ -1,4 +1,4 @@
-"""Vanta/Drata-style audit readiness aggregation for console and API."""
+"""Headless-first audit readiness aggregation for console and API."""
 
 from __future__ import annotations
 
@@ -17,77 +17,73 @@ from security_lakehouse.io import read_jsonl
 from security_lakehouse.services import access_reviews as access_review_services
 
 
-def _parity_checklist(*, posture_score: int, frameworks_ready: int, framework_total: int) -> list[dict[str, Any]]:
-    """Honest Vanta/Drata workflow parity — what TrustOps covers today vs gaps."""
+def _workflow_checklist(*, posture_score: int, framework_total: int) -> list[dict[str, Any]]:
+    """Audit-center workflow capabilities — shipped vs roadmap gaps."""
     return [
         {
             "id": "continuous_controls",
             "label": "Continuous control tests",
-            "vanta_drata": True,
-            "trustops": True,
+            "shipped": True,
             "note": "Deterministic tests over live connector evidence",
         },
         {
             "id": "framework_mapping",
             "label": "SOC 2 / ISO / NIST framework packs",
-            "vanta_drata": True,
-            "trustops": framework_total > 0,
+            "shipped": framework_total > 0,
             "note": f"{framework_total} registered framework(s)",
         },
         {
             "id": "evidence_collection",
             "label": "Automated evidence collection",
-            "vanta_drata": True,
-            "trustops": True,
+            "shipped": True,
             "note": "Read-only connectors + lake pipeline",
         },
         {
             "id": "auditor_portal",
             "label": "Auditor read-only portal",
-            "vanta_drata": True,
-            "trustops": True,
+            "shipped": True,
             "note": "Trust-center shares + auditor role redaction",
         },
         {
             "id": "access_reviews",
             "label": "Access review campaigns",
-            "vanta_drata": True,
-            "trustops": True,
+            "shipped": True,
             "note": "Certify / revoke / flag with audit trail",
         },
         {
             "id": "evidence_requests",
             "label": "Evidence requests to owners",
-            "vanta_drata": True,
-            "trustops": True,
+            "shipped": True,
             "note": "Remediation evidence-request workflow",
         },
         {
             "id": "policy_library",
             "label": "Policy template library",
-            "vanta_drata": True,
-            "trustops": True,
+            "shipped": True,
             "note": "Bundled templates + adopt/publish MVP",
         },
         {
             "id": "point_in_time",
             "label": "Point-in-time audit snapshot",
-            "vanta_drata": True,
-            "trustops": posture_score > 0,
+            "shipped": posture_score > 0,
             "note": "Assessment snapshots with hash chain",
+        },
+        {
+            "id": "headless_api",
+            "label": "Headless API / MCP / CI gates",
+            "shipped": True,
+            "note": "Same /api/v1 contract for agents and console",
         },
         {
             "id": "personnel_tracking",
             "label": "Personnel / HR onboarding",
-            "vanta_drata": True,
-            "trustops": False,
+            "shipped": False,
             "note": "Roadmap — use access reviews + IdP connector today",
         },
         {
             "id": "auditor_marketplace",
             "label": "Auditor marketplace",
-            "vanta_drata": True,
-            "trustops": False,
+            "shipped": False,
             "note": "Bring your own auditor; trust shares for evidence",
         },
     ]
@@ -99,7 +95,7 @@ def build_audit_readiness(
     session: Session,
     tenant_id: str,
 ) -> dict[str, Any]:
-    """Aggregate audit-room metrics comparable to Vanta/Drata audit centers."""
+    """Aggregate audit-room metrics for human console and headless API consumers."""
     posture_payload = build_current_posture(lake)
     posture = posture_payload.get("posture") or {}
     frameworks = posture_payload.get("frameworks") or []
@@ -169,18 +165,14 @@ def build_audit_readiness(
             }
         )
 
-    parity = _parity_checklist(
-        posture_score=posture_score,
-        frameworks_ready=frameworks_ready,
-        framework_total=framework_total,
-    )
-    parity_score = round(100 * sum(1 for row in parity if row["trustops"]) / max(len(parity), 1))
+    checklist = _workflow_checklist(posture_score=posture_score, framework_total=framework_total)
+    coverage_score = round(100 * sum(1 for row in checklist if row["shipped"]) / max(len(checklist), 1))
 
     audit_score = round(
         posture_score * 0.4
         + (100 * passing / total_tests if total_tests else 0) * 0.3
         + (100 * frameworks_ready / framework_total if framework_total else 0) * 0.2
-        + parity_score * 0.1
+        + coverage_score * 0.1
     )
 
     state = "audit_ready" if audit_score >= 85 and not gaps else ("on_track" if audit_score >= 60 else "needs_work")
@@ -221,9 +213,9 @@ def build_audit_readiness(
         },
         "agents": {"pending_decisions": pending_decisions},
         "gaps": gaps,
-        "parity": {
-            "score": parity_score,
-            "checklist": parity,
+        "workflow_coverage": {
+            "score": coverage_score,
+            "checklist": checklist,
         },
     }
 

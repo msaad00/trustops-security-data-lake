@@ -312,11 +312,10 @@ export interface PocReadiness {
   onboarding?: OnboardingProgress;
 }
 
-export interface AuditParityItem {
+export interface AuditWorkflowItem {
   id: string;
   label: string;
-  vanta_drata: boolean;
-  trustops: boolean;
+  shipped: boolean;
   note: string;
 }
 
@@ -348,7 +347,7 @@ export interface AuditReadiness {
   };
   agents: { pending_decisions: number };
   gaps: AuditReadinessGap[];
-  parity: { score: number; checklist: AuditParityItem[] };
+  workflow_coverage: { score: number; checklist: AuditWorkflowItem[] };
 }
 
 export interface SnapshotResponse {

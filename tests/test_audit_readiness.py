@@ -33,7 +33,7 @@ def test_build_audit_readiness_fixture(tmp_path: Path) -> None:
         data = build_audit_readiness(lake=tmp_path, session=session, tenant_id=tenant.id)
     assert "audit_score" in data
     assert data["control_tests"]["total"] >= 0
-    assert len(data["parity"]["checklist"]) >= 8
+    assert len(data["workflow_coverage"]["checklist"]) >= 8
 
 
 def test_audit_readiness_api(tmp_path: Path) -> None:
@@ -48,5 +48,5 @@ def test_audit_readiness_api(tmp_path: Path) -> None:
     resp = client.get("/api/v1/platform/audit-readiness", headers=_bearer(token))
     assert resp.status_code == HTTPStatus.OK
     body = resp.json()["data"]
-    assert body["parity"]["score"] >= 0
-    assert any(row["id"] == "continuous_controls" for row in body["parity"]["checklist"])
+    assert body["workflow_coverage"]["score"] >= 0
+    assert any(row["id"] == "continuous_controls" for row in body["workflow_coverage"]["checklist"])
