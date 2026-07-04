@@ -312,6 +312,44 @@ export interface PocReadiness {
   onboarding?: OnboardingProgress;
 }
 
+export interface AuditWorkflowItem {
+  id: string;
+  label: string;
+  shipped: boolean;
+  note: string;
+}
+
+export interface AuditReadinessGap {
+  id: string;
+  label: string;
+  href: string;
+}
+
+export interface AuditReadiness {
+  state: "audit_ready" | "on_track" | "needs_work" | string;
+  audit_score: number;
+  evaluated_at: string;
+  posture: {
+    score: number;
+    open_violations: number;
+    frameworks_ready: number;
+    frameworks_total: number;
+  };
+  control_tests: { passing: number; failing: number; total: number };
+  evidence_requests: { open: number };
+  access_reviews: { active: number; completed: number };
+  trust_shares: { active: number; auditor: number };
+  connectors: { enabled: number; failed: number; evidence_count: number };
+  snapshots: {
+    latest_hash: string | null;
+    latest_at: string | null;
+    count: number;
+  };
+  agents: { pending_decisions: number };
+  gaps: AuditReadinessGap[];
+  workflow_coverage: { score: number; checklist: AuditWorkflowItem[] };
+}
+
 export interface SnapshotResponse {
   snapshot_path: string;
   reason: string;
