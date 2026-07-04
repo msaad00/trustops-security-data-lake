@@ -258,6 +258,20 @@ def test_build_repository_graph_links_repo_governance_and_controls(tmp_path: Pat
     assert graph["counts"]["repository"] == 1
 
 
+def test_build_repository_graph_fixture_includes_link_metadata() -> None:
+    fixture_lake = Path(__file__).parent / "fixtures" / "repo-graph"
+    graph = build_repository_graph(fixture_lake)
+    evidence_nodes = [node for node in graph["nodes"] if node["kind"] == "evidence"]
+    assert evidence_nodes
+    linked = next(node for node in evidence_nodes if node.get("event_type") == "repository.codeowners")
+    assert linked["control_ids"] == ["SOC2-CC6.1"]
+    assert linked.get("evidence_id")
+    branch = next(
+        node for node in evidence_nodes if node.get("event_type") == "repository.governance.branch_protection"
+    )
+    assert branch.get("evidence_ref", "").startswith("https://")
+
+
 def test_crosswalk_returns_self_diagonal_and_shared_dimensions() -> None:
     crosswalk = build_framework_crosswalk()
     fids = crosswalk["frameworks"]

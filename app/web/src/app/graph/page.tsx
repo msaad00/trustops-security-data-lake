@@ -46,6 +46,7 @@ import {
   type ImperativeRef,
   type LayoutDir,
 } from "@/components/graph/GraphCanvas";
+import { GraphNodeDrawer } from "@/components/graph/GraphNodeDrawer";
 import { useComplianceGraph, useRepositoryGraph } from "@/lib/api/hooks";
 import type { GraphNode, GraphNodeKind } from "@/lib/api/types";
 
@@ -423,6 +424,12 @@ export default function GraphPage() {
     return () => window.removeEventListener("keydown", handler);
   }, [pathMode]);
 
+  const repoGraphEmpty =
+    graphMode === "repository" &&
+    !graph.isLoading &&
+    !graph.isError &&
+    (data?.nodes.length ?? 0) === 0;
+
   return (
     <div className="mx-auto grid w-full max-w-[1560px] min-w-0 gap-3 px-3 py-3 sm:px-4 lg:px-4">
       <PageHeader
@@ -581,16 +588,29 @@ export default function GraphPage() {
         </Card>
         <Card className="p-2.5">
           <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-            Covered assets
+            {graphMode === "compliance" ? "Covered assets" : "Signal gaps"}
           </div>
           <div className="mt-0.5 text-lg font-black text-ink">
-            {visibleSummary.assets}
+            {graphMode === "compliance"
+              ? visibleSummary.assets
+              : (counts.signal_gap ?? 0)}
           </div>
           <div className="mt-0.5 text-[11px] text-muted">
-            with evidence paths
+            {graphMode === "compliance"
+              ? "with evidence paths"
+              : "need authenticated sync"}
           </div>
         </Card>
       </div>
+
+      {repoGraphEmpty && (
+        <div className="rounded-xl border border-dashed border-line bg-slate-50 p-4 text-sm text-muted">
+          <b className="text-ink">No repository graph yet.</b> Run a public repo
+          audit or sync GitHub/GitLab governance evidence, then reload this
+          workbench. Private signals stay explicit — the graph will show{" "}
+          <code>not_available_public_mode</code> gaps instead of inventing data.
+        </div>
+      )}
 
       <div className="grid min-w-0 gap-3 xl:grid-cols-[220px_minmax(0,1fr)]">
         <Card className="max-h-[clamp(380px,calc(100dvh-260px),620px)] min-h-[340px] overflow-auto">
@@ -821,73 +841,11 @@ export default function GraphPage() {
         </Card>
       )}
 
-      <Card className="overflow-hidden">
-        <CardHeader>
-          <CardTitle>Selected node</CardTitle>
-          <CardDescription>
-            Click any node in the canvas to inspect. Edges are derived, not
-            stored.
-          </CardDescription>
-        </CardHeader>
-        <div className="p-4 pt-0 text-sm">
-          {selected ? (
-            <div className="grid gap-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge tone={KIND_TONE[selected.kind]}>
-                  {selected.kind.replace("_", " ")}
-                </Badge>
-                <code className="break-all text-xs text-ink">
-                  {selected.id}
-                </code>
-              </div>
-              <dl className="grid min-w-0 grid-cols-[110px_minmax(0,1fr)] gap-x-3 gap-y-1.5 sm:grid-cols-[140px_minmax(0,1fr)]">
-                <dt className="text-muted">Label</dt>
-                <dd className="min-w-0 break-words font-extrabold">
-                  {selected.label}
-                </dd>
-                {selected.subtitle && (
-                  <>
-                    <dt className="text-muted">Subtitle</dt>
-                    <dd className="min-w-0 break-words">{selected.subtitle}</dd>
-                  </>
-                )}
-                {selected.framework_id && (
-                  <>
-                    <dt className="text-muted">Framework</dt>
-                    <dd className="font-extrabold">{selected.framework_id}</dd>
-                  </>
-                )}
-                {selected.owner && (
-                  <>
-                    <dt className="text-muted">Owner</dt>
-                    <dd className="font-extrabold">{selected.owner}</dd>
-                  </>
-                )}
-                {selected.environment && (
-                  <>
-                    <dt className="text-muted">Environment</dt>
-                    <dd className="font-extrabold">{selected.environment}</dd>
-                  </>
-                )}
-                {selected.risk_score !== undefined && (
-                  <>
-                    <dt className="text-muted">Risk score</dt>
-                    <dd className="font-extrabold">{selected.risk_score}</dd>
-                  </>
-                )}
-                {selected.event_count !== undefined && (
-                  <>
-                    <dt className="text-muted">Evidence count</dt>
-                    <dd className="font-extrabold">{selected.event_count}</dd>
-                  </>
-                )}
-              </dl>
-            </div>
-          ) : (
-            <div className="text-xs text-muted">No node selected.</div>
-          )}
-        </div>
-      </Card>
+      <GraphNodeDrawer
+        node={selected}
+        graphMode={graphMode}
+        onClose={() => setSelected(null)}
+      />
     </div>
   );
 }
