@@ -34,7 +34,7 @@ program dashboards on the trust command center.
 | Family     | Component        | Policy                                             |
 | ---------- | ---------------- | -------------------------------------------------- |
 | Frameworks | `FrameworkBadge` | Neutral text marks — SOC, ISO, PCI, …              |
-| Connectors | `ConnectorMark`  | Vendor-colored abbreviations — AWS, GH, OKTA, …    |
+| Connectors | `ConnectorMark`  | Brand SVG logos (Simple Icons) with text fallback  |
 | Identity   | `AuthMark`       | IdP-colored abbreviations — Okta, Entra, SAML, KEY |
 
 See [THIRD_PARTY_ASSETS.md](THIRD_PARTY_ASSETS.md).

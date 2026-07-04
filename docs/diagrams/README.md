@@ -31,7 +31,8 @@ Visual references for architecture, ingestion, auth, and deployment.
 
 Interactive flow strips live in `app/web/src/components/diagrams/`:
 
-- `IngestionPipelineDiagram` — `/connectors`
-- `ConnectionCompareDiagram` — `/connectors`
+- `ConnectionCompareDiagram` — `/deploy` (evidence boundary reference)
 - `AuthIdentityDiagram` — `/auth`
 - `FlowStrip` — `/deploy` go-live path
+
+Operational connector UI (`/connectors`) shows live status and setup steps only — no marketing compare blocks.

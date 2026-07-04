@@ -71,7 +71,7 @@ const TIERS = [
       "Dedicated or isolated cluster",
       "Custom framework packs",
       "Customer success + onboarding",
-      "~⅓–½ managed GRC platform TCO target",
+      "~⅓–½ typical managed platform TCO target",
     ],
   },
 ] as const;
