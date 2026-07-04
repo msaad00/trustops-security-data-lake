@@ -10,13 +10,13 @@ operations: automation runs continuously; humans inspect, approve, and sign off.
 
 ## Surfaces (one core)
 
-| Surface | Primary caller | Role |
-| ------- | -------------- | ---- |
-| **REST API** | CI, scripts, integrations | Read posture, write gated mutations |
-| **CLI** | Operators, runbooks | Lake rebuild, connector sync, snapshots |
-| **MCP / agents** | SOC, GRC, remediation agents | Tool calls with same RBAC as API keys |
-| **Scheduler** | CronJob / K8s | Connector sync, workflow ticks |
-| **Console** | GRC leads, auditors | Visual drill-down, approvals, trust shares |
+| Surface          | Primary caller               | Role                                       |
+| ---------------- | ---------------------------- | ------------------------------------------ |
+| **REST API**     | CI, scripts, integrations    | Read posture, write gated mutations        |
+| **CLI**          | Operators, runbooks          | Lake rebuild, connector sync, snapshots    |
+| **MCP / agents** | SOC, GRC, remediation agents | Tool calls with same RBAC as API keys      |
+| **Scheduler**    | CronJob / K8s                | Connector sync, workflow ticks             |
+| **Console**      | GRC leads, auditors          | Visual drill-down, approvals, trust shares |
 
 All surfaces read the **same JSON** from the customer lake. Agents must not bypass
 approval gates for remediation, trust shares, or workflow side effects.
@@ -62,12 +62,12 @@ Console actions hit the **same API** as headless callers and appear in request a
 
 ## Idempotency and traceability
 
-| Concern | Mechanism |
-| ------- | --------- |
-| Duplicate writes | `Idempotency-Key` on mutating APIs |
-| Evidence dedupe | `event_id` on raw connector events |
-| Request tracing | `X-Correlation-ID` (one attempt per row) |
-| Audit integrity | Chained triage log + UUID request audit |
+| Concern          | Mechanism                                |
+| ---------------- | ---------------------------------------- |
+| Duplicate writes | `Idempotency-Key` on mutating APIs       |
+| Evidence dedupe  | `event_id` on raw connector events       |
+| Request tracing  | `X-Correlation-ID` (one attempt per row) |
+| Audit integrity  | Chained triage log + UUID request audit  |
 
 See [INGESTION_CONNECTORS_IDEMPOTENCY.md](INGESTION_CONNECTORS_IDEMPOTENCY.md).
 
