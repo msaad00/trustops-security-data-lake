@@ -2747,6 +2747,18 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         _status, body = api_v1.handle_get(f"/api/v1/frameworks/{framework_id}/detail", {}, lake_for(identity))
         return JSONResponse(_redact_payload(body, identity), status_code=int(_status))
 
+    @app.get("/api/v1/snapshots/{snapshot_id}", tags=["assessment"])
+    def snapshot_detail(snapshot_id: str, identity: Identity = Depends(_require_read)) -> JSONResponse:
+        from security_lakehouse.assessment import load_snapshot, snapshot_detail_summary
+
+        lake = lake_for(identity)
+        try:
+            payload = load_snapshot(lake, snapshot_id)
+        except (FileNotFoundError, json.JSONDecodeError, OSError):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="snapshot not found") from None
+        data = snapshot_detail_summary(snapshot_id, payload)
+        return JSONResponse(api_v1.envelope("snapshots.detail", _redact_payload(data, identity)))
+
     @app.get("/api/v1/snapshots/{snapshot_id}/export.pdf", tags=["assessment"])
     def snapshot_export_pdf(snapshot_id: str, identity: Identity = Depends(_require_read)) -> Response:
         from security_lakehouse.assessment import load_snapshot, safe_snapshot_export_filename

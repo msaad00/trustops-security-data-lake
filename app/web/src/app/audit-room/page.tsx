@@ -19,6 +19,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { EvidenceFreshnessSlaPanel } from "@/components/evidence/EvidenceFreshnessSlaPanel";
+import { AuditRoomTrendsPanel } from "@/components/audit-room/AuditRoomTrendsPanel";
+import { AuditSnapshotTimeline } from "@/components/audit-room/AuditSnapshotTimeline";
+import { RemediationSlaStrip } from "@/components/audit-room/RemediationSlaStrip";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { KpiTile } from "@/components/ui/KpiTile";
@@ -97,6 +100,12 @@ export default function AuditRoomPage() {
             </div>
 
             <EvidenceFreshnessSlaPanel />
+
+            <AuditRoomTrendsPanel />
+
+            <RemediationSlaStrip />
+
+            <AuditSnapshotTimeline />
 
             {audit.data.gaps.length > 0 && (
               <Card>

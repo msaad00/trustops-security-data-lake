@@ -298,6 +298,10 @@ export const api = {
     post<SnapshotResponse>("/snapshots", { reason }),
   listSnapshots: () =>
     get<{ count: number; snapshots: SnapshotSummary[] }>("/snapshots"),
+  getSnapshotDetail: (snapshotId: string) =>
+    get<{ data: SnapshotDetail }>(
+      `/v1/snapshots/${encodeURIComponent(snapshotId)}`,
+    ).then((b) => b.data),
   getTracking: (violationId: string) =>
     get<{
       violation_id: string;
@@ -678,6 +682,21 @@ export interface SnapshotSummary {
   posture_score: number | null;
   open_violation_count: number | null;
   critical_violation_count: number | null;
+}
+
+export interface SnapshotDetail {
+  snapshot_id: string;
+  evaluated_at: string | null;
+  reason: string;
+  assessment_hash: string | null;
+  prev_hash: string | null;
+  posture: Record<string, unknown> | null;
+  frameworks: Array<{ framework?: string; score?: number; name?: string }>;
+  violations: Array<{ control_id?: string; severity?: string }>;
+  violation_count: number;
+  stale_control_count: number;
+  evidence_refs: string[];
+  evidence_freshness?: unknown;
 }
 
 export interface CloudLinkSession {

@@ -334,6 +334,15 @@ export function useSnapshots(opts?: Opts<SnapshotSummary[]>) {
   });
 }
 
+export function useSnapshotDetail(snapshotId: string | undefined) {
+  return useQuery({
+    queryKey: ["snapshots", "detail", snapshotId],
+    queryFn: () => api.getSnapshotDetail(snapshotId!),
+    enabled: Boolean(snapshotId),
+    staleTime: STALE,
+  });
+}
+
 export function useTracking(violationId: string | null) {
   return useQuery({
     queryKey: ["tracking", violationId],

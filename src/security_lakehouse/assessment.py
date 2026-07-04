@@ -620,3 +620,36 @@ def _assessment_hash(assessment: dict[str, Any]) -> str:
     body = {key: value for key, value in assessment.items() if key != "assessment_hash"}
     canonical = json.dumps(body, sort_keys=True, separators=(",", ":"), default=str)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def snapshot_detail_summary(snapshot_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+    """Build an auditor-friendly snapshot detail payload (no raw bronze evidence)."""
+    posture = payload.get("posture") or {}
+    violations = payload.get("violations") or []
+    if not isinstance(violations, list):
+        violations = []
+    frameworks = payload.get("frameworks") or []
+    stale_controls = payload.get("stale_controls") or []
+    evidence_refs: set[str] = set()
+    for row in violations:
+        if isinstance(row, dict):
+            ref = row.get("evidence_ref")
+            if isinstance(ref, str) and ref.strip():
+                evidence_refs.add(ref.strip())
+    stale_count = (
+        len(stale_controls) if isinstance(stale_controls, list) else int(posture.get("stale_control_count") or 0)
+    )
+    return {
+        "snapshot_id": snapshot_id,
+        "evaluated_at": payload.get("evaluated_at"),
+        "reason": payload.get("snapshot_reason") or "manual",
+        "assessment_hash": payload.get("assessment_hash"),
+        "prev_hash": payload.get("prev_hash"),
+        "posture": posture,
+        "frameworks": frameworks,
+        "violations": violations[:50],
+        "violation_count": len(violations),
+        "stale_control_count": stale_count,
+        "evidence_refs": sorted(evidence_refs)[:100],
+        "evidence_freshness": payload.get("evidence_freshness"),
+    }
