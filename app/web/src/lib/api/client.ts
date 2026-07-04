@@ -39,6 +39,8 @@ import type {
   Crosswalk,
   CreateAgentRunPayload,
   EvidenceFreshness,
+  EvidenceFreshnessSummary,
+  EscalateFreshnessResult,
   EntityTag,
   FrameworkReadiness,
   FrameworkDetail,
@@ -190,6 +192,15 @@ export const api = {
     post<{ data: { ok: boolean } }>("/v1/auth/logout", {}).then(
       (body) => body.data,
     ),
+  authFreshnessSummary: () =>
+    get<{ data: EvidenceFreshnessSummary }>(
+      "/v1/evidence/freshness/summary",
+    ).then((body) => body.data),
+  escalateStaleEvidence: (limit = 10) =>
+    post<{ data: EscalateFreshnessResult }>("/v1/evidence/freshness/escalate", {
+      limit,
+      statuses: ["stale", "expired", "missing"],
+    }).then((body) => body.data),
   pocReadiness: () =>
     get<{ data: PocReadiness }>("/v1/platform/poc-readiness").then(
       (body) => body.data,

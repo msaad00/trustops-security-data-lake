@@ -33,6 +33,8 @@ import type {
   ControlTest,
   Crosswalk,
   EvidenceFreshness,
+  EvidenceFreshnessSummary,
+  EscalateFreshnessResult,
   EntityTag,
   FrameworkView,
   FrameworkDetail,
@@ -287,6 +289,30 @@ export function useEvidenceFreshness(opts?: Opts<EvidenceFreshness[]>) {
     refetchInterval: LIVE,
     refetchOnWindowFocus: true,
     ...opts,
+  });
+}
+
+export function useEvidenceFreshnessSummary(
+  opts?: Opts<EvidenceFreshnessSummary>,
+) {
+  return useQuery({
+    queryKey: ["evidence", "freshness", "summary"],
+    queryFn: api.authFreshnessSummary,
+    staleTime: STALE,
+    refetchInterval: LIVE,
+    ...opts,
+  });
+}
+
+export function useEscalateStaleEvidenceMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (limit: number) => api.escalateStaleEvidence(limit),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["evidence", "freshness"] });
+      void qc.invalidateQueries({ queryKey: ["remediation", "tasks"] });
+      void qc.invalidateQueries({ queryKey: ["platform", "audit-readiness"] });
+    },
   });
 }
 
