@@ -62,6 +62,17 @@ web-build:
 demo-screenshots:
 	npm --prefix app/web run demo-screenshots
 
+# Full pipeline: fixture + web build + ephemeral server + PNG capture (for CI/agents).
+demo-screenshots-full:
+	bash tools/capture_readme_screenshots.sh
+
+# Local console with golden fixture (run on your machine — localhost is not remote-hosted).
+demo-local: web-build
+	uv run security-lakehouse fixtures load --company golden --out build/lakehouse
+	uv run security-lakehouse db upgrade --lake build/lakehouse
+	@echo "Starting console at http://127.0.0.1:8787/console/dashboard/"
+	uv run security-lakehouse serve --lake build/lakehouse --server --allow-insecure-no-auth --port 8787
+
 web-ci: web-install web-typecheck web-build
 
 web-clean:

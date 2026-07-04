@@ -52,6 +52,10 @@ Gap map vs mature managed GRC SaaS (UX polish, HRIS/devices, billing): [PRODUCT_
 
 ## Console
 
+**Preview below** — committed screenshots from the **golden** fixture (37 controls, intentional failures). They render in this README on GitHub; you do **not** need a running server to browse them.
+
+To open the **live** console, run [Quick start](#quick-start) on your own machine. `http://127.0.0.1:8787` only works where you start `serve` — it is not a hosted demo URL.
+
 <p align="center">
   <img src="docs/images/trustops-product-mosaic.svg" alt="Trust command center, audit room, evidence, workflows, graph, trust center, connectors, access" width="100%">
 </p>
@@ -111,7 +115,23 @@ security-lakehouse db upgrade --lake build/lakehouse
 security-lakehouse serve --lake build/lakehouse --server --allow-insecure-no-auth --port 8787
 ```
 
-Open **http://127.0.0.1:8787/console/dashboard/** — the golden fixture ships 37 controls with intentional gaps so the workbench has real posture to triage. Try **Audit room** at `/console/audit-room/`.
+Open **http://127.0.0.1:8787/console/dashboard/** on the machine where you ran `serve` above.
+
+Regenerate committed README screenshots (CI/agents — one command):
+
+```bash
+make demo-screenshots-full
+```
+
+That loads the golden fixture, builds the console, starts a temporary local server, writes `docs/images/trustops-demo-*.png`, and exits. Requires `npx playwright install chromium` once.
+
+```bash
+curl -s http://127.0.0.1:8787/api/v1/posture/current | jq .
+curl -s http://127.0.0.1:8787/api/v1/platform/audit-readiness | jq .
+security-lakehouse assessment snapshot --lake build/lakehouse --reason demo
+```
+
+Hosted evaluator demos use your deployment URL — see [Shareable demo](docs/SHAREABLE_DEMO.md).
 
 Production auth requires signed session cookies:
 
@@ -121,14 +141,6 @@ security-lakehouse serve --lake build/lakehouse --server --port 8787
 ```
 
 See [SERVER_AUTH.md](docs/SERVER_AUTH.md) for OIDC/SAML, API keys, and user admin.
-
-```bash
-curl -s http://127.0.0.1:8787/api/v1/posture/current | jq .
-curl -s http://127.0.0.1:8787/api/v1/platform/audit-readiness | jq .
-security-lakehouse assessment snapshot --lake build/lakehouse --reason demo
-```
-
-Regenerate README screenshots after UI changes: `make demo-screenshots` (server on `:8787`).
 
 ## Documentation
 
@@ -151,7 +163,8 @@ Regenerate README screenshots after UI changes: `make demo-screenshots` (server 
 
 ```bash
 make smoke          # validate, pipeline, dashboard, pytest
-make demo-screenshots   # optional: refresh docs/images/trustops-demo-*.png
+make demo-screenshots-full   # regenerate docs/images/trustops-demo-*.png
+make demo-local     # golden fixture + serve on :8787 (your machine only)
 ```
 
 ## Repo layout
