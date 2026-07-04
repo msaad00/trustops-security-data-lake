@@ -35,7 +35,8 @@ program dashboards on the trust command center.
 | Lake routing      | Snowflake governed evidence, ClickHouse telemetry analytics   |
 | Agent console     | API routes, skills, allowed actions, snapshot controls        |
 | Connectors        | vendor marks, ingestion pipeline, managed GRC compare strip   |
-| Access / auth     | IdP marks, identity flow, session + RBAC                      |
+| Audit room        | score, gaps, freshness SLA, workflow checklist                |
+| Access / auth     | API keys, users & roles, invites, IdP marks                   |
 | Deploy            | OSS / self-hosted / hosted models + go-live flow              |
 
 ## Marks (not official logos)

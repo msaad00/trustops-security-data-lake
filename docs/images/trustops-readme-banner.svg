@@ -46,7 +46,7 @@
     <text x="52" y="72" class="eyebrow">CONTINUOUS TRUST OPERATIONS</text>
     <text x="52" y="132" class="headline">TrustOps control plane</text>
     <text x="52" y="171" class="sub">Live compliance posture from evidence lakes, controls-as-code,</text>
-    <text x="52" y="198" class="sub">remediation workflows, graph lineage, snapshots, and agent APIs.</text>
+    <text x="52" y="198" class="sub">audit room, freshness SLA, snapshots, and agent APIs.</text>
 
     <g filter="url(#shadow)">
       <rect x="52" y="244" width="256" height="128" rx="18" class="panel"/>
@@ -58,7 +58,7 @@
 
       <rect x="342" y="244" width="256" height="128" rx="18" class="panel"/>
       <text x="366" y="284" class="title">Assessment engine</text>
-      <text x="366" y="313" class="body">rules, freshness, owners,</text>
+      <text x="366" y="313" class="body">rules, freshness SLA, owners,</text>
       <text x="366" y="339" class="body">violations, confidence</text>
       <g transform="translate(366 354)">
         <rect width="48" height="16" rx="8" fill="#dcfce7"/>
@@ -74,7 +74,7 @@
 
       <rect x="922" y="244" width="256" height="128" rx="18" class="light"/>
       <text x="946" y="284" fill="#111827" font-size="17" font-weight="950">Trust outputs</text>
-      <text x="946" y="313" fill="#475569" font-size="13" font-weight="750">console - shares</text>
+      <text x="946" y="313" fill="#475569" font-size="13" font-weight="750">console - audit room - shares</text>
       <text x="946" y="339" fill="#475569" font-size="13" font-weight="750">OpenAPI - MCP - SDKs</text>
     </g>
 
@@ -94,8 +94,8 @@
     </g>
     <g transform="translate(632 414)" filter="url(#shadow)">
       <rect width="262" height="62" rx="16" fill="#451a03" stroke="#f59e0b"/>
-      <text x="22" y="27" class="label" fill="#fed7aa">AUDIT SNAPSHOTS</text>
-      <text x="22" y="47" class="tiny">hash-chained, point-in-time posture</text>
+      <text x="22" y="27" class="label" fill="#fed7aa">AUDIT READINESS</text>
+      <text x="22" y="47" class="tiny">score, gaps, freshness SLA</text>
     </g>
     <g transform="translate(922 414)" filter="url(#shadow)">
       <rect width="256" height="62" rx="16" class="panel"/>

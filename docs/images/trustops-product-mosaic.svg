@@ -51,24 +51,30 @@
   <g class="font">
     <g transform="translate(64 126)">
       <rect width="252" height="560" rx="16" fill="#08111e"/>
-      <text x="24" y="42" fill="#64748b" font-size="11" font-weight="950" letter-spacing="3">WORKBENCH</text>
-      <g transform="translate(22 78)">
-        <rect width="208" height="38" rx="10" fill="#172a45"/>
-        <text x="52" y="25" fill="#fff" font-size="14" font-weight="900">Command center</text>
+      <text x="24" y="42" fill="#64748b" font-size="11" font-weight="950" letter-spacing="3">OPERATE</text>
+      <g transform="translate(22 58)">
+        <rect width="208" height="34" rx="10" fill="#172a45"/>
+        <text x="52" y="22" fill="#fff" font-size="13" font-weight="900">Command center</text>
       </g>
-      <text x="74" y="158" fill="#cbd5e1" font-size="14" font-weight="850">Controls</text>
-      <text x="74" y="208" fill="#cbd5e1" font-size="14" font-weight="850">Remediation</text>
-      <text x="74" y="258" fill="#cbd5e1" font-size="14" font-weight="850">Evidence</text>
-      <text x="74" y="308" fill="#cbd5e1" font-size="14" font-weight="850">Workflows</text>
-      <text x="74" y="358" fill="#cbd5e1" font-size="14" font-weight="850">Graph</text>
-      <text x="74" y="408" fill="#cbd5e1" font-size="14" font-weight="850">Connectors</text>
-      <text x="74" y="458" fill="#cbd5e1" font-size="14" font-weight="850">Trust center</text>
+      <g transform="translate(22 100)">
+        <rect width="208" height="34" rx="10" fill="#1e3a5f" stroke="#38bdf8" stroke-width="1"/>
+        <text x="52" y="22" fill="#7dd3fc" font-size="13" font-weight="900">Audit room</text>
+      </g>
+      <text x="74" y="162" fill="#cbd5e1" font-size="13" font-weight="850">Controls</text>
+      <text x="74" y="198" fill="#cbd5e1" font-size="13" font-weight="850">Evidence</text>
+      <text x="74" y="234" fill="#cbd5e1" font-size="13" font-weight="850">Remediation</text>
+      <text x="74" y="270" fill="#cbd5e1" font-size="13" font-weight="850">Workflows</text>
+      <text x="74" y="306" fill="#cbd5e1" font-size="13" font-weight="850">Graph</text>
+      <text x="74" y="342" fill="#64748b" font-size="11" font-weight="950" letter-spacing="2">CONFIGURE</text>
+      <text x="74" y="372" fill="#cbd5e1" font-size="13" font-weight="850">Connectors</text>
+      <text x="74" y="408" fill="#cbd5e1" font-size="13" font-weight="850">Access</text>
+      <text x="74" y="444" fill="#cbd5e1" font-size="13" font-weight="850">Trust center</text>
     </g>
 
     <g transform="translate(348 130)">
       <text x="0" y="22" class="eyebrow">CURRENT POSTURE</text>
       <text x="0" y="58" fill="#111827" font-size="34" font-weight="950">Trust command center</text>
-      <text x="0" y="84" class="sub">Posture, findings, evidence, owners, workflows, and audit actions.</text>
+      <text x="0" y="84" class="sub">Posture, audit readiness, freshness SLA, and remediation queue.</text>
 
       <g transform="translate(0 122)">
         <rect width="142" height="96" rx="14" class="card"/>

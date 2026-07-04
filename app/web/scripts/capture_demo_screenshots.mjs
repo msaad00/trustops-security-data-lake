@@ -12,12 +12,14 @@ import { fileURLToPath } from "node:url";
 const base =
   process.env.TRUSTOPS_SCREENSHOT_URL?.replace(/\/$/, "") ||
   "http://127.0.0.1:8787";
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const outDir = path.join(root, "docs", "images");
 
 const shots = [
   ["trustops-demo-dashboard.png", "/console/dashboard/"],
+  ["trustops-demo-audit-room.png", "/console/audit-room/"],
   ["trustops-demo-evidence.png", "/console/evidence/"],
+  ["trustops-demo-auth.png", "/console/auth/"],
   ["trustops-demo-connectors.png", "/console/connectors/"],
   ["trustops-demo-frameworks.png", "/console/frameworks/"],
   ["trustops-demo-workflows.png", "/console/automation/"],
