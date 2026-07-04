@@ -478,6 +478,14 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "methods": ["GET"],
         "scopes": ["auth_admin"],
     },
+    {
+        "resource": "audit-log",
+        "path": "/api/v1/audit-log",
+        "kind": "collection",
+        "methods": ["GET"],
+        "scopes": ["read"],
+        "query_params": ["category", "actor", "limit", "include_requests"],
+    },
 ]
 
 

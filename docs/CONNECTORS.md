@@ -2,6 +2,10 @@
 
 TrustOps should collect evidence with the smallest viable access boundary.
 
+For ingestion idempotency, unique event IDs, headless/agent vs console surfaces,
+and security-finding flow, see
+[INGESTION_CONNECTORS_IDEMPOTENCY.md](INGESTION_CONNECTORS_IDEMPOTENCY.md).
+
 ## Access Priority
 
 | Priority | Mode                             | Best for                                              | Boundary                          |

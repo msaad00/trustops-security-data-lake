@@ -1,0 +1,132 @@
+# Ingestion, Connectors, Idempotency, and Headless GRC
+
+TrustOps is built for **continuous compliance automation**: connectors ingest
+evidence into **your** lake, the pipeline materializes gold posture, and the
+**same `/api/v1` contract** serves humans (console), agents (MCP/CLI), and CI.
+
+There is no runtime plugin marketplace — extensions are **code registries**
+(connectors, workflow actions, framework packs) shipped in the OSS tree.
+
+## Architecture
+
+```text
+Sources (AWS, Azure, GCP, Snowflake, GitHub, Okta, Jira, …)
+  → connector_runner (probe → sync → raw upsert)
+  → raw/connector_events.jsonl
+  → pipeline (bronze → silver → gold)
+  → control_tests, violations, posture
+  → /api/v1 (console, agents, MCP, scheduler)
+```
+
+| Layer           | Path / module                                               | Role                                                      |
+| --------------- | ----------------------------------------------------------- | --------------------------------------------------------- |
+| **Contracts**   | `connectors/catalog.json`                                   | 16 connector access contracts (8 implemented runners)     |
+| **Registry**    | `connector_runner.REGISTRY`                                 | Static dispatch — add `connectors_<vendor>.py` + one line |
+| **State**       | `connector_state.py`                                        | Probe-gated enablement, run history JSONL                 |
+| **Incremental** | `ingestion/watermark.py`                                    | Cursors in `gold/watermarks.jsonl`                        |
+| **Dedupe**      | `ingestion/merge.py`, `connector_runner._upsert_raw_events` | Last-writer-wins on `event_id`                            |
+| **Validation**  | `validation.py`                                             | Strict raw schema; reject duplicate `event_id`            |
+| **Scale**       | `docs/AUDIT_SCALE.md`, `io.iter_jsonl`                      | Streaming IO, capped violations, synthetic fixtures       |
+
+## Unique IDs and timestamps
+
+| Artifact           | ID field            | Timestamp                     | Notes                                 |
+| ------------------ | ------------------- | ----------------------------- | ------------------------------------- |
+| Raw evidence       | `event_id`          | `event_time`                  | Required; merge dedupes on id         |
+| Silver events      | `event_id`          | normalized in pipeline        | Propagates from bronze                |
+| Violations         | `violation_id`      | `evaluated_at` on assessment  | Control-linked findings               |
+| Control tests      | `test_id`           | `evaluated_at`                | Pass/fail/warn                        |
+| Triage audit       | `tracking_id`       | `occurred_at` (UTC ISO)       | Hash chain + optional idempotency key |
+| Request audit      | `event_id` (UUID)   | `occurred_at`                 | Per HTTP decision row                 |
+| Activity log entry | `event_id`          | `occurred_at`                 | Unified `/api/v1/audit-log`           |
+| Agent runs         | DB `id`             | `created_at` / `completed_at` | Tenant-scoped                         |
+| Snapshots          | `assessment_hash`   | `evaluated_at`                | Hash chain `prev_hash`                |
+| Connector runs     | `run_id` in payload | `started_at`                  | In `connector_runs.jsonl`             |
+
+All server timestamps use **UTC** with timezone-aware ISO-8601.
+
+## Idempotency matrix
+
+| Operation            | Mechanism                                | Header / key                          |
+| -------------------- | ---------------------------------------- | ------------------------------------- |
+| Connector raw upsert | Dedupe by `event_id`                     | N/A (natural key)                     |
+| Violation triage     | `append_chained_jsonl`                   | `idempotency_key` in body             |
+| Agent run create     | DB unique `(tenant_id, idempotency_key)` | `Idempotency-Key`                     |
+| Trust share create   | Lake idempotency key                     | `Idempotency-Key`                     |
+| Workflow webhook     | Stable derived key                       | `Idempotency-Key` on retry            |
+| HTTP request audit   | **Not idempotent**                       | `X-Correlation-ID` traces one attempt |
+| Pipeline rebuild     | `evidence_set_sha256`                    | Same input → same hash                |
+
+**Important:** `X-Correlation-ID` ties one request for tracing; it does **not**
+suppress duplicate audit rows on client retries. Use `Idempotency-Key` on
+**mutating** API calls that must not double-apply.
+
+## Security findings (not a separate issue tracker)
+
+TrustOps does not mirror Dependabot/Snyk as a standalone “security issues”
+product. Findings flow through **normalized evidence → violations**:
+
+| Source            | Event types                              | Downstream                        |
+| ----------------- | ---------------------------------------- | --------------------------------- |
+| GitHub governance | vulnerability alerts, branch protection  | Raw → silver → controls           |
+| Jira              | security/governance tickets              | Workflow + SLA signals            |
+| Cloud posture     | misconfigurations                        | Control tests                     |
+| SOC agent         | `vulnerability.*`, `detection.*` filters | Triage proposals (approval-gated) |
+
+Query open security posture via `GET /api/v1/violations` and control tests —
+not a separate `/security-issues` store.
+
+## Headless vs human
+
+| Caller        | Entry                        | Write model                             | Audit                          |
+| ------------- | ---------------------------- | --------------------------------------- | ------------------------------ |
+| **Console**   | `/console/*`                 | Same API as agents                      | Session cookie + request audit |
+| **CLI**       | `security-lakehouse`         | Lake + server DB                        | Operator identity              |
+| **CI / gate** | `POST /api/v1/...` + API key | Read posture; optional snapshot         | API key + correlation ID       |
+| **MCP agent** | `mcp_server.py` tools        | Lake writes local; DB writes via server | Same RBAC as API key           |
+| **Scheduler** | CronJob `scheduler tick`     | Connector sync + workflows              | System actor in connector runs |
+
+Humans and agents read the **same JSON**; agents must not bypass approval gates
+for remediation, trust shares, or workflow side effects.
+
+See [AGENT_API.md](api/AGENT_API.md) and [CONTINUOUS_INGESTION.md](CONTINUOUS_INGESTION.md).
+
+## API: unified activity log
+
+```http
+GET /api/v1/audit-log?category=connector&limit=100
+GET /api/v1/audit-log?include_requests=true&category=request
+Authorization: Bearer <token>
+```
+
+Returns v1 envelope with `event_id`, `occurred_at`, `category`, `actor`,
+`summary`, `subject`, `payload`.
+
+Legacy unversioned `GET /api/audit-log` remains for backward compatibility.
+
+## Adding a connector (registry, not plugin)
+
+1. Implement collector in `src/security_lakehouse/connectors_<vendor>.py`
+2. Register builder in `connector_runner.REGISTRY`
+3. Add contract row to `connectors/catalog.json` with `is_implemented: true`
+4. Add probe/sync tests under `tests/test_*_connector.py`
+5. Document permissions in `docs/CONNECTORS.md`
+
+## Scale
+
+For million-finding workloads see [AUDIT_SCALE.md](AUDIT_SCALE.md):
+
+- `fixtures synthesize-scale` + streaming pipeline
+- Capped violation rollups in assessment API
+- Warehouse sinks (Snowflake, ClickHouse) for analytics outside JSONL
+
+Audit log aggregation uses `iter_jsonl` per source file; full k-way merge at
+very large lake sizes is a follow-up for operator SIEM export.
+
+## Related
+
+- [CONNECTORS.md](CONNECTORS.md)
+- [AUDIT_SCALE.md](AUDIT_SCALE.md)
+- [api/AGENT_API.md](api/AGENT_API.md)
+- [HEADLESS_GRC.md](HEADLESS_GRC.md)
+- [AUDIT_READINESS.md](AUDIT_READINESS.md) (when merged)

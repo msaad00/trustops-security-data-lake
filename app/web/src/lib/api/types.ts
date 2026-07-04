@@ -699,6 +699,7 @@ export interface TrustShare {
 // --- Audit log --------------------------------------------------------------
 
 export interface AuditLogEntry {
+  event_id: string;
   category:
     | "triage"
     | "connector"

@@ -40,7 +40,7 @@ TrustOps reaches 85% when a team can complete this path in one short session:
 3. **Connector secret and scope UX**: discover objects after auth, show
    selectable scopes, persist only references and fingerprints, and block
    enablement until probe succeeds.
-4. **Workflow operating loop**: Tines-like templates, run history, approvals,
+4. **Workflow operating loop**: template library, run history, approvals,
    retries, egress guardrails, and action logs tied to findings.
 5. **Framework packs and evidence coverage**: expand mapped controls, evidence
    requirements, owners, freshness windows, and “how to fix” guidance.

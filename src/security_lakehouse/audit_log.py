@@ -20,6 +20,7 @@ Every entry has the same shape so the UI table is a single render path.
 
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -27,6 +28,7 @@ from typing import Any
 from security_lakehouse.auth.request_audit import REQUEST_AUDIT_FILE
 from security_lakehouse.connector_state import CONFIG_FILE as CONNECTOR_CONFIG_FILE
 from security_lakehouse.connector_state import RUNS_FILE as CONNECTOR_RUNS_FILE
+from security_lakehouse.io import iter_jsonl
 from security_lakehouse.trust_share import SHARES_FILE as TRUST_SHARES_FILE
 from security_lakehouse.workflows import RUNS_FILE as WORKFLOW_RUNS_FILE
 
@@ -41,15 +43,28 @@ def _gold(lake_dir: str | Path) -> Path:
 def _read_log(path: Path) -> list[dict[str, Any]]:
     if not path.is_file():
         return []
-    out: list[dict[str, Any]] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        if not line.strip():
-            continue
-        try:
-            out.append(json.loads(line))
-        except json.JSONDecodeError:
-            continue
-    return out
+    return list(iter_jsonl(path, missing_ok=True))
+
+
+def _stable_event_id(
+    *,
+    category: str,
+    subject: str,
+    occurred_at: str,
+    payload: dict[str, Any],
+) -> str:
+    for key in ("event_id", "tracking_id", "share_id", "correlation_id", "run_id", "idempotency_key"):
+        value = payload.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    digest = hashlib.sha256(
+        json.dumps(
+            {"category": category, "subject": subject, "occurred_at": occurred_at},
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    return digest[:32]
 
 
 def _entry(
@@ -62,14 +77,21 @@ def _entry(
     result: str | None = None,
     payload: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    body = payload or {}
     return {
+        "event_id": _stable_event_id(
+            category=category,
+            subject=subject,
+            occurred_at=occurred_at,
+            payload=body,
+        ),
         "category": category,
         "actor": actor or "system",
         "occurred_at": occurred_at,
         "summary": summary,
         "subject": subject,
         "result": result,
-        "payload": payload or {},
+        "payload": body,
     }
 
 
@@ -202,7 +224,7 @@ def _request_entries(lake: Path) -> list[dict[str, Any]]:
                 actor=str(row.get("actor") or "anonymous"),
                 occurred_at=str(row.get("occurred_at") or ""),
                 summary=(f"{row.get('method')} {row.get('route')} {row.get('decision')} ({row.get('status_code')})"),
-                subject=str(row.get("correlation_id") or ""),
+                subject=str(row.get("event_id") or row.get("correlation_id") or ""),
                 result=str(row.get("decision") or ""),
                 payload=row,
             )

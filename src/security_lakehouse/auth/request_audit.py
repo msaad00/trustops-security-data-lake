@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -26,8 +27,14 @@ def append_request_audit(
     correlation_id: str,
     identity: Identity | None = None,
 ) -> dict[str, Any]:
-    """Persist a single request authorization decision."""
+    """Persist a single request authorization decision.
+
+    Each row gets a unique ``event_id``. ``correlation_id`` ties one HTTP
+    request/response pair for tracing; it is **not** an idempotency key — client
+    retries may append multiple rows with the same correlation id.
+    """
     event = {
+        "event_id": str(uuid.uuid4()),
         "category": "request",
         "actor": identity.email if identity else "anonymous",
         "actor_user_id": identity.user_id if identity else None,
