@@ -191,6 +191,23 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         return _get("/api/v1/snapshots", lake, limit=str(limit), offset=str(offset))
 
     @mcp.tool()
+    def list_audit_log(category: str = "", limit: int = 100, include_requests: bool = False) -> list[JsonObject]:
+        """List unified activity log entries from the lake (connectors, triage, workflows).
+
+        Each row includes stable ``event_id`` and UTC ``occurred_at``. Set
+        ``include_requests=true`` only when request audit JSONL is present locally.
+        """
+        from security_lakehouse.audit_log import build_audit_log
+
+        capped = max(1, min(limit, 1000))
+        return build_audit_log(
+            lake,
+            category=category or None,
+            limit=capped,
+            include_requests=include_requests,
+        )
+
+    @mcp.tool()
     def list_frameworks() -> list[JsonObject]:
         """List the compliance frameworks in the registry (id, name, version, source, status).
 
@@ -286,6 +303,15 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             f"/api/v1/agent-runs/{encoded_run}/decisions/{decision_index}/approve",
             {"note": note},
         )
+
+    @mcp.tool()
+    def get_audit_readiness() -> JsonObject:
+        """Return audit score, blocking gaps, and workflow coverage checklist.
+
+        Requires ``TRUSTOPS_API_URL`` and ``TRUSTOPS_API_KEY`` — tenant-scoped
+        fields (evidence requests, access reviews, trust shares) live in the app DB.
+        """
+        return _server_api_request("GET", "/api/v1/platform/audit-readiness")
 
     # ------------------------------------------------------------------
     # Write tools — lake-backed actions an agent can take, not just read.
