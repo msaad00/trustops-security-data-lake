@@ -97,7 +97,12 @@ def create_api_key(
 
 def resolve_api_key(session: Session, token: str) -> ApiKey | None:
     """Resolve a presented token to its API key by hash (active or not)."""
-    return session.scalars(select(ApiKey).where(ApiKey.key_hash == hash_token(token))).one_or_none()
+    return resolve_api_key_by_hash(session, hash_token(token))
+
+
+def resolve_api_key_by_hash(session: Session, key_hash: str) -> ApiKey | None:
+    """Look up an API key row by persisted SHA-256 digest only."""
+    return session.scalars(select(ApiKey).where(ApiKey.key_hash == key_hash)).one_or_none()
 
 
 def list_api_keys(session: Session, *, tenant_id: str) -> list[ApiKey]:

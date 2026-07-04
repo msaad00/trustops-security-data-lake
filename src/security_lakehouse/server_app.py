@@ -40,6 +40,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from security_lakehouse import api_legacy, api_v1, remediation_guidance, tenancy, trust_share
 from security_lakehouse.assessment import build_current_posture, write_assessment_snapshot
+from security_lakehouse.auth.api_key_session import ApiKeySessionError, exchange_api_key_for_browser_session
 from security_lakehouse.auth.dependencies import get_session, require_scope
 from security_lakehouse.auth.oidc import OIDCLoginError, build_oauth, complete_oidc_login, load_oidc_config
 from security_lakehouse.auth.presentation import build_auth_methods_payload
@@ -1357,29 +1358,22 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         session: Session = Depends(get_session),
     ) -> JSONResponse:
         """Exchange a valid API key for a browser session cookie."""
-        now = datetime.now(UTC)
-        key = repository.resolve_api_key(session, body.api_key.strip())
-        if key is None or not key.is_active(now=now):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid or inactive API key")
-        if not key.user.is_active:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="user is disabled")
-        key.last_used_at = now
-        _row, sess_token = repository.create_user_session(
-            session,
-            tenant_id=key.tenant_id,
-            user_id=key.user_id,
-            idp="api_key",
-        )
+        try:
+            user, sess_token = exchange_api_key_for_browser_session(session, raw_token=body.api_key)
+        except ApiKeySessionError as exc:
+            detail = str(exc)
+            code = status.HTTP_403_FORBIDDEN if detail == "user is disabled" else status.HTTP_401_UNAUTHORIZED
+            raise HTTPException(status_code=code, detail=detail) from exc
         session.commit()
         response = JSONResponse(
             api_v1.envelope(
                 "auth.session",
                 {
-                    "user_id": key.user_id,
-                    "tenant_id": key.tenant_id,
-                    "email": key.user.email,
-                    "role": key.user.role,
-                    "scopes": sorted(scopes_for_role(key.user.role)),
+                    "user_id": user.id,
+                    "tenant_id": user.tenant_id,
+                    "email": user.email,
+                    "role": user.role,
+                    "scopes": sorted(scopes_for_role(user.role)),
                 },
             )
         )
@@ -1544,8 +1538,8 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         from security_lakehouse.commercial import scim as scim_services
         from security_lakehouse.commercial.scim_provision import (
             list_scim_users,
+            require_scim_bearer,
             resolve_scim_tenant_id,
-            verify_scim_bearer,
         )
 
         if not scim_services.scim_enabled():
@@ -1553,10 +1547,10 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
                 api_v1.error_envelope("not_implemented", scim_services.scim_not_implemented_detail()),
                 status_code=status.HTTP_501_NOT_IMPLEMENTED,
             )
-        auth_header = request.headers.get("Authorization", "")
-        bearer = auth_header[7:] if auth_header.lower().startswith("bearer ") else ""
-        if not verify_scim_bearer(bearer):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid SCIM bearer token")
+        try:
+            require_scim_bearer(request.headers.get("Authorization"))
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)) from exc
         params = _params(request)
         start_index = int((params.get("startIndex") or ["1"])[0])
         count = int((params.get("count") or ["100"])[0])
@@ -1569,8 +1563,8 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         from security_lakehouse.commercial import scim as scim_services
         from security_lakehouse.commercial.scim_provision import (
             create_scim_user,
+            require_scim_bearer,
             resolve_scim_tenant_id,
-            verify_scim_bearer,
         )
 
         if not scim_services.scim_enabled():
@@ -1578,10 +1572,10 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
                 api_v1.error_envelope("not_implemented", scim_services.scim_not_implemented_detail()),
                 status_code=status.HTTP_501_NOT_IMPLEMENTED,
             )
-        auth_header = request.headers.get("Authorization", "")
-        bearer = auth_header[7:] if auth_header.lower().startswith("bearer ") else ""
-        if not verify_scim_bearer(bearer):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid SCIM bearer token")
+        try:
+            require_scim_bearer(request.headers.get("Authorization"))
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)) from exc
         body = await request.json()
         email = str(body.get("userName") or "").strip()
         if not email and body.get("emails"):
@@ -1620,8 +1614,8 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         from security_lakehouse.commercial import scim as scim_services
         from security_lakehouse.commercial.scim_provision import (
             patch_scim_user,
+            require_scim_bearer,
             resolve_scim_tenant_id,
-            verify_scim_bearer,
         )
 
         if not scim_services.scim_enabled():
@@ -1629,10 +1623,10 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
                 api_v1.error_envelope("not_implemented", scim_services.scim_not_implemented_detail()),
                 status_code=status.HTTP_501_NOT_IMPLEMENTED,
             )
-        auth_header = request.headers.get("Authorization", "")
-        bearer = auth_header[7:] if auth_header.lower().startswith("bearer ") else ""
-        if not verify_scim_bearer(bearer):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid SCIM bearer token")
+        try:
+            require_scim_bearer(request.headers.get("Authorization"))
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)) from exc
         body = await request.json()
         active: bool | None = None
         role: str | None = None

@@ -25,6 +25,22 @@ def verify_scim_bearer(provided: str | None) -> bool:
     return secrets.compare_digest(provided or "", expected)
 
 
+def scim_bearer_from_authorization(header_value: str | None) -> str:
+    """Extract bearer token from an Authorization header without logging it."""
+    if not header_value:
+        return ""
+    lowered = header_value.lower()
+    if not lowered.startswith("bearer "):
+        return ""
+    return header_value[7:].strip()
+
+
+def require_scim_bearer(header_value: str | None) -> None:
+    """Raise ValueError when SCIM bearer auth fails."""
+    if not verify_scim_bearer(scim_bearer_from_authorization(header_value)):
+        raise ValueError("invalid SCIM bearer token")
+
+
 def _scim_user(row: User) -> dict[str, Any]:
     return {
         "schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],
