@@ -1,8 +1,5 @@
 /**
- * Neutral vendor marks for connector sources (enterprise GRC-style integration tiles).
- *
- * These are text marks with vendor-recognizable accent colors — not official
- * product logos. See docs/THIRD_PARTY_ASSETS.md.
+ * Text fallback marks when no brand SVG is mapped (see connector-brand-logos.ts).
  */
 
 export interface ConnectorVisual {
