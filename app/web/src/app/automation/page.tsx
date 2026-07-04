@@ -526,6 +526,73 @@ export default function AutomationPage() {
     return { result: match.result, output: match.output, error: match.error };
   }, [lastRun, selectedNode]);
 
+  const isTypingTarget = useCallback((target: EventTarget | null) => {
+    if (!(target instanceof HTMLElement)) return false;
+    const tag = target.tagName;
+    return (
+      tag === "INPUT" ||
+      tag === "TEXTAREA" ||
+      tag === "SELECT" ||
+      target.isContentEditable
+    );
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (auditor || isTypingTarget(event.target)) return;
+
+      if (event.key === "Escape") {
+        if (lastRun) {
+          setLastRun(null);
+          event.preventDefault();
+          return;
+        }
+        if (selectedNode) {
+          setSelectedNode(null);
+          event.preventDefault();
+        }
+        return;
+      }
+
+      if (
+        (event.key === "Delete" || event.key === "Backspace") &&
+        selectedNode
+      ) {
+        deleteNode(selectedNode);
+        setSelectedNode(null);
+        event.preventDefault();
+        return;
+      }
+
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        void persist();
+        return;
+      }
+
+      if (
+        (event.metaKey || event.ctrlKey) &&
+        event.key === "Enter" &&
+        editor.nodes.length > 0
+      ) {
+        event.preventDefault();
+        void execute(false);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [
+    auditor,
+    deleteNode,
+    editor.nodes.length,
+    execute,
+    isTypingTarget,
+    lastRun,
+    persist,
+    selectedNode,
+  ]);
+
   return (
     <div className="grid min-w-0 gap-4 px-4 py-5 sm:px-5 lg:px-7">
       <PageHeader
@@ -667,6 +734,14 @@ export default function AutomationPage() {
       </div>
 
       <RunnerContract nodes={editor.nodes} edges={editor.edges} />
+
+      <p className="text-xs text-muted">
+        Keyboard: <kbd className="rounded border border-line px-1">Esc</kbd>{" "}
+        clear selection ·{" "}
+        <kbd className="rounded border border-line px-1">Del</kbd> remove node ·{" "}
+        <kbd className="rounded border border-line px-1">⌘/Ctrl+S</kbd> save ·{" "}
+        <kbd className="rounded border border-line px-1">⌘/Ctrl+Enter</kbd> run
+      </p>
 
       <Card className="overflow-hidden">
         <CardHeader>

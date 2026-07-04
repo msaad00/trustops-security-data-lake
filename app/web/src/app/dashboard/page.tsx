@@ -14,6 +14,8 @@ import {
   usePostureStream,
 } from "@/lib/api/hooks";
 import { AuditReadinessStrip } from "@/components/dashboard/AuditReadinessStrip";
+import { EvidenceFreshnessStrip } from "@/components/dashboard/EvidenceFreshnessStrip";
+import { TrustHomeQuickLinks } from "@/components/dashboard/TrustHomeQuickLinks";
 import { PostureRing } from "@/components/dashboard/PostureRing";
 import { ReadinessGrid } from "@/components/dashboard/ReadinessGrid";
 import { FixNext } from "@/components/dashboard/FixNext";
@@ -75,16 +77,18 @@ export default function DashboardPage() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0">
           <div className="text-[12px] font-black uppercase tracking-wider text-brand">
-            Trust Command Center
+            Trust Home
           </div>
-          <span className="sr-only">Trust Home</span>
           <h1 className="mt-1 text-[clamp(24px,2.5vw,32px)] font-black leading-tight text-ink">
-            Executive trust overview
+            Posture, proof, and what to fix next
           </h1>
           <p className="mt-1 max-w-[720px] text-sm leading-5 text-muted">
-            Live readiness, risk, evidence freshness, and owner action in one
-            place — managed GRC-style continuous compliance at a glance.
+            Guided readiness across frameworks, live evidence freshness, and
+            owner actions — your continuous compliance home base.
           </p>
+          <div className="mt-3">
+            <TrustHomeQuickLinks />
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <span
@@ -104,6 +108,7 @@ export default function DashboardPage() {
       </div>
 
       <AuditReadinessStrip />
+      <EvidenceFreshnessStrip />
 
       <QueryState queries={[posture]} label="posture">
         <Card className="overflow-hidden border-line shadow-card">

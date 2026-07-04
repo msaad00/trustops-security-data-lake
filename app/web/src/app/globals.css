@@ -12,6 +12,20 @@
     --color-rail-line: #243244;
     --color-surface: #ffffff;
     --color-surface-muted: #f1f5f9;
+    --color-brand: #4f7cff;
+    --color-brand-cyan: #30c7d2;
+    --color-ready: #16b364;
+    --color-attention: #f79009;
+    --color-critical: #d92d20;
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.25rem;
+    --shadow-card: 0 18px 45px rgba(15, 23, 42, 0.08);
+    --shadow-hero: 0 24px 65px rgba(2, 6, 23, 0.22);
+    --motion-fast: 150ms;
+    --motion-base: 220ms;
+    --motion-slow: 320ms;
   }
 
   .dark {
