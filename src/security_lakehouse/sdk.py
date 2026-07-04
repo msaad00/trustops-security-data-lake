@@ -107,7 +107,7 @@ class TrustOpsClient:
 
         from security_lakehouse.sdk import TrustOpsClient
 
-        client = TrustOpsClient("https://trustops.example.com", api_key="sk-...")
+        client = TrustOpsClient("https://trustops.example.com", api_key="tops_example_token")
         posture = client.get_posture()
         print(posture["posture"]["score"])
 
@@ -325,7 +325,7 @@ class AsyncTrustOpsClient:
 
         from security_lakehouse.sdk import AsyncTrustOpsClient
 
-        async with AsyncTrustOpsClient("https://trustops.example.com", api_key="sk-...") as client:
+        async with AsyncTrustOpsClient("https://trustops.example.com", api_key="tops_example_token") as client:
             posture = await client.get_posture()
             print(posture["posture"]["score"])
 
