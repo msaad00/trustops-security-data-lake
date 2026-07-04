@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from http import HTTPStatus
 from pathlib import Path
 
@@ -101,24 +102,46 @@ def test_admin_can_issue_and_revoke_keys(env) -> None:
     client, tokens = env
     admin = _bearer(tokens["admin"])
 
-    created = client.post("/api/v1/auth/keys", json={"user_email": "read_only@acme.test", "name": "ci"}, headers=admin)
+    created = client.post(
+        "/api/v1/auth/keys",
+        json={"user_email": "read_only@acme.test", "name": "ci", "expires_in_days": 30},
+        headers=admin,
+    )
     assert created.status_code == HTTPStatus.CREATED
-    new_token = created.json()["data"]["token"]
-    key_id = created.json()["data"]["id"]
+    created_data = created.json()["data"]
+    new_token = created_data["token"]
+    key_id = created_data["id"]
+    assert created_data["role"] == "read_only"
+    assert created_data["expires_at"]
 
     # the freshly minted key works as a read_only user
     assert client.get("/api/v1/controls", headers=_bearer(new_token)).status_code == HTTPStatus.OK
+    whoami = client.get("/api/v1/auth/whoami", headers=_bearer(new_token))
+    assert whoami.status_code == HTTPStatus.OK
+    assert whoami.json()["data"]["email"] == "read_only@acme.test"
 
     # revoke it, and it stops working
     revoked = client.delete(f"/api/v1/auth/keys/{key_id}", headers=admin)
     assert revoked.status_code == HTTPStatus.OK
     assert client.get("/api/v1/controls", headers=_bearer(new_token)).status_code == HTTPStatus.UNAUTHORIZED
+    assert client.get("/api/v1/auth/whoami", headers=_bearer(new_token)).status_code == HTTPStatus.UNAUTHORIZED
 
 
 def test_issue_key_for_unknown_user_is_404(env) -> None:
     client, tokens = env
     resp = client.post("/api/v1/auth/keys", json={"user_email": "ghost@acme.test"}, headers=_bearer(tokens["admin"]))
     assert resp.status_code == HTTPStatus.NOT_FOUND
+    assert "ghost@acme.test" not in json.dumps(resp.json())
+
+
+def test_issue_key_rejects_invalid_expiry(env) -> None:
+    client, tokens = env
+    resp = client.post(
+        "/api/v1/auth/keys",
+        json={"user_email": "read_only@acme.test", "expires_in_days": 0},
+        headers=_bearer(tokens["admin"]),
+    )
+    assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
 
 def test_auditor_reads_redacted_owner_fields(env) -> None:

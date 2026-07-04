@@ -11,7 +11,10 @@ import type {
   Assessment,
   AssetRisk,
   AuthMethods,
+  AuthApiKey,
   AuthWhoami,
+  CreatedAuthApiKey,
+  CreateAuthKeyPayload,
   ControlExceptionItem,
   EvidenceRequestItem,
   PostureMetricPoint,
@@ -144,6 +147,19 @@ export const api = {
     get<{ data: AuthMethods }>("/v1/auth/methods").then((body) => body.data),
   authWhoami: () =>
     get<{ data: AuthWhoami }>("/v1/auth/whoami").then((body) => body.data),
+  authKeys: () =>
+    get<{ data: AuthApiKey[]; meta?: { count?: number } }>(
+      "/v1/auth/keys",
+    ).then((body) => body.data),
+  createAuthKey: (payload: CreateAuthKeyPayload) =>
+    post<{ data: CreatedAuthApiKey }>("/v1/auth/keys", payload).then(
+      (body) => body.data,
+    ),
+  revokeAuthKey: (keyId: string) =>
+    mutate<{ data: { id: string; revoked: boolean } }>(
+      `/v1/auth/keys/${encodeURIComponent(keyId)}`,
+      "DELETE",
+    ).then((body) => body.data),
   authLogout: () =>
     post<{ data: { ok: boolean } }>("/v1/auth/logout", {}).then(
       (body) => body.data,

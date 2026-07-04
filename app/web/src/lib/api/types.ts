@@ -211,6 +211,31 @@ export interface AuthWhoami {
   scopes: string[];
 }
 
+export interface AuthApiKey {
+  id: string;
+  name: string;
+  prefix: string;
+  user_email: string;
+  role: string;
+  created_at: string | null;
+  last_used_at: string | null;
+  expires_at: string | null;
+  revoked: boolean;
+}
+
+export interface CreateAuthKeyPayload {
+  user_email: string;
+  name?: string;
+  expires_in_days?: number | null;
+}
+
+export interface CreatedAuthApiKey {
+  id: string;
+  prefix: string;
+  user_email: string;
+  token: string;
+}
+
 export interface AuthMethods {
   require_auth: boolean;
   methods: AuthMethod[];

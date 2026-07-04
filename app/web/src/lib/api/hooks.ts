@@ -17,7 +17,9 @@ import type {
   AuditReadiness,
   AssetRisk,
   AuthMethods,
+  AuthApiKey,
   AuthWhoami,
+  CreateAuthKeyPayload,
   ComplianceGraph,
   ConfigurePayload,
   ConnectorRun,
@@ -143,6 +145,36 @@ export function useAuthWhoami(opts?: Opts<AuthWhoami>) {
     staleTime: STALE,
     retry: false,
     ...opts,
+  });
+}
+
+export function useAuthKeys(opts?: Opts<AuthApiKey[]>) {
+  return useQuery({
+    queryKey: ["auth", "keys"],
+    queryFn: api.authKeys,
+    staleTime: STALE,
+    retry: false,
+    ...opts,
+  });
+}
+
+export function useCreateAuthKeyMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: CreateAuthKeyPayload) => api.createAuthKey(payload),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["auth", "keys"] });
+    },
+  });
+}
+
+export function useRevokeAuthKeyMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (keyId: string) => api.revokeAuthKey(keyId),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["auth", "keys"] });
+    },
   });
 }
 

@@ -22,8 +22,15 @@ creation endpoint.
 
 ```bash
 security-lakehouse platform seed-dev --lake build/lakehouse
+security-lakehouse auth issue-key --lake build/lakehouse --tenant-slug dev --email admin@localhost --name local
 security-lakehouse auth list-keys --lake build/lakehouse --tenant-slug acme
 ```
+
+The console **Access** page (`/console/auth/`) lets admins create, list, and
+revoke keys with a one-time token reveal. The CLI `auth issue-key` and
+`platform seed-dev` commands are metadata-only so bearer tokens do not land in
+terminal logs; use the authenticated console or API create-key endpoint when a
+human must copy the one-time secret.
 
 ## OIDC
 
@@ -52,6 +59,9 @@ Endpoints:
 The console **Access** page (`/console/auth/`) and sign-in page render the same
 `auth.methods` payload with neutral IdP marks (Okta, Entra ID, Google, SAML) —
 not official vendor logos. See [THIRD_PARTY_ASSETS.md](THIRD_PARTY_ASSETS.md).
+
+Admins manage API keys under **Access → API keys** (create with one-time secret,
+revoke, MCP config copy).
 
 <p align="center">
   <img src="images/trustops-identity-boundary.svg" alt="TrustOps identity boundary: OIDC, SAML, and API keys to tenant RBAC and audit" width="100%">
