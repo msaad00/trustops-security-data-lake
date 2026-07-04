@@ -14,6 +14,7 @@ pytest.importorskip("sqlalchemy")
 from fastapi.testclient import TestClient  # noqa: E402
 
 from security_lakehouse.audit_readiness import build_audit_readiness  # noqa: E402
+from security_lakehouse.db import vendor_assessments as vendor_assessment_db  # noqa: E402
 from security_lakehouse.db.repository import create_api_key, create_tenant, create_user  # noqa: E402
 from security_lakehouse.server_app import create_app  # noqa: E402
 from test_api_v1 import _seed_lake  # noqa: E402
@@ -50,3 +51,27 @@ def test_audit_readiness_api(tmp_path: Path) -> None:
     body = resp.json()["data"]
     assert body["workflow_coverage"]["score"] >= 0
     assert any(row["id"] == "continuous_controls" for row in body["workflow_coverage"]["checklist"])
+    assert "vendor_risk" in body
+    assert body["vendor_risk"]["total"] == 0
+
+
+def test_audit_readiness_vendor_gaps(tmp_path: Path) -> None:
+    from datetime import UTC, datetime, timedelta
+
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path)
+    with app.state.sessionmaker() as session:
+        tenant = create_tenant(session, slug="vendor-audit", name="Vendor Audit")
+        create_user(session, tenant_id=tenant.id, email="admin@vendor-audit.test", role="admin")
+        vendor_assessment_db.create_assessment(
+            session,
+            tenant_id=tenant.id,
+            vendor_name="Cloud SaaS",
+            template_id="soc2-vendor-standard",
+            due_at=datetime.now(UTC) - timedelta(days=3),
+        )
+        session.commit()
+        data = build_audit_readiness(lake=tmp_path, session=session, tenant_id=tenant.id)
+    assert data["vendor_risk"]["total"] == 1
+    assert data["vendor_risk"]["overdue"] == 1
+    assert any(gap["id"] == "vendor_overdue" for gap in data["gaps"])

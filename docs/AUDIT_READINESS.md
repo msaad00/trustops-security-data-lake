@@ -18,7 +18,7 @@ See [HEADLESS_GRC.md](HEADLESS_GRC.md) for the overall architecture.
 | Policy management             | MVP template library (8 templates)                         |
 | Point-in-time audit           | Assessment snapshots + hash chain                          |
 | Personnel / HRIS              | Gap — use IdP + access reviews                             |
-| Vendor risk                   | MVP vendor risk module                                     |
+| Vendor risk                   | MVP vendor risk module + audit-room diligence rollups      |
 | Workflow automation           | Native workflow canvas with approvals                      |
 | Self-host / data residency    | **Yes** — core differentiator                              |
 | Headless / agent API          | **Yes** — MCP, OpenAPI, agent harness, CI gates            |
@@ -78,7 +78,7 @@ State:
 - `on_track` — score ≥ 60
 - `needs_work` — otherwise
 
-Blocking gaps include: no connectors, failing controls, open evidence requests, no active access review, no auditor share.
+Blocking gaps include: no connectors, failing controls, open evidence requests, no active access review, no auditor share, overdue or missing vendor diligence.
 
 ## Related
 
