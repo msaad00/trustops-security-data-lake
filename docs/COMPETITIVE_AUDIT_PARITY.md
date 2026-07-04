@@ -6,20 +6,20 @@ marketing claim of feature parity.
 
 ## Executive summary
 
-| Dimension | Vanta / Drata | TrustOps v0.2.x |
-| --------- | ------------- | --------------- |
-| Continuous control monitoring | Native tests + integrations | Deterministic tests over customer lake |
-| Framework packs | Broad, sales-curated | SOC 2, NIST AI RMF, FedRAMP foundation, CIS AWS, ISO packs |
-| Evidence automation | Deep integration marketplace | Open connector catalog + read-only cloud posture |
-| Auditor experience | Hosted auditor portal | Trust-center shares + `auditor` role redaction |
-| Access reviews | Personnel + app access | Access-review campaigns with certify/revoke/flag |
-| Policy management | Large template library | MVP template library (8 templates) |
-| Point-in-time audit | Audit period snapshots | Assessment snapshots + hash chain |
-| Personnel / HRIS | Native | Gap — use IdP + access reviews |
-| Vendor risk | Mature questionnaires | MVP vendor risk module |
-| Workflow automation | Limited native | Tines-grade workflow canvas (differentiator) |
-| Self-host / data residency | No | **Yes** — core differentiator |
-| Headless / agent API | Limited | **Yes** — MCP, OpenAPI, agent harness |
+| Dimension                     | Vanta / Drata                | TrustOps v0.2.x                                            |
+| ----------------------------- | ---------------------------- | ---------------------------------------------------------- |
+| Continuous control monitoring | Native tests + integrations  | Deterministic tests over customer lake                     |
+| Framework packs               | Broad, sales-curated         | SOC 2, NIST AI RMF, FedRAMP foundation, CIS AWS, ISO packs |
+| Evidence automation           | Deep integration marketplace | Open connector catalog + read-only cloud posture           |
+| Auditor experience            | Hosted auditor portal        | Trust-center shares + `auditor` role redaction             |
+| Access reviews                | Personnel + app access       | Access-review campaigns with certify/revoke/flag           |
+| Policy management             | Large template library       | MVP template library (8 templates)                         |
+| Point-in-time audit           | Audit period snapshots       | Assessment snapshots + hash chain                          |
+| Personnel / HRIS              | Native                       | Gap — use IdP + access reviews                             |
+| Vendor risk                   | Mature questionnaires        | MVP vendor risk module                                     |
+| Workflow automation           | Limited native               | Tines-grade workflow canvas (differentiator)               |
+| Self-host / data residency    | No                           | **Yes** — core differentiator                              |
+| Headless / agent API          | Limited                      | **Yes** — MCP, OpenAPI, agent harness                      |
 
 **Console surface:** `/console/audit-room/` aggregates audit score, gaps, and parity checklist.
 **API:** `GET /api/v1/platform/audit-readiness`
@@ -41,24 +41,24 @@ marketing claim of feature parity.
 
 ### Gaps (honest)
 
-| Gap | Vanta/Drata | TrustOps workaround |
-| --- | ----------- | ------------------- |
-| Personnel tracking | HRIS-linked onboarding | IdP connector + access reviews |
-| Auditor marketplace | In-product auditor network | Export trust share + PDF snapshot |
-| Pen test coordination | In-app | External process |
-| Device/agent inventory | Endpoint agents | Connector evidence only |
-| Policy acknowledgment | Employee attestation flows | Roadmap |
-| Native billing/signup | Self-serve SaaS | Commercial scaffold (P5) |
+| Gap                    | Vanta/Drata                | TrustOps workaround               |
+| ---------------------- | -------------------------- | --------------------------------- |
+| Personnel tracking     | HRIS-linked onboarding     | IdP connector + access reviews    |
+| Auditor marketplace    | In-product auditor network | Export trust share + PDF snapshot |
+| Pen test coordination  | In-app                     | External process                  |
+| Device/agent inventory | Endpoint agents            | Connector evidence only           |
+| Policy acknowledgment  | Employee attestation flows | Roadmap                           |
+| Native billing/signup  | Self-serve SaaS            | Commercial scaffold (P5)          |
 
 ## UI/UX parity targets (Epic #96)
 
-| Surface | Target bar |
-| ------- | ---------- |
-| Trust Home dashboard | Executive KPIs + audit strip + live posture |
-| Audit room | Single pane for audit score, gaps, parity checklist |
-| Framework drill-down | Control → rule → evidence → datasource (#91) |
-| Dark mode | CSS-variable theming across shell + review pages |
-| Workflow canvas | Tines-grade inspector + approvals (#90) |
+| Surface              | Target bar                                          |
+| -------------------- | --------------------------------------------------- |
+| Trust Home dashboard | Executive KPIs + audit strip + live posture         |
+| Audit room           | Single pane for audit score, gaps, parity checklist |
+| Framework drill-down | Control → rule → evidence → datasource (#91)        |
+| Dark mode            | CSS-variable theming across shell + review pages    |
+| Workflow canvas      | Tines-grade inspector + approvals (#90)             |
 
 ## Audit score formula
 

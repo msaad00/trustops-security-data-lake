@@ -27,7 +27,10 @@ function consoleHref(href: string) {
   return href.startsWith("/console") ? href.replace(/^\/console/, "") : href;
 }
 
-const STATE_COPY: Record<string, { label: string; tone: "ready" | "attention" | "critical" }> = {
+const STATE_COPY: Record<
+  string,
+  { label: string; tone: "ready" | "attention" | "critical" }
+> = {
   audit_ready: { label: "Audit ready", tone: "ready" },
   on_track: { label: "On track", tone: "attention" },
   needs_work: { label: "Needs work", tone: "attention" },
@@ -84,7 +87,8 @@ export default function AuditRoomPage() {
                 <CardHeader>
                   <CardTitle className="text-base">Blocking gaps</CardTitle>
                   <CardDescription>
-                    Top items an auditor or GRC lead would ask for before sign-off.
+                    Top items an auditor or GRC lead would ask for before
+                    sign-off.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-2">
@@ -108,25 +112,34 @@ export default function AuditRoomPage() {
             <div className="grid gap-4 lg:grid-cols-2">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Evidence &amp; access</CardTitle>
+                  <CardTitle className="text-base">
+                    Evidence &amp; access
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-2 text-sm text-muted">
                   <div className="flex justify-between">
                     <span>Open evidence requests</span>
-                    <b className="text-ink">{audit.data.evidence_requests.open}</b>
+                    <b className="text-ink">
+                      {audit.data.evidence_requests.open}
+                    </b>
                   </div>
                   <div className="flex justify-between">
                     <span>Active access reviews</span>
-                    <b className="text-ink">{audit.data.access_reviews.active}</b>
+                    <b className="text-ink">
+                      {audit.data.access_reviews.active}
+                    </b>
                   </div>
                   <div className="flex justify-between">
                     <span>Auditor trust shares</span>
-                    <b className="text-ink">{audit.data.trust_shares.auditor}</b>
+                    <b className="text-ink">
+                      {audit.data.trust_shares.auditor}
+                    </b>
                   </div>
                   <div className="flex justify-between">
                     <span>Connectors / evidence rows</span>
                     <b className="text-ink">
-                      {audit.data.connectors.enabled} / {audit.data.connectors.evidence_count}
+                      {audit.data.connectors.enabled} /{" "}
+                      {audit.data.connectors.evidence_count}
                     </b>
                   </div>
                 </CardContent>
@@ -149,7 +162,9 @@ export default function AuditRoomPage() {
                   </div>
                   <div className="flex justify-between">
                     <span>Open violations</span>
-                    <b className="text-ink">{audit.data.posture.open_violations}</b>
+                    <b className="text-ink">
+                      {audit.data.posture.open_violations}
+                    </b>
                   </div>
                 </CardContent>
               </Card>
@@ -157,9 +172,12 @@ export default function AuditRoomPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Vanta / Drata workflow parity</CardTitle>
+                <CardTitle className="text-base">
+                  Vanta / Drata workflow parity
+                </CardTitle>
                 <CardDescription>
-                  Honest checklist — green when TrustOps ships equivalent workflow today.
+                  Honest checklist — green when TrustOps ships equivalent
+                  workflow today.
                 </CardDescription>
               </CardHeader>
               <CardContent className="grid gap-2">
@@ -174,7 +192,9 @@ export default function AuditRoomPage() {
                       <CircleAlert className="mt-0.5 h-4 w-4 text-muted" />
                     )}
                     <div>
-                      <div className="text-sm font-bold text-ink">{row.label}</div>
+                      <div className="text-sm font-bold text-ink">
+                        {row.label}
+                      </div>
                       <div className="text-xs text-muted">{row.note}</div>
                     </div>
                     <Badge tone={row.trustops ? "ready" : "default"}>

@@ -28,7 +28,7 @@ def test_build_audit_readiness_fixture(tmp_path: Path) -> None:
     app = create_app(tmp_path)
     with app.state.sessionmaker() as session:
         tenant = create_tenant(session, slug="auditco", name="Audit Co")
-        user = create_user(session, tenant_id=tenant.id, email="admin@auditco.test", role="admin")
+        create_user(session, tenant_id=tenant.id, email="admin@auditco.test", role="admin")
         session.commit()
         data = build_audit_readiness(lake=tmp_path, session=session, tenant_id=tenant.id)
     assert "audit_score" in data

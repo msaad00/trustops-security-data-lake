@@ -6,7 +6,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from security_lakehouse import trust_share
@@ -138,9 +137,13 @@ def build_audit_readiness(
 
     gaps: list[dict[str, str]] = []
     if int(summary.get("enabled_connectors") or 0) == 0:
-        gaps.append({"id": "connectors", "label": "Connect at least one evidence source", "href": "/console/connectors"})
+        gaps.append(
+            {"id": "connectors", "label": "Connect at least one evidence source", "href": "/console/connectors"}
+        )
     if failing > 0:
-        gaps.append({"id": "failing_controls", "label": f"{failing} control test(s) failing", "href": "/console/controls"})
+        gaps.append(
+            {"id": "failing_controls", "label": f"{failing} control test(s) failing", "href": "/console/controls"}
+        )
     if open_evidence:
         gaps.append(
             {
@@ -174,12 +177,10 @@ def build_audit_readiness(
     parity_score = round(100 * sum(1 for row in parity if row["trustops"]) / max(len(parity), 1))
 
     audit_score = round(
-        (
-            posture_score * 0.4
-            + (100 * passing / total_tests if total_tests else 0) * 0.3
-            + (100 * frameworks_ready / framework_total if framework_total else 0) * 0.2
-            + parity_score * 0.1
-        )
+        posture_score * 0.4
+        + (100 * passing / total_tests if total_tests else 0) * 0.3
+        + (100 * frameworks_ready / framework_total if framework_total else 0) * 0.2
+        + parity_score * 0.1
     )
 
     state = "audit_ready" if audit_score >= 85 and not gaps else ("on_track" if audit_score >= 60 else "needs_work")
