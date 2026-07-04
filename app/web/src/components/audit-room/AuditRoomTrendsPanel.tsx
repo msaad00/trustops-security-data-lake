@@ -20,10 +20,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  useInsightsTimeseries,
-  useSnapshots,
-} from "@/lib/api/hooks";
+import { useInsightsTimeseries, useSnapshots } from "@/lib/api/hooks";
 
 function fmtDate(iso: string): string {
   const d = new Date(iso);
@@ -87,8 +84,16 @@ export function AuditRoomTrendsPanel() {
                 margin={{ top: 4, right: 16, left: 0, bottom: 4 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e9f0" />
-                <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="#94a3b8" />
-                <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} stroke="#94a3b8" />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 11 }}
+                  stroke="#94a3b8"
+                />
+                <YAxis
+                  domain={[0, 100]}
+                  tick={{ fontSize: 11 }}
+                  stroke="#94a3b8"
+                />
                 <Tooltip
                   contentStyle={{
                     fontSize: 12,
@@ -129,13 +134,27 @@ export function AuditRoomTrendsPanel() {
                 margin={{ top: 4, right: 16, left: 0, bottom: 4 }}
               >
                 <defs>
-                  <linearGradient id="auditViolGrad" x1="0" x2="0" y1="0" y2="1">
+                  <linearGradient
+                    id="auditViolGrad"
+                    x1="0"
+                    x2="0"
+                    y1="0"
+                    y2="1"
+                  >
                     <stop offset="0%" stopColor="#f87171" stopOpacity={0.35} />
-                    <stop offset="100%" stopColor="#f87171" stopOpacity={0.02} />
+                    <stop
+                      offset="100%"
+                      stopColor="#f87171"
+                      stopOpacity={0.02}
+                    />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e9f0" />
-                <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="#94a3b8" />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 11 }}
+                  stroke="#94a3b8"
+                />
                 <YAxis tick={{ fontSize: 11 }} stroke="#94a3b8" />
                 <Tooltip
                   contentStyle={{
