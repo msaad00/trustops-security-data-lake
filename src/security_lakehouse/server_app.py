@@ -141,6 +141,14 @@ class AcceptInviteRequest(_StrictModel):
     display_name: str = ""
 
 
+class SignupRequest(_StrictModel):
+    org_slug: str
+    org_name: str
+    admin_email: str
+    admin_name: str = ""
+    plan_tier: str = "starter"
+
+
 class CreateTaskRequest(_StrictModel):
     title: str
     description: str = ""
@@ -1235,6 +1243,15 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         user = repository.get_user_by_email(session, tenant_id=identity.tenant_id, email=body.user_email)
         if user is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"no user {body.user_email!r} in tenant")
+        from security_lakehouse.commercial.limits import UsageLimitError, assert_within_limit
+        from security_lakehouse.db.models import Tenant
+
+        tenant = session.get(Tenant, identity.tenant_id)
+        if tenant is not None:
+            try:
+                assert_within_limit(session, tenant=tenant, resource="api_keys")
+            except UsageLimitError as exc:
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
         expires_at = None
         if body.expires_in_days is not None:
             expires_at = datetime.now(UTC) + timedelta(days=body.expires_in_days)
@@ -1262,7 +1279,54 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         session.commit()
         return JSONResponse(api_v1.envelope("auth.keys", {"id": key_id, "revoked": True}))
 
-    # --- commercial hosted: invites + SCIM scaffold ---
+    # --- commercial hosted: pricing, signup, invites, usage, SCIM ---
+    @app.get("/api/v1/platform/pricing", tags=["commercial"])
+    def platform_pricing() -> JSONResponse:
+        from security_lakehouse.commercial import pricing as pricing_services
+
+        return JSONResponse(api_v1.envelope("platform.pricing", pricing_services.pricing_payload()))
+
+    @app.post("/api/v1/signup", status_code=status.HTTP_201_CREATED, tags=["commercial"])
+    def self_serve_signup(
+        request: Request,
+        body: SignupRequest,
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        from security_lakehouse.commercial import signup as signup_services
+
+        secret = request.headers.get("X-TrustOps-Signup-Secret")
+        if not signup_services.verify_signup_secret(secret):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="invalid signup secret")
+        try:
+            data = signup_services.create_workspace(
+                session,
+                org_slug=body.org_slug,
+                org_name=body.org_name,
+                admin_email=body.admin_email,
+                admin_name=body.admin_name,
+                plan_tier=body.plan_tier,
+            )
+        except ValueError as exc:
+            detail = str(exc)
+            if "TRUSTOPS_" in detail or "self-serve signup requires" in detail:
+                raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail=detail) from exc
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail) from exc
+        session.commit()
+        return JSONResponse(api_v1.envelope("signup", data), status_code=status.HTTP_201_CREATED)
+
+    @app.get("/api/v1/platform/usage", tags=["commercial"])
+    def platform_usage(
+        identity: Identity = Depends(_require_admin),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        from security_lakehouse.commercial import limits as limit_services
+        from security_lakehouse.db.models import Tenant
+
+        tenant = session.get(Tenant, identity.tenant_id)
+        if tenant is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="tenant not found")
+        return JSONResponse(api_v1.envelope("platform.usage", limit_services.usage_summary(session, tenant=tenant)))
+
     @app.get("/api/v1/invites", tags=["commercial"])
     def list_invites_route(
         request: Request,
@@ -1288,6 +1352,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         session: Session = Depends(get_session),
     ) -> JSONResponse:
         from security_lakehouse.commercial import invites as invite_services
+        from security_lakehouse.commercial.limits import UsageLimitError
 
         try:
             row, _token = invite_services.create_invite(
@@ -1297,6 +1362,8 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
                 role=body.role,
                 invited_by=identity.email,
             )
+        except UsageLimitError as exc:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
         except ValueError as exc:
             detail = str(exc)
             code = (
@@ -1314,9 +1381,12 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     @app.post("/api/v1/invites/accept", tags=["commercial"])
     def accept_invite_route(body: AcceptInviteRequest, session: Session = Depends(get_session)) -> JSONResponse:
         from security_lakehouse.commercial import invites as invite_services
+        from security_lakehouse.commercial.limits import UsageLimitError
 
         try:
             data = invite_services.accept_invite(session, token=body.token, display_name=body.display_name)
+        except UsageLimitError as exc:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
         except ValueError as exc:
             detail = str(exc)
             if "TRUSTOPS_COMMERCIAL_HOSTED" in detail:
