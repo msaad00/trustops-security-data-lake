@@ -440,7 +440,7 @@ def _parser() -> argparse.ArgumentParser:
         help="role: admin/security_admin/contributor/auditor/read_only",
     )
     auth_user.set_defaults(func=_auth_create_user)
-    auth_key = auth_sub.add_parser("issue-key", help="mint an API key for a user (printed once)")
+    auth_key = auth_sub.add_parser("issue-key", help="mint an API key for a user")
     auth_key.add_argument("--lake", required=True, help="security data lake output directory")
     auth_key.add_argument("--tenant-slug", required=True, help="tenant slug")
     auth_key.add_argument("--email", required=True, help="user email the key acts as")
@@ -1111,24 +1111,19 @@ def _auth_issue_key(args: argparse.Namespace) -> int:
             from datetime import UTC, datetime, timedelta
 
             expires_at = datetime.now(UTC) + timedelta(days=args.expires_days)
-        key, token = repository.create_api_key(
+        key, _token = repository.create_api_key(
             session, tenant_id=tenant.id, user_id=user.id, name=args.name, expires_at=expires_at
         )
-        print(
-            json.dumps(
-                {
-                    "tenant": tenant.slug,
-                    "user_email": user.email,
-                    "api_key_id": key.id,
-                    "prefix": key.prefix,
-                    "token": token,
-                    "status": key.status,
-                    "warning": "Store the token now — it cannot be retrieved again.",
-                },
-                indent=2,
-                sort_keys=True,
-            )
-        )
+        result = {
+            "tenant": tenant.slug,
+            "user_email": user.email,
+            "api_key_id": key.id,
+            "prefix": key.prefix,
+            "status": key.status,
+            "token_revealed": False,
+            "warning": "Token omitted from CLI output. Use the authenticated console or API create-key endpoint for one-time reveal.",
+        }
+        print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 
 
@@ -1186,7 +1181,7 @@ def _platform_seed_dev(args: argparse.Namespace) -> int:
                 display_name=args.display_name,
                 role="admin",
             )
-        key, token = repository.create_api_key(session, tenant_id=tenant.id, user_id=user.id, name="local-dev")
+        key, _token = repository.create_api_key(session, tenant_id=tenant.id, user_id=user.id, name="local-dev")
         result = {
             "tenant_id": tenant.id,
             "tenant_slug": tenant.slug,
@@ -1195,8 +1190,8 @@ def _platform_seed_dev(args: argparse.Namespace) -> int:
             "role": user.role,
             "api_key_id": key.id,
             "api_key_prefix": key.prefix,
-            "token": token,
-            "warning": "Store the token now — it cannot be retrieved again.",
+            "token_revealed": False,
+            "warning": "Token omitted from CLI output. Use the authenticated console or API create-key endpoint for one-time reveal.",
         }
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0

@@ -27,8 +27,10 @@ security-lakehouse auth list-keys --lake build/lakehouse --tenant-slug acme
 ```
 
 The console **Access** page (`/console/auth/`) lets admins create, list, and
-revoke keys with a one-time token reveal. CLI `auth issue-key` and
-`platform seed-dev` also print the raw token once.
+revoke keys with a one-time token reveal. The CLI `auth issue-key` and
+`platform seed-dev` commands are metadata-only so bearer tokens do not land in
+terminal logs; use the authenticated console or API create-key endpoint when a
+human must copy the one-time secret.
 
 ## OIDC
 
