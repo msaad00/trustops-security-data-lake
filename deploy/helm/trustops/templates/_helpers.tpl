@@ -72,7 +72,7 @@ true
 {{- else -}}
 {{- $found := false -}}
 {{- range .Values.env -}}
-{{- if or (eq .name "TRUSTOPS_OIDC_CLIENT_ID") (eq .name "TRUSTOPS_SAML_IDP_METADATA_URL") (eq .name "TRUSTOPS_SESSION_SECRET") -}}
+{{- if or (eq .name "TRUSTOPS_OIDC_CLIENT_ID") (eq .name "TRUSTOPS_SAML_IDP_METADATA_URL") (eq .name "TRUSTOPS_SESSION_SECRET") (eq .name "TRUSTOPS_COOKIE_SIGNING_KEY") -}}
 {{- $found = true -}}
 {{- end -}}
 {{- end -}}

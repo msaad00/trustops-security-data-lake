@@ -26,8 +26,16 @@ def test_oidc_requires_session_secret(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("TRUSTOPS_OIDC_ISSUER", "https://idp.test")
     monkeypatch.setenv("TRUSTOPS_OIDC_CLIENT_ID", "cid")
     monkeypatch.setenv("TRUSTOPS_OIDC_CLIENT_SECRET", "sec")
+    monkeypatch.setenv("TRUSTOPS_COOKIE_SIGNING_KEY", "test-cookie-signing-key")
     monkeypatch.delenv("TRUSTOPS_SESSION_SECRET", raising=False)
     with pytest.raises(RuntimeError, match="TRUSTOPS_SESSION_SECRET"):
+        create_app(tmp_path)
+
+
+def test_auth_requires_cookie_signing_key(tmp_path: Path, monkeypatch) -> None:
+    _seed_lake(tmp_path)
+    monkeypatch.delenv("TRUSTOPS_COOKIE_SIGNING_KEY", raising=False)
+    with pytest.raises(RuntimeError, match="TRUSTOPS_COOKIE_SIGNING_KEY"):
         create_app(tmp_path)
 
 
@@ -37,5 +45,6 @@ def test_oidc_starts_when_session_secret_set(tmp_path: Path, monkeypatch) -> Non
     monkeypatch.setenv("TRUSTOPS_OIDC_CLIENT_ID", "cid")
     monkeypatch.setenv("TRUSTOPS_OIDC_CLIENT_SECRET", "sec")
     monkeypatch.setenv("TRUSTOPS_SESSION_SECRET", "test-session-secret")
+    monkeypatch.setenv("TRUSTOPS_COOKIE_SIGNING_KEY", "test-cookie-signing-key")
     app = create_app(tmp_path)
     assert isinstance(app.state.oidc_config, OIDCConfig)

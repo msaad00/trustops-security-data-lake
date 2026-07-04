@@ -56,7 +56,12 @@ from security_lakehouse.auth.saml import (
     load_saml_config,
     saml_request_data,
 )
-from security_lakehouse.auth.sessions import SESSION_COOKIE, decode_session_cookie, encode_session_cookie
+from security_lakehouse.auth.sessions import (
+    SESSION_COOKIE,
+    decode_session_cookie,
+    encode_session_cookie,
+    ensure_cookie_signing_configured,
+)
 from security_lakehouse.catalog import load_control_catalog
 from security_lakehouse.dashboard import render_dashboard
 from security_lakehouse.data_policy import redact_payload
@@ -872,6 +877,8 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     )
     app.state.sessionmaker = session_factory(engine)
     app.state.require_auth = require_auth and not _insecure_requested()
+    if app.state.require_auth:
+        ensure_cookie_signing_configured()
     app.state.rate_limiter = RateLimiter(RateLimitConfig.from_env(dict(os.environ)))
 
     def lake_for(identity: Identity) -> Path:
