@@ -206,6 +206,12 @@ const ROUTES: RouteSpec[] = [
   },
   {
     method: "GET",
+    path: "/api/v1/platform/audit-readiness",
+    description: "Audit score, blocking gaps, and workflow coverage checklist.",
+    scope: "posture",
+  },
+  {
+    method: "GET",
     path: "/api/graph",
     description: "Framework -> control -> evidence -> asset graph.",
     scope: "graph",

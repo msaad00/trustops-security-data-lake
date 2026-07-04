@@ -1447,6 +1447,20 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             )
         )
 
+    @app.get("/api/v1/platform/audit-readiness", tags=["platform"])
+    def audit_readiness_route(
+        identity: Identity = Depends(_require_read),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        from security_lakehouse.audit_readiness import build_audit_readiness
+
+        data = build_audit_readiness(
+            lake=lake_for(identity),
+            session=session,
+            tenant_id=identity.tenant_id,
+        )
+        return JSONResponse(api_v1.envelope("platform.audit-readiness", data))
+
     @app.get("/api/v1/platform/poc-readiness")
     def poc_readiness(
         identity: Identity = Depends(_require_admin),

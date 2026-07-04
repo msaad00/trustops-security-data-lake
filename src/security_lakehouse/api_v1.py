@@ -479,6 +479,13 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "scopes": ["auth_admin"],
     },
     {
+        "resource": "platform.audit-readiness",
+        "path": "/api/v1/platform/audit-readiness",
+        "kind": "singleton",
+        "methods": ["GET"],
+        "scopes": ["read"],
+    },
+    {
         "resource": "audit-log",
         "path": "/api/v1/audit-log",
         "kind": "collection",

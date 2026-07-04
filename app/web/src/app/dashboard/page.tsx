@@ -13,6 +13,7 @@ import {
   usePosture,
   usePostureStream,
 } from "@/lib/api/hooks";
+import { AuditReadinessStrip } from "@/components/dashboard/AuditReadinessStrip";
 import { PostureRing } from "@/components/dashboard/PostureRing";
 import { ReadinessGrid } from "@/components/dashboard/ReadinessGrid";
 import { FixNext } from "@/components/dashboard/FixNext";
@@ -101,6 +102,8 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
+
+      <AuditReadinessStrip />
 
       <QueryState queries={[posture]} label="posture">
         <Card className="overflow-hidden border-line shadow-card">
