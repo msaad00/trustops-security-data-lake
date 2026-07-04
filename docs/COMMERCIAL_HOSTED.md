@@ -21,11 +21,12 @@ export TRUSTOPS_SELF_SERVE_SIGNUP=1
 export TRUSTOPS_SIGNUP_SECRET=<optional-abuse-guard>
 ```
 
-Optional SCIM (returns empty collections when enabled; full provisioning in managed SaaS):
+Optional SCIM bearer provisioning (Enterprise tier; soft-deletes users on `DELETE`):
 
 ```bash
 export TRUSTOPS_SCIM_ENABLED=1
 export TRUSTOPS_SCIM_BEARER_TOKEN=<operator-issued-secret>
+export TRUSTOPS_SCIM_TENANT_SLUG=<tenant-slug>   # defaults to TRUSTOPS_OIDC_TENANT_SLUG or "default"
 ```
 
 ## Invite API
@@ -69,10 +70,17 @@ See [HOSTED_PRICING.md](HOSTED_PRICING.md) for tier details and console `/consol
 
 ## SCIM
 
-| Method     | Path                    | When disabled | When enabled                            |
-| ---------- | ----------------------- | ------------- | --------------------------------------- |
-| `GET`      | `/api/v1/platform/scim` | config stub   | `enabled: true`                         |
-| `GET/POST` | `/api/v1/scim/v2/*`     | **501**       | empty Users list (managed SaaS extends) |
+| Method   | Path                                    | When disabled | When enabled                                       |
+| -------- | --------------------------------------- | ------------- | -------------------------------------------------- |
+| `GET`    | `/api/v1/platform/scim`                 | config stub   | `enabled: true`                                    |
+| `GET`    | `/api/v1/scim/v2/ServiceProviderConfig` | **501**       | patch supported; bearer auth                       |
+| `GET`    | `/api/v1/scim/v2/Users`                 | **501**       | list tenant users (paginated)                      |
+| `POST`   | `/api/v1/scim/v2/Users`                 | **501**       | create user (`userName`, `trustopsRole`, `active`) |
+| `GET`    | `/api/v1/scim/v2/Users/{user_id}`       | **501**       | fetch single user                                  |
+| `PATCH`  | `/api/v1/scim/v2/Users/{user_id}`       | **501**       | update `active` / `trustopsRole`                   |
+| `DELETE` | `/api/v1/scim/v2/Users/{user_id}`       | **501**       | soft offboard (`is_active=false`, **204**)         |
+
+All `/api/v1/scim/v2/*` routes require `Authorization: Bearer <TRUSTOPS_SCIM_BEARER_TOKEN>`.
 
 ## Database
 

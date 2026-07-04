@@ -1680,6 +1680,65 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         session.commit()
         return JSONResponse(api_v1.envelope("scim.users", payload))
 
+    @app.get("/api/v1/scim/v2/Users/{user_id}", tags=["commercial"])
+    def scim_get_user(
+        user_id: str,
+        request: Request,
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        from security_lakehouse.commercial import scim as scim_services
+        from security_lakehouse.commercial.scim_provision import (
+            get_scim_user,
+            require_scim_bearer,
+            resolve_scim_tenant_id,
+        )
+
+        if not scim_services.scim_enabled():
+            return JSONResponse(
+                api_v1.error_envelope("not_implemented", scim_services.scim_not_implemented_detail()),
+                status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            )
+        try:
+            require_scim_bearer(request.headers.get("Authorization"))
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)) from exc
+        try:
+            tenant_id = resolve_scim_tenant_id(session)
+            payload = get_scim_user(session, tenant_id=tenant_id, user_id=user_id)
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("scim.users", payload))
+
+    @app.delete("/api/v1/scim/v2/Users/{user_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["commercial"])
+    def scim_delete_user(
+        user_id: str,
+        request: Request,
+        session: Session = Depends(get_session),
+    ) -> Response:
+        from security_lakehouse.commercial import scim as scim_services
+        from security_lakehouse.commercial.scim_provision import (
+            deactivate_scim_user,
+            require_scim_bearer,
+            resolve_scim_tenant_id,
+        )
+
+        if not scim_services.scim_enabled():
+            return JSONResponse(
+                api_v1.error_envelope("not_implemented", scim_services.scim_not_implemented_detail()),
+                status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            )
+        try:
+            require_scim_bearer(request.headers.get("Authorization"))
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)) from exc
+        try:
+            tenant_id = resolve_scim_tenant_id(session)
+            deactivate_scim_user(session, tenant_id=tenant_id, user_id=user_id)
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        session.commit()
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
     @app.get("/api/v1/evidence/freshness/summary", tags=["platform"])
     def evidence_freshness_summary(
         identity: Identity = Depends(_require_read),
