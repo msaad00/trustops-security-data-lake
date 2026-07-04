@@ -81,11 +81,17 @@ function Row({
         </div>
         <div className="mt-2 flex flex-wrap gap-1.5">
           <Badge>{framework.control_count} controls</Badge>
-          <Badge
-            tone={framework.mapping_coverage_pct >= 95 ? "ready" : "attention"}
-          >
-            {framework.mapping_coverage_pct}% coverage
-          </Badge>
+          {framework.implementation_status === "planned" ? (
+            <Badge tone="attention">planned pack</Badge>
+          ) : (
+            <Badge
+              tone={
+                framework.mapping_coverage_pct >= 95 ? "ready" : "attention"
+              }
+            >
+              {framework.mapping_coverage_pct}% coverage
+            </Badge>
+          )}
           <Badge>sync every {framework.sync_cadence_days}d</Badge>
         </div>
       </div>

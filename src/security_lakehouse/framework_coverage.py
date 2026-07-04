@@ -89,6 +89,7 @@ def build_framework_coverage(
                 "missing_mapping_count": len(missing),
                 "missing_mapping_control_ids": missing,
                 "seeded_mapping_coverage_pct": round(mapped_count / seeded_count * 100, 1) if seeded_count else 0.0,
+                "implementation_status": framework.get("implementation_status"),
                 "source_policy": _source_policy(framework),
                 "asset_policy": "neutral label; no official logo or certification seal bundled",
             }
@@ -104,8 +105,12 @@ def framework_coverage_summary(
     mapped = sum(int(row["reviewed_mapping_count"]) for row in rows)
     missing = sum(int(row["missing_mapping_count"]) for row in rows)
     applicability = applicability_rows if applicability_rows is not None else build_control_asset_applicability()
+    implemented = [row for row in rows if str(row.get("implementation_status", "")).startswith("implemented")]
+    planned = [row for row in rows if str(row.get("implementation_status", "")) == "planned"]
     return {
         "framework_count": len(rows),
+        "implemented_framework_count": len(implemented),
+        "planned_framework_count": len(planned),
         "seeded_control_count": seeded,
         "reviewed_mapping_count": mapped,
         "missing_mapping_count": missing,
@@ -143,15 +148,16 @@ def render_framework_coverage_markdown(
     applicability = applicability_rows if applicability_rows is not None else build_control_asset_applicability()
     summary = framework_coverage_summary(rows, applicability)
     lines = [
-        "| Framework | Official source | Seeded controls | Reviewed mappings | Seeded mapping coverage | Source state | Source policy |",
-        "| --- | --- | ---: | ---: | ---: | --- | --- |",
+        "| Framework | Official source | Status | Seeded controls | Reviewed mappings | Seeded mapping coverage | Source state | Source policy |",
+        "| --- | --- | --- | ---: | ---: | ---: | --- | --- |",
     ]
     for row in rows:
         lines.append(
-            "| {name} | [{source}]({url}) | {controls} | {mappings} | {coverage}% | {freshness} | {policy} |".format(
+            "| {name} | [{source}]({url}) | {status} | {controls} | {mappings} | {coverage}% | {freshness} | {policy} |".format(
                 name=_markdown_text(row["name"]),
                 source=_markdown_text(row["official_source_name"]),
                 url=_markdown_text(row["official_source_url"]),
+                status=_markdown_text(row.get("implementation_status") or "unknown"),
                 controls=row["seeded_control_count"],
                 mappings=row["reviewed_mapping_count"],
                 coverage=row["seeded_mapping_coverage_pct"],
@@ -167,7 +173,7 @@ def render_framework_coverage_markdown(
         applicability_lines.append(f"| `{_markdown_text(row['asset_type'])}` | {row['applicable_control_count']} |")
     return "\n".join(
         [
-            f"Frameworks: {summary['framework_count']}",
+            f"Frameworks: {summary['framework_count']} ({summary['implemented_framework_count']} implemented, {summary['planned_framework_count']} planned)",
             f"Seeded controls: {summary['seeded_control_count']}",
             f"Reviewed mappings: {summary['reviewed_mapping_count']}",
             f"Asset types modeled: {summary['asset_type_count']}",
