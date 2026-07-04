@@ -1,7 +1,10 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { connectorBrandLogo } from "@/lib/connector-brand-logos";
+import {
+  connectorBrandLogo,
+  type ConnectorBrandLogo,
+} from "@/lib/connector-brand-logos";
 import { connectorVisual } from "@/lib/connector-visuals";
 
 interface ConnectorMarkProps {
@@ -23,29 +26,49 @@ const SIZE: Record<
 };
 
 function BrandSvg({
-  title,
-  hex,
-  path,
+  brand,
   iconSize,
 }: {
-  title: string;
-  hex: string;
-  path: string;
+  brand: ConnectorBrandLogo;
   iconSize: number;
 }) {
-  return (
-    <svg
-      role="img"
-      viewBox="0 0 24 24"
-      width={iconSize}
-      height={iconSize}
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden
-    >
-      <title>{title}</title>
-      <path d={path} fill={`#${hex}`} />
-    </svg>
-  );
+  const viewBox = brand.viewBox ?? "0 0 24 24";
+
+  if (brand.paths?.length) {
+    return (
+      <svg
+        role="img"
+        viewBox={viewBox}
+        width={iconSize}
+        height={iconSize}
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden
+      >
+        <title>{brand.title}</title>
+        {brand.paths.map((segment) => (
+          <path key={segment.d.slice(0, 24)} d={segment.d} fill={segment.fill} />
+        ))}
+      </svg>
+    );
+  }
+
+  if (brand.path && brand.hex) {
+    return (
+      <svg
+        role="img"
+        viewBox={viewBox}
+        width={iconSize}
+        height={iconSize}
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden
+      >
+        <title>{brand.title}</title>
+        <path d={brand.path} fill={`#${brand.hex}`} />
+      </svg>
+    );
+  }
+
+  return null;
 }
 
 export function ConnectorMark({
@@ -63,6 +86,9 @@ export function ConnectorMark({
     width: dim.box,
     height: dim.box,
   };
+  const hasBrand =
+    brand &&
+    ((brand.path && brand.hex) || (brand.paths && brand.paths.length > 0));
 
   return (
     <span
@@ -77,13 +103,8 @@ export function ConnectorMark({
         className="grid shrink-0 place-items-center rounded-xl border border-line bg-white shadow-sm"
         style={boxStyle}
       >
-        {brand ? (
-          <BrandSvg
-            title={brand.title}
-            hex={brand.hex}
-            path={brand.path}
-            iconSize={dim.icon}
-          />
+        {hasBrand && brand ? (
+          <BrandSvg brand={brand} iconSize={dim.icon} />
         ) : (
           <span
             className={[
