@@ -28,4 +28,6 @@ export const BRAND = {
     ink: "#101623",
   },
   repoUrl: "https://github.com/msaad00/trustops-security-data-lake",
+  mcpServerName: "trustops",
+  mcpCommand: "trustops-mcp",
 } as const;

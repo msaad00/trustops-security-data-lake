@@ -66,6 +66,22 @@ The TrustOps mark is a gradient square monogram with a white **T**.
 - **Customer-owned evidence:** Read-only ingestion; no vendor evidence silo.
 - Avoid competitor names in repo copy, UI, docs, and PRs.
 
+## MCP server branding
+
+The `trustops-mcp` server advertises TrustOps icons per MCP SEP-973:
+
+| Surface             | Icon source                                                |
+| ------------------- | ---------------------------------------------------------- |
+| Server `initialize` | `serverInfo.icons` — hosted URL + embedded SVG data URI    |
+| Each tool           | `tools/list` entry includes `title` and `icons`            |
+| HTTP                | `GET /brand/trustops-mark.svg` and `/favicon.ico` redirect |
+
+Set `TRUSTOPS_PUBLIC_URL` (or `TRUSTOPS_API_URL`) on hosted deployments so MCP
+clients can fetch the logo over HTTPS. Stdio transport always includes an
+embedded data URI fallback.
+
+Example Cursor config: [`.cursor/mcp.json.example`](../.cursor/mcp.json.example)
+
 ## Code reference
 
 Brand constants for metadata and copy live in `app/web/src/lib/brand.ts`.

@@ -29,6 +29,13 @@ from typing import TYPE_CHECKING, Any
 
 from security_lakehouse import api_v1, workflows
 from security_lakehouse.assessment import build_current_posture
+from security_lakehouse.brand_assets import (
+    MCP_INSTRUCTIONS,
+    MCP_SERVER_NAME,
+    MCP_WEBSITE_URL,
+    human_tool_title,
+    mcp_icons,
+)
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from mcp.server.fastmcp import FastMCP
@@ -134,9 +141,26 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
     from mcp.server.fastmcp import FastMCP
 
     lake = (lake_dir or resolve_lake_dir()).resolve()
-    mcp = FastMCP("trustops")
+    tool_icons = mcp_icons()
+    mcp = FastMCP(
+        MCP_SERVER_NAME,
+        instructions=MCP_INSTRUCTIONS,
+        website_url=MCP_WEBSITE_URL,
+        icons=tool_icons,
+    )
 
-    @mcp.tool()
+    def trustops_tool(**kwargs):  # noqa: ANN003
+        """Register an MCP tool with TrustOps display title and brand icon."""
+        title = kwargs.pop("title", None)
+        icons = kwargs.pop("icons", tool_icons)
+
+        def decorator(fn):  # noqa: ANN001
+            display_title = title or human_tool_title(fn.__name__)
+            return mcp.tool(title=display_title, icons=icons, **kwargs)(fn)
+
+        return decorator
+
+    @trustops_tool()
     def get_posture() -> JsonObject:
         """Return the current compliance posture summary.
 
@@ -146,7 +170,7 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """
         return _get("/api/v1/posture/current", lake)
 
-    @mcp.tool()
+    @trustops_tool()
     def posture_as_of(as_of: str) -> JsonObject:
         """Return the compliance posture as of a point in time.
 
@@ -157,17 +181,17 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """
         return _get("/api/v1/posture/as-of", lake, as_of=as_of)
 
-    @mcp.tool()
+    @trustops_tool()
     def list_controls(limit: int = 100, offset: int = 0) -> list[JsonObject]:
         """List control posture rows (one per framework control, with pass/fail status)."""
         return _get("/api/v1/controls", lake, limit=str(limit), offset=str(offset))
 
-    @mcp.tool()
+    @trustops_tool()
     def list_control_tests(limit: int = 100, offset: int = 0) -> list[JsonObject]:
         """List control-test results that produced the control posture."""
         return _get("/api/v1/control-tests", lake, limit=str(limit), offset=str(offset))
 
-    @mcp.tool()
+    @trustops_tool()
     def list_evidence(limit: int = 100, offset: int = 0) -> list[JsonObject]:
         """List normalized evidence events backing the assessment.
 
@@ -175,22 +199,22 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """
         return _get("/api/v1/evidence", lake, limit=str(limit), offset=str(offset))
 
-    @mcp.tool()
+    @trustops_tool()
     def list_assets(limit: int = 100, offset: int = 0) -> list[JsonObject]:
         """List assets with their computed risk scores."""
         return _get("/api/v1/assets", lake, limit=str(limit), offset=str(offset))
 
-    @mcp.tool()
+    @trustops_tool()
     def list_violations(limit: int = 100, offset: int = 0) -> list[JsonObject]:
         """List open control/asset violations requiring owner action, highest severity first."""
         return _get("/api/v1/violations", lake, limit=str(limit), offset=str(offset))
 
-    @mcp.tool()
+    @trustops_tool()
     def list_snapshots(limit: int = 100, offset: int = 0) -> list[JsonObject]:
         """List point-in-time assessment snapshots written to the gold zone (for audit/JIT review)."""
         return _get("/api/v1/snapshots", lake, limit=str(limit), offset=str(offset))
 
-    @mcp.tool()
+    @trustops_tool()
     def list_audit_log(category: str = "", limit: int = 100, include_requests: bool = False) -> list[JsonObject]:
         """List unified activity log entries from the lake (connectors, triage, workflows).
 
@@ -207,7 +231,7 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             include_requests=include_requests,
         )
 
-    @mcp.tool()
+    @trustops_tool()
     def list_frameworks() -> list[JsonObject]:
         """List the compliance frameworks in the registry (id, name, version, source, status).
 
@@ -222,7 +246,7 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             posture = build_current_posture(lake)
             return posture.get("frameworks", [])
 
-    @mcp.tool()
+    @trustops_tool(title="Describe API")
     def describe_api() -> list[JsonObject]:
         """Describe the available v1 resources so an agent can discover the surface.
 
@@ -240,7 +264,7 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
     # tenant isolation, and audit events live behind the server API boundary.
     # ------------------------------------------------------------------
 
-    @mcp.tool()
+    @trustops_tool()
     def list_agent_runs(limit: int = 100, harness: str = "", status: str = "") -> JsonObject:
         """List persisted human/headless agent harness runs through the authenticated API.
 
@@ -249,7 +273,7 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """
         return _server_api_request("GET", "/api/v1/agent-runs", limit=limit, harness=harness, status=status)
 
-    @mcp.tool()
+    @trustops_tool()
     def create_agent_run(
         harness: str = "posture_review",
         objective: str = "",
@@ -285,12 +309,12 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             payload["max_output_tokens"] = max_output_tokens
         return _server_api_request("POST", "/api/v1/agent-runs", payload)
 
-    @mcp.tool()
+    @trustops_tool()
     def get_agent_run(run_id: str) -> JsonObject:
         """Inspect one persisted agent harness run through the authenticated API."""
         return _server_api_request("GET", f"/api/v1/agent-runs/{urllib.parse.quote(run_id, safe='')}")
 
-    @mcp.tool()
+    @trustops_tool(title="Approve Agent Decision")
     def approve_agent_decision(run_id: str, decision_index: int, note: str = "") -> JsonObject:
         """Approve one stored harness decision and execute its allowlisted TrustOps write.
 
@@ -304,7 +328,7 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             {"note": note},
         )
 
-    @mcp.tool()
+    @trustops_tool(title="Audit Readiness")
     def get_audit_readiness() -> JsonObject:
         """Return audit score, blocking gaps, and workflow coverage checklist.
 
@@ -324,7 +348,7 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
     # services layer and an authenticated MCP transport.
     # ------------------------------------------------------------------
 
-    @mcp.tool()
+    @trustops_tool()
     def create_snapshot(reason: str = "mcp_request") -> JsonObject:
         """Write a point-in-time assessment snapshot to the gold zone.
 
@@ -340,7 +364,7 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             raise ValueError(errors[0].get("detail", "snapshot failed"))
         return body["data"]
 
-    @mcp.tool()
+    @trustops_tool()
     def list_workflows() -> list[JsonObject]:
         """List saved automation workflows (latest version per workflow, newest first).
 
@@ -349,7 +373,7 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """
         return workflows.list_workflows(lake)
 
-    @mcp.tool()
+    @trustops_tool()
     def get_workflow(workflow_id: str) -> JsonObject:
         """Fetch a single saved workflow (latest version) by its id.
 
@@ -361,7 +385,7 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             raise ValueError(f"unknown workflow_id {workflow_id!r}")
         return workflow
 
-    @mcp.tool()
+    @trustops_tool(title="List Workflow Actions")
     def list_workflow_actions() -> list[JsonObject]:
         """List the available workflow action node types (the automation building blocks).
 
@@ -371,7 +395,7 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """
         return workflows.action_catalog()
 
-    @mcp.tool()
+    @trustops_tool()
     def run_workflow(workflow_id: str) -> JsonObject:
         """Execute a saved workflow end-to-end and return the run result.
 

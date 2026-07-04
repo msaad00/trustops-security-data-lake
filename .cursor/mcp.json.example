@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "trustops": {
+      "command": "trustops-mcp",
+      "env": {
+        "TRUSTOPS_API_URL": "http://127.0.0.1:8787",
+        "TRUSTOPS_API_KEY": "tops_your_api_key_here"
+      }
+    }
+  }
+}

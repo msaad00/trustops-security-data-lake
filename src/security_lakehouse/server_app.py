@@ -2534,6 +2534,23 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     def console() -> HTMLResponse:
         return HTMLResponse(dashboard.read_text(encoding="utf-8"))
 
+    brand_mark = Path(__file__).resolve().parent / "static" / "trustops-mark.svg"
+
+    @app.get("/brand/trustops-mark.svg", include_in_schema=False)
+    def trustops_brand_mark() -> Response:
+        """Public TrustOps monogram for MCP clients and link previews."""
+        if not brand_mark.is_file():
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not found")
+        return Response(
+            brand_mark.read_bytes(),
+            media_type="image/svg+xml",
+            headers={"Cache-Control": "public, max-age=86400"},
+        )
+
+    @app.get("/favicon.ico", include_in_schema=False)
+    def favicon() -> RedirectResponse:
+        return RedirectResponse(url="/brand/trustops-mark.svg", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
+
     if web_dist is not None:
         # The public trust page is a static export under a dynamic segment, so
         # only one placeholder is prebuilt. Serve that prebuilt HTML for any
