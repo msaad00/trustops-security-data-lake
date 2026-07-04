@@ -23,6 +23,7 @@ import math
 import os
 import uuid
 from collections.abc import AsyncIterator
+from itsdangerous import TimestampSigner
 from datetime import UTC, datetime, timedelta
 from http import HTTPStatus
 from pathlib import Path
@@ -78,6 +79,8 @@ from security_lakehouse.services import vendor_risk as vendor_risk_services
 from security_lakehouse.web import web_dist_dir, web_dist_index
 
 _COOKIE_SECURE = os.environ.get("TRUSTOPS_COOKIE_SECURE", "true").lower() in {"1", "true", "yes", "on"}
+_COOKIE_SIGNING_KEY = os.environ.get("TRUSTOPS_COOKIE_SIGNING_KEY", "")
+_COOKIE_SIGNER = TimestampSigner(_COOKIE_SIGNING_KEY) if _COOKIE_SIGNING_KEY else None
 
 _ERROR_CODES = {400: "bad_request", 401: "unauthorized", 403: "forbidden", 404: "not_found", 429: "rate_limited"}
 
@@ -1377,7 +1380,20 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
                 },
             )
         )
-        response.set_cookie(SESSION_COOKIE, sess_token, httponly=True, secure=_COOKIE_SECURE, samesite="lax", path="/")
+        if _COOKIE_SIGNER is None:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="cookie signing key is not configured",
+            )
+        signed_session_token = _COOKIE_SIGNER.sign(sess_token).decode("utf-8")
+        response.set_cookie(
+            SESSION_COOKIE,
+            signed_session_token,
+            httponly=True,
+            secure=_COOKIE_SECURE,
+            samesite="lax",
+            path="/",
+        )
         return response
 
     # --- commercial hosted: pricing, signup, invites, usage, SCIM ---
