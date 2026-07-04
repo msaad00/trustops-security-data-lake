@@ -23,7 +23,6 @@ import math
 import os
 import uuid
 from collections.abc import AsyncIterator
-from itsdangerous import TimestampSigner
 from datetime import UTC, datetime, timedelta
 from http import HTTPStatus
 from pathlib import Path
@@ -57,7 +56,7 @@ from security_lakehouse.auth.saml import (
     load_saml_config,
     saml_request_data,
 )
-from security_lakehouse.auth.sessions import SESSION_COOKIE
+from security_lakehouse.auth.sessions import SESSION_COOKIE, decode_session_cookie, encode_session_cookie
 from security_lakehouse.catalog import load_control_catalog
 from security_lakehouse.dashboard import render_dashboard
 from security_lakehouse.data_policy import redact_payload
@@ -79,8 +78,6 @@ from security_lakehouse.services import vendor_risk as vendor_risk_services
 from security_lakehouse.web import web_dist_dir, web_dist_index
 
 _COOKIE_SECURE = os.environ.get("TRUSTOPS_COOKIE_SECURE", "true").lower() in {"1", "true", "yes", "on"}
-_COOKIE_SIGNING_KEY = os.environ.get("TRUSTOPS_COOKIE_SIGNING_KEY", "")
-_COOKIE_SIGNER = TimestampSigner(_COOKIE_SIGNING_KEY) if _COOKIE_SIGNING_KEY else None
 
 _ERROR_CODES = {400: "bad_request", 401: "unauthorized", 403: "forbidden", 404: "not_found", 429: "rate_limited"}
 
@@ -1124,15 +1121,24 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="OIDC login rejected") from None
         session.commit()
         response = RedirectResponse(url="/console", status_code=status.HTTP_302_FOUND)
-        response.set_cookie(SESSION_COOKIE, sess_token, httponly=True, secure=_COOKIE_SECURE, samesite="lax", path="/")
+        response.set_cookie(
+            SESSION_COOKIE,
+            encode_session_cookie(sess_token),
+            httponly=True,
+            secure=_COOKIE_SECURE,
+            samesite="lax",
+            path="/",
+        )
         return response
 
     @app.post("/api/v1/auth/logout")
     def sso_logout(request: Request, session: Session = Depends(get_session)) -> JSONResponse:
-        cookie = request.cookies.get(SESSION_COOKIE)
-        if cookie:
-            repository.revoke_user_session(session, cookie, now=datetime.now(UTC))
-            session.commit()
+        cookie_raw = request.cookies.get(SESSION_COOKIE)
+        if cookie_raw:
+            session_token = decode_session_cookie(cookie_raw)
+            if session_token:
+                repository.revoke_user_session(session, session_token, now=datetime.now(UTC))
+                session.commit()
         response = JSONResponse(api_v1.envelope("auth.logout", {"ok": True}))
         response.delete_cookie(SESSION_COOKIE, path="/")
         return response
@@ -1210,7 +1216,14 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="SAML login rejected") from None
         session.commit()
         response = RedirectResponse(url="/console", status_code=status.HTTP_302_FOUND)
-        response.set_cookie(SESSION_COOKIE, sess_token, httponly=True, secure=_COOKIE_SECURE, samesite="lax", path="/")
+        response.set_cookie(
+            SESSION_COOKIE,
+            encode_session_cookie(sess_token),
+            httponly=True,
+            secure=_COOKIE_SECURE,
+            samesite="lax",
+            path="/",
+        )
         return response
 
     # --- auth surface ---
@@ -1380,15 +1393,9 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
                 },
             )
         )
-        if _COOKIE_SIGNER is None:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="cookie signing key is not configured",
-            )
-        signed_session_token = _COOKIE_SIGNER.sign(sess_token).decode("utf-8")
         response.set_cookie(
             SESSION_COOKIE,
-            signed_session_token,
+            encode_session_cookie(sess_token),
             httponly=True,
             secure=_COOKIE_SECURE,
             samesite="lax",
