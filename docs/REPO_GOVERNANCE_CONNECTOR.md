@@ -1,12 +1,13 @@
 # Repository Governance Connector
 
-TrustOps can sync authenticated GitHub repository governance evidence for
-private repos and organization-only controls that public audit cannot observe.
-The connector emits raw JSONL evidence that can be validated and routed into
-the security data lake.
+TrustOps can sync authenticated **GitHub** and **GitLab** repository governance
+evidence for private repos and organization-only controls that public audit
+cannot observe. The connector emits raw JSONL evidence that can be validated and
+routed into the security data lake.
 
 ```bash
 TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN=... security-lakehouse repo governance-sync OWNER/REPO --out build/repo-governance.jsonl
+TRUSTOPS_GITLAB_ACCESS_TOKEN=... security-lakehouse repo governance-sync NAMESPACE/PROJECT --provider gitlab --out build/gitlab-governance.jsonl
 security-lakehouse validate --raw build/repo-governance.jsonl
 ```
 
@@ -16,9 +17,16 @@ Offline fixture mode is available for tests, demos, and CI without credentials:
 security-lakehouse repo governance-sync OWNER/REPO \
   --fixture-dir tests/fixtures/github-governance \
   --out build/repo-governance.jsonl
+
+security-lakehouse repo governance-sync acme/private-agent-api \
+  --provider gitlab \
+  --fixture-dir tests/fixtures/gitlab-governance \
+  --out build/gitlab-governance.jsonl
 ```
 
 ## Access Boundary
+
+### GitHub
 
 Use a GitHub App installation token with read-only repository permissions. The
 connector does not need write, delete, admin, secret value, or package publish
@@ -31,6 +39,19 @@ permissions.
 | `administration:read`  | branch protection, collaborators, teams, workflow permissions      |
 | `security_events:read` | security setting and alert availability summaries where allowed    |
 | fixture bundle         | deterministic local evidence with `credential_fingerprint=fixture` |
+
+### GitLab
+
+Use a project or group access token with read-only API access (`read_api`,
+`read_repository`). Optional `TRUSTOPS_GITLAB_API_URL` overrides the default
+`https://gitlab.com/api/v4` base for self-managed instances.
+
+| Scope or permission | Unlocks                                                            |
+| ------------------- | ------------------------------------------------------------------ |
+| `read_api`          | project metadata, protected branches, members, shared groups       |
+| `read_repository`   | repository identity and default branch                             |
+| `read_user`         | member username resolution                                         |
+| fixture bundle      | deterministic local evidence with `credential_fingerprint=fixture` |
 
 Installation token values are never emitted. TrustOps stores only a short
 SHA-256 credential fingerprint so operators can tell which credential boundary
@@ -52,7 +73,7 @@ Each emitted record includes:
 - `tenant_id`
 - `workspace_id`
 - `event_time`
-- `source=github-repo-governance`
+- `source=github-repo-governance` or `source=gitlab-repo-governance`
 - `event_type`
 - `entity.asset_id`
 - `entity.asset_type=repository`

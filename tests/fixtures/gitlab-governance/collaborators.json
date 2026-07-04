@@ -1,0 +1,9 @@
+[
+  {
+    "login": "alice",
+    "permissions": {
+      "maintain": true
+    },
+    "role_name": "maintain"
+  }
+]

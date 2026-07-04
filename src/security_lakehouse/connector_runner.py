@@ -362,7 +362,28 @@ def _build_github(inputs: SyncInputs) -> list[dict[str, Any]]:
     cred_ref = str(inputs.credentials.get("credential_ref") or "").strip()
     if cred_ref:
         token_env = cred_ref
-    return sync_repo_governance(effective_repo, fixture_dir=inputs.fixture_dir, token_env=token_env)
+    return sync_repo_governance(
+        effective_repo,
+        fixture_dir=inputs.fixture_dir,
+        token_env=token_env,
+        provider="github",
+    )
+
+
+def _build_gitlab(inputs: SyncInputs) -> list[dict[str, Any]]:
+    effective_repo = (inputs.repo or str(inputs.options.get("repo") or "")).strip()
+    if not effective_repo:
+        raise ValueError("gitlab-security sync requires options.repo (namespace/project)")
+    token_env = "TRUSTOPS_GITLAB_ACCESS_TOKEN" if inputs.token_env == DEFAULT_TOKEN_ENV else inputs.token_env
+    cred_ref = str(inputs.credentials.get("credential_ref") or "").strip()
+    if cred_ref:
+        token_env = cred_ref
+    return sync_repo_governance(
+        effective_repo,
+        fixture_dir=inputs.fixture_dir,
+        token_env=token_env,
+        provider="gitlab",
+    )
 
 
 def _build_okta(inputs: SyncInputs) -> list[dict[str, Any]]:
@@ -417,6 +438,7 @@ def _build_snowflake(inputs: SyncInputs) -> list[dict[str, Any]]:
 REGISTRY: dict[str, ConnectorBuilder] = {
     "snowflake-evidence-lake": _build_snowflake,
     "github-security": _build_github,
+    "gitlab-security": _build_gitlab,
     "okta-identity": _build_okta,
     "aws-posture": _build_aws,
     "google-workspace-identity": _build_google_workspace,
