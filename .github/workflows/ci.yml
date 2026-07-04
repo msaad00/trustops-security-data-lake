@@ -161,8 +161,12 @@ jobs:
       - name: Verify dashboard artifact
         run: test -s build/dashboard/index.html && grep -q "Trust Home" build/dashboard/index.html
       - name: Run live API smoke
+        env:
+          TRUSTOPS_COOKIE_SIGNING_KEY: ci-test-cookie-signing-key
         run: uv run python tools/api_smoke.py
       - name: Run tests
+        env:
+          TRUSTOPS_COOKIE_SIGNING_KEY: ci-test-cookie-signing-key
         run: uv run python -m pytest -q
 
   deploy-check:

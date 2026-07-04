@@ -43,6 +43,17 @@ def test_ingress_requires_auth_configuration() -> None:
     assert "ingress.enabled requires authentication" in result.stderr
 
 
+def test_ingress_passes_with_cookie_signing_key() -> None:
+    result = _helm_template(
+        [
+            "ingress.enabled=true",
+            "env[0].name=TRUSTOPS_COOKIE_SIGNING_KEY",
+            "env[0].value=super-secret-for-tests",
+        ]
+    )
+    assert result.returncode == 0
+
+
 def test_ingress_passes_with_session_secret() -> None:
     result = _helm_template(
         [

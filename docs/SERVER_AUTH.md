@@ -14,6 +14,16 @@ API key, OIDC login, or SAML login
 Local mode stays zero-dependency. These settings apply only when running the
 FastAPI server surface from `trustops-security-data-lake[server]`.
 
+Browser session cookies are **always signed**. Set a dedicated secret before
+starting the server with authentication enabled:
+
+```bash
+export TRUSTOPS_COOKIE_SIGNING_KEY="$(openssl rand -hex 32)"
+```
+
+Without this key, `create_app()` fails fast when auth is required (CI, Helm, and
+production deployments).
+
 ## API Keys
 
 API keys are for agents, CI, and service accounts. The database stores only a
@@ -44,6 +54,7 @@ export TRUSTOPS_OIDC_CLIENT_SECRET="..."
 export TRUSTOPS_OIDC_TENANT_SLUG="acme"
 export TRUSTOPS_OIDC_AUTO_PROVISION="false"
 export TRUSTOPS_SESSION_SECRET="replace-with-32-byte-random-secret"
+export TRUSTOPS_COOKIE_SIGNING_KEY="$(openssl rand -hex 32)"
 ```
 
 Endpoints:

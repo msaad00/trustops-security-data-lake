@@ -128,6 +128,50 @@ export interface EvidenceFreshness {
   next_action: string;
 }
 
+export interface EvidenceFreshnessSourceSummary {
+  source: string;
+  connector_id: string;
+  fresh_count: number;
+  stale_count: number;
+  expired_count: number;
+  missing_count: number;
+  evidence_count: number;
+  latest_evidence_at: string | null;
+  freshness_slo_minutes: number;
+  state: string;
+  status: string;
+  next_action: string;
+}
+
+export interface EvidenceFreshnessSummary {
+  total: number;
+  fresh_count: number;
+  stale_count: number;
+  expired_count: number;
+  missing_count: number;
+  sla_breach_count: number;
+  fresh_rate_pct: number;
+  state: string;
+  sources: EvidenceFreshnessSourceSummary[];
+  sources_needing_action: number;
+  top_breaches: Array<{
+    event_id: string;
+    source: string;
+    status: string;
+    age_minutes: number | null;
+    reason: string;
+    next_action: string;
+    control_ids: string[];
+  }>;
+}
+
+export interface EscalateFreshnessResult {
+  created_count: number;
+  skipped_duplicates: number;
+  sla_breach_count: number;
+  tasks: Array<{ id: string; title: string; status: string }>;
+}
+
 export interface Health {
   ok: boolean;
   service: string;
@@ -393,6 +437,11 @@ export interface AuditReadiness {
     frameworks_total: number;
   };
   control_tests: { passing: number; failing: number; total: number };
+  evidence_freshness?: {
+    total: number;
+    stale_count: number;
+    fresh_rate_pct: number;
+  };
   evidence_requests: { open: number };
   access_reviews: { active: number; completed: number };
   trust_shares: { active: number; auditor: number };

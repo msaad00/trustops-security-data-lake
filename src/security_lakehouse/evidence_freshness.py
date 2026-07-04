@@ -269,3 +269,52 @@ def _next_action(status: str, source: str) -> str:
     if status == "expired":
         return f"recollect expired {source} evidence and rerun affected control tests"
     return f"refresh stale {source} evidence and rerun affected control tests"
+
+
+def build_freshness_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
+    """Aggregate SLA breach counts for audit room and headless automation."""
+    statuses = Counter(str(row.get("status") or "unknown") for row in records)
+    stale_rows = [row for row in records if str(row.get("status") or "") in STALE_STATUSES]
+    total = len(records)
+    fresh_count = int(statuses.get("fresh", 0))
+    stale_count = int(statuses.get("stale", 0))
+    expired_count = int(statuses.get("expired", 0))
+    missing_count = int(statuses.get("missing", 0))
+    breach_count = len(stale_rows)
+    fresh_rate = round(100 * fresh_count / total, 1) if total else 100.0
+    sources = summarize_source_freshness(records)
+    action_sources = [row for row in sources if row.get("state") == "action_required"]
+    return {
+        "total": total,
+        "fresh_count": fresh_count,
+        "stale_count": stale_count,
+        "expired_count": expired_count,
+        "missing_count": missing_count,
+        "sla_breach_count": breach_count,
+        "fresh_rate_pct": fresh_rate,
+        "state": "healthy" if breach_count == 0 else "action_required",
+        "sources": sources,
+        "sources_needing_action": len(action_sources),
+        "top_breaches": [
+            {
+                "event_id": row.get("event_id"),
+                "source": row.get("source"),
+                "status": row.get("status"),
+                "age_minutes": row.get("age_minutes"),
+                "reason": row.get("reason"),
+                "next_action": row.get("next_action"),
+                "control_ids": row.get("control_ids") or [],
+            }
+            for row in stale_rows[:25]
+        ],
+    }
+
+
+__all__ = [
+    "STALE_STATUSES",
+    "build_evidence_freshness",
+    "build_freshness_summary",
+    "stale_control_ids",
+    "summarize_control_freshness",
+    "summarize_source_freshness",
+]

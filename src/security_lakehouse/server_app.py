@@ -56,7 +56,12 @@ from security_lakehouse.auth.saml import (
     load_saml_config,
     saml_request_data,
 )
-from security_lakehouse.auth.sessions import SESSION_COOKIE, decode_session_cookie, encode_session_cookie
+from security_lakehouse.auth.sessions import (
+    SESSION_COOKIE,
+    decode_session_cookie,
+    encode_session_cookie,
+    ensure_cookie_signing_configured,
+)
 from security_lakehouse.catalog import load_control_catalog
 from security_lakehouse.dashboard import render_dashboard
 from security_lakehouse.data_policy import redact_payload
@@ -141,6 +146,11 @@ class UpdateUserRequest(_StrictModel):
 
 class SessionFromKeyRequest(_StrictModel):
     api_key: str = Field(min_length=8, max_length=512)
+
+
+class EscalateFreshnessRequest(_StrictModel):
+    limit: int = Field(default=10, ge=1, le=100)
+    statuses: list[str] = Field(default_factory=lambda: ["stale", "expired", "missing"])
 
 
 class CreateInviteRequest(_StrictModel):
@@ -872,6 +882,8 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     )
     app.state.sessionmaker = session_factory(engine)
     app.state.require_auth = require_auth and not _insecure_requested()
+    if app.state.require_auth:
+        ensure_cookie_signing_configured()
     app.state.rate_limiter = RateLimiter(RateLimitConfig.from_env(dict(os.environ)))
 
     def lake_for(identity: Identity) -> Path:
@@ -1667,6 +1679,36 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
         session.commit()
         return JSONResponse(api_v1.envelope("scim.users", payload))
+
+    @app.get("/api/v1/evidence/freshness/summary", tags=["platform"])
+    def evidence_freshness_summary(
+        identity: Identity = Depends(_require_read),
+    ) -> JSONResponse:
+        from security_lakehouse.evidence_freshness import build_freshness_summary
+        from security_lakehouse.evidence_freshness_workflows import load_freshness_records
+
+        records = load_freshness_records(str(lake_for(identity)))
+        data = build_freshness_summary(records)
+        return JSONResponse(api_v1.envelope("evidence.freshness.summary", data))
+
+    @app.post("/api/v1/evidence/freshness/escalate", tags=["platform"])
+    def evidence_freshness_escalate(
+        body: EscalateFreshnessRequest,
+        identity: Identity = Depends(_require_write),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        from security_lakehouse.evidence_freshness_workflows import escalate_stale_evidence
+
+        data = escalate_stale_evidence(
+            session,
+            tenant_id=identity.tenant_id,
+            lake_dir=str(lake_for(identity)),
+            actor_email=identity.email,
+            statuses=set(body.statuses),
+            limit=body.limit,
+        )
+        session.commit()
+        return JSONResponse(api_v1.envelope("evidence.freshness.escalate", data))
 
     @app.get("/api/v1/platform/audit-readiness", tags=["platform"])
     def audit_readiness_route(

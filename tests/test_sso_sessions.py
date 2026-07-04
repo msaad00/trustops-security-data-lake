@@ -28,7 +28,7 @@ from security_lakehouse.auth.saml import (  # noqa: E402
     load_saml_config,
     saml_request_data,
 )
-from security_lakehouse.auth.sessions import SESSION_COOKIE  # noqa: E402
+from security_lakehouse.auth.sessions import SESSION_COOKIE, encode_session_cookie  # noqa: E402
 from security_lakehouse.db import repository  # noqa: E402
 from security_lakehouse.db.base import session_scope  # noqa: E402
 from security_lakehouse.db.repository import create_tenant, create_user, create_user_session  # noqa: E402
@@ -185,7 +185,7 @@ def test_session_cookie_authenticates(app_env) -> None:
         tenant = create_tenant(session, slug="acme", name="Acme")
         user = create_user(session, tenant_id=tenant.id, email="u@acme.test", role="read_only")
         _row, token = create_user_session(session, tenant_id=tenant.id, user_id=user.id)
-    client.cookies.set(SESSION_COOKIE, token)
+    client.cookies.set(SESSION_COOKIE, encode_session_cookie(token))
     assert client.get("/api/v1/controls").status_code == HTTPStatus.OK
     who = client.get("/api/v1/auth/whoami").json()["data"]
     assert who["email"] == "u@acme.test"
@@ -198,9 +198,10 @@ def test_logout_revokes_session(app_env) -> None:
         tenant = create_tenant(session, slug="acme", name="Acme")
         user = create_user(session, tenant_id=tenant.id, email="u@acme.test")
         _row, token = create_user_session(session, tenant_id=tenant.id, user_id=user.id)
-    client.cookies.set(SESSION_COOKIE, token)
+    signed = encode_session_cookie(token)
+    client.cookies.set(SESSION_COOKIE, signed)
     assert client.post("/api/v1/auth/logout").status_code == HTTPStatus.OK
-    client.cookies.set(SESSION_COOKIE, token)  # re-present the now-revoked token
+    client.cookies.set(SESSION_COOKIE, signed)  # re-present the now-revoked token
     assert client.get("/api/v1/controls").status_code == HTTPStatus.UNAUTHORIZED
 
 
