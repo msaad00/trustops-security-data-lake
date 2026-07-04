@@ -491,6 +491,8 @@ export function WorkflowCanvas({
       className="relative h-[min(760px,calc(100dvh-245px))] min-h-[560px] overflow-hidden rounded-2xl border border-line bg-white"
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      role="application"
+      aria-label="Workflow canvas"
     >
       <ReactFlow
         nodes={decoratedNodes}

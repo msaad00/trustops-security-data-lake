@@ -43,8 +43,19 @@ const config: Config = {
         ],
       },
       boxShadow: {
-        card: "0 18px 45px rgba(15,23,42,.08)",
-        hero: "0 24px 65px rgba(2,6,23,.22)",
+        card: "var(--shadow-card)",
+        hero: "var(--shadow-hero)",
+      },
+      borderRadius: {
+        sm: "var(--radius-sm)",
+        md: "var(--radius-md)",
+        lg: "var(--radius-lg)",
+        xl: "var(--radius-xl)",
+      },
+      transitionDuration: {
+        fast: "var(--motion-fast)",
+        base: "var(--motion-base)",
+        slow: "var(--motion-slow)",
       },
     },
   },
