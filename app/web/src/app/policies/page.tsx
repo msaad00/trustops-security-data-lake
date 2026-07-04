@@ -9,9 +9,12 @@ import {
   useAdoptPolicyMutation,
   usePolicies,
   usePolicy,
+  usePolicyAcknowledgments,
+  usePolicyAttestationSummary,
   usePolicyCoverage,
   usePolicyTemplates,
   usePublishPolicyMutation,
+  useRecordPolicyAcknowledgmentMutation,
   useUpdatePolicyMutation,
 } from "@/lib/api/hooks";
 import type {
@@ -82,6 +85,8 @@ function AdoptTemplateForm({ template }: { template: PolicyTemplateSummary }) {
 
 function PolicyDetail({ documentId }: { documentId: string }) {
   const detail = usePolicy(documentId);
+  const acknowledgments = usePolicyAcknowledgments(documentId);
+  const recordAck = useRecordPolicyAcknowledgmentMutation(documentId);
   const update = useUpdatePolicyMutation(documentId);
   const publish = usePublishPolicyMutation();
   const doc = detail.data;
@@ -128,7 +133,48 @@ function PolicyDetail({ documentId }: { documentId: string }) {
             {publish.isPending ? "Publishing…" : "Publish"}
           </Button>
         </div>
-      ) : null}
+      ) : (
+        <div className="space-y-3 rounded-lg border border-line bg-surfaceMuted p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p className="text-sm font-bold text-ink">
+                Employee acknowledgments
+              </p>
+              <p className="text-xs text-muted">
+                Attestation evidence for auditors — managed GRC policy sign-off
+                parity.
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              disabled={recordAck.isPending}
+              onClick={() => recordAck.mutate({})}
+            >
+              {recordAck.isPending ? "Recording…" : "Record my acknowledgment"}
+            </Button>
+          </div>
+          {acknowledgments.data && acknowledgments.data.length > 0 ? (
+            <ul className="grid gap-2 text-sm">
+              {acknowledgments.data.map((row) => (
+                <li
+                  key={row.id}
+                  className="flex flex-wrap items-center justify-between gap-2 rounded border border-line bg-white px-3 py-2"
+                >
+                  <span className="font-medium text-ink">{row.user_email}</span>
+                  <span className="text-xs text-muted">
+                    {new Date(row.acknowledged_at).toLocaleString()}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-xs text-muted">
+              No acknowledgments recorded yet.
+            </p>
+          )}
+        </div>
+      )}
     </Card>
   );
 }
@@ -165,6 +211,7 @@ export default function PoliciesPage() {
   const templates = usePolicyTemplates();
   const policies = usePolicies();
   const coverage = usePolicyCoverage();
+  const attestation = usePolicyAttestationSummary();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const firstTemplate = templates.data?.[0];
 
@@ -180,6 +227,35 @@ export default function PoliciesPage() {
         title="Policy template library"
         description="Browse bundled SOC 2 and ISO-aligned policy templates, adopt them for your tenant, edit markdown drafts, and publish to prove control coverage."
       />
+
+      {attestation.data && attestation.data.published > 0 && (
+        <Card className="grid gap-2 p-5 sm:grid-cols-4">
+          <div>
+            <p className="text-xs text-muted">Published policies</p>
+            <p className="text-lg font-bold text-ink">
+              {attestation.data.published}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-muted">With acknowledgments</p>
+            <p className="text-lg font-bold text-ink">
+              {attestation.data.acknowledged}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-muted">Unattested</p>
+            <p className="text-lg font-bold text-ink">
+              {attestation.data.unattested}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-muted">Total attestations</p>
+            <p className="text-lg font-bold text-ink">
+              {attestation.data.total_acknowledgments}
+            </p>
+          </div>
+        </Card>
+      )}
 
       <Card className="p-5">
         <CardHeader className="p-0">
