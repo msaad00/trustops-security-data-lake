@@ -1226,8 +1226,10 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
                 "name": key.name,
                 "prefix": key.prefix,
                 "user_email": key.user.email,
+                "role": key.role,
                 "created_at": key.created_at.isoformat() if key.created_at else None,
                 "last_used_at": key.last_used_at.isoformat() if key.last_used_at else None,
+                "expires_at": key.expires_at.isoformat() if key.expires_at else None,
                 "revoked": key.revoked_at is not None,
             }
             for key in keys

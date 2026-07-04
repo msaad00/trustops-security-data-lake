@@ -1111,7 +1111,7 @@ def _auth_issue_key(args: argparse.Namespace) -> int:
             from datetime import UTC, datetime, timedelta
 
             expires_at = datetime.now(UTC) + timedelta(days=args.expires_days)
-        key, _token = repository.create_api_key(
+        key, token = repository.create_api_key(
             session, tenant_id=tenant.id, user_id=user.id, name=args.name, expires_at=expires_at
         )
         print(
@@ -1121,9 +1121,9 @@ def _auth_issue_key(args: argparse.Namespace) -> int:
                     "user_email": user.email,
                     "api_key_id": key.id,
                     "prefix": key.prefix,
+                    "token": token,
                     "status": key.status,
-                    "secret_returned": False,
-                    "note": "CLI output is non-secret; use the authenticated API creation endpoint for one-time raw key return.",
+                    "warning": "Store the token now — it cannot be retrieved again.",
                 },
                 indent=2,
                 sort_keys=True,
@@ -1186,7 +1186,7 @@ def _platform_seed_dev(args: argparse.Namespace) -> int:
                 display_name=args.display_name,
                 role="admin",
             )
-        key, _token = repository.create_api_key(session, tenant_id=tenant.id, user_id=user.id, name="local-dev")
+        key, token = repository.create_api_key(session, tenant_id=tenant.id, user_id=user.id, name="local-dev")
         result = {
             "tenant_id": tenant.id,
             "tenant_slug": tenant.slug,
@@ -1195,8 +1195,8 @@ def _platform_seed_dev(args: argparse.Namespace) -> int:
             "role": user.role,
             "api_key_id": key.id,
             "api_key_prefix": key.prefix,
-            "secret_returned": False,
-            "note": "Seeded dev principal and key metadata. CLI output is non-secret.",
+            "token": token,
+            "warning": "Store the token now — it cannot be retrieved again.",
         }
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0

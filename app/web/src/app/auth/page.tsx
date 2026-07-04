@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AuthIdentityDiagram } from "@/components/diagrams/AuthIdentityDiagram";
+import { ApiKeysPanel } from "@/components/auth/ApiKeysPanel";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { useAuthMethods, useAuthWhoami } from "@/lib/api/hooks";
@@ -58,9 +59,9 @@ function MethodRow({ method }: { method: AuthMethod }) {
         )}
         {method.id === "api_key" && (
           <Button asChild size="sm" variant="default">
-            <a href={method.login_url} target="_blank" rel="noreferrer">
+            <a href="#api-keys">
               <KeyRound className="h-4 w-4" />
-              API docs
+              Manage keys
             </a>
           </Button>
         )}
@@ -158,6 +159,10 @@ export default function AuthPage() {
           </div>
         </CardContent>
       </Card>
+
+      <div id="api-keys">
+        <ApiKeysPanel />
+      </div>
     </div>
   );
 }
