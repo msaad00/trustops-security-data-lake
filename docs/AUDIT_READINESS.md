@@ -8,20 +8,20 @@ See [HEADLESS_GRC.md](HEADLESS_GRC.md) for the overall architecture.
 
 ## Executive summary
 
-| Dimension | TrustOps v0.2.x |
-| --------- | --------------- |
-| Continuous control monitoring | Deterministic tests over customer lake |
-| Framework packs | SOC 2, NIST AI RMF, FedRAMP foundation, CIS AWS, ISO packs |
-| Evidence automation | Open connector catalog + read-only cloud posture |
-| Auditor experience | Trust-center shares + `auditor` role redaction |
-| Access reviews | Access-review campaigns with certify/revoke/flag |
-| Policy management | MVP template library (8 templates) |
-| Point-in-time audit | Assessment snapshots + hash chain |
-| Personnel / HRIS | Gap — use IdP + access reviews |
-| Vendor risk | MVP vendor risk module |
-| Workflow automation | Native workflow canvas with approvals |
-| Self-host / data residency | **Yes** — core differentiator |
-| Headless / agent API | **Yes** — MCP, OpenAPI, agent harness, CI gates |
+| Dimension                     | TrustOps v0.2.x                                            |
+| ----------------------------- | ---------------------------------------------------------- |
+| Continuous control monitoring | Deterministic tests over customer lake                     |
+| Framework packs               | SOC 2, NIST AI RMF, FedRAMP foundation, CIS AWS, ISO packs |
+| Evidence automation           | Open connector catalog + read-only cloud posture           |
+| Auditor experience            | Trust-center shares + `auditor` role redaction             |
+| Access reviews                | Access-review campaigns with certify/revoke/flag           |
+| Policy management             | MVP template library (8 templates)                         |
+| Point-in-time audit           | Assessment snapshots + hash chain                          |
+| Personnel / HRIS              | Gap — use IdP + access reviews                             |
+| Vendor risk                   | MVP vendor risk module                                     |
+| Workflow automation           | Native workflow canvas with approvals                      |
+| Self-host / data residency    | **Yes** — core differentiator                              |
+| Headless / agent API          | **Yes** — MCP, OpenAPI, agent harness, CI gates            |
 
 ## Workflow checklist
 
@@ -41,24 +41,24 @@ See [HEADLESS_GRC.md](HEADLESS_GRC.md) for the overall architecture.
 
 ### Known gaps
 
-| Gap | Workaround today |
-| --- | ---------------- |
-| Personnel tracking | IdP connector + access reviews |
-| Auditor marketplace | Export trust share + PDF snapshot |
-| Pen test coordination | External process |
-| Device/agent inventory | Connector evidence only |
-| Policy acknowledgment | Roadmap |
-| Native billing/signup | Commercial scaffold (P5) |
+| Gap                    | Workaround today                  |
+| ---------------------- | --------------------------------- |
+| Personnel tracking     | IdP connector + access reviews    |
+| Auditor marketplace    | Export trust share + PDF snapshot |
+| Pen test coordination  | External process                  |
+| Device/agent inventory | Connector evidence only           |
+| Policy acknowledgment  | Roadmap                           |
+| Native billing/signup  | Commercial scaffold (P5)          |
 
 ## UI/UX targets (Epic #96)
 
-| Surface | Target |
-| ------- | ------ |
-| Trust Home dashboard | Executive KPIs + audit strip + live posture |
-| Audit room | Single pane for audit score, gaps, workflow checklist |
-| Framework drill-down | Control → rule → evidence → datasource (#91) |
-| Dark mode | CSS-variable theming across shell + review pages |
-| Workflow canvas | Inspector + approvals (#90) |
+| Surface              | Target                                                |
+| -------------------- | ----------------------------------------------------- |
+| Trust Home dashboard | Executive KPIs + audit strip + live posture           |
+| Audit room           | Single pane for audit score, gaps, workflow checklist |
+| Framework drill-down | Control → rule → evidence → datasource (#91)          |
+| Dark mode            | CSS-variable theming across shell + review pages      |
+| Workflow canvas      | Inspector + approvals (#90)                           |
 
 ## Audit score formula
 
