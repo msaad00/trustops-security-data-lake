@@ -1568,7 +1568,6 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             )
         )
 
-<<<<<<< HEAD
     @app.get("/api/v1/scim/v2/Users", tags=["commercial"])
     def scim_list_users(request: Request, session: Session = Depends(get_session)) -> JSONResponse:
         from security_lakehouse.commercial import scim as scim_services

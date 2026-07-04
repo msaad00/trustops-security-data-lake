@@ -49,7 +49,9 @@ export function EvidenceFreshnessSlaPanel() {
         <Button
           variant="primary"
           size="sm"
-          disabled={escalate.isPending || (summary.data?.sla_breach_count ?? 0) === 0}
+          disabled={
+            escalate.isPending || (summary.data?.sla_breach_count ?? 0) === 0
+          }
           onClick={escalateTasks}
         >
           {escalate.isPending ? (
@@ -103,8 +105,9 @@ export function EvidenceFreshnessSlaPanel() {
                 <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
                   <AlertTriangle className="mt-0.5 h-4 w-4 flex-none" />
                   <p>
-                    {summary.data.stale_count} stale · {summary.data.expired_count}{" "}
-                    expired · {summary.data.missing_count} missing. Review in{" "}
+                    {summary.data.stale_count} stale ·{" "}
+                    {summary.data.expired_count} expired ·{" "}
+                    {summary.data.missing_count} missing. Review in{" "}
                     <Link href="/evidence" className="font-bold underline">
                       Evidence
                     </Link>{" "}
@@ -126,14 +129,17 @@ export function EvidenceFreshnessSlaPanel() {
                         </span>
                         <Badge
                           tone={
-                            row.state === "action_required" ? "attention" : "ready"
+                            row.state === "action_required"
+                              ? "attention"
+                              : "ready"
                           }
                         >
                           {row.status}
                         </Badge>
                       </div>
                       <p className="text-xs text-muted">
-                        {row.evidence_count} rows · SLO {row.freshness_slo_minutes}m
+                        {row.evidence_count} rows · SLO{" "}
+                        {row.freshness_slo_minutes}m
                       </p>
                     </div>
                     <span className="text-xs font-bold text-muted">
