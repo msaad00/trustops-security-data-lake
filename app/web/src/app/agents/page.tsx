@@ -200,7 +200,7 @@ const ROUTES: RouteSpec[] = [
   },
   {
     method: "GET",
-    path: "/api/audit-log",
+    path: "/api/v1/audit-log",
     description: "Unified activity stream across every append-only log.",
     scope: "audit",
   },

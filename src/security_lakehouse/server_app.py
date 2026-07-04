@@ -1416,6 +1416,37 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
         )
 
+    @app.get("/api/v1/audit-log", tags=["platform"])
+    def audit_log_v1(
+        request: Request,
+        identity: Identity = Depends(_require_read),
+    ) -> JSONResponse:
+        from security_lakehouse.audit_log import build_audit_log
+
+        params = _params(request)
+        limit_raw = (params.get("limit") or ["200"])[0]
+        try:
+            limit = int(limit_raw)
+        except ValueError:
+            limit = 200
+        include_requests = (params.get("include_requests") or ["false"])[0].lower() in {"1", "true", "yes"}
+        category = (params.get("category") or [""])[0] or None
+        actor = (params.get("actor") or [""])[0] or None
+        entries = build_audit_log(
+            lake_for(identity),
+            category=category,
+            actor=actor,
+            limit=max(1, min(limit, 1000)),
+            include_requests=include_requests,
+        )
+        return JSONResponse(
+            api_v1.envelope(
+                "audit-log",
+                entries,
+                meta={"count": len(entries), "limit": limit},
+            )
+        )
+
     @app.get("/api/v1/platform/poc-readiness")
     def poc_readiness(
         identity: Identity = Depends(_require_admin),
