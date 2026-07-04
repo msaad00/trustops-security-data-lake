@@ -2,7 +2,7 @@
 
 A node failure must only skip its *downstream descendants*. Independent
 parallel branches keep running instead of the whole DAG aborting on the first
-error (Tines-grade behavior).
+error (enterprise workflow isolation).
 """
 
 from __future__ import annotations

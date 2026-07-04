@@ -119,7 +119,7 @@ export function CloudLinkPanel({
         <div className="text-xs font-black uppercase tracking-wide text-ink">
           One-click cloud linking
         </div>
-        <Badge tone="info">Vanta-style</Badge>
+        <Badge tone="info">OAuth link</Badge>
       </div>
       <p className="mt-2 text-xs font-semibold text-muted">
         {linkDescription(connector.connector_id)}

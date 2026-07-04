@@ -404,9 +404,12 @@ export const api = {
       qs.set("include_requests", String(opts.include_requests));
     if (opts.limit !== undefined) qs.set("limit", String(opts.limit));
     const tail = qs.toString();
-    return get<{ count: number; entries: AuditLogEntry[] }>(
-      `/audit-log${tail ? `?${tail}` : ""}`,
-    );
+    return get<{ data: AuditLogEntry[]; meta?: { count?: number } }>(
+      `/v1/audit-log${tail ? `?${tail}` : ""}`,
+    ).then((body) => ({
+      count: body.meta?.count ?? body.data.length,
+      entries: body.data,
+    }));
   },
 
   // --- Tags + saved views ---

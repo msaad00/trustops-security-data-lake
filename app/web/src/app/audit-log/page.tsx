@@ -21,6 +21,7 @@ const CATEGORIES: Array<AuditLogEntry["category"] | "all"> = [
   "snapshot",
   "workflow",
   "trust_share",
+  "request",
 ];
 
 const CATEGORY_TONE: Record<
@@ -57,6 +58,8 @@ function Row({ entry }: { entry: AuditLogEntry }) {
             </span>
           </div>
           <div className="mt-1 text-xs text-muted">
+            <code className="text-[10px] text-ink">{entry.event_id}</code>
+            {" · "}
             actor <b className="text-ink">{entry.actor}</b> · subject{" "}
             <code className="text-ink">{entry.subject}</code> ·{" "}
             {entry.occurred_at}

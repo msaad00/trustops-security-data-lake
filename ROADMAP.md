@@ -51,10 +51,18 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 - [x] Unified data model single-page diagram
 - [x] Dark mode
 
-## P5 — Commercial hosted (future)
+## P5 — Commercial hosted
 
 - [x] Published hosted pricing tiers
 - [x] Self-serve signup and tenant lifecycle
-- [x] Billing, usage limits, and SCIM
+- [x] Usage limits enforcement scaffold
+- [ ] Billing (Stripe) and SCIM provisioning
+
+## P6 — Headless GRC
+
+- [x] Headless architecture guide (`docs/HEADLESS_GRC.md`)
+- [ ] Unified v1 audit-log with stable event IDs (#339)
+- [ ] Audit readiness API and audit room (#340)
+- [ ] MCP/API resource catalog parity for platform endpoints
 
 See [TRUSTOPS_85_PLAN.md](docs/TRUSTOPS_85_PLAN.md) for the 85% self-hosted bar.

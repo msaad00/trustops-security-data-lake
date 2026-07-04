@@ -63,7 +63,7 @@ platform: deployable by URL, usable by humans, and callable by headless agents.
 - Framework packs are seeded and source-linked, but not full certification-grade
   coverage for every framework.
 - Workflow automation has a usable DAG/canvas, templates, and runs, but still
-  needs deeper Tines-like run inspection, retries, approvals, and action logs.
+  needs deeper run inspection, retries, approvals, and action logs.
 - Production operations need backup/restore drills, external secret sync,
   multi-replica guidance, alerting, WAF/API gateway guidance, and hosted
   observability before a broad public launch.

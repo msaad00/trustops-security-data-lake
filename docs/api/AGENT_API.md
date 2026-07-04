@@ -91,10 +91,15 @@ agent action should be rendered back to humans with the same audit trail.
 | `POST` | `/api/v1/agent-runs`                                             | run and persist a deterministic, optional LangGraph-orchestrated, or optional model-assisted harness with data-readiness preflight |
 | `GET`  | `/api/v1/agent-runs/{run_id}`                                    | inspect one persisted harness run, including evaluation and proposed actions                                                       |
 | `POST` | `/api/v1/agent-runs/{run_id}/decisions/{decision_index}/approve` | approve one stored proposal and execute its allowlisted TrustOps write idempotently                                                |
+| `GET`  | `/api/v1/audit-log`                                              | unified activity stream (`event_id`, `occurred_at`, category filters)                                                              |
+| `GET`  | `/api/v1/connectors`                                             | connector catalog + live sync health                                                                                               |
+| `POST` | `/api/v1/connectors/{id}/sync`                                   | trigger read-only connector sync (idempotent raw upsert on `event_id`)                                                             |
 
 The unversioned `/api/*` routes remain for the bundled console and local
-compatibility. Server mode serves the same unversioned surface behind the same
-identity and RBAC boundary as `/api/v1/*`.
+compatibility. Prefer **`/api/v1/*`** for agents and CI.
+
+See [INGESTION_CONNECTORS_IDEMPOTENCY.md](../INGESTION_CONNECTORS_IDEMPOTENCY.md)
+for connector registry, unique IDs, timestamps, and idempotency keys.
 
 ## Agent Usage Pattern
 
