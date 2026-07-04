@@ -60,17 +60,23 @@ class GovernanceRepoSpec:
 
 
 class GovernanceClient(Protocol):
-    def repo(self) -> dict[str, Any]: ...
+    def repo(self) -> dict[str, Any]:
+        pass
 
-    def branch_protection(self, branch: str) -> dict[str, Any] | list[dict[str, Any]]: ...
+    def branch_protection(self, branch: str) -> dict[str, Any] | list[dict[str, Any]]:
+        pass
 
-    def collaborators(self) -> list[dict[str, Any]]: ...
+    def collaborators(self) -> list[dict[str, Any]]:
+        pass
 
-    def teams(self) -> list[dict[str, Any]]: ...
+    def teams(self) -> list[dict[str, Any]]:
+        pass
 
-    def workflow_permissions(self) -> dict[str, Any]: ...
+    def workflow_permissions(self) -> dict[str, Any]:
+        pass
 
-    def vulnerability_alerts(self) -> dict[str, Any]: ...
+    def vulnerability_alerts(self) -> dict[str, Any]:
+        pass
 
 
 def parse_governance_repo_spec(value: str, *, provider: str | None = None) -> GovernanceRepoSpec:
