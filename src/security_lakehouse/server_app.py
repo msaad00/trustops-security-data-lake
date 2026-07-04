@@ -40,6 +40,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from security_lakehouse import api_legacy, api_v1, remediation_guidance, tenancy, trust_share
 from security_lakehouse.assessment import build_current_posture, write_assessment_snapshot
+from security_lakehouse.auth.api_key_session import ApiKeySessionError, exchange_api_key_for_browser_session
 from security_lakehouse.auth.dependencies import get_session, require_scope
 from security_lakehouse.auth.oidc import OIDCLoginError, build_oauth, complete_oidc_login, load_oidc_config
 from security_lakehouse.auth.presentation import build_auth_methods_payload
@@ -51,10 +52,11 @@ from security_lakehouse.auth.saml import (
     build_saml_auth,
     complete_saml_login,
     email_from_saml_assertion,
+    groups_from_saml_assertion,
     load_saml_config,
     saml_request_data,
 )
-from security_lakehouse.auth.sessions import SESSION_COOKIE
+from security_lakehouse.auth.sessions import SESSION_COOKIE, decode_session_cookie, encode_session_cookie
 from security_lakehouse.catalog import load_control_catalog
 from security_lakehouse.dashboard import render_dashboard
 from security_lakehouse.data_policy import redact_payload
@@ -129,6 +131,16 @@ class CreateKeyRequest(_StrictModel):
     user_email: str = Field(min_length=3, max_length=320)
     name: str = Field(default="", max_length=80)
     expires_in_days: int | None = Field(default=None, ge=1, le=3660)
+
+
+class UpdateUserRequest(_StrictModel):
+    role: str | None = None
+    is_active: bool | None = None
+    display_name: str | None = Field(default=None, max_length=120)
+
+
+class SessionFromKeyRequest(_StrictModel):
+    api_key: str = Field(min_length=8, max_length=512)
 
 
 class CreateInviteRequest(_StrictModel):
@@ -1092,26 +1104,41 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="OIDC token exchange failed") from None
         email = (token.get("userinfo") or {}).get("email", "")
         email_verified = (token.get("userinfo") or {}).get("email_verified")
+        userinfo = token.get("userinfo") or {}
+        from security_lakehouse.auth.idp_roles import extract_claim_values
+
+        oidc_config = app.state.oidc_config
+        claim_values = extract_claim_values(userinfo, oidc_config.role_claim) if oidc_config else []
         try:
             _user, sess_token = complete_oidc_login(
                 session,
-                config=app.state.oidc_config,
+                config=oidc_config,
                 email=email,
                 email_verified=email_verified,
+                idp_claim_values=claim_values,
             )
         except OIDCLoginError:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="OIDC login rejected") from None
         session.commit()
         response = RedirectResponse(url="/console", status_code=status.HTTP_302_FOUND)
-        response.set_cookie(SESSION_COOKIE, sess_token, httponly=True, secure=_COOKIE_SECURE, samesite="lax", path="/")
+        response.set_cookie(
+            SESSION_COOKIE,
+            encode_session_cookie(sess_token),
+            httponly=True,
+            secure=_COOKIE_SECURE,
+            samesite="lax",
+            path="/",
+        )
         return response
 
     @app.post("/api/v1/auth/logout")
     def sso_logout(request: Request, session: Session = Depends(get_session)) -> JSONResponse:
-        cookie = request.cookies.get(SESSION_COOKIE)
-        if cookie:
-            repository.revoke_user_session(session, cookie, now=datetime.now(UTC))
-            session.commit()
+        cookie_raw = request.cookies.get(SESSION_COOKIE)
+        if cookie_raw:
+            session_token = decode_session_cookie(cookie_raw)
+            if session_token:
+                repository.revoke_user_session(session, session_token, now=datetime.now(UTC))
+                session.commit()
         response = JSONResponse(api_v1.envelope("auth.logout", {"ok": True}))
         response.delete_cookie(SESSION_COOKIE, path="/")
         return response
@@ -1174,16 +1201,29 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         if errors or not auth.is_authenticated():
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="SAML response rejected")
         try:
+            saml_config = app.state.saml_config
+            claim_values = groups_from_saml_assertion(
+                auth,
+                attribute_name=saml_config.role_attribute,
+            )
             _user, sess_token = complete_saml_login(
                 session,
-                config=app.state.saml_config,
+                config=saml_config,
                 email=email_from_saml_assertion(auth),
+                idp_claim_values=claim_values,
             )
         except SAMLLoginError:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="SAML login rejected") from None
         session.commit()
         response = RedirectResponse(url="/console", status_code=status.HTTP_302_FOUND)
-        response.set_cookie(SESSION_COOKIE, sess_token, httponly=True, secure=_COOKIE_SECURE, samesite="lax", path="/")
+        response.set_cookie(
+            SESSION_COOKIE,
+            encode_session_cookie(sess_token),
+            httponly=True,
+            secure=_COOKIE_SECURE,
+            samesite="lax",
+            path="/",
+        )
         return response
 
     # --- auth surface ---
@@ -1292,6 +1332,76 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="key not found or already revoked")
         session.commit()
         return JSONResponse(api_v1.envelope("auth.keys", {"id": key_id, "revoked": True}))
+
+    @app.get("/api/v1/auth/users")
+    def list_users(
+        identity: Identity = Depends(_require_admin),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        from security_lakehouse.auth.users_admin import list_tenant_users, user_to_dict
+
+        rows = list_tenant_users(session, tenant_id=identity.tenant_id)
+        data = [user_to_dict(row) for row in rows]
+        return JSONResponse(api_v1.envelope("auth.users", data, meta={"count": len(data)}))
+
+    @app.patch("/api/v1/auth/users/{user_id}")
+    def update_user(
+        user_id: str,
+        body: UpdateUserRequest,
+        identity: Identity = Depends(_require_admin),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        from security_lakehouse.auth.users_admin import UserAdminError, update_tenant_user, user_to_dict
+
+        try:
+            row = update_tenant_user(
+                session,
+                tenant_id=identity.tenant_id,
+                user_id=user_id,
+                actor_user_id=identity.user_id,
+                role=body.role,
+                is_active=body.is_active,
+                display_name=body.display_name,
+            )
+        except UserAdminError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        session.commit()
+        return JSONResponse(api_v1.envelope("auth.users", user_to_dict(row)))
+
+    @app.post("/api/v1/auth/session-from-key")
+    def session_from_key(
+        body: SessionFromKeyRequest,
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        """Exchange a valid API key for a browser session cookie."""
+        try:
+            user, sess_token = exchange_api_key_for_browser_session(session, raw_token=body.api_key)
+        except ApiKeySessionError as exc:
+            detail = str(exc)
+            code = status.HTTP_403_FORBIDDEN if detail == "user is disabled" else status.HTTP_401_UNAUTHORIZED
+            raise HTTPException(status_code=code, detail=detail) from exc
+        session.commit()
+        response = JSONResponse(
+            api_v1.envelope(
+                "auth.session",
+                {
+                    "user_id": user.id,
+                    "tenant_id": user.tenant_id,
+                    "email": user.email,
+                    "role": user.role,
+                    "scopes": sorted(scopes_for_role(user.role)),
+                },
+            )
+        )
+        response.set_cookie(
+            SESSION_COOKIE,
+            encode_session_cookie(sess_token),
+            httponly=True,
+            secure=_COOKIE_SECURE,
+            samesite="lax",
+            path="/",
+        )
+        return response
 
     # --- commercial hosted: pricing, signup, invites, usage, SCIM ---
     @app.get("/api/v1/platform/pricing", tags=["commercial"])
@@ -1416,19 +1526,147 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         return JSONResponse(api_v1.envelope("platform.scim", scim_services.scim_config()))
 
     @app.get("/api/v1/scim/v2/ServiceProviderConfig", tags=["commercial"])
-    @app.get("/api/v1/scim/v2/Users", tags=["commercial"])
-    @app.post("/api/v1/scim/v2/Users", tags=["commercial"])
-    def scim_not_implemented() -> JSONResponse:
+    def scim_service_provider_config() -> JSONResponse:
         from security_lakehouse.commercial import scim as scim_services
 
-        if scim_services.scim_enabled():
+        if not scim_services.scim_enabled():
             return JSONResponse(
-                api_v1.envelope("scim", {"resources": [], "totalResults": 0}),
+                api_v1.error_envelope("not_implemented", scim_services.scim_not_implemented_detail()),
+                status_code=status.HTTP_501_NOT_IMPLEMENTED,
             )
         return JSONResponse(
-            api_v1.error_envelope("not_implemented", scim_services.scim_not_implemented_detail()),
-            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            api_v1.envelope(
+                "scim",
+                {
+                    "schemas": ["urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig"],
+                    "patch": {"supported": True},
+                    "bulk": {"supported": False},
+                    "filter": {"supported": False},
+                    "changePassword": {"supported": False},
+                    "sort": {"supported": False},
+                    "etag": {"supported": False},
+                    "authenticationSchemes": [
+                        {
+                            "type": "oauthbearertoken",
+                            "name": "OAuth Bearer Token",
+                            "description": "SCIM bearer token configured via TRUSTOPS_SCIM_BEARER_TOKEN",
+                        }
+                    ],
+                },
+            )
         )
+
+    @app.get("/api/v1/scim/v2/Users", tags=["commercial"])
+    def scim_list_users(request: Request, session: Session = Depends(get_session)) -> JSONResponse:
+        from security_lakehouse.commercial import scim as scim_services
+        from security_lakehouse.commercial.scim_provision import (
+            list_scim_users,
+            require_scim_bearer,
+            resolve_scim_tenant_id,
+        )
+
+        if not scim_services.scim_enabled():
+            return JSONResponse(
+                api_v1.error_envelope("not_implemented", scim_services.scim_not_implemented_detail()),
+                status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            )
+        try:
+            require_scim_bearer(request.headers.get("Authorization"))
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)) from exc
+        params = _params(request)
+        start_index = int((params.get("startIndex") or ["1"])[0])
+        count = int((params.get("count") or ["100"])[0])
+        tenant_id = resolve_scim_tenant_id(session)
+        payload = list_scim_users(session, tenant_id=tenant_id, start_index=start_index, count=count)
+        return JSONResponse(api_v1.envelope("scim.users", payload))
+
+    @app.post("/api/v1/scim/v2/Users", status_code=status.HTTP_201_CREATED, tags=["commercial"])
+    async def scim_create_user(request: Request, session: Session = Depends(get_session)) -> JSONResponse:
+        from security_lakehouse.commercial import scim as scim_services
+        from security_lakehouse.commercial.scim_provision import (
+            create_scim_user,
+            require_scim_bearer,
+            resolve_scim_tenant_id,
+        )
+
+        if not scim_services.scim_enabled():
+            return JSONResponse(
+                api_v1.error_envelope("not_implemented", scim_services.scim_not_implemented_detail()),
+                status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            )
+        try:
+            require_scim_bearer(request.headers.get("Authorization"))
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)) from exc
+        body = await request.json()
+        email = str(body.get("userName") or "").strip()
+        if not email and body.get("emails"):
+            emails = body.get("emails") or []
+            if emails:
+                email = str(emails[0].get("value") or "").strip()
+        role = str(body.get("trustopsRole") or body.get("role") or "read_only")
+        display_name = ""
+        name = body.get("name") or {}
+        if isinstance(name, dict):
+            display_name = str(name.get("formatted") or name.get("givenName") or "")
+        active = body.get("active", True)
+        try:
+            tenant_id = resolve_scim_tenant_id(session)
+            payload = create_scim_user(
+                session,
+                tenant_id=tenant_id,
+                email=email,
+                role=role,
+                display_name=display_name,
+                active=bool(active),
+            )
+        except ValueError as exc:
+            detail = str(exc)
+            code = status.HTTP_409_CONFLICT if "already exists" in detail else status.HTTP_400_BAD_REQUEST
+            raise HTTPException(status_code=code, detail=detail) from exc
+        session.commit()
+        return JSONResponse(api_v1.envelope("scim.users", payload), status_code=status.HTTP_201_CREATED)
+
+    @app.patch("/api/v1/scim/v2/Users/{user_id}", tags=["commercial"])
+    async def scim_patch_user(
+        user_id: str,
+        request: Request,
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        from security_lakehouse.commercial import scim as scim_services
+        from security_lakehouse.commercial.scim_provision import (
+            patch_scim_user,
+            require_scim_bearer,
+            resolve_scim_tenant_id,
+        )
+
+        if not scim_services.scim_enabled():
+            return JSONResponse(
+                api_v1.error_envelope("not_implemented", scim_services.scim_not_implemented_detail()),
+                status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            )
+        try:
+            require_scim_bearer(request.headers.get("Authorization"))
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)) from exc
+        body = await request.json()
+        active: bool | None = None
+        role: str | None = None
+        for op in body.get("Operations") or []:
+            path = str(op.get("path") or "").lower()
+            value = op.get("value")
+            if path in {"active", "istrue"} or (not path and isinstance(value, dict) and "active" in value):
+                active = bool(value.get("active") if isinstance(value, dict) else value)
+            if path in {"trustopsrole", "role"} or (isinstance(value, dict) and "trustopsRole" in value):
+                role = str(value.get("trustopsRole") if isinstance(value, dict) else value)
+        try:
+            tenant_id = resolve_scim_tenant_id(session)
+            payload = patch_scim_user(session, tenant_id=tenant_id, user_id=user_id, active=active, role=role)
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        session.commit()
+        return JSONResponse(api_v1.envelope("scim.users", payload))
 
     @app.get("/api/v1/platform/audit-readiness", tags=["platform"])
     def audit_readiness_route(

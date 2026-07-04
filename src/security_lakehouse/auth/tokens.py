@@ -1,7 +1,7 @@
 """API token generation and hashing.
 
-Tokens look like ``tops_<48 hex chars>``. Only the SHA-256 hash is persisted;
-the plaintext is returned once at creation and never stored.
+Tokens look like ``tops_<48 hex chars>``. Only a derived lookup digest is
+persisted; the plaintext is returned once at creation and never stored.
 """
 
 from __future__ import annotations
@@ -10,6 +10,8 @@ import hashlib
 import secrets
 
 TOKEN_PREFIX = "tops_"
+_TOKEN_HASH_SALT = b"trustops-api-token-v2"
+_TOKEN_HASH_ITERATIONS = 210_000
 
 
 def generate_token() -> tuple[str, str, str]:
@@ -19,8 +21,13 @@ def generate_token() -> tuple[str, str, str]:
 
 
 def hash_token(token: str) -> str:
-    """SHA-256 hex digest of a token (the only form persisted)."""
-    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+    """PBKDF2-HMAC lookup digest of a token (the only form persisted)."""
+    return hashlib.pbkdf2_hmac(
+        "sha256",
+        token.encode("utf-8"),
+        _TOKEN_HASH_SALT,
+        _TOKEN_HASH_ITERATIONS,
+    ).hex()
 
 
 def display_prefix(token: str) -> str:

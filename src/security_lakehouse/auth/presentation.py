@@ -21,7 +21,7 @@ _SETUP_HINTS: dict[str, str] = {
     "okta_saml": "Upload TrustOps SP metadata to Okta; map NameID to email.",
     "azure_ad_saml": "Enterprise application SAML SSO with ACS URL and email NameID.",
     "generic_saml": "IdP metadata with ACS URL, entity ID, and x509 cert mounted on the server.",
-    "api_key": "Create a scoped API key for agents, CI, and MCP — hashed server-side, shown once.",
+    "api_key": "Paste an API key on the sign-in page for a browser session, or use Bearer auth for MCP and CI.",
 }
 
 _OIDC_PROVIDER_RULES: tuple[tuple[tuple[str, ...], str, str], ...] = (
@@ -226,7 +226,7 @@ def build_auth_methods_payload(
             method_id="api_key",
             label="API key (headless)",
             configured=True,
-            login_url="/api/v1/auth/keys",
+            login_url="/api/v1/auth/session-from-key",
             protocol="API key",
             provider_kind="api_key",
             provider_label="TrustOps API keys",

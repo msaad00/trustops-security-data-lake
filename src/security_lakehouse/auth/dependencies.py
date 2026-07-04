@@ -10,7 +10,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
 from security_lakehouse.auth.rbac import Identity, scopes_for_role
-from security_lakehouse.auth.sessions import SESSION_COOKIE
+from security_lakehouse.auth.sessions import SESSION_COOKIE, decode_session_cookie
 from security_lakehouse.db import repository
 
 _bearer = HTTPBearer(auto_error=False)
@@ -72,9 +72,12 @@ def get_identity(
         return identity
 
     # 2. Browser session (SSO): httpOnly cookie
-    cookie = request.cookies.get(SESSION_COOKIE)
-    if cookie:
-        sess = repository.resolve_user_session(session, cookie)
+    cookie_raw = request.cookies.get(SESSION_COOKIE)
+    if cookie_raw:
+        session_token = decode_session_cookie(cookie_raw)
+        if session_token is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid or expired session")
+        sess = repository.resolve_user_session(session, session_token)
         if sess is None or not sess.is_active(now=now):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid or expired session")
         if not sess.user.is_active:

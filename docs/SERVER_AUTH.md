@@ -17,8 +17,8 @@ FastAPI server surface from `trustops-security-data-lake[server]`.
 ## API Keys
 
 API keys are for agents, CI, and service accounts. The database stores only a
-SHA-256 token hash. Raw key material is returned once by the authenticated API
-creation endpoint.
+derived lookup digest. Raw key material is returned once by the authenticated
+API creation endpoint.
 
 ```bash
 security-lakehouse platform seed-dev --lake build/lakehouse
@@ -61,7 +61,51 @@ The console **Access** page (`/console/auth/`) and sign-in page render the same
 not official vendor logos. See [THIRD_PARTY_ASSETS.md](THIRD_PARTY_ASSETS.md).
 
 Admins manage API keys under **Access → API keys** (create with one-time secret,
-revoke, MCP config copy).
+revoke, MCP config copy). Admins manage tenant users under **Access → Users &
+roles** (promote, demote, deactivate). Paste an API key on the sign-in page to
+open a browser session without SSO.
+
+## User directory
+
+| Endpoint                             | Purpose                                     |
+| ------------------------------------ | ------------------------------------------- |
+| `GET /api/v1/auth/users`             | List tenant users (admin)                   |
+| `PATCH /api/v1/auth/users/{id}`      | Change role, active flag, or display name   |
+| `POST /api/v1/auth/session-from-key` | Exchange API key for browser session cookie |
+
+Last active admin cannot be demoted or deactivated.
+
+## IdP group → role mapping
+
+Map identity-provider groups to TrustOps roles on SSO login:
+
+```bash
+export TRUSTOPS_OIDC_ROLE_MAP='{"TrustOps-Admins":"admin","TrustOps-Auditors":"auditor"}'
+export TRUSTOPS_OIDC_ROLE_CLAIM="groups"
+export TRUSTOPS_IDP_SYNC_ROLE_ON_LOGIN="true"
+```
+
+SAML uses `TRUSTOPS_SAML_ROLE_MAP` and `TRUSTOPS_SAML_ROLE_ATTRIBUTE` (default
+`groups`). When sync is enabled, each login reapplies the highest matched role.
+
+## SCIM (commercial hosted)
+
+Enable with commercial hosted mode plus:
+
+```bash
+export TRUSTOPS_COMMERCIAL_HOSTED="1"
+export TRUSTOPS_SCIM_ENABLED="1"
+export TRUSTOPS_SCIM_BEARER_TOKEN="replace-with-long-random-secret"
+export TRUSTOPS_SCIM_TENANT_SLUG="acme"
+```
+
+| Endpoint                           | Purpose                   |
+| ---------------------------------- | ------------------------- |
+| `GET /api/v1/scim/v2/Users`        | List users                |
+| `POST /api/v1/scim/v2/Users`       | Provision user            |
+| `PATCH /api/v1/scim/v2/Users/{id}` | Deactivate or change role |
+
+SCIM requests authenticate with the SCIM bearer token, not a user API key.
 
 <p align="center">
   <img src="images/trustops-identity-boundary.svg" alt="TrustOps identity boundary: OIDC, SAML, and API keys to tenant RBAC and audit" width="100%">
