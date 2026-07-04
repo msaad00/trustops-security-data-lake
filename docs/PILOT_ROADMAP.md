@@ -2,7 +2,10 @@
 
 This tracker keeps the one-company internal TrustOps pilot honest. It maps the
 remaining open roadmap issues to delivery phases, owner surfaces, acceptance
-evidence, and sequencing. Status is intentionally conservative:
+evidence, and sequencing. For the full product-shape parity map and recommended
+PR execution order, see [PRODUCT_SHAPE.md](PRODUCT_SHAPE.md).
+
+Status is intentionally conservative:
 
 - **Shipped**: closed issue or merged PR with repo evidence.
 - **Partial**: a working surface exists, but the open issue acceptance criteria

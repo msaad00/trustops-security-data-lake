@@ -16,6 +16,7 @@
 
 <p align="center">
   <a href="docs/PRODUCT_WALKTHROUGH.md"><strong>Walkthrough</strong></a> ·
+  <a href="docs/PRODUCT_SHAPE.md"><strong>Product shape</strong></a> ·
   <a href="docs/SHAREABLE_DEMO.md"><strong>Demo</strong></a> ·
   <a href="docs/ARCHITECTURE.md"><strong>Architecture</strong></a> ·
   <a href="docs/CONNECTORS.md"><strong>Connectors</strong></a> ·
