@@ -141,6 +141,11 @@ def test_scim_users_when_enabled(env, monkeypatch: pytest.MonkeyPatch) -> None:
     assert created.json()["data"]["userName"] == "scim-new@acme.test"
 
     user_id = created.json()["data"]["id"]
+    fetched = client.get(f"/api/v1/scim/v2/Users/{user_id}", headers=scim_auth)
+    assert fetched.status_code == HTTPStatus.OK
+    assert fetched.json()["data"]["userName"] == "scim-new@acme.test"
+    assert fetched.json()["data"]["active"] is True
+
     patched = client.patch(
         f"/api/v1/scim/v2/Users/{user_id}",
         headers=scim_auth,
@@ -151,3 +156,13 @@ def test_scim_users_when_enabled(env, monkeypatch: pytest.MonkeyPatch) -> None:
     )
     assert patched.status_code == HTTPStatus.OK
     assert patched.json()["data"]["active"] is False
+
+    deleted = client.delete(f"/api/v1/scim/v2/Users/{user_id}", headers=scim_auth)
+    assert deleted.status_code == HTTPStatus.NO_CONTENT
+
+    after_delete = client.get(f"/api/v1/scim/v2/Users/{user_id}", headers=scim_auth)
+    assert after_delete.status_code == HTTPStatus.OK
+    assert after_delete.json()["data"]["active"] is False
+
+    missing = client.get("/api/v1/scim/v2/Users/does-not-exist", headers=scim_auth)
+    assert missing.status_code == HTTPStatus.NOT_FOUND
