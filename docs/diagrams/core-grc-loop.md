@@ -46,14 +46,14 @@ flowchart TB
 
 ## Stage map
 
-| Stage | Console | API / headless |
-| ----- | ------- | -------------- |
-| Connect | `/console/connectors/` | `POST /api/v1/connectors/{id}/sync` |
-| Evaluate | `/console/controls/` | `GET /api/v1/posture/current` |
-| Freshness | `/console/audit-room/` | `GET /api/v1/evidence/freshness/summary` |
-| Remediate | `/console/remediation/` | `POST /api/v1/evidence/freshness/escalate` |
-| Review | `/console/access-reviews/` | `GET /api/v1/platform/audit-readiness` |
-| Share | `/console/trust-center/` | Trust token routes + snapshot export |
+| Stage     | Console                    | API / headless                             |
+| --------- | -------------------------- | ------------------------------------------ |
+| Connect   | `/console/connectors/`     | `POST /api/v1/connectors/{id}/sync`        |
+| Evaluate  | `/console/controls/`       | `GET /api/v1/posture/current`              |
+| Freshness | `/console/audit-room/`     | `GET /api/v1/evidence/freshness/summary`   |
+| Remediate | `/console/remediation/`    | `POST /api/v1/evidence/freshness/escalate` |
+| Review    | `/console/access-reviews/` | `GET /api/v1/platform/audit-readiness`     |
+| Share     | `/console/trust-center/`   | Trust token routes + snapshot export       |
 
 ## Identity spine
 
