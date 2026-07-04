@@ -1,11 +1,11 @@
 {
   "schema_version": "trustops.catalog_bundle.v1",
   "as_of": null,
-  "framework_count": 10,
+  "framework_count": 13,
   "control_count": 635,
   "crosswalk_count": 635,
   "components": {
-    "frameworks": "12d13569aa9852562b11179aab2ad960999974c71da4747b5786a33349fa8148",
+    "frameworks": "7d7bdb9b9c2a8e78f6c7ade2eb0697048d0e4ed0df851f9ddd00a7f7fd814a61",
     "controls": "1c47e0984c5f9055aa4c776405660597d0c70ec3df2631328496b9a4b2c11935",
     "crosswalk": "c00c6d073a4c47e72195e120c8da8939a1539c900edfe62035fea0a49dfcb1d6"
   },
@@ -14,6 +14,13 @@
       "framework_id": "cis_aws",
       "version": "v3.0.0",
       "effective_date": "2024-01-31",
+      "superseded_by": null,
+      "source_sha256": null
+    },
+    {
+      "framework_id": "cmmc-2-level2",
+      "version": "CMMC 2.0 Level 2",
+      "effective_date": "2024-10-15",
       "superseded_by": null,
       "source_sha256": null
     },
@@ -53,6 +60,13 @@
       "source_sha256": null
     },
     {
+      "framework_id": "iso-27017-2015",
+      "version": "2015 edition",
+      "effective_date": "2015-12-15",
+      "superseded_by": null,
+      "source_sha256": null
+    },
+    {
       "framework_id": "iso-42001-2023",
       "version": "2023 edition",
       "effective_date": "2023-12-18",
@@ -63,6 +77,13 @@
       "framework_id": "nist-ai-rmf",
       "version": "AI RMF 1.0, NIST AI 100-1",
       "effective_date": "2023-01-26",
+      "superseded_by": null,
+      "source_sha256": null
+    },
+    {
+      "framework_id": "nist-csf-2.0",
+      "version": "CSF 2.0",
+      "effective_date": "2024-02-26",
       "superseded_by": null,
       "source_sha256": null
     },
@@ -4528,5 +4549,5 @@
       "lifecycle_status": "active"
     }
   ],
-  "bundle_sha256": "9e38cb2b069e472c347f333f433ab9b74c6aec3ccb504e394cd0fa21e1916b6a"
+  "bundle_sha256": "afa7d607c95dd993cbc023aa55f9684192fc1d578928fb5324b97e02eb83a379"
 }

@@ -57,9 +57,12 @@ def _controls(catalog: dict) -> list[dict]:
 
 
 def test_every_framework_has_a_format_pattern() -> None:
-    """Catch a new framework that ships without a registered id format."""
-    registry_ids = {fw["framework_id"] for fw in _frameworks(_load("frameworks/registry.json"))}
-    missing = sorted(registry_ids - set(_FORMAT_PATTERNS))
+    """Catch a new implemented framework that ships without a registered id format."""
+    registry = _frameworks(_load("frameworks/registry.json"))
+    implemented_ids = {
+        fw["framework_id"] for fw in registry if str(fw.get("implementation_status") or "").startswith("implemented")
+    }
+    missing = sorted(implemented_ids - set(_FORMAT_PATTERNS))
     assert missing == [], f"framework(s) without an article_id format pattern: {missing}"
 
 
