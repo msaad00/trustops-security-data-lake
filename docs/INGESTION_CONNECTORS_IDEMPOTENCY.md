@@ -128,4 +128,5 @@ very large lake sizes is a follow-up for operator SIEM export.
 - [CONNECTORS.md](CONNECTORS.md)
 - [AUDIT_SCALE.md](AUDIT_SCALE.md)
 - [api/AGENT_API.md](api/AGENT_API.md)
-- [COMPETITIVE_AUDIT_PARITY.md](COMPETITIVE_AUDIT_PARITY.md) (when merged)
+- [HEADLESS_GRC.md](HEADLESS_GRC.md)
+- [AUDIT_READINESS.md](AUDIT_READINESS.md) (when merged)
