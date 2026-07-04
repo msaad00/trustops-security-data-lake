@@ -18,6 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { EvidenceFreshnessSlaPanel } from "@/components/evidence/EvidenceFreshnessSlaPanel";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { KpiTile } from "@/components/ui/KpiTile";
@@ -59,7 +60,7 @@ export default function AuditRoomPage() {
               </span>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
               <KpiTile
                 label="Audit score"
                 value={`${audit.data.audit_score}%`}
@@ -76,11 +77,26 @@ export default function AuditRoomPage() {
                 detail={`${audit.data.posture.score}% posture`}
               />
               <KpiTile
+                label="Evidence fresh"
+                value={
+                  audit.data.evidence_freshness
+                    ? `${audit.data.evidence_freshness.fresh_rate_pct}%`
+                    : "—"
+                }
+                detail={
+                  audit.data.evidence_freshness
+                    ? `${audit.data.evidence_freshness.stale_count} SLA breach(es)`
+                    : "Freshness rollups from lake pipeline"
+                }
+              />
+              <KpiTile
                 label="Workflow coverage"
                 value={`${audit.data.workflow_coverage.score}%`}
                 detail="Audit-center checklist"
               />
             </div>
+
+            <EvidenceFreshnessSlaPanel />
 
             {audit.data.gaps.length > 0 && (
               <Card>

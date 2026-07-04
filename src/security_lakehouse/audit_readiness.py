@@ -69,6 +69,12 @@ def _workflow_checklist(*, posture_score: int, framework_total: int) -> list[dic
             "note": "Assessment snapshots with hash chain",
         },
         {
+            "id": "evidence_freshness_sla",
+            "label": "Evidence freshness SLA enforcement",
+            "shipped": True,
+            "note": "Per-connector SLOs with stale/expired/missing workflows",
+        },
+        {
             "id": "headless_api",
             "label": "Headless API / MCP / CI gates",
             "shipped": True,
@@ -100,6 +106,8 @@ def build_audit_readiness(
     posture = posture_payload.get("posture") or {}
     frameworks = posture_payload.get("frameworks") or []
     violations = posture_payload.get("violations") or []
+    evidence_freshness = posture_payload.get("evidence_freshness") or {}
+    stale_evidence_count = int(evidence_freshness.get("stale_count") or 0)
     control_tests = read_jsonl(lake / "gold" / "control_tests.jsonl", missing_ok=True)
 
     passing = sum(1 for row in control_tests if str(row.get("result", "")).lower() in {"pass", "ready"})
@@ -156,6 +164,14 @@ def build_audit_readiness(
                 "href": "/console/access-reviews",
             }
         )
+    if stale_evidence_count > 0:
+        gaps.append(
+            {
+                "id": "stale_evidence",
+                "label": f"{stale_evidence_count} stale/expired/missing evidence item(s)",
+                "href": "/console/evidence?freshness=stale",
+            }
+        )
     if not auditor_shares:
         gaps.append(
             {
@@ -191,6 +207,16 @@ def build_audit_readiness(
             "passing": passing,
             "failing": failing,
             "total": total_tests,
+        },
+        "evidence_freshness": {
+            "total": int(evidence_freshness.get("count") or 0),
+            "stale_count": stale_evidence_count,
+            "fresh_rate_pct": round(
+                100
+                * (int(evidence_freshness.get("count") or 0) - stale_evidence_count)
+                / max(int(evidence_freshness.get("count") or 0), 1),
+                1,
+            ),
         },
         "evidence_requests": {"open": len(open_evidence)},
         "access_reviews": {

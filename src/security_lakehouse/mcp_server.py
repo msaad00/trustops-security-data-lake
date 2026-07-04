@@ -337,6 +337,25 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """
         return _server_api_request("GET", "/api/v1/platform/audit-readiness")
 
+    @trustops_tool(title="Evidence Freshness Summary")
+    def get_evidence_freshness_summary() -> JsonObject:
+        """Return SLA breach rollups: fresh rate, stale counts, and top breaches by source."""
+        return _server_api_request("GET", "/api/v1/evidence/freshness/summary")
+
+    @trustops_tool(title="Escalate Stale Evidence")
+    def escalate_stale_evidence(limit: int = 10) -> JsonObject:
+        """Create remediation tasks for stale, expired, or missing evidence rows."""
+        return _server_api_request(
+            "POST",
+            "/api/v1/evidence/freshness/escalate",
+            body={"limit": limit, "statuses": ["stale", "expired", "missing"]},
+        )
+
+    @trustops_tool(title="Insights Timeseries")
+    def get_insights_timeseries(limit: int = 14) -> JsonObject:
+        """Return captured posture trend points (score, fresh rate, violations)."""
+        return _server_api_request("GET", "/api/v1/insights/timeseries", limit=str(limit))
+
     # ------------------------------------------------------------------
     # Write tools — lake-backed actions an agent can take, not just read.
     #

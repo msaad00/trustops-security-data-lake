@@ -486,6 +486,20 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "scopes": ["read"],
     },
     {
+        "resource": "evidence.freshness.summary",
+        "path": "/api/v1/evidence/freshness/summary",
+        "kind": "singleton",
+        "methods": ["GET"],
+        "scopes": ["read"],
+    },
+    {
+        "resource": "evidence.freshness.escalate",
+        "path": "/api/v1/evidence/freshness/escalate",
+        "kind": "action",
+        "methods": ["POST"],
+        "scopes": ["write"],
+    },
+    {
         "resource": "audit-log",
         "path": "/api/v1/audit-log",
         "kind": "collection",
