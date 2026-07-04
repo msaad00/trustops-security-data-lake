@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Lock, ShieldCheck, Loader2, ShieldAlert } from "lucide-react";
+import { Lock, Loader2, ShieldAlert } from "lucide-react";
+import { TrustOpsLogo } from "@/components/brand/TrustOpsLogo";
 import { Badge } from "@/components/ui/badge";
 
 type FrameworkRow = {
@@ -98,16 +99,17 @@ export default function PublicTrustView() {
   return (
     <section className="grid min-h-screen place-items-center bg-[#04101c] p-6">
       <div className="w-full max-w-[860px]">
-        <header className="mb-6 flex items-center gap-3 text-white">
-          <ShieldCheck className="h-7 w-7 text-cyan-300" />
-          <div>
-            <h1 className="text-2xl font-black leading-tight">
-              TrustOps — Security Posture
-            </h1>
-            <p className="text-sm text-slate-400">
-              Shared, read-only verification for external reviewers.
-            </p>
-          </div>
+        <header className="mb-6 flex items-center gap-4 text-white">
+          <TrustOpsLogo
+            showWordmark
+            subtitle="Trust Center"
+            inverted
+            markSize="lg"
+            gradientId="trustops-trust-gradient"
+          />
+          <p className="min-w-0 flex-1 text-sm leading-6 text-slate-400">
+            Shared, read-only verification for external reviewers.
+          </p>
         </header>
 
         <div className="mb-6">

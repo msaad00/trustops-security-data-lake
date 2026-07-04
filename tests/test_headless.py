@@ -108,7 +108,7 @@ def test_v1_connector_actions_require_connector_manage_scope(tmp_path: Path) -> 
 def test_openapi_schema_documents_surface(tmp_path: Path) -> None:
     _seed_lake(tmp_path)
     spec = create_app(tmp_path, require_auth=False).openapi()
-    assert spec["info"]["title"] == "TrustOps Security Data Lake"
+    assert spec["info"]["title"] == "TrustOps API"
     paths = spec["paths"]
     for documented in (
         "/api/v1",

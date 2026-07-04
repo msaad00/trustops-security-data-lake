@@ -24,6 +24,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { McpSetupStrip } from "@/components/agents/McpSetupStrip";
 import { useAuditorMode } from "@/lib/state/auditor";
 import {
   useAgentRuns,
@@ -499,6 +500,8 @@ export default function AgentsPage() {
           </div>
         }
       />
+
+      <McpSetupStrip />
 
       <div className="grid gap-5 xl:grid-cols-[360px_minmax(0,1fr)]">
         <Card className="overflow-hidden">

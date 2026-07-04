@@ -1,6 +1,14 @@
 # TrustOps Security Data Lake
 
+<p align="center">
+  <img src="docs/images/trustops-logo.svg" alt="TrustOps — open-source trust operations" width="280">
+</p>
+
 **Open-source trust operations** — turn cloud, identity, code, runtime, and AI evidence into live posture, framework readiness, findings, workflows, snapshots, and shareable proof. Evidence stays in **your** lake, VPC, or laptop.
+
+> **Naming:** **TrustOps** is the product. **TrustOps Console** is the web UI.
+> The repo/package name `trustops-security-data-lake` and CLI `security-lakehouse`
+> are operator surfaces — see [Brand guide](docs/BRAND.md).
 
 <p align="center">
   <img src="docs/images/trustops-readme-banner.svg" alt="Collect evidence, evaluate controls, route risk, automate follow-up, share proof" width="100%">

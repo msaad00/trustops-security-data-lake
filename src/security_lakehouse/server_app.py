@@ -840,12 +840,13 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     engine = create_engine_for(lake)
 
     app = FastAPI(
-        title="TrustOps Security Data Lake",
+        title="TrustOps API",
         version=api_v1.API_VERSION,
         description=(
-            "Continuous compliance assessment for security data lakes. The same "
-            "engine serves a human console and a headless `/api/v1` surface for "
-            "agents. Discover the contract at `GET /api/v1`; browse it at `/docs`."
+            "Open-source, headless-first trust operations for customer-owned "
+            "evidence lakes. The same engine serves TrustOps Console and "
+            "`/api/v1` for agents, CI, and runbooks. Discover the contract at "
+            "`GET /api/v1`; browse it at `/docs`."
         ),
         openapi_tags=[
             {"name": "discovery", "description": "Self-describing index + health."},
@@ -2532,6 +2533,23 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     @app.get("/console", response_class=HTMLResponse)
     def console() -> HTMLResponse:
         return HTMLResponse(dashboard.read_text(encoding="utf-8"))
+
+    brand_mark = Path(__file__).resolve().parent / "static" / "trustops-mark.svg"
+
+    @app.get("/brand/trustops-mark.svg", include_in_schema=False)
+    def trustops_brand_mark() -> Response:
+        """Public TrustOps monogram for MCP clients and link previews."""
+        if not brand_mark.is_file():
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not found")
+        return Response(
+            brand_mark.read_bytes(),
+            media_type="image/svg+xml",
+            headers={"Cache-Control": "public, max-age=86400"},
+        )
+
+    @app.get("/favicon.ico", include_in_schema=False)
+    def favicon() -> RedirectResponse:
+        return RedirectResponse(url="/brand/trustops-mark.svg", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
 
     if web_dist is not None:
         # The public trust page is a static export under a dynamic segment, so

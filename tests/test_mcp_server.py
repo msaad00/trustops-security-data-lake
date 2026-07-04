@@ -68,6 +68,16 @@ def tool_names(server) -> set[str]:
     return {tool.name for tool in tools}
 
 
+def test_mcp_server_branding(tmp_path: Path) -> None:
+    server = _seeded_server(tmp_path)
+    assert server.icons
+    assert len(server.icons) >= 1
+    tools = anyio.run(server.list_tools)
+    assert tools
+    assert all(getattr(tool, "icons", None) for tool in tools)
+    assert all(getattr(tool, "title", None) for tool in tools)
+
+
 def test_resolve_lake_dir_defaults(monkeypatch):
     monkeypatch.delenv("TRUSTOPS_LAKE", raising=False)
     assert mcp_server.resolve_lake_dir() == Path("./lake").expanduser().resolve()
