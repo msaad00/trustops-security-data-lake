@@ -14,38 +14,48 @@ flowchart LR
 
   subgraph Headless["Automation"]
     KEY["API key<br/>agents / CI / MCP"]
+    SESS["API key → browser session"]
   end
 
   subgraph TrustOps["TrustOps auth core"]
-    MAP["Map email → user"]
+    MAP["Map email → user<br/>IdP group → role"]
     TEN["Tenant scope"]
     RBAC["Role + scopes"]
-    SESS["Session / key hash"]
+    SIGN["Signed session cookie"]
     AUD["Request audit log"]
   end
 
   subgraph Apps["Protected surfaces"]
-    CON["Console"]
-    V1["/api/v1"]
+    CON["Console + audit room"]
+    V1["/api/v1 + MCP"]
+    SCIM["SCIM Users (hosted)"]
   end
 
   OIDC --> MAP
   SAML --> MAP
   KEY --> TEN
-  MAP --> TEN --> RBAC --> SESS --> AUD
+  SESS --> SIGN
+  MAP --> TEN --> RBAC --> SIGN --> AUD
   RBAC --> CON
   RBAC --> V1
+  RBAC --> SCIM
 ```
 
 ## OIDC vs SAML vs API key
 
-| Method       | Best for                             | TrustOps endpoints                  |
-| ------------ | ------------------------------------ | ----------------------------------- |
-| **OIDC**     | Modern IdPs (Okta, Entra ID, Google) | `GET /api/v1/auth/login` → callback |
-| **SAML 2.0** | Enterprise IdPs without OIDC         | `GET /api/v1/auth/saml/login` → ACS |
-| **API key**  | Agents, CI, MCP clients              | `POST /api/v1/auth/keys` (admin)    |
+| Method            | Best for                             | TrustOps endpoints                   |
+| ----------------- | ------------------------------------ | ------------------------------------ |
+| **OIDC**          | Modern IdPs (Okta, Entra ID, Google) | `GET /api/v1/auth/login` → callback  |
+| **SAML 2.0**      | Enterprise IdPs without OIDC         | `GET /api/v1/auth/saml/login` → ACS  |
+| **API key**       | Agents, CI, MCP clients              | `Authorization: Bearer tops_…`       |
+| **Key → session** | Console without SSO                  | `POST /api/v1/auth/session-from-key` |
+| **SCIM**          | Hosted enterprise provisioning       | `/api/v1/scim/v2/Users` (commercial) |
 
 ## Session contract
+
+Browser session cookies are **always signed** when auth is enabled
+(`TRUSTOPS_COOKIE_SIGNING_KEY`). OIDC OAuth state uses a separate
+`TRUSTOPS_SESSION_SECRET`.
 
 ```mermaid
 sequenceDiagram
@@ -59,10 +69,19 @@ sequenceDiagram
   IdP-->>User: Authenticate
   IdP-->>TO: Assertion / token
   TO->>DB: Resolve tenant user + role
-  TO-->>User: HttpOnly session cookie
+  TO-->>User: Signed HttpOnly session cookie
   User->>TO: Console / API (scoped)
   TO->>DB: Append audit event
 ```
+
+## Admin surfaces
+
+| Surface                              | Purpose                                             |
+| ------------------------------------ | --------------------------------------------------- |
+| `GET/PATCH /api/v1/auth/users`       | Tenant user directory (admin)                       |
+| `POST /api/v1/auth/session-from-key` | Paste API key on login page                         |
+| Console **Access**                   | API keys, users & roles, invites                    |
+| IdP role maps                        | `TRUSTOPS_OIDC_ROLE_MAP` / `TRUSTOPS_SAML_ROLE_MAP` |
 
 ## Roles (summary)
 

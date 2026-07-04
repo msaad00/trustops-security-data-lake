@@ -6,6 +6,7 @@ Visual references for architecture, ingestion, auth, and deployment.
 
 | Diagram                                     | File                                                               |
 | ------------------------------------------- | ------------------------------------------------------------------ |
+| **Core GRC loop** (connect → prove)         | [core-grc-loop.md](core-grc-loop.md)                               |
 | Connector ingestion & read-only connections | [connector-ingestion.md](connector-ingestion.md)                   |
 | OIDC / SAML / API key identity              | [auth-identity.md](auth-identity.md)                               |
 | OSS / self-hosted / hosted models           | [deployment-models.md](deployment-models.md)                       |
