@@ -95,7 +95,7 @@ export default function AuditLogPage() {
     <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
       <PageHeader
         eyebrow="Audit log"
-        title="Workbench activity"
+        title="Console activity"
         description="Every posture-changing event in one stream: triage decisions, connector configuration and probes, snapshot freezes, workflow runs, and trust-share lifecycle. All entries come from append-only logs in gold/."
         actions={
           <Badge tone="info">

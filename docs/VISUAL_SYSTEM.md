@@ -4,6 +4,15 @@ The product should feel like an assessment console, not a report. The visual
 language should make current posture, violations, owners, evidence, and
 snapshots understandable for both humans and agents.
 
+Product name, logo, taglines, and naming hierarchy: [BRAND.md](BRAND.md).
+
+## TrustOps mark
+
+- Gradient monogram (`#4f7cff` → `#30c7d2`) with white **T** — use
+  `TrustOpsMark` / `TrustOpsLogo` in the console shell; SVG wordmark in docs.
+- Console chrome label: **TrustOps Console** (sidebar subtitle), not
+  "Workbench" or "Assessment Console".
+
 ## Framework visual identity
 
 Neutral **gradient marks** with Lucide icons identify each program (SOC 2, ISO,

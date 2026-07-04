@@ -3,25 +3,31 @@ import { ReactNode } from "react";
 import { Toaster } from "sonner";
 import { Providers } from "./providers";
 import { Shell } from "@/components/shell/Shell";
+import { BRAND } from "@/lib/brand";
 import "./globals.css";
 
-const DESCRIPTION =
-  "Continuous compliance assessment for security data lakes — SOC 2, NIST AI RMF, and beyond.";
-
 export const metadata: Metadata = {
-  title: { default: "TrustOps Assessment Console", template: "%s · TrustOps" },
-  description: DESCRIPTION,
-  applicationName: "TrustOps",
+  title: { default: BRAND.consoleName, template: `%s · ${BRAND.name}` },
+  description: BRAND.description,
+  applicationName: BRAND.name,
   openGraph: {
-    title: "TrustOps Assessment Console",
-    description: DESCRIPTION,
-    siteName: "TrustOps",
+    title: BRAND.consoleName,
+    description: BRAND.description,
+    siteName: BRAND.name,
     type: "website",
+    images: [
+      {
+        url: "/console/og/trustops-share.svg",
+        width: 1200,
+        height: 630,
+        alt: `${BRAND.name} — ${BRAND.category}`,
+      },
+    ],
   },
   twitter: {
-    card: "summary",
-    title: "TrustOps Assessment Console",
-    description: DESCRIPTION,
+    card: "summary_large_image",
+    title: BRAND.consoleName,
+    description: BRAND.description,
   },
 };
 

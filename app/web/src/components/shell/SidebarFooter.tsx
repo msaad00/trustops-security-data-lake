@@ -1,8 +1,10 @@
 "use client";
 
 import { BookText, ExternalLink, MessageCircleQuestion } from "lucide-react";
+import { TrustOpsMark } from "@/components/brand/TrustOpsMark";
+import { BRAND } from "@/lib/brand";
 
-const VERSION = "0.2.0";
+const VERSION = BRAND.version;
 
 interface Props {
   collapsed: boolean;
@@ -36,7 +38,10 @@ export function SidebarFooter({ collapsed }: Props) {
             <ExternalLink className="h-3 w-3 opacity-60" />
           </a>
           <div className="mt-1 flex items-center justify-between px-2 text-[10px] text-[#5b6a7e]">
-            <span>TrustOps</span>
+            <span className="inline-flex items-center gap-1.5">
+              <TrustOpsMark size="xs" gradientId="trustops-footer-gradient" />
+              {BRAND.name}
+            </span>
             <span>v{VERSION}</span>
           </div>
         </>

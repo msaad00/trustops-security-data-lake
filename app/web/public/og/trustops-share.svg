@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="TrustOps  open-source trust operations">
+  <title>TrustOps  open-source trust operations</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#07111e"/>
+      <stop offset="55%" stop-color="#101623"/>
+      <stop offset="100%" stop-color="#0a1628"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4f7cff"/>
+      <stop offset="100%" stop-color="#30c7d2"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="72" y="198" width="96" height="96" rx="22" fill="url(#mark)"/>
+  <path d="M96 228h48v12.6h-17.7V318h-12.6V240.6H96z" fill="#fff"/>
+  <text x="196" y="248" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="64" font-weight="800" fill="#ffffff">TrustOps</text>
+  <text x="196" y="292" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="22" font-weight="700" fill="#30c7d2" letter-spacing="4">OPEN-SOURCE TRUST OPERATIONS</text>
+  <text x="72" y="380" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="30" font-weight="500" fill="#c8d4e4">Turn evidence in your lake into live compliance posture,</text>
+  <text x="72" y="422" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="30" font-weight="500" fill="#c8d4e4">audit-ready snapshots, and shareable proof.</text>
+  <text x="72" y="490" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="20" font-weight="700" fill="#708198" letter-spacing="2">API · CLI · MCP · CI · CONSOLE</text>
+</svg>
