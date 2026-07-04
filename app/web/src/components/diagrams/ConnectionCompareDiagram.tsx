@@ -78,9 +78,9 @@ export function ConnectionCompareDiagram() {
         />
       </div>
       <p className="line-clamp-3 text-xs leading-5 text-muted">
-        AWS cross-account IAM, GitHub App tokens, and Okta/Google read-only scopes
-        use the same connection patterns — TrustOps stores raw events in your
-        boundary.
+        AWS cross-account IAM, GitHub App tokens, and Okta/Google read-only
+        scopes use the same connection patterns — TrustOps stores raw events in
+        your boundary.
       </p>
     </div>
   );

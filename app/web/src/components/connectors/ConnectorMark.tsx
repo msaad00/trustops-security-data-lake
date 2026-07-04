@@ -46,7 +46,11 @@ function BrandSvg({
       >
         <title>{brand.title}</title>
         {brand.paths.map((segment) => (
-          <path key={segment.d.slice(0, 24)} d={segment.d} fill={segment.fill} />
+          <path
+            key={segment.d.slice(0, 24)}
+            d={segment.d}
+            fill={segment.fill}
+          />
         ))}
       </svg>
     );
@@ -119,7 +123,11 @@ export function ConnectorMark({
       </span>
       {showVendor && (
         <span className="min-w-0 overflow-hidden">
-          <span className={["block truncate font-black text-ink", dim.vendor].join(" ")}>
+          <span
+            className={["block truncate font-black text-ink", dim.vendor].join(
+              " ",
+            )}
+          >
             {name ?? visual.vendor}
           </span>
           <span className="block truncate text-[10px] text-muted">

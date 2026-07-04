@@ -68,7 +68,9 @@ function AccountCard({ connector }: { connector: ConnectorView | undefined }) {
         />
         <div className="min-w-0 flex-1 overflow-hidden">
           <div className="flex items-start justify-between gap-2">
-            <span className="truncate text-sm font-black text-ink">{label}</span>
+            <span className="truncate text-sm font-black text-ink">
+              {label}
+            </span>
             <ArrowRight className="h-4 w-4 shrink-0 text-muted opacity-0 transition-opacity group-hover:opacity-100" />
           </div>
           <div className="mt-2 flex flex-wrap gap-1.5">

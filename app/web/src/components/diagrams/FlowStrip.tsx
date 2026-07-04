@@ -33,7 +33,10 @@ export function FlowStrip({
       )}
     >
       {steps.map((item, index) => (
-        <div key={item.step} className="flex min-w-0 flex-1 items-stretch gap-2">
+        <div
+          key={item.step}
+          className="flex min-w-0 flex-1 items-stretch gap-2"
+        >
           <div className="grid min-h-0 min-w-0 flex-1 grid-cols-[auto_minmax(0,1fr)] gap-3 overflow-hidden rounded-xl border border-line bg-white p-3 shadow-card">
             <span
               className={cn(

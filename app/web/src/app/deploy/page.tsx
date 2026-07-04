@@ -209,7 +209,8 @@ export default function DeployPage() {
         <CardHeader>
           <CardTitle className="text-base">Editions</CardTitle>
           <CardDescription>
-            Feature matrix by deployment — details and pricing on the pricing page.
+            Feature matrix by deployment — details and pricing on the pricing
+            page.
           </CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto">
@@ -271,7 +272,8 @@ export default function DeployPage() {
         <CardHeader>
           <CardTitle className="text-base">Go-live path</CardTitle>
           <CardDescription>
-            From zero to operating posture — OSS license, your infra, your evidence.
+            From zero to operating posture — OSS license, your infra, your
+            evidence.
           </CardDescription>
         </CardHeader>
         <CardContent className="min-w-0 overflow-hidden">
