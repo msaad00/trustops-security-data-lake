@@ -30,6 +30,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import { SidebarFooter } from "./SidebarFooter";
+import { TrustOpsLogo } from "@/components/brand/TrustOpsLogo";
 import { cn } from "@/lib/utils";
 import { usePersistentState } from "@/lib/state/preferences";
 
@@ -216,9 +217,14 @@ export function Sidebar() {
     >
       <div className="flex items-center justify-between border-b border-railLine p-2.5">
         {!effectiveCollapsed && (
-          <span className="px-2 text-[10px] font-black uppercase tracking-[0.18em] text-[#708198]">
-            Workbench
-          </span>
+          <TrustOpsLogo
+            href="/dashboard"
+            inverted
+            markSize="sm"
+            subtitle="Console"
+            wordmarkClassName="max-w-[140px]"
+            gradientId="trustops-sidebar-gradient"
+          />
         )}
         <button
           type="button"

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { Camera, RefreshCw, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TrustOpsLogo } from "@/components/brand/TrustOpsLogo";
 import { NotificationBell } from "./NotificationBell";
 import { UserMenu } from "./UserMenu";
 import { useHealth } from "@/lib/api/hooks";
@@ -33,12 +34,15 @@ export function TopBar({ onRefresh, onSnapshot, onOpenPalette }: Props) {
 
   return (
     <header className="flex h-[52px] min-w-0 items-center justify-between gap-1.5 overflow-hidden border-b border-railLine bg-rail px-2 text-slate-100 md:px-3">
-      <div className="flex flex-none items-center gap-2 text-[18px] font-black">
-        <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-brand to-brand-cyan text-sm text-white">
-          T
-        </span>
-        <span className="hidden xl:inline">TrustOps</span>
-      </div>
+      <TrustOpsLogo
+        href="/dashboard"
+        inverted
+        markSize="md"
+        showWordmark
+        wordmarkClassName="hidden xl:block"
+        className="flex-none"
+        gradientId="trustops-topbar-gradient"
+      />
       <button
         type="button"
         onClick={onOpenPalette}

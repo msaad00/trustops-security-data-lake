@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
 import Link from "next/link";
+import { useMemo } from "react";
 import { usePathname } from "next/navigation";
-import { ChevronRight, Home } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import { TrustOpsMark } from "@/components/brand/TrustOpsMark";
+import { BRAND } from "@/lib/brand";
 
 const LABEL: Record<string, string> = {
   dashboard: "Dashboard",
@@ -45,10 +47,10 @@ export function Breadcrumbs() {
     >
       <Link
         href="/dashboard"
-        className="inline-flex items-center gap-1 rounded px-1 py-0.5 font-extrabold text-muted hover:bg-slate-100 hover:text-ink"
+        className="inline-flex items-center gap-1.5 rounded px-1 py-0.5 font-extrabold text-muted hover:bg-slate-100 hover:text-ink"
       >
-        <Home className="h-3 w-3" />
-        TrustOps
+        <TrustOpsMark size="xs" gradientId="trustops-crumb-gradient" />
+        {BRAND.name}
       </Link>
       {crumbs.map((crumb, idx) => (
         <span key={crumb.href} className="inline-flex items-center gap-1.5">

@@ -840,12 +840,13 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     engine = create_engine_for(lake)
 
     app = FastAPI(
-        title="TrustOps Security Data Lake",
+        title="TrustOps API",
         version=api_v1.API_VERSION,
         description=(
-            "Continuous compliance assessment for security data lakes. The same "
-            "engine serves a human console and a headless `/api/v1` surface for "
-            "agents. Discover the contract at `GET /api/v1`; browse it at `/docs`."
+            "Open-source, headless-first trust operations for customer-owned "
+            "evidence lakes. The same engine serves TrustOps Console and "
+            "`/api/v1` for agents, CI, and runbooks. Discover the contract at "
+            "`GET /api/v1`; browse it at `/docs`."
         ),
         openapi_tags=[
             {"name": "discovery", "description": "Self-describing index + health."},
