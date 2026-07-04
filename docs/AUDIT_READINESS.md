@@ -82,6 +82,7 @@ Blocking gaps include: no connectors, failing controls, open evidence requests, 
 
 ## Related
 
+- [PRODUCT_SHAPE.md](PRODUCT_SHAPE.md) — parity map, open issues, execution order
 - [HEADLESS_GRC.md](HEADLESS_GRC.md)
 - [RELEASE_READINESS.md](RELEASE_READINESS.md)
 - [DEPLOYMENT_AND_PRICING.md](DEPLOYMENT_AND_PRICING.md)

@@ -65,4 +65,17 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 - [x] Audit readiness API and audit room (#340)
 - [ ] MCP/API resource catalog parity for platform endpoints (partial: `list_audit_log`, `get_audit_readiness` shipped)
 
+## P7 — Turnkey GRC loop + premium UX (open)
+
+Honest parity map: [PRODUCT_SHAPE.md](docs/PRODUCT_SHAPE.md)
+
+| Issue                                                                                                                                             | Closes                                                                       |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [#96](https://github.com/msaad00/trustops-security-data-lake/issues/96)                                                                           | Premium GRC SaaS UX — design system, Trust Home, workflow canvas, drill-down |
+| [#13](https://github.com/msaad00/trustops-security-data-lake/issues/13)                                                                           | Evidence freshness SLA + stale evidence → remediation                        |
+| [#15](https://github.com/msaad00/trustops-security-data-lake/issues/15) / [#18](https://github.com/msaad00/trustops-security-data-lake/issues/18) | Audit room trends + product-grade visualizations                             |
+| [#22](https://github.com/msaad00/trustops-security-data-lake/issues/22) / [#23](https://github.com/msaad00/trustops-security-data-lake/issues/23) | GitHub/GitLab governance + repo graph workbench                              |
+| [#14](https://github.com/msaad00/trustops-security-data-lake/issues/14)                                                                           | Source-linked framework/control expansion                                    |
+| [#345](https://github.com/msaad00/trustops-security-data-lake/pull/345)                                                                           | Identity/admin parity (users, API-key session, IdP roles, SCIM scaffold)     |
+
 See [TRUSTOPS_85_PLAN.md](docs/TRUSTOPS_85_PLAN.md) for the 85% self-hosted bar.
