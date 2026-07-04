@@ -222,12 +222,7 @@ def complete_saml_login(
     )
     if user is None:
         raise SAMLLoginError(f"no provisioned user for {email!r} and auto-provisioning is disabled")
-    if (
-        config.role_map
-        and idp_claim_values
-        and sync_role_on_login_enabled()
-        and mapped_role != user.role
-    ):
+    if config.role_map and idp_claim_values and sync_role_on_login_enabled() and mapped_role != user.role:
         user.role = mapped_role
     if not user.is_active:
         raise SAMLLoginError(f"user {email!r} is disabled")

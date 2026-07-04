@@ -17,8 +17,8 @@ FastAPI server surface from `trustops-security-data-lake[server]`.
 ## API Keys
 
 API keys are for agents, CI, and service accounts. The database stores only a
-SHA-256 token hash. Raw key material is returned once by the authenticated API
-creation endpoint.
+derived lookup digest. Raw key material is returned once by the authenticated
+API creation endpoint.
 
 ```bash
 security-lakehouse platform seed-dev --lake build/lakehouse
@@ -67,10 +67,10 @@ open a browser session without SSO.
 
 ## User directory
 
-| Endpoint                         | Purpose                                      |
-| -------------------------------- | -------------------------------------------- |
-| `GET /api/v1/auth/users`         | List tenant users (admin)                    |
-| `PATCH /api/v1/auth/users/{id}`  | Change role, active flag, or display name    |
+| Endpoint                             | Purpose                                     |
+| ------------------------------------ | ------------------------------------------- |
+| `GET /api/v1/auth/users`             | List tenant users (admin)                   |
+| `PATCH /api/v1/auth/users/{id}`      | Change role, active flag, or display name   |
 | `POST /api/v1/auth/session-from-key` | Exchange API key for browser session cookie |
 
 Last active admin cannot be demoted or deactivated.
@@ -99,11 +99,11 @@ export TRUSTOPS_SCIM_BEARER_TOKEN="replace-with-long-random-secret"
 export TRUSTOPS_SCIM_TENANT_SLUG="acme"
 ```
 
-| Endpoint                              | Purpose                |
-| ------------------------------------- | ---------------------- |
-| `GET /api/v1/scim/v2/Users`           | List users             |
-| `POST /api/v1/scim/v2/Users`          | Provision user         |
-| `PATCH /api/v1/scim/v2/Users/{id}`    | Deactivate or change role |
+| Endpoint                           | Purpose                   |
+| ---------------------------------- | ------------------------- |
+| `GET /api/v1/scim/v2/Users`        | List users                |
+| `POST /api/v1/scim/v2/Users`       | Provision user            |
+| `PATCH /api/v1/scim/v2/Users/{id}` | Deactivate or change role |
 
 SCIM requests authenticate with the SCIM bearer token, not a user API key.
 

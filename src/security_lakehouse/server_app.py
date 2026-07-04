@@ -1542,7 +1542,11 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     @app.get("/api/v1/scim/v2/Users", tags=["commercial"])
     def scim_list_users(request: Request, session: Session = Depends(get_session)) -> JSONResponse:
         from security_lakehouse.commercial import scim as scim_services
-        from security_lakehouse.commercial.scim_provision import list_scim_users, resolve_scim_tenant_id, verify_scim_bearer
+        from security_lakehouse.commercial.scim_provision import (
+            list_scim_users,
+            resolve_scim_tenant_id,
+            verify_scim_bearer,
+        )
 
         if not scim_services.scim_enabled():
             return JSONResponse(
@@ -1563,7 +1567,11 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     @app.post("/api/v1/scim/v2/Users", status_code=status.HTTP_201_CREATED, tags=["commercial"])
     async def scim_create_user(request: Request, session: Session = Depends(get_session)) -> JSONResponse:
         from security_lakehouse.commercial import scim as scim_services
-        from security_lakehouse.commercial.scim_provision import create_scim_user, resolve_scim_tenant_id, verify_scim_bearer
+        from security_lakehouse.commercial.scim_provision import (
+            create_scim_user,
+            resolve_scim_tenant_id,
+            verify_scim_bearer,
+        )
 
         if not scim_services.scim_enabled():
             return JSONResponse(
@@ -1610,7 +1618,11 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         session: Session = Depends(get_session),
     ) -> JSONResponse:
         from security_lakehouse.commercial import scim as scim_services
-        from security_lakehouse.commercial.scim_provision import patch_scim_user, resolve_scim_tenant_id, verify_scim_bearer
+        from security_lakehouse.commercial.scim_provision import (
+            patch_scim_user,
+            resolve_scim_tenant_id,
+            verify_scim_bearer,
+        )
 
         if not scim_services.scim_enabled():
             return JSONResponse(

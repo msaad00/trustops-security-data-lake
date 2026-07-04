@@ -21,7 +21,13 @@ import {
 import type { TenantInvite } from "@/lib/api/types";
 import { notify } from "@/lib/toast";
 
-const ROLES = ["contributor", "read_only", "auditor", "security_admin", "admin"] as const;
+const ROLES = [
+  "contributor",
+  "read_only",
+  "auditor",
+  "security_admin",
+  "admin",
+] as const;
 
 function InviteStatusBadge({ row }: { row: TenantInvite }) {
   const tone =
@@ -39,7 +45,7 @@ export function InvitesPanel() {
     () =>
       Boolean(
         whoami.data?.role === "admin" ||
-          whoami.data?.scopes.includes("auth_admin"),
+        whoami.data?.scopes.includes("auth_admin"),
       ),
     [whoami.data],
   );
@@ -50,8 +56,7 @@ export function InvitesPanel() {
   const [role, setRole] = useState<string>("contributor");
 
   const commercialUnavailable =
-    invites.isError &&
-    String(invites.error?.message ?? "").includes("501");
+    invites.isError && String(invites.error?.message ?? "").includes("501");
 
   const submit = async () => {
     const normalized = email.trim();

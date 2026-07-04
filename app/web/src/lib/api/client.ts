@@ -179,9 +179,9 @@ export const api = {
       api_key: apiKey,
     }).then((body) => body.data),
   invites: () =>
-    get<{ data: TenantInvite[]; meta?: { count?: number } }>("/v1/invites").then(
-      (body) => body.data,
-    ),
+    get<{ data: TenantInvite[]; meta?: { count?: number } }>(
+      "/v1/invites",
+    ).then((body) => body.data),
   createInvite: (payload: CreateInvitePayload) =>
     post<{ data: TenantInvite }>("/v1/invites", payload).then(
       (body) => body.data,

@@ -57,7 +57,9 @@ function UserRow({
     <div className="grid gap-3 rounded-xl border border-line bg-white p-4 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto] lg:items-center">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="truncate text-sm font-black text-ink">{row.email}</span>
+          <span className="truncate text-sm font-black text-ink">
+            {row.email}
+          </span>
           {!row.is_active && <Badge tone="critical">inactive</Badge>}
           {isSelf && <Badge tone="info">you</Badge>}
         </div>
@@ -105,7 +107,7 @@ export function UsersPanel() {
     () =>
       Boolean(
         whoami.data?.role === "admin" ||
-          whoami.data?.scopes.includes("auth_admin"),
+        whoami.data?.scopes.includes("auth_admin"),
       ),
     [whoami.data],
   );

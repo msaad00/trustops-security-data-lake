@@ -18,10 +18,14 @@ def list_tenant_users(session: Session, *, tenant_id: str) -> list[User]:
 
 
 def count_active_admins(session: Session, *, tenant_id: str, exclude_user_id: str | None = None) -> int:
-    stmt = select(func.count()).select_from(User).where(
-        User.tenant_id == tenant_id,
-        User.role == "admin",
-        User.is_active.is_(True),
+    stmt = (
+        select(func.count())
+        .select_from(User)
+        .where(
+            User.tenant_id == tenant_id,
+            User.role == "admin",
+            User.is_active.is_(True),
+        )
     )
     if exclude_user_id:
         stmt = stmt.where(User.id != exclude_user_id)
