@@ -33,7 +33,7 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -126,9 +126,9 @@ class _StrictModel(BaseModel):
 
 
 class CreateKeyRequest(_StrictModel):
-    user_email: str
-    name: str = ""
-    expires_in_days: int | None = None
+    user_email: str = Field(min_length=3, max_length=320)
+    name: str = Field(default="", max_length=80)
+    expires_in_days: int | None = Field(default=None, ge=1, le=3660)
 
 
 class CreateInviteRequest(_StrictModel):
@@ -1245,7 +1245,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     ) -> JSONResponse:
         user = repository.get_user_by_email(session, tenant_id=identity.tenant_id, email=body.user_email)
         if user is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"no user {body.user_email!r} in tenant")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found in tenant")
         from security_lakehouse.commercial.limits import UsageLimitError, assert_within_limit
         from security_lakehouse.db.models import Tenant
 
@@ -1265,7 +1265,18 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         return JSONResponse(
             api_v1.envelope(
                 "auth.keys",
-                {"id": key.id, "prefix": key.prefix, "user_email": user.email, "token": token},
+                {
+                    "id": key.id,
+                    "name": key.name,
+                    "prefix": key.prefix,
+                    "user_email": user.email,
+                    "role": key.role,
+                    "created_at": key.created_at.isoformat() if key.created_at else None,
+                    "last_used_at": key.last_used_at.isoformat() if key.last_used_at else None,
+                    "expires_at": key.expires_at.isoformat() if key.expires_at else None,
+                    "revoked": key.revoked_at is not None,
+                    "token": token,
+                },
             ),
             status_code=status.HTTP_201_CREATED,
         )
