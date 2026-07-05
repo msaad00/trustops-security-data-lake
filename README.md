@@ -56,6 +56,7 @@ Deep-link examples (after `serve`):
 | GCP       | `/console/connectors/?connect=gcp-posture`             |
 | Snowflake | `/console/connectors/?connect=snowflake-evidence-lake` |
 | GitHub    | `/console/connectors/?connect=github-security`         |
+| GitLab    | `/console/connectors/?connect=gitlab-security`         |
 | Okta      | `/console/connectors/?connect=okta-identity`           |
 
 ## Console preview

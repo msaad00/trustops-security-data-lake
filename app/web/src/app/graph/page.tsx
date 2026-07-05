@@ -189,6 +189,13 @@ interface MappingRow {
   assetCount: number;
 }
 
+interface RepoMappingRow {
+  repository: GraphNode;
+  signalCount: number;
+  gapCount: number;
+  controlIds: string[];
+}
+
 function downloadBlob(filename: string, blob: Blob) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -365,6 +372,44 @@ export default function GraphPage() {
         return { control, evidenceTypes, assetCount: assetIds.size };
       });
   }, [data, filterFramework, graphIndex, graphMode]);
+
+  const repoMappingRows = useMemo<RepoMappingRow[]>(() => {
+    if (graphMode !== "repository" || !data) return [];
+    const collectLinked = (rootId: string) => {
+      const seen = new Set<string>();
+      const queue = [rootId];
+      let signalCount = 0;
+      let gapCount = 0;
+      const controlIds = new Set<string>();
+      while (queue.length > 0) {
+        const nodeId = queue.shift()!;
+        if (seen.has(nodeId)) continue;
+        seen.add(nodeId);
+        const node = graphIndex.nodesById.get(nodeId);
+        if (!node) continue;
+        if (
+          node.kind === "governance_signal" ||
+          node.kind === "evidence_signal"
+        ) {
+          signalCount += 1;
+        }
+        if (node.kind === "signal_gap") gapCount += 1;
+        if (node.kind === "control") controlIds.add(node.label);
+        for (const controlId of node.control_ids ?? []) controlIds.add(controlId);
+        for (const nextId of graphIndex.outgoing.get(nodeId) ?? []) {
+          if (!seen.has(nextId)) queue.push(nextId);
+        }
+      }
+      return { signalCount, gapCount, controlIds: [...controlIds].sort() };
+    };
+    return data.nodes
+      .filter((node) => node.kind === "repository")
+      .slice(0, 12)
+      .map((repository) => {
+        const linked = collectLinked(repository.id);
+        return { repository, ...linked };
+      });
+  }, [data, graphIndex, graphMode]);
 
   const toggle = (kind: GraphNodeKind) => {
     setVisible((prev) => {
@@ -789,52 +834,96 @@ export default function GraphPage() {
         </div>
       </div>
 
-      {graphMode === "compliance" && (
+      {(graphMode === "compliance" || graphMode === "repository") && (
         <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle>Mapping inspector</CardTitle>
             <CardDescription>
-              Control paths currently visible in the graph. Select a row to
-              inspect the mapped control and keep the canvas focused.
+              {graphMode === "compliance"
+                ? "Control paths currently visible in the graph. Select a row to inspect the mapped control and keep the canvas focused."
+                : "Repository governance paths in the graph. Select a row to focus the canvas on repo signals, gaps, and linked controls."}
             </CardDescription>
           </CardHeader>
           <CardContent className="p-4 pt-0">
-            {mappingRows.length > 0 ? (
-              <div className="grid gap-2 md:grid-cols-2 2xl:grid-cols-3">
-                {mappingRows.map(({ control, evidenceTypes, assetCount }) => (
-                  <button
-                    key={control.id}
-                    type="button"
-                    onClick={() => handleSelect(control)}
-                    className="min-w-0 rounded-lg border border-line bg-slate-50 p-3 text-left transition hover:border-brand hover:bg-white"
-                  >
-                    <div className="flex min-w-0 items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <div className="truncate text-sm font-black text-ink">
-                          {control.label}
+            {graphMode === "compliance" ? (
+              mappingRows.length > 0 ? (
+                <div className="grid gap-2 md:grid-cols-2 2xl:grid-cols-3">
+                  {mappingRows.map(({ control, evidenceTypes, assetCount }) => (
+                    <button
+                      key={control.id}
+                      type="button"
+                      onClick={() => handleSelect(control)}
+                      className="min-w-0 rounded-lg border border-line bg-slate-50 p-3 text-left transition hover:border-brand hover:bg-white"
+                    >
+                      <div className="flex min-w-0 items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="truncate text-sm font-black text-ink">
+                            {control.label}
+                          </div>
+                          <div className="mt-0.5 truncate text-[11px] text-muted">
+                            {control.subtitle}
+                          </div>
                         </div>
-                        <div className="mt-0.5 truncate text-[11px] text-muted">
-                          {control.subtitle}
-                        </div>
+                        <Badge tone="info">{control.framework_id}</Badge>
                       </div>
-                      <Badge tone="info">{control.framework_id}</Badge>
-                    </div>
-                    <div className="mt-2 grid grid-cols-[minmax(0,1fr)_auto] gap-2 text-xs">
-                      <span className="truncate text-muted">
-                        {evidenceTypes.length > 0
-                          ? evidenceTypes.map((e) => e.label).join(", ")
-                          : "No evidence type mapped"}
-                      </span>
-                      <span className="font-black text-ink">
-                        {assetCount} assets
-                      </span>
-                    </div>
-                  </button>
-                ))}
+                      <div className="mt-2 grid grid-cols-[minmax(0,1fr)_auto] gap-2 text-xs">
+                        <span className="truncate text-muted">
+                          {evidenceTypes.length > 0
+                            ? evidenceTypes.map((e) => e.label).join(", ")
+                            : "No evidence type mapped"}
+                        </span>
+                        <span className="font-black text-ink">
+                          {assetCount} assets
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-dashed border-line bg-slate-50 p-4 text-sm text-muted">
+                  No mapped control paths match the active filters.
+                </div>
+              )
+            ) : repoMappingRows.length > 0 ? (
+              <div className="grid gap-2 md:grid-cols-2 2xl:grid-cols-3">
+                {repoMappingRows.map(
+                  ({ repository, signalCount, gapCount, controlIds }) => (
+                    <button
+                      key={repository.id}
+                      type="button"
+                      onClick={() => handleSelect(repository)}
+                      className="min-w-0 rounded-lg border border-line bg-slate-50 p-3 text-left transition hover:border-brand hover:bg-white"
+                    >
+                      <div className="flex min-w-0 items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="truncate text-sm font-black text-ink">
+                            {repository.label}
+                          </div>
+                          <div className="mt-0.5 truncate text-[11px] text-muted">
+                            {repository.subtitle ?? repository.owner ?? "repository"}
+                          </div>
+                        </div>
+                        {repository.provider && (
+                          <Badge>{repository.provider}</Badge>
+                        )}
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                        <Badge tone="info">{signalCount} signals</Badge>
+                        {gapCount > 0 && (
+                          <Badge tone="critical">{gapCount} auth gaps</Badge>
+                        )}
+                        <span className="font-black text-ink">
+                          {controlIds.length} controls
+                        </span>
+                      </div>
+                    </button>
+                  ),
+                )}
               </div>
             ) : (
               <div className="rounded-xl border border-dashed border-line bg-slate-50 p-4 text-sm text-muted">
-                No mapped control paths match the active filters.
+                Link GitHub or GitLab governance connectors and sync a repository
+                to populate the topology graph.
               </div>
             )}
           </CardContent>

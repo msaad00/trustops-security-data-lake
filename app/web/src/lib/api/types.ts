@@ -900,7 +900,13 @@ export type GraphNodeKind =
 export type GraphEdgeKind =
   | "framework_has_control"
   | "control_requires_evidence"
-  | "evidence_covers_asset";
+  | "evidence_covers_asset"
+  | "contains"
+  | "has_signal"
+  | "has_evidence"
+  | "evidence_maps_control"
+  | "has_governance_signal"
+  | "requires_status_check";
 
 export interface GraphNode {
   id: string;

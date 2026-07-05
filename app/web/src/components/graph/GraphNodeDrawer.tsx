@@ -6,6 +6,7 @@ import {
   ArrowRight,
   ClipboardCheck,
   ExternalLink,
+  ListChecks,
   Plug,
   ShieldCheck,
 } from "lucide-react";
@@ -55,13 +56,13 @@ function primaryHref(node: GraphNode): { href: string; label: string } | null {
     return { href: "/evidence", label: "Open evidence room" };
   }
   if (node.kind === "signal_gap") {
-    return { href: "/connectors", label: "Configure governance connector" };
+    return { href: "/connectors/?connect=github-security", label: "Configure governance connector" };
   }
   if (node.kind === "governance_signal") {
     return { href: "/connectors", label: "Review connector sync" };
   }
   if (node.kind === "repository") {
-    return { href: "/connectors", label: "Link repository source" };
+    return { href: "/connectors/?connect=github-security", label: "Link repository source" };
   }
   return null;
 }
@@ -171,12 +172,20 @@ export function GraphNodeDrawer({ node, graphMode, onClose }: Props) {
               </Button>
             )}
             {graphMode === "repository" && (
-              <Button variant="default" asChild>
-                <Link href="/violations">
-                  <ClipboardCheck className="h-4 w-4" />
-                  Violations queue
-                </Link>
-              </Button>
+              <>
+                <Button variant="default" asChild>
+                  <Link href="/remediation">
+                    <ListChecks className="h-4 w-4" />
+                    Remediation tasks
+                  </Link>
+                </Button>
+                <Button variant="default" asChild>
+                  <Link href="/violations">
+                    <ClipboardCheck className="h-4 w-4" />
+                    Violations queue
+                  </Link>
+                </Button>
+              </>
             )}
             {node.evidence_ref?.startsWith("http") && (
               <Button variant="default" asChild>
