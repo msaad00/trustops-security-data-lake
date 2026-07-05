@@ -5,8 +5,13 @@
 </p>
 
 <p align="center">
-  <strong>Continuous compliance in your VPC</strong> — connect AWS, Azure, GCP, Snowflake, GitHub, GitLab, and identity sources;<br/>
-  evaluate controls deterministically; run audit-ready workflows; share proof with auditors and agents.
+  <strong>Continuous compliance in your VPC</strong> — your evidence lake, deterministic control tests, audit-ready workflows;<br/>
+  same JSON for console, agents, CI gates, and auditors.
+</p>
+
+<p align="center">
+  <em>TrustOps</em> is the product (console · <code>/api/v1</code> · MCP · agents).<br/>
+  <code>security-lakehouse</code> is the engine CLI (connectors · lake pipeline · assessment).
 </p>
 
 <p align="center">

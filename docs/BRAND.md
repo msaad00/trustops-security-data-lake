@@ -27,14 +27,17 @@ customer-facing product names.
 
 ## Logo
 
-The TrustOps mark is a gradient square monogram with a white **T**.
+The TrustOps mark is a gradient square monogram with a white **T** and a **proof
+check badge** (deterministic verdict / audit proof).
 
 | Token          | Value                                                                  |
 | -------------- | ---------------------------------------------------------------------- |
 | Gradient start | `#4f7cff`                                                              |
 | Gradient end   | `#30c7d2`                                                              |
+| Proof badge    | White circle + `#047857` check (bottom-right of monogram)              |
 | Wordmark ink   | `#101623` on light UI; gradient or `#f8fafc` on dark rails             |
 | README lockup  | White plate + gradient wordmark in `trustops-logo.svg` (GitHub themes) |
+| Lockup tagline | `YOUR LAKE · DETERMINISTIC CONTROLS · PROOF` (short; no truncation)    |
 | Corner radius  | 8px at 32×32 (scales with size)                                        |
 
 ### Assets
