@@ -23,6 +23,7 @@ import { AuditRoomTrendsPanel } from "@/components/audit-room/AuditRoomTrendsPan
 import { AuditSnapshotTimeline } from "@/components/audit-room/AuditSnapshotTimeline";
 import { RemediationSlaStrip } from "@/components/audit-room/RemediationSlaStrip";
 import { VendorRiskStrip } from "@/components/audit-room/VendorRiskStrip";
+import { PolicyAttestationStrip } from "@/components/audit-room/PolicyAttestationStrip";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { KpiTile } from "@/components/ui/KpiTile";
@@ -109,6 +110,8 @@ export default function AuditRoomPage() {
             <RemediationSlaStrip />
 
             <VendorRiskStrip />
+
+            <PolicyAttestationStrip />
 
             <AuditSnapshotTimeline />
 
