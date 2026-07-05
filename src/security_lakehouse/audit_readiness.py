@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from security_lakehouse import trust_share
 from security_lakehouse.assessment import _iter_snapshots, build_current_posture
 from security_lakehouse.db import agent_runs as agent_runs_db
+from security_lakehouse.db import policy_acknowledgments as policy_acknowledgment_db
 from security_lakehouse.db import remediation
 from security_lakehouse.db import vendor_assessments as vendor_assessment_db
 from security_lakehouse.ingestion_status import build_ingestion_status
@@ -68,6 +69,12 @@ def _workflow_checklist(*, posture_score: int, framework_total: int) -> list[dic
             "label": "Policy template library",
             "shipped": True,
             "note": "Bundled templates + adopt/publish MVP",
+        },
+        {
+            "id": "policy_attestation",
+            "label": "Employee policy acknowledgment",
+            "shipped": True,
+            "note": "Record attestations on published policies for audit evidence",
         },
         {
             "id": "point_in_time",
@@ -240,6 +247,16 @@ def build_audit_readiness(
             }
         )
 
+    policy_attestation = policy_acknowledgment_db.attestation_summary(session, tenant_id=tenant_id)
+    if policy_attestation["published"] > 0 and policy_attestation["unattested"] > 0:
+        gaps.append(
+            {
+                "id": "policy_attestation",
+                "label": (f"{policy_attestation['unattested']} published polic(ies) without employee acknowledgment"),
+                "href": "/console/policies",
+            }
+        )
+
     checklist = _workflow_checklist(posture_score=posture_score, framework_total=framework_total)
     coverage_score = round(100 * sum(1 for row in checklist if row["shipped"]) / max(len(checklist), 1))
 
@@ -298,6 +315,7 @@ def build_audit_readiness(
         },
         "agents": {"pending_decisions": pending_decisions},
         "vendor_risk": vendor_risk,
+        "policy_attestation": policy_attestation,
         "gaps": gaps,
         "workflow_coverage": {
             "score": coverage_score,

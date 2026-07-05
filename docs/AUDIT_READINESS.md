@@ -15,7 +15,7 @@ See [HEADLESS_GRC.md](HEADLESS_GRC.md) for the overall architecture.
 | Evidence automation           | Open connector catalog + read-only cloud posture           |
 | Auditor experience            | Trust-center shares + `auditor` role redaction             |
 | Access reviews                | Access-review campaigns with certify/revoke/flag           |
-| Policy management             | MVP template library (8 templates)                         |
+| Policy management             | Template library + employee acknowledgment on publish      |
 | Point-in-time audit           | Assessment snapshots + hash chain                          |
 | Personnel / HRIS              | Gap — use IdP + access reviews                             |
 | Vendor risk                   | MVP vendor risk module + audit-room diligence rollups      |
@@ -41,14 +41,14 @@ See [HEADLESS_GRC.md](HEADLESS_GRC.md) for the overall architecture.
 
 ### Known gaps
 
-| Gap                    | Workaround today                  |
-| ---------------------- | --------------------------------- |
-| Personnel tracking     | IdP connector + access reviews    |
-| Auditor marketplace    | Export trust share + PDF snapshot |
-| Pen test coordination  | External process                  |
-| Device/agent inventory | Connector evidence only           |
-| Policy acknowledgment  | Roadmap                           |
-| Native billing/signup  | Commercial scaffold (P5)          |
+| Gap                    | Workaround today                           |
+| ---------------------- | ------------------------------------------ |
+| Personnel tracking     | IdP connector + access reviews             |
+| Auditor marketplace    | Export trust share + PDF snapshot          |
+| Pen test coordination  | External process                           |
+| Device/agent inventory | Connector evidence only                    |
+| Policy acknowledgment  | Employee attestation on published policies |
+| Native billing/signup  | Commercial scaffold (P5)                   |
 
 ## UI/UX targets (Epic #96)
 

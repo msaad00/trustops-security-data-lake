@@ -543,6 +543,34 @@ class PolicyDocument(Base):
     review_due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
+class PolicyAcknowledgment(Base):
+    """Employee acknowledgment of a published tenant policy (GRC attestation pillar)."""
+
+    __tablename__ = "policy_acknowledgments"
+    __table_args__ = (
+        Index("ix_policy_ack_tenant_policy", "tenant_id", "policy_document_id"),
+        UniqueConstraint(
+            "tenant_id",
+            "policy_document_id",
+            "user_email",
+            name="uq_policy_ack_tenant_document_email",
+        ),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    policy_document_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("policy_documents.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    user_email: Mapped[str] = mapped_column(String(255), nullable=False)
+    display_name: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    acknowledged_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
+
+
 VENDOR_ASSESSMENT_STATUSES = frozenset({"draft", "in_review", "completed", "rejected"})
 
 
