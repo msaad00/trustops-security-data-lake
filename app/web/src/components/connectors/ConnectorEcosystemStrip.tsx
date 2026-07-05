@@ -12,6 +12,7 @@ const LIVE_CONNECTORS = [
   { id: "gcp-posture", label: "GCP" },
   { id: "snowflake-evidence-lake", label: "Snowflake" },
   { id: "github-security", label: "GitHub" },
+  { id: "gitlab-security", label: "GitLab" },
   { id: "okta-identity", label: "Okta" },
 ] as const;
 

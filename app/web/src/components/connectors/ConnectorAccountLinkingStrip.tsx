@@ -21,6 +21,7 @@ const RECOMMENDED_IDS = [
   "gcp-posture",
   "snowflake-evidence-lake",
   "github-security",
+  "gitlab-security",
   "okta-identity",
 ] as const;
 
