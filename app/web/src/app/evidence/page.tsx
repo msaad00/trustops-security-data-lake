@@ -18,6 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { SavedViewsBar } from "@/components/SavedViewsBar";
 import { QueryState } from "@/components/QueryState";
 import { Toolbar, matchesQuery } from "@/components/Toolbar";
 import { EvidenceDrawer } from "@/components/drawers/EvidenceDrawer";
@@ -27,7 +28,14 @@ import {
   useEvidenceFreshness,
 } from "@/lib/api/hooks";
 import { useToolbar } from "@/lib/state/filters";
-import type { EvidenceFreshness, NormalizedEvent } from "@/lib/api/types";
+import type {
+  EvidenceFreshness,
+  EvidenceFreshnessStatus,
+  NormalizedEvent,
+  Severity,
+} from "@/lib/api/types";
+
+const SURFACE = "evidence";
 
 type EvidenceRow = NormalizedEvent & { freshness?: EvidenceFreshness };
 
@@ -209,6 +217,26 @@ export default function EvidencePage() {
               ? `${staleCount} freshness issues`
               : `${(evidence.data ?? []).length} normalized`}
           </span>
+        }
+      />
+      <SavedViewsBar
+        surface={SURFACE}
+        filters={{
+          framework: filters.framework,
+          severity: filters.severity,
+          freshness: filters.freshness ?? "all",
+          query: filters.query,
+        }}
+        onApply={(viewFilters) =>
+          setFilters({
+            ...filters,
+            framework: (viewFilters.framework as string) ?? "all",
+            severity: (viewFilters.severity as Severity | "all") ?? "all",
+            freshness:
+              (viewFilters.freshness as
+                EvidenceFreshnessStatus | "all" | undefined) ?? "all",
+            query: (viewFilters.query as string) ?? "",
+          })
         }
       />
       <Toolbar
