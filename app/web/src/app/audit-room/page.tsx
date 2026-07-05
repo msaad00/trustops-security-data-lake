@@ -26,7 +26,7 @@ import { VendorRiskStrip } from "@/components/audit-room/VendorRiskStrip";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { KpiTile } from "@/components/ui/KpiTile";
-import { useAuditReadiness } from "@/lib/api/hooks";
+import { useAuditReadiness, usePlatformStream } from "@/lib/api/hooks";
 
 function consoleHref(href: string) {
   return href.startsWith("/console") ? href.replace(/^\/console/, "") : href;
@@ -43,6 +43,7 @@ const STATE_COPY: Record<
 
 export default function AuditRoomPage() {
   const audit = useAuditReadiness();
+  const { connected } = usePlatformStream();
 
   return (
     <div className="mx-auto grid max-w-6xl gap-6 p-6 md:p-8">
@@ -59,6 +60,7 @@ export default function AuditRoomPage() {
               <Badge tone={STATE_COPY[audit.data.state]?.tone ?? "attention"}>
                 {STATE_COPY[audit.data.state]?.label ?? audit.data.state}
               </Badge>
+              {connected ? <Badge tone="ready">Live</Badge> : null}
               <span className="text-sm text-muted">
                 Evaluated {new Date(audit.data.evaluated_at).toLocaleString()}
               </span>

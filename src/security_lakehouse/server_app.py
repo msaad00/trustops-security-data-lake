@@ -836,23 +836,61 @@ def _legacy_post_response(path: str, body: dict[str, object], lake: Path, identi
     return JSONResponse(payload, status_code=int(status_code))
 
 
-async def posture_event_stream(lake: Path, request: Request, *, interval: float = 10.0) -> AsyncIterator[str]:
-    """SSE frames for continuous eval: a ``posture`` event on change, else a keep-alive ping.
-
-    Stops when the client disconnects. Module-level (not a closure) so it is unit-testable.
-    """
-    last = ""
+async def platform_event_stream(
+    lake: Path,
+    request: Request,
+    *,
+    tenant_id: str | None = None,
+    sessionmaker=None,
+    interval: float = 10.0,
+) -> AsyncIterator[str]:
+    """SSE frames for continuous eval: posture, freshness, and audit-readiness on change."""
+    last = {"posture": "", "freshness": "", "audit_readiness": ""}
     while not await request.is_disconnected():
-        # Posture is rebuilt from lake files; offload so the per-tick read does
-        # not block the event loop for other connections.
+        emitted = False
+
         _status, body = await run_in_threadpool(api_v1.handle_get, "/api/v1/posture/current", {}, lake)
-        payload = json.dumps(body.get("data", {}), default=str)
-        if payload != last:
-            last = payload
-            yield f"event: posture\ndata: {payload}\n\n"
-        else:
+        posture_payload = json.dumps(body.get("data", {}), default=str, sort_keys=True)
+        if posture_payload != last["posture"]:
+            last["posture"] = posture_payload
+            yield f"event: posture\ndata: {posture_payload}\n\n"
+            emitted = True
+
+        from security_lakehouse.evidence_freshness import build_freshness_summary
+        from security_lakehouse.evidence_freshness_workflows import load_freshness_records
+
+        records = await run_in_threadpool(load_freshness_records, str(lake))
+        freshness_payload = json.dumps(build_freshness_summary(records), default=str, sort_keys=True)
+        if freshness_payload != last["freshness"]:
+            last["freshness"] = freshness_payload
+            yield f"event: freshness\ndata: {freshness_payload}\n\n"
+            emitted = True
+
+        if tenant_id and sessionmaker is not None:
+
+            def _audit_readiness() -> dict[str, object]:
+                from security_lakehouse.audit_readiness import build_audit_readiness
+
+                with sessionmaker() as session:
+                    return build_audit_readiness(lake=lake, session=session, tenant_id=tenant_id)
+
+            audit_data = await run_in_threadpool(_audit_readiness)
+            audit_payload = json.dumps(audit_data, default=str, sort_keys=True)
+            if audit_payload != last["audit_readiness"]:
+                last["audit_readiness"] = audit_payload
+                yield f"event: audit-readiness\ndata: {audit_payload}\n\n"
+                emitted = True
+
+        if not emitted:
             yield ": ping\n\n"
         await asyncio.sleep(interval)
+
+
+async def posture_event_stream(lake: Path, request: Request, *, interval: float = 10.0) -> AsyncIterator[str]:
+    """Posture-only stream kept for narrow unit tests."""
+    async for frame in platform_event_stream(lake, request, interval=interval):
+        if frame.startswith("event: posture") or frame.startswith(": ping"):
+            yield frame
 
 
 def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
@@ -1092,13 +1130,17 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         )
 
     # --- continuous-eval live stream (SSE) ---
-    # Pushes posture updates so the console is live without client polling.
-    # EventSource carries only cookies, so this is the session-authenticated
-    # (human app) surface; headless agents poll /api/v1/posture/current instead.
+    # Pushes posture, evidence freshness, and audit-readiness updates so the
+    # console audit room stays live without polling.
     @app.get("/api/v1/stream")
     async def stream(request: Request, identity: Identity = Depends(_require_read)) -> StreamingResponse:
         return StreamingResponse(
-            posture_event_stream(lake_for(identity), request),
+            platform_event_stream(
+                lake_for(identity),
+                request,
+                tenant_id=identity.tenant_id,
+                sessionmaker=app.state.sessionmaker,
+            ),
             media_type="text/event-stream",
             headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
         )

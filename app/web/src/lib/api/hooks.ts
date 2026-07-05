@@ -1074,9 +1074,8 @@ export function useCaptureMetricMutation() {
   });
 }
 
-// Continuous-eval: push posture updates via SSE into the query cache so the
-// console is live (poll stays as the fallback when EventSource is unavailable).
-export function usePostureStream(): { connected: boolean } {
+// Continuous-eval: push posture, freshness, and audit-readiness via SSE (#92).
+export function usePlatformStream(): { connected: boolean } {
   const qc = useQueryClient();
   const [connected, setConnected] = useState(false);
   useEffect(() => {
@@ -1091,11 +1090,33 @@ export function usePostureStream(): { connected: boolean } {
         /* ignore malformed frame */
       }
     });
+    es.addEventListener("freshness", (event) => {
+      try {
+        const data = JSON.parse(
+          (event as MessageEvent).data,
+        ) as EvidenceFreshnessSummary;
+        qc.setQueryData(["evidence", "freshness", "summary"], data);
+      } catch {
+        /* ignore malformed frame */
+      }
+    });
+    es.addEventListener("audit-readiness", (event) => {
+      try {
+        const data = JSON.parse((event as MessageEvent).data) as AuditReadiness;
+        qc.setQueryData(["platform", "audit-readiness"], data);
+      } catch {
+        /* ignore malformed frame */
+      }
+    });
     es.onopen = () => setConnected(true);
     es.onerror = () => setConnected(false);
     return () => es.close();
   }, [qc]);
   return { connected };
+}
+
+export function usePostureStream(): { connected: boolean } {
+  return usePlatformStream();
 }
 
 export function useAccessReviews(query = "") {
