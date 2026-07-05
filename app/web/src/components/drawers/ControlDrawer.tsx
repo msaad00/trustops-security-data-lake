@@ -9,6 +9,7 @@ import {
   usePosture,
 } from "@/lib/api/hooks";
 import { FrameworkBadge } from "@/components/framework/FrameworkBadge";
+import { EntityTagsEditor } from "@/components/EntityTagsEditor";
 import { resolveFrameworkId } from "@/lib/framework-visuals";
 import type { ControlPosture } from "@/lib/api/types";
 
@@ -143,6 +144,10 @@ export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
               )}
             </div>
           )}
+          <EntityTagsEditor
+            entityType="control"
+            entityId={control.control_id}
+          />
           <div className="flex flex-wrap gap-2">
             <Button variant="default">Request evidence</Button>
             <Button variant="default">Open in dashboard</Button>

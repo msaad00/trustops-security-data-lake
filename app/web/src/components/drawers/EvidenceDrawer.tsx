@@ -5,6 +5,7 @@ import { CheckCircle2, Loader2, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Drawer } from "@/components/ui/drawer";
+import { EntityTagsEditor } from "@/components/EntityTagsEditor";
 import { useVerifyMutation } from "@/lib/api/hooks";
 import type { NormalizedEvent, VerifyResult } from "@/lib/api/types";
 
@@ -149,6 +150,10 @@ export function EvidenceDrawer({ evidence, onClose }: Props) {
               </dl>
             </div>
           )}
+          <EntityTagsEditor
+            entityType="evidence"
+            entityId={evidence.event_id}
+          />
         </div>
       )}
     </Drawer>

@@ -197,6 +197,23 @@ def tags_for_entity(
     return list(session.scalars(stmt))
 
 
+def entity_ids_for_tag(
+    session: Session,
+    *,
+    tenant_id: str,
+    tag_id: str,
+    entity_type: str | None = None,
+) -> list[str]:
+    """Return entity ids attached to ``tag_id``, optionally filtered by type."""
+    if get_tag(session, tenant_id=tenant_id, tag_id=tag_id) is None:
+        return []
+    stmt = select(EntityTag.entity_id).where(EntityTag.tenant_id == tenant_id).where(EntityTag.tag_id == tag_id)
+    if entity_type:
+        stmt = stmt.where(EntityTag.entity_type == entity_type.strip())
+    stmt = stmt.order_by(EntityTag.entity_type, EntityTag.entity_id)
+    return list(session.scalars(stmt))
+
+
 def entity_tag_to_dict(et: EntityTag) -> dict[str, Any]:
     return {
         "id": et.id,
@@ -292,6 +309,7 @@ __all__ = [
     "delete_saved_view",
     "delete_tag",
     "detach_tag",
+    "entity_ids_for_tag",
     "entity_tag_to_dict",
     "get_saved_view",
     "get_tag",

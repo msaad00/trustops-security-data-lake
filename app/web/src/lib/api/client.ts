@@ -498,6 +498,13 @@ export const api = {
     get<{ data: Tag[] }>(
       `/v1/tags/for?entity_type=${encodeURIComponent(entityType)}&entity_id=${encodeURIComponent(entityId)}`,
     ).then((b) => b.data),
+  tagEntities: (tagId: string, entityType?: string) => {
+    const params = new URLSearchParams({ tag_id: tagId });
+    if (entityType) params.set("entity_type", entityType);
+    return get<{ data: string[] }>(
+      `/v1/tags/entities?${params.toString()}`,
+    ).then((b) => b.data);
+  },
   listSavedViews: (surface?: string) => {
     const qs = surface ? `?surface=${encodeURIComponent(surface)}` : "";
     return get<{ data: SavedView[] }>(`/v1/saved-views${qs}`).then(

@@ -387,6 +387,14 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """List tenant tags for cross-entity navigation and filtering."""
         return _server_api_request("GET", "/api/v1/tags")
 
+    @trustops_tool(title="List Tag Entities")
+    def list_tag_entities(tag_id: str, entity_type: str = "") -> JsonObject:
+        """List entity ids attached to a tag, optionally filtered by entity type."""
+        params: dict[str, Any] = {"tag_id": tag_id}
+        if entity_type:
+            params["entity_type"] = entity_type
+        return _server_api_request("GET", "/api/v1/tags/entities", **params)
+
     @trustops_tool(title="List Saved Views")
     def list_saved_views(surface: str = "") -> JsonObject:
         """List saved filter views for a console surface (e.g. controls, violations)."""

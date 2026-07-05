@@ -5,6 +5,7 @@ import { CheckCircle2, History, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Drawer } from "@/components/ui/drawer";
+import { EntityTagsEditor } from "@/components/EntityTagsEditor";
 import { useTracking, useTriageMutation } from "@/lib/api/hooks";
 import { useAuditorMode } from "@/lib/state/auditor";
 import type { TrackingState, Violation } from "@/lib/api/types";
@@ -215,6 +216,11 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
               </label>
             </fieldset>
           )}
+
+          <EntityTagsEditor
+            entityType="violation"
+            entityId={violation.violation_id}
+          />
 
           <div>
             <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
