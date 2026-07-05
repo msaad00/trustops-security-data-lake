@@ -252,6 +252,11 @@ class UpdatePolicyDocumentRequest(_StrictModel):
     status: str | None = None
 
 
+class RecordPolicyAcknowledgmentRequest(_StrictModel):
+    user_email: str | None = None
+    display_name: str = ""
+
+
 class CreateCampaignRequest(_StrictModel):
     name: str
     description: str = ""
@@ -831,23 +836,61 @@ def _legacy_post_response(path: str, body: dict[str, object], lake: Path, identi
     return JSONResponse(payload, status_code=int(status_code))
 
 
-async def posture_event_stream(lake: Path, request: Request, *, interval: float = 10.0) -> AsyncIterator[str]:
-    """SSE frames for continuous eval: a ``posture`` event on change, else a keep-alive ping.
-
-    Stops when the client disconnects. Module-level (not a closure) so it is unit-testable.
-    """
-    last = ""
+async def platform_event_stream(
+    lake: Path,
+    request: Request,
+    *,
+    tenant_id: str | None = None,
+    sessionmaker=None,
+    interval: float = 10.0,
+) -> AsyncIterator[str]:
+    """SSE frames for continuous eval: posture, freshness, and audit-readiness on change."""
+    last = {"posture": "", "freshness": "", "audit_readiness": ""}
     while not await request.is_disconnected():
-        # Posture is rebuilt from lake files; offload so the per-tick read does
-        # not block the event loop for other connections.
+        emitted = False
+
         _status, body = await run_in_threadpool(api_v1.handle_get, "/api/v1/posture/current", {}, lake)
-        payload = json.dumps(body.get("data", {}), default=str)
-        if payload != last:
-            last = payload
-            yield f"event: posture\ndata: {payload}\n\n"
-        else:
+        posture_payload = json.dumps(body.get("data", {}), default=str, sort_keys=True)
+        if posture_payload != last["posture"]:
+            last["posture"] = posture_payload
+            yield f"event: posture\ndata: {posture_payload}\n\n"
+            emitted = True
+
+        from security_lakehouse.evidence_freshness import build_freshness_summary
+        from security_lakehouse.evidence_freshness_workflows import load_freshness_records
+
+        records = await run_in_threadpool(load_freshness_records, str(lake))
+        freshness_payload = json.dumps(build_freshness_summary(records), default=str, sort_keys=True)
+        if freshness_payload != last["freshness"]:
+            last["freshness"] = freshness_payload
+            yield f"event: freshness\ndata: {freshness_payload}\n\n"
+            emitted = True
+
+        if tenant_id and sessionmaker is not None:
+
+            def _audit_readiness() -> dict[str, object]:
+                from security_lakehouse.audit_readiness import build_audit_readiness
+
+                with sessionmaker() as session:
+                    return build_audit_readiness(lake=lake, session=session, tenant_id=tenant_id)
+
+            audit_data = await run_in_threadpool(_audit_readiness)
+            audit_payload = json.dumps(audit_data, default=str, sort_keys=True)
+            if audit_payload != last["audit_readiness"]:
+                last["audit_readiness"] = audit_payload
+                yield f"event: audit-readiness\ndata: {audit_payload}\n\n"
+                emitted = True
+
+        if not emitted:
             yield ": ping\n\n"
         await asyncio.sleep(interval)
+
+
+async def posture_event_stream(lake: Path, request: Request, *, interval: float = 10.0) -> AsyncIterator[str]:
+    """Posture-only stream kept for narrow unit tests."""
+    async for frame in platform_event_stream(lake, request, interval=interval):
+        if frame.startswith("event: posture") or frame.startswith(": ping"):
+            yield frame
 
 
 def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
@@ -1087,13 +1130,17 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         )
 
     # --- continuous-eval live stream (SSE) ---
-    # Pushes posture updates so the console is live without client polling.
-    # EventSource carries only cookies, so this is the session-authenticated
-    # (human app) surface; headless agents poll /api/v1/posture/current instead.
+    # Pushes posture, evidence freshness, and audit-readiness updates so the
+    # console audit room stays live without polling.
     @app.get("/api/v1/stream")
     async def stream(request: Request, identity: Identity = Depends(_require_read)) -> StreamingResponse:
         return StreamingResponse(
-            posture_event_stream(lake_for(identity), request),
+            platform_event_stream(
+                lake_for(identity),
+                request,
+                tenant_id=identity.tenant_id,
+                sessionmaker=app.state.sessionmaker,
+            ),
             media_type="text/event-stream",
             headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
         )
@@ -1680,6 +1727,65 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         session.commit()
         return JSONResponse(api_v1.envelope("scim.users", payload))
 
+    @app.get("/api/v1/scim/v2/Users/{user_id}", tags=["commercial"])
+    def scim_get_user(
+        user_id: str,
+        request: Request,
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        from security_lakehouse.commercial import scim as scim_services
+        from security_lakehouse.commercial.scim_provision import (
+            get_scim_user,
+            require_scim_bearer,
+            resolve_scim_tenant_id,
+        )
+
+        if not scim_services.scim_enabled():
+            return JSONResponse(
+                api_v1.error_envelope("not_implemented", scim_services.scim_not_implemented_detail()),
+                status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            )
+        try:
+            require_scim_bearer(request.headers.get("Authorization"))
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)) from exc
+        try:
+            tenant_id = resolve_scim_tenant_id(session)
+            payload = get_scim_user(session, tenant_id=tenant_id, user_id=user_id)
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("scim.users", payload))
+
+    @app.delete("/api/v1/scim/v2/Users/{user_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["commercial"])
+    def scim_delete_user(
+        user_id: str,
+        request: Request,
+        session: Session = Depends(get_session),
+    ) -> Response:
+        from security_lakehouse.commercial import scim as scim_services
+        from security_lakehouse.commercial.scim_provision import (
+            deactivate_scim_user,
+            require_scim_bearer,
+            resolve_scim_tenant_id,
+        )
+
+        if not scim_services.scim_enabled():
+            return JSONResponse(
+                api_v1.error_envelope("not_implemented", scim_services.scim_not_implemented_detail()),
+                status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            )
+        try:
+            require_scim_bearer(request.headers.get("Authorization"))
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)) from exc
+        try:
+            tenant_id = resolve_scim_tenant_id(session)
+            deactivate_scim_user(session, tenant_id=tenant_id, user_id=user_id)
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        session.commit()
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
     @app.get("/api/v1/evidence/freshness/summary", tags=["platform"])
     def evidence_freshness_summary(
         identity: Identity = Depends(_require_read),
@@ -2204,6 +2310,13 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             api_v1.envelope("policies.coverage", _redact_payload(data, identity), meta={"count": len(data)})
         )
 
+    @app.get("/api/v1/policies/attestation-summary")
+    def policy_attestation_summary(
+        identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        data = policy_document_services.attestation_summary(session, identity.tenant_id)
+        return JSONResponse(api_v1.envelope("policies.attestation", _redact_payload(data, identity)))
+
     @app.get("/api/v1/policies")
     def list_policies(
         request: Request, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
@@ -2283,6 +2396,47 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         except NotFound as exc:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
         return JSONResponse(api_v1.envelope("policies", document))
+
+    @app.get("/api/v1/policies/{document_id}/acknowledgments")
+    def list_policy_acknowledgments(
+        document_id: str, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        try:
+            data = policy_document_services.list_acknowledgments(session, identity.tenant_id, document_id)
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(
+            api_v1.envelope("policies.acknowledgments", _redact_payload(data, identity), meta={"count": len(data)})
+        )
+
+    @app.post("/api/v1/policies/{document_id}/acknowledgments", status_code=status.HTTP_201_CREATED)
+    def record_policy_acknowledgment(
+        document_id: str,
+        body: RecordPolicyAcknowledgmentRequest,
+        identity: Identity = Depends(_require_read),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        target_email = (body.user_email or identity.email or "").strip()
+        if (
+            body.user_email
+            and identity.role not in {"admin", "security_admin"}
+            and target_email.lower() != (identity.email or "").lower()
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="only admins may record acknowledgments for other users",
+            )
+        try:
+            row = policy_document_services.record_acknowledgment(
+                session,
+                identity.tenant_id,
+                document_id,
+                user_email=target_email,
+                display_name=body.display_name,
+            )
+        except ValidationError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("policies.acknowledgments", row), status_code=status.HTTP_201_CREATED)
 
     # --- access reviews (GRC) ---
     @app.get("/api/v1/access-reviews")
@@ -2653,6 +2807,31 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         )
         data = [tags_db.tag_to_dict(t) for t in rows]
         return JSONResponse(api_v1.envelope("tags.for", data, meta={"count": len(data)}))
+
+    @app.get("/api/v1/tags/entities")
+    def tag_entities(
+        request: Request,
+        identity: Identity = Depends(_require_read),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        params = _params(request)
+        tag_id = (params.get("tag_id") or [None])[0]
+        entity_type = (params.get("entity_type") or [None])[0]
+        if not tag_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="tag_id is required")
+        entity_ids = tags_db.entity_ids_for_tag(
+            session,
+            tenant_id=identity.tenant_id,
+            tag_id=str(tag_id),
+            entity_type=str(entity_type) if entity_type else None,
+        )
+        return JSONResponse(
+            api_v1.envelope(
+                "tags.entities",
+                entity_ids,
+                meta={"count": len(entity_ids), "tag_id": tag_id, "entity_type": entity_type or "all"},
+            )
+        )
 
     # --- saved views ---
     @app.get("/api/v1/saved-views")

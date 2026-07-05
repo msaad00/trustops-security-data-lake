@@ -32,12 +32,23 @@ EXPECTED_TOOLS = {
     "list_snapshots",
     "list_audit_log",
     "list_frameworks",
+    "get_framework_detail",
     "describe_api",
     "list_agent_runs",
     "create_agent_run",
     "get_agent_run",
     "approve_agent_decision",
     "get_audit_readiness",
+    "get_evidence_freshness_summary",
+    "escalate_stale_evidence",
+    "get_insights_timeseries",
+    "get_insights_remediation",
+    "list_vendor_assessments",
+    "list_policies",
+    "get_policy_attestation_summary",
+    "list_tags",
+    "list_tag_entities",
+    "list_saved_views",
 }
 
 
@@ -169,6 +180,8 @@ def test_describe_api_lists_resources(tmp_path):
     assert "/api/v1/controls" in paths
     assert "/api/v1/audit-log" in paths
     assert "/api/v1/platform/audit-readiness" in paths
+    assert "/api/v1/insights/remediation" in paths
+    assert "/api/v1/vendor-assessments" in paths
 
 
 def test_list_audit_log_returns_entries(tmp_path):
@@ -191,6 +204,55 @@ def test_get_audit_readiness_calls_api(tmp_path, monkeypatch):
     monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
     result = call_tool(server, "get_audit_readiness")
     assert result["data"]["audit_score"] == 88
+
+
+def test_get_framework_detail_soc2(tmp_path):
+    server = _seeded_server(tmp_path)
+    detail = call_tool(server, "get_framework_detail", framework_id="soc2")
+    assert detail["framework"]["framework_id"] == "soc2"
+    assert detail["summary"]["control_count"] >= 1
+    assert detail["controls"]
+
+
+def test_get_insights_remediation_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/insights/remediation"
+        return {"data": {"open": 3, "overdue": 1}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "get_insights_remediation")
+    assert result["data"]["open"] == 3
+
+
+def test_list_vendor_assessments_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+    calls = []
+
+    def fake_request(method, path, body=None, **params):
+        calls.append({"method": method, "path": path, "params": params})
+        return {"data": [], "meta": {"count": 0}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    call_tool(server, "list_vendor_assessments", status="completed", limit=25)
+    assert calls[0]["path"] == "/api/v1/vendor-assessments"
+    assert calls[0]["params"]["status"] == "completed"
+    assert calls[0]["params"]["limit"] == 25
+
+
+def test_get_policy_attestation_summary_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/policies/attestation-summary"
+        return {"data": {"published": 2, "unattested": 1}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "get_policy_attestation_summary")
+    assert result["data"]["unattested"] == 1
 
 
 def test_mcp_agent_run_tools_call_authenticated_api(tmp_path, monkeypatch):

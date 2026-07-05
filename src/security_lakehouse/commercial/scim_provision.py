@@ -143,3 +143,33 @@ def patch_scim_user(
         row.is_active = active
     session.flush()
     return _scim_user(row)
+
+
+def get_scim_user(session: Session, *, tenant_id: str, user_id: str) -> dict[str, Any]:
+    row = session.get(User, user_id)
+    if row is None or row.tenant_id != tenant_id:
+        raise ValueError("user not found")
+    return _scim_user(row)
+
+
+def deactivate_scim_user(session: Session, *, tenant_id: str, user_id: str) -> None:
+    """SCIM DELETE deactivates the user (soft offboarding) instead of hard delete."""
+    row = session.get(User, user_id)
+    if row is None or row.tenant_id != tenant_id:
+        raise ValueError("user not found")
+    row.is_active = False
+    session.flush()
+
+
+__all__ = [
+    "create_scim_user",
+    "deactivate_scim_user",
+    "get_scim_user",
+    "list_scim_users",
+    "patch_scim_user",
+    "require_scim_bearer",
+    "resolve_scim_tenant_id",
+    "scim_bearer_from_authorization",
+    "scim_bearer_token",
+    "verify_scim_bearer",
+]

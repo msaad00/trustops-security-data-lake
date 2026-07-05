@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import type { FrameworkPosture } from "@/lib/api/types";
 import { FrameworkMark } from "@/components/framework/FrameworkMark";
 import { resolveFrameworkId } from "@/lib/framework-visuals";
+import { frameworkDetailHref } from "@/lib/framework-links";
 import { cn } from "@/lib/utils";
 
 function ringColor(score: number) {
@@ -27,7 +29,10 @@ function ComplianceRing({
   const offset = c - (pct / 100) * c;
 
   return (
-    <div className="flex min-w-[108px] flex-col items-center gap-2 rounded-xl border border-line bg-white p-3 shadow-sm">
+    <Link
+      href={frameworkDetailHref(frameworkId)}
+      className="flex min-w-[108px] flex-col items-center gap-2 rounded-xl border border-line bg-white p-3 shadow-sm transition-colors hover:border-brand hover:shadow-card"
+    >
       <div className="relative h-[72px] w-[72px]">
         <svg className="h-full w-full -rotate-90" viewBox="0 0 72 72">
           <circle
@@ -66,7 +71,7 @@ function ComplianceRing({
           {label}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

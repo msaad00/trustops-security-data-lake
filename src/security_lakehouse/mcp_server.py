@@ -356,6 +356,63 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """Return captured posture trend points (score, fresh rate, violations)."""
         return _server_api_request("GET", "/api/v1/insights/timeseries", limit=str(limit))
 
+    @trustops_tool(title="Insights Remediation")
+    def get_insights_remediation() -> JsonObject:
+        """Return remediation SLA rollups: open/overdue counts, MTTR, attainment."""
+        return _server_api_request("GET", "/api/v1/insights/remediation")
+
+    @trustops_tool(title="List Vendor Assessments")
+    def list_vendor_assessments(status: str = "", limit: int = 100) -> JsonObject:
+        """List tenant vendor diligence questionnaires (requires server API auth)."""
+        params: dict[str, Any] = {"limit": limit}
+        if status:
+            params["status"] = status
+        return _server_api_request("GET", "/api/v1/vendor-assessments", **params)
+
+    @trustops_tool(title="List Policies")
+    def list_policies(status: str = "", limit: int = 100) -> JsonObject:
+        """List tenant policy documents adopted from bundled templates."""
+        params: dict[str, Any] = {"limit": limit}
+        if status:
+            params["status"] = status
+        return _server_api_request("GET", "/api/v1/policies", **params)
+
+    @trustops_tool(title="Policy Attestation Summary")
+    def get_policy_attestation_summary() -> JsonObject:
+        """Return published vs acknowledged policy counts for audit prep."""
+        return _server_api_request("GET", "/api/v1/policies/attestation-summary")
+
+    @trustops_tool(title="List Tags")
+    def list_tags() -> JsonObject:
+        """List tenant tags for cross-entity navigation and filtering."""
+        return _server_api_request("GET", "/api/v1/tags")
+
+    @trustops_tool(title="List Tag Entities")
+    def list_tag_entities(tag_id: str, entity_type: str = "") -> JsonObject:
+        """List entity ids attached to a tag, optionally filtered by entity type."""
+        params: dict[str, Any] = {"tag_id": tag_id}
+        if entity_type:
+            params["entity_type"] = entity_type
+        return _server_api_request("GET", "/api/v1/tags/entities", **params)
+
+    @trustops_tool(title="List Saved Views")
+    def list_saved_views(surface: str = "") -> JsonObject:
+        """List saved filter views for a console surface (e.g. controls, violations)."""
+        params: dict[str, Any] = {}
+        if surface:
+            params["surface"] = surface
+        return _server_api_request("GET", "/api/v1/saved-views", **params)
+
+    @trustops_tool(title="Framework Drill-Down")
+    def get_framework_detail(framework_id: str) -> JsonObject:
+        """Return control → rule → evidence → datasource detail for one framework."""
+        from security_lakehouse.framework_detail import build_framework_detail
+
+        detail = build_framework_detail(framework_id, lake)
+        if detail is None:
+            raise ValueError(f"unknown framework_id {framework_id!r}")
+        return detail
+
     # ------------------------------------------------------------------
     # Write tools — lake-backed actions an agent can take, not just read.
     #

@@ -435,6 +435,14 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "query": ["entity_type", "entity_id"],
     },
     {
+        "resource": "tags.entities",
+        "path": "/api/v1/tags/entities",
+        "kind": "collection",
+        "methods": ["GET"],
+        "scopes": ["read"],
+        "query": ["tag_id", "entity_type"],
+    },
+    {
         "resource": "saved-views",
         "path": "/api/v1/saved-views",
         "kind": "collection",

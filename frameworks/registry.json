@@ -139,6 +139,48 @@
       "implementation_status": "implemented_full_pack",
       "copyright_guardrail": "Do not reproduce licensed CIS recommendation text. Store local control IDs, short internal titles, evidence requirements, and official source references only.",
       "sync_cadence_days": 90
+    },
+    {
+      "framework_id": "nist-csf-2.0",
+      "name": "NIST Cybersecurity Framework (CSF) 2.0",
+      "version": "CSF 2.0",
+      "effective_date": "2024-02-26",
+      "superseded_by": null,
+      "official_source_name": "NIST Cybersecurity Framework 2.0",
+      "official_source_url": "https://www.nist.gov/cyberframework",
+      "source_sha256": null,
+      "pulled_at": null,
+      "implementation_status": "planned",
+      "copyright_guardrail": "NIST CSF is public NIST guidance. Planned pack will cite official NIST functions/categories only — no controls ship until source-linked mappings are reviewed.",
+      "sync_cadence_days": 90
+    },
+    {
+      "framework_id": "cmmc-2-level2",
+      "name": "CMMC 2.0 Level 2 (NIST SP 800-171 alignment)",
+      "version": "CMMC 2.0 Level 2",
+      "effective_date": "2024-10-15",
+      "superseded_by": null,
+      "official_source_name": "DoD CMMC Program",
+      "official_source_url": "https://dodcio.defense.gov/CMMC/Documentation/",
+      "source_sha256": null,
+      "pulled_at": null,
+      "implementation_status": "planned",
+      "copyright_guardrail": "CMMC practices derive from NIST SP 800-171. Planned pack will use official practice IDs only after human review — not shipped in v0.2.x seed catalog.",
+      "sync_cadence_days": 90
+    },
+    {
+      "framework_id": "iso-27017-2015",
+      "name": "ISO/IEC 27017:2015 Cloud security controls",
+      "version": "2015 edition",
+      "effective_date": "2015-12-15",
+      "superseded_by": null,
+      "official_source_name": "ISO/IEC 27017:2015",
+      "official_source_url": "https://www.iso.org/standard/43757.html",
+      "source_sha256": null,
+      "pulled_at": null,
+      "implementation_status": "planned",
+      "copyright_guardrail": "ISO standard text is licensed. Planned pack will store clause identifiers only; customers must hold their own license for the official PDF.",
+      "sync_cadence_days": 90
     }
   ]
 }

@@ -52,6 +52,8 @@ import type {
   PocReadiness,
   AuditReadiness,
   PolicyDocument,
+  PolicyAcknowledgment,
+  PolicyAttestationSummary,
   PolicyTemplate,
   PolicyTemplateSummary,
   PolicyCoverage,
@@ -496,6 +498,13 @@ export const api = {
     get<{ data: Tag[] }>(
       `/v1/tags/for?entity_type=${encodeURIComponent(entityType)}&entity_id=${encodeURIComponent(entityId)}`,
     ).then((b) => b.data),
+  tagEntities: (tagId: string, entityType?: string) => {
+    const params = new URLSearchParams({ tag_id: tagId });
+    if (entityType) params.set("entity_type", entityType);
+    return get<{ data: string[] }>(
+      `/v1/tags/entities?${params.toString()}`,
+    ).then((b) => b.data);
+  },
   listSavedViews: (surface?: string) => {
     const qs = surface ? `?surface=${encodeURIComponent(surface)}` : "";
     return get<{ data: SavedView[] }>(`/v1/saved-views${qs}`).then(
@@ -615,6 +624,22 @@ export const api = {
     post<{ data: PolicyDocument }>(
       `/v1/policies/${encodeURIComponent(id)}/publish`,
       {},
+    ).then((b) => b.data),
+  policyAcknowledgments: (id: string) =>
+    get<{ data: PolicyAcknowledgment[] }>(
+      `/v1/policies/${encodeURIComponent(id)}/acknowledgments`,
+    ).then((b) => b.data),
+  recordPolicyAcknowledgment: (
+    id: string,
+    payload: { user_email?: string; display_name?: string } = {},
+  ) =>
+    post<{ data: PolicyAcknowledgment }>(
+      `/v1/policies/${encodeURIComponent(id)}/acknowledgments`,
+      payload,
+    ).then((b) => b.data),
+  policyAttestationSummary: () =>
+    get<{ data: PolicyAttestationSummary }>(
+      "/v1/policies/attestation-summary",
     ).then((b) => b.data),
   policyCoverage: () =>
     get<{ data: PolicyCoverage[] }>("/v1/policies/coverage").then(

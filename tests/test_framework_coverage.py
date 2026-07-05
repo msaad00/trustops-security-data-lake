@@ -16,7 +16,9 @@ def test_framework_coverage_ledger_counts_seeded_mappings(capsys) -> None:
     applicability = build_control_asset_applicability()
     summary = framework_coverage_summary(rows, applicability)
 
-    assert summary["framework_count"] == 10
+    assert summary["framework_count"] == 13
+    assert summary["implemented_framework_count"] == 10
+    assert summary["planned_framework_count"] == 3
     assert summary["seeded_control_count"] == 635
     assert summary["reviewed_mapping_count"] == 635
     assert summary["missing_mapping_count"] == 0

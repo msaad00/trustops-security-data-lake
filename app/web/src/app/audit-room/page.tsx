@@ -22,10 +22,12 @@ import { EvidenceFreshnessSlaPanel } from "@/components/evidence/EvidenceFreshne
 import { AuditRoomTrendsPanel } from "@/components/audit-room/AuditRoomTrendsPanel";
 import { AuditSnapshotTimeline } from "@/components/audit-room/AuditSnapshotTimeline";
 import { RemediationSlaStrip } from "@/components/audit-room/RemediationSlaStrip";
+import { VendorRiskStrip } from "@/components/audit-room/VendorRiskStrip";
+import { PolicyAttestationStrip } from "@/components/audit-room/PolicyAttestationStrip";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { KpiTile } from "@/components/ui/KpiTile";
-import { useAuditReadiness } from "@/lib/api/hooks";
+import { useAuditReadiness, usePlatformStream } from "@/lib/api/hooks";
 
 function consoleHref(href: string) {
   return href.startsWith("/console") ? href.replace(/^\/console/, "") : href;
@@ -42,6 +44,7 @@ const STATE_COPY: Record<
 
 export default function AuditRoomPage() {
   const audit = useAuditReadiness();
+  const { connected } = usePlatformStream();
 
   return (
     <div className="mx-auto grid max-w-6xl gap-6 p-6 md:p-8">
@@ -58,6 +61,7 @@ export default function AuditRoomPage() {
               <Badge tone={STATE_COPY[audit.data.state]?.tone ?? "attention"}>
                 {STATE_COPY[audit.data.state]?.label ?? audit.data.state}
               </Badge>
+              {connected ? <Badge tone="ready">Live</Badge> : null}
               <span className="text-sm text-muted">
                 Evaluated {new Date(audit.data.evaluated_at).toLocaleString()}
               </span>
@@ -104,6 +108,10 @@ export default function AuditRoomPage() {
             <AuditRoomTrendsPanel />
 
             <RemediationSlaStrip />
+
+            <VendorRiskStrip />
+
+            <PolicyAttestationStrip />
 
             <AuditSnapshotTimeline />
 
@@ -167,6 +175,23 @@ export default function AuditRoomPage() {
                       {audit.data.connectors.evidence_count}
                     </b>
                   </div>
+                  {audit.data.vendor_risk && (
+                    <>
+                      <div className="flex justify-between">
+                        <span>Vendor assessments</span>
+                        <b className="text-ink">
+                          {audit.data.vendor_risk.completed}/
+                          {audit.data.vendor_risk.total} complete
+                        </b>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Overdue vendor reviews</span>
+                        <b className="text-ink">
+                          {audit.data.vendor_risk.overdue}
+                        </b>
+                      </div>
+                    </>
+                  )}
                 </CardContent>
               </Card>
 

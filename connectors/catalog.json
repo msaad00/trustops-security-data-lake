@@ -108,6 +108,26 @@
       "setup_hint": "GitHub App installation token with security read scopes."
     },
     {
+      "connector_id": "gitlab-security",
+      "name": "GitLab Security",
+      "category": "developer_platform",
+      "collection_mode": "direct_api_read",
+      "access_boundary": "scoped_token",
+      "credential_type": "gitlab_access_token",
+      "minimum_permissions": ["read_api", "read_repository", "read_user"],
+      "evidence_types": ["repository", "branch_protection", "dependency_alert"],
+      "default_route": "dual",
+      "freshness_slo_minutes": 60,
+      "is_implemented": true,
+      "production_status": "supported_connector",
+      "velocity": "medium_api",
+      "native_connector": false,
+      "data_shape": "event_log",
+      "vendor": "GitLab",
+      "description": "Protected branches, members, shared groups, CI permissions, and security settings.",
+      "setup_hint": "GitLab project access token or group token with read_api scope."
+    },
+    {
       "connector_id": "okta-identity",
       "name": "Okta Identity",
       "category": "identity",

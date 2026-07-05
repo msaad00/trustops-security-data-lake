@@ -40,6 +40,18 @@ ROOT = _data_root()
 DEFAULT_FRAMEWORK_REGISTRY = ROOT / "frameworks" / "registry.json"
 DEFAULT_CONTROL_CATALOG = ROOT / "controls" / "catalog.json"
 
+FRAMEWORK_IMPLEMENTATION_STATUSES = frozenset(
+    {
+        "implemented_full_pack",
+        "implemented_limited_mapping",
+        "referenced_only",
+        "planned",
+    }
+)
+CONTROL_IMPLEMENTATION_STATUSES = frozenset(
+    {"implemented", "implemented_limited_mapping", "referenced_only", "planned"}
+)
+
 
 def load_framework_registry(path: str | Path | None = None) -> dict[str, dict[str, Any]]:
     payload = _read_json(path or DEFAULT_FRAMEWORK_REGISTRY)
@@ -69,6 +81,20 @@ def validate_catalog(
         for required in ("name", "version", "official_source_url", "implementation_status"):
             if not str(framework.get(required, "")).strip():
                 errors.append(f"framework {framework_id} missing {required}")
+        status = str(framework.get("implementation_status") or "")
+        if status not in FRAMEWORK_IMPLEMENTATION_STATUSES:
+            errors.append(
+                f"framework {framework_id} implementation_status {status!r} "
+                f"not in {sorted(FRAMEWORK_IMPLEMENTATION_STATUSES)}"
+            )
+        seeded = [cid for cid, control in catalog.items() if str(control.get("framework_id") or "") == framework_id]
+        if status in {"planned", "referenced_only"} and seeded:
+            errors.append(
+                f"framework {framework_id} is {status} but catalog seeds {len(seeded)} control(s); "
+                "planned/referenced frameworks must not ship controls"
+            )
+        if status.startswith("implemented") and not seeded:
+            errors.append(f"framework {framework_id} is {status} but has no seeded controls")
     for control_id, control in catalog.items():
         framework_id = str(control.get("framework_id") or "")
         if framework_id not in registry:
@@ -87,6 +113,15 @@ def validate_catalog(
         ):
             if not str(control.get(required, "")).strip():
                 errors.append(f"control {control_id} missing {required}")
+        control_status = str(control.get("implementation_status") or "")
+        if control_status not in CONTROL_IMPLEMENTATION_STATUSES:
+            errors.append(
+                f"control {control_id} implementation_status {control_status!r} "
+                f"not in {sorted(CONTROL_IMPLEMENTATION_STATUSES)}"
+            )
+        framework_status = str(registry.get(framework_id, {}).get("implementation_status") or "")
+        if framework_status in {"planned", "referenced_only"}:
+            errors.append(f"control {control_id} references {framework_status} framework {framework_id}")
         if control.get("official_source_ref") != framework_id:
             errors.append(f"control {control_id} official_source_ref must match framework_id")
         asset_types = control.get("asset_types")

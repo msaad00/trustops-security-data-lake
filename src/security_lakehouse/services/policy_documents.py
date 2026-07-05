@@ -7,6 +7,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from security_lakehouse.catalog import load_control_catalog
+from security_lakehouse.db import policy_acknowledgments as pa
 from security_lakehouse.db import policy_documents as pd
 from security_lakehouse.policy_templates import (
     get_policy_template,
@@ -115,6 +116,40 @@ def update_document(
 
 def publish_document(session: Session, tenant_id: str, document_id: str) -> dict[str, Any]:
     return update_document(session, tenant_id, document_id, changes={"status": "published"})
+
+
+def list_acknowledgments(session: Session, tenant_id: str, document_id: str) -> list[dict[str, Any]]:
+    row = pd.get_document(session, tenant_id=tenant_id, document_id=document_id)
+    if row is None:
+        raise NotFound("policy document not found")
+    rows = pa.list_acknowledgments(session, tenant_id=tenant_id, policy_document_id=document_id)
+    return [pa.acknowledgment_to_dict(item) for item in rows]
+
+
+def record_acknowledgment(
+    session: Session,
+    tenant_id: str,
+    document_id: str,
+    *,
+    user_email: str,
+    display_name: str = "",
+) -> dict[str, Any]:
+    try:
+        row = pa.record_acknowledgment(
+            session,
+            tenant_id=tenant_id,
+            policy_document_id=document_id,
+            user_email=user_email,
+            display_name=display_name,
+        )
+    except ValueError as exc:
+        raise ValidationError(str(exc)) from exc
+    session.commit()
+    return pa.acknowledgment_to_dict(row)
+
+
+def attestation_summary(session: Session, tenant_id: str) -> dict[str, int]:
+    return pa.attestation_summary(session, tenant_id=tenant_id)
 
 
 def control_coverage(session: Session, tenant_id: str) -> list[dict[str, Any]]:

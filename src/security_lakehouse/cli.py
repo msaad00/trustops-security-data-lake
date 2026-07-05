@@ -359,15 +359,21 @@ def _parser() -> argparse.ArgumentParser:
     repo_audit.add_argument("--fixture-dir", default=None, help="local fixture directory for offline tests and demos")
     repo_audit.set_defaults(func=_repo_audit)
     repo_governance = repo_sub.add_parser(
-        "governance-sync", help="sync authenticated GitHub repository governance evidence"
+        "governance-sync", help="sync authenticated GitHub/GitLab repository governance evidence"
     )
-    repo_governance.add_argument("repo", help="GitHub URL or OWNER/REPO")
+    repo_governance.add_argument("repo", help="GitHub or GitLab URL or NAMESPACE/PROJECT")
     repo_governance.add_argument("--out", required=True, help="raw evidence JSONL output path")
     repo_governance.add_argument("--fixture-dir", default=None, help="local fixture directory for offline tests")
     repo_governance.add_argument(
+        "--provider",
+        choices=("github", "gitlab"),
+        default=None,
+        help="force provider when the repo string is ambiguous",
+    )
+    repo_governance.add_argument(
         "--token-env",
-        default="TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN",
-        help="environment variable containing the GitHub App installation token",
+        default=None,
+        help="environment variable containing the access token (defaults by provider)",
     )
     repo_governance.set_defaults(func=_repo_governance_sync)
 
@@ -1429,7 +1435,13 @@ def _repo_audit(args: argparse.Namespace) -> int:
 def _repo_governance_sync(args: argparse.Namespace) -> int:
     from security_lakehouse.repo_governance import sync_repo_governance
 
-    rows = sync_repo_governance(args.repo, out=args.out, fixture_dir=args.fixture_dir, token_env=args.token_env)
+    rows = sync_repo_governance(
+        args.repo,
+        out=args.out,
+        fixture_dir=args.fixture_dir,
+        token_env=args.token_env,
+        provider=args.provider,
+    )
     signals = sorted({row["event_type"] for row in rows})
     print(json.dumps({"count": len(rows), "out": args.out, "signals": signals}, indent=2, sort_keys=True))
     return 0

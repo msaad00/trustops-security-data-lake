@@ -15,6 +15,7 @@ import {
 } from "@/lib/api/hooks";
 import { AuditReadinessStrip } from "@/components/dashboard/AuditReadinessStrip";
 import { EvidenceFreshnessStrip } from "@/components/dashboard/EvidenceFreshnessStrip";
+import { InsightsRemediationStrip } from "@/components/dashboard/InsightsRemediationStrip";
 import { TrustHomeQuickLinks } from "@/components/dashboard/TrustHomeQuickLinks";
 import { PostureRing } from "@/components/dashboard/PostureRing";
 import { ReadinessGrid } from "@/components/dashboard/ReadinessGrid";
@@ -109,6 +110,7 @@ export default function DashboardPage() {
 
       <AuditReadinessStrip />
       <EvidenceFreshnessStrip />
+      <InsightsRemediationStrip />
 
       <QueryState queries={[posture]} label="posture">
         <Card className="overflow-hidden border-line shadow-card">

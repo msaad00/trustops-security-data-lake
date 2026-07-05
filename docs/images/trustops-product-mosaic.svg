@@ -61,7 +61,7 @@
         <text x="52" y="22" fill="#7dd3fc" font-size="13" font-weight="900">Audit room</text>
       </g>
       <text x="74" y="162" fill="#cbd5e1" font-size="13" font-weight="850">Controls</text>
-      <text x="74" y="198" fill="#cbd5e1" font-size="13" font-weight="850">Evidence</text>
+      <text x="74" y="198" fill="#cbd5e1" font-size="13" font-weight="850">Evidence + views</text>
       <text x="74" y="234" fill="#cbd5e1" font-size="13" font-weight="850">Remediation</text>
       <text x="74" y="270" fill="#cbd5e1" font-size="13" font-weight="850">Workflows</text>
       <text x="74" y="306" fill="#cbd5e1" font-size="13" font-weight="850">Graph</text>
@@ -74,7 +74,7 @@
     <g transform="translate(348 130)">
       <text x="0" y="22" class="eyebrow">CURRENT POSTURE</text>
       <text x="0" y="58" fill="#111827" font-size="34" font-weight="950">Trust command center</text>
-      <text x="0" y="84" class="sub">Posture, audit readiness, freshness SLA, and remediation queue.</text>
+      <text x="0" y="84" class="sub">Posture, audit readiness, freshness SLA, saved views, tags, and live SSE.</text>
 
       <g transform="translate(0 122)">
         <rect width="142" height="96" rx="14" class="card"/>
@@ -138,7 +138,7 @@
     <g transform="translate(768 606)">
       <rect width="392" height="62" rx="16" fill="url(#dark)" stroke="#203550"/>
       <text x="22" y="28" class="darkText">Graph + trust center</text>
-      <text x="22" y="47" fill="#cbd5e1" font-size="12" font-weight="700">Framework, control, evidence, and asset paths.</text>
+      <text x="22" y="47" fill="#cbd5e1" font-size="12" font-weight="700">Framework drill-down, control paths, and trust center.</text>
     </g>
   </g>
 </svg>

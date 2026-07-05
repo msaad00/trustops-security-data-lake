@@ -100,6 +100,32 @@ def test_governance_sync_requires_fixture_or_token(monkeypatch: pytest.MonkeyPat
         sync_repo_governance("acme/private-agent-api")
 
 
+def test_gitlab_governance_sync_fixture_emits_valid_raw_events(tmp_path: Path) -> None:
+    rows = sync_repo_governance(
+        "https://gitlab.com/acme/private-agent-api",
+        fixture_dir=_fixture(tmp_path),
+        provider="gitlab",
+        collected_at=datetime(2026, 5, 24, 12, 0, tzinfo=UTC),
+    )
+    assert validate_raw_events(rows) == []
+    assert rows[0]["source"] == "gitlab-repo-governance"
+    assert rows[0]["entity"]["asset_id"] == "gitlab:repo:acme/private-agent-api"
+    assert len(rows) == 5
+
+
+def test_gitlab_governance_sync_redacts_secret_like_fields(tmp_path: Path) -> None:
+    rows = sync_repo_governance(
+        "acme/private-agent-api",
+        fixture_dir=_fixture(tmp_path),
+        provider="gitlab",
+        token="gitlab_access_token_value",
+        collected_at=datetime(2026, 5, 24, 12, 0, tzinfo=UTC),
+    )
+    body = json.dumps(rows, sort_keys=True)
+    assert "gitlab_access_token_value" not in body
+    assert rows[0]["attributes"]["source_health"]["provider"] == "gitlab"
+
+
 def test_governance_sync_cli_writes_jsonl(tmp_path: Path, capsys) -> None:  # type: ignore[no-untyped-def]
     out = tmp_path / "repo-governance.jsonl"
     code = main(

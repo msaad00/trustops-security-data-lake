@@ -9,13 +9,7 @@ import {
   useReactTable,
   type SortingState,
 } from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  Bookmark,
-  BookmarkCheck,
-  Tag as TagIcon,
-  X,
-} from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -24,18 +18,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { SavedViewsBar } from "@/components/SavedViewsBar";
 import { QueryState } from "@/components/QueryState";
 import { notify } from "@/lib/toast";
 import { Toolbar, matchesQuery } from "@/components/Toolbar";
-import { TagChip } from "@/components/TagChip";
+import { TagFilterBar } from "@/components/TagFilterBar";
 import { ViolationDrawer } from "@/components/drawers/ViolationDrawer";
 import {
   useControls,
+  useTagEntityIds,
   useViolations,
   useTags,
-  useSavedViews,
-  useCreateSavedViewMutation,
-  useDeleteSavedViewMutation,
 } from "@/lib/api/hooks";
 import { useToolbar } from "@/lib/state/filters";
 import type { Severity, Violation } from "@/lib/api/types";
@@ -51,9 +44,6 @@ export default function ViolationsPage() {
   const violations = useViolations();
   const controls = useControls();
   const tagsQuery = useTags();
-  const savedViewsQuery = useSavedViews(SURFACE);
-  const createView = useCreateSavedViewMutation();
-  const deleteView = useDeleteSavedViewMutation();
 
   const { filters, setFilters } = useToolbar();
   const [sorting, setSorting] = useState<SortingState>([
@@ -61,8 +51,11 @@ export default function ViolationsPage() {
   ]);
   const [selected, setSelected] = useState<Violation | null>(null);
   const [activeTagId, setActiveTagId] = useState<string | null>(null);
-  const [saveViewName, setSaveViewName] = useState("");
-  const [showSavePanel, setShowSavePanel] = useState(false);
+  const taggedViolations = useTagEntityIds(activeTagId, "violation");
+  const taggedIds = useMemo(
+    () => new Set(taggedViolations.data ?? []),
+    [taggedViolations.data],
+  );
 
   const frameworks = useMemo(
     () => Array.from(new Set((controls.data ?? []).map((c) => c.framework))),
@@ -78,6 +71,7 @@ export default function ViolationsPage() {
   const filtered = useMemo(
     () =>
       (violations.data ?? []).filter((v) => {
+        if (activeTagId && !taggedIds.has(v.violation_id)) return false;
         if (
           filters.framework !== "all" &&
           controlFramework.get(v.control_id) !== filters.framework
@@ -87,7 +81,7 @@ export default function ViolationsPage() {
           return false;
         return matchesQuery(v, filters.query);
       }),
-    [violations.data, filters, controlFramework],
+    [violations.data, filters, controlFramework, activeTagId, taggedIds],
   );
 
   const columns = [
@@ -155,37 +149,6 @@ export default function ViolationsPage() {
   });
 
   const tags = tagsQuery.data ?? [];
-  const savedViews = savedViewsQuery.data ?? [];
-
-  function applyView(view: { filters: Record<string, unknown> }) {
-    setFilters({
-      framework: (view.filters.framework as string) ?? "all",
-      severity: (view.filters.severity as Severity | "all") ?? "all",
-      query: (view.filters.query as string) ?? "",
-    });
-  }
-
-  function handleSaveView() {
-    if (!saveViewName.trim()) return;
-    createView.mutate(
-      {
-        surface: SURFACE,
-        name: saveViewName.trim(),
-        filters: {
-          framework: filters.framework,
-          severity: filters.severity,
-          query: filters.query,
-        },
-      },
-      {
-        onSuccess: () => {
-          setSaveViewName("");
-          setShowSavePanel(false);
-          notify.success("View saved");
-        },
-      },
-    );
-  }
 
   return (
     <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
@@ -195,105 +158,29 @@ export default function ViolationsPage() {
         description="Open control failures with severity, asset, source, and evidence reference. Click a row to triage and persist the action server-side."
       />
 
-      {/* Tag filter strip */}
-      {tags.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-muted">
-            <TagIcon className="h-3 w-3" />
-            Tags
-          </span>
-          {tags.map((tag) => (
-            <button
-              key={tag.id}
-              type="button"
-              onClick={() =>
-                setActiveTagId(activeTagId === tag.id ? null : tag.id)
-              }
-              className={`rounded-full outline-none ring-offset-1 focus:ring-2 focus:ring-violet-500 ${
-                activeTagId === tag.id
-                  ? "ring-2 ring-violet-500 ring-offset-1"
-                  : ""
-              }`}
-            >
-              <TagChip tag={tag} />
-            </button>
-          ))}
-          {activeTagId && (
-            <button
-              type="button"
-              onClick={() => setActiveTagId(null)}
-              className="flex items-center gap-1 text-[11px] text-muted hover:text-ink"
-            >
-              <X className="h-3 w-3" />
-              clear
-            </button>
-          )}
-        </div>
-      )}
+      <TagFilterBar
+        tags={tags}
+        activeTagId={activeTagId}
+        onSelect={setActiveTagId}
+        onClear={() => setActiveTagId(null)}
+      />
 
       {/* Saved views */}
-      {(savedViews.length > 0 || true) && (
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-muted">
-            <Bookmark className="h-3 w-3" />
-            Saved views
-          </span>
-          {savedViews.map((view) => (
-            <div key={view.id} className="flex items-center gap-0.5">
-              <button
-                type="button"
-                onClick={() => applyView(view)}
-                className="rounded-md border border-line bg-white px-2 py-0.5 text-[11px] font-medium text-ink hover:bg-slate-50"
-              >
-                {view.name}
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  deleteView.mutate(
-                    { viewId: view.id, surface: SURFACE },
-                    {
-                      onSuccess: () => {
-                        notify.success("View deleted");
-                      },
-                    },
-                  )
-                }
-                className="rounded p-0.5 text-muted hover:text-ink"
-                aria-label="Delete saved view"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={() => setShowSavePanel(!showSavePanel)}
-            className="flex items-center gap-1 rounded-md border border-line bg-white px-2 py-0.5 text-[11px] font-medium text-muted hover:text-ink"
-          >
-            <BookmarkCheck className="h-3 w-3" />
-            Save current
-          </button>
-          {showSavePanel && (
-            <div className="flex items-center gap-1">
-              <input
-                value={saveViewName}
-                onChange={(e) => setSaveViewName(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSaveView()}
-                placeholder="View name…"
-                className="rounded border border-line px-2 py-0.5 text-[11px] focus:outline-none focus:ring-2 focus:ring-violet-500"
-              />
-              <button
-                type="button"
-                onClick={handleSaveView}
-                className="rounded bg-violet-600 px-2 py-0.5 text-[11px] font-medium text-white hover:bg-violet-700"
-              >
-                Save
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+      <SavedViewsBar
+        surface={SURFACE}
+        filters={{
+          framework: filters.framework,
+          severity: filters.severity,
+          query: filters.query,
+        }}
+        onApply={(viewFilters) =>
+          setFilters({
+            framework: (viewFilters.framework as string) ?? "all",
+            severity: (viewFilters.severity as Severity | "all") ?? "all",
+            query: (viewFilters.query as string) ?? "",
+          })
+        }
+      />
 
       <Toolbar
         filters={filters}

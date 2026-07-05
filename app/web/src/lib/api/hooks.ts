@@ -969,6 +969,7 @@ export function useAttachTagMutation() {
       qc.invalidateQueries({
         queryKey: ["tags-for", vars.entity_type, vars.entity_id],
       });
+      qc.invalidateQueries({ queryKey: ["tag-entities"] });
     },
   });
 }
@@ -986,7 +987,25 @@ export function useDetachTagMutation() {
       qc.invalidateQueries({
         queryKey: ["tags-for", vars.entity_type, vars.entity_id],
       });
+      qc.invalidateQueries({ queryKey: ["tag-entities"] });
     },
+  });
+}
+
+export function useTagEntityIds(
+  tagId: string | null,
+  entityType: string,
+  opts?: Opts<string[]>,
+) {
+  return useQuery({
+    queryKey: ["tag-entities", tagId, entityType],
+    queryFn: async () => {
+      if (!tagId) return [] as string[];
+      return api.tagEntities(tagId, entityType);
+    },
+    enabled: Boolean(tagId),
+    staleTime: STALE,
+    ...opts,
   });
 }
 
@@ -1074,9 +1093,8 @@ export function useCaptureMetricMutation() {
   });
 }
 
-// Continuous-eval: push posture updates via SSE into the query cache so the
-// console is live (poll stays as the fallback when EventSource is unavailable).
-export function usePostureStream(): { connected: boolean } {
+// Continuous-eval: push posture, freshness, and audit-readiness via SSE (#92).
+export function usePlatformStream(): { connected: boolean } {
   const qc = useQueryClient();
   const [connected, setConnected] = useState(false);
   useEffect(() => {
@@ -1091,11 +1109,33 @@ export function usePostureStream(): { connected: boolean } {
         /* ignore malformed frame */
       }
     });
+    es.addEventListener("freshness", (event) => {
+      try {
+        const data = JSON.parse(
+          (event as MessageEvent).data,
+        ) as EvidenceFreshnessSummary;
+        qc.setQueryData(["evidence", "freshness", "summary"], data);
+      } catch {
+        /* ignore malformed frame */
+      }
+    });
+    es.addEventListener("audit-readiness", (event) => {
+      try {
+        const data = JSON.parse((event as MessageEvent).data) as AuditReadiness;
+        qc.setQueryData(["platform", "audit-readiness"], data);
+      } catch {
+        /* ignore malformed frame */
+      }
+    });
     es.onopen = () => setConnected(true);
     es.onerror = () => setConnected(false);
     return () => es.close();
   }, [qc]);
   return { connected };
+}
+
+export function usePostureStream(): { connected: boolean } {
+  return usePlatformStream();
 }
 
 export function useAccessReviews(query = "") {
@@ -1248,6 +1288,38 @@ export function usePolicyCoverage() {
     queryKey: ["policy-coverage"],
     queryFn: () => api.policyCoverage(),
     staleTime: STALE,
+  });
+}
+
+export function usePolicyAcknowledgments(documentId: string | null) {
+  return useQuery({
+    queryKey: ["policy-acknowledgments", documentId],
+    queryFn: () => api.policyAcknowledgments(documentId as string),
+    enabled: Boolean(documentId),
+    staleTime: STALE,
+  });
+}
+
+export function usePolicyAttestationSummary() {
+  return useQuery({
+    queryKey: ["policy-attestation-summary"],
+    queryFn: () => api.policyAttestationSummary(),
+    staleTime: STALE,
+  });
+}
+
+export function useRecordPolicyAcknowledgmentMutation(documentId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: { user_email?: string; display_name?: string }) =>
+      api.recordPolicyAcknowledgment(documentId, payload),
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: ["policy-acknowledgments", documentId],
+      });
+      qc.invalidateQueries({ queryKey: ["policy-attestation-summary"] });
+      qc.invalidateQueries({ queryKey: ["platform", "audit-readiness"] });
+    },
   });
 }
 

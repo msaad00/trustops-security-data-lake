@@ -11,15 +11,25 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { SavedViewsBar } from "@/components/SavedViewsBar";
+import { TagFilterBar } from "@/components/TagFilterBar";
 import { QueryState } from "@/components/QueryState";
 import { notify } from "@/lib/toast";
 import { Toolbar, matchesQuery } from "@/components/Toolbar";
 import { ControlDrawer } from "@/components/drawers/ControlDrawer";
 import { ViolationDrawer } from "@/components/drawers/ViolationDrawer";
-import { useControls, useControlTests, usePosture } from "@/lib/api/hooks";
+import {
+  useControls,
+  useControlTests,
+  usePosture,
+  useTagEntityIds,
+  useTags,
+} from "@/lib/api/hooks";
 import { useToolbar } from "@/lib/state/filters";
 import { cn } from "@/lib/utils";
 import type { ControlPosture, Violation } from "@/lib/api/types";
+
+const SURFACE = "controls";
 
 const toneForStatus = (status: string) =>
   status === "pass" ? "ready" : status === "fail" ? "critical" : "attention";
@@ -76,9 +86,17 @@ export default function ControlsPage() {
   const controls = useControls();
   const tests = useControlTests();
   const posture = usePosture();
+  const tagsQuery = useTags();
   const { filters, setFilters } = useToolbar();
   const [selected, setSelected] = useState<ControlPosture | null>(null);
   const [violation, setViolation] = useState<Violation | null>(null);
+  const [activeTagId, setActiveTagId] = useState<string | null>(null);
+  const taggedControls = useTagEntityIds(activeTagId, "control");
+  const taggedIds = useMemo(
+    () => new Set(taggedControls.data ?? []),
+    [taggedControls.data],
+  );
+  const tags = tagsQuery.data ?? [];
 
   const frameworks = useMemo(
     () => Array.from(new Set((controls.data ?? []).map((c) => c.framework))),
@@ -87,12 +105,14 @@ export default function ControlsPage() {
 
   const filtered = useMemo(
     () =>
-      (controls.data ?? []).filter(
-        (c) =>
+      (controls.data ?? []).filter((c) => {
+        if (activeTagId && !taggedIds.has(c.control_id)) return false;
+        return (
           (filters.framework === "all" || c.framework === filters.framework) &&
-          matchesQuery(c, filters.query),
-      ),
-    [controls.data, filters],
+          matchesQuery(c, filters.query)
+        );
+      }),
+    [controls.data, filters, activeTagId, taggedIds],
   );
 
   const openViolation = (violationId: string) => {
@@ -108,6 +128,26 @@ export default function ControlsPage() {
         eyebrow="Controls"
         title="Control workbench"
         description="Per-framework control catalog. Click any row to open the control drawer, then drill into violations to record triage events."
+      />
+      <TagFilterBar
+        tags={tags}
+        activeTagId={activeTagId}
+        onSelect={setActiveTagId}
+        onClear={() => setActiveTagId(null)}
+      />
+      <SavedViewsBar
+        surface={SURFACE}
+        filters={{
+          framework: filters.framework,
+          query: filters.query,
+        }}
+        onApply={(viewFilters) =>
+          setFilters({
+            ...filters,
+            framework: (viewFilters.framework as string) ?? "all",
+            query: (viewFilters.query as string) ?? "",
+          })
+        }
       />
       <Toolbar
         filters={filters}
