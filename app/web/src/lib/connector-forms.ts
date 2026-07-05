@@ -106,7 +106,16 @@ export const CONNECTOR_CREDENTIAL_FIELDS: Record<string, ConnectorFieldDef[]> =
         label: "GitHub App installation token env",
         placeholder: "TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN",
         required: true,
-        hint: "Read-only GitHub App token with security alert scopes.",
+        hint: "Read-only GitHub App token with repository metadata scopes.",
+      },
+    ],
+    "gitlab-security": [
+      {
+        name: "credential_ref",
+        label: "GitLab access token env",
+        placeholder: "TRUSTOPS_GITLAB_ACCESS_TOKEN",
+        required: true,
+        hint: "Read-only project token with api read_repository scope.",
       },
     ],
     "okta-identity": [
@@ -191,6 +200,21 @@ export const CONNECTOR_SCOPE_FIELDS: Record<string, ConnectorFieldDef[]> = {
       placeholder: "acme-corp/platform",
       required: true,
       hint: "Single repo per connector; add another connector row for more repos.",
+    },
+  ],
+  "gitlab-security": [
+    {
+      name: "repo",
+      label: "Project path (group/project)",
+      placeholder: "acme/platform",
+      required: true,
+      hint: "GitLab project path; URL-encode nested groups if needed.",
+    },
+    {
+      name: "api_url",
+      label: "GitLab API URL (optional)",
+      placeholder: "https://gitlab.com/api/v4",
+      hint: "Self-managed GitLab base API URL; defaults to gitlab.com.",
     },
   ],
   "snowflake-evidence-lake": [

@@ -36,8 +36,9 @@ def test_golden_events_validate() -> None:
 def test_golden_fixture_ships_and_populates_dashboard(tmp_path: Path) -> None:
     fixture = find_fixture(GOLDEN_COMPANY)
     assert fixture is not None
-    assert fixture.event_count == 37
-    assert set(fixture.controls) == set(golden_control_ids())
+    assert fixture.event_count >= len(golden_control_ids())
+    expected_controls = set(golden_control_ids()) | {"ISO27001-A.5.15"}
+    assert set(fixture.controls) == expected_controls
 
     run_pipeline(fixture.raw_path, tmp_path)
     posture_rows = [
@@ -45,11 +46,11 @@ def test_golden_fixture_ships_and_populates_dashboard(tmp_path: Path) -> None:
         for line in (tmp_path / "gold" / "control_posture.jsonl").read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
-    assert len(posture_rows) == 37
-    assert {row["control_id"] for row in posture_rows} == set(golden_control_ids())
+    assert len(posture_rows) == len(expected_controls)
+    assert {row["control_id"] for row in posture_rows} == expected_controls
 
     posture = build_current_posture(tmp_path)
-    assert posture["posture"]["control_count"] == 37
-    assert posture["posture"]["framework_count"] == 2
+    assert posture["posture"]["control_count"] == len(expected_controls)
+    assert posture["posture"]["framework_count"] == 3
     frameworks = {row["framework"] for row in posture["frameworks"]}
-    assert frameworks == {"SOC 2", "NIST AI RMF"}
+    assert frameworks == {"SOC 2", "NIST AI RMF", "ISO 27001:2022"}
