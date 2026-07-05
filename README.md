@@ -1,12 +1,12 @@
 # TrustOps Security Data Lake
 
 <p align="center">
-  <img src="docs/images/trustops-logo.svg" alt="TrustOps — open-source trust operations" width="280">
+  <img src="docs/images/trustops-logo.svg" alt="TrustOps — open-source trust operations platform" width="360">
 </p>
 
 <p align="center">
-  <strong>Continuous compliance in your VPC</strong> — connect AWS, Azure, GCP, Snowflake, and identity sources;<br/>
-  evaluate controls deterministically; run audit-ready workflows; share proof with auditors.
+  <strong>Continuous compliance in your VPC</strong> — connect AWS, Azure, GCP, Snowflake, GitHub, GitLab, and identity sources;<br/>
+  evaluate controls deterministically; run audit-ready workflows; share proof with auditors and agents.
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/images/trustops-readme-banner.svg" alt="TrustOps — connect sources, evaluate controls, automate remediation, share proof" width="100%">
+  <img src="docs/images/trustops-readme-banner.svg" alt="TrustOps platform — connectors, evidence lake, control tests, audit room, and headless API surfaces" width="100%">
 </p>
 
 ## Why teams pick TrustOps over managed GRC
