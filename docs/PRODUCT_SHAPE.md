@@ -120,18 +120,18 @@ Connect → Sync → Evaluate → Remediate → Review → Share → Prove
 
 Rough comparison vs mature managed GRC SaaS on capability + UX reality:
 
-| Area                       | vs managed SaaS | TrustOps today                                               |
-| -------------------------- | --------------- | ------------------------------------------------------------ |
-| Audit room + readiness     | Strong          | **Shipped** — live SSE, gaps, vendor/policy strips           |
-| Evidence freshness SLA     | Strong          | **Shipped** — summary, escalate, audit panel                 |
-| Vendor diligence + policy  | MVP parity      | **Shipped** — questionnaires + attestation rollups           |
-| Saved views + tags         | Good            | **Shipped** — controls, violations, evidence + tag filter    |
-| Framework drill-down       | Good            | **Shipped** — control → rule → evidence → source             |
-| Live SSE updates           | Good            | **Shipped** — posture + audit-readiness stream               |
+| Area                       | vs managed SaaS | TrustOps today                                                      |
+| -------------------------- | --------------- | ------------------------------------------------------------------- |
+| Audit room + readiness     | Strong          | **Shipped** — live SSE, gaps, vendor/policy strips                  |
+| Evidence freshness SLA     | Strong          | **Shipped** — summary, escalate, audit panel                        |
+| Vendor diligence + policy  | MVP parity      | **Shipped** — questionnaires + attestation rollups                  |
+| Saved views + tags         | Good            | **Shipped** — controls, violations, evidence + tag filter           |
+| Framework drill-down       | Good            | **Shipped** — control → rule → evidence → source                    |
+| Live SSE updates           | Good            | **Shipped** — posture + audit-readiness stream                      |
 | Integrations long tail     | Behind          | AWS/Azure/GCP/Snowflake/GitHub/GitLab/Okta live; #22/#23 repo graph |
-| HRIS / devices / personnel | Behind          | IdP + access reviews workaround                              |
-| Billing / full SCIM        | Behind          | P5 hosted scaffold                                           |
-| Premium onboarding polish  | Behind          | Wizard shipped; polish incremental                           |
+| HRIS / devices / personnel | Behind          | IdP + access reviews workaround                                     |
+| Billing / full SCIM        | Behind          | P5 hosted scaffold                                                  |
+| Premium onboarding polish  | Behind          | Wizard shipped; polish incremental                                  |
 
 ## Parity scorecard (detailed)
 
@@ -229,17 +229,17 @@ engineering, managed SaaS still wins on packaging.
 
 Open issues ranked by impact on **turnkey core GRC loop + premium UX**:
 
-| Priority | Issue                                                                        | Closes                                       | Status                            |
-| -------- | ---------------------------------------------------------------------------- | -------------------------------------------- | --------------------------------- |
-| **P0**   | [#96](https://github.com/msaad00/trustops-security-data-lake/issues/96) Epic | Premium GRC SaaS feel — biggest UX gap       | **Mostly shipped** (#89–#95, #91) |
-| **P0**   | [#14](https://github.com/msaad00/trustops-security-data-lake/issues/14)      | Source-linked framework/control expansion    | Open                              |
-| **P1**   | [#13](https://github.com/msaad00/trustops-security-data-lake/issues/13)      | Evidence freshness SLA + stale → remediation | **Shipped**                       |
-| **P1**   | [#15](https://github.com/msaad00/trustops-security-data-lake/issues/15)      | Audit snapshot room + reviewer trust center  | **Shipped** (trends + timeline)   |
-| **P1**   | [#18](https://github.com/msaad00/trustops-security-data-lake/issues/18)      | Product-grade topology, trend, workflow viz  | Open                              |
+| Priority | Issue                                                                        | Closes                                       | Status                                    |
+| -------- | ---------------------------------------------------------------------------- | -------------------------------------------- | ----------------------------------------- |
+| **P0**   | [#96](https://github.com/msaad00/trustops-security-data-lake/issues/96) Epic | Premium GRC SaaS feel — biggest UX gap       | **Mostly shipped** (#89–#95, #91)         |
+| **P0**   | [#14](https://github.com/msaad00/trustops-security-data-lake/issues/14)      | Source-linked framework/control expansion    | Open                                      |
+| **P1**   | [#13](https://github.com/msaad00/trustops-security-data-lake/issues/13)      | Evidence freshness SLA + stale → remediation | **Shipped**                               |
+| **P1**   | [#15](https://github.com/msaad00/trustops-security-data-lake/issues/15)      | Audit snapshot room + reviewer trust center  | **Shipped** (trends + timeline)           |
+| **P1**   | [#18](https://github.com/msaad00/trustops-security-data-lake/issues/18)      | Product-grade topology, trend, workflow viz  | Open                                      |
 | **P1**   | [#22](https://github.com/msaad00/trustops-security-data-lake/issues/22)      | GitHub/GitLab repo governance connector      | **Shipped** (GitLab UI + governance sync) |
 | **P1**   | [#23](https://github.com/msaad00/trustops-security-data-lake/issues/23)      | Repository topology graph workbench          | **Shipped** (demo data + inspector)       |
-| **P1**   | [#16](https://github.com/msaad00/trustops-security-data-lake/issues/16)      | Headless agent workbench + guarded skills    | Partial                           |
-| **Ship** | [#345](https://github.com/msaad00/trustops-security-data-lake/pull/345)      | Identity/admin parity for enterprise SSO     | PR open                           |
+| **P1**   | [#16](https://github.com/msaad00/trustops-security-data-lake/issues/16)      | Headless agent workbench + guarded skills    | Partial                                   |
+| **Ship** | [#345](https://github.com/msaad00/trustops-security-data-lake/pull/345)      | Identity/admin parity for enterprise SSO     | PR open                                   |
 
 ### Epic #96 breakdown (experience uplift)
 

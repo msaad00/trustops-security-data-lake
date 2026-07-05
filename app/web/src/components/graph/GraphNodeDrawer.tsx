@@ -56,13 +56,19 @@ function primaryHref(node: GraphNode): { href: string; label: string } | null {
     return { href: "/evidence", label: "Open evidence room" };
   }
   if (node.kind === "signal_gap") {
-    return { href: "/connectors/?connect=github-security", label: "Configure governance connector" };
+    return {
+      href: "/connectors/?connect=github-security",
+      label: "Configure governance connector",
+    };
   }
   if (node.kind === "governance_signal") {
     return { href: "/connectors", label: "Review connector sync" };
   }
   if (node.kind === "repository") {
-    return { href: "/connectors/?connect=github-security", label: "Link repository source" };
+    return {
+      href: "/connectors/?connect=github-security",
+      label: "Link repository source",
+    };
   }
   return null;
 }

@@ -395,7 +395,8 @@ export default function GraphPage() {
         }
         if (node.kind === "signal_gap") gapCount += 1;
         if (node.kind === "control") controlIds.add(node.label);
-        for (const controlId of node.control_ids ?? []) controlIds.add(controlId);
+        for (const controlId of node.control_ids ?? [])
+          controlIds.add(controlId);
         for (const nextId of graphIndex.outgoing.get(nodeId) ?? []) {
           if (!seen.has(nextId)) queue.push(nextId);
         }
@@ -900,7 +901,9 @@ export default function GraphPage() {
                             {repository.label}
                           </div>
                           <div className="mt-0.5 truncate text-[11px] text-muted">
-                            {repository.subtitle ?? repository.owner ?? "repository"}
+                            {repository.subtitle ??
+                              repository.owner ??
+                              "repository"}
                           </div>
                         </div>
                         {repository.provider && (
@@ -922,8 +925,8 @@ export default function GraphPage() {
               </div>
             ) : (
               <div className="rounded-xl border border-dashed border-line bg-slate-50 p-4 text-sm text-muted">
-                Link GitHub or GitLab governance connectors and sync a repository
-                to populate the topology graph.
+                Link GitHub or GitLab governance connectors and sync a
+                repository to populate the topology graph.
               </div>
             )}
           </CardContent>
