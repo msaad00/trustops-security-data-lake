@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { ConnectorMark } from "@/components/connectors/ConnectorMark";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const QUICK_CONNECT = [
   {
@@ -43,7 +49,8 @@ export function OnboardingQuickConnect() {
       <CardHeader>
         <CardTitle>Quick connect</CardTitle>
         <CardDescription>
-          Deep-link into probe → discover → test → enable → sync for each source.
+          Deep-link into probe → discover → test → enable → sync for each
+          source.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-2 sm:grid-cols-2">

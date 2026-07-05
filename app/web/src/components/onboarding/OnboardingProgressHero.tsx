@@ -1,7 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Circle, Plug, RefreshCw, ShieldCheck, Share2 } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Circle,
+  Plug,
+  RefreshCw,
+  ShieldCheck,
+  Share2,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,7 +17,12 @@ import { TrustOpsMark } from "@/components/brand/TrustOpsMark";
 import type { PocReadinessStep } from "@/lib/api/types";
 
 const STAGES = [
-  { id: "connect", label: "Connect", icon: Plug, href: "/connectors/?connect=aws-posture" },
+  {
+    id: "connect",
+    label: "Connect",
+    icon: Plug,
+    href: "/connectors/?connect=aws-posture",
+  },
   { id: "sync", label: "Sync", icon: RefreshCw, href: "/connectors" },
   { id: "evaluate", label: "Evaluate", icon: ShieldCheck, href: "/dashboard" },
   { id: "share", label: "Share", icon: Share2, href: "/trust-center" },
@@ -86,7 +99,9 @@ export function OnboardingProgressHero({
                       className={`h-4 w-4 ${active ? "text-sky-300" : "text-slate-500"}`}
                     />
                   )}
-                  <Icon className={`h-4 w-4 ${active ? "text-sky-200" : "text-slate-300"}`} />
+                  <Icon
+                    className={`h-4 w-4 ${active ? "text-sky-200" : "text-slate-300"}`}
+                  />
                   <span className="text-sm font-black">{stage.label}</span>
                 </div>
               </Link>
@@ -116,7 +131,9 @@ export function OnboardingProgressHero({
                 Current step
               </div>
               <div className="font-black text-white">{currentStep.label}</div>
-              <p className="mt-1 text-sm text-slate-300">{currentStep.detail}</p>
+              <p className="mt-1 text-sm text-slate-300">
+                {currentStep.detail}
+              </p>
             </div>
             {currentHref ? (
               <Button asChild variant="primary">
