@@ -64,9 +64,7 @@ export function PolicyAttestationStrip() {
         />
         <KpiTile
           label="Total attestations"
-          value={
-            attestation ? String(attestation.total_acknowledgments) : "—"
-          }
+          value={attestation ? String(attestation.total_acknowledgments) : "—"}
           detail="Recorded employee sign-offs"
           tone="default"
         />
