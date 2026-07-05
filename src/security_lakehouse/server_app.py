@@ -252,6 +252,11 @@ class UpdatePolicyDocumentRequest(_StrictModel):
     status: str | None = None
 
 
+class RecordPolicyAcknowledgmentRequest(_StrictModel):
+    user_email: str | None = None
+    display_name: str = ""
+
+
 class CreateCampaignRequest(_StrictModel):
     name: str
     description: str = ""
@@ -2305,6 +2310,13 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             api_v1.envelope("policies.coverage", _redact_payload(data, identity), meta={"count": len(data)})
         )
 
+    @app.get("/api/v1/policies/attestation-summary")
+    def policy_attestation_summary(
+        identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        data = policy_document_services.attestation_summary(session, identity.tenant_id)
+        return JSONResponse(api_v1.envelope("policies.attestation", _redact_payload(data, identity)))
+
     @app.get("/api/v1/policies")
     def list_policies(
         request: Request, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
@@ -2384,6 +2396,47 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         except NotFound as exc:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
         return JSONResponse(api_v1.envelope("policies", document))
+
+    @app.get("/api/v1/policies/{document_id}/acknowledgments")
+    def list_policy_acknowledgments(
+        document_id: str, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        try:
+            data = policy_document_services.list_acknowledgments(session, identity.tenant_id, document_id)
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(
+            api_v1.envelope("policies.acknowledgments", _redact_payload(data, identity), meta={"count": len(data)})
+        )
+
+    @app.post("/api/v1/policies/{document_id}/acknowledgments", status_code=status.HTTP_201_CREATED)
+    def record_policy_acknowledgment(
+        document_id: str,
+        body: RecordPolicyAcknowledgmentRequest,
+        identity: Identity = Depends(_require_read),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        target_email = (body.user_email or identity.email or "").strip()
+        if (
+            body.user_email
+            and identity.role not in {"admin", "security_admin"}
+            and target_email.lower() != (identity.email or "").lower()
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="only admins may record acknowledgments for other users",
+            )
+        try:
+            row = policy_document_services.record_acknowledgment(
+                session,
+                identity.tenant_id,
+                document_id,
+                user_email=target_email,
+                display_name=body.display_name,
+            )
+        except ValidationError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("policies.acknowledgments", row), status_code=status.HTTP_201_CREATED)
 
     # --- access reviews (GRC) ---
     @app.get("/api/v1/access-reviews")

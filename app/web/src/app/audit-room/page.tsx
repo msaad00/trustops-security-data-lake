@@ -22,6 +22,7 @@ import { EvidenceFreshnessSlaPanel } from "@/components/evidence/EvidenceFreshne
 import { AuditRoomTrendsPanel } from "@/components/audit-room/AuditRoomTrendsPanel";
 import { AuditSnapshotTimeline } from "@/components/audit-room/AuditSnapshotTimeline";
 import { RemediationSlaStrip } from "@/components/audit-room/RemediationSlaStrip";
+import { VendorRiskStrip } from "@/components/audit-room/VendorRiskStrip";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { KpiTile } from "@/components/ui/KpiTile";
@@ -107,6 +108,8 @@ export default function AuditRoomPage() {
 
             <RemediationSlaStrip />
 
+            <VendorRiskStrip />
+
             <AuditSnapshotTimeline />
 
             {audit.data.gaps.length > 0 && (
@@ -169,6 +172,23 @@ export default function AuditRoomPage() {
                       {audit.data.connectors.evidence_count}
                     </b>
                   </div>
+                  {audit.data.vendor_risk && (
+                    <>
+                      <div className="flex justify-between">
+                        <span>Vendor assessments</span>
+                        <b className="text-ink">
+                          {audit.data.vendor_risk.completed}/
+                          {audit.data.vendor_risk.total} complete
+                        </b>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Overdue vendor reviews</span>
+                        <b className="text-ink">
+                          {audit.data.vendor_risk.overdue}
+                        </b>
+                      </div>
+                    </>
+                  )}
                 </CardContent>
               </Card>
 
