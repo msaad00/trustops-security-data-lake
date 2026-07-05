@@ -52,6 +52,13 @@ export const CONNECTOR_VISUALS: Record<string, ConnectorVisual> = {
     bg: "#f6f8fa",
     categoryLabel: "Developer platform",
   },
+  "gitlab-security": {
+    vendor: "GitLab",
+    mark: "GL",
+    accent: "#FC6D26",
+    bg: "#fff7ed",
+    categoryLabel: "Developer platform",
+  },
   "okta-identity": {
     vendor: "Okta",
     mark: "OKTA",

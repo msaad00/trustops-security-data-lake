@@ -166,6 +166,24 @@ TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN=... security-lakehouse connectors sync \
   --repo OWNER/REPO
 ```
 
+GitLab governance sync (fixture-backed or live token):
+
+```bash
+security-lakehouse connectors sync \
+  --lake build/lakehouse \
+  --connector-id gitlab-security \
+  --repo GROUP/PROJECT \
+  --fixture-dir tests/fixtures/gitlab-governance
+
+TRUSTOPS_GITLAB_ACCESS_TOKEN=... security-lakehouse connectors sync \
+  --lake build/lakehouse \
+  --connector-id gitlab-security \
+  --repo GROUP/PROJECT
+```
+
+Self-managed GitLab: set `TRUSTOPS_GITLAB_API_URL` to your instance API base
+(for example `https://gitlab.example.com/api/v4`) before sync.
+
 Snowflake is the read-existing-lake path. The fixture path mirrors the expected
 views (`audit_events`, `control_posture`, `asset_risk`, and
 `evidence_bundles`) and exercises the same raw-to-gold pipeline:
