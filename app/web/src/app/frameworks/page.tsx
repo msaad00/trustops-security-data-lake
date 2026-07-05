@@ -1,13 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Calendar,
-  Database,
-  ExternalLink,
-  FileCheck2,
-  ShieldAlert,
-} from "lucide-react";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Calendar, ExternalLink, FileCheck2, ShieldAlert } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -18,14 +13,10 @@ import {
 import { Drawer } from "@/components/ui/drawer";
 import { PageHeader } from "@/components/PageHeader";
 import { FrameworkBadge } from "@/components/framework/FrameworkBadge";
-import {
-  useFrameworkDetail,
-  useFrameworks,
-  useReadiness,
-} from "@/lib/api/hooks";
+import { FrameworkDrilldownPanel } from "@/components/framework/FrameworkDrilldownPanel";
+import { frameworkDetailHref } from "@/lib/framework-links";
+import { useFrameworks, useReadiness } from "@/lib/api/hooks";
 import type {
-  FrameworkControlDetail,
-  FrameworkSourceRollup,
   FrameworkFreshness,
   FrameworkReadiness,
   FrameworkView,
@@ -114,143 +105,17 @@ function Row({
   );
 }
 
-function SourcePills({ sources }: { sources: FrameworkSourceRollup[] }) {
-  if (sources.length === 0) {
-    return (
-      <span className="text-xs text-muted">No evidence sources observed.</span>
-    );
-  }
-  return (
-    <div className="flex flex-wrap gap-1.5">
-      {sources.slice(0, 6).map((source) => (
-        <Badge
-          key={source.source}
-          tone={source.expired_count ? "critical" : "info"}
-        >
-          {source.source} · {source.event_count}
-        </Badge>
-      ))}
-      {sources.length > 6 && <Badge>+{sources.length - 6} more</Badge>}
-    </div>
-  );
-}
-
-function ControlDrilldown({ control }: { control: FrameworkControlDetail }) {
-  const statusTone =
-    control.posture.status === "pass"
-      ? "ready"
-      : control.posture.status === "fail"
-        ? "critical"
-        : "default";
-  return (
-    <section className="rounded-xl border border-line bg-white p-3">
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div className="min-w-0">
-          <code className="text-xs font-black text-brand">
-            {control.control_id}
-          </code>
-          <div className="mt-1 font-black leading-snug text-ink">
-            {control.title}
-          </div>
-          <div className="mt-1 text-xs text-muted">
-            {control.owner} · {control.risk_domain} · {control.frequency}
-          </div>
-        </div>
-        <Badge tone={statusTone}>
-          {control.posture.status.replace("_", " ")}
-        </Badge>
-      </div>
-
-      <div className="mt-3 grid gap-3 lg:grid-cols-2">
-        <div className="rounded-lg bg-slate-50 p-3">
-          <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-            Rule + requirement
-          </div>
-          <code className="mt-1 block break-words text-xs font-bold text-ink">
-            {control.evaluation_rule}
-          </code>
-          <p className="mt-2 text-xs text-muted">
-            {control.evidence_requirement}
-          </p>
-          {control.posture.rule_reasons.length > 0 && (
-            <ul className="mt-2 space-y-1 text-xs text-rose-700">
-              {control.posture.rule_reasons.map((reason) => (
-                <li key={reason}>• {reason}</li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div className="rounded-lg bg-slate-50 p-3">
-          <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-            Evidence state
-          </div>
-          <div className="mt-1 flex flex-wrap gap-1.5">
-            <Badge>{control.evidence.count} facts</Badge>
-            <Badge
-              tone={
-                control.test.freshness_status === "expired"
-                  ? "critical"
-                  : "info"
-              }
-            >
-              {control.test.freshness_status ?? "not evaluated"}
-            </Badge>
-            <Badge>{control.test.confidence_score ?? 0}% confidence</Badge>
-          </div>
-          <div className="mt-2 text-xs text-muted">
-            Required: {control.test.required_evidence_types.join(", ") || "—"}
-          </div>
-          <div className="mt-2">
-            <SourcePills sources={control.evidence.sources} />
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-3 rounded-lg border border-line p-3">
-        <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-          Reviewed source mapping
-        </div>
-        {control.articles.length === 0 ? (
-          <p className="mt-1 text-xs text-muted">
-            No reviewed source article mapping.
-          </p>
-        ) : (
-          <div className="mt-2 grid gap-2">
-            {control.articles.map((article) => (
-              <a
-                key={`${control.control_id}-${article.article_id}`}
-                href={article.official_source_url}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-lg border border-line p-2 text-xs hover:border-brand"
-              >
-                <span className="font-black text-ink">
-                  {article.article_id}
-                </span>{" "}
-                <span className="text-muted">{article.title}</span>
-                <ExternalLink className="ml-1 inline h-3 w-3 text-brand" />
-                <div className="mt-1 text-[11px] text-muted">
-                  Reviewed by {article.reviewed_by} on {article.reviewed_at}
-                </div>
-              </a>
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
-  );
-}
-
 function Detail({
   framework,
+  expandedControlId,
+  onExpandedControlChange,
   onClose,
 }: {
   framework: FrameworkView | null;
+  expandedControlId: string | null;
+  onExpandedControlChange: (controlId: string | null) => void;
   onClose: () => void;
 }) {
-  const detail = useFrameworkDetail(framework?.framework_id ?? null);
-  const data = detail.data;
   return (
     <Drawer
       open={Boolean(framework)}
@@ -355,89 +220,11 @@ function Detail({
           </section>
 
           <section className="grid gap-2 rounded-xl border border-line p-3">
-            <div className="flex items-center justify-between gap-2">
-              <div>
-                <div className="text-xs font-black uppercase tracking-wide text-muted">
-                  Control-to-evidence drill-down
-                </div>
-                <p className="mt-1 text-xs text-muted">
-                  Read-only composition from registry, mappings, control tests,
-                  normalized evidence, and freshness state.
-                </p>
-              </div>
-              {data && (
-                <Badge
-                  tone={
-                    data.summary.failing_control_count ? "critical" : "ready"
-                  }
-                >
-                  {data.summary.passing_control_count}/
-                  {data.summary.control_count} pass
-                </Badge>
-              )}
-            </div>
-            {detail.isLoading && (
-              <div className="rounded-lg border border-dashed border-line p-3 text-xs text-muted">
-                Loading framework chain…
-              </div>
-            )}
-            {detail.isError && (
-              <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700">
-                Framework detail could not be loaded.
-              </div>
-            )}
-            {data && (
-              <>
-                <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
-                  <div className="rounded-lg bg-slate-50 p-3">
-                    <div className="text-[10px] font-black uppercase text-muted">
-                      Evidence facts
-                    </div>
-                    <div className="mt-1 text-2xl font-black text-ink">
-                      {data.summary.evidence_count}
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-slate-50 p-3">
-                    <div className="text-[10px] font-black uppercase text-muted">
-                      Sources
-                    </div>
-                    <div className="mt-1 text-2xl font-black text-ink">
-                      {data.summary.source_count}
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-slate-50 p-3">
-                    <div className="text-[10px] font-black uppercase text-muted">
-                      Mapped
-                    </div>
-                    <div className="mt-1 text-2xl font-black text-ink">
-                      {data.summary.mapped_control_count}
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-slate-50 p-3">
-                    <div className="text-[10px] font-black uppercase text-muted">
-                      Failing
-                    </div>
-                    <div className="mt-1 text-2xl font-black text-rose-600">
-                      {data.summary.failing_control_count}
-                    </div>
-                  </div>
-                </div>
-                <div className="rounded-lg border border-line p-3">
-                  <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
-                    <Database className="h-3.5 w-3.5" /> Evidence sources
-                  </div>
-                  <SourcePills sources={data.sources} />
-                </div>
-                <div className="grid gap-3">
-                  {data.controls.map((control) => (
-                    <ControlDrilldown
-                      key={control.control_id}
-                      control={control}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
+            <FrameworkDrilldownPanel
+              frameworkId={framework.framework_id}
+              expandedControlId={expandedControlId}
+              onExpandedControlChange={onExpandedControlChange}
+            />
           </section>
         </div>
       )}
@@ -508,12 +295,41 @@ function ReadinessRow({ row }: { row: FrameworkReadiness }) {
   );
 }
 
-export default function FrameworksPage() {
+function FrameworksPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const frameworks = useFrameworks();
   const readiness = useReadiness();
   const [selected, setSelected] = useState<FrameworkView | null>(null);
   const data = frameworks.data ?? [];
   const readinessRows = readiness.data ?? [];
+  const frameworkParam = searchParams.get("framework");
+  const controlParam = searchParams.get("control");
+
+  useEffect(() => {
+    if (!frameworkParam || data.length === 0) return;
+    const match = data.find((row) => row.framework_id === frameworkParam);
+    if (match) setSelected(match);
+  }, [frameworkParam, data]);
+
+  function openFramework(framework: FrameworkView) {
+    setSelected(framework);
+    router.replace(frameworkDetailHref(framework.framework_id), {
+      scroll: false,
+    });
+  }
+
+  function closeFramework() {
+    setSelected(null);
+    router.replace("/frameworks", { scroll: false });
+  }
+
+  function setExpandedControl(controlId: string | null) {
+    if (!selected) return;
+    router.replace(frameworkDetailHref(selected.framework_id, controlId), {
+      scroll: false,
+    });
+  }
 
   return (
     <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
@@ -571,13 +387,30 @@ export default function FrameworksPage() {
             <Row
               key={f.framework_id}
               framework={f}
-              onSelect={() => setSelected(f)}
+              onSelect={() => openFramework(f)}
             />
           ))}
         </div>
       </Card>
 
-      <Detail framework={selected} onClose={() => setSelected(null)} />
+      <Detail
+        framework={selected}
+        expandedControlId={controlParam}
+        onExpandedControlChange={setExpandedControl}
+        onClose={closeFramework}
+      />
     </div>
+  );
+}
+
+export default function FrameworksPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="px-4 py-5 text-sm text-muted">Loading frameworks…</div>
+      }
+    >
+      <FrameworksPageContent />
+    </Suspense>
   );
 }
