@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
 import { DemoShareKit } from "@/components/demo/DemoShareKit";
+import { ConnectorEcosystemStrip } from "@/components/connectors/ConnectorEcosystemStrip";
 import { useAuthMethods, usePocReadiness } from "@/lib/api/hooks";
 
 const STEPS = [
@@ -144,6 +145,8 @@ export default function DemoLandingPage() {
           </div>
         </CardContent>
       </Card>
+
+      <ConnectorEcosystemStrip />
 
       {readiness.isError && (
         <Card>

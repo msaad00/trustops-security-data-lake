@@ -11,14 +11,14 @@ Related: [TRUSTOPS_85_PLAN.md](TRUSTOPS_85_PLAN.md) (self-hosted bar) ·
 
 ## TL;DR
 
-| Dimension             | Mature managed GRC SaaS     | TrustOps today                                    |
-| --------------------- | --------------------------- | ------------------------------------------------- |
-| **Product shape**     | Polished multi-tenant SaaS  | Self-hostable platform + optional hosted scaffold |
-| **Core GRC loop**     | Mature, turnkey             | Strong on controls, evidence, audit room, shares  |
-| **UI/UX**             | Best-in-class consumer SaaS | Good foundation — not yet premium GRC polish      |
-| **Integrations**      | 100+ deep connectors        | Solid cloud/IdP core, narrower long tail          |
-| **Agents / API / CI** | Add-ons, limited vs core    | **Differentiator** — MCP, harness, headless-first |
-| **Data ownership**    | Vendor-hosted evidence      | **Customer lake** — major differentiator          |
+| Dimension             | Mature managed GRC SaaS     | TrustOps today                                              |
+| --------------------- | --------------------------- | ----------------------------------------------------------- |
+| **Product shape**     | Polished multi-tenant SaaS  | Self-hostable platform + optional hosted scaffold           |
+| **Core GRC loop**     | Mature, turnkey             | Strong on controls, evidence, audit room, shares            |
+| **UI/UX**             | Best-in-class consumer SaaS | Good foundation — Epic #96 largely shipped (~65–70% polish) |
+| **Integrations**      | 100+ deep connectors        | Solid cloud/IdP core, narrower long tail                    |
+| **Agents / API / CI** | Add-ons, limited vs core    | **Differentiator** — MCP, harness, headless-first           |
+| **Data ownership**    | Vendor-hosted evidence      | **Customer lake** — major differentiator                    |
 
 **Overall:** TrustOps is a credible **self-hosted / headless GRC platform** with
 real audit-room depth. It is not yet a drop-in replacement for teams that want
@@ -78,16 +78,16 @@ Connect → Sync → Evaluate → Remediate → Review → Share → Prove
    └─ AWS/Azure/GCP/Snowflake/GitHub/Okta + catalog long tail
 ```
 
-| Loop stage          | Maturity    | Notes                                                                        |
-| ------------------- | ----------- | ---------------------------------------------------------------------------- |
-| Connect & sync      | **Strong**  | Executable runners for core cloud/IdP; catalog for long tail                 |
-| Evaluate            | **Strong**  | Lake-backed tests, not connector pass/fail widgets only                      |
-| Remediate           | **Good**    | Tasks, evidence requests, workflow canvas with approvals                     |
-| Audit review        | **Good**    | Audit room, readiness API, access reviews, executive PDF                     |
-| Share & prove       | **Good**    | Trust-center shares, snapshots, hash chain, auditor redaction                |
-| Personnel / devices | **Weak**    | IdP + access reviews workaround; no native HRIS/MDM                          |
-| Policy program      | **Partial** | Template library MVP; no employee attestation                                |
-| SaaS polish         | **Partial** | Epic [#96](https://github.com/msaad00/trustops-security-data-lake/issues/96) |
+| Loop stage          | Maturity   | Notes                                                         |
+| ------------------- | ---------- | ------------------------------------------------------------- |
+| Connect & sync      | **Strong** | Executable runners for core cloud/IdP; catalog for long tail  |
+| Evaluate            | **Strong** | Lake-backed tests, not connector pass/fail widgets only       |
+| Remediate           | **Good**   | Tasks, evidence requests, workflow canvas with approvals      |
+| Audit review        | **Good**   | Audit room, readiness API, access reviews, executive PDF      |
+| Share & prove       | **Good**   | Trust-center shares, snapshots, hash chain, auditor redaction |
+| Personnel / devices | **Weak**   | IdP + access reviews workaround; no native HRIS/MDM           |
+| Policy program      | **Good**   | Template library + employee attestation MVP shipped           |
+| SaaS polish         | **Good**   | Trust Home, audit room SSE, saved views, tags, drill-down     |
 
 ## Console surface (28 routes)
 
@@ -120,16 +120,33 @@ Connect → Sync → Evaluate → Remediate → Review → Share → Prove
 
 Rough comparison vs mature managed GRC SaaS on capability + UX reality:
 
+| Area                       | vs managed SaaS | TrustOps today                                               |
+| -------------------------- | --------------- | ------------------------------------------------------------ |
+| Audit room + readiness     | Strong          | **Shipped** — live SSE, gaps, vendor/policy strips           |
+| Evidence freshness SLA     | Strong          | **Shipped** — summary, escalate, audit panel                 |
+| Vendor diligence + policy  | MVP parity      | **Shipped** — questionnaires + attestation rollups           |
+| Saved views + tags         | Good            | **Shipped** — controls, violations, evidence + tag filter    |
+| Framework drill-down       | Good            | **Shipped** — control → rule → evidence → source             |
+| Live SSE updates           | Good            | **Shipped** — posture + audit-readiness stream               |
+| Integrations long tail     | Behind          | AWS/Azure/GCP/Snowflake/GitHub/Okta live; #22/#23 repo graph |
+| HRIS / devices / personnel | Behind          | IdP + access reviews workaround                              |
+| Billing / full SCIM        | Behind          | P5 hosted scaffold                                           |
+| Premium onboarding polish  | Behind          | Wizard shipped; polish incremental                           |
+
+## Parity scorecard (detailed)
+
+Rough comparison vs mature managed GRC SaaS on capability + UX reality:
+
 | Area                        | vs mature SaaS | TrustOps strength                                    |
 | --------------------------- | -------------- | ---------------------------------------------------- |
-| SOC 2 / ISO control library | ~75–85%        | Depth good; UX polish behind                         |
-| Continuous monitoring       | ~70%           | Core connectors; fewer integrations                  |
-| Auditor experience          | ~65%           | Trust shares + redaction; no marketplace/timeline UX |
+| SOC 2 / ISO control library | ~80%           | Depth good; framework packs as code                  |
+| Continuous monitoring       | ~75%           | Core cloud/IdP connectors runnable                   |
+| Auditor experience          | ~70%           | Trust shares, PDF, audit room trends; no marketplace |
 | Personnel / devices / HR    | ~30%           | Workarounds only                                     |
-| Policy program              | ~50%           | Templates MVP; no attestation                        |
-| Vendor risk                 | ~55%           | MVP questionnaires; not full TPRM suite              |
+| Policy program              | ~70%           | Templates + attestation MVP                          |
+| Vendor risk                 | ~65%           | Questionnaires + audit-room rollups                  |
 | Self-host / API / agents    | **~120%**      | Ahead — they don't lead here                         |
-| SaaS polish / onboarding    | ~50–60%        | Epic #96                                             |
+| SaaS polish / onboarding    | ~65–70%        | #96 shipped; incremental polish remains              |
 
 ## Where TrustOps matches well (shipped)
 
@@ -161,20 +178,20 @@ states, or zero-config wow on first login.
 
 Mature SaaS: HRIS, device MDM, ticketing, training — hundreds of pre-built checks.
 
-TrustOps: strong AWS / Azure / GCP / Snowflake / GitHub / Okta paths; open
-connector catalog; read-only posture. Gaps: personnel/HRIS, device MDM, pen-test
-coordination, policy employee attestation ([#22](https://github.com/msaad00/trustops-security-data-lake/issues/22), [#23](https://github.com/msaad00/trustops-security-data-lake/issues/23)).
+TrustOps: strong AWS / Azure / GCP / Snowflake / GitHub / Okta paths with vendor
+marks in-console; open connector catalog; read-only posture. Gaps: personnel/HRIS,
+device MDM, pen-test coordination ([#22](https://github.com/msaad00/trustops-security-data-lake/issues/22), [#23](https://github.com/msaad00/trustops-security-data-lake/issues/23)).
 
 ### 3. Compliance OS convenience
 
-| Feature                   | Mature SaaS  | TrustOps                                    |
-| ------------------------- | ------------ | ------------------------------------------- |
-| Policy employee sign-off  | Native       | Roadmap                                     |
-| Personnel tracking        | Native       | IdP + access reviews                        |
-| Auditor marketplace       | Yes          | BYO auditor + trust share                   |
-| Device inventory          | Integrations | Connector evidence only                     |
-| Billing / self-serve SaaS | Native       | Pricing/signup scaffold; Stripe not shipped |
-| SCIM lifecycle            | Full         | Scaffold + env bearer (PR #345)             |
+| Feature                   | Mature SaaS  | TrustOps                                            |
+| ------------------------- | ------------ | --------------------------------------------------- |
+| Policy employee sign-off  | Native       | **MVP shipped** — publish + acknowledgment tracking |
+| Personnel tracking        | Native       | IdP + access reviews                                |
+| Auditor marketplace       | Yes          | BYO auditor + trust share                           |
+| Device inventory          | Integrations | Connector evidence only                             |
+| Billing / self-serve SaaS | Native       | Pricing/signup scaffold; Stripe not shipped         |
+| SCIM lifecycle            | Full         | Scaffold + env bearer (PR #345)                     |
 
 ### 4. Visual analytics ([#18](https://github.com/msaad00/trustops-security-data-lake/issues/18))
 
@@ -212,29 +229,29 @@ engineering, managed SaaS still wins on packaging.
 
 Open issues ranked by impact on **turnkey core GRC loop + premium UX**:
 
-| Priority | Issue                                                                        | Closes                                       | Status                                      |
-| -------- | ---------------------------------------------------------------------------- | -------------------------------------------- | ------------------------------------------- |
-| **P0**   | [#96](https://github.com/msaad00/trustops-security-data-lake/issues/96) Epic | Premium GRC SaaS feel — biggest UX gap       | Open                                        |
-| **P0**   | [#14](https://github.com/msaad00/trustops-security-data-lake/issues/14)      | Source-linked framework/control expansion    | Open                                        |
-| **P1**   | [#13](https://github.com/msaad00/trustops-security-data-lake/issues/13)      | Evidence freshness SLA + stale → remediation | Branch `cursor/evidence-freshness-sla-d259` |
-| **P1**   | [#15](https://github.com/msaad00/trustops-security-data-lake/issues/15)      | Audit snapshot room + reviewer trust center  | Partial                                     |
-| **P1**   | [#18](https://github.com/msaad00/trustops-security-data-lake/issues/18)      | Product-grade topology, trend, workflow viz  | Open                                        |
-| **P1**   | [#22](https://github.com/msaad00/trustops-security-data-lake/issues/22)      | GitHub/GitLab repo governance connector      | Partial                                     |
-| **P1**   | [#23](https://github.com/msaad00/trustops-security-data-lake/issues/23)      | Repository topology graph workbench          | Open                                        |
-| **P1**   | [#16](https://github.com/msaad00/trustops-security-data-lake/issues/16)      | Headless agent workbench + guarded skills    | Partial                                     |
-| **Ship** | [#345](https://github.com/msaad00/trustops-security-data-lake/pull/345)      | Identity/admin parity for enterprise SSO     | PR open                                     |
+| Priority | Issue                                                                        | Closes                                       | Status                            |
+| -------- | ---------------------------------------------------------------------------- | -------------------------------------------- | --------------------------------- |
+| **P0**   | [#96](https://github.com/msaad00/trustops-security-data-lake/issues/96) Epic | Premium GRC SaaS feel — biggest UX gap       | **Mostly shipped** (#89–#95, #91) |
+| **P0**   | [#14](https://github.com/msaad00/trustops-security-data-lake/issues/14)      | Source-linked framework/control expansion    | Open                              |
+| **P1**   | [#13](https://github.com/msaad00/trustops-security-data-lake/issues/13)      | Evidence freshness SLA + stale → remediation | **Shipped**                       |
+| **P1**   | [#15](https://github.com/msaad00/trustops-security-data-lake/issues/15)      | Audit snapshot room + reviewer trust center  | **Shipped** (trends + timeline)   |
+| **P1**   | [#18](https://github.com/msaad00/trustops-security-data-lake/issues/18)      | Product-grade topology, trend, workflow viz  | Open                              |
+| **P1**   | [#22](https://github.com/msaad00/trustops-security-data-lake/issues/22)      | GitHub/GitLab repo governance connector      | Partial                           |
+| **P1**   | [#23](https://github.com/msaad00/trustops-security-data-lake/issues/23)      | Repository topology graph workbench          | Open                              |
+| **P1**   | [#16](https://github.com/msaad00/trustops-security-data-lake/issues/16)      | Headless agent workbench + guarded skills    | Partial                           |
+| **Ship** | [#345](https://github.com/msaad00/trustops-security-data-lake/pull/345)      | Identity/admin parity for enterprise SSO     | PR open                           |
 
 ### Epic #96 breakdown (experience uplift)
 
-| Sub-issue | Surface                    | Bar                                    |
-| --------- | -------------------------- | -------------------------------------- |
-| #89       | Design system + Trust Home | First impression                       |
-| #90       | Workflow canvas            | Tines-grade automation UX              |
-| #91       | Framework drill-down       | Control → rule → evidence → datasource |
-| #92       | Continuous-eval layer      | SSE + freshness live updates           |
-| #93       | Headless parity            | Published OpenAPI for agents           |
-| #94       | Tags + saved views         | Cross-entity navigation                |
-| #95       | Metrics & insights         | Trends, MTTR, SLA, coverage            |
+| Sub-issue | Surface                    | Bar                                |
+| --------- | -------------------------- | ---------------------------------- |
+| #89       | Design system + Trust Home | **Shipped**                        |
+| #90       | Workflow canvas            | **Shipped**                        |
+| #91       | Framework drill-down       | **Shipped**                        |
+| #92       | Continuous-eval layer      | **Shipped** (SSE)                  |
+| #93       | Headless parity            | **Shipped** (MCP catalog expanded) |
+| #94       | Tags + saved views         | **Shipped**                        |
+| #95       | Metrics & insights         | **Shipped**                        |
 
 ## Recommended execution order
 
@@ -261,7 +278,7 @@ web typecheck/build, `gh pr checks`.
 | **Secure**           | Auth/RBAC/audit spine       | SCIM lifecycle, signed cookies always | #345, P5           |
 | **Scale**            | Audit-scale synth + HA docs | Multi-replica read paths proven       | ops runbooks       |
 | **Turnkey core GRC** | Audit room + shares strong  | Freshness SLA, trends, premium UX     | #13, #15, #18, #96 |
-| **Premium UI/UX**    | ~55%                        | ~80–85% managed-SaaS bar              | #96 epic           |
+| **Premium UI/UX**    | ~65–70%                     | ~80–85% managed-SaaS bar              | polish, #22/#23    |
 
 See [TRUSTOPS_85_PLAN.md](TRUSTOPS_85_PLAN.md) for the self-hosted 85% exit
 criteria and [ROADMAP.md](../ROADMAP.md) for shipped vs remaining milestones.

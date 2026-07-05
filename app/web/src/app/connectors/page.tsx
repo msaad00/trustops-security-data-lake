@@ -15,6 +15,7 @@ import { ConnectorDrawer } from "@/components/drawers/ConnectorDrawer";
 import { ConnectorMark } from "@/components/connectors/ConnectorMark";
 import { ConnectorIngestionStrip } from "@/components/connectors/ConnectorIngestionStrip";
 import { ConnectorAccountLinkingStrip } from "@/components/connectors/ConnectorAccountLinkingStrip";
+import { ConnectorEcosystemStrip } from "@/components/connectors/ConnectorEcosystemStrip";
 import { notify } from "@/lib/toast";
 import { useConnectors } from "@/lib/api/hooks";
 import type { ConnectorView } from "@/lib/api/types";
@@ -306,6 +307,8 @@ export default function ConnectorsPage() {
       />
 
       <ConnectorIngestionStrip />
+
+      <ConnectorEcosystemStrip compact />
 
       <ConnectorAccountLinkingStrip />
 
