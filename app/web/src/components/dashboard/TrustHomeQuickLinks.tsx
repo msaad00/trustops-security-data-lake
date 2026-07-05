@@ -6,6 +6,7 @@ import {
   GitBranch,
   Plug,
   ShieldCheck,
+  TrendingUp,
   Workflow,
 } from "lucide-react";
 
@@ -19,6 +20,11 @@ const LINKS = [
     href: "/evidence",
     label: "Evidence",
     icon: ShieldCheck,
+  },
+  {
+    href: "/insights",
+    label: "Insights",
+    icon: TrendingUp,
   },
   {
     href: "/automation",
