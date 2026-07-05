@@ -39,6 +39,15 @@ export function TrustOpsMark({
       </defs>
       <rect width="32" height="32" rx="8" fill={`url(#${gradientId})`} />
       <path d="M8 9h16v4.2h-5.9V26h-4.2V13.2H8z" fill="#fff" />
+      <circle cx="24" cy="24" r="7" fill="#fff" />
+      <path
+        d="M20.5 24l2 2 4.5-4.5"
+        stroke="#047857"
+        strokeWidth="1.8"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

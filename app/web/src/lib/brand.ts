@@ -9,7 +9,7 @@ export const BRAND = {
   category: "Open-source trust operations",
   /** One-line mission for meta tags and share cards. */
   tagline:
-    "Turn evidence in your lake into live compliance posture, audit-ready snapshots, and shareable proof.",
+    "Your evidence lake, deterministic controls, audit-ready proof — same JSON everywhere.",
   /** Headless-first differentiator. */
   surfaces: "API · CLI · MCP · CI · Console",
   /** Short description for Open Graph / npm / package manifests. */
