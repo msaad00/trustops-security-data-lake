@@ -382,6 +382,19 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """Return published vs acknowledged policy counts for audit prep."""
         return _server_api_request("GET", "/api/v1/policies/attestation-summary")
 
+    @trustops_tool(title="List Tags")
+    def list_tags() -> JsonObject:
+        """List tenant tags for cross-entity navigation and filtering."""
+        return _server_api_request("GET", "/api/v1/tags")
+
+    @trustops_tool(title="List Saved Views")
+    def list_saved_views(surface: str = "") -> JsonObject:
+        """List saved filter views for a console surface (e.g. controls, violations)."""
+        params: dict[str, Any] = {}
+        if surface:
+            params["surface"] = surface
+        return _server_api_request("GET", "/api/v1/saved-views", **params)
+
     @trustops_tool(title="Framework Drill-Down")
     def get_framework_detail(framework_id: str) -> JsonObject:
         """Return control → rule → evidence → datasource detail for one framework."""
