@@ -12,6 +12,7 @@ from security_lakehouse import trust_share
 from security_lakehouse.assessment import _iter_snapshots, build_current_posture
 from security_lakehouse.db import agent_runs as agent_runs_db
 from security_lakehouse.db import remediation
+from security_lakehouse.db import vendor_assessments as vendor_assessment_db
 from security_lakehouse.ingestion_status import build_ingestion_status
 from security_lakehouse.io import read_jsonl
 from security_lakehouse.services import access_reviews as access_review_services
@@ -57,6 +58,12 @@ def _workflow_checklist(*, posture_score: int, framework_total: int) -> list[dic
             "note": "Remediation evidence-request workflow",
         },
         {
+            "id": "vendor_diligence",
+            "label": "Third-party vendor diligence",
+            "shipped": True,
+            "note": "Questionnaire templates + scored assessments (SOC 2 CC9 pattern)",
+        },
+        {
             "id": "policy_library",
             "label": "Policy template library",
             "shipped": True,
@@ -93,6 +100,32 @@ def _workflow_checklist(*, posture_score: int, framework_total: int) -> list[dic
             "note": "Bring your own auditor; trust shares for evidence",
         },
     ]
+
+
+def _vendor_risk_summary(session: Session, *, tenant_id: str) -> dict[str, Any]:
+    """Roll up vendor diligence status for audit-room parity with managed GRC SaaS."""
+    now = datetime.now(UTC)
+    rows = vendor_assessment_db.list_assessments(session, tenant_id=tenant_id, limit=500)
+    open_statuses = {"draft", "in_review"}
+    open_rows = [row for row in rows if row.status in open_statuses]
+    overdue = [
+        row
+        for row in open_rows
+        if row.due_at is not None and (row.due_at if row.due_at.tzinfo else row.due_at.replace(tzinfo=UTC)) < now
+    ]
+    completed = [row for row in rows if row.status == "completed"]
+    high_risk_open = [
+        row
+        for row in open_rows
+        if str(row.risk_level or "").lower() in {"high", "critical"} or (row.score is not None and row.score < 70)
+    ]
+    return {
+        "total": len(rows),
+        "open": len(open_rows),
+        "overdue": len(overdue),
+        "completed": len(completed),
+        "high_risk_open": len(high_risk_open),
+    }
 
 
 def build_audit_readiness(
@@ -181,6 +214,32 @@ def build_audit_readiness(
             }
         )
 
+    vendor_risk = _vendor_risk_summary(session, tenant_id=tenant_id)
+    if vendor_risk["total"] == 0:
+        gaps.append(
+            {
+                "id": "vendor_diligence",
+                "label": "Record vendor diligence for critical third parties",
+                "href": "/console/vendor-risk",
+            }
+        )
+    elif vendor_risk["overdue"] > 0:
+        gaps.append(
+            {
+                "id": "vendor_overdue",
+                "label": f"{vendor_risk['overdue']} overdue vendor assessment(s)",
+                "href": "/console/vendor-risk",
+            }
+        )
+    elif vendor_risk["open"] > 0:
+        gaps.append(
+            {
+                "id": "vendor_incomplete",
+                "label": f"{vendor_risk['open']} vendor assessment(s) pending completion",
+                "href": "/console/vendor-risk",
+            }
+        )
+
     checklist = _workflow_checklist(posture_score=posture_score, framework_total=framework_total)
     coverage_score = round(100 * sum(1 for row in checklist if row["shipped"]) / max(len(checklist), 1))
 
@@ -238,6 +297,7 @@ def build_audit_readiness(
             "count": len(snapshot_rows),
         },
         "agents": {"pending_decisions": pending_decisions},
+        "vendor_risk": vendor_risk,
         "gaps": gaps,
         "workflow_coverage": {
             "score": coverage_score,

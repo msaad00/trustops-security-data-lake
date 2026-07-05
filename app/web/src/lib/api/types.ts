@@ -452,6 +452,13 @@ export interface AuditReadiness {
     count: number;
   };
   agents: { pending_decisions: number };
+  vendor_risk?: {
+    total: number;
+    open: number;
+    overdue: number;
+    completed: number;
+    high_risk_open: number;
+  };
   gaps: AuditReadinessGap[];
   workflow_coverage: { score: number; checklist: AuditWorkflowItem[] };
 }
