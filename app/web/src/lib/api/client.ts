@@ -52,6 +52,8 @@ import type {
   PocReadiness,
   AuditReadiness,
   PolicyDocument,
+  PolicyAcknowledgment,
+  PolicyAttestationSummary,
   PolicyTemplate,
   PolicyTemplateSummary,
   PolicyCoverage,
@@ -615,6 +617,22 @@ export const api = {
     post<{ data: PolicyDocument }>(
       `/v1/policies/${encodeURIComponent(id)}/publish`,
       {},
+    ).then((b) => b.data),
+  policyAcknowledgments: (id: string) =>
+    get<{ data: PolicyAcknowledgment[] }>(
+      `/v1/policies/${encodeURIComponent(id)}/acknowledgments`,
+    ).then((b) => b.data),
+  recordPolicyAcknowledgment: (
+    id: string,
+    payload: { user_email?: string; display_name?: string } = {},
+  ) =>
+    post<{ data: PolicyAcknowledgment }>(
+      `/v1/policies/${encodeURIComponent(id)}/acknowledgments`,
+      payload,
+    ).then((b) => b.data),
+  policyAttestationSummary: () =>
+    get<{ data: PolicyAttestationSummary }>(
+      "/v1/policies/attestation-summary",
     ).then((b) => b.data),
   policyCoverage: () =>
     get<{ data: PolicyCoverage[] }>("/v1/policies/coverage").then(

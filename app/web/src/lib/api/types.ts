@@ -452,6 +452,19 @@ export interface AuditReadiness {
     count: number;
   };
   agents: { pending_decisions: number };
+  vendor_risk?: {
+    total: number;
+    open: number;
+    overdue: number;
+    completed: number;
+    high_risk_open: number;
+  };
+  policy_attestation?: {
+    published: number;
+    acknowledged: number;
+    unattested: number;
+    total_acknowledgments: number;
+  };
   gaps: AuditReadinessGap[];
   workflow_coverage: { score: number; checklist: AuditWorkflowItem[] };
 }
@@ -1224,6 +1237,21 @@ export interface PolicyDocument {
   updated_at: string;
   published_at: string | null;
   review_due_at: string | null;
+}
+
+export interface PolicyAcknowledgment {
+  id: string;
+  policy_document_id: string;
+  user_email: string;
+  display_name: string;
+  acknowledged_at: string;
+}
+
+export interface PolicyAttestationSummary {
+  published: number;
+  acknowledged: number;
+  unattested: number;
+  total_acknowledgments: number;
 }
 
 export interface PolicyCoverage {

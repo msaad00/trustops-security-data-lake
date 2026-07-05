@@ -1251,6 +1251,38 @@ export function usePolicyCoverage() {
   });
 }
 
+export function usePolicyAcknowledgments(documentId: string | null) {
+  return useQuery({
+    queryKey: ["policy-acknowledgments", documentId],
+    queryFn: () => api.policyAcknowledgments(documentId as string),
+    enabled: Boolean(documentId),
+    staleTime: STALE,
+  });
+}
+
+export function usePolicyAttestationSummary() {
+  return useQuery({
+    queryKey: ["policy-attestation-summary"],
+    queryFn: () => api.policyAttestationSummary(),
+    staleTime: STALE,
+  });
+}
+
+export function useRecordPolicyAcknowledgmentMutation(documentId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: { user_email?: string; display_name?: string }) =>
+      api.recordPolicyAcknowledgment(documentId, payload),
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: ["policy-acknowledgments", documentId],
+      });
+      qc.invalidateQueries({ queryKey: ["policy-attestation-summary"] });
+      qc.invalidateQueries({ queryKey: ["platform", "audit-readiness"] });
+    },
+  });
+}
+
 export function useAdoptPolicyMutation() {
   const qc = useQueryClient();
   return useMutation({
