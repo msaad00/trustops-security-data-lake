@@ -1,12 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="232" height="48" viewBox="0 0 232 48" role="img" aria-label="TrustOps">
-  <title>TrustOps</title>
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="72" viewBox="0 0 320 72" role="img" aria-labelledby="title desc">
+  <title id="title">TrustOps</title>
+  <desc id="desc">TrustOps gradient monogram and wordmark lockup for README and docs.</desc>
   <defs>
-    <linearGradient id="t" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#4f7cff"/>
       <stop offset="100%" stop-color="#30c7d2"/>
     </linearGradient>
+    <linearGradient id="word" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#4f7cff"/>
+      <stop offset="55%" stop-color="#5b86ff"/>
+      <stop offset="100%" stop-color="#30c7d2"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="1.2" flood-color="#4f7cff" flood-opacity=".35"/>
+    </filter>
   </defs>
-  <rect x="2" y="6" width="36" height="36" rx="9" fill="url(#t)"/>
-  <path d="M10 15.5h20v4.7h-7.4V37h-4.7V20.2H10z" fill="#fff"/>
-  <text x="50" y="33" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="26" font-weight="800" fill="#101623">TrustOps</text>
+
+  <!-- Opaque lockup plate: readable on GitHub light and dark themes -->
+  <rect x="1" y="1" width="318" height="70" rx="16" fill="#ffffff" stroke="#dbeafe" stroke-width="1.2"/>
+  <rect x="1" y="1" width="318" height="70" rx="16" fill="url(#mark)" fill-opacity=".04"/>
+
+  <g transform="translate(14,14)">
+    <rect width="44" height="44" rx="11" fill="url(#mark)"/>
+    <path d="M11 12h22v5.2h-8.1V32h-5.2V17.2H11z" fill="#fff"/>
+  </g>
+
+  <g font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif">
+    <text x="72" y="38" font-size="28" font-weight="900" fill="url(#word)" filter="url(#glow)">TrustOps</text>
+    <text x="73" y="56" font-size="11.5" font-weight="800" fill="#64748b" letter-spacing="2.4">OPEN-SOURCE TRUST OPERATIONS</text>
+  </g>
 </svg>

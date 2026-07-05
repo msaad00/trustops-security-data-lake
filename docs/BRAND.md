@@ -29,12 +29,13 @@ customer-facing product names.
 
 The TrustOps mark is a gradient square monogram with a white **T**.
 
-| Token          | Value                           |
-| -------------- | ------------------------------- |
-| Gradient start | `#4f7cff`                       |
-| Gradient end   | `#30c7d2`                       |
-| Wordmark ink   | `#101623`                       |
-| Corner radius  | 8px at 32×32 (scales with size) |
+| Token          | Value                                                                  |
+| -------------- | ---------------------------------------------------------------------- |
+| Gradient start | `#4f7cff`                                                              |
+| Gradient end   | `#30c7d2`                                                              |
+| Wordmark ink   | `#101623` on light UI; gradient or `#f8fafc` on dark rails             |
+| README lockup  | White plate + gradient wordmark in `trustops-logo.svg` (GitHub themes) |
+| Corner radius  | 8px at 32×32 (scales with size)                                        |
 
 ### Assets
 
@@ -43,6 +44,7 @@ The TrustOps mark is a gradient square monogram with a white **T**.
 | `docs/images/trustops-logo.svg`                 | Docs, README, external slides |
 | `app/web/src/app/icon.svg`                      | Favicon (Next.js App Router)  |
 | `app/web/public/og/trustops-share.svg`          | Social / link preview card    |
+| `docs/images/trustops-product-mosaic.svg`       | README console preview mosaic |
 | `app/web/src/components/brand/TrustOpsMark.tsx` | In-app monogram component     |
 | `app/web/src/components/brand/TrustOpsLogo.tsx` | Monogram + wordmark lockup    |
 
