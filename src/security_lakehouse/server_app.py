@@ -2808,6 +2808,31 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         data = [tags_db.tag_to_dict(t) for t in rows]
         return JSONResponse(api_v1.envelope("tags.for", data, meta={"count": len(data)}))
 
+    @app.get("/api/v1/tags/entities")
+    def tag_entities(
+        request: Request,
+        identity: Identity = Depends(_require_read),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        params = _params(request)
+        tag_id = (params.get("tag_id") or [None])[0]
+        entity_type = (params.get("entity_type") or [None])[0]
+        if not tag_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="tag_id is required")
+        entity_ids = tags_db.entity_ids_for_tag(
+            session,
+            tenant_id=identity.tenant_id,
+            tag_id=str(tag_id),
+            entity_type=str(entity_type) if entity_type else None,
+        )
+        return JSONResponse(
+            api_v1.envelope(
+                "tags.entities",
+                entity_ids,
+                meta={"count": len(entity_ids), "tag_id": tag_id, "entity_type": entity_type or "all"},
+            )
+        )
+
     # --- saved views ---
     @app.get("/api/v1/saved-views")
     def list_saved_views(

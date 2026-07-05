@@ -47,6 +47,7 @@ EXPECTED_TOOLS = {
     "list_policies",
     "get_policy_attestation_summary",
     "list_tags",
+    "list_tag_entities",
     "list_saved_views",
 }
 

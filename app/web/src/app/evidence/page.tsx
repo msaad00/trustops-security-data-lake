@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
 import { SavedViewsBar } from "@/components/SavedViewsBar";
+import { TagFilterBar } from "@/components/TagFilterBar";
 import { QueryState } from "@/components/QueryState";
 import { Toolbar, matchesQuery } from "@/components/Toolbar";
 import { EvidenceDrawer } from "@/components/drawers/EvidenceDrawer";
@@ -26,6 +27,8 @@ import {
   useControls,
   useEvidence,
   useEvidenceFreshness,
+  useTagEntityIds,
+  useTags,
 } from "@/lib/api/hooks";
 import { useToolbar } from "@/lib/state/filters";
 import type {
@@ -61,11 +64,19 @@ export default function EvidencePage() {
   const evidence = useEvidence();
   const freshness = useEvidenceFreshness();
   const controls = useControls();
+  const tagsQuery = useTags();
   const { filters, setFilters } = useToolbar();
   const [sorting, setSorting] = useState<SortingState>([
     { id: "event_time", desc: true },
   ]);
   const [selected, setSelected] = useState<EvidenceRow | null>(null);
+  const [activeTagId, setActiveTagId] = useState<string | null>(null);
+  const taggedEvidence = useTagEntityIds(activeTagId, "evidence");
+  const taggedIds = useMemo(
+    () => new Set(taggedEvidence.data ?? []),
+    [taggedEvidence.data],
+  );
+  const tags = tagsQuery.data ?? [];
 
   const frameworks = useMemo(
     () => Array.from(new Set((controls.data ?? []).map((c) => c.framework))),
@@ -104,6 +115,7 @@ export default function EvidencePage() {
   const filtered = useMemo(() => {
     const freshnessFilter = filters.freshness ?? "all";
     return rows.filter((e) => {
+      if (activeTagId && !taggedIds.has(e.event_id)) return false;
       if (filters.framework !== "all") {
         const hit = e.control_ids.some(
           (cid) => controlFramework.get(cid) === filters.framework,
@@ -116,7 +128,7 @@ export default function EvidencePage() {
         return false;
       return matchesQuery(e, filters.query);
     });
-  }, [rows, filters, controlFramework]);
+  }, [rows, filters, controlFramework, activeTagId, taggedIds]);
 
   const columns = [
     helper.accessor("event_time", {
@@ -218,6 +230,12 @@ export default function EvidencePage() {
               : `${(evidence.data ?? []).length} normalized`}
           </span>
         }
+      />
+      <TagFilterBar
+        tags={tags}
+        activeTagId={activeTagId}
+        onSelect={setActiveTagId}
+        onClear={() => setActiveTagId(null)}
       />
       <SavedViewsBar
         surface={SURFACE}

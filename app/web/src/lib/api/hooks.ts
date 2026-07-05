@@ -969,6 +969,7 @@ export function useAttachTagMutation() {
       qc.invalidateQueries({
         queryKey: ["tags-for", vars.entity_type, vars.entity_id],
       });
+      qc.invalidateQueries({ queryKey: ["tag-entities"] });
     },
   });
 }
@@ -986,7 +987,25 @@ export function useDetachTagMutation() {
       qc.invalidateQueries({
         queryKey: ["tags-for", vars.entity_type, vars.entity_id],
       });
+      qc.invalidateQueries({ queryKey: ["tag-entities"] });
     },
+  });
+}
+
+export function useTagEntityIds(
+  tagId: string | null,
+  entityType: string,
+  opts?: Opts<string[]>,
+) {
+  return useQuery({
+    queryKey: ["tag-entities", tagId, entityType],
+    queryFn: async () => {
+      if (!tagId) return [] as string[];
+      return api.tagEntities(tagId, entityType);
+    },
+    enabled: Boolean(tagId),
+    staleTime: STALE,
+    ...opts,
   });
 }
 

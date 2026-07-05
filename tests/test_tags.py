@@ -116,6 +116,25 @@ def test_attach_detach_and_tags_for_entity(tmp_path: Path) -> None:
         assert entity_tags[0].id == t2.id
 
 
+def test_entity_ids_for_tag_filters_by_type(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path)
+    with session_scope(app.state.sessionmaker) as session:
+        tenant = create_tenant(session, slug="acme", name="Acme")
+        tag = tags_db.create_tag(session, tenant_id=tenant.id, name="audit-q3")
+        tags_db.attach_tag(session, tenant_id=tenant.id, tag_id=tag.id, entity_type="violation", entity_id="v-001")
+        tags_db.attach_tag(session, tenant_id=tenant.id, tag_id=tag.id, entity_type="control", entity_id="SOC2-CC6.1")
+        tags_db.attach_tag(session, tenant_id=tenant.id, tag_id=tag.id, entity_type="evidence", entity_id="evt-9")
+
+        all_ids = tags_db.entity_ids_for_tag(session, tenant_id=tenant.id, tag_id=tag.id)
+        assert all_ids == ["SOC2-CC6.1", "evt-9", "v-001"]
+
+        violations = tags_db.entity_ids_for_tag(session, tenant_id=tenant.id, tag_id=tag.id, entity_type="violation")
+        assert violations == ["v-001"]
+
+        assert tags_db.entity_ids_for_tag(session, tenant_id=tenant.id, tag_id="missing") == []
+
+
 def test_attach_unknown_tag_raises(tmp_path: Path) -> None:
     _seed_lake(tmp_path)
     app = create_app(tmp_path)
@@ -247,6 +266,23 @@ def test_tags_for_missing_params(env) -> None:
     _app, client, tokens = env
     resp = client.get("/api/v1/tags/for", headers=_bearer(tokens["read_only"]))
     assert resp.status_code == HTTPStatus.BAD_REQUEST
+
+
+def test_tag_entities_api(env) -> None:
+    _app, client, tokens = env
+
+    created = client.post("/api/v1/tags", json={"name": "q3-audit"}, headers=_bearer(tokens["contributor"]))
+    tag_id = created.json()["data"]["id"]
+    attach = {"tag_id": tag_id, "entity_type": "violation", "entity_id": "v-99"}
+    client.post("/api/v1/tags/attach", json=attach, headers=_bearer(tokens["contributor"]))
+
+    resp = client.get(
+        f"/api/v1/tags/entities?tag_id={tag_id}&entity_type=violation",
+        headers=_bearer(tokens["read_only"]),
+    )
+    assert resp.status_code == HTTPStatus.OK
+    assert resp.json()["data"] == ["v-99"]
+    assert resp.json()["meta"]["resource"] == "tags.entities"
 
 
 def test_saved_views_crud_and_rbac(env) -> None:

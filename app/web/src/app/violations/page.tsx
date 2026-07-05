@@ -9,7 +9,7 @@ import {
   useReactTable,
   type SortingState,
 } from "@tanstack/react-table";
-import { ArrowUpDown, Tag as TagIcon, X } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -22,9 +22,14 @@ import { SavedViewsBar } from "@/components/SavedViewsBar";
 import { QueryState } from "@/components/QueryState";
 import { notify } from "@/lib/toast";
 import { Toolbar, matchesQuery } from "@/components/Toolbar";
-import { TagChip } from "@/components/TagChip";
+import { TagFilterBar } from "@/components/TagFilterBar";
 import { ViolationDrawer } from "@/components/drawers/ViolationDrawer";
-import { useControls, useViolations, useTags } from "@/lib/api/hooks";
+import {
+  useControls,
+  useTagEntityIds,
+  useViolations,
+  useTags,
+} from "@/lib/api/hooks";
 import { useToolbar } from "@/lib/state/filters";
 import type { Severity, Violation } from "@/lib/api/types";
 
@@ -46,6 +51,11 @@ export default function ViolationsPage() {
   ]);
   const [selected, setSelected] = useState<Violation | null>(null);
   const [activeTagId, setActiveTagId] = useState<string | null>(null);
+  const taggedViolations = useTagEntityIds(activeTagId, "violation");
+  const taggedIds = useMemo(
+    () => new Set(taggedViolations.data ?? []),
+    [taggedViolations.data],
+  );
 
   const frameworks = useMemo(
     () => Array.from(new Set((controls.data ?? []).map((c) => c.framework))),
@@ -61,6 +71,7 @@ export default function ViolationsPage() {
   const filtered = useMemo(
     () =>
       (violations.data ?? []).filter((v) => {
+        if (activeTagId && !taggedIds.has(v.violation_id)) return false;
         if (
           filters.framework !== "all" &&
           controlFramework.get(v.control_id) !== filters.framework
@@ -70,7 +81,7 @@ export default function ViolationsPage() {
           return false;
         return matchesQuery(v, filters.query);
       }),
-    [violations.data, filters, controlFramework],
+    [violations.data, filters, controlFramework, activeTagId, taggedIds],
   );
 
   const columns = [
@@ -147,41 +158,12 @@ export default function ViolationsPage() {
         description="Open control failures with severity, asset, source, and evidence reference. Click a row to triage and persist the action server-side."
       />
 
-      {/* Tag filter strip */}
-      {tags.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-muted">
-            <TagIcon className="h-3 w-3" />
-            Tags
-          </span>
-          {tags.map((tag) => (
-            <button
-              key={tag.id}
-              type="button"
-              onClick={() =>
-                setActiveTagId(activeTagId === tag.id ? null : tag.id)
-              }
-              className={`rounded-full outline-none ring-offset-1 focus:ring-2 focus:ring-violet-500 ${
-                activeTagId === tag.id
-                  ? "ring-2 ring-violet-500 ring-offset-1"
-                  : ""
-              }`}
-            >
-              <TagChip tag={tag} />
-            </button>
-          ))}
-          {activeTagId && (
-            <button
-              type="button"
-              onClick={() => setActiveTagId(null)}
-              className="flex items-center gap-1 text-[11px] text-muted hover:text-ink"
-            >
-              <X className="h-3 w-3" />
-              clear
-            </button>
-          )}
-        </div>
-      )}
+      <TagFilterBar
+        tags={tags}
+        activeTagId={activeTagId}
+        onSelect={setActiveTagId}
+        onClear={() => setActiveTagId(null)}
+      />
 
       {/* Saved views */}
       <SavedViewsBar
