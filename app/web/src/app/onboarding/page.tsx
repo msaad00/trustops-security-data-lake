@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   CircleAlert,
   ListChecks,
-  Rocket,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,6 +18,8 @@ import {
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
 import { ConnectorEcosystemStrip } from "@/components/connectors/ConnectorEcosystemStrip";
+import { OnboardingProgressHero } from "@/components/onboarding/OnboardingProgressHero";
+import { OnboardingQuickConnect } from "@/components/onboarding/OnboardingQuickConnect";
 import { usePocReadiness } from "@/lib/api/hooks";
 import type { PocReadinessStep } from "@/lib/api/types";
 
@@ -34,21 +35,12 @@ export default function OnboardingPage() {
   const current = data?.next_step ?? null;
 
   return (
-    <div className="mx-auto grid w-full max-w-3xl min-w-0 gap-4 px-3 py-4 sm:px-4">
+    <div className="mx-auto grid w-full max-w-4xl min-w-0 gap-4 px-3 py-4 sm:px-4">
       <PageHeader
         eyebrow="Getting started"
         title="First-run onboarding"
-        description="Walk through the gates to connect a source, prove sync, and share trust — the same path managed GRC tools use for evaluators."
-        actions={
-          data && (
-            <Badge tone={data.shareable ? "ready" : "attention"}>
-              {data.shareable ? "shareable" : `${progress}% ready`}
-            </Badge>
-          )
-        }
+        description="Connect live cloud and identity sources, prove sync, and reach a shareable trust workspace."
       />
-
-      <ConnectorEcosystemStrip compact />
 
       {readiness.isLoading && (
         <Card>
@@ -68,48 +60,18 @@ export default function OnboardingPage() {
 
       {data && onboarding && (
         <>
-          <Card>
-            <CardContent className="p-5">
-              <div className="flex items-center justify-between text-xs font-black uppercase tracking-wide text-muted">
-                <span>Blocking progress</span>
-                <span>
-                  {onboarding.completed_blocking}/{onboarding.blocking_total}
-                </span>
-              </div>
-              <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#315dff] to-[#21c6c7]"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <OnboardingProgressHero
+            progress={progress}
+            shareable={data.shareable}
+            completedBlocking={onboarding.completed_blocking}
+            blockingTotal={onboarding.blocking_total}
+            currentStep={current}
+            currentHref={current ? stepHref(current) : null}
+          />
 
-          {current && (
-            <Card className="border-brand/40 bg-brand/5">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Rocket className="h-5 w-5 text-brand" />
-                  Current step: {current.label}
-                </CardTitle>
-                <CardDescription>{current.detail}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {stepHref(current) ? (
-                  <Button asChild variant="primary">
-                    <Link href={stepHref(current)!}>
-                      Continue setup
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                ) : (
-                  <Badge tone="attention">
-                    Configure in deployment settings
-                  </Badge>
-                )}
-              </CardContent>
-            </Card>
-          )}
+          <ConnectorEcosystemStrip compact />
+
+          <OnboardingQuickConnect />
 
           <Card>
             <CardHeader>
