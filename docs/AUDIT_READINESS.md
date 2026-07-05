@@ -41,14 +41,13 @@ See [HEADLESS_GRC.md](HEADLESS_GRC.md) for the overall architecture.
 
 ### Known gaps
 
-| Gap                    | Workaround today                           |
-| ---------------------- | ------------------------------------------ |
-| Personnel tracking     | IdP connector + access reviews             |
-| Auditor marketplace    | Export trust share + PDF snapshot          |
-| Pen test coordination  | External process                           |
-| Device/agent inventory | Connector evidence only                    |
-| Policy acknowledgment  | Employee attestation on published policies |
-| Native billing/signup  | Commercial scaffold (P5)                   |
+| Gap                    | Workaround today                  |
+| ---------------------- | --------------------------------- |
+| Personnel tracking     | IdP connector + access reviews    |
+| Auditor marketplace    | Export trust share + PDF snapshot |
+| Pen test coordination  | External process                  |
+| Device/agent inventory | Connector evidence only           |
+| Native billing/signup  | Commercial scaffold (P5)          |
 
 ## UI/UX targets (Epic #96)
 
@@ -78,7 +77,7 @@ State:
 - `on_track` — score ≥ 60
 - `needs_work` — otherwise
 
-Blocking gaps include: no connectors, failing controls, open evidence requests, no active access review, no auditor share, overdue or missing vendor diligence.
+Blocking gaps include: no connectors, failing controls, open evidence requests, no active access review, no auditor share, overdue or missing vendor diligence, unattested published policies.
 
 ## Related
 

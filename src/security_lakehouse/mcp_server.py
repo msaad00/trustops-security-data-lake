@@ -377,6 +377,11 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             params["status"] = status
         return _server_api_request("GET", "/api/v1/policies", **params)
 
+    @trustops_tool(title="Policy Attestation Summary")
+    def get_policy_attestation_summary() -> JsonObject:
+        """Return published vs acknowledged policy counts for audit prep."""
+        return _server_api_request("GET", "/api/v1/policies/attestation-summary")
+
     @trustops_tool(title="Framework Drill-Down")
     def get_framework_detail(framework_id: str) -> JsonObject:
         """Return control → rule → evidence → datasource detail for one framework."""

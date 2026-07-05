@@ -45,6 +45,7 @@ EXPECTED_TOOLS = {
     "get_insights_remediation",
     "list_vendor_assessments",
     "list_policies",
+    "get_policy_attestation_summary",
 }
 
 
@@ -236,6 +237,19 @@ def test_list_vendor_assessments_calls_api(tmp_path, monkeypatch):
     assert calls[0]["path"] == "/api/v1/vendor-assessments"
     assert calls[0]["params"]["status"] == "completed"
     assert calls[0]["params"]["limit"] == 25
+
+
+def test_get_policy_attestation_summary_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/policies/attestation-summary"
+        return {"data": {"published": 2, "unattested": 1}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "get_policy_attestation_summary")
+    assert result["data"]["unattested"] == 1
 
 
 def test_mcp_agent_run_tools_call_authenticated_api(tmp_path, monkeypatch):
