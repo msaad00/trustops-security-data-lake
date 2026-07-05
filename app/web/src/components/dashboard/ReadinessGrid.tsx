@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { ChevronDown, ChevronUp, LayoutGrid, ListFilter } from "lucide-react";
 import type { FrameworkPosture, FrameworkView } from "@/lib/api/types";
 import {
@@ -12,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { FrameworkBadge } from "@/components/framework/FrameworkBadge";
 import { resolveFrameworkId } from "@/lib/framework-visuals";
+import { frameworkDetailHref } from "@/lib/framework-links";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -180,10 +182,11 @@ export function ReadinessGrid({
               const status = statusFor(f);
               const gapCount = f.failing_control_count + f.stale_control_count;
               return (
-                <div
+                <Link
                   key={f.framework}
+                  href={frameworkDetailHref(frameworkIdFor(f.framework))}
                   className={cn(
-                    "grid gap-3 rounded-lg border border-line bg-white p-3 transition-shadow hover:shadow-card",
+                    "grid gap-3 rounded-lg border border-line bg-white p-3 transition-shadow hover:border-brand hover:shadow-card",
                     f.state !== "ready" && "border-l-4",
                   )}
                   style={
@@ -253,13 +256,14 @@ export function ReadinessGrid({
                       ? "No current gaps detected for this program."
                       : `${gapCount} gap${gapCount === 1 ? "" : "s"} blocking external share.`}
                   </div>
-                </div>
+                </Link>
               );
             })}
             {visibleUnmonitored.map((framework) => (
-              <div
+              <Link
                 key={framework.framework_id}
-                className="grid gap-3 rounded-lg border border-dashed border-line bg-panel p-3"
+                href={frameworkDetailHref(framework.framework_id)}
+                className="grid gap-3 rounded-lg border border-dashed border-line bg-panel p-3 transition-colors hover:border-brand"
               >
                 <div className="flex min-w-0 items-start justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3">
@@ -295,7 +299,7 @@ export function ReadinessGrid({
                   Registered in the catalog, but no live evidence has evaluated
                   this program in the current lake.
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
