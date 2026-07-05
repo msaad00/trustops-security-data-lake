@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { SavedViewsBar } from "@/components/SavedViewsBar";
 import { QueryState } from "@/components/QueryState";
 import { notify } from "@/lib/toast";
 import { Toolbar, matchesQuery } from "@/components/Toolbar";
@@ -20,6 +21,8 @@ import { useControls, useControlTests, usePosture } from "@/lib/api/hooks";
 import { useToolbar } from "@/lib/state/filters";
 import { cn } from "@/lib/utils";
 import type { ControlPosture, Violation } from "@/lib/api/types";
+
+const SURFACE = "controls";
 
 const toneForStatus = (status: string) =>
   status === "pass" ? "ready" : status === "fail" ? "critical" : "attention";
@@ -108,6 +111,20 @@ export default function ControlsPage() {
         eyebrow="Controls"
         title="Control workbench"
         description="Per-framework control catalog. Click any row to open the control drawer, then drill into violations to record triage events."
+      />
+      <SavedViewsBar
+        surface={SURFACE}
+        filters={{
+          framework: filters.framework,
+          query: filters.query,
+        }}
+        onApply={(viewFilters) =>
+          setFilters({
+            ...filters,
+            framework: (viewFilters.framework as string) ?? "all",
+            query: (viewFilters.query as string) ?? "",
+          })
+        }
       />
       <Toolbar
         filters={filters}
