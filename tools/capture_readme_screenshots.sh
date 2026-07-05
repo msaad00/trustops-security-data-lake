@@ -31,7 +31,7 @@ cleanup() {
 trap cleanup EXIT
 
 deadline=$((SECONDS + 30))
-until curl -sf "${BASE}/api/healthz" >/dev/null 2>&1; do
+until curl -sf "${BASE}/api/v1/healthz" >/dev/null 2>&1; do
   if (( SECONDS > deadline )); then
     echo "Server failed to start on ${BASE}" >&2
     exit 1

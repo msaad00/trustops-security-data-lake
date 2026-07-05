@@ -18,6 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { ConnectorEcosystemStrip } from "@/components/connectors/ConnectorEcosystemStrip";
 import { usePocReadiness } from "@/lib/api/hooks";
 import type { PocReadinessStep } from "@/lib/api/types";
 
@@ -46,6 +47,8 @@ export default function OnboardingPage() {
           )
         }
       />
+
+      <ConnectorEcosystemStrip compact />
 
       {readiness.isLoading && (
         <Card>
