@@ -88,7 +88,28 @@ def build_ingestion_status(lake_dir: str | Path) -> JsonObject:
             "default_sync_schedule": DEFAULT_SYNC_SCHEDULE,
             "default_eval_schedule": DEFAULT_EVAL_SCHEDULE,
             "warehouse_row_threshold": WAREHOUSE_ROW_THRESHOLD,
+            "latest_eval": _latest_eval_run(lake),
+            "manifest": _manifest_summary(lake),
         },
+    }
+
+
+def _latest_eval_run(lake: Path) -> JsonObject:
+    from security_lakehouse.lake_eval import list_eval_runs
+
+    rows = list_eval_runs(lake, limit=1)
+    return rows[0] if rows else {}
+
+
+def _manifest_summary(lake: Path) -> JsonObject:
+    manifest = _read_optional_json(lake / "manifest.json", lake)
+    if not manifest:
+        return {}
+    return {
+        "materialize_mode": manifest.get("materialize_mode"),
+        "delta_count": manifest.get("delta_count"),
+        "removed_count": manifest.get("removed_count"),
+        "row_counts": manifest.get("row_counts") or {},
     }
 
 

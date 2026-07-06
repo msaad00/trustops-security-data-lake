@@ -159,6 +159,9 @@ The headless path uses the same operations as the UI:
 | Configure connector        | `POST /api/v1/connectors/{connector_id}/configure` | `connector_manage` |
 | Create snapshot            | `POST /api/v1/snapshots`                           | `snapshot`         |
 | Verify snapshot chain      | `GET /api/v1/snapshots/integrity`                  | `read`             |
+| Run lake eval              | `POST /api/v1/ingestion/eval`                      | `connector_manage` |
+| List eval runs             | `GET /api/v1/ingestion/eval/runs`                  | `read`             |
+| Scheduler tick             | `POST /api/v1/scheduler/tick`                      | `connector_manage` |
 
 This is the path external portals, internal platform automation, MCP tools, and
 agent harnesses should use. CLI examples are wrappers around the same contract,
