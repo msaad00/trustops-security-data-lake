@@ -336,7 +336,10 @@ export const api = {
       `/v1/connectors/${encodeURIComponent(id)}/probe`,
       payload,
     ).then((body) => ({ run: body.data })),
-  syncConnector: (id: string, payload: { actor?: string } = {}) =>
+  syncConnector: (
+    id: string,
+    payload: { actor?: string; materialize?: boolean } = {},
+  ) =>
     post<{
       data: {
         connector_id: string;
@@ -348,6 +351,23 @@ export const api = {
     }>(`/v1/connectors/${encodeURIComponent(id)}/sync`, payload).then(
       (body) => body.data,
     ),
+  runLakeEval: (payload: { actor?: string } = {}) =>
+    post<{
+      data: {
+        result: string;
+        mode: string;
+        duration_ms: number;
+        error: string | null;
+        strategy: Record<string, unknown>;
+      };
+    }>("/v1/ingestion/eval", payload).then((body) => body.data),
+  runSchedulerTick: () =>
+    post<{
+      data: {
+        fired: Array<Record<string, unknown>>;
+        count: number;
+      };
+    }>("/v1/scheduler/tick", {}).then((body) => body.data),
   discoverConnector: (id: string, payload: DiscoverPayload = {}) =>
     post<{ data: ConnectorRun }>(
       `/v1/connectors/${encodeURIComponent(id)}/discover`,
