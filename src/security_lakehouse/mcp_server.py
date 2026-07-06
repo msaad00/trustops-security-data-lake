@@ -246,6 +246,61 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             posture = build_current_posture(lake)
             return posture.get("frameworks", [])
 
+    @trustops_tool(title="Ingestion Status")
+    def get_ingestion_status() -> JsonObject:
+        """Return live ingestion health, scale tier, schedules, and recommended actions.
+
+        Includes connector freshness, pipeline artifact counts, split ingest/eval
+        schedules, warehouse tier (local incremental vs warehouse-required), and the
+        latest lake evaluation run — the same payload as ``GET /api/v1/ingestion/status``.
+        """
+        return _get("/api/v1/ingestion/status", lake)
+
+    @trustops_tool(title="Run Lake Eval")
+    def run_lake_eval(actor: str = "mcp") -> JsonObject:
+        """Materialize and evaluate the lake on the scale-appropriate path.
+
+        Uses incremental materialize below 100k events, or projects to a configured
+        warehouse sink above that threshold. This is the lake-wide eval step that
+        split schedules run separately from connector ingest syncs.
+        """
+        status, body = api_v1.handle_post("/api/v1/ingestion/eval", {"actor": actor}, lake)
+        if status not in {HTTPStatus.CREATED, HTTPStatus.OK}:
+            errors = body.get("errors") or [{"detail": "lake eval failed"}]
+            raise ValueError(errors[0].get("detail", "lake eval failed"))
+        return body["data"]
+
+    @trustops_tool(title="Scheduler Tick")
+    def run_scheduler_tick() -> JsonObject:
+        """Fire every due connector sync, lake eval, and cron workflow once.
+
+        Mirrors ``security-lakehouse scheduler tick`` and the production CronJob:
+        ingest-only connector syncs on ``sync_schedule``, lake eval on
+        ``eval_schedule``, with advisory locking to prevent double-fires.
+        """
+        status, body = api_v1.handle_post("/api/v1/scheduler/tick", {}, lake)
+        if status not in {HTTPStatus.CREATED, HTTPStatus.OK}:
+            errors = body.get("errors") or [{"detail": "scheduler tick failed"}]
+            raise ValueError(errors[0].get("detail", "scheduler tick failed"))
+        return body["data"]
+
+    @trustops_tool(title="Sync Connector")
+    def sync_connector(connector_id: str, materialize: bool | None = None, actor: str = "mcp") -> JsonObject:
+        """Run one connector sync into the managed raw lake.
+
+        When ``materialize`` is omitted, split ingest/eval defaults apply
+        (ingest-only if ``split_ingest_eval`` is enabled on the connector).
+        """
+        payload: dict[str, Any] = {"actor": actor}
+        if materialize is not None:
+            payload["materialize"] = materialize
+        path = f"/api/v1/connectors/{urllib.parse.quote(connector_id, safe='')}/sync"
+        status, body = api_v1.handle_post(path, payload, lake)
+        if status != HTTPStatus.CREATED:
+            errors = body.get("errors") or [{"detail": "connector sync failed"}]
+            raise ValueError(errors[0].get("detail", "connector sync failed"))
+        return body["data"]
+
     @trustops_tool(title="Describe API")
     def describe_api() -> list[JsonObject]:
         """Describe the available v1 resources so an agent can discover the surface.

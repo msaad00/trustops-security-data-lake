@@ -21,15 +21,15 @@ no special surfaces.
 
 ## What ships today
 
-| Capability | Automation surface |
-|------------|------------------|
-| **851 controls** across 9 full framework packs | `frameworks sync-packs`, eval engine |
-| **Continuous ingestion** (15m sync / 6h eval at scale) | Scheduler, connector runners, lake eval |
-| **Remediation + evidence requests** | API, UI, MCP write tools |
-| **POA&M + SPRS** (CMMC / NIST 800-171) | `GET /gov-compliance/sprs`, `POST /gov-compliance/poam/sync` |
-| **Audit readiness score** | Platform API + audit room |
-| **Agent harness** | MCP tools with approval gates |
-| **Executive PDF** | Snapshot export |
+| Capability                                             | Automation surface                                           |
+| ------------------------------------------------------ | ------------------------------------------------------------ |
+| **851 controls** across 9 full framework packs         | `frameworks sync-packs`, eval engine                         |
+| **Continuous ingestion** (15m sync / 6h eval at scale) | Scheduler, connector runners, lake eval                      |
+| **Remediation + evidence requests**                    | API, UI, MCP write tools                                     |
+| **POA&M + SPRS** (CMMC / NIST 800-171)                 | `GET /gov-compliance/sprs`, `POST /gov-compliance/poam/sync` |
+| **Audit readiness score**                              | Platform API + audit room                                    |
+| **Agent harness**                                      | MCP tools with approval gates                                |
+| **Executive PDF**                                      | Snapshot export                                              |
 
 ## Headless agent verbs (new)
 
@@ -49,13 +49,13 @@ escalate_stale_evidence → sync_poam_from_posture → create_remediation_task �
 
 ## Kingdom gaps (honest)
 
-| Gap | Status |
-|-----|--------|
-| HRIS / MDM personnel connectors | Roadmap (IdP + access reviews workaround today) |
+| Gap                                    | Status                                                                      |
+| -------------------------------------- | --------------------------------------------------------------------------- |
+| HRIS / MDM personnel connectors        | Roadmap (IdP + access reviews workaround today)                             |
 | Pack-specific connector evidence hints | **Shipped** — framework drill-down shows recommended connectors per control |
-| FedRAMP 323-selected overlay | After Moderate baseline pack |
-| Scheduled executive narrative packs | Snapshot PDF today |
-| Billing / SCIM self-serve | P5 partial |
+| FedRAMP 323-selected overlay           | After Moderate baseline pack                                                |
+| Scheduled executive narrative packs    | Snapshot PDF today                                                          |
+| Billing / SCIM self-serve              | P5 partial                                                                  |
 
 ## Why we win
 

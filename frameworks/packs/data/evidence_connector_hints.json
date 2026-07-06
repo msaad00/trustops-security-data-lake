@@ -7,12 +7,20 @@
       "secondary": ["azure-posture", "gcp-posture", "identity-provider"]
     },
     "monitoring": {
-      "primary": ["okta-system-log", "siem-alerts", "clickhouse-telemetry-lake"],
+      "primary": [
+        "okta-system-log",
+        "siem-alerts",
+        "clickhouse-telemetry-lake"
+      ],
       "secondary": ["aws-posture", "github-security"]
     },
     "controls-operations": {
       "primary": ["aws-posture", "azure-posture", "gcp-posture"],
-      "secondary": ["github-security", "gitlab-security", "object-storage-evidence"]
+      "secondary": [
+        "github-security",
+        "gitlab-security",
+        "object-storage-evidence"
+      ]
     },
     "governance": {
       "primary": ["ticketing", "jira-ticketing", "managed-local-evidence"],
@@ -97,7 +105,11 @@
     "repo": ["github-security", "gitlab-security"],
     "service": ["aws-posture", "runtime-gateway"],
     "host": ["aws-posture", "siem-alerts"],
-    "audit_log": ["okta-system-log", "siem-alerts", "clickhouse-telemetry-lake"],
+    "audit_log": [
+      "okta-system-log",
+      "siem-alerts",
+      "clickhouse-telemetry-lake"
+    ],
     "data_store": ["snowflake-evidence-lake", "object-storage-evidence"],
     "container_image": ["github-security", "runtime-gateway"]
   }

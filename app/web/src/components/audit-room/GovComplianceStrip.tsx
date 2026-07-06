@@ -7,7 +7,9 @@ import { Button } from "@/components/ui/button";
 
 const STALE = 60_000;
 
-function sprsTone(score: number | undefined): "ready" | "attention" | "critical" | "default" {
+function sprsTone(
+  score: number | undefined,
+): "ready" | "attention" | "critical" | "default" {
   if (score == null) return "default";
   if (score >= 100) return "ready";
   if (score >= 70) return "attention";
@@ -24,7 +26,8 @@ export function GovComplianceStrip() {
   });
   const poam = useQuery({
     queryKey: ["gov-compliance", "poam"],
-    queryFn: () => api.poamItems({ framework_id: "cmmc-2-level2", status: "open" }),
+    queryFn: () =>
+      api.poamItems({ framework_id: "cmmc-2-level2", status: "open" }),
     staleTime: STALE,
     retry: false,
   });
@@ -42,9 +45,12 @@ export function GovComplianceStrip() {
     <section className="grid gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h2 className="text-sm font-semibold text-foreground">Gov programs (CMMC)</h2>
+          <h2 className="text-sm font-semibold text-foreground">
+            Gov programs (CMMC)
+          </h2>
           <p className="text-sm text-muted">
-            SPRS score and POA&M auto-sync from failing NIST SP 800-171 Rev 2 practices.
+            SPRS score and POA&M auto-sync from failing NIST SP 800-171 Rev 2
+            practices.
           </p>
         </div>
         <Button
@@ -73,7 +79,11 @@ export function GovComplianceStrip() {
           label="Unmet practices"
           value={sprs.data ? String(sprs.data.requirements_unmet) : "—"}
           detail={`${sprs.data?.requirements_total ?? 110} CMMC L2 requirements`}
-          tone={sprs.data && sprs.data.requirements_unmet > 0 ? "attention" : "default"}
+          tone={
+            sprs.data && sprs.data.requirements_unmet > 0
+              ? "attention"
+              : "default"
+          }
         />
         <KpiTile
           label="Deduction points"

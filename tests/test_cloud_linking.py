@@ -7,7 +7,6 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 import pytest
-from tests.test_api_v1 import _request, _spin
 
 from security_lakehouse.cloud_linking import (
     aws_quick_create_url,
@@ -25,6 +24,7 @@ from security_lakehouse.cloud_linking import (
     start_cloud_link,
     valid_gcp_project_id,
 )
+from test_api_v1 import _request, _spin
 
 
 def test_aws_template_bytes_is_packaged() -> None:

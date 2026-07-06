@@ -490,7 +490,7 @@ export function useSyncMutation() {
       payload = {},
     }: {
       id: string;
-      payload?: { actor?: string };
+      payload?: { actor?: string; materialize?: boolean };
     }) => api.syncConnector(id, payload),
     onSuccess: (_data, { id }) => {
       // A sync lands evidence: refresh the connector, its runs, and the posture
@@ -499,6 +499,32 @@ export function useSyncMutation() {
       qc.invalidateQueries({ queryKey: ["connector-runs", id] });
       qc.invalidateQueries({ queryKey: ["posture", "current"] });
       qc.invalidateQueries({ queryKey: ["ingestion", "status"] });
+      qc.invalidateQueries({ queryKey: ["violations"] });
+    },
+  });
+}
+
+export function useRunLakeEvalMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: { actor?: string } = {}) => api.runLakeEval(payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["ingestion", "status"] });
+      qc.invalidateQueries({ queryKey: ["posture", "current"] });
+      qc.invalidateQueries({ queryKey: ["violations"] });
+      qc.invalidateQueries({ queryKey: ["controls"] });
+    },
+  });
+}
+
+export function useRunSchedulerTickMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.runSchedulerTick(),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["ingestion", "status"] });
+      qc.invalidateQueries({ queryKey: ["connectors"] });
+      qc.invalidateQueries({ queryKey: ["posture", "current"] });
       qc.invalidateQueries({ queryKey: ["violations"] });
     },
   });
