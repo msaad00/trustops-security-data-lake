@@ -1,14 +1,22 @@
+"use client";
+
 import {
   Activity,
   AlertTriangle,
   CheckCircle2,
   Database,
   FileCheck2,
+  Layers,
   RefreshCw,
 } from "lucide-react";
 import type { IngestionStatus } from "@/lib/api/types";
+import {
+  useRunLakeEvalMutation,
+  useRunSchedulerTickMutation,
+} from "@/lib/api/hooks";
 import { shortDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -53,12 +61,29 @@ function Metric({
   );
 }
 
+function labelForScaleMode(mode?: string) {
+  if (mode === "warehouse_required") return "Warehouse required";
+  if (mode === "warehouse") return "Warehouse eval";
+  if (mode === "local_incremental") return "Incremental";
+  if (mode === "local_full") return "Full local";
+  return mode?.replace(/_/g, " ") ?? "unknown";
+}
+
+function toneForScaleMode(mode?: string): "ready" | "attention" | "critical" {
+  if (mode === "warehouse_required") return "critical";
+  if (mode === "warehouse") return "attention";
+  return "ready";
+}
+
 export function IngestionStatusPanel({
   status,
 }: {
   status: IngestionStatus | undefined;
 }) {
+  const runEval = useRunLakeEvalMutation();
+  const runTick = useRunSchedulerTickMutation();
   const summary = status?.summary;
+  const scale = status?.scale;
   const action = status?.recommended_actions?.[0];
   const visibleConnectors =
     status?.connectors
@@ -110,6 +135,56 @@ export function IngestionStatusPanel({
             detail={status?.proof?.scenario ?? "not run"}
           />
         </div>
+
+        {scale && (
+          <div className="rounded-lg border border-line bg-panel p-3">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Layers className="h-4 w-4 text-brand" />
+                  <span className="text-sm font-black text-ink">
+                    Scale tier
+                  </span>
+                  <Badge tone={toneForScaleMode(scale.mode)}>
+                    {labelForScaleMode(scale.mode)}
+                  </Badge>
+                </div>
+                <p className="mt-2 text-sm leading-5 text-muted">
+                  {(scale.event_count ?? 0).toLocaleString()} events · sync{" "}
+                  {scale.default_sync_schedule}
+                  {scale.eval_schedule ? ` · eval ${scale.eval_schedule}` : ""}
+                </p>
+                <p className="mt-1 text-xs leading-5 text-muted">
+                  {scale.recommendation}
+                </p>
+                {scale.latest_eval?.occurred_at && (
+                  <p className="mt-2 text-xs text-muted">
+                    Last eval {shortDate(scale.latest_eval.occurred_at)} ·{" "}
+                    {scale.latest_eval.mode} · {scale.latest_eval.result}
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  variant="primary"
+                  disabled={runEval.isPending}
+                  onClick={() => runEval.mutate({ actor: "console" })}
+                >
+                  Run lake eval
+                </Button>
+                <Button
+                  size="sm"
+                  variant="default"
+                  disabled={runTick.isPending}
+                  onClick={() => runTick.mutate()}
+                >
+                  Scheduler tick
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="min-w-0 rounded-lg border border-line">

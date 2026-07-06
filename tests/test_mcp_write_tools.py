@@ -17,10 +17,10 @@ pytest.importorskip("mcp")
 
 import anyio  # noqa: E402
 from mcp.server.fastmcp.exceptions import ToolError  # noqa: E402
-from tests.test_api_v1 import _seed_lake  # noqa: E402
-from tests.test_mcp_server import call_tool, tool_names  # noqa: E402
 
 from security_lakehouse import mcp_server, workflows  # noqa: E402
+from test_api_v1 import _seed_lake  # noqa: E402
+from test_mcp_server import call_tool, tool_names  # noqa: E402
 
 
 async def _call_struct_async(server, name, arguments):
