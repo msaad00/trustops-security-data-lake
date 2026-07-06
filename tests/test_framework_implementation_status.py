@@ -16,7 +16,7 @@ def test_validate_catalog_accepts_current_registry() -> None:
 def test_planned_frameworks_have_no_seeded_controls() -> None:
     rows = build_framework_coverage()
     planned = [row for row in rows if row.get("implementation_status") == "planned"]
-    assert len(planned) >= 3
+    assert len(planned) >= 2
     assert all(int(row["seeded_control_count"]) == 0 for row in planned)
 
 
@@ -24,8 +24,8 @@ def test_coverage_summary_splits_implemented_and_planned() -> None:
     rows = build_framework_coverage()
     summary = framework_coverage_summary(rows)
     assert summary["framework_count"] == summary["implemented_framework_count"] + summary["planned_framework_count"]
-    assert summary["planned_framework_count"] >= 3
-    assert summary["implemented_framework_count"] == 10
+    assert summary["planned_framework_count"] >= 2
+    assert summary["implemented_framework_count"] == 11
 
 
 def test_framework_status_enum_is_documented() -> None:

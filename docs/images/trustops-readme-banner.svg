@@ -55,7 +55,7 @@
     <!-- Metric chips -->
     <g transform="translate(820,38)">
       <rect width="118" height="34" rx="10" class="chip"/>
-      <text x="16" y="22" class="chipText">635 controls</text>
+      <text x="16" y="22" class="chipText">741 controls</text>
       <rect x="128" width="118" height="34" rx="10" class="chip"/>
       <text x="144" y="22" class="chipText">28 console routes</text>
       <rect x="256" width="156" height="34" rx="10" fill="#102a43" stroke="#38bdf8" stroke-width="1"/>

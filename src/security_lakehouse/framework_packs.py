@@ -25,8 +25,11 @@ from security_lakehouse.pack_data import (
     ISO_27001_SOURCE,
     ISO_42001_CONTROLS,
     ISO_42001_SOURCE,
+    NIST_CSF_2_COUNT,
+    NIST_CSF_2_SOURCE,
     cis_aws_v3_requirements,
     cis_section_risk_domain,
+    csf_category_risk_domain,
     iso_27001_2022_annex_a_refs,
     iso_27001_theme_risk_domain,
     nist_800_53_rev5_moderate_ids,
@@ -46,6 +49,7 @@ SOC2_SOURCE = (
     "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022"
 )
 NIST_AI_RMF_SOURCE = "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10"
+NIST_CSF_2_SUBCATEGORY_COUNT = NIST_CSF_2_COUNT
 
 # Expected full pack sizes (used by tests and coverage gates).
 SOC2_COMMON_CRITERIA_COUNT = 33
@@ -333,6 +337,51 @@ def nist_ai_rmf_specs() -> list[PackControlSpec]:
     return specs
 
 
+def _csf_2_category_blocks() -> list[tuple[str, list[tuple[str, int]]]]:
+    """Official NIST CSF 2.0 Core: 106 subcategories across six functions."""
+    return [
+        ("GV", [("OC", 5), ("RM", 7), ("RR", 4), ("PO", 2), ("OV", 3), ("SC", 10)]),
+        ("ID", [("AM", 7), ("RA", 10), ("IM", 4)]),
+        ("PR", [("AA", 6), ("AT", 2), ("DS", 4), ("PS", 6), ("IR", 4)]),
+        ("DE", [("CM", 5), ("AE", 6)]),
+        ("RS", [("MA", 5), ("AN", 4), ("CO", 2), ("MI", 2)]),
+        ("RC", [("RP", 6), ("CO", 2)]),
+    ]
+
+
+def nist_csf_2_specs() -> list[PackControlSpec]:
+    """All 106 NIST CSF 2.0 Core subcategories across GOVERN, IDENTIFY, PROTECT, DETECT, RESPOND, RECOVER."""
+    specs: list[PackControlSpec] = []
+    for function, categories in _csf_2_category_blocks():
+        for category, count in categories:
+            risk = csf_category_risk_domain(function, category)
+            owner = _soc2_owner(risk)
+            for sub in range(1, count + 1):
+                article_id = f"{function}.{category}-{sub:02d}"
+                title = f"NIST CSF 2.0 {article_id} — assessed from cybersecurity program and operational evidence"
+                specs.append(
+                    PackControlSpec(
+                        control_id=f"NIST-CSF-{article_id}",
+                        framework_id="nist-csf-2.0",
+                        framework="NIST CSF 2.0",
+                        framework_ref=f"NIST CSF 2.0 {article_id}",
+                        article_id=article_id,
+                        title=title,
+                        risk_domain=risk,
+                        owner=owner,
+                        evaluation_rule=_soc2_evaluation_rule(risk),
+                        evidence_requirement=(
+                            f"Current evidence supports NIST CSF 2.0 outcome {article_id} "
+                            "with reviewed mappings and fresh operational proof."
+                        ),
+                        asset_types=_soc2_assets(risk),
+                        source_url=NIST_CSF_2_SOURCE,
+                        official_source_ref="nist-csf-2.0",
+                    )
+                )
+    return specs
+
+
 def _normalize_nist_control_id(control_id: str) -> str:
     return control_id.upper()
 
@@ -453,6 +502,7 @@ def iso_42001_2023_specs() -> list[PackControlSpec]:
 PACK_BUILDERS = {
     "soc2": soc2_full_pack_specs,
     "nist-ai-rmf": nist_ai_rmf_specs,
+    "nist-csf-2.0": nist_csf_2_specs,
     "fedramp-moderate": fedramp_moderate_specs,
     "cis-aws": cis_aws_v3_specs,
     "iso-27001-2022": iso_27001_2022_specs,
@@ -619,6 +669,7 @@ def sync_framework_packs(
         for framework_id in (
             "soc2",
             "nist-ai-rmf",
+            "nist-csf-2.0",
             "fedramp-moderate",
             "cis_aws",
             "iso-27001-2022",
@@ -632,6 +683,7 @@ def sync_framework_packs(
         "control_count": len(catalog_payload["controls"]),
         "soc2_control_count": framework_counts["soc2"],
         "nist_ai_rmf_control_count": framework_counts["nist-ai-rmf"],
+        "nist_csf_2_control_count": framework_counts["nist-csf-2.0"],
         "fedramp_moderate_control_count": framework_counts["fedramp-moderate"],
         "cis_aws_control_count": framework_counts["cis_aws"],
         "iso_27001_control_count": framework_counts["iso-27001-2022"],
