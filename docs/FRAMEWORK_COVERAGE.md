@@ -1,14 +1,14 @@
-Frameworks: 13 (12 implemented, 1 planned)
-Seeded controls: 788
-Reviewed mappings: 788
+Frameworks: 13 (13 implemented, 0 planned)
+Seeded controls: 898
+Reviewed mappings: 898
 Asset types modeled: 18
-Control-to-asset applicability links: 2560
+Control-to-asset applicability links: 2911
 Seeded mapping coverage: 100.0%
 
 | Framework                                                  | Official source                                                                                                                                                                                 | Status                      | Seeded controls | Reviewed mappings | Seeded mapping coverage | Source state | Source policy                 |
 | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | --------------: | ----------------: | ----------------------: | ------------ | ----------------------------- |
 | CIS Amazon Web Services Foundations Benchmark              | [CIS Amazon Web Services Foundations Benchmark v3.0.0](https://www.cisecurity.org/benchmark/amazon_web_services)                                                                                | implemented_full_pack       |              62 |                62 |                  100.0% | never pulled | source-linked identifier only |
-| CMMC 2.0 Level 2 (NIST SP 800-171 alignment)               | [DoD CMMC Program](https://dodcio.defense.gov/CMMC/Documentation/)                                                                                                                              | planned                     |               0 |                 0 |                    0.0% | never pulled | source-linked identifier only |
+| CMMC 2.0 Level 2 (NIST SP 800-171 alignment)               | [DoD CMMC Program](https://dodcio.defense.gov/CMMC/Documentation/)                                                                                                                              | implemented_full_pack       |             110 |               110 |                  100.0% | never pulled | source-linked identifier only |
 | EU AI Act - Regulation (EU) 2024/1689                      | [EUR-Lex - Regulation (EU) 2024/1689](https://eur-lex.europa.eu/eli/reg/2024/1689/oj)                                                                                                           | implemented_limited_mapping |               6 |                 6 |                  100.0% | never pulled | public-source citation        |
 | FedRAMP Moderate (NIST SP 800-53 Rev 5 Moderate baseline)  | [NIST SP 800-53 Rev 5 Moderate baseline (FedRAMP Moderate foundation)](https://csrc.nist.gov/publications/detail/sp/800-53b/final)                                                              | implemented_full_pack       |             287 |               287 |                  100.0% | never pulled | source-linked identifier only |
 | GDPR - EU General Data Protection Regulation (2016/679)    | [EUR-Lex - Regulation (EU) 2016/679](https://eur-lex.europa.eu/eli/reg/2016/679/oj)                                                                                                             | implemented_limited_mapping |               6 |                 6 |                  100.0% | never pulled | public-source citation        |
@@ -27,20 +27,20 @@ Every seeded control declares the asset types it applies to. The pipeline joins 
 
 | Asset type                 | Applicable controls |
 | -------------------------- | ------------------: |
-| `service`                  |                 614 |
-| `audit_log`                |                 294 |
-| `cloud_resource`           |                 214 |
-| `cloud_policy`             |                 209 |
+| `service`                  |                 691 |
+| `audit_log`                |                 325 |
+| `cloud_resource`           |                 248 |
+| `cloud_policy`             |                 243 |
+| `iam_role`                 |                 186 |
 | `data_store`               |                 166 |
-| `iam_role`                 |                 153 |
+| `identity_user`            |                 146 |
+| `identity_group`           |                 126 |
+| `okta_user`                |                 126 |
 | `ai_agent`                 |                 117 |
 | `ai_model`                 |                 117 |
-| `identity_user`            |                 113 |
-| `host`                     |                  94 |
-| `identity_group`           |                  93 |
-| `okta_user`                |                  93 |
-| `container_image`          |                  77 |
-| `repo`                     |                  75 |
+| `host`                     |                 113 |
+| `container_image`          |                  89 |
+| `repo`                     |                  87 |
 | `s3_bucket`                |                  66 |
 | `identity_account`         |                  61 |
 | `identity_role_assignment` |                   3 |

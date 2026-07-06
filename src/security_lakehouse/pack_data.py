@@ -9,6 +9,7 @@ from pathlib import Path
 PACK_DATA_DIR = Path(__file__).resolve().parents[2] / "frameworks" / "packs" / "data"
 
 FEDRAMP_MODERATE_COUNT = 287
+CMMC_2_LEVEL2_COUNT = 110
 CIS_AWS_V3_COUNT = 62
 ISO_27001_2022_ANNEX_A_COUNT = 93
 ISO_27017_2015_COUNT = 47
@@ -17,6 +18,8 @@ ISO_42001_2023_ANNEX_A_COUNT = 38
 NIST_CSF_2_COUNT = 106
 
 FEDRAMP_SOURCE = "https://csrc.nist.gov/publications/detail/sp/800-53b/final"
+CMMC_2_LEVEL2_SOURCE = "https://csrc.nist.gov/publications/detail/sp/800-171/rev-2/final"
+CMMC_PROGRAM_SOURCE = "https://dodcio.defense.gov/CMMC/Documentation/"
 CIS_AWS_SOURCE = "https://www.cisecurity.org/benchmark/amazon_web_services"
 ISO_27001_SOURCE = "https://www.iso.org/standard/27001"
 ISO_27017_SOURCE = "https://www.iso.org/standard/43757.html"
@@ -73,6 +76,13 @@ def nist_800_53_rev5_moderate_ids() -> tuple[str, ...]:
 
 
 @lru_cache(maxsize=1)
+def cmmc_2_level2_requirements() -> tuple[tuple[str, str], ...]:
+    path = PACK_DATA_DIR / "cmmc_2_level2.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return tuple((str(row["id"]).strip(), str(row["title"])) for row in payload["requirements"])
+
+
+@lru_cache(maxsize=1)
 def iso_27017_2015_controls() -> tuple[tuple[str, str], ...]:
     path = PACK_DATA_DIR / "iso_27017_2015.json"
     payload = json.loads(path.read_text(encoding="utf-8"))
@@ -118,6 +128,26 @@ def nist_family_risk_domain(control_id: str) -> str:
         "SC": "controls-operations",
         "SI": "monitoring",
         "SR": "vendor-risk",
+    }.get(family, "governance")
+
+
+def cmmc_800_171_family_risk_domain(requirement_id: str) -> str:
+    family = ".".join(requirement_id.split(".")[:2])
+    return {
+        "3.1": "identity",
+        "3.2": "governance",
+        "3.3": "monitoring",
+        "3.4": "controls-operations",
+        "3.5": "identity",
+        "3.6": "monitoring",
+        "3.7": "change-management",
+        "3.8": "controls-operations",
+        "3.9": "governance",
+        "3.10": "change-management",
+        "3.11": "risk-management",
+        "3.12": "risk-management",
+        "3.13": "controls-operations",
+        "3.14": "monitoring",
     }.get(family, "governance")
 
 

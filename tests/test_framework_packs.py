@@ -12,6 +12,7 @@ from security_lakehouse.framework_packs import (
     SOC2_FULL_PACK_COUNT,
     SOC2_TSC_EXTENSION_COUNT,
     cis_aws_v3_specs,
+    cmmc_2_level2_specs,
     fedramp_moderate_specs,
     iso_27001_2022_specs,
     iso_27017_2015_specs,
@@ -26,12 +27,14 @@ from security_lakehouse.framework_packs import (
 from security_lakehouse.mappings import load_control_article_mappings
 from security_lakehouse.pack_data import (
     CIS_AWS_V3_COUNT,
+    CMMC_2_LEVEL2_COUNT,
     FEDRAMP_MODERATE_COUNT,
     ISO_27001_2022_ANNEX_A_COUNT,
     ISO_27017_2015_COUNT,
     ISO_42001_2023_ANNEX_A_COUNT,
     NIST_CSF_2_COUNT,
     cis_aws_v3_requirements,
+    cmmc_2_level2_requirements,
     iso_27017_2015_controls,
 )
 
@@ -102,6 +105,16 @@ def test_cis_aws_pack_has_all_v3_recommendations() -> None:
     assert article_ids == expected
 
 
+def test_cmmc_2_level2_pack_has_all_nist_800_171_requirements() -> None:
+    specs = cmmc_2_level2_specs()
+    assert len(specs) == CMMC_2_LEVEL2_COUNT
+    article_ids = {spec.article_id for spec in specs}
+    expected = {req_id for req_id, _title in cmmc_2_level2_requirements()}
+    assert article_ids == expected
+    assert specs[0].framework_id == "cmmc-2-level2"
+    assert specs[0].control_id.startswith("CMMC-")
+
+
 def test_iso_packs_have_full_annex_a_counts() -> None:
     assert len(iso_27001_2022_specs()) == ISO_27001_2022_ANNEX_A_COUNT
     assert len(iso_42001_2023_specs()) == ISO_42001_2023_ANNEX_A_COUNT
@@ -128,6 +141,7 @@ def test_catalog_has_full_core_framework_packs() -> None:
         "nist-csf-2.0": NIST_CSF_2_COUNT,
         "fedramp-moderate": FEDRAMP_MODERATE_COUNT,
         "cis_aws": CIS_AWS_V3_COUNT,
+        "cmmc-2-level2": CMMC_2_LEVEL2_COUNT,
         "iso-27001-2022": ISO_27001_2022_ANNEX_A_COUNT,
         "iso-27017-2015": ISO_27017_2015_COUNT,
         "iso-42001-2023": ISO_42001_2023_ANNEX_A_COUNT,

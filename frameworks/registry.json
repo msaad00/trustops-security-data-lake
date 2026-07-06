@@ -164,8 +164,8 @@
       "official_source_url": "https://dodcio.defense.gov/CMMC/Documentation/",
       "source_sha256": null,
       "pulled_at": null,
-      "implementation_status": "planned",
-      "copyright_guardrail": "CMMC practices derive from NIST SP 800-171. Planned pack will use official practice IDs only after human review — not shipped in v0.2.x seed catalog.",
+      "implementation_status": "implemented_full_pack",
+      "copyright_guardrail": "NIST SP 800-171 Rev 2 is public-domain U.S. government work. Pack stores official requirement IDs (3.x.y) and short internal titles only; CMMC assessment overlays ship separately.",
       "sync_cadence_days": 90
     },
     {

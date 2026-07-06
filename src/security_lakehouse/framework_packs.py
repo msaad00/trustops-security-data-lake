@@ -21,6 +21,7 @@ from security_lakehouse.catalog_versions import (
 from security_lakehouse.mappings import DEFAULT_MAPPINGS
 from security_lakehouse.pack_data import (
     CIS_AWS_SOURCE,
+    CMMC_2_LEVEL2_SOURCE,
     FEDRAMP_SOURCE,
     ISO_27001_SOURCE,
     ISO_27017_SOURCE,
@@ -30,6 +31,8 @@ from security_lakehouse.pack_data import (
     NIST_CSF_2_SOURCE,
     cis_aws_v3_requirements,
     cis_section_risk_domain,
+    cmmc_2_level2_requirements,
+    cmmc_800_171_family_risk_domain,
     csf_category_risk_domain,
     iso_27001_2022_annex_a_refs,
     iso_27001_theme_risk_domain,
@@ -477,6 +480,35 @@ def iso_27001_2022_specs() -> list[PackControlSpec]:
     return specs
 
 
+def cmmc_2_level2_specs() -> list[PackControlSpec]:
+    """All 110 CMMC 2.0 Level 2 practices (NIST SP 800-171 Rev 2 requirements)."""
+    specs: list[PackControlSpec] = []
+    for requirement_id, short_title in cmmc_2_level2_requirements():
+        risk = cmmc_800_171_family_risk_domain(requirement_id)
+        owner = _soc2_owner(risk)
+        specs.append(
+            PackControlSpec(
+                control_id=f"CMMC-{requirement_id}",
+                framework_id="cmmc-2-level2",
+                framework="CMMC 2.0 Level 2",
+                framework_ref=f"NIST SP 800-171 Rev 2 {requirement_id}",
+                article_id=requirement_id,
+                title=f"CMMC L2 {requirement_id} — {short_title}",
+                risk_domain=risk,
+                owner=owner,
+                evaluation_rule=_soc2_evaluation_rule(risk),
+                evidence_requirement=(
+                    f"CUI protection evidence supports NIST SP 800-171 Rev 2 requirement {requirement_id} "
+                    f"({short_title}) for CMMC Level 2 assessment."
+                ),
+                asset_types=_soc2_assets(risk),
+                source_url=CMMC_2_LEVEL2_SOURCE,
+                official_source_ref="cmmc-2-level2",
+            )
+        )
+    return specs
+
+
 def iso_27017_2015_specs() -> list[PackControlSpec]:
     """All 47 ISO/IEC 27017:2015 cloud security clause IDs (40 ISO 27002 + 7 CLD)."""
     specs: list[PackControlSpec] = []
@@ -538,6 +570,7 @@ PACK_BUILDERS = {
     "nist-csf-2.0": nist_csf_2_specs,
     "fedramp-moderate": fedramp_moderate_specs,
     "cis-aws": cis_aws_v3_specs,
+    "cmmc-2-level2": cmmc_2_level2_specs,
     "iso-27001-2022": iso_27001_2022_specs,
     "iso-27017-2015": iso_27017_2015_specs,
     "iso-42001-2023": iso_42001_2023_specs,
@@ -706,6 +739,7 @@ def sync_framework_packs(
             "nist-csf-2.0",
             "fedramp-moderate",
             "cis_aws",
+            "cmmc-2-level2",
             "iso-27001-2022",
             "iso-27017-2015",
             "iso-42001-2023",
@@ -721,6 +755,7 @@ def sync_framework_packs(
         "nist_csf_2_control_count": framework_counts["nist-csf-2.0"],
         "fedramp_moderate_control_count": framework_counts["fedramp-moderate"],
         "cis_aws_control_count": framework_counts["cis_aws"],
+        "cmmc_2_level2_control_count": framework_counts["cmmc-2-level2"],
         "iso_27001_control_count": framework_counts["iso-27001-2022"],
         "iso_27017_control_count": framework_counts["iso-27017-2015"],
         "iso_42001_control_count": framework_counts["iso-42001-2023"],

@@ -16,7 +16,6 @@ def test_validate_catalog_accepts_current_registry() -> None:
 def test_planned_frameworks_have_no_seeded_controls() -> None:
     rows = build_framework_coverage()
     planned = [row for row in rows if row.get("implementation_status") == "planned"]
-    assert len(planned) >= 1
     assert all(int(row["seeded_control_count"]) == 0 for row in planned)
 
 
