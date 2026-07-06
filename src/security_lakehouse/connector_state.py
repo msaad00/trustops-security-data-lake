@@ -25,6 +25,7 @@ from security_lakehouse.connectors import (
 )
 from security_lakehouse.connectors_snowflake import CONNECTOR_ID as SNOWFLAKE_CONNECTOR_ID
 from security_lakehouse.connectors_snowflake import discover_snowflake_scope, probe_snowflake_access
+from security_lakehouse.lake_scale import apply_split_schedule_defaults
 from security_lakehouse.models import parse_event_time, utc_iso
 
 CONFIG_FILE = "connector_config.jsonl"
@@ -42,7 +43,17 @@ PRODUCTION_STATUS_ORDER = {
     "local_demo": 2,
 }
 _ACCESS_FINGERPRINT_KEY = b"trustops-access-fingerprint-v1"
-_ACCESS_FINGERPRINT_OPTION_EXCLUDES = frozenset({"raw", "sync_schedule", "fixture_dir", "token_env", "materialize"})
+_ACCESS_FINGERPRINT_OPTION_EXCLUDES = frozenset(
+    {
+        "raw",
+        "sync_schedule",
+        "eval_schedule",
+        "split_ingest_eval",
+        "fixture_dir",
+        "token_env",
+        "materialize",
+    }
+)
 _SECRET_REFERENCE_SUFFIXES = ("_ref", "_env")
 
 
@@ -132,7 +143,7 @@ def append_config_event(
         state=state,
         actor=actor or "anonymous",
         credentials=credentials,
-        options=options,
+        options=apply_split_schedule_defaults(options),
     )
     gold = _gold(lake_dir)
     gold.mkdir(parents=True, exist_ok=True)

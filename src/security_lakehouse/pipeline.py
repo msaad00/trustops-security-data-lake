@@ -18,7 +18,7 @@ from security_lakehouse.evidence_freshness import (
     summarize_source_freshness,
 )
 from security_lakehouse.evidence_types import expand_evidence_types
-from security_lakehouse.io import read_jsonl, write_json, write_jsonl
+from security_lakehouse.io import iter_jsonl, read_json, read_jsonl, write_json, write_jsonl
 from security_lakehouse.models import SEVERITY_SCORE, PipelineResult, parse_event_time, utc_iso
 from security_lakehouse.policy import ControlContext, evaluate_control
 from security_lakehouse.programs import build_control_tests
@@ -36,7 +36,105 @@ def run_pipeline(
     errors = validate_raw_events(raw_rows)
     if errors:
         raise ValueError("raw evidence validation failed:\n" + "\n".join(errors))
+    bronze_rows = [_bronze_row(row) for row in raw_rows]
+    silver_rows = [_silver_row(row, bronze["raw_sha256"]) for row, bronze in zip(raw_rows, bronze_rows, strict=True)]
+    return _materialize_from_rows(
+        raw_path=raw_path,
+        out_dir=out_dir,
+        raw_rows=raw_rows,
+        bronze_rows=bronze_rows,
+        silver_rows=silver_rows,
+        mapping_path=mapping_path,
+        tenant_id=tenant_id,
+        materialize_mode="full",
+    )
 
+
+def run_pipeline_incremental(
+    raw_path: str | Path,
+    out_dir: str | Path,
+    *,
+    mapping_path: str | Path | None = None,
+    tenant_id: str = "default",
+) -> PipelineResult:
+    """Materialize only raw evidence that changed since the last manifest."""
+    out = Path(out_dir)
+    manifest_path = out / "manifest.json"
+    if not manifest_path.is_file():
+        return run_pipeline(raw_path, out_dir, mapping_path=mapping_path, tenant_id=tenant_id)
+
+    manifest = read_json(manifest_path, base_dir=out)
+    prior_index = manifest.get("raw_index") or {}
+    if not isinstance(prior_index, dict):
+        prior_index = {}
+
+    delta_rows, removed_ids, new_index = _compute_raw_delta(raw_path, prior_index)
+    if not delta_rows and not removed_ids:
+        return _pipeline_result_from_manifest(out, manifest)
+
+    if removed_ids and len(removed_ids) > max(1000, len(prior_index) // 5):
+        return run_pipeline(raw_path, out_dir, mapping_path=mapping_path, tenant_id=tenant_id)
+
+    bronze_by_event: dict[str, dict[str, Any]] = {}
+    silver_by_event: dict[str, dict[str, Any]] = {}
+    bronze_path = out / "bronze" / "raw_events.jsonl"
+    silver_path = out / "silver" / "normalized_events.jsonl"
+    for bronze in read_jsonl(bronze_path, missing_ok=True, base_dir=out):
+        event_id = str((bronze.get("raw") or {}).get("event_id") or "")
+        if event_id:
+            bronze_by_event[event_id] = bronze
+    for silver in read_jsonl(silver_path, missing_ok=True, base_dir=out):
+        event_id = str(silver.get("event_id") or "")
+        if event_id:
+            silver_by_event[event_id] = silver
+
+    for event_id in removed_ids:
+        bronze_by_event.pop(event_id, None)
+        silver_by_event.pop(event_id, None)
+
+    if delta_rows:
+        errors = validate_raw_events(delta_rows)
+        if errors:
+            raise ValueError("raw evidence validation failed:\n" + "\n".join(errors))
+        for row in delta_rows:
+            bronze = _bronze_row(row)
+            silver = _silver_row(row, bronze["raw_sha256"])
+            event_id = str(row["event_id"])
+            bronze_by_event[event_id] = bronze
+            silver_by_event[event_id] = silver
+
+    bronze_rows = list(bronze_by_event.values())
+    silver_rows = list(silver_by_event.values())
+    raw_rows = [bronze["raw"] for bronze in bronze_rows]
+    return _materialize_from_rows(
+        raw_path=raw_path,
+        out_dir=out_dir,
+        raw_rows=raw_rows,
+        bronze_rows=bronze_rows,
+        silver_rows=silver_rows,
+        mapping_path=mapping_path,
+        tenant_id=tenant_id,
+        materialize_mode="incremental",
+        raw_index=new_index,
+        delta_count=len(delta_rows),
+        removed_count=len(removed_ids),
+    )
+
+
+def _materialize_from_rows(
+    *,
+    raw_path: str | Path,
+    out_dir: str | Path,
+    raw_rows: list[dict[str, Any]],
+    bronze_rows: list[dict[str, Any]],
+    silver_rows: list[dict[str, Any]],
+    mapping_path: str | Path | None,
+    tenant_id: str,
+    materialize_mode: str,
+    raw_index: dict[str, str] | None = None,
+    delta_count: int | None = None,
+    removed_count: int | None = None,
+) -> PipelineResult:
     out = Path(out_dir)
     bronze_dir = out / "bronze"
     silver_dir = out / "silver"
@@ -45,8 +143,6 @@ def run_pipeline(
     for directory in (bronze_dir, silver_dir, gold_dir, mart_dir):
         directory.mkdir(parents=True, exist_ok=True)
 
-    bronze_rows = [_bronze_row(row) for row in raw_rows]
-    silver_rows = [_silver_row(row, bronze["raw_sha256"]) for row, bronze in zip(raw_rows, bronze_rows, strict=True)]
     control_map = load_control_map(mapping_path)
     evidence_freshness_rows = build_evidence_freshness(silver_rows)
     stale_controls = stale_control_ids(evidence_freshness_rows)
@@ -132,6 +228,10 @@ def run_pipeline(
         out / "manifest.json",
         {
             "raw_path": str(raw_path),
+            "materialize_mode": materialize_mode,
+            "delta_count": delta_count,
+            "removed_count": removed_count,
+            "raw_index": raw_index if raw_index is not None else _build_raw_index(raw_rows),
             "row_counts": {
                 "raw": len(raw_rows),
                 "bronze": len(bronze_rows),
@@ -187,6 +287,49 @@ def run_pipeline(
         metrics_path=str(gold_dir / "metrics.json"),
         dashboard_data_path=str(gold_dir / "dashboard_data.json"),
         duckdb_mart_path=str(duckdb_mart_path) if wrote_duckdb else None,
+    )
+
+
+def _raw_row_fingerprint(row: dict[str, Any]) -> str:
+    canonical = json.dumps(row, sort_keys=True, separators=(",", ":"), default=str)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def _build_raw_index(raw_rows: list[dict[str, Any]]) -> dict[str, str]:
+    return {str(row["event_id"]): _raw_row_fingerprint(row) for row in raw_rows}
+
+
+def _compute_raw_delta(
+    raw_path: str | Path,
+    prior_index: dict[str, str],
+) -> tuple[list[dict[str, Any]], set[str], dict[str, str]]:
+    delta_rows: list[dict[str, Any]] = []
+    new_index: dict[str, str] = {}
+    for row in iter_jsonl(raw_path):
+        event_id = str(row["event_id"])
+        fingerprint = _raw_row_fingerprint(row)
+        new_index[event_id] = fingerprint
+        if prior_index.get(event_id) != fingerprint:
+            delta_rows.append(row)
+    removed_ids = set(prior_index) - set(new_index)
+    return delta_rows, removed_ids, new_index
+
+
+def _pipeline_result_from_manifest(out: Path, manifest: dict[str, Any]) -> PipelineResult:
+    counts = manifest.get("row_counts") or {}
+    zones = manifest.get("zones") or {}
+    marts = manifest.get("marts") or {}
+    gold_dir = out / "gold"
+    return PipelineResult(
+        output_dir=str(out),
+        raw_count=int(counts.get("raw") or 0),
+        silver_count=int(counts.get("silver") or 0),
+        control_count=int(counts.get("gold_control_posture") or 0),
+        asset_count=int(counts.get("gold_asset_risk") or 0),
+        mart_path=str(marts.get("sqlite") or out / "mart" / "security_lakehouse.sqlite"),
+        metrics_path=str(zones.get("gold_metrics") or gold_dir / "metrics.json"),
+        dashboard_data_path=str(gold_dir / "dashboard_data.json"),
+        duckdb_mart_path=marts.get("duckdb"),
     )
 
 

@@ -10,6 +10,13 @@ from typing import Any
 from security_lakehouse.connector_health import build_connector_health
 from security_lakehouse.connector_state import build_catalog_view, list_runs
 from security_lakehouse.io import count_jsonl, jsonl_field_counts, read_json, read_jsonl
+from security_lakehouse.lake_scale import (
+    DEFAULT_EVAL_SCHEDULE,
+    DEFAULT_SYNC_SCHEDULE,
+    WAREHOUSE_ROW_THRESHOLD,
+    lake_eval_schedule,
+    resolve_materialize_strategy,
+)
 
 JsonObject = dict[str, Any]
 
@@ -32,6 +39,8 @@ def build_ingestion_status(lake_dir: str | Path) -> JsonObject:
     never_synced = [row for row in enabled if row.get("latest_sync", {}).get("result") is None]
     health = build_connector_health(lake)
     silent_count = int(health["summary"]["silent"]) + int(health["summary"]["never_succeeded"])
+    raw_path = lake / "raw" / "connector_events.jsonl"
+    scale = resolve_materialize_strategy(lake, raw_path)
     state = _overall_state(
         enabled=enabled,
         evidence_count=evidence_count,
@@ -71,7 +80,15 @@ def build_ingestion_status(lake_dir: str | Path) -> JsonObject:
             silent_count=silent_count,
             proof=proof,
             current_posture=current_posture,
+            scale=scale,
         ),
+        "scale": {
+            **scale,
+            "eval_schedule": lake_eval_schedule(lake),
+            "default_sync_schedule": DEFAULT_SYNC_SCHEDULE,
+            "default_eval_schedule": DEFAULT_EVAL_SCHEDULE,
+            "warehouse_row_threshold": WAREHOUSE_ROW_THRESHOLD,
+        },
     }
 
 
@@ -249,8 +266,17 @@ def _recommended_actions(
     silent_count: int,
     proof: JsonObject,
     current_posture: JsonObject,
+    scale: JsonObject,
 ) -> list[JsonObject]:
     actions: list[JsonObject] = []
+    if scale.get("mode") == "warehouse_required":
+        actions.append(
+            {
+                "priority": "p0",
+                "action": "configure_warehouse_sink",
+                "reason": str(scale.get("recommendation") or "Warehouse sink required above 100k events."),
+            }
+        )
     if silent_count:
         actions.append(
             {

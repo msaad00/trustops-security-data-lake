@@ -220,11 +220,12 @@ def test_scheduler_fires_due_connector_sync_once(tmp_path: Path) -> None:
     second = tick(tmp_path, now=base + timedelta(minutes=2), connector_runner=connector_runner)
     third = tick(tmp_path, now=base + timedelta(minutes=6), connector_runner=connector_runner)
 
-    assert [row["target_kind"] for row in first] == ["connector"]
+    assert [row["target_kind"] for row in first] == ["connector", "lake_eval"]
     assert first[0]["connector_id"] == "github-security"
     assert first[0]["evidence_count"] == 5
     assert second == []
     assert len(third) == 1
+    assert third[0]["target_kind"] == "connector"
     assert len(fired) == 2
     assert fired[0]["actor"] == "scheduler"
     assert fired[0]["repo"] == "acme/model-service"
@@ -247,7 +248,7 @@ def test_scheduler_connector_sync_runs_real_github_fixture(tmp_path: Path) -> No
 
     result = tick(tmp_path)
 
-    assert len(result) == 1
+    assert len(result) == 2
     assert result[0]["target_kind"] == "connector"
     assert result[0]["connector_id"] == "github-security"
     assert result[0]["result"] == "ok"

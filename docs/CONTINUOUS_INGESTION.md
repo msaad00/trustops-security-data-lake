@@ -83,7 +83,8 @@ reviewers/agents   -> read posture, runs, evidence, snapshots, trust shares
 | ----------------- | ----------------------------------------------------------------------------------------------------------------- |
 | Credentials       | Connector config stores references and fingerprints, not raw passwords or private keys.                           |
 | Enablement        | Public enablement is probe-gated and rejects changed scope until the new payload is probed.                       |
-| Scheduling        | `scheduler tick` uses an advisory lock and persisted last-fired state to avoid overlapping fires.                 |
+| Scheduling        | `scheduler tick` uses an advisory lock and persisted last-fired state to avoid overlapping fires. Connector syncs default to ingest-only (`materialize: false`) when `sync_schedule` is set; lake-wide `eval_schedule` (default `every 6h`) runs `run_lake_eval`. |
+| Scale tiers       | Above ~100k events, local full JSONL rebuild is blocked unless a warehouse sink is configured; incremental materialize processes only changed raw rows below that threshold. |
 | Idempotency       | Connector raw events are upserted by `event_id`; overlapping syncs do not double-count evidence.                  |
 | Incremental reads | Append-style connectors advance persisted watermarks; full-scope syncs remain safe by upsert.                     |
 | Lake sinks        | Snowflake, ClickHouse, and DuckDB projections are optional and best-effort; local evidence remains authoritative. |

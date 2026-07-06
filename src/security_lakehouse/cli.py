@@ -45,6 +45,10 @@ def _parser() -> argparse.ArgumentParser:
     run.add_argument("--out", required=True, help="security data lake output directory")
     run.add_argument("--mapping", default=None, help="optional control mapping JSON")
     run.set_defaults(func=_run_pipeline)
+    pipeline_eval = pipeline_sub.add_parser("eval", help="run scale-aware lake evaluation")
+    pipeline_eval.add_argument("--lake", required=True, help="security data lake output directory")
+    pipeline_eval.add_argument("--actor", default="cli", help="actor recorded on the eval run")
+    pipeline_eval.set_defaults(func=_pipeline_eval)
     verify_integrity = pipeline_sub.add_parser(
         "verify-integrity",
         help="verify evidence hashes, idempotency signals, and artifact integrity",
@@ -78,7 +82,12 @@ def _parser() -> argparse.ArgumentParser:
     connectors_configure.add_argument(
         "--sync-schedule",
         default=None,
-        help="optional scheduler expression for continuous connector syncs, for example '@hourly' or 'every 15m'",
+        help="optional scheduler expression for continuous connector syncs, for example 'every 15m'",
+    )
+    connectors_configure.add_argument(
+        "--eval-schedule",
+        default=None,
+        help="lake-wide materialize/eval schedule when split ingest/eval is enabled (default every 6h)",
     )
     connectors_configure.add_argument(
         "--repo", default=None, help="GitHub OWNER/REPO for scheduled github-security sync"
@@ -663,6 +672,27 @@ def _run_pipeline(args: argparse.Namespace) -> int:
     return 0
 
 
+def _pipeline_eval(args: argparse.Namespace) -> int:
+    from security_lakehouse.lake_eval import run_lake_eval
+
+    result = run_lake_eval(args.lake, actor=args.actor)
+    print(
+        json.dumps(
+            {
+                "result": result.result,
+                "mode": result.mode,
+                "duration_ms": result.duration_ms,
+                "error": result.error,
+                "strategy": result.strategy,
+                "pipeline": result.pipeline.__dict__ if result.pipeline else None,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return 0 if result.result == "ok" else 1
+
+
 def _verify_pipeline_integrity(args: argparse.Namespace) -> int:
     from security_lakehouse.verification import verify_lake_integrity
 
@@ -727,6 +757,7 @@ def _connectors_configure(args: argparse.Namespace) -> int:
         key: value
         for key, value in {
             "sync_schedule": args.sync_schedule,
+            "eval_schedule": args.eval_schedule,
             "repo": args.repo,
             "fixture_dir": args.fixture_dir,
             "token_env": args.token_env,

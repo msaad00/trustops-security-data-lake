@@ -62,7 +62,8 @@ from security_lakehouse.connectors_snowflake import (
 from security_lakehouse.ingestion.merge import dedupe_by_key
 from security_lakehouse.ingestion.watermark import read_watermark, write_watermark
 from security_lakehouse.io import read_jsonl, write_jsonl
-from security_lakehouse.pipeline import run_pipeline
+from security_lakehouse.lake_scale import resolve_materialize_strategy, write_lake_scale_state
+from security_lakehouse.pipeline import run_pipeline, run_pipeline_incremental
 from security_lakehouse.repo_governance import sync_repo_governance
 from security_lakehouse.sinks import land_if_configured
 from security_lakehouse.validation import validate_raw_events
@@ -200,8 +201,7 @@ def run_connector_sync(
         _upsert_raw_events(raw_path, rows, connector_id=connector_id, write_mode=write_mode)
         cursor = _advance_watermark(lake, connector_id, rows, write_mode=write_mode)
         if materialize:
-            run_pipeline(raw_path, lake)
-            _land_to_sink(lake, connector_id=connector_id)
+            _materialize_after_sync(lake, raw_path, connector_id=connector_id)
             _fire_evidence_changed(lake, connector_id)
         run = append_run_event(
             lake,
@@ -240,6 +240,30 @@ class ConnectorSyncError(RuntimeError):
     def __init__(self, message: str, *, run: dict[str, Any]) -> None:
         super().__init__(message)
         self.run = run
+
+
+def _materialize_after_sync(lake: Path, raw_path: Path, *, connector_id: str) -> None:
+    """Run scale-aware materialize after a connector sync."""
+    from security_lakehouse.lake_scale import LakeEvalError
+
+    env = os.environ
+    strategy = resolve_materialize_strategy(lake, raw_path, env=env)
+    mode = str(strategy["mode"])
+    write_lake_scale_state(lake, strategy)
+    if mode == "warehouse_required":
+        raise LakeEvalError(str(strategy["recommendation"]))
+    if mode == "warehouse":
+        if (lake / "manifest.json").is_file():
+            run_pipeline_incremental(raw_path, lake)
+        else:
+            run_pipeline(raw_path, lake)
+        _land_to_sink(lake, connector_id=connector_id)
+        return
+    if mode == "local_incremental":
+        run_pipeline_incremental(raw_path, lake)
+    else:
+        run_pipeline(raw_path, lake)
+    _land_to_sink(lake, connector_id=connector_id)
 
 
 def _land_to_sink(lake: Path, *, connector_id: str | None = None) -> None:
