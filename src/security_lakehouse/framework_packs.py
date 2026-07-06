@@ -23,6 +23,7 @@ from security_lakehouse.pack_data import (
     CIS_AWS_SOURCE,
     FEDRAMP_SOURCE,
     ISO_27001_SOURCE,
+    ISO_27017_SOURCE,
     ISO_42001_CONTROLS,
     ISO_42001_SOURCE,
     NIST_CSF_2_COUNT,
@@ -32,6 +33,8 @@ from security_lakehouse.pack_data import (
     csf_category_risk_domain,
     iso_27001_2022_annex_a_refs,
     iso_27001_theme_risk_domain,
+    iso_27017_2015_controls,
+    iso_27017_risk_domain,
     nist_800_53_rev5_moderate_ids,
     nist_family_risk_domain,
 )
@@ -474,6 +477,36 @@ def iso_27001_2022_specs() -> list[PackControlSpec]:
     return specs
 
 
+def iso_27017_2015_specs() -> list[PackControlSpec]:
+    """All 47 ISO/IEC 27017:2015 cloud security clause IDs (40 ISO 27002 + 7 CLD)."""
+    specs: list[PackControlSpec] = []
+    for article_id, short_title in iso_27017_2015_controls():
+        risk = iso_27017_risk_domain(article_id)
+        owner = _soc2_owner(risk)
+        control_suffix = article_id
+        specs.append(
+            PackControlSpec(
+                control_id=f"ISO27017-{control_suffix}",
+                framework_id="iso-27017-2015",
+                framework="ISO 27017:2015",
+                framework_ref=f"ISO 27017:2015 {article_id}",
+                article_id=article_id,
+                title=f"ISO 27017:2015 {article_id} — {short_title}",
+                risk_domain=risk,
+                owner=owner,
+                evaluation_rule=_soc2_evaluation_rule(risk),
+                evidence_requirement=(
+                    f"Cloud security evidence supports ISO 27017:2015 clause {article_id} "
+                    f"({short_title}) for shared CSP/CSC responsibilities."
+                ),
+                asset_types=_soc2_assets(risk),
+                source_url=ISO_27017_SOURCE,
+                official_source_ref="iso-27017-2015",
+            )
+        )
+    return specs
+
+
 def iso_42001_2023_specs() -> list[PackControlSpec]:
     """All 38 ISO/IEC 42001:2023 Annex A AI management controls."""
     specs: list[PackControlSpec] = []
@@ -506,6 +539,7 @@ PACK_BUILDERS = {
     "fedramp-moderate": fedramp_moderate_specs,
     "cis-aws": cis_aws_v3_specs,
     "iso-27001-2022": iso_27001_2022_specs,
+    "iso-27017-2015": iso_27017_2015_specs,
     "iso-42001-2023": iso_42001_2023_specs,
 }
 
@@ -673,6 +707,7 @@ def sync_framework_packs(
             "fedramp-moderate",
             "cis_aws",
             "iso-27001-2022",
+            "iso-27017-2015",
             "iso-42001-2023",
         )
     }
@@ -687,6 +722,7 @@ def sync_framework_packs(
         "fedramp_moderate_control_count": framework_counts["fedramp-moderate"],
         "cis_aws_control_count": framework_counts["cis_aws"],
         "iso_27001_control_count": framework_counts["iso-27001-2022"],
+        "iso_27017_control_count": framework_counts["iso-27017-2015"],
         "iso_42001_control_count": framework_counts["iso-42001-2023"],
         "framework_counts": framework_counts,
         "bundle_hash": bundle.get("components", {}).get("controls") if bundle else None,

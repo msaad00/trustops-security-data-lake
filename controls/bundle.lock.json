@@ -2,12 +2,12 @@
   "schema_version": "trustops.catalog_bundle.v1",
   "as_of": null,
   "framework_count": 13,
-  "control_count": 741,
-  "crosswalk_count": 741,
+  "control_count": 788,
+  "crosswalk_count": 788,
   "components": {
-    "frameworks": "6c0bbaeef0df1d17fc7b4a902bb4bb9f52f0f8c270fded9d12dd963c1de36f95",
-    "controls": "ab45cfee1b8380f0daaa7e70e3dc1ef937a88f8e62d6fa8564cf6da49756335e",
-    "crosswalk": "d834ccc85513fcf95a39723172efa743d1691a185299262e7d322645ec973aa9"
+    "frameworks": "73ecdba12f380345dd1a86b7b575000e3a981bbe8dea923f2fb6763a31e47e51",
+    "controls": "6e83a7c2862279bf9170cc6f0e1b62625db12ac82c9e9e78075da12283ff6b3d",
+    "crosswalk": "00d8804b699f10cf4c28c0f85fc605fa1c34e80f86aba0dc4b9ae06e432c79c4"
   },
   "framework_versions": [
     {
@@ -3324,6 +3324,335 @@
       "lifecycle_status": "active"
     },
     {
+      "control_id": "ISO27017-10.1.1",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-10.1.2",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-11.2.5",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-11.2.7",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-12.1.1",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-12.1.2",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-12.1.3",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-12.4.1",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-12.4.2",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-12.4.3",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-12.4.4",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-13.1.1",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-13.1.2",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-13.1.3",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-15.1.1",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-16.1.3",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-18.1.1",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-5.1.1",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-5.1.2",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-6.1.1",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-6.1.3",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-6.1.4",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-6.2.1",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-6.2.2",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-8.1.1",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-8.1.2",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-8.1.3",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-8.1.4",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-9.1.1",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-9.1.2",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-9.2.1",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-9.2.2",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-9.2.3",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-9.2.4",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-9.2.5",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-9.2.6",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-9.3.1",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-9.4.1",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-9.4.2",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-9.4.3",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-CLD.12.1.5",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-CLD.12.4.5",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-CLD.13.1.4",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-CLD.6.3.1",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-CLD.8.1.5",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-CLD.9.5.1",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "ISO27017-CLD.9.5.2",
+      "framework_id": "iso-27017-2015",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
       "control_id": "ISO42001-10.2",
       "framework_id": "iso-42001-2023",
       "version": "1.0.0",
@@ -5291,5 +5620,5 @@
       "lifecycle_status": "active"
     }
   ],
-  "bundle_sha256": "260d92c8526db794518b37aec62f5533672ed2f7af82375a08f80aa09cef61fa"
+  "bundle_sha256": "cfb365c70b1962a833b7abd8a546dfc7c95285be634b675bbddcd8cae9f66203"
 }

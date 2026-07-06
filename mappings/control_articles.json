@@ -6444,6 +6444,664 @@
       ]
     },
     {
+      "control_id": "ISO27017-10.1.1",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "10.1.1",
+          "title": "ISO 27017:2015 10.1.1 \u2014 Policy on the use of cryptographic controls",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 10.1.1."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-10.1.2",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "10.1.2",
+          "title": "ISO 27017:2015 10.1.2 \u2014 Key management",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 10.1.2."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-11.2.5",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "11.2.5",
+          "title": "ISO 27017:2015 11.2.5 \u2014 Removal of assets",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 11.2.5."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-11.2.7",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "11.2.7",
+          "title": "ISO 27017:2015 11.2.7 \u2014 Secure disposal or re-use of equipment",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 11.2.7."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-12.1.1",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "12.1.1",
+          "title": "ISO 27017:2015 12.1.1 \u2014 Documented operating procedures",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 12.1.1."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-12.1.2",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "12.1.2",
+          "title": "ISO 27017:2015 12.1.2 \u2014 Change management",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 12.1.2."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-12.1.3",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "12.1.3",
+          "title": "ISO 27017:2015 12.1.3 \u2014 Capacity management",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 12.1.3."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-12.4.1",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "12.4.1",
+          "title": "ISO 27017:2015 12.4.1 \u2014 Event logging",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 12.4.1."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-12.4.2",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "12.4.2",
+          "title": "ISO 27017:2015 12.4.2 \u2014 Protection of log information",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 12.4.2."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-12.4.3",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "12.4.3",
+          "title": "ISO 27017:2015 12.4.3 \u2014 Administrator and operator logs",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 12.4.3."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-12.4.4",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "12.4.4",
+          "title": "ISO 27017:2015 12.4.4 \u2014 Clock synchronisation",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 12.4.4."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-13.1.1",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "13.1.1",
+          "title": "ISO 27017:2015 13.1.1 \u2014 Network controls",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 13.1.1."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-13.1.2",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "13.1.2",
+          "title": "ISO 27017:2015 13.1.2 \u2014 Security of network services",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 13.1.2."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-13.1.3",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "13.1.3",
+          "title": "ISO 27017:2015 13.1.3 \u2014 Segregation in networks",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 13.1.3."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-15.1.1",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "15.1.1",
+          "title": "ISO 27017:2015 15.1.1 \u2014 Information security policy for supplier relationships",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 15.1.1."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-16.1.3",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "16.1.3",
+          "title": "ISO 27017:2015 16.1.3 \u2014 Reporting information security weaknesses",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 16.1.3."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-18.1.1",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "18.1.1",
+          "title": "ISO 27017:2015 18.1.1 \u2014 Identification of applicable legislation and contractual requirements",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 18.1.1."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-5.1.1",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "5.1.1",
+          "title": "ISO 27017:2015 5.1.1 \u2014 Policies for information security",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 5.1.1."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-5.1.2",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "5.1.2",
+          "title": "ISO 27017:2015 5.1.2 \u2014 Review of the policies for information security",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 5.1.2."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-6.1.1",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "6.1.1",
+          "title": "ISO 27017:2015 6.1.1 \u2014 Information security roles and responsibilities",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 6.1.1."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-6.1.3",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "6.1.3",
+          "title": "ISO 27017:2015 6.1.3 \u2014 Contact with authorities",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 6.1.3."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-6.1.4",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "6.1.4",
+          "title": "ISO 27017:2015 6.1.4 \u2014 Contact with special interest groups",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 6.1.4."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-6.2.1",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "6.2.1",
+          "title": "ISO 27017:2015 6.2.1 \u2014 Mobile device policy",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 6.2.1."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-6.2.2",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "6.2.2",
+          "title": "ISO 27017:2015 6.2.2 \u2014 Teleworking",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 6.2.2."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-8.1.1",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "8.1.1",
+          "title": "ISO 27017:2015 8.1.1 \u2014 Inventory of assets",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 8.1.1."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-8.1.2",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "8.1.2",
+          "title": "ISO 27017:2015 8.1.2 \u2014 Ownership of assets",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 8.1.2."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-8.1.3",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "8.1.3",
+          "title": "ISO 27017:2015 8.1.3 \u2014 Acceptable use of assets",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 8.1.3."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-8.1.4",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "8.1.4",
+          "title": "ISO 27017:2015 8.1.4 \u2014 Return of assets",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 8.1.4."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-9.1.1",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "9.1.1",
+          "title": "ISO 27017:2015 9.1.1 \u2014 Access control policy",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 9.1.1."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-9.1.2",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "9.1.2",
+          "title": "ISO 27017:2015 9.1.2 \u2014 Access to networks and network services",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 9.1.2."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-9.2.1",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "9.2.1",
+          "title": "ISO 27017:2015 9.2.1 \u2014 User registration and de-registration",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 9.2.1."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-9.2.2",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "9.2.2",
+          "title": "ISO 27017:2015 9.2.2 \u2014 User access provisioning",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 9.2.2."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-9.2.3",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "9.2.3",
+          "title": "ISO 27017:2015 9.2.3 \u2014 Management of privileged access rights",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 9.2.3."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-9.2.4",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "9.2.4",
+          "title": "ISO 27017:2015 9.2.4 \u2014 Management of secret authentication information of users",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 9.2.4."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-9.2.5",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "9.2.5",
+          "title": "ISO 27017:2015 9.2.5 \u2014 Review of user access rights",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 9.2.5."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-9.2.6",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "9.2.6",
+          "title": "ISO 27017:2015 9.2.6 \u2014 Removal or adjustment of access rights",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 9.2.6."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-9.3.1",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "9.3.1",
+          "title": "ISO 27017:2015 9.3.1 \u2014 Use of secret authentication information",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 9.3.1."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-9.4.1",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "9.4.1",
+          "title": "ISO 27017:2015 9.4.1 \u2014 Information access restriction",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 9.4.1."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-9.4.2",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "9.4.2",
+          "title": "ISO 27017:2015 9.4.2 \u2014 Secure log-on procedures",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 9.4.2."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-9.4.3",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "9.4.3",
+          "title": "ISO 27017:2015 9.4.3 \u2014 Password management system",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 9.4.3."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-CLD.12.1.5",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "CLD.12.1.5",
+          "title": "ISO 27017:2015 CLD.12.1.5 \u2014 Administrator's operational security",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 CLD.12.1.5."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-CLD.12.4.5",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "CLD.12.4.5",
+          "title": "ISO 27017:2015 CLD.12.4.5 \u2014 Monitoring of cloud services",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 CLD.12.4.5."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-CLD.13.1.4",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "CLD.13.1.4",
+          "title": "ISO 27017:2015 CLD.13.1.4 \u2014 Alignment of security management for virtual and physical networks",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 CLD.13.1.4."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-CLD.6.3.1",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "CLD.6.3.1",
+          "title": "ISO 27017:2015 CLD.6.3.1 \u2014 Relationship between cloud service provider and cloud service customer",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 CLD.6.3.1."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-CLD.8.1.5",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "CLD.8.1.5",
+          "title": "ISO 27017:2015 CLD.8.1.5 \u2014 Removal of cloud service customer assets",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 CLD.8.1.5."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-CLD.9.5.1",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "CLD.9.5.1",
+          "title": "ISO 27017:2015 CLD.9.5.1 \u2014 Segregation in virtual computing environments",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 CLD.9.5.1."
+        }
+      ]
+    },
+    {
+      "control_id": "ISO27017-CLD.9.5.2",
+      "framework_id": "iso-27017-2015",
+      "articles": [
+        {
+          "article_id": "CLD.9.5.2",
+          "title": "ISO 27017:2015 CLD.9.5.2 \u2014 Virtual machine hardening",
+          "official_source_url": "https://www.iso.org/standard/43757.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to ISO 27017:2015 CLD.9.5.2."
+        }
+      ]
+    },
+    {
       "control_id": "ISO42001-10.2",
       "framework_id": "iso-42001-2023",
       "articles": [

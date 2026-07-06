@@ -178,8 +178,8 @@
       "official_source_url": "https://www.iso.org/standard/43757.html",
       "source_sha256": null,
       "pulled_at": null,
-      "implementation_status": "planned",
-      "copyright_guardrail": "ISO standard text is licensed. Planned pack will store clause identifiers only; customers must hold their own license for the official PDF.",
+      "implementation_status": "implemented_full_pack",
+      "copyright_guardrail": "ISO standard text is licensed. Pack stores clause identifiers and short internal titles only; customers must hold their own license for the official PDF.",
       "sync_cadence_days": 90
     }
   ]
