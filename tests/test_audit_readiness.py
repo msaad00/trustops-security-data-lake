@@ -75,3 +75,33 @@ def test_audit_readiness_vendor_gaps(tmp_path: Path) -> None:
     assert data["vendor_risk"]["total"] == 1
     assert data["vendor_risk"]["overdue"] == 1
     assert any(gap["id"] == "vendor_overdue" for gap in data["gaps"])
+
+
+def test_audit_readiness_personnel_summary(tmp_path: Path) -> None:
+    from security_lakehouse.db import access_reviews as access_reviews_db
+    from security_lakehouse.services import access_reviews as access_review_services
+
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path)
+    with app.state.sessionmaker() as session:
+        tenant = create_tenant(session, slug="personnel-audit", name="Personnel Audit")
+        create_user(session, tenant_id=tenant.id, email="admin@personnel-audit.test", role="admin")
+        campaign = access_review_services.create_campaign(session, tenant_id=tenant.id, name="Q2 users")
+        access_review_services.set_campaign_status(
+            session, tenant_id=tenant.id, campaign_id=campaign["id"], status="active"
+        )
+        access_reviews_db.add_item(
+            session,
+            tenant_id=tenant.id,
+            campaign_id=campaign["id"],
+            subject_id="user-1",
+            subject_name="Alice",
+        )
+        session.commit()
+        data = build_audit_readiness(lake=tmp_path, session=session, tenant_id=tenant.id)
+
+    assert data["personnel"]["active_campaigns"] == 1
+    assert data["personnel"]["pending_certifications"] == 1
+    assert any(gap["id"] == "personnel_idp" for gap in data["gaps"])
+    personnel_row = next(row for row in data["workflow_coverage"]["checklist"] if row["id"] == "personnel_tracking")
+    assert personnel_row["shipped"] is True

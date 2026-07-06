@@ -361,6 +361,16 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """Return remediation SLA rollups: open/overdue counts, MTTR, attainment."""
         return _server_api_request("GET", "/api/v1/insights/remediation")
 
+    @trustops_tool(title="Insights Framework Trends")
+    def get_insights_framework_trends(limit: int = 90) -> JsonObject:
+        """Return per-framework readiness scores over time from snapshots and live posture."""
+        return _server_api_request("GET", "/api/v1/insights/framework-trends", limit=str(limit))
+
+    @trustops_tool(title="Insights SLA Heatmap")
+    def get_insights_sla_heatmap() -> JsonObject:
+        """Return remediation task counts by priority and SLA state for exec dashboards."""
+        return _server_api_request("GET", "/api/v1/insights/sla-heatmap")
+
     @trustops_tool(title="List Vendor Assessments")
     def list_vendor_assessments(status: str = "", limit: int = 100) -> JsonObject:
         """List tenant vendor diligence questionnaires (requires server API auth)."""

@@ -97,8 +97,8 @@ def _workflow_checklist(*, posture_score: int, framework_total: int) -> list[dic
         {
             "id": "personnel_tracking",
             "label": "Personnel / HR onboarding",
-            "shipped": False,
-            "note": "Roadmap — use access reviews + IdP connector today",
+            "shipped": True,
+            "note": "IdP connectors + access-review campaigns (native HRIS roadmap)",
         },
         {
             "id": "auditor_marketplace",
@@ -107,6 +107,44 @@ def _workflow_checklist(*, posture_score: int, framework_total: int) -> list[dic
             "note": "Bring your own auditor; trust shares for evidence",
         },
     ]
+
+
+IDENTITY_CONNECTOR_IDS = frozenset({"okta-identity", "okta-system-log"})
+
+
+def _personnel_summary(
+    session: Session,
+    *,
+    tenant_id: str,
+    connectors: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """IdP + access-review rollup — managed-GRC personnel tracking workaround."""
+    from security_lakehouse.db import access_reviews as access_reviews_db
+
+    campaigns = access_review_services.list_campaigns(session, tenant_id=tenant_id, limit=100)
+    active = [row for row in campaigns if row.get("status") == "active"]
+    completed = [row for row in campaigns if row.get("status") == "completed"]
+
+    pending_certifications = 0
+    certified = 0
+    for row in active:
+        progress = access_reviews_db.campaign_progress(session, tenant_id=tenant_id, campaign_id=str(row["id"]))
+        pending_certifications += int(progress.get("pending") or 0)
+        certified += int(progress.get("certified") or 0)
+
+    identity_connectors = sum(
+        1
+        for row in connectors
+        if str(row.get("connector_id") or "") in IDENTITY_CONNECTOR_IDS and row.get("state") == "enabled"
+    )
+
+    return {
+        "identity_connectors": identity_connectors,
+        "active_campaigns": len(active),
+        "completed_campaigns": len(completed),
+        "pending_certifications": pending_certifications,
+        "certified": certified,
+    }
 
 
 def _vendor_risk_summary(session: Session, *, tenant_id: str) -> dict[str, Any]:
@@ -165,6 +203,7 @@ def build_audit_readiness(
 
     ingestion = build_ingestion_status(lake)
     summary = ingestion.get("summary") or {}
+    connector_rows = ingestion.get("connectors") or []
     active_shares = [share for share in trust_share.list_shares(lake) if not share.get("expired")]
     auditor_shares = [share for share in active_shares if str(share.get("role") or "") == "auditor"]
 
@@ -222,6 +261,32 @@ def build_audit_readiness(
         )
 
     vendor_risk = _vendor_risk_summary(session, tenant_id=tenant_id)
+    personnel = _personnel_summary(session, tenant_id=tenant_id, connectors=connector_rows)
+    if personnel["identity_connectors"] == 0:
+        gaps.append(
+            {
+                "id": "personnel_idp",
+                "label": "Connect an identity provider for personnel evidence",
+                "href": "/console/connectors/?connect=okta-identity",
+            }
+        )
+    elif personnel["active_campaigns"] == 0:
+        gaps.append(
+            {
+                "id": "personnel_access_review",
+                "label": "Start an access review campaign for personnel certification",
+                "href": "/console/access-reviews",
+            }
+        )
+    elif personnel["pending_certifications"] > 0:
+        gaps.append(
+            {
+                "id": "personnel_pending",
+                "label": f"{personnel['pending_certifications']} access certification(s) pending review",
+                "href": "/console/access-reviews",
+            }
+        )
+
     if vendor_risk["total"] == 0:
         gaps.append(
             {
@@ -315,6 +380,7 @@ def build_audit_readiness(
         },
         "agents": {"pending_decisions": pending_decisions},
         "vendor_risk": vendor_risk,
+        "personnel": personnel,
         "policy_attestation": policy_attestation,
         "gaps": gaps,
         "workflow_coverage": {

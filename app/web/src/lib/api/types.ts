@@ -465,6 +465,13 @@ export interface AuditReadiness {
     unattested: number;
     total_acknowledgments: number;
   };
+  personnel?: {
+    identity_connectors: number;
+    active_campaigns: number;
+    completed_campaigns: number;
+    pending_certifications: number;
+    certified: number;
+  };
   gaps: AuditReadinessGap[];
   workflow_coverage: { score: number; checklist: AuditWorkflowItem[] };
 }
