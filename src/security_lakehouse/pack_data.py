@@ -13,10 +13,13 @@ CIS_AWS_V3_COUNT = 62
 ISO_27001_2022_ANNEX_A_COUNT = 93
 ISO_42001_2023_ANNEX_A_COUNT = 38
 
+NIST_CSF_2_COUNT = 106
+
 FEDRAMP_SOURCE = "https://csrc.nist.gov/publications/detail/sp/800-53b/final"
 CIS_AWS_SOURCE = "https://www.cisecurity.org/benchmark/amazon_web_services"
 ISO_27001_SOURCE = "https://www.iso.org/standard/27001"
 ISO_42001_SOURCE = "https://www.iso.org/standard/42001"
+NIST_CSF_2_SOURCE = "https://www.nist.gov/cyberframework"
 
 ISO_42001_CONTROLS: tuple[tuple[str, str], ...] = (
     ("A.2.2", "AI policy"),
@@ -127,3 +130,32 @@ def cis_section_risk_domain(section: str) -> str:
         "4": "monitoring",
         "5": "controls-operations",
     }.get(section, "controls-operations")
+
+
+def csf_category_risk_domain(function: str, category: str) -> str:
+    """Map NIST CSF 2.0 function/category pairs to TrustOps risk domains."""
+    key = f"{function}.{category}"
+    return {
+        "GV.OC": "governance",
+        "GV.RM": "risk-management",
+        "GV.RR": "governance",
+        "GV.PO": "governance",
+        "GV.OV": "governance",
+        "GV.SC": "vendor-risk",
+        "ID.AM": "controls-operations",
+        "ID.RA": "risk-management",
+        "ID.IM": "risk-management",
+        "PR.AA": "identity",
+        "PR.AT": "governance",
+        "PR.DS": "controls-operations",
+        "PR.PS": "controls-operations",
+        "PR.IR": "change-management",
+        "DE.CM": "monitoring",
+        "DE.AE": "monitoring",
+        "RS.MA": "monitoring",
+        "RS.AN": "monitoring",
+        "RS.CO": "monitoring",
+        "RS.MI": "monitoring",
+        "RC.RP": "change-management",
+        "RC.CO": "change-management",
+    }.get(key, "governance")

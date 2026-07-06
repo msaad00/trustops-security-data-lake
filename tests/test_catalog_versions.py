@@ -28,7 +28,7 @@ def test_bundle_is_deterministic_and_covers_components() -> None:
     b = cv.compute_bundle()
     assert a["bundle_sha256"] == b["bundle_sha256"]
     assert a["framework_count"] == 13
-    assert a["control_count"] == 635
+    assert a["control_count"] == 741
     assert set(a["components"]) == {"frameworks", "controls", "crosswalk"}
 
 

@@ -1,8 +1,8 @@
-Frameworks: 13 (10 implemented, 3 planned)
-Seeded controls: 635
-Reviewed mappings: 635
+Frameworks: 13 (11 implemented, 2 planned)
+Seeded controls: 741
+Reviewed mappings: 741
 Asset types modeled: 18
-Control-to-asset applicability links: 2139
+Control-to-asset applicability links: 2416
 Seeded mapping coverage: 100.0%
 
 | Framework                                                  | Official source                                                                                                                                                                                 | Status                      | Seeded controls | Reviewed mappings | Seeded mapping coverage | Source state | Source policy                 |
@@ -17,7 +17,7 @@ Seeded mapping coverage: 100.0%
 | ISO/IEC 27017:2015 Cloud security controls                 | [ISO/IEC 27017:2015](https://www.iso.org/standard/43757.html)                                                                                                                                   | planned                     |               0 |                 0 |                    0.0% | never pulled | source-linked identifier only |
 | ISO/IEC 42001:2023 AI management system                    | [ISO/IEC 42001:2023](https://www.iso.org/standard/42001)                                                                                                                                        | implemented_full_pack       |              39 |                39 |                  100.0% | never pulled | source-linked identifier only |
 | NIST AI Risk Management Framework                          | [NIST Artificial Intelligence Risk Management Framework (AI RMF 1.0)](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10)                            | implemented_full_pack       |              72 |                72 |                  100.0% | never pulled | public-source citation        |
-| NIST Cybersecurity Framework (CSF) 2.0                     | [NIST Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework)                                                                                                                         | planned                     |               0 |                 0 |                    0.0% | never pulled | public-source citation        |
+| NIST Cybersecurity Framework (CSF) 2.0                     | [NIST Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework)                                                                                                                         | implemented_full_pack       |             106 |               106 |                  100.0% | never pulled | public-source citation        |
 | PCI DSS v4.0 Payment Card Industry Data Security Standard  | [PCI Security Standards Council - PCI DSS v4.0](https://www.pcisecuritystandards.org/document_library/?category=pcidss)                                                                         | implemented_limited_mapping |               3 |                 3 |                  100.0% | never pulled | source-linked identifier only |
 | SOC 2 Trust Services Criteria                              | [AICPA & CIMA 2017 Trust Services Criteria (With Revised Points of Focus - 2022)](https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022) | implemented_full_pack       |              61 |                61 |                  100.0% | never pulled | source-linked identifier only |
 
@@ -27,21 +27,21 @@ Every seeded control declares the asset types it applies to. The pipeline joins 
 
 | Asset type                 | Applicable controls |
 | -------------------------- | ------------------: |
-| `service`                  |                 480 |
-| `audit_log`                |                 216 |
-| `cloud_resource`           |                 185 |
-| `cloud_policy`             |                 180 |
-| `data_store`               |                 154 |
-| `iam_role`                 |                 134 |
+| `service`                  |                 580 |
+| `audit_log`                |                 277 |
+| `cloud_resource`           |                 202 |
+| `cloud_policy`             |                 197 |
+| `data_store`               |                 164 |
+| `iam_role`                 |                 140 |
 | `ai_agent`                 |                 117 |
 | `ai_model`                 |                 117 |
-| `identity_user`            |                  94 |
-| `identity_group`           |                  74 |
-| `okta_user`                |                  74 |
+| `identity_user`            |                 100 |
+| `host`                     |                  85 |
+| `identity_group`           |                  80 |
+| `okta_user`                |                  80 |
+| `container_image`          |                  74 |
+| `repo`                     |                  72 |
 | `s3_bucket`                |                  66 |
-| `container_image`          |                  62 |
-| `host`                     |                  61 |
 | `identity_account`         |                  61 |
-| `repo`                     |                  60 |
 | `identity_role_assignment` |                   3 |
 | `account_config`           |                   1 |

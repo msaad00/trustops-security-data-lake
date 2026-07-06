@@ -39,7 +39,7 @@
 
     <g transform="translate(900,36)">
       <rect width="108" height="32" rx="10" class="chip"/>
-      <text x="16" y="21" class="chipText">635 controls</text>
+      <text x="16" y="21" class="chipText">741 controls</text>
       <rect x="118" width="132" height="32" rx="10" fill="#102a43" stroke="#38bdf8" stroke-width="1"/>
       <text x="134" y="21" fill="#7dd3fc" font-size="11" font-weight="900">/api/v1 · MCP · CI</text>
     </g>

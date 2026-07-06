@@ -7,6 +7,7 @@ import json
 from security_lakehouse.catalog import load_control_catalog
 from security_lakehouse.framework_packs import (
     NIST_AI_RMF_SUBCATEGORY_COUNT,
+    NIST_CSF_2_SUBCATEGORY_COUNT,
     SOC2_COMMON_CRITERIA_COUNT,
     SOC2_FULL_PACK_COUNT,
     SOC2_TSC_EXTENSION_COUNT,
@@ -15,6 +16,7 @@ from security_lakehouse.framework_packs import (
     iso_27001_2022_specs,
     iso_42001_2023_specs,
     nist_ai_rmf_specs,
+    nist_csf_2_specs,
     soc2_common_criteria_specs,
     soc2_full_pack_specs,
     soc2_tsc_extension_specs,
@@ -26,6 +28,7 @@ from security_lakehouse.pack_data import (
     FEDRAMP_MODERATE_COUNT,
     ISO_27001_2022_ANNEX_A_COUNT,
     ISO_42001_2023_ANNEX_A_COUNT,
+    NIST_CSF_2_COUNT,
     cis_aws_v3_requirements,
 )
 
@@ -72,6 +75,14 @@ def test_nist_ai_rmf_pack_has_all_subcategories() -> None:
     assert len(nist_ai_rmf_specs()) == NIST_AI_RMF_SUBCATEGORY_COUNT
 
 
+def test_nist_csf_2_pack_has_all_subcategories() -> None:
+    specs = nist_csf_2_specs()
+    assert len(specs) == NIST_CSF_2_SUBCATEGORY_COUNT
+    assert len(specs) == NIST_CSF_2_COUNT
+    assert specs[0].framework_id == "nist-csf-2.0"
+    assert specs[0].control_id.startswith("NIST-CSF-")
+
+
 def test_fedramp_pack_has_nist_moderate_baseline() -> None:
     specs = fedramp_moderate_specs()
     assert len(specs) == FEDRAMP_MODERATE_COUNT
@@ -99,6 +110,7 @@ def test_catalog_has_full_core_framework_packs() -> None:
     expectations = {
         "soc2": SOC2_FULL_PACK_COUNT,
         "nist-ai-rmf": NIST_AI_RMF_SUBCATEGORY_COUNT,
+        "nist-csf-2.0": NIST_CSF_2_COUNT,
         "fedramp-moderate": FEDRAMP_MODERATE_COUNT,
         "cis_aws": CIS_AWS_V3_COUNT,
         "iso-27001-2022": ISO_27001_2022_ANNEX_A_COUNT,

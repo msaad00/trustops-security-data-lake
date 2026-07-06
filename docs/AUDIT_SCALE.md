@@ -35,7 +35,7 @@ security-lakehouse fixtures synthesize-scale \
 security-lakehouse benchmark pipeline --raw /tmp/audit-scale/raw.jsonl --out /tmp/audit-scale/lake
 ```
 
-Controls are sampled from the active catalog (635 controls after TSC extensions). Each open event fans out to `controls_per_event` findings during evaluation.
+Controls are sampled from the active catalog (741 controls after full framework packs). Each open event fans out to `controls_per_event` findings during evaluation.
 
 ## Latency and throughput enhancements
 

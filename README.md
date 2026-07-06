@@ -106,7 +106,7 @@ More: [onboarding](docs/images/trustops-demo-onboarding.png) · [graph](docs/ima
 | ------------------- | -------------------------------------------------------------------------------- |
 | **Audit room**      | Readiness API, live SSE, gap checklist, snapshot timeline, executive PDF         |
 | **Evidence**        | Freshness SLA, escalate-to-tasks, SHA-256 verify, saved views, cross-entity tags |
-| **Frameworks**      | 10 families · **635** controls · drill-down chain · staged readiness gates       |
+| **Frameworks**      | 11 families · **741** controls · drill-down chain · staged readiness gates       |
 | **Vendor & policy** | Questionnaire MVP, diligence rollups, employee policy attestation                |
 | **Remediation**     | Tasks, evidence requests, workflow canvas with approval gates                    |
 | **Identity**        | OIDC/SAML, API keys, user admin, IdP role map, SCIM scaffold                     |
@@ -170,7 +170,7 @@ Production auth requires signed session cookies — see [SERVER_AUTH.md](docs/SE
 |                |                                                                                       |
 | -------------- | ------------------------------------------------------------------------------------- |
 | **Release**    | `0.2.x` — OSS demos, self-hosted pilots, hosted scaffold                              |
-| **Catalog**    | 10 framework families · **635** controls · 18 asset types                             |
+| **Catalog**    | 11 framework families · **741** controls · 18 asset types                             |
 | **Console**    | **28 routes** — dashboard, audit room, controls, evidence, connectors, …              |
 | **Deployment** | Local · Helm self-hosted · managed hosted ([pricing](docs/DEPLOYMENT_AND_PRICING.md)) |
 | **Surfaces**   | Console · `/api/v1` · SDK · MCP · agents ([API](docs/api/AGENT_API.md))               |

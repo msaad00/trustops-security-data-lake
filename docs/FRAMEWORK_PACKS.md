@@ -12,6 +12,7 @@ frameworks stay seed-and-expand.
 | SOC 2 Common Criteria       | `soc2`                | **33** (CC1.1–CC9.2)                                    | [AICPA TSC 2017/2022](https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022) |
 | SOC 2 TSC extensions        | `soc2`                | **28** supplemental (A1, C1, PI1, P1–P8) — **61 total** | same                                                                                                                                |
 | NIST AI RMF 1.0             | `nist-ai-rmf`         | **72** (all GOVERN/MAP/MEASURE/MANAGE subcategories)    | [NIST AI RMF 1.0](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10)                    |
+| NIST CSF 2.0 Core           | `nist-csf-2.0`        | **106** subcategories (GOVERN through RECOVER)          | [NIST Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework)                                                             |
 | FedRAMP Moderate foundation | `fedramp-moderate`    | **287** (NIST SP 800-53 Rev 5 Moderate baseline)        | [NIST SP 800-53B](https://csrc.nist.gov/publications/detail/sp/800-53b/final)                                                       |
 | CIS AWS Foundations v3.0    | `cis-aws` / `cis_aws` | **62** recommendations                                  | [CIS AWS Benchmark](https://www.cisecurity.org/benchmark/amazon_web_services)                                                       |
 | ISO/IEC 27001:2022 Annex A  | `iso-27001-2022`      | **93** controls                                         | [ISO/IEC 27001:2022](https://www.iso.org/standard/27001)                                                                            |
@@ -32,6 +33,7 @@ in a follow-up.
 ```bash
 security-lakehouse frameworks sync-packs
 # or one pack:
+security-lakehouse frameworks sync-packs --pack nist-csf-2.0
 security-lakehouse frameworks sync-packs --pack fedramp-moderate
 security-lakehouse frameworks sync-packs --pack cis-aws
 security-lakehouse frameworks sync-packs --pack iso-27001-2022
@@ -97,7 +99,7 @@ Tune per control after sync by editing `evaluation_rule` in the catalog.
 
 - FedRAMP **Rev 5 overlay** controls beyond NIST Moderate (323-selected set)
 - SOC 2 **Availability / Confidentiality / Processing Integrity / Privacy** TSC
-- NIST **CSF 2.0** full pack
+- CMMC 2.0 Level 2 and ISO/IEC 27017 full packs
 - Pack-specific evidence requirement templates linked to connector catalogs
 
 See [ROADMAP.md](../ROADMAP.md).

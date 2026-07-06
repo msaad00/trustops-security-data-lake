@@ -150,8 +150,8 @@
       "official_source_url": "https://www.nist.gov/cyberframework",
       "source_sha256": null,
       "pulled_at": null,
-      "implementation_status": "planned",
-      "copyright_guardrail": "NIST CSF is public NIST guidance. Planned pack will cite official NIST functions/categories only — no controls ship until source-linked mappings are reviewed.",
+      "implementation_status": "implemented_full_pack",
+      "copyright_guardrail": "NIST CSF is public NIST guidance. Pack cites official CSF 2.0 function/category/subcategory IDs with short internal titles only.",
       "sync_cadence_days": 90
     },
     {
