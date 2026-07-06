@@ -39,6 +39,34 @@ Controls are sampled from the active catalog (741 controls after full framework 
 
 ## Latency and throughput enhancements
 
+### Incremental materialize (`pipeline.run_pipeline_incremental`)
+
+When a prior `manifest.json` exists, incremental materialize:
+
+- streams raw JSONL and compares each `event_id` fingerprint to `manifest.raw_index`
+- upserts only changed/new rows into bronze/silver
+- rebuilds gold/marts from the merged silver set (not a full raw replay of unchanged rows)
+- records `materialize_mode`, `delta_count`, and `removed_count` on the manifest
+
+Use split schedules so connector sync stays ingest-only and lake eval runs less often:
+
+```bash
+security-lakehouse connectors configure \
+  --lake /lake \
+  --connector-id github-security \
+  --state enabled \
+  --options-json '{"sync_schedule":"every 15m","eval_schedule":"every 6h"}'
+
+security-lakehouse pipeline eval --lake /lake
+security-lakehouse scheduler tick --lake /lake
+```
+
+### Warehouse tier above 100k events
+
+When silver/raw cardinality exceeds `100_000`, local full rebuild is blocked unless a
+Snowflake, ClickHouse, or DuckDB sink is configured. The active tier is recorded in
+`gold/lake_scale.json` and surfaced on `/api/v1/ingestion/status`.
+
 ### Streaming IO (`security_lakehouse.io`)
 
 - `iter_jsonl` — line-at-a-time reads (no full-file `read_text`)

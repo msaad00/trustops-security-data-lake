@@ -266,12 +266,19 @@ export const CONNECTOR_SCOPE_FIELDS: Record<string, ConnectorFieldDef[]> = {
 export const SYNC_SCHEDULE_FIELD: ConnectorFieldDef = {
   name: "sync_schedule",
   label: "Sync schedule",
-  placeholder: "@hourly",
-  hint: "Optional: @hourly, @daily, every 15m, every 6h. Leave empty for manual sync only.",
+  placeholder: "every 15m",
+  hint: "Ingest-only cadence: @hourly, @daily, every 15m. Defaults to split ingest/eval when set.",
+};
+
+export const EVAL_SCHEDULE_FIELD: ConnectorFieldDef = {
+  name: "eval_schedule",
+  label: "Eval schedule",
+  placeholder: "every 6h",
+  hint: "Lake-wide materialize + evaluate cadence (default every 6h when sync is set).",
 };
 
 export function schedulerFieldsFor(isRunnable: boolean): ConnectorFieldDef[] {
-  return isRunnable ? [SYNC_SCHEDULE_FIELD] : [];
+  return isRunnable ? [SYNC_SCHEDULE_FIELD, EVAL_SCHEDULE_FIELD] : [];
 }
 
 export function fallbackCredentialFields(

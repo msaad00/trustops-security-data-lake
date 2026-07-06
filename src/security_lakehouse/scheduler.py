@@ -6,9 +6,10 @@ fires every due workflow exactly once, and persists the last-fired timestamp
 to ``gold/scheduler_state.jsonl`` so successive ticks don't double-fire.
 
 An enabled connector becomes eligible for periodic sync when its connector
-configuration options include ``sync_schedule``. The scheduler calls the same
-connector runner used by the CLI, so scheduled evidence collection and manual
-syncs share validation, run history, and raw-event materialization.
+configuration options include ``sync_schedule``. When ``split_ingest_eval`` is
+true (the default whenever ``sync_schedule`` is set), syncs ingest raw evidence
+only and a separate lake-wide ``eval_schedule`` (default ``every 6h``) runs
+``run_lake_eval`` to materialize and evaluate.
 
 Two execution surfaces:
   * ``security-lakehouse scheduler tick --lake build/lakehouse`` runs the
@@ -39,6 +40,8 @@ from typing import Any
 
 from security_lakehouse.connector_runner import run_connector_sync
 from security_lakehouse.connector_state import build_catalog_view
+from security_lakehouse.lake_eval import run_lake_eval
+from security_lakehouse.lake_scale import connector_materialize_on_sync, lake_eval_schedule
 from security_lakehouse.workflows import list_workflows, run_workflow
 
 STATE_FILE = "scheduler_state.jsonl"
@@ -121,6 +124,22 @@ def _scheduled_from_workflows(workflows: list[dict[str, Any]]) -> list[Scheduled
     return out
 
 
+@dataclass(frozen=True)
+class ScheduledLakeEval:
+    schedule: str
+    period: timedelta
+
+
+def _scheduled_lake_eval(lake_dir: str | Path) -> ScheduledLakeEval | None:
+    schedule = lake_eval_schedule(lake_dir)
+    if not schedule:
+        return None
+    period = parse_schedule(schedule)
+    if period is None:
+        return None
+    return ScheduledLakeEval(schedule=schedule, period=period)
+
+
 def _scheduled_from_connectors(lake_dir: str | Path) -> list[ScheduledConnector]:
     out: list[ScheduledConnector] = []
     for connector in build_catalog_view(lake_dir):
@@ -139,7 +158,7 @@ def _scheduled_from_connectors(lake_dir: str | Path) -> list[ScheduledConnector]
                 repo=options.get("repo"),
                 fixture_dir=options.get("fixture_dir"),
                 token_env=str(options.get("token_env") or "__provider_default__"),
-                materialize=bool(options.get("materialize", True)),
+                materialize=connector_materialize_on_sync(options),
             )
         )
     return out
@@ -323,6 +342,34 @@ def _tick_locked(
                     "error": "internal error",
                 }
             )
+    lake_eval = _scheduled_lake_eval(lake_dir)
+    if lake_eval is not None:
+        last_fired = state.get(_state_key("lake_eval", "default"))
+        due_at = (last_fired + lake_eval.period) if last_fired else moment
+        if last_fired is None or moment >= due_at:
+            try:
+                eval_result = run_lake_eval(lake_dir, actor="scheduler")
+                _write_state(lake_dir, target_kind="lake_eval", target_id="default", fired_at=moment)
+                results.append(
+                    {
+                        "target_kind": "lake_eval",
+                        "schedule": lake_eval.schedule,
+                        "fired_at": _utc_iso(moment),
+                        "result": eval_result.result,
+                        "mode": eval_result.mode,
+                        "error": eval_result.error,
+                    }
+                )
+            except Exception:  # noqa: BLE001 - scheduler results must not expose exception details
+                results.append(
+                    {
+                        "target_kind": "lake_eval",
+                        "schedule": lake_eval.schedule,
+                        "fired_at": _utc_iso(moment),
+                        "result": "error",
+                        "error": "internal error",
+                    }
+                )
     return results
 
 
