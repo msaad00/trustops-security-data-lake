@@ -1,8 +1,8 @@
-Frameworks: 13 (12 implemented, 1 planned)
-Seeded controls: 851
-Reviewed mappings: 851
+Frameworks: 13 (13 implemented, 0 planned)
+Seeded controls: 898
+Reviewed mappings: 898
 Asset types modeled: 18
-Control-to-asset applicability links: 2767
+Control-to-asset applicability links: 2911
 Seeded mapping coverage: 100.0%
 
 | Framework                                                  | Official source                                                                                                                                                                                 | Status                      | Seeded controls | Reviewed mappings | Seeded mapping coverage | Source state | Source policy                 |
@@ -14,7 +14,7 @@ Seeded mapping coverage: 100.0%
 | GDPR - EU General Data Protection Regulation (2016/679)    | [EUR-Lex - Regulation (EU) 2016/679](https://eur-lex.europa.eu/eli/reg/2016/679/oj)                                                                                                             | implemented_limited_mapping |               6 |                 6 |                  100.0% | never pulled | public-source citation        |
 | HIPAA Security Rule (45 CFR Parts 160, 162, 164)           | [U.S. HHS HIPAA Security Rule](https://www.hhs.gov/hipaa/for-professionals/security/index.html)                                                                                                 | implemented_limited_mapping |               6 |                 6 |                  100.0% | never pulled | public-source citation        |
 | ISO/IEC 27001:2022 Information security management systems | [ISO/IEC 27001:2022](https://www.iso.org/standard/27001)                                                                                                                                        | implemented_full_pack       |              93 |                93 |                  100.0% | never pulled | source-linked identifier only |
-| ISO/IEC 27017:2015 Cloud security controls                 | [ISO/IEC 27017:2015](https://www.iso.org/standard/43757.html)                                                                                                                                   | planned                     |               0 |                 0 |                    0.0% | never pulled | source-linked identifier only |
+| ISO/IEC 27017:2015 Cloud security controls                 | [ISO/IEC 27017:2015](https://www.iso.org/standard/43757.html)                                                                                                                                   | implemented_full_pack       |              47 |                47 |                  100.0% | never pulled | source-linked identifier only |
 | ISO/IEC 42001:2023 AI management system                    | [ISO/IEC 42001:2023](https://www.iso.org/standard/42001)                                                                                                                                        | implemented_full_pack       |              39 |                39 |                  100.0% | never pulled | source-linked identifier only |
 | NIST AI Risk Management Framework                          | [NIST Artificial Intelligence Risk Management Framework (AI RMF 1.0)](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10)                            | implemented_full_pack       |              72 |                72 |                  100.0% | never pulled | public-source citation        |
 | NIST Cybersecurity Framework (CSF) 2.0                     | [NIST Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework)                                                                                                                         | implemented_full_pack       |             106 |               106 |                  100.0% | never pulled | public-source citation        |
@@ -27,20 +27,20 @@ Every seeded control declares the asset types it applies to. The pipeline joins 
 
 | Asset type                 | Applicable controls |
 | -------------------------- | ------------------: |
-| `service`                  |                 657 |
-| `audit_log`                |                 308 |
-| `cloud_resource`           |                 236 |
-| `cloud_policy`             |                 231 |
-| `iam_role`                 |                 173 |
-| `data_store`               |                 164 |
-| `identity_user`            |                 133 |
+| `service`                  |                 691 |
+| `audit_log`                |                 325 |
+| `cloud_resource`           |                 248 |
+| `cloud_policy`             |                 243 |
+| `iam_role`                 |                 186 |
+| `data_store`               |                 166 |
+| `identity_user`            |                 146 |
+| `identity_group`           |                 126 |
+| `okta_user`                |                 126 |
 | `ai_agent`                 |                 117 |
 | `ai_model`                 |                 117 |
-| `identity_group`           |                 113 |
-| `okta_user`                |                 113 |
-| `host`                     |                 104 |
-| `container_image`          |                  86 |
-| `repo`                     |                  84 |
+| `host`                     |                 113 |
+| `container_image`          |                  89 |
+| `repo`                     |                  87 |
 | `s3_bucket`                |                  66 |
 | `identity_account`         |                  61 |
 | `identity_role_assignment` |                   3 |

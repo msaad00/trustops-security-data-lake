@@ -15,6 +15,7 @@ from security_lakehouse.framework_packs import (
     cmmc_2_level2_specs,
     fedramp_moderate_specs,
     iso_27001_2022_specs,
+    iso_27017_2015_specs,
     iso_42001_2023_specs,
     nist_ai_rmf_specs,
     nist_csf_2_specs,
@@ -29,10 +30,12 @@ from security_lakehouse.pack_data import (
     CMMC_2_LEVEL2_COUNT,
     FEDRAMP_MODERATE_COUNT,
     ISO_27001_2022_ANNEX_A_COUNT,
+    ISO_27017_2015_COUNT,
     ISO_42001_2023_ANNEX_A_COUNT,
     NIST_CSF_2_COUNT,
     cis_aws_v3_requirements,
     cmmc_2_level2_requirements,
+    iso_27017_2015_controls,
 )
 
 
@@ -117,6 +120,18 @@ def test_iso_packs_have_full_annex_a_counts() -> None:
     assert len(iso_42001_2023_specs()) == ISO_42001_2023_ANNEX_A_COUNT
 
 
+def test_iso_27017_pack_has_all_cloud_clause_ids() -> None:
+    specs = iso_27017_2015_specs()
+    assert len(specs) == ISO_27017_2015_COUNT
+    article_ids = {spec.article_id for spec in specs}
+    expected = {article_id for article_id, _title in iso_27017_2015_controls()}
+    assert article_ids == expected
+    cld_ids = {spec.article_id for spec in specs if spec.article_id.startswith("CLD.")}
+    assert len(cld_ids) == 7
+    assert specs[0].framework_id == "iso-27017-2015"
+    assert specs[0].control_id.startswith("ISO27017-")
+
+
 def test_catalog_has_full_core_framework_packs() -> None:
     catalog = load_control_catalog()
     mappings = load_control_article_mappings()
@@ -128,6 +143,7 @@ def test_catalog_has_full_core_framework_packs() -> None:
         "cis_aws": CIS_AWS_V3_COUNT,
         "cmmc-2-level2": CMMC_2_LEVEL2_COUNT,
         "iso-27001-2022": ISO_27001_2022_ANNEX_A_COUNT,
+        "iso-27017-2015": ISO_27017_2015_COUNT,
         "iso-42001-2023": ISO_42001_2023_ANNEX_A_COUNT,
     }
     for framework_id, minimum in expectations.items():

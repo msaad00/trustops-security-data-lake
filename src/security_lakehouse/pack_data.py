@@ -12,6 +12,7 @@ FEDRAMP_MODERATE_COUNT = 287
 CMMC_2_LEVEL2_COUNT = 110
 CIS_AWS_V3_COUNT = 62
 ISO_27001_2022_ANNEX_A_COUNT = 93
+ISO_27017_2015_COUNT = 47
 ISO_42001_2023_ANNEX_A_COUNT = 38
 
 NIST_CSF_2_COUNT = 106
@@ -21,6 +22,7 @@ CMMC_2_LEVEL2_SOURCE = "https://csrc.nist.gov/publications/detail/sp/800-171/rev
 CMMC_PROGRAM_SOURCE = "https://dodcio.defense.gov/CMMC/Documentation/"
 CIS_AWS_SOURCE = "https://www.cisecurity.org/benchmark/amazon_web_services"
 ISO_27001_SOURCE = "https://www.iso.org/standard/27001"
+ISO_27017_SOURCE = "https://www.iso.org/standard/43757.html"
 ISO_42001_SOURCE = "https://www.iso.org/standard/42001"
 NIST_CSF_2_SOURCE = "https://www.nist.gov/cyberframework"
 
@@ -78,6 +80,13 @@ def cmmc_2_level2_requirements() -> tuple[tuple[str, str], ...]:
     path = PACK_DATA_DIR / "cmmc_2_level2.json"
     payload = json.loads(path.read_text(encoding="utf-8"))
     return tuple((str(row["id"]).strip(), str(row["title"])) for row in payload["requirements"])
+
+
+@lru_cache(maxsize=1)
+def iso_27017_2015_controls() -> tuple[tuple[str, str], ...]:
+    path = PACK_DATA_DIR / "iso_27017_2015.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return tuple((str(row["id"]), str(row["title"])) for row in payload["controls"])
 
 
 @lru_cache(maxsize=1)
@@ -150,6 +159,37 @@ def iso_27001_theme_risk_domain(ref: str) -> str:
     if ref.startswith("A.7."):
         return "change-management"
     return "controls-operations"
+
+
+def iso_27017_risk_domain(article_id: str) -> str:
+    if article_id.startswith("CLD."):
+        cld = {
+            "CLD.6.3.1": "vendor-risk",
+            "CLD.8.1.5": "change-management",
+            "CLD.9.5.1": "controls-operations",
+            "CLD.9.5.2": "controls-operations",
+            "CLD.12.1.5": "identity",
+            "CLD.12.4.5": "monitoring",
+            "CLD.13.1.4": "controls-operations",
+        }
+        return cld.get(article_id, "controls-operations")
+    section = int(article_id.split(".", 1)[0])
+    return {
+        5: "governance",
+        6: "governance",
+        7: "governance",
+        8: "controls-operations",
+        9: "identity",
+        10: "controls-operations",
+        11: "change-management",
+        12: "monitoring",
+        13: "controls-operations",
+        14: "change-management",
+        15: "vendor-risk",
+        16: "monitoring",
+        17: "change-management",
+        18: "governance",
+    }.get(section, "controls-operations")
 
 
 def cis_section_risk_domain(section: str) -> str:

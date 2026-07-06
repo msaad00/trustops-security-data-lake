@@ -17,6 +17,7 @@ frameworks stay seed-and-expand.
 | CIS AWS Foundations v3.0    | `cis-aws` / `cis_aws` | **62** recommendations                                  | [CIS AWS Benchmark](https://www.cisecurity.org/benchmark/amazon_web_services)                                                                      |
 | CMMC 2.0 Level 2            | `cmmc-2-level2`       | **110** practices (NIST SP 800-171 Rev 2)               | [NIST SP 800-171 Rev 2](https://csrc.nist.gov/publications/detail/sp/800-171/rev-2/final) / [CMMC](https://dodcio.defense.gov/CMMC/Documentation/) |
 | ISO/IEC 27001:2022 Annex A  | `iso-27001-2022`      | **93** controls                                         | [ISO/IEC 27001:2022](https://www.iso.org/standard/27001)                                                                                           |
+| ISO/IEC 27017:2015 Cloud    | `iso-27017-2015`      | **47** clauses (40 ISO 27002 + 7 CLD)                   | [ISO/IEC 27017:2015](https://www.iso.org/standard/43757.html)                                                                                      |
 | ISO/IEC 42001:2023 Annex A  | `iso-42001-2023`      | **38** AI controls                                      | [ISO/IEC 42001:2023](https://www.iso.org/standard/42001)                                                                                           |
 
 **Important:** 100% here means **every official criterion ID is seeded, mapped,
@@ -39,6 +40,7 @@ security-lakehouse frameworks sync-packs --pack fedramp-moderate
 security-lakehouse frameworks sync-packs --pack cis-aws
 security-lakehouse frameworks sync-packs --pack cmmc-2-level2
 security-lakehouse frameworks sync-packs --pack iso-27001-2022
+security-lakehouse frameworks sync-packs --pack iso-27017-2015
 security-lakehouse frameworks sync-packs --pack iso-42001-2023
 make framework-packs
 ```
@@ -101,7 +103,6 @@ Tune per control after sync by editing `evaluation_rule` in the catalog.
 
 - FedRAMP **Rev 5 overlay** controls beyond NIST Moderate (323-selected set)
 - SOC 2 **Availability / Confidentiality / Processing Integrity / Privacy** TSC
-- ISO/IEC 27017 full pack
 - Pack-specific evidence requirement templates linked to connector catalogs
 
 See [ROADMAP.md](../ROADMAP.md).
