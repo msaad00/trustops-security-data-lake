@@ -2922,7 +2922,10 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             api_v1.envelope(
                 "insights.framework_trends",
                 _redact_payload(data, identity),
-                meta={"framework_count": len(data.get("frameworks") or []), "point_count": len(data.get("points") or [])},
+                meta={
+                    "framework_count": len(data.get("frameworks") or []),
+                    "point_count": len(data.get("points") or []),
+                },
             )
         )
 

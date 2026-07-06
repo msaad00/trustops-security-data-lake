@@ -232,10 +232,8 @@ def test_sla_heatmap_buckets(tmp_path: Path) -> None:
     with session_scope(app.state.sessionmaker) as session:
         tenant = create_tenant(session, slug="acme", name="Acme")
 
-        overdue = remediation.create_task(
-            session, tenant_id=tenant.id, title="late", priority="high", due_at=base
-        )
-        on_track = remediation.create_task(
+        remediation.create_task(session, tenant_id=tenant.id, title="late", priority="high", due_at=base)
+        remediation.create_task(
             session,
             tenant_id=tenant.id,
             title="ok",

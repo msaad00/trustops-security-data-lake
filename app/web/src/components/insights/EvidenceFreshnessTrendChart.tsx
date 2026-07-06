@@ -19,7 +19,11 @@ import {
 import { useInsightsTimeseries } from "@/lib/api/hooks";
 import { fmtChartDate, TOOLTIP_STYLE } from "./chart-utils";
 
-export function EvidenceFreshnessTrendChart({ limit = 90 }: { limit?: number }) {
+export function EvidenceFreshnessTrendChart({
+  limit = 90,
+}: {
+  limit?: number;
+}) {
   const timeseries = useInsightsTimeseries(limit);
   const points = timeseries.data ?? [];
 
@@ -57,11 +61,7 @@ export function EvidenceFreshnessTrendChart({ limit = 90 }: { limit?: number }) 
               <defs>
                 <linearGradient id="freshGrad" x1="0" x2="0" y1="0" y2="1">
                   <stop offset="0%" stopColor="#22c55e" stopOpacity={0.35} />
-                  <stop
-                    offset="100%"
-                    stopColor="#22c55e"
-                    stopOpacity={0.02}
-                  />
+                  <stop offset="100%" stopColor="#22c55e" stopOpacity={0.02} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e9f0" />
