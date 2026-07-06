@@ -1,7 +1,7 @@
 # TrustOps Security Data Lake
 
 <p align="center">
-  <img src="docs/images/trustops-logo.svg" alt="TrustOps — open-source trust operations platform" width="360">
+  <img src="docs/images/trustops-logo.svg" alt="TrustOps — open-source trust operations platform" width="420">
 </p>
 
 <p align="center">
