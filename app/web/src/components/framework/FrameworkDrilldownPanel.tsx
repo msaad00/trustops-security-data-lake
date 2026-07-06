@@ -6,11 +6,14 @@ import {
   ChevronUp,
   Database,
   ExternalLink,
+  Plug,
   Search,
 } from "lucide-react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { useFrameworkDetail } from "@/lib/api/hooks";
 import type {
+  FrameworkConnectorHint,
   FrameworkControlDetail,
   FrameworkSourceRollup,
 } from "@/lib/api/types";
@@ -36,6 +39,33 @@ function SourcePills({ sources }: { sources: FrameworkSourceRollup[] }) {
         </Badge>
       ))}
       {sources.length > 6 && <Badge>+{sources.length - 6} more</Badge>}
+    </div>
+  );
+}
+
+function ConnectorHintPills({ hints }: { hints: FrameworkConnectorHint[] }) {
+  if (hints.length === 0) {
+    return (
+      <span className="text-xs text-muted">
+        No connector mapping for this control yet.
+      </span>
+    );
+  }
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {hints.map((hint) => (
+        <Link
+          key={hint.connector_id}
+          href={`/connectors/?connect=${encodeURIComponent(hint.connector_id)}`}
+          className="inline-flex"
+        >
+          <Badge tone={hint.configured ? "ready" : "attention"}>
+            <Plug className="mr-1 inline h-3 w-3" />
+            {hint.name}
+            {hint.configured ? " · configured" : " · connect"}
+          </Badge>
+        </Link>
+      ))}
     </div>
   );
 }
@@ -150,6 +180,19 @@ function ControlRow({
 
           <div className="rounded-lg border border-line p-3">
             <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+              Recommended connectors
+            </div>
+            <p className="mt-1 text-xs text-muted">
+              {control.connector_hints[0]?.rationale ??
+                "Enable connectors that collect evidence for this control family."}
+            </p>
+            <div className="mt-2">
+              <ConnectorHintPills hints={control.connector_hints} />
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-line p-3">
+            <div className="text-[10px] font-black uppercase tracking-wide text-muted">
               Reviewed source mapping
             </div>
             {control.articles.length === 0 ? (
@@ -216,6 +259,8 @@ export function FrameworkDrilldownPanel({
         control.evidence_requirement,
         control.owner,
         ...control.evidence.sources.map((source) => source.source),
+        ...control.connector_hints.map((hint) => hint.name),
+        ...control.connector_hints.map((hint) => hint.connector_id),
       ]
         .join(" ")
         .toLowerCase();
@@ -269,7 +314,7 @@ export function FrameworkDrilldownPanel({
         </Badge>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 lg:grid-cols-5">
         <div className="rounded-lg bg-slate-50 p-3">
           <div className="text-[10px] font-black uppercase text-muted">
             Evidence facts
@@ -301,6 +346,16 @@ export function FrameworkDrilldownPanel({
           <div className="mt-1 text-2xl font-black text-rose-600">
             {data.summary.failing_control_count}
           </div>
+        </div>
+        <div className="rounded-lg bg-slate-50 p-3">
+          <div className="text-[10px] font-black uppercase text-muted">
+            Connectors
+          </div>
+          <div className="mt-1 text-2xl font-black text-ink">
+            {data.summary.configured_recommended_connector_count ?? 0}/
+            {data.summary.recommended_connector_count ?? 0}
+          </div>
+          <div className="text-[10px] text-muted">configured / recommended</div>
         </div>
       </div>
 

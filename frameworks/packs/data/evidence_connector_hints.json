@@ -1,0 +1,116 @@
+{
+  "schema": "trustops.evidence_connector_hints.v1",
+  "note": "Maps control risk domains and framework families to recommended read-only connectors. Hints are guidance only — customers enable connectors that match their stack.",
+  "risk_domain_connectors": {
+    "identity": {
+      "primary": ["okta-identity", "google-workspace-identity", "aws-posture"],
+      "secondary": ["azure-posture", "gcp-posture", "identity-provider"]
+    },
+    "monitoring": {
+      "primary": [
+        "okta-system-log",
+        "siem-alerts",
+        "clickhouse-telemetry-lake"
+      ],
+      "secondary": ["aws-posture", "github-security"]
+    },
+    "controls-operations": {
+      "primary": ["aws-posture", "azure-posture", "gcp-posture"],
+      "secondary": [
+        "github-security",
+        "gitlab-security",
+        "object-storage-evidence"
+      ]
+    },
+    "governance": {
+      "primary": ["ticketing", "jira-ticketing", "managed-local-evidence"],
+      "secondary": ["github-security", "object-storage-evidence"]
+    },
+    "risk-management": {
+      "primary": ["ticketing", "jira-ticketing", "managed-local-evidence"],
+      "secondary": ["siem-alerts", "object-storage-evidence"]
+    },
+    "change-management": {
+      "primary": ["github-security", "gitlab-security", "aws-posture"],
+      "secondary": ["ticketing", "jira-ticketing"]
+    },
+    "vendor-risk": {
+      "primary": ["ticketing", "managed-local-evidence"],
+      "secondary": ["object-storage-evidence", "github-security"]
+    },
+    "availability": {
+      "primary": ["aws-posture", "clickhouse-telemetry-lake"],
+      "secondary": ["siem-alerts", "runtime-gateway"]
+    },
+    "confidentiality": {
+      "primary": ["aws-posture", "object-storage-evidence"],
+      "secondary": ["github-security", "siem-alerts"]
+    },
+    "processing-integrity": {
+      "primary": ["github-security", "gitlab-security", "aws-posture"],
+      "secondary": ["object-storage-evidence"]
+    },
+    "privacy": {
+      "primary": ["okta-identity", "google-workspace-identity"],
+      "secondary": ["managed-local-evidence", "ticketing"]
+    },
+    "ai-governance": {
+      "primary": ["runtime-gateway", "managed-local-evidence"],
+      "secondary": ["github-security", "object-storage-evidence"]
+    }
+  },
+  "framework_family_connectors": {
+    "cmmc-2-level2": {
+      "3.1": ["okta-identity", "aws-posture", "google-workspace-identity"],
+      "3.2": ["managed-local-evidence", "okta-identity"],
+      "3.3": ["okta-system-log", "siem-alerts", "clickhouse-telemetry-lake"],
+      "3.4": ["aws-posture", "github-security", "azure-posture"],
+      "3.5": ["okta-identity", "aws-posture"],
+      "3.6": ["siem-alerts", "ticketing", "jira-ticketing"],
+      "3.7": ["aws-posture", "github-security"],
+      "3.8": ["object-storage-evidence", "aws-posture"],
+      "3.9": ["okta-identity", "managed-local-evidence"],
+      "3.10": ["aws-posture", "azure-posture"],
+      "3.11": ["siem-alerts", "managed-local-evidence"],
+      "3.12": ["managed-local-evidence", "object-storage-evidence"],
+      "3.13": ["aws-posture", "azure-posture", "gcp-posture"],
+      "3.14": ["siem-alerts", "github-security", "runtime-gateway"]
+    },
+    "cis-aws": {
+      "1": ["aws-posture"],
+      "2": ["aws-posture"],
+      "3": ["aws-posture", "okta-system-log"],
+      "4": ["aws-posture"],
+      "5": ["aws-posture"]
+    },
+    "fedramp-moderate": {
+      "AC": ["okta-identity", "aws-posture"],
+      "AU": ["okta-system-log", "siem-alerts"],
+      "CM": ["github-security", "aws-posture"],
+      "IA": ["okta-identity", "google-workspace-identity"],
+      "IR": ["siem-alerts", "ticketing"],
+      "RA": ["siem-alerts", "managed-local-evidence"],
+      "SC": ["aws-posture", "azure-posture"]
+    }
+  },
+  "asset_type_connectors": {
+    "iam_role": ["aws-posture", "azure-posture", "gcp-posture"],
+    "identity_user": ["okta-identity", "google-workspace-identity"],
+    "identity_group": ["okta-identity", "google-workspace-identity"],
+    "identity_account": ["aws-posture", "azure-posture", "gcp-posture"],
+    "okta_user": ["okta-identity"],
+    "cloud_resource": ["aws-posture", "azure-posture", "gcp-posture"],
+    "cloud_policy": ["aws-posture", "azure-posture", "gcp-posture"],
+    "s3_bucket": ["aws-posture", "object-storage-evidence"],
+    "repo": ["github-security", "gitlab-security"],
+    "service": ["aws-posture", "runtime-gateway"],
+    "host": ["aws-posture", "siem-alerts"],
+    "audit_log": [
+      "okta-system-log",
+      "siem-alerts",
+      "clickhouse-telemetry-lake"
+    ],
+    "data_store": ["snowflake-evidence-lake", "object-storage-evidence"],
+    "container_image": ["github-security", "runtime-gateway"]
+  }
+}

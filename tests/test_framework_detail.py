@@ -28,6 +28,10 @@ def test_framework_detail_composes_controls_rules_evidence_and_sources(tmp_path:
     assert control["posture"]["status"] in {"pass", "fail"}
     assert control["test"]["required_evidence_types"]
     assert control["evidence"]["sources"]
+    assert isinstance(control["connector_hints"], list)
+    if control["connector_hints"]:
+        assert control["connector_hints"][0]["connector_id"]
+        assert "configured" in control["connector_hints"][0]
 
 
 def test_framework_detail_routes_return_404_for_unknown_framework(tmp_path: Path) -> None:

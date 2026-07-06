@@ -49,13 +49,13 @@ escalate_stale_evidence → sync_poam_from_posture → create_remediation_task �
 
 ## Kingdom gaps (honest)
 
-| Gap                                    | Status                                          |
-| -------------------------------------- | ----------------------------------------------- |
-| HRIS / MDM personnel connectors        | Roadmap (IdP + access reviews workaround today) |
-| Pack-specific connector evidence hints | Next                                            |
-| FedRAMP 323-selected overlay           | After Moderate baseline pack                    |
-| Scheduled executive narrative packs    | Snapshot PDF today                              |
-| Billing / SCIM self-serve              | P5 partial                                      |
+| Gap                                    | Status                                                                      |
+| -------------------------------------- | --------------------------------------------------------------------------- |
+| HRIS / MDM personnel connectors        | Roadmap (IdP + access reviews workaround today)                             |
+| Pack-specific connector evidence hints | **Shipped** — framework drill-down shows recommended connectors per control |
+| FedRAMP 323-selected overlay           | After Moderate baseline pack                                                |
+| Scheduled executive narrative packs    | Snapshot PDF today                                                          |
+| Billing / SCIM self-serve              | P5 partial                                                                  |
 
 ## Why we win
 
