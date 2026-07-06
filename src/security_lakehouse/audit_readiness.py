@@ -95,6 +95,12 @@ def _workflow_checklist(*, posture_score: int, framework_total: int) -> list[dic
             "note": "Same /api/v1 contract for agents and console",
         },
         {
+            "id": "poam_sprs",
+            "label": "POA&M + SPRS (CMMC / gov programs)",
+            "shipped": True,
+            "note": "Auto-sync POA&M from posture; SPRS score from NIST SP 800-171 Rev 2 gaps",
+        },
+        {
             "id": "personnel_tracking",
             "label": "Personnel / HR onboarding",
             "shipped": True,

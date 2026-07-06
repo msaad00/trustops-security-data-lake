@@ -184,6 +184,7 @@ Production auth requires signed session cookies — see [SERVER_AUTH.md](docs/SE
 | Audit readiness       | [AUDIT_READINESS.md](docs/AUDIT_READINESS.md)                                         |
 | Connectors            | [CONNECTORS.md](docs/CONNECTORS.md)                                                   |
 | Framework packs       | [FRAMEWORK_PACKS.md](docs/FRAMEWORK_PACKS.md)                                         |
+| GRC automation        | [GRC_AUTOMATION.md](docs/GRC_AUTOMATION.md)                                           |
 | Auth & tenancy        | [SERVER_AUTH.md](docs/SERVER_AUTH.md)                                                 |
 | Shareable POC         | [SHAREABLE_DEMO.md](docs/SHAREABLE_DEMO.md)                                           |
 | MCP cookbook          | [cookbook/MCP_EVIDENCE_AND_APPROVALS.md](docs/cookbook/MCP_EVIDENCE_AND_APPROVALS.md) |

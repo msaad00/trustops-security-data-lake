@@ -468,6 +468,80 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             params["surface"] = surface
         return _server_api_request("GET", "/api/v1/saved-views", **params)
 
+    @trustops_tool(title="List Remediation Tasks")
+    def list_remediation_tasks(
+        limit: int = 100, status: str = "", owner: str = "", overdue: bool = False
+    ) -> JsonObject:
+        """List tenant remediation tasks (requires server API auth)."""
+        params: dict[str, Any] = {"limit": limit}
+        if status:
+            params["status"] = status
+        if owner:
+            params["owner"] = owner
+        if overdue:
+            params["overdue"] = "true"
+        return _server_api_request("GET", "/api/v1/remediation/tasks", **params)
+
+    @trustops_tool(title="Create Remediation Task")
+    def create_remediation_task(
+        title: str,
+        description: str = "",
+        control_id: str = "",
+        violation_id: str = "",
+        owner: str = "",
+        priority: str = "medium",
+        due_at: str = "",
+    ) -> JsonObject:
+        """Create a remediation task to close a control or violation gap."""
+        payload: dict[str, Any] = {
+            "title": title,
+            "description": description,
+            "owner": owner,
+            "priority": priority,
+        }
+        if control_id:
+            payload["control_id"] = control_id
+        if violation_id:
+            payload["violation_id"] = violation_id
+        if due_at:
+            payload["due_at"] = due_at
+        return _server_api_request("POST", "/api/v1/remediation/tasks", payload)
+
+    @trustops_tool(title="Create Evidence Request")
+    def create_evidence_request(
+        control_id: str,
+        requested_from: str = "",
+        note: str = "",
+        due_at: str = "",
+    ) -> JsonObject:
+        """Request fresh evidence from a control owner."""
+        payload: dict[str, Any] = {
+            "control_id": control_id,
+            "requested_from": requested_from,
+            "note": note,
+        }
+        if due_at:
+            payload["due_at"] = due_at
+        return _server_api_request("POST", "/api/v1/remediation/evidence-requests", payload)
+
+    @trustops_tool(title="SPRS Score")
+    def get_sprs_score() -> JsonObject:
+        """Return CMMC Level 2 SPRS score from failing NIST SP 800-171 Rev 2 practices."""
+        return _server_api_request("GET", "/api/v1/gov-compliance/sprs")
+
+    @trustops_tool(title="List POA&M Items")
+    def list_poam_items(framework_id: str = "cmmc-2-level2", status: str = "", limit: int = 100) -> JsonObject:
+        """List Plan of Action & Milestones rows for gov/defense programs."""
+        params: dict[str, Any] = {"limit": limit, "framework_id": framework_id}
+        if status:
+            params["status"] = status
+        return _server_api_request("GET", "/api/v1/gov-compliance/poam", **params)
+
+    @trustops_tool(title="Sync POA&M From Posture")
+    def sync_poam_from_posture() -> JsonObject:
+        """Auto-create POA&M rows from failing CMMC control tests and refresh SPRS."""
+        return _server_api_request("POST", "/api/v1/gov-compliance/poam/sync", {})
+
     @trustops_tool(title="Framework Drill-Down")
     def get_framework_detail(framework_id: str) -> JsonObject:
         """Return control → rule → evidence → datasource detail for one framework."""
@@ -484,9 +558,8 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
     # Each of these mutates the lake directory (gold zone) only: writing a
     # snapshot, persisting a workflow, or executing one. None of them touch
     # the application-state DB or require tenant auth, so they are safe over
-    # the local stdio transport. DB-backed writes (risks, tasks, assignments)
-    # are intentionally NOT exposed here — they belong behind a shared
-    # services layer and an authenticated MCP transport.
+    # the local stdio transport. DB-backed writes (tasks, POA&M, evidence requests)
+    # use authenticated server API tools (TRUSTOPS_API_URL + TRUSTOPS_API_KEY).
     # ------------------------------------------------------------------
 
     @trustops_tool()

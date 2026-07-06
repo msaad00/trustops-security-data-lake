@@ -1068,6 +1068,53 @@ export interface RemediationTask {
   resolved_at: string | null;
 }
 
+export interface SprsReport {
+  framework_id: string;
+  base_score: number;
+  minimum_score: number;
+  score: number;
+  deduction_total: number;
+  requirements_total: number;
+  requirements_met: number;
+  requirements_unmet: number;
+  deductions: Array<{
+    requirement_id: string;
+    title: string;
+    sprs_points: number;
+    poam_eligible: boolean;
+  }>;
+  source?: string;
+}
+
+export interface PoamItem {
+  id: string;
+  framework_id: string;
+  requirement_id: string;
+  control_id: string;
+  title: string;
+  weakness: string;
+  status: "open" | "in_progress" | "completed" | "risk_accepted";
+  owner: string;
+  milestone: string;
+  sprs_points: number;
+  poam_eligible: boolean;
+  due_at: string | null;
+  remediation_task_id: string | null;
+  created_by: string;
+  created_at: string | null;
+  updated_at: string | null;
+  completed_at: string | null;
+}
+
+export interface PoamSyncResult {
+  framework_id: string;
+  sprs: SprsReport;
+  created: number;
+  updated: number;
+  closed: number;
+  open_poam_count: number;
+}
+
 export type RiskLevel = "low" | "medium" | "high" | "critical";
 export type RiskStatus = "open" | "mitigating" | "accepted" | "closed";
 

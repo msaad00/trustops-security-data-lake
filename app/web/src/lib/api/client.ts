@@ -22,6 +22,8 @@ import type {
   ControlExceptionItem,
   EvidenceRequestItem,
   PostureMetricPoint,
+  PoamItem,
+  PoamSyncResult,
   ProbePayload,
   RemediationInsights,
   RemediationTask,
@@ -62,6 +64,7 @@ import type {
   SlaHeatmap,
   SnapshotResponse,
   Tag,
+  SprsReport,
   TrackingEvent,
   TriagePayload,
   TrustShare,
@@ -724,6 +727,21 @@ export const api = {
     get<{ data: ControlRemediation }>(
       `/v1/controls/${encodeURIComponent(controlId)}/remediation`,
     ).then((b) => b.data),
+  sprsScore: () =>
+    get<{ data: SprsReport }>("/v1/gov-compliance/sprs").then((b) => b.data),
+  poamItems: (params?: { framework_id?: string; status?: string }) => {
+    const qs = new URLSearchParams();
+    if (params?.framework_id) qs.set("framework_id", params.framework_id);
+    if (params?.status) qs.set("status", params.status);
+    const suffix = qs.toString() ? `?${qs}` : "";
+    return get<{ data: PoamItem[] }>(`/v1/gov-compliance/poam${suffix}`).then(
+      (b) => b.data,
+    );
+  },
+  syncPoam: () =>
+    post<{ data: PoamSyncResult }>("/v1/gov-compliance/poam/sync", {}).then(
+      (b) => b.data,
+    ),
 };
 
 export interface SnapshotSummary {

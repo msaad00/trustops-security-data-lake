@@ -194,11 +194,57 @@ def update_task(
     return remediation.task_to_dict(task)
 
 
+def list_evidence_requests(
+    session: Session,
+    tenant_id: str,
+    *,
+    status: str | None = None,
+    limit: int | None = None,
+    offset: int | None = None,
+) -> list[dict[str, Any]]:
+    rows = remediation.list_evidence_requests(
+        session,
+        tenant_id=tenant_id,
+        status=status,
+        limit=limit,
+        offset=offset,
+    )
+    return [remediation.evidence_request_to_dict(row) for row in rows]
+
+
+def create_evidence_request(
+    session: Session,
+    tenant_id: str,
+    *,
+    control_id: str,
+    requested_from: str = "",
+    note: str = "",
+    due_at: datetime | None = None,
+    created_by: str = "",
+) -> dict[str, Any]:
+    try:
+        request = remediation.create_evidence_request(
+            session,
+            tenant_id=tenant_id,
+            control_id=control_id,
+            requested_from=requested_from,
+            note=note,
+            due_at=due_at,
+            created_by=created_by,
+        )
+    except ValueError as exc:
+        raise ValidationError(str(exc)) from exc
+    session.commit()
+    return remediation.evidence_request_to_dict(request)
+
+
 __all__ = [
+    "create_evidence_request",
     "create_risk",
     "create_task",
     "delete_risk",
     "get_risk",
+    "list_evidence_requests",
     "list_risks",
     "list_tasks",
     "update_risk",
