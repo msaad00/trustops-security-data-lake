@@ -43,6 +43,8 @@ EXPECTED_TOOLS = {
     "escalate_stale_evidence",
     "get_insights_timeseries",
     "get_insights_remediation",
+    "get_insights_framework_trends",
+    "get_insights_sla_heatmap",
     "list_vendor_assessments",
     "list_policies",
     "get_policy_attestation_summary",
@@ -225,6 +227,32 @@ def test_get_insights_remediation_calls_api(tmp_path, monkeypatch):
     monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
     result = call_tool(server, "get_insights_remediation")
     assert result["data"]["open"] == 3
+
+
+def test_get_insights_framework_trends_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/insights/framework-trends"
+        assert params.get("limit") == "30"
+        return {"data": {"frameworks": ["soc2"], "points": []}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "get_insights_framework_trends", limit=30)
+    assert result["data"]["frameworks"] == ["soc2"]
+
+
+def test_get_insights_sla_heatmap_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/insights/sla-heatmap"
+        return {"data": {"columns": [], "rows": []}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    call_tool(server, "get_insights_sla_heatmap")
 
 
 def test_list_vendor_assessments_calls_api(tmp_path, monkeypatch):

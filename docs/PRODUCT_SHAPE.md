@@ -78,16 +78,16 @@ Connect → Sync → Evaluate → Remediate → Review → Share → Prove
    └─ AWS/Azure/GCP/Snowflake/GitHub/Okta + catalog long tail
 ```
 
-| Loop stage          | Maturity   | Notes                                                         |
-| ------------------- | ---------- | ------------------------------------------------------------- |
-| Connect & sync      | **Strong** | Executable runners for core cloud/IdP; catalog for long tail  |
-| Evaluate            | **Strong** | Lake-backed tests, not connector pass/fail widgets only       |
-| Remediate           | **Good**   | Tasks, evidence requests, workflow canvas with approvals      |
-| Audit review        | **Good**   | Audit room, readiness API, access reviews, executive PDF      |
-| Share & prove       | **Good**   | Trust-center shares, snapshots, hash chain, auditor redaction |
-| Personnel / devices | **Weak**   | IdP + access reviews workaround; no native HRIS/MDM           |
-| Policy program      | **Good**   | Template library + employee attestation MVP shipped           |
-| SaaS polish         | **Good**   | Trust Home, audit room SSE, saved views, tags, drill-down     |
+| Loop stage          | Maturity    | Notes                                                         |
+| ------------------- | ----------- | ------------------------------------------------------------- |
+| Connect & sync      | **Strong**  | Executable runners for core cloud/IdP; catalog for long tail  |
+| Evaluate            | **Strong**  | Lake-backed tests, not connector pass/fail widgets only       |
+| Remediate           | **Good**    | Tasks, evidence requests, workflow canvas with approvals      |
+| Audit review        | **Good**    | Audit room, readiness API, access reviews, executive PDF      |
+| Share & prove       | **Good**    | Trust-center shares, snapshots, hash chain, auditor redaction |
+| Personnel / devices | **Partial** | IdP + access reviews audit strip; no native HRIS/MDM          |
+| Policy program      | **Good**    | Template library + employee attestation MVP shipped           |
+| SaaS polish         | **Good**    | Trust Home, audit room SSE, saved views, tags, drill-down     |
 
 ## Console surface (28 routes)
 
@@ -187,7 +187,7 @@ device MDM, pen-test coordination ([#22](https://github.com/msaad00/trustops-sec
 | Feature                   | Mature SaaS  | TrustOps                                            |
 | ------------------------- | ------------ | --------------------------------------------------- |
 | Policy employee sign-off  | Native       | **MVP shipped** — publish + acknowledgment tracking |
-| Personnel tracking        | Native       | IdP + access reviews                                |
+| Personnel tracking        | Native       | **IdP + access reviews strip** (HRIS roadmap)       |
 | Auditor marketplace       | Yes          | BYO auditor + trust share                           |
 | Device inventory          | Integrations | Connector evidence only                             |
 | Billing / self-serve SaaS | Native       | Pricing/signup scaffold; Stripe not shipped         |
