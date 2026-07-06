@@ -2909,6 +2909,34 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         data = metrics_db.remediation_insights(session, tenant_id=identity.tenant_id)
         return JSONResponse(api_v1.envelope("insights.remediation", _redact_payload(data, identity)))
 
+    @app.get("/api/v1/insights/framework-trends")
+    def insights_framework_trends(
+        request: Request,
+        identity: Identity = Depends(_require_read),
+    ) -> JSONResponse:
+        raw_limit = (_params(request).get("limit") or [None])[0]
+        limit = int(raw_limit) if raw_limit and raw_limit.isdigit() else 90
+        limit = min(max(limit, 1), 1000)
+        data = metrics_db.framework_readiness_trends(lake_for(identity), limit=limit)
+        return JSONResponse(
+            api_v1.envelope(
+                "insights.framework_trends",
+                _redact_payload(data, identity),
+                meta={
+                    "framework_count": len(data.get("frameworks") or []),
+                    "point_count": len(data.get("points") or []),
+                },
+            )
+        )
+
+    @app.get("/api/v1/insights/sla-heatmap")
+    def insights_sla_heatmap(
+        identity: Identity = Depends(_require_read),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        data = metrics_db.sla_heatmap(session, tenant_id=identity.tenant_id)
+        return JSONResponse(api_v1.envelope("insights.sla_heatmap", _redact_payload(data, identity)))
+
     @app.post("/api/v1/insights/capture", status_code=status.HTTP_201_CREATED)
     def insights_capture(
         identity: Identity = Depends(_require_write),
