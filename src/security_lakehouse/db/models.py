@@ -11,7 +11,7 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Index, String, Text, UniqueConstraint, func
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Index, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from security_lakehouse.db.base import Base
@@ -30,6 +30,9 @@ EXCEPTION_STATUSES = ("active", "revoked", "expired")
 # GRC risk-register vocabularies.
 RISK_STATUSES = ("open", "mitigating", "accepted", "closed")
 RISK_LEVELS = ("low", "medium", "high", "critical")
+
+# Gov POA&M (Plan of Action & Milestones) for CMMC / FedRAMP-style programs.
+POAM_STATUSES = ("open", "in_progress", "completed", "risk_accepted")
 
 # Access-review vocabularies (GRC pillar): periodic user-access certification.
 # A campaign walks draft → active → completed; each item (one subject's access)
@@ -233,6 +236,38 @@ class RemediationTask(Base):
         if self.due_at is None or not self.is_open:
             return False
         return _as_aware(self.due_at) < (now or _utcnow())
+
+
+class PoamItem(Base):
+    """Plan of Action & Milestones row for a gov/defense security requirement."""
+
+    __tablename__ = "poam_items"
+    __table_args__ = (Index("ix_poam_items_tenant_framework_status", "tenant_id", "framework_id", "status"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    framework_id: Mapped[str] = mapped_column(String(64), nullable=False, default="cmmc-2-level2")
+    requirement_id: Mapped[str] = mapped_column(String(32), nullable=False, index=True)
+    control_id: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    weakness: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="open")
+    owner: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    milestone: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    sprs_points: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    poam_eligible: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    remediation_task_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    created_by: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class Risk(Base):

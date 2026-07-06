@@ -25,6 +25,7 @@ import { RemediationSlaStrip } from "@/components/audit-room/RemediationSlaStrip
 import { VendorRiskStrip } from "@/components/audit-room/VendorRiskStrip";
 import { PolicyAttestationStrip } from "@/components/audit-room/PolicyAttestationStrip";
 import { PersonnelComplianceStrip } from "@/components/audit-room/PersonnelComplianceStrip";
+import { GovComplianceStrip } from "@/components/audit-room/GovComplianceStrip";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { KpiTile } from "@/components/ui/KpiTile";
@@ -113,6 +114,7 @@ export default function AuditRoomPage() {
             <VendorRiskStrip />
 
             <PersonnelComplianceStrip />
+            <GovComplianceStrip />
 
             <PolicyAttestationStrip />
 

@@ -51,6 +51,12 @@ EXPECTED_TOOLS = {
     "list_tags",
     "list_tag_entities",
     "list_saved_views",
+    "list_remediation_tasks",
+    "create_remediation_task",
+    "create_evidence_request",
+    "get_sprs_score",
+    "list_poam_items",
+    "sync_poam_from_posture",
 }
 
 
