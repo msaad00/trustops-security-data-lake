@@ -563,6 +563,38 @@ export interface IngestionAction {
   reason: string;
 }
 
+export interface IngestionScale {
+  mode:
+    | "local_full"
+    | "local_incremental"
+    | "warehouse"
+    | "warehouse_required"
+    | string;
+  event_count: number;
+  silver_count: number;
+  warehouse_row_threshold: number;
+  warehouse_sink_configured: boolean;
+  recommendation: string;
+  eval_schedule: string | null;
+  default_sync_schedule: string;
+  default_eval_schedule: string;
+  latest_eval?: {
+    kind?: string;
+    actor?: string;
+    result?: string;
+    mode?: string;
+    duration_ms?: number;
+    error?: string | null;
+    occurred_at?: string;
+  };
+  manifest?: {
+    materialize_mode?: string | null;
+    delta_count?: number | null;
+    removed_count?: number | null;
+    row_counts?: Record<string, number>;
+  };
+}
+
 export interface IngestionStatus {
   state:
     | "active"
@@ -636,6 +668,7 @@ export interface IngestionStatus {
     recommended_actions: IngestionAction[];
   };
   recommended_actions: IngestionAction[];
+  scale?: IngestionScale;
   health?: {
     evaluated_at: string;
     summary: {

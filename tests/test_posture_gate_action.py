@@ -9,7 +9,8 @@ from http.server import ThreadingHTTPServer
 from pathlib import Path
 
 import yaml
-from tests.test_api_v1 import _Handler, _seed_lake
+
+from test_api_v1 import _Handler, _seed_lake
 
 
 def _action_dir() -> Path:

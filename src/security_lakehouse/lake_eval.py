@@ -23,6 +23,16 @@ from security_lakehouse.sinks import land_if_configured
 EVAL_RUNS_FILE = ("gold", "eval_runs.jsonl")
 
 
+def list_eval_runs(lake_dir: str | Path, *, limit: int = 25) -> list[dict[str, Any]]:
+    """Return recent lake evaluation runs newest-first."""
+    from security_lakehouse.io import read_jsonl
+
+    lake = Path(lake_dir)
+    rows = read_jsonl(lake.joinpath(*EVAL_RUNS_FILE), missing_ok=True, base_dir=lake)
+    capped = max(1, min(limit, 1000))
+    return list(reversed(rows[-capped:]))
+
+
 @dataclass(frozen=True)
 class LakeEvalResult:
     result: str
