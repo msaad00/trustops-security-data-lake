@@ -53,7 +53,9 @@ export function PersonnelComplianceStrip() {
           value={personnel ? String(personnel.active_campaigns) : "—"}
           detail="In-flight certifications"
           tone={
-            personnel && personnel.active_campaigns === 0 ? "attention" : "default"
+            personnel && personnel.active_campaigns === 0
+              ? "attention"
+              : "default"
           }
         />
         <KpiTile
