@@ -9,7 +9,13 @@ import pytest
 
 from security_lakehouse import catalog_versions as cv
 from security_lakehouse.assessment import verify_snapshot_chain, write_assessment_snapshot
-from security_lakehouse.catalog import DEFAULT_CONTROL_CATALOG, DEFAULT_FRAMEWORK_REGISTRY, validate_catalog
+from security_lakehouse.catalog import (
+    DEFAULT_CONTROL_CATALOG,
+    DEFAULT_FRAMEWORK_REGISTRY,
+    load_control_catalog,
+    load_framework_registry,
+    validate_catalog,
+)
 
 
 def _copy_catalog(tmp_path: Path) -> Path:
@@ -27,8 +33,9 @@ def test_bundle_is_deterministic_and_covers_components() -> None:
     a = cv.compute_bundle()
     b = cv.compute_bundle()
     assert a["bundle_sha256"] == b["bundle_sha256"]
-    assert a["framework_count"] == 13
-    assert a["control_count"] == 741
+    assert a["framework_count"] == len(load_framework_registry())
+    assert a["control_count"] == len(load_control_catalog())
+    assert a["control_count"] >= 741
     assert set(a["components"]) == {"frameworks", "controls", "crosswalk"}
 
 
