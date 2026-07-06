@@ -514,3 +514,48 @@ def test_v1_errors_use_contract_envelope(tmp_path: Path) -> None:
         assert body["errors"][0]["code"] == "not_found"
     finally:
         server.shutdown()
+
+
+def test_v1_ingestion_eval_and_scheduler_tick(tmp_path: Path) -> None:
+    import shutil
+
+    from tests.test_pipeline import RAW
+
+    from security_lakehouse.pipeline import run_pipeline
+
+    server = _spin(tmp_path)
+    try:
+        raw_dir = tmp_path / "raw"
+        raw_dir.mkdir(parents=True)
+        shutil.copy(RAW, raw_dir / "connector_events.jsonl")
+        run_pipeline(raw_dir / "connector_events.jsonl", tmp_path)
+        status, body = _request(server, "POST", "/api/v1/ingestion/eval", {"actor": "test"})
+        assert status == HTTPStatus.CREATED
+        assert body["meta"]["resource"] == "ingestion.eval"
+        assert body["data"]["result"] == "ok"
+        assert body["data"]["mode"] in {"local_full", "local_incremental"}
+
+        status, body = _request(server, "POST", "/api/v1/scheduler/tick", {})
+        assert status == HTTPStatus.CREATED
+        assert body["meta"]["resource"] == "scheduler.tick"
+        assert "fired" in body["data"]
+
+        status, body = _request(server, "GET", "/api/v1/ingestion/status")
+        assert status == HTTPStatus.OK
+        assert "scale" in body["data"]
+        assert body["data"]["scale"]["mode"]
+    finally:
+        server.shutdown()
+
+
+def test_v1_ingestion_status_includes_scale(tmp_path: Path) -> None:
+    server = _spin(tmp_path)
+    try:
+        status, body = _request(server, "GET", "/api/v1/ingestion/status")
+        assert status == HTTPStatus.OK
+        scale = body["data"]["scale"]
+        assert "mode" in scale
+        assert "eval_schedule" in scale
+        assert "warehouse_row_threshold" in scale
+    finally:
+        server.shutdown()

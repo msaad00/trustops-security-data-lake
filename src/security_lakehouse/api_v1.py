@@ -31,6 +31,7 @@ from security_lakehouse.connector_state import (
     build_catalog_view,
     configure_payload_error,
     enablement_probe_error,
+    latest_config,
     list_runs,
     run_discovery,
     run_probe,
@@ -39,6 +40,8 @@ from security_lakehouse.framework_detail import build_framework_detail
 from security_lakehouse.graph import analyze_coverage
 from security_lakehouse.ingestion_status import build_ingestion_status
 from security_lakehouse.io import read_jsonl, resolve_path
+from security_lakehouse.lake_eval import list_eval_runs, run_lake_eval
+from security_lakehouse.lake_scale import connector_materialize_on_sync
 from security_lakehouse.tracking import verify_tracking_chain
 
 API_VERSION = "v1"
@@ -124,10 +127,15 @@ COLLECTION_LOADERS: dict[str, tuple[str, Callable[[Path], list[JsonObject]]]] = 
     ),
     "/api/v1/violations": ("violations", lambda lake: build_current_posture(lake)["violations"]),
     "/api/v1/snapshots": ("snapshots", list_snapshots),
+    "/api/v1/ingestion/eval/runs": ("ingestion.eval.runs", list_eval_runs),
 }
 
 # Resources that also accept writes via handle_post.
-_WRITABLE = {"/api/v1/snapshots": ["POST"]}
+_WRITABLE = {
+    "/api/v1/snapshots": ["POST"],
+    "/api/v1/ingestion/eval": ["POST"],
+    "/api/v1/scheduler/tick": ["POST"],
+}
 
 
 def _suffix_match(path: str, prefix: str, suffix: str) -> str | None:
@@ -149,6 +157,10 @@ def required_post_scope(path: str) -> str:
     """Return the RBAC scope required to mutate a v1 route."""
     if path == "/api/v1/snapshots":
         return "snapshot"
+    if path == "/api/v1/ingestion/eval":
+        return "connector_manage"
+    if path == "/api/v1/scheduler/tick":
+        return "connector_manage"
     if _connector_action(path, "configure") is not None:
         return "connector_manage"
     if _connector_action(path, "discover") is not None:
@@ -569,6 +581,20 @@ def resource_catalog() -> list[JsonObject]:
                 "methods": ["POST"],
                 "scopes": ["connector_manage"],
                 "path_params": ["connector_id"],
+            },
+            {
+                "resource": "ingestion.eval",
+                "path": "/api/v1/ingestion/eval",
+                "kind": "action",
+                "methods": ["POST"],
+                "scopes": ["connector_manage"],
+            },
+            {
+                "resource": "scheduler.tick",
+                "path": "/api/v1/scheduler/tick",
+                "kind": "action",
+                "methods": ["POST"],
+                "scopes": ["connector_manage"],
             },
             {
                 "resource": "connector.link.start",
@@ -998,11 +1024,17 @@ def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tup
         return HTTPStatus.CREATED, envelope("connector.probe", record)
     sync = _connector_action(path, "sync")
     if sync is not None:
+        if "materialize" in payload:
+            materialize = bool(payload.get("materialize"))
+        else:
+            config = latest_config(lake, sync)
+            materialize = connector_materialize_on_sync((config or {}).get("options") or {})
         try:
             result = run_connector_sync(
                 lake,
                 connector_id=sync,
                 actor=str(payload.get("actor") or "console"),
+                materialize=materialize,
             )
         except ConnectorSyncError:
             # The run is persisted with its outcome; surface a generic failure
@@ -1021,6 +1053,27 @@ def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tup
                 "run": result.run,
             },
         )
+    if path == "/api/v1/ingestion/eval":
+        eval_result = run_lake_eval(lake, actor=str(payload.get("actor") or "console"))
+        return (
+            HTTPStatus.CREATED if eval_result.result == "ok" else HTTPStatus.BAD_REQUEST,
+            envelope(
+                "ingestion.eval",
+                {
+                    "result": eval_result.result,
+                    "mode": eval_result.mode,
+                    "duration_ms": eval_result.duration_ms,
+                    "error": eval_result.error,
+                    "strategy": eval_result.strategy,
+                    "pipeline": eval_result.pipeline.__dict__ if eval_result.pipeline else None,
+                },
+            ),
+        )
+    if path == "/api/v1/scheduler/tick":
+        from security_lakehouse.scheduler import tick
+
+        fired = tick(lake)
+        return HTTPStatus.CREATED, envelope("scheduler.tick", {"fired": fired, "count": len(fired)})
     link_start = _connector_link_action(path, "start")
     if link_start is not None:
         from security_lakehouse.cloud_linking import start_cloud_link

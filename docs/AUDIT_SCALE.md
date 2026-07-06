@@ -61,6 +61,18 @@ security-lakehouse pipeline eval --lake /lake
 security-lakehouse scheduler tick --lake /lake
 ```
 
+HTTP/API (same contract as UI, MCP, and agents):
+
+```bash
+curl -X POST -H "Authorization: Bearer $TOKEN" \
+  https://trustops.example/api/v1/ingestion/eval -d '{"actor":"api"}'
+
+curl -X POST -H "Authorization: Bearer $TOKEN" \
+  https://trustops.example/api/v1/scheduler/tick -d '{}'
+```
+
+MCP tools: ``get_ingestion_status``, ``run_lake_eval``, ``run_scheduler_tick``, ``sync_connector``.
+
 ### Warehouse tier above 100k events
 
 When silver/raw cardinality exceeds ``100_000``, local full rebuild is blocked unless a

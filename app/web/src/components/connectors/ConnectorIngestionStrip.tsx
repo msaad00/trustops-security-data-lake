@@ -37,8 +37,10 @@ export function ConnectorIngestionStrip() {
               <p className="mt-1 text-xs leading-5 text-muted">
                 {ingestion.data.summary.enabled_connectors} of{" "}
                 {ingestion.data.summary.connector_count} connectors enabled ·{" "}
-                {ingestion.data.summary.evidence_count} evidence rows · bronze →
-                silver → gold pipeline
+                {ingestion.data.summary.evidence_count.toLocaleString()} evidence rows
+                {ingestion.data.scale?.mode
+                  ? ` · ${ingestion.data.scale.mode.replace(/_/g, " ")}`
+                  : ""}
               </p>
               <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-bold text-muted">
                 <span className="inline-flex items-center gap-1 rounded-full border border-line bg-white px-2 py-0.5">

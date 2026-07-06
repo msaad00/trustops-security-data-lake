@@ -32,6 +32,10 @@ EXPECTED_TOOLS = {
     "list_snapshots",
     "list_audit_log",
     "list_frameworks",
+    "get_ingestion_status",
+    "run_lake_eval",
+    "run_scheduler_tick",
+    "sync_connector",
     "get_framework_detail",
     "describe_api",
     "list_agent_runs",
@@ -119,6 +123,13 @@ def test_get_posture_has_score(tmp_path):
     posture = call_tool(server, "get_posture")
     assert "posture" in posture
     assert isinstance(posture["posture"]["score"], (int, float))
+
+
+def test_get_ingestion_status_includes_scale(tmp_path):
+    server = _seeded_server(tmp_path)
+    status = call_tool(server, "get_ingestion_status")
+    assert "scale" in status
+    assert status["scale"]["mode"]
 
 
 def test_posture_as_of_after_snapshot(tmp_path):
