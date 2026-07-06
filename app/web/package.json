@@ -23,11 +23,11 @@
     "@tanstack/react-query": "^5.101.2",
     "@tanstack/react-table": "^8.20.6",
     "@xyflow/react": "^12.11.1",
-    "caniuse-lite": "^1.0.30001799",
+    "caniuse-lite": "^1.0.30001802",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "framer-motion": "^12.42.0",
-    "lucide-react": "^1.21.0",
+    "framer-motion": "^12.42.2",
+    "lucide-react": "^1.23.0",
     "next": "^15.5.19",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
@@ -36,7 +36,7 @@
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
-    "@types/node": "^26.0.1",
+    "@types/node": "^26.1.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.0.2",
     "autoprefixer": "^10.4.20",
