@@ -37,7 +37,7 @@ check badge** (deterministic verdict / audit proof).
 | Proof badge    | White circle + `#047857` check (bottom-right of monogram)              |
 | Wordmark ink   | `#101623` on light UI; gradient or `#f8fafc` on dark rails             |
 | README lockup  | White plate + gradient wordmark in `trustops-logo.svg` (GitHub themes) |
-| Lockup tagline | `YOUR LAKE · DETERMINISTIC CONTROLS · PROOF` (short; no truncation)    |
+| Lockup tagline | `Evidence lake · deterministic controls · audit proof` (fits README lockup plate) |
 | Corner radius  | 8px at 32×32 (scales with size)                                        |
 
 ### Assets

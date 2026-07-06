@@ -1,173 +1,102 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-labelledby="title desc">
   <title id="title">TrustOps continuous compliance platform</title>
-  <desc id="desc">Hero diagram showing TrustOps connector ecosystem, evidence lake, deterministic assessment, audit room, and headless API surfaces.</desc>
+  <desc id="desc">Simplified hero: connectors feed the evidence lake, deterministic control tests, and audit-ready workflows.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#060d18"/>
-      <stop offset=".45" stop-color="#0b1526"/>
+      <stop offset=".5" stop-color="#0b1526"/>
       <stop offset="1" stop-color="#0a3038"/>
     </linearGradient>
     <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0" stop-color="#4f7cff"/>
       <stop offset="1" stop-color="#30c7d2"/>
     </linearGradient>
-    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#4f7cff"/>
-      <stop offset="100%" stop-color="#30c7d2"/>
-    </linearGradient>
     <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#121f33"/>
       <stop offset="1" stop-color="#0c1626"/>
     </linearGradient>
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#020617" flood-opacity=".45"/>
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#020617" flood-opacity=".35"/>
     </filter>
     <style>
       .font { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; }
-      .eyebrow { fill: #7dd3fc; font-size: 12px; font-weight: 900; letter-spacing: 3px; }
-      .headline { fill: #fff; font-size: 42px; font-weight: 950; letter-spacing: -1.2px; }
-      .sub { fill: #cbd5e1; font-size: 17px; font-weight: 650; }
+      .eyebrow { fill: #7dd3fc; font-size: 12px; font-weight: 900; letter-spacing: 2.4px; }
+      .headline { fill: #fff; font-size: 38px; font-weight: 950; letter-spacing: -1px; }
+      .sub { fill: #cbd5e1; font-size: 16px; font-weight: 650; }
       .chip { fill: #1e293b; stroke: #334155; stroke-width: 1; }
       .chipText { fill: #e2e8f0; font-size: 11px; font-weight: 850; }
-      .label { fill: #64748b; font-size: 10px; font-weight: 900; letter-spacing: 1.8px; }
-      .title { fill: #f8fafc; font-size: 16px; font-weight: 900; }
-      .body { fill: #cbd5e1; font-size: 12.5px; font-weight: 650; }
-      .metric { fill: #fff; font-size: 24px; font-weight: 950; }
-      .metricSub { fill: #94a3b8; font-size: 11px; font-weight: 750; }
+      .label { fill: #64748b; font-size: 10px; font-weight: 900; letter-spacing: 1.6px; }
+      .title { fill: #f8fafc; font-size: 17px; font-weight: 900; }
+      .body { fill: #94a3b8; font-size: 13px; font-weight: 650; }
     </style>
   </defs>
 
-  <rect width="1280" height="640" rx="28" fill="url(#bg)"/>
-  <circle cx="1140" cy="96" r="210" fill="none" stroke="#315dff" stroke-opacity=".18" stroke-width="2"/>
-  <circle cx="160" cy="560" r="150" fill="none" stroke="#30c7d2" stroke-opacity=".14" stroke-width="2"/>
+  <rect width="1280" height="420" rx="24" fill="url(#bg)"/>
+  <circle cx="1180" cy="70" r="140" fill="none" stroke="#315dff" stroke-opacity=".14" stroke-width="2"/>
 
   <g class="font">
-    <!-- Header lockup -->
-    <g transform="translate(44,34)">
-      <rect width="44" height="44" rx="11" fill="url(#mark)"/>
-      <path d="M11 12h22v5.2h-8.1V32h-5.2V17.2H11z" fill="#fff"/>
-      <circle cx="33" cy="33" r="9.5" fill="#fff"/>
-      <path d="M28.5 33l2.8 2.8 6.2-6.2" stroke="#047857" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <text x="58" y="30" fill="url(#accent)" font-size="26" font-weight="950">TrustOps</text>
-      <text x="59" y="48" fill="#64748b" font-size="11" font-weight="800" letter-spacing="1.8">YOUR LAKE · DETERMINISTIC CONTROLS · PROOF</text>
+    <text x="48" y="58" class="eyebrow">CONTINUOUS COMPLIANCE IN YOUR VPC</text>
+
+    <g transform="translate(900,36)">
+      <rect width="108" height="32" rx="10" class="chip"/>
+      <text x="16" y="21" class="chipText">635 controls</text>
+      <rect x="118" width="132" height="32" rx="10" fill="#102a43" stroke="#38bdf8" stroke-width="1"/>
+      <text x="134" y="21" fill="#7dd3fc" font-size="11" font-weight="900">/api/v1 · MCP · CI</text>
     </g>
 
-    <!-- Metric chips -->
-    <g transform="translate(820,38)">
-      <rect width="118" height="34" rx="10" class="chip"/>
-      <text x="16" y="22" class="chipText">635 controls</text>
-      <rect x="128" width="118" height="34" rx="10" class="chip"/>
-      <text x="144" y="22" class="chipText">28 console routes</text>
-      <rect x="256" width="156" height="34" rx="10" fill="#102a43" stroke="#38bdf8" stroke-width="1"/>
-      <text x="272" y="22" fill="#7dd3fc" font-size="11" font-weight="900">/api/v1 · MCP · CI gates</text>
-    </g>
+    <text x="48" y="118" class="headline">Connect sources. Prove controls. Ship audit-ready.</text>
+    <text x="48" y="152" class="sub">Read-only connectors → evidence lake → deterministic tests → audit room</text>
 
-    <text x="44" y="128" class="eyebrow">CONTINUOUS COMPLIANCE IN YOUR VPC</text>
-    <text x="44" y="178" class="headline">Connect sources. Prove controls. Ship audit-ready.</text>
-    <text x="44" y="212" class="sub">Read-only connectors → bronze / silver / gold lake → deterministic tests → audit room → trust shares</text>
-
-    <!-- Vendor strip -->
-    <g transform="translate(44,238)">
-      <rect width="1192" height="54" rx="14" fill="#0a1320" stroke="#243044"/>
-      <text x="18" y="22" class="label">LIVE CONNECTORS</text>
-      <g transform="translate(18,28)">
-        <rect width="72" height="18" rx="9" fill="#111827" stroke="#334155"/>
-        <text x="36" y="13" text-anchor="middle" fill="#FF9900" font-size="10" font-weight="900">AWS</text>
-        <rect x="80" width="72" height="18" rx="9" fill="#111827" stroke="#334155"/>
-        <text x="116" y="13" text-anchor="middle" fill="#0078D4" font-size="10" font-weight="900">Azure</text>
-        <rect x="160" width="72" height="18" rx="9" fill="#111827" stroke="#334155"/>
-        <text x="196" y="13" text-anchor="middle" fill="#4285F4" font-size="10" font-weight="900">GCP</text>
-        <rect x="240" width="88" height="18" rx="9" fill="#111827" stroke="#334155"/>
-        <text x="284" y="13" text-anchor="middle" fill="#29B5E8" font-size="10" font-weight="900">Snowflake</text>
-        <rect x="336" width="72" height="18" rx="9" fill="#111827" stroke="#334155"/>
-        <text x="372" y="13" text-anchor="middle" fill="#f8fafc" font-size="10" font-weight="900">GitHub</text>
-        <rect x="416" width="72" height="18" rx="9" fill="#111827" stroke="#334155"/>
-        <text x="452" y="13" text-anchor="middle" fill="#FC6D26" font-size="10" font-weight="900">GitLab</text>
-        <rect x="496" width="64" height="18" rx="9" fill="#111827" stroke="#334155"/>
-        <text x="528" y="13" text-anchor="middle" fill="#007DC1" font-size="10" font-weight="900">Okta</text>
-        <text x="580" y="13" fill="#64748b" font-size="10" font-weight="750">+ identity · tickets · catalog</text>
+    <g transform="translate(48,188)">
+      <rect width="1184" height="44" rx="12" fill="#0a1320" stroke="#243044"/>
+      <text x="16" y="18" class="label">CONNECTORS</text>
+      <g transform="translate(16,24)">
+        <rect width="64" height="16" rx="8" fill="#111827" stroke="#334155"/>
+        <text x="32" y="12" text-anchor="middle" fill="#FF9900" font-size="9" font-weight="900">AWS</text>
+        <rect x="72" width="64" height="16" rx="8" fill="#111827" stroke="#334155"/>
+        <text x="104" y="12" text-anchor="middle" fill="#0078D4" font-size="9" font-weight="900">Azure</text>
+        <rect x="144" width="56" height="16" rx="8" fill="#111827" stroke="#334155"/>
+        <text x="172" y="12" text-anchor="middle" fill="#4285F4" font-size="9" font-weight="900">GCP</text>
+        <rect x="208" width="72" height="16" rx="8" fill="#111827" stroke="#334155"/>
+        <text x="244" y="12" text-anchor="middle" fill="#29B5E8" font-size="9" font-weight="900">Snowflake</text>
+        <rect x="288" width="64" height="16" rx="8" fill="#111827" stroke="#334155"/>
+        <text x="320" y="12" text-anchor="middle" fill="#f8fafc" font-size="9" font-weight="900">GitHub</text>
+        <rect x="360" width="64" height="16" rx="8" fill="#111827" stroke="#334155"/>
+        <text x="392" y="12" text-anchor="middle" fill="#FC6D26" font-size="9" font-weight="900">GitLab</text>
+        <rect x="432" width="52" height="16" rx="8" fill="#111827" stroke="#334155"/>
+        <text x="458" y="12" text-anchor="middle" fill="#007DC1" font-size="9" font-weight="900">Okta</text>
       </g>
     </g>
 
-    <!-- Pipeline cards -->
     <g filter="url(#shadow)">
-      <g transform="translate(44,314)">
-        <rect width="286" height="132" rx="18" fill="url(#panel)" stroke="#334155"/>
-        <text x="22" y="36" class="label">01 · INGEST</text>
+      <g transform="translate(48,256)">
+        <rect width="288" height="128" rx="16" fill="url(#panel)" stroke="#334155"/>
+        <text x="22" y="34" class="label">01 · INGEST</text>
         <text x="22" y="62" class="title">Evidence lake</text>
-        <text x="22" y="86" class="body">Probe · discover · sync read-only</text>
-        <text x="22" y="106" class="body">Customer bronze / silver / gold</text>
-        <rect x="22" y="118" width="120" height="8" rx="4" fill="#1e293b"/>
-        <rect x="22" y="118" width="96" height="8" rx="4" fill="url(#accent)"/>
+        <text x="22" y="88" class="body">Bronze / silver / gold in your VPC</text>
       </g>
-
-      <g transform="translate(350,314)">
-        <rect width="286" height="132" rx="18" fill="url(#panel)" stroke="#334155"/>
-        <text x="22" y="36" class="label">02 · EVALUATE</text>
+      <g transform="translate(352,256)">
+        <rect width="288" height="128" rx="16" fill="url(#panel)" stroke="#334155"/>
+        <text x="22" y="34" class="label">02 · EVALUATE</text>
         <text x="22" y="62" class="title">Control tests</text>
-        <text x="22" y="86" class="body">Deterministic pass / fail · hashes</text>
-        <text x="22" y="106" class="body">Freshness SLA · saved views · tags</text>
-        <g transform="translate(22,118)">
-          <rect width="44" height="16" rx="8" fill="#dcfce7"/>
-          <text x="22" y="12" text-anchor="middle" fill="#047857" font-size="9" font-weight="900">PASS</text>
-          <rect x="52" width="44" height="16" rx="8" fill="#fee2e2"/>
-          <text x="74" y="12" text-anchor="middle" fill="#b91c1c" font-size="9" font-weight="900">FAIL</text>
-        </g>
+        <text x="22" y="88" class="body">Deterministic pass / fail · freshness SLA</text>
       </g>
-
-      <g transform="translate(656,314)">
-        <rect width="286" height="132" rx="18" fill="#1e1b4b" stroke="#6366f1"/>
-        <text x="22" y="36" class="label" fill="#c4b5fd">03 · OPERATE</text>
-        <text x="22" y="62" class="title">Audit room + workflows</text>
-        <text x="22" y="86" class="body">Live SSE · gap checklist · snapshots</text>
-        <text x="22" y="106" class="body">Remediation · vendor · policy attestation</text>
-        <rect x="22" y="118" width="88" height="16" rx="8" fill="#312e81"/>
-        <text x="66" y="130" text-anchor="middle" fill="#ddd6fe" font-size="9" font-weight="900">audit_ready</text>
+      <g transform="translate(656,256)">
+        <rect width="288" height="128" rx="16" fill="#1e1b4b" stroke="#6366f1"/>
+        <text x="22" y="34" class="label" fill="#c4b5fd">03 · OPERATE</text>
+        <text x="22" y="62" class="title">Audit room</text>
+        <text x="22" y="88" class="body">Snapshots · remediation · vendor / policy</text>
       </g>
-
-      <g transform="translate(962,314)">
-        <rect width="274" height="132" rx="18" fill="#f8fafc" stroke="#dbeafe"/>
-        <text x="22" y="36" fill="#64748b" font-size="10" font-weight="900" letter-spacing="1.8">04 · PROVE</text>
-        <text x="22" y="62" fill="#0f172a" font-size="16" font-weight="950">Headless + human surfaces</text>
-        <text x="22" y="86" fill="#475569" font-size="12.5" font-weight="750">Console · audit PDF · trust center</text>
-        <text x="22" y="106" fill="#475569" font-size="12.5" font-weight="750">OpenAPI · MCP agents · GitHub gate</text>
-        <rect x="22" y="118" width="118" height="16" rx="8" fill="#eff6ff" stroke="#bfdbfe"/>
-        <text x="81" y="130" text-anchor="middle" fill="#1d4ed8" font-size="9" font-weight="900">same JSON everywhere</text>
+      <g transform="translate(960,256)">
+        <rect width="272" height="128" rx="16" fill="#f8fafc" stroke="#dbeafe"/>
+        <text x="22" y="34" fill="#64748b" font-size="10" font-weight="900" letter-spacing="1.6">04 · PROVE</text>
+        <text x="22" y="62" fill="#0f172a" font-size="17" font-weight="950">Console · API · MCP</text>
+        <text x="22" y="88" fill="#475569" font-size="13" font-weight="750">Same JSON for humans, agents, and auditors</text>
       </g>
     </g>
 
-    <path d="M336 380h16" stroke="url(#accent)" stroke-width="4" stroke-linecap="round"/>
-    <path d="M642 380h16" stroke="url(#accent)" stroke-width="4" stroke-linecap="round"/>
-    <path d="M948 380h16" stroke="url(#accent)" stroke-width="4" stroke-linecap="round"/>
-
-    <!-- Bottom KPI row -->
-    <g transform="translate(44,472)" filter="url(#shadow)">
-      <rect width="286" height="132" rx="18" fill="#082f49" stroke="#38bdf8"/>
-      <text x="22" y="34" class="label" fill="#7dd3fc">TRUST HOME</text>
-      <text x="22" y="72" class="metric">88%</text>
-      <text x="22" y="94" class="metricSub">posture · insights · readiness strip</text>
-      <text x="22" y="114" class="body">Framework drill-down · repo graph</text>
-    </g>
-    <g transform="translate(350,472)" filter="url(#shadow)">
-      <rect width="286" height="132" rx="18" fill="#064e3b" stroke="#34d399"/>
-      <text x="22" y="34" class="label" fill="#a7f3d0">EVIDENCE ROOM</text>
-      <text x="22" y="72" class="metric">SLA</text>
-      <text x="22" y="94" class="metricSub">fresh · stale · escalate to tasks</text>
-      <text x="22" y="114" class="body">SHA-256 verify · saved views</text>
-    </g>
-    <g transform="translate(656,472)" filter="url(#shadow)">
-      <rect width="286" height="132" rx="18" fill="#451a03" stroke="#f59e0b"/>
-      <text x="22" y="34" class="label" fill="#fed7aa">AUDIT READINESS</text>
-      <text x="22" y="72" class="metric">Score</text>
-      <text x="22" y="94" class="metricSub">gaps · vendor · policy strips</text>
-      <text x="22" y="114" class="body">Executive PDF · snapshot timeline</text>
-    </g>
-    <g transform="translate(962,472)" filter="url(#shadow)">
-      <rect width="274" height="132" rx="18" fill="url(#panel)" stroke="#334155"/>
-      <text x="22" y="34" class="label">HEADLESS FIRST</text>
-      <text x="22" y="72" class="metric" font-size="20">API · MCP</text>
-      <text x="22" y="94" class="metricSub">agents propose · humans approve</text>
-      <text x="22" y="114" class="body">Models summarize — never own verdicts</text>
-    </g>
+    <path d="M344 320h12" stroke="url(#accent)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M648 320h12" stroke="url(#accent)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M944 320h12" stroke="url(#accent)" stroke-width="3" stroke-linecap="round"/>
   </g>
 </svg>
