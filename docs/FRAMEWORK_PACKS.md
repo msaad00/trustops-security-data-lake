@@ -15,6 +15,7 @@ frameworks stay seed-and-expand.
 | NIST CSF 2.0 Core           | `nist-csf-2.0`        | **106** subcategories (GOVERN through RECOVER)          | [NIST Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework)                                                             |
 | FedRAMP Moderate foundation | `fedramp-moderate`    | **287** (NIST SP 800-53 Rev 5 Moderate baseline)        | [NIST SP 800-53B](https://csrc.nist.gov/publications/detail/sp/800-53b/final)                                                       |
 | CIS AWS Foundations v3.0    | `cis-aws` / `cis_aws` | **62** recommendations                                  | [CIS AWS Benchmark](https://www.cisecurity.org/benchmark/amazon_web_services)                                                       |
+| CMMC 2.0 Level 2            | `cmmc-2-level2`       | **110** practices (NIST SP 800-171 Rev 2)               | [NIST SP 800-171 Rev 2](https://csrc.nist.gov/publications/detail/sp/800-171/rev-2/final) / [CMMC](https://dodcio.defense.gov/CMMC/Documentation/) |
 | ISO/IEC 27001:2022 Annex A  | `iso-27001-2022`      | **93** controls                                         | [ISO/IEC 27001:2022](https://www.iso.org/standard/27001)                                                                            |
 | ISO/IEC 42001:2023 Annex A  | `iso-42001-2023`      | **38** AI controls                                      | [ISO/IEC 42001:2023](https://www.iso.org/standard/42001)                                                                            |
 
@@ -36,6 +37,7 @@ security-lakehouse frameworks sync-packs
 security-lakehouse frameworks sync-packs --pack nist-csf-2.0
 security-lakehouse frameworks sync-packs --pack fedramp-moderate
 security-lakehouse frameworks sync-packs --pack cis-aws
+security-lakehouse frameworks sync-packs --pack cmmc-2-level2
 security-lakehouse frameworks sync-packs --pack iso-27001-2022
 security-lakehouse frameworks sync-packs --pack iso-42001-2023
 make framework-packs
@@ -99,7 +101,7 @@ Tune per control after sync by editing `evaluation_rule` in the catalog.
 
 - FedRAMP **Rev 5 overlay** controls beyond NIST Moderate (323-selected set)
 - SOC 2 **Availability / Confidentiality / Processing Integrity / Privacy** TSC
-- CMMC 2.0 Level 2 and ISO/IEC 27017 full packs
+- ISO/IEC 27017 full pack
 - Pack-specific evidence requirement templates linked to connector catalogs
 
 See [ROADMAP.md](../ROADMAP.md).

@@ -2,12 +2,12 @@
   "schema_version": "trustops.catalog_bundle.v1",
   "as_of": null,
   "framework_count": 13,
-  "control_count": 741,
-  "crosswalk_count": 741,
+  "control_count": 851,
+  "crosswalk_count": 851,
   "components": {
-    "frameworks": "6c0bbaeef0df1d17fc7b4a902bb4bb9f52f0f8c270fded9d12dd963c1de36f95",
-    "controls": "ab45cfee1b8380f0daaa7e70e3dc1ef937a88f8e62d6fa8564cf6da49756335e",
-    "crosswalk": "d834ccc85513fcf95a39723172efa743d1691a185299262e7d322645ec973aa9"
+    "frameworks": "d8eec299efc2dec36c6abd1bc8961c72337b94b78df7f6606a8bc26696d706f7",
+    "controls": "d8670bb1f6900736f803dab504f598dc896978ed8dc26bb7f2702803dcbdda90",
+    "crosswalk": "58794a8b26f7dad93922fb58ab5599244156218628367aa4eafbc2b7f699aa39"
   },
   "framework_versions": [
     {
@@ -533,6 +533,776 @@
     {
       "control_id": "CIS-AWS-5.6",
       "framework_id": "cis_aws",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.1",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.10",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.11",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.12",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.13",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.14",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.15",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.16",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.17",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.18",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.19",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.2",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.20",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.21",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.22",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.3",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.4",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.5",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.6",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.7",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.8",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.1.9",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.10.1",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.10.2",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.10.3",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.10.4",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.10.5",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.10.6",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.11.1",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.11.2",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.11.3",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.12.1",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.12.2",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.12.3",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.12.4",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.13.1",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.13.10",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.13.11",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.13.12",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.13.13",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.13.14",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.13.15",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.13.16",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.13.2",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.13.3",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.13.4",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.13.5",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.13.6",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.13.7",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.13.8",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.13.9",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.14.1",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.14.2",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.14.3",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.14.4",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.14.5",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.14.6",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.14.7",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.2.1",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.2.2",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.2.3",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.3.1",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.3.2",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.3.3",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.3.4",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.3.5",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.3.6",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.3.7",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.3.8",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.3.9",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.4.1",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.4.2",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.4.3",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.4.4",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.4.5",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.4.6",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.4.7",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.4.8",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.4.9",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.5.1",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.5.10",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.5.11",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.5.2",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.5.3",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.5.4",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.5.5",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.5.6",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.5.7",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.5.8",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.5.9",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.6.1",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.6.2",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.6.3",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.7.1",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.7.2",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.7.3",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.7.4",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.7.5",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.7.6",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.8.1",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.8.2",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.8.3",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.8.4",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.8.5",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.8.6",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.8.7",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.8.8",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.8.9",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.9.1",
+      "framework_id": "cmmc-2-level2",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CMMC-3.9.2",
+      "framework_id": "cmmc-2-level2",
       "version": "1.0.0",
       "valid_from": "2026-06-30",
       "lifecycle_status": "active"
@@ -5291,5 +6061,5 @@
       "lifecycle_status": "active"
     }
   ],
-  "bundle_sha256": "260d92c8526db794518b37aec62f5533672ed2f7af82375a08f80aa09cef61fa"
+  "bundle_sha256": "7a6b3307d69c83bebd5cec141513396f94354ea17f32579b4ab854304b3ec31b"
 }

@@ -6,6 +6,7 @@ Static identifier lists used by `security-lakehouse frameworks sync-packs`.
 | -------------------------------- | ------------------ | ----: |
 | `nist_800_53_rev5_moderate.json` | `fedramp-moderate` |   287 |
 | `cis_aws_v3.json`                | `cis-aws`          |    62 |
+| `cmmc_2_level2.json`             | `cmmc-2-level2`    |   110 |
 
 ISO 27001 and ISO 42001 Annex A controls are generated programmatically in
 `src/security_lakehouse/pack_data.py`.
