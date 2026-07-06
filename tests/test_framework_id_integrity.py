@@ -31,6 +31,7 @@ _FORMAT_PATTERNS: dict[str, str] = {
     "iso-27001-2022": r"^A\.\d",
     "gdpr-2016-679": r"^Art\.\d+$",
     "nist-ai-rmf": r"^(GOVERN|MAP|MEASURE|MANAGE)-\d",
+    "nist-csf-2.0": r"^(GV|ID|PR|DE|RS|RC)\.[A-Z]{2}-\d{2}$",
     "hipaa-security-rule": r"^164\.",
     "pci-dss-v4": r"^Req-\d",
     "eu-ai-act-2024-1689": r"^Art\.\d+$",

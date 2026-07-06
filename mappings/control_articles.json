@@ -7998,6 +7998,1490 @@
       ]
     },
     {
+      "control_id": "NIST-CSF-DE.AE-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "DE.AE-01",
+          "title": "NIST CSF 2.0 DE.AE-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 DE.AE-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-DE.AE-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "DE.AE-02",
+          "title": "NIST CSF 2.0 DE.AE-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 DE.AE-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-DE.AE-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "DE.AE-03",
+          "title": "NIST CSF 2.0 DE.AE-03 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 DE.AE-03."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-DE.AE-04",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "DE.AE-04",
+          "title": "NIST CSF 2.0 DE.AE-04 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 DE.AE-04."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-DE.AE-05",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "DE.AE-05",
+          "title": "NIST CSF 2.0 DE.AE-05 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 DE.AE-05."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-DE.AE-06",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "DE.AE-06",
+          "title": "NIST CSF 2.0 DE.AE-06 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 DE.AE-06."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-DE.CM-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "DE.CM-01",
+          "title": "NIST CSF 2.0 DE.CM-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 DE.CM-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-DE.CM-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "DE.CM-02",
+          "title": "NIST CSF 2.0 DE.CM-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 DE.CM-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-DE.CM-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "DE.CM-03",
+          "title": "NIST CSF 2.0 DE.CM-03 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 DE.CM-03."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-DE.CM-04",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "DE.CM-04",
+          "title": "NIST CSF 2.0 DE.CM-04 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 DE.CM-04."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-DE.CM-05",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "DE.CM-05",
+          "title": "NIST CSF 2.0 DE.CM-05 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 DE.CM-05."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.OC-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.OC-01",
+          "title": "NIST CSF 2.0 GV.OC-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.OC-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.OC-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.OC-02",
+          "title": "NIST CSF 2.0 GV.OC-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.OC-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.OC-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.OC-03",
+          "title": "NIST CSF 2.0 GV.OC-03 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.OC-03."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.OC-04",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.OC-04",
+          "title": "NIST CSF 2.0 GV.OC-04 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.OC-04."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.OC-05",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.OC-05",
+          "title": "NIST CSF 2.0 GV.OC-05 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.OC-05."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.OV-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.OV-01",
+          "title": "NIST CSF 2.0 GV.OV-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.OV-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.OV-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.OV-02",
+          "title": "NIST CSF 2.0 GV.OV-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.OV-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.OV-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.OV-03",
+          "title": "NIST CSF 2.0 GV.OV-03 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.OV-03."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.PO-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.PO-01",
+          "title": "NIST CSF 2.0 GV.PO-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.PO-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.PO-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.PO-02",
+          "title": "NIST CSF 2.0 GV.PO-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.PO-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.RM-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.RM-01",
+          "title": "NIST CSF 2.0 GV.RM-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.RM-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.RM-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.RM-02",
+          "title": "NIST CSF 2.0 GV.RM-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.RM-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.RM-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.RM-03",
+          "title": "NIST CSF 2.0 GV.RM-03 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.RM-03."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.RM-04",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.RM-04",
+          "title": "NIST CSF 2.0 GV.RM-04 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.RM-04."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.RM-05",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.RM-05",
+          "title": "NIST CSF 2.0 GV.RM-05 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.RM-05."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.RM-06",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.RM-06",
+          "title": "NIST CSF 2.0 GV.RM-06 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.RM-06."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.RM-07",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.RM-07",
+          "title": "NIST CSF 2.0 GV.RM-07 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.RM-07."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.RR-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.RR-01",
+          "title": "NIST CSF 2.0 GV.RR-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.RR-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.RR-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.RR-02",
+          "title": "NIST CSF 2.0 GV.RR-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.RR-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.RR-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.RR-03",
+          "title": "NIST CSF 2.0 GV.RR-03 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.RR-03."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.RR-04",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.RR-04",
+          "title": "NIST CSF 2.0 GV.RR-04 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.RR-04."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.SC-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.SC-01",
+          "title": "NIST CSF 2.0 GV.SC-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.SC-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.SC-02",
+          "title": "NIST CSF 2.0 GV.SC-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.SC-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.SC-03",
+          "title": "NIST CSF 2.0 GV.SC-03 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-03."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.SC-04",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.SC-04",
+          "title": "NIST CSF 2.0 GV.SC-04 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-04."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.SC-05",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.SC-05",
+          "title": "NIST CSF 2.0 GV.SC-05 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-05."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.SC-06",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.SC-06",
+          "title": "NIST CSF 2.0 GV.SC-06 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-06."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.SC-07",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.SC-07",
+          "title": "NIST CSF 2.0 GV.SC-07 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-07."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.SC-08",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.SC-08",
+          "title": "NIST CSF 2.0 GV.SC-08 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-08."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.SC-09",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.SC-09",
+          "title": "NIST CSF 2.0 GV.SC-09 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-09."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-GV.SC-10",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "GV.SC-10",
+          "title": "NIST CSF 2.0 GV.SC-10 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-10."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.AM-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.AM-01",
+          "title": "NIST CSF 2.0 ID.AM-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.AM-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.AM-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.AM-02",
+          "title": "NIST CSF 2.0 ID.AM-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.AM-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.AM-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.AM-03",
+          "title": "NIST CSF 2.0 ID.AM-03 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.AM-03."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.AM-04",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.AM-04",
+          "title": "NIST CSF 2.0 ID.AM-04 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.AM-04."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.AM-05",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.AM-05",
+          "title": "NIST CSF 2.0 ID.AM-05 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.AM-05."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.AM-06",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.AM-06",
+          "title": "NIST CSF 2.0 ID.AM-06 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.AM-06."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.AM-07",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.AM-07",
+          "title": "NIST CSF 2.0 ID.AM-07 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.AM-07."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.IM-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.IM-01",
+          "title": "NIST CSF 2.0 ID.IM-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.IM-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.IM-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.IM-02",
+          "title": "NIST CSF 2.0 ID.IM-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.IM-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.IM-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.IM-03",
+          "title": "NIST CSF 2.0 ID.IM-03 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.IM-03."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.IM-04",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.IM-04",
+          "title": "NIST CSF 2.0 ID.IM-04 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.IM-04."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.RA-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.RA-01",
+          "title": "NIST CSF 2.0 ID.RA-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.RA-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.RA-02",
+          "title": "NIST CSF 2.0 ID.RA-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.RA-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.RA-03",
+          "title": "NIST CSF 2.0 ID.RA-03 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-03."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.RA-04",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.RA-04",
+          "title": "NIST CSF 2.0 ID.RA-04 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-04."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.RA-05",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.RA-05",
+          "title": "NIST CSF 2.0 ID.RA-05 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-05."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.RA-06",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.RA-06",
+          "title": "NIST CSF 2.0 ID.RA-06 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-06."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.RA-07",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.RA-07",
+          "title": "NIST CSF 2.0 ID.RA-07 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-07."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.RA-08",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.RA-08",
+          "title": "NIST CSF 2.0 ID.RA-08 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-08."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.RA-09",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.RA-09",
+          "title": "NIST CSF 2.0 ID.RA-09 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-09."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.RA-10",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.RA-10",
+          "title": "NIST CSF 2.0 ID.RA-10 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-10."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.AA-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.AA-01",
+          "title": "NIST CSF 2.0 PR.AA-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.AA-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.AA-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.AA-02",
+          "title": "NIST CSF 2.0 PR.AA-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.AA-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.AA-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.AA-03",
+          "title": "NIST CSF 2.0 PR.AA-03 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.AA-03."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.AA-04",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.AA-04",
+          "title": "NIST CSF 2.0 PR.AA-04 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.AA-04."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.AA-05",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.AA-05",
+          "title": "NIST CSF 2.0 PR.AA-05 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.AA-05."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.AA-06",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.AA-06",
+          "title": "NIST CSF 2.0 PR.AA-06 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.AA-06."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.AT-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.AT-01",
+          "title": "NIST CSF 2.0 PR.AT-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.AT-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.AT-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.AT-02",
+          "title": "NIST CSF 2.0 PR.AT-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.AT-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.DS-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.DS-01",
+          "title": "NIST CSF 2.0 PR.DS-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.DS-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.DS-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.DS-02",
+          "title": "NIST CSF 2.0 PR.DS-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.DS-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.DS-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.DS-03",
+          "title": "NIST CSF 2.0 PR.DS-03 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.DS-03."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.DS-04",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.DS-04",
+          "title": "NIST CSF 2.0 PR.DS-04 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.DS-04."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.IR-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.IR-01",
+          "title": "NIST CSF 2.0 PR.IR-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.IR-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.IR-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.IR-02",
+          "title": "NIST CSF 2.0 PR.IR-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.IR-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.IR-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.IR-03",
+          "title": "NIST CSF 2.0 PR.IR-03 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.IR-03."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.IR-04",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.IR-04",
+          "title": "NIST CSF 2.0 PR.IR-04 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.IR-04."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.PS-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.PS-01",
+          "title": "NIST CSF 2.0 PR.PS-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.PS-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.PS-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.PS-02",
+          "title": "NIST CSF 2.0 PR.PS-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.PS-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.PS-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.PS-03",
+          "title": "NIST CSF 2.0 PR.PS-03 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.PS-03."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.PS-04",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.PS-04",
+          "title": "NIST CSF 2.0 PR.PS-04 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.PS-04."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.PS-05",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.PS-05",
+          "title": "NIST CSF 2.0 PR.PS-05 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.PS-05."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-PR.PS-06",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "PR.PS-06",
+          "title": "NIST CSF 2.0 PR.PS-06 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 PR.PS-06."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RC.CO-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RC.CO-01",
+          "title": "NIST CSF 2.0 RC.CO-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RC.CO-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RC.CO-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RC.CO-02",
+          "title": "NIST CSF 2.0 RC.CO-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RC.CO-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RC.RP-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RC.RP-01",
+          "title": "NIST CSF 2.0 RC.RP-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RC.RP-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RC.RP-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RC.RP-02",
+          "title": "NIST CSF 2.0 RC.RP-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RC.RP-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RC.RP-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RC.RP-03",
+          "title": "NIST CSF 2.0 RC.RP-03 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RC.RP-03."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RC.RP-04",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RC.RP-04",
+          "title": "NIST CSF 2.0 RC.RP-04 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RC.RP-04."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RC.RP-05",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RC.RP-05",
+          "title": "NIST CSF 2.0 RC.RP-05 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RC.RP-05."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RC.RP-06",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RC.RP-06",
+          "title": "NIST CSF 2.0 RC.RP-06 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RC.RP-06."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RS.AN-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RS.AN-01",
+          "title": "NIST CSF 2.0 RS.AN-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RS.AN-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RS.AN-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RS.AN-02",
+          "title": "NIST CSF 2.0 RS.AN-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RS.AN-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RS.AN-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RS.AN-03",
+          "title": "NIST CSF 2.0 RS.AN-03 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RS.AN-03."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RS.AN-04",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RS.AN-04",
+          "title": "NIST CSF 2.0 RS.AN-04 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RS.AN-04."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RS.CO-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RS.CO-01",
+          "title": "NIST CSF 2.0 RS.CO-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RS.CO-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RS.CO-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RS.CO-02",
+          "title": "NIST CSF 2.0 RS.CO-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RS.CO-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RS.MA-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RS.MA-01",
+          "title": "NIST CSF 2.0 RS.MA-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RS.MA-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RS.MA-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RS.MA-02",
+          "title": "NIST CSF 2.0 RS.MA-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RS.MA-02."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RS.MA-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RS.MA-03",
+          "title": "NIST CSF 2.0 RS.MA-03 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RS.MA-03."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RS.MA-04",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RS.MA-04",
+          "title": "NIST CSF 2.0 RS.MA-04 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RS.MA-04."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RS.MA-05",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RS.MA-05",
+          "title": "NIST CSF 2.0 RS.MA-05 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RS.MA-05."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RS.MI-01",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RS.MI-01",
+          "title": "NIST CSF 2.0 RS.MI-01 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RS.MI-01."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RS.MI-02",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RS.MI-02",
+          "title": "NIST CSF 2.0 RS.MI-02 \u2014 assessed from cybersecurity program and operational evidence",
+          "official_source_url": "https://www.nist.gov/cyberframework",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to NIST CSF 2.0 RS.MI-02."
+        }
+      ]
+    },
+    {
       "control_id": "PCI-DSS-10",
       "framework_id": "pci-dss-v4",
       "articles": [
