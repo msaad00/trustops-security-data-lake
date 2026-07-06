@@ -1,0 +1,26 @@
+name: grc_review
+version: 1.0.0
+config-version: 2
+
+profile: grc_review
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+seed-paths: ["seeds"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  sla_hours: 24
+
+models:
+  grc_review:
+    bronze:
+      +schema: BRONZE
+    silver:
+      +schema: SILVER
+      +materialized: incremental
+      +incremental_strategy: merge
+    gold:
+      +schema: GOLD
+      +materialized: table

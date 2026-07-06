@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: bronze
+    database: GRC_REVIEW
+    schema: BRONZE
+    tables:
+      - name: raw_entra_users

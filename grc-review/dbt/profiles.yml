@@ -1,0 +1,13 @@
+grc_review:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      role: GRC_DBT_RUNNER
+      database: GRC_REVIEW
+      warehouse: GRC_REVIEW_WH
+      schema: SILVER
+      authenticator: externalbrowser
+      threads: 4

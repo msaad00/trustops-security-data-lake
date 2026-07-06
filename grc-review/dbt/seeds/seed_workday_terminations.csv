@@ -1,0 +1,4 @@
+employee_id,email,termination_date,termination_ts,status
+E001,alice.departed@example.com,2026-06-28,2026-06-28 17:00:00,terminated
+E002,bob.departed@example.com,2026-06-30,2026-06-30 17:00:00,terminated
+E003,cara.departed@example.com,2026-07-01,2026-07-01 17:00:00,terminated

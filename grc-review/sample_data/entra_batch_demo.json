@@ -1,0 +1,35 @@
+[
+  {
+    "id": "entra-alice",
+    "userPrincipalName": "alice.departed@example.com",
+    "mail": "alice.departed@example.com",
+    "accountEnabled": true,
+    "employeeId": "E001",
+    "displayName": "Alice Departed",
+    "source_operation": "upsert",
+    "ingest_batch_id": "20260706T120000Z",
+    "ingest_time": "2026-07-06T12:00:00+00:00"
+  },
+  {
+    "id": "entra-bob",
+    "userPrincipalName": "bob.departed@example.com",
+    "mail": "bob.departed@example.com",
+    "accountEnabled": true,
+    "employeeId": "E002",
+    "displayName": "Bob Departed",
+    "source_operation": "upsert",
+    "ingest_batch_id": "20260706T120000Z",
+    "ingest_time": "2026-07-06T12:00:00+00:00"
+  },
+  {
+    "id": "entra-cara",
+    "userPrincipalName": "cara.departed@example.com",
+    "mail": "cara.departed@example.com",
+    "accountEnabled": false,
+    "employeeId": "E003",
+    "displayName": "Cara Departed",
+    "source_operation": "upsert",
+    "ingest_batch_id": "20260706T120000Z",
+    "ingest_time": "2026-07-06T12:00:00+00:00"
+  }
+]

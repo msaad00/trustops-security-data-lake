@@ -1,0 +1,8 @@
+build/
+.entra_delta_watermark.json
+ingest/config.env
+dbt/target/
+dbt/dbt_packages/
+__pycache__/
+*.pyc
+.env

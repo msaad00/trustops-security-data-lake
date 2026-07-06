@@ -1,0 +1,8 @@
+version: 2
+
+seeds:
+  - name: seed_workday_terminations
+    config:
+      column_types:
+        termination_date: date
+        termination_ts: timestamp_ntz
