@@ -209,6 +209,66 @@ def test_remediation_insights_overdue(tmp_path: Path) -> None:
     assert ins["overdue"] == 1
 
 
+def test_framework_readiness_trends_from_current(tmp_path: Path) -> None:
+    """Without snapshots, trends include at least the live posture baseline."""
+    _seed_lake(tmp_path)
+    data = metrics_db.framework_readiness_trends(tmp_path)
+    assert isinstance(data["frameworks"], list)
+    assert len(data["frameworks"]) >= 1
+    assert len(data["points"]) >= 1
+    last = data["points"][-1]
+    assert last["source"] in {"current", "snapshot"}
+    assert isinstance(last["frameworks"], dict)
+    for fw in data["frameworks"]:
+        assert fw in last["frameworks"]
+
+
+def test_sla_heatmap_buckets(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path)
+    base = datetime(2026, 5, 1, 12, 0, 0, tzinfo=UTC)
+    now = base + timedelta(days=2)
+
+    with session_scope(app.state.sessionmaker) as session:
+        tenant = create_tenant(session, slug="acme", name="Acme")
+
+        overdue = remediation.create_task(
+            session, tenant_id=tenant.id, title="late", priority="high", due_at=base
+        )
+        on_track = remediation.create_task(
+            session,
+            tenant_id=tenant.id,
+            title="ok",
+            priority="critical",
+            due_at=base + timedelta(days=7),
+        )
+        resolved_on_time = remediation.create_task(session, tenant_id=tenant.id, title="done")
+        resolved_on_time.priority = "medium"
+        resolved_on_time.created_at = base
+        resolved_on_time.due_at = base + timedelta(hours=8)
+        resolved_on_time.resolved_at = base + timedelta(hours=4)
+        resolved_on_time.status = "resolved"
+
+        session.flush()
+        session.commit()
+
+        heat = metrics_db.sla_heatmap(session, tenant_id=tenant.id, now=now)
+
+    assert heat["columns"] == [
+        "open_on_track",
+        "open_overdue",
+        "open_no_sla",
+        "resolved_on_time",
+        "resolved_late",
+    ]
+    high = next(row for row in heat["rows"] if row["priority"] == "high")
+    critical = next(row for row in heat["rows"] if row["priority"] == "critical")
+    medium = next(row for row in heat["rows"] if row["priority"] == "medium")
+    assert high["open_overdue"] == 1
+    assert critical["open_on_track"] == 1
+    assert medium["resolved_on_time"] == 1
+
+
 # ---------------------------------------------------------------------------
 # API layer — RBAC
 # ---------------------------------------------------------------------------
@@ -289,3 +349,37 @@ def test_capture_contributor_ok(env) -> None:
     assert "id" in data
     assert "posture_score" in data
     assert "captured_at" in data
+
+
+def test_framework_trends_api_read_ok(env) -> None:
+    _app, client, tokens = env
+    res = client.get("/api/v1/insights/framework-trends", headers=_bearer(tokens["read_only"]))
+    assert res.status_code == HTTPStatus.OK
+    body = res.json()
+    data = body["data"]
+    assert "frameworks" in data
+    assert "points" in data
+    assert isinstance(data["points"], list)
+
+
+def test_framework_trends_requires_auth(env) -> None:
+    _app, client, _tokens = env
+    res = client.get("/api/v1/insights/framework-trends")
+    assert res.status_code == HTTPStatus.UNAUTHORIZED
+
+
+def test_sla_heatmap_api_read_ok(env) -> None:
+    _app, client, tokens = env
+    res = client.get("/api/v1/insights/sla-heatmap", headers=_bearer(tokens["read_only"]))
+    assert res.status_code == HTTPStatus.OK
+    body = res.json()
+    data = body["data"]
+    assert "rows" in data
+    assert "columns" in data
+    assert len(data["rows"]) == 4
+
+
+def test_sla_heatmap_requires_auth(env) -> None:
+    _app, client, _tokens = env
+    res = client.get("/api/v1/insights/sla-heatmap")
+    assert res.status_code == HTTPStatus.UNAUTHORIZED

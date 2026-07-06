@@ -20,6 +20,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { EvidenceFreshnessTrendChart } from "@/components/insights/EvidenceFreshnessTrendChart";
+import { FrameworkReadinessTrendChart } from "@/components/insights/FrameworkReadinessTrendChart";
 import { useInsightsTimeseries, useSnapshots } from "@/lib/api/hooks";
 
 function fmtDate(iso: string): string {
@@ -57,7 +59,8 @@ export function AuditRoomTrendsPanel() {
   const loading = snapshots.isLoading || timeseries.isLoading;
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
+    <div className="grid gap-4">
+      <div className="grid gap-4 lg:grid-cols-2">
       <Card className="overflow-hidden">
         <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0">
           <div>
@@ -176,6 +179,10 @@ export function AuditRoomTrendsPanel() {
           </div>
         )}
       </Card>
+      </div>
+
+      <FrameworkReadinessTrendChart />
+      <EvidenceFreshnessTrendChart limit={30} />
     </div>
   );
 }

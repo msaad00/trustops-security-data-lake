@@ -43,6 +43,7 @@ import type {
   EscalateFreshnessResult,
   EntityTag,
   FrameworkReadiness,
+  FrameworkReadinessTrends,
   FrameworkDetail,
   FrameworkView,
   ReviewedCrosswalk,
@@ -58,6 +59,7 @@ import type {
   PolicyTemplateSummary,
   PolicyCoverage,
   SavedView,
+  SlaHeatmap,
   SnapshotResponse,
   Tag,
   TrackingEvent,
@@ -534,6 +536,12 @@ export const api = {
     post<{ data: PostureMetricPoint }>("/v1/insights/capture", {}).then(
       (b) => b.data,
     ),
+  insightsFrameworkTrends: (limit = 90) =>
+    get<{ data: FrameworkReadinessTrends }>(
+      `/v1/insights/framework-trends?limit=${limit}`,
+    ).then((b) => b.data),
+  insightsSlaHeatmap: () =>
+    get<{ data: SlaHeatmap }>("/v1/insights/sla-heatmap").then((b) => b.data),
   agentRuns: (query = "") =>
     get<{ data: AgentRun[] }>(`/v1/agent-runs${query}`).then((b) => b.data),
   createAgentRun: (payload: CreateAgentRunPayload) =>

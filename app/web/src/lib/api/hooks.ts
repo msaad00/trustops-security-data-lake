@@ -1093,6 +1093,24 @@ export function useCaptureMetricMutation() {
   });
 }
 
+export function useInsightsFrameworkTrends(limit = 90) {
+  return useQuery({
+    queryKey: ["insights", "framework-trends", limit],
+    queryFn: () => api.insightsFrameworkTrends(limit),
+    staleTime: STALE,
+    refetchInterval: LIVE,
+  });
+}
+
+export function useInsightsSlaHeatmap() {
+  return useQuery({
+    queryKey: ["insights", "sla-heatmap"],
+    queryFn: api.insightsSlaHeatmap,
+    staleTime: STALE,
+    refetchInterval: LIVE,
+  });
+}
+
 // Continuous-eval: push posture, freshness, and audit-readiness via SSE (#92).
 export function usePlatformStream(): { connected: boolean } {
   const qc = useQueryClient();

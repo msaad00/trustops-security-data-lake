@@ -1152,6 +1152,39 @@ export interface RemediationInsights {
   sla_eligible_count: number;
 }
 
+export type SlaHeatmapColumn =
+  | "open_on_track"
+  | "open_overdue"
+  | "open_no_sla"
+  | "resolved_on_time"
+  | "resolved_late";
+
+export interface SlaHeatmapRow {
+  priority: "critical" | "high" | "medium" | "low";
+  open_on_track: number;
+  open_overdue: number;
+  open_no_sla: number;
+  resolved_on_time: number;
+  resolved_late: number;
+}
+
+export interface SlaHeatmap {
+  columns: SlaHeatmapColumn[];
+  rows: SlaHeatmapRow[];
+}
+
+export interface FrameworkTrendPoint {
+  at: string;
+  source: "snapshot" | "current";
+  snapshot_id: string | null;
+  frameworks: Record<string, number>;
+}
+
+export interface FrameworkReadinessTrends {
+  frameworks: string[];
+  points: FrameworkTrendPoint[];
+}
+
 export type AccessReviewStatus = "draft" | "active" | "completed" | "cancelled";
 export type AccessReviewDecision =
   "pending" | "certified" | "revoked" | "flagged";

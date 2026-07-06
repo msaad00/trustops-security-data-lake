@@ -165,6 +165,121 @@ def remediation_insights(
 
 
 # ---------------------------------------------------------------------------
+# Visual analytics (#18): framework trends + SLA heatmap
+# ---------------------------------------------------------------------------
+
+_SLA_PRIORITIES = ("critical", "high", "medium", "low")
+_SLA_COLUMNS = (
+    "open_on_track",
+    "open_overdue",
+    "open_no_sla",
+    "resolved_on_time",
+    "resolved_late",
+)
+
+
+def framework_readiness_trends(
+    lake_dir: str | Path,
+    *,
+    limit: int = 90,
+    include_current: bool = True,
+) -> dict[str, Any]:
+    """Per-framework readiness scores over time from gold snapshots + current posture."""
+    from security_lakehouse.assessment import _iter_snapshots, build_current_posture
+
+    snapshots = _iter_snapshots(lake_dir)
+    if limit > 0 and len(snapshots) > limit:
+        snapshots = snapshots[-limit:]
+
+    points: list[dict[str, Any]] = []
+    framework_names: set[str] = set()
+
+    for evaluated_at, payload, path in snapshots:
+        fw_scores: dict[str, float] = {}
+        for row in payload.get("frameworks") or []:
+            name = row.get("framework")
+            if not isinstance(name, str) or not name:
+                continue
+            framework_names.add(name)
+            fw_scores[name] = round(float(row.get("score") or 0.0), 1)
+        points.append(
+            {
+                "at": _iso(evaluated_at),
+                "source": "snapshot",
+                "snapshot_id": path.stem,
+                "frameworks": fw_scores,
+            }
+        )
+
+    if include_current:
+        current = build_current_posture(lake_dir)
+        fw_scores = {}
+        for row in current.get("frameworks") or []:
+            name = row.get("framework")
+            if not isinstance(name, str) or not name:
+                continue
+            framework_names.add(name)
+            fw_scores[name] = round(float(row.get("score") or 0.0), 1)
+        at = current.get("evaluated_at")
+        if isinstance(at, str) and (not points or points[-1]["at"] != at):
+            points.append(
+                {
+                    "at": at,
+                    "source": "current",
+                    "snapshot_id": None,
+                    "frameworks": fw_scores,
+                }
+            )
+
+    return {
+        "frameworks": sorted(framework_names),
+        "points": points,
+    }
+
+
+def sla_heatmap(
+    session: Session,
+    *,
+    tenant_id: str,
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    """Remediation SLA status grid by priority — open/on-track, overdue, and resolution timing."""
+    moment = _now(now)
+    stmt = select(RemediationTask).where(RemediationTask.tenant_id == tenant_id)
+    tasks = list(session.scalars(stmt))
+
+    cells: dict[str, dict[str, int]] = {
+        priority: {column: 0 for column in _SLA_COLUMNS} for priority in _SLA_PRIORITIES
+    }
+
+    for task in tasks:
+        priority = task.priority if task.priority in _SLA_PRIORITIES else "medium"
+        bucket = cells[priority]
+
+        if task.is_open:
+            if task.due_at is None:
+                bucket["open_no_sla"] += 1
+            elif task.is_overdue(now=moment):
+                bucket["open_overdue"] += 1
+            else:
+                bucket["open_on_track"] += 1
+            continue
+
+        if task.status != "resolved" or task.resolved_at is None or task.due_at is None:
+            continue
+
+        resolved_at = _as_aware(task.resolved_at)
+        due_at = _as_aware(task.due_at)
+        if resolved_at <= due_at:
+            bucket["resolved_on_time"] += 1
+        else:
+            bucket["resolved_late"] += 1
+
+    rows = [{"priority": priority, **cells[priority]} for priority in _SLA_PRIORITIES]
+    return {"columns": list(_SLA_COLUMNS), "rows": rows}
+
+
+# ---------------------------------------------------------------------------
 # Serializers
 # ---------------------------------------------------------------------------
 
@@ -187,7 +302,9 @@ def metric_point_to_dict(point: PostureMetricPoint) -> dict[str, Any]:
 
 __all__ = [
     "capture_metric_point",
+    "framework_readiness_trends",
     "list_metric_points",
     "metric_point_to_dict",
     "remediation_insights",
+    "sla_heatmap",
 ]

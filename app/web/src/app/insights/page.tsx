@@ -23,6 +23,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { EvidenceFreshnessTrendChart } from "@/components/insights/EvidenceFreshnessTrendChart";
+import { FrameworkReadinessTrendChart } from "@/components/insights/FrameworkReadinessTrendChart";
+import { SlaHeatmapPanel } from "@/components/insights/SlaHeatmapPanel";
 
 function fmtDate(iso: string): string {
   const d = new Date(iso);
@@ -92,9 +95,9 @@ export default function InsightsPage() {
             Metrics &amp; trends
           </h1>
           <p className="mt-2 max-w-[720px] text-sm text-muted">
-            Time-series posture score, control pass rate, MTTR, and SLA
-            attainment. Capture a snapshot on demand or wire the scheduler to
-            run{" "}
+            Time-series posture score, framework readiness, evidence freshness,
+            MTTR, and SLA attainment. Capture a snapshot on demand or wire the
+            scheduler to run{" "}
             <code className="rounded bg-slate-100 px-1 text-[11px]">
               POST /api/v1/insights/capture
             </code>{" "}
@@ -258,6 +261,12 @@ export default function InsightsPage() {
           )}
         </div>
       </Card>
+
+      <FrameworkReadinessTrendChart />
+
+      <EvidenceFreshnessTrendChart limit={90} />
+
+      <SlaHeatmapPanel />
     </div>
   );
 }
