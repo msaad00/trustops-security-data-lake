@@ -711,6 +711,19 @@ export interface FrameworkSourceRollup {
   latest_evidence_at: string | null;
 }
 
+export interface FrameworkConnectorHint {
+  connector_id: string;
+  name: string;
+  vendor: string;
+  category: string;
+  priority: "primary" | "secondary";
+  configured: boolean;
+  production_status: string;
+  evidence_types: string[];
+  setup_hint: string;
+  rationale: string;
+}
+
 export interface FrameworkControlDetail {
   control_id: string;
   title: string;
@@ -747,6 +760,7 @@ export interface FrameworkControlDetail {
     };
     sources: FrameworkSourceRollup[];
   };
+  connector_hints: FrameworkConnectorHint[];
 }
 
 export interface FrameworkDetail {
@@ -758,6 +772,8 @@ export interface FrameworkDetail {
     failing_control_count: number;
     evidence_count: number;
     source_count: number;
+    recommended_connector_count?: number;
+    configured_recommended_connector_count?: number;
   };
   controls: FrameworkControlDetail[];
   sources: FrameworkSourceRollup[];

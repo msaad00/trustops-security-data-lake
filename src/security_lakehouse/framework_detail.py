@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from security_lakehouse.catalog import load_control_catalog
+from security_lakehouse.evidence_hints import enabled_connector_ids, resolve_connector_hints
 from security_lakehouse.framework_provenance import build_framework_view
 from security_lakehouse.io import read_jsonl
 from security_lakehouse.mappings import load_control_article_mappings
@@ -69,6 +70,7 @@ def build_framework_detail(framework_id: str, lake_dir: str | Path) -> JsonObjec
     }
     evidence = read_jsonl(lake / "silver" / "normalized_events.jsonl")
     freshness = read_jsonl(lake / "gold" / "evidence_freshness.jsonl")
+    configured_connectors = enabled_connector_ids(lake)
 
     evidence_by_control: dict[str, list[JsonObject]] = defaultdict(list)
     freshness_by_control: dict[str, list[JsonObject]] = defaultdict(list)
@@ -89,6 +91,14 @@ def build_framework_detail(framework_id: str, lake_dir: str | Path) -> JsonObjec
         control_evidence = evidence_by_control.get(control_id, [])
         control_freshness = freshness_by_control.get(control_id, [])
         mapping = mappings.get(control_id, {})
+        articles = mapping.get("articles") or []
+        article_ids = [str(article.get("article_id") or "") for article in articles]
+        connector_hints = resolve_connector_hints(
+            framework_id=framework_id,
+            control=control,
+            article_ids=article_ids,
+            enabled_connector_ids=configured_connectors,
+        )
         control_rows.append(
             {
                 "control_id": control_id,
@@ -100,7 +110,8 @@ def build_framework_detail(framework_id: str, lake_dir: str | Path) -> JsonObjec
                 "evidence_requirement": control.get("evidence_requirement"),
                 "evaluation_rule": control.get("evaluation_rule"),
                 "official_source_ref": control.get("official_source_ref"),
-                "articles": mapping.get("articles") or [],
+                "articles": articles,
+                "connector_hints": connector_hints,
                 "posture": {
                     "status": (posture or {}).get("status") or "not_evaluated",
                     "risk_score": (posture or {}).get("risk_score"),
@@ -135,6 +146,13 @@ def build_framework_detail(framework_id: str, lake_dir: str | Path) -> JsonObjec
     framework_evidence: list[JsonObject] = []
     for row in control_rows:
         framework_evidence.extend(evidence_by_control.get(str(row["control_id"]), []))
+    recommended = {hint["connector_id"] for row in control_rows for hint in row.get("connector_hints") or []}
+    configured_recommended = {
+        hint["connector_id"]
+        for row in control_rows
+        for hint in row.get("connector_hints") or []
+        if hint.get("configured")
+    }
     return {
         "framework": framework,
         "summary": {
@@ -144,6 +162,8 @@ def build_framework_detail(framework_id: str, lake_dir: str | Path) -> JsonObjec
             "failing_control_count": sum(1 for row in control_rows if row["posture"]["status"] == "fail"),
             "evidence_count": sum(int(row["evidence"]["count"]) for row in control_rows),
             "source_count": len({source["source"] for row in control_rows for source in row["evidence"]["sources"]}),
+            "recommended_connector_count": len(recommended),
+            "configured_recommended_connector_count": len(configured_recommended),
         },
         "controls": control_rows,
         "sources": _source_rollups(framework_evidence, freshness),

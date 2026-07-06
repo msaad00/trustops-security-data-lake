@@ -54,7 +54,9 @@ This merges pack rows into:
 Hand-authored controls (e.g. richer `SOC2-CC6.1` evidence text) are **preserved**
 when the `control_id` already exists.
 
-Pack source data for FedRAMP and CIS lives under `frameworks/packs/data/`.
+Pack source data for FedRAMP, CIS, CMMC, and connector hints lives under
+`frameworks/packs/data/`. Connector hints power framework drill-down
+recommendations (`evidence_hints.py`).
 
 ## Verify coverage
 
