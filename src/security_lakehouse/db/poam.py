@@ -68,9 +68,7 @@ def get_item(session: Session, *, tenant_id: str, item_id: str) -> PoamItem | No
     return row if row is not None and row.tenant_id == tenant_id else None
 
 
-def get_by_requirement(
-    session: Session, *, tenant_id: str, framework_id: str, requirement_id: str
-) -> PoamItem | None:
+def get_by_requirement(session: Session, *, tenant_id: str, framework_id: str, requirement_id: str) -> PoamItem | None:
     stmt = (
         select(PoamItem)
         .where(
