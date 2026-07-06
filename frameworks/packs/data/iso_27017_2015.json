@@ -1,0 +1,195 @@
+{
+  "source": "ISO/IEC 27017:2015 \u2014 Code of practice for cloud security controls based on ISO/IEC 27002",
+  "official_source_url": "https://www.iso.org/standard/43757.html",
+  "note": "47 evaluable clause IDs: 40 ISO/IEC 27002:2013 controls with cloud implementation guidance plus 7 CLD cloud-specific controls.",
+  "controls": [
+    {
+      "id": "5.1.1",
+      "title": "Policies for information security"
+    },
+    {
+      "id": "5.1.2",
+      "title": "Review of the policies for information security"
+    },
+    {
+      "id": "6.1.1",
+      "title": "Information security roles and responsibilities"
+    },
+    {
+      "id": "6.1.3",
+      "title": "Contact with authorities"
+    },
+    {
+      "id": "6.1.4",
+      "title": "Contact with special interest groups"
+    },
+    {
+      "id": "6.2.1",
+      "title": "Mobile device policy"
+    },
+    {
+      "id": "6.2.2",
+      "title": "Teleworking"
+    },
+    {
+      "id": "CLD.6.3.1",
+      "title": "Relationship between cloud service provider and cloud service customer"
+    },
+    {
+      "id": "8.1.1",
+      "title": "Inventory of assets"
+    },
+    {
+      "id": "8.1.2",
+      "title": "Ownership of assets"
+    },
+    {
+      "id": "8.1.3",
+      "title": "Acceptable use of assets"
+    },
+    {
+      "id": "8.1.4",
+      "title": "Return of assets"
+    },
+    {
+      "id": "CLD.8.1.5",
+      "title": "Removal of cloud service customer assets"
+    },
+    {
+      "id": "9.1.1",
+      "title": "Access control policy"
+    },
+    {
+      "id": "9.1.2",
+      "title": "Access to networks and network services"
+    },
+    {
+      "id": "9.2.1",
+      "title": "User registration and de-registration"
+    },
+    {
+      "id": "9.2.2",
+      "title": "User access provisioning"
+    },
+    {
+      "id": "9.2.3",
+      "title": "Management of privileged access rights"
+    },
+    {
+      "id": "9.2.4",
+      "title": "Management of secret authentication information of users"
+    },
+    {
+      "id": "9.2.5",
+      "title": "Review of user access rights"
+    },
+    {
+      "id": "9.2.6",
+      "title": "Removal or adjustment of access rights"
+    },
+    {
+      "id": "9.3.1",
+      "title": "Use of secret authentication information"
+    },
+    {
+      "id": "9.4.1",
+      "title": "Information access restriction"
+    },
+    {
+      "id": "9.4.2",
+      "title": "Secure log-on procedures"
+    },
+    {
+      "id": "9.4.3",
+      "title": "Password management system"
+    },
+    {
+      "id": "CLD.9.5.1",
+      "title": "Segregation in virtual computing environments"
+    },
+    {
+      "id": "CLD.9.5.2",
+      "title": "Virtual machine hardening"
+    },
+    {
+      "id": "10.1.1",
+      "title": "Policy on the use of cryptographic controls"
+    },
+    {
+      "id": "10.1.2",
+      "title": "Key management"
+    },
+    {
+      "id": "11.2.5",
+      "title": "Removal of assets"
+    },
+    {
+      "id": "11.2.7",
+      "title": "Secure disposal or re-use of equipment"
+    },
+    {
+      "id": "12.1.1",
+      "title": "Documented operating procedures"
+    },
+    {
+      "id": "12.1.2",
+      "title": "Change management"
+    },
+    {
+      "id": "12.1.3",
+      "title": "Capacity management"
+    },
+    {
+      "id": "12.4.1",
+      "title": "Event logging"
+    },
+    {
+      "id": "12.4.2",
+      "title": "Protection of log information"
+    },
+    {
+      "id": "12.4.3",
+      "title": "Administrator and operator logs"
+    },
+    {
+      "id": "12.4.4",
+      "title": "Clock synchronisation"
+    },
+    {
+      "id": "CLD.12.1.5",
+      "title": "Administrator's operational security"
+    },
+    {
+      "id": "CLD.12.4.5",
+      "title": "Monitoring of cloud services"
+    },
+    {
+      "id": "13.1.1",
+      "title": "Network controls"
+    },
+    {
+      "id": "13.1.2",
+      "title": "Security of network services"
+    },
+    {
+      "id": "13.1.3",
+      "title": "Segregation in networks"
+    },
+    {
+      "id": "CLD.13.1.4",
+      "title": "Alignment of security management for virtual and physical networks"
+    },
+    {
+      "id": "15.1.1",
+      "title": "Information security policy for supplier relationships"
+    },
+    {
+      "id": "16.1.3",
+      "title": "Reporting information security weaknesses"
+    },
+    {
+      "id": "18.1.1",
+      "title": "Identification of applicable legislation and contractual requirements"
+    }
+  ]
+}
