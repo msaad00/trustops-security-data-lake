@@ -519,9 +519,8 @@ def test_v1_errors_use_contract_envelope(tmp_path: Path) -> None:
 def test_v1_ingestion_eval_and_scheduler_tick(tmp_path: Path) -> None:
     import shutil
 
-    from tests.test_pipeline import RAW
-
     from security_lakehouse.pipeline import run_pipeline
+    from test_pipeline import RAW
 
     server = _spin(tmp_path)
     try:

@@ -17,9 +17,9 @@ import pytest
 pytest.importorskip("mcp")
 
 import anyio  # noqa: E402
-from tests.test_api_v1 import _seed_lake  # noqa: E402
 
 from security_lakehouse import mcp_server  # noqa: E402
+from test_api_v1 import _seed_lake  # noqa: E402
 
 EXPECTED_TOOLS = {
     "get_posture",

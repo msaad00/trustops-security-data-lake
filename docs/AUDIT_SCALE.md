@@ -41,12 +41,12 @@ Controls are sampled from the active catalog (741 controls after full framework 
 
 ### Incremental materialize (`pipeline.run_pipeline_incremental`)
 
-When a prior ``manifest.json`` exists, incremental materialize:
+When a prior `manifest.json` exists, incremental materialize:
 
-- streams raw JSONL and compares each ``event_id`` fingerprint to ``manifest.raw_index``
+- streams raw JSONL and compares each `event_id` fingerprint to `manifest.raw_index`
 - upserts only changed/new rows into bronze/silver
 - rebuilds gold/marts from the merged silver set (not a full raw replay of unchanged rows)
-- records ``materialize_mode``, ``delta_count``, and ``removed_count`` on the manifest
+- records `materialize_mode`, `delta_count`, and `removed_count` on the manifest
 
 Use split schedules so connector sync stays ingest-only and lake eval runs less often:
 
@@ -71,13 +71,13 @@ curl -X POST -H "Authorization: Bearer $TOKEN" \
   https://trustops.example/api/v1/scheduler/tick -d '{}'
 ```
 
-MCP tools: ``get_ingestion_status``, ``run_lake_eval``, ``run_scheduler_tick``, ``sync_connector``.
+MCP tools: `get_ingestion_status`, `run_lake_eval`, `run_scheduler_tick`, `sync_connector`.
 
 ### Warehouse tier above 100k events
 
-When silver/raw cardinality exceeds ``100_000``, local full rebuild is blocked unless a
+When silver/raw cardinality exceeds `100_000`, local full rebuild is blocked unless a
 Snowflake, ClickHouse, or DuckDB sink is configured. The active tier is recorded in
-``gold/lake_scale.json`` and surfaced on ``/api/v1/ingestion/status``.
+`gold/lake_scale.json` and surfaced on `/api/v1/ingestion/status`.
 
 ### Streaming IO (`security_lakehouse.io`)
 

@@ -37,7 +37,8 @@ export function ConnectorIngestionStrip() {
               <p className="mt-1 text-xs leading-5 text-muted">
                 {ingestion.data.summary.enabled_connectors} of{" "}
                 {ingestion.data.summary.connector_count} connectors enabled ·{" "}
-                {ingestion.data.summary.evidence_count.toLocaleString()} evidence rows
+                {ingestion.data.summary.evidence_count.toLocaleString()}{" "}
+                evidence rows
                 {ingestion.data.scale?.mode
                   ? ` · ${ingestion.data.scale.mode.replace(/_/g, " ")}`
                   : ""}

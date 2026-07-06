@@ -6,11 +6,10 @@ import json
 from http import HTTPStatus
 from pathlib import Path
 
-from tests.test_api_v1 import _request, _spin
-from tests.test_pipeline import RAW, run_pipeline
-
 from security_lakehouse.assessment import load_snapshot, resolve_snapshot_path, write_assessment_snapshot
 from security_lakehouse.reporting.executive_pdf import render_executive_pdf
+from test_api_v1 import _request, _spin
+from test_pipeline import RAW, run_pipeline
 
 
 def test_render_executive_pdf_produces_valid_pdf(tmp_path: Path) -> None:

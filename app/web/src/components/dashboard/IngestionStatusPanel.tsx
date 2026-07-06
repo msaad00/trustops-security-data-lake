@@ -10,7 +10,10 @@ import {
   RefreshCw,
 } from "lucide-react";
 import type { IngestionStatus } from "@/lib/api/types";
-import { useRunLakeEvalMutation, useRunSchedulerTickMutation } from "@/lib/api/hooks";
+import {
+  useRunLakeEvalMutation,
+  useRunSchedulerTickMutation,
+} from "@/lib/api/hooks";
 import { shortDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -139,7 +142,9 @@ export function IngestionStatusPanel({
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <Layers className="h-4 w-4 text-brand" />
-                  <span className="text-sm font-black text-ink">Scale tier</span>
+                  <span className="text-sm font-black text-ink">
+                    Scale tier
+                  </span>
                   <Badge tone={toneForScaleMode(scale.mode)}>
                     {labelForScaleMode(scale.mode)}
                   </Badge>
@@ -147,9 +152,7 @@ export function IngestionStatusPanel({
                 <p className="mt-2 text-sm leading-5 text-muted">
                   {(scale.event_count ?? 0).toLocaleString()} events · sync{" "}
                   {scale.default_sync_schedule}
-                  {scale.eval_schedule
-                    ? ` · eval ${scale.eval_schedule}`
-                    : ""}
+                  {scale.eval_schedule ? ` · eval ${scale.eval_schedule}` : ""}
                 </p>
                 <p className="mt-1 text-xs leading-5 text-muted">
                   {scale.recommendation}

@@ -203,10 +203,12 @@ def test_connector_configure_cli_persists_schedule_options(tmp_path: Path, capsy
     payload = json.loads(capsys.readouterr().out)
     options = payload["event"]["options"]
     assert options == {
+        "eval_schedule": "every 6h",
         "fixture_dir": str(FIXTURE),
         "materialize": False,
         "org": "acme",
         "repo": "acme/model-service",
+        "split_ingest_eval": True,
         "sync_schedule": "every 15m",
         "token_env": "GH_READ_TOKEN",
     }
