@@ -214,6 +214,11 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """List point-in-time assessment snapshots written to the gold zone (for audit/JIT review)."""
         return _get("/api/v1/snapshots", lake, limit=str(limit), offset=str(offset))
 
+    @trustops_tool(title="Snapshot Integrity")
+    def get_snapshots_integrity() -> JsonObject:
+        """Verify the assessment snapshot hash chain in the local lake."""
+        return _get("/api/v1/snapshots/integrity", lake)
+
     @trustops_tool()
     def list_audit_log(category: str = "", limit: int = 100, include_requests: bool = False) -> list[JsonObject]:
         """List unified activity log entries from the lake (connectors, triage, workflows).
@@ -451,6 +456,12 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             params["status"] = status
         return _server_api_request("GET", "/api/v1/vendor-assessments", **params)
 
+    @trustops_tool(title="Get Vendor Assessment")
+    def get_vendor_assessment(assessment_id: str) -> JsonObject:
+        """Return one tenant vendor assessment by id."""
+        path = f"/api/v1/vendor-assessments/{urllib.parse.quote(assessment_id, safe='')}"
+        return _server_api_request("GET", path)
+
     @trustops_tool(title="List Vendor Questionnaires")
     def list_vendor_questionnaires() -> JsonObject:
         """List bundled vendor diligence questionnaire templates."""
@@ -485,6 +496,18 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """List bundled policy templates available for adoption."""
         return _server_api_request("GET", "/api/v1/policy-templates")
 
+    @trustops_tool(title="Get Policy Template")
+    def get_policy_template(template_id: str) -> JsonObject:
+        """Return one bundled policy template by id."""
+        path = f"/api/v1/policy-templates/{urllib.parse.quote(template_id, safe='')}"
+        return _server_api_request("GET", path)
+
+    @trustops_tool(title="Get Policy")
+    def get_policy(document_id: str) -> JsonObject:
+        """Return one tenant policy document by id."""
+        path = f"/api/v1/policies/{urllib.parse.quote(document_id, safe='')}"
+        return _server_api_request("GET", path)
+
     @trustops_tool(title="List Access Reviews")
     def list_access_reviews(status: str = "", limit: int = 100) -> JsonObject:
         """List periodic access-review campaigns (requires server API auth)."""
@@ -492,6 +515,12 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         if status:
             params["status"] = status
         return _server_api_request("GET", "/api/v1/access-reviews", **params)
+
+    @trustops_tool(title="Get Access Review")
+    def get_access_review(campaign_id: str) -> JsonObject:
+        """Return one access-review campaign by id."""
+        path = f"/api/v1/access-reviews/{urllib.parse.quote(campaign_id, safe='')}"
+        return _server_api_request("GET", path)
 
     @trustops_tool(title="Access Review Coverage")
     def get_access_reviews_coverage() -> JsonObject:
