@@ -51,6 +51,7 @@ EXPECTED_TOOLS = {
     "get_insights_sla_heatmap",
     "list_vendor_assessments",
     "list_policies",
+    "list_access_reviews",
     "get_policy_attestation_summary",
     "list_tags",
     "list_tag_entities",
@@ -285,6 +286,21 @@ def test_list_vendor_assessments_calls_api(tmp_path, monkeypatch):
     assert calls[0]["path"] == "/api/v1/vendor-assessments"
     assert calls[0]["params"]["status"] == "completed"
     assert calls[0]["params"]["limit"] == 25
+
+
+def test_list_access_reviews_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+    calls = []
+
+    def fake_request(method, path, body=None, **params):
+        calls.append({"method": method, "path": path, "params": params})
+        return {"data": [], "meta": {"count": 0}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    call_tool(server, "list_access_reviews", status="active", limit=10)
+    assert calls[0]["path"] == "/api/v1/access-reviews"
+    assert calls[0]["params"]["status"] == "active"
+    assert calls[0]["params"]["limit"] == 10
 
 
 def test_get_policy_attestation_summary_calls_api(tmp_path, monkeypatch):

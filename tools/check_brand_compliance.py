@@ -1,0 +1,94 @@
+#!/usr/bin/env python3
+"""Fail CI when tracked copy uses forbidden competitor or employer names.
+
+Policy: docs/BRAND.md — use "managed GRC SaaS" instead of vendor product names.
+"""
+
+from __future__ import annotations
+
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+# Case-insensitive whole-word-ish matches for GRC competitors and interview leaks.
+FORBIDDEN = re.compile(
+    r"\b("
+    r"drata|vanta|secureframe|sprinto|thoropass|onetrust|auditboard|"
+    r"logicgate|hyperproof|scrut\s+automation|comp\.?ai|"
+    r"harvey\s+trust|grc-access-review|grc-review-harvey"
+    r")\b",
+    re.IGNORECASE,
+)
+
+SCAN_ROOTS = (
+    ROOT / "README.md",
+    ROOT / "CHANGELOG.md",
+    ROOT / "ROADMAP.md",
+    ROOT / "docs",
+    ROOT / "app",
+    ROOT / "src",
+    ROOT / "tests",
+    ROOT / "deploy",
+    ROOT / "tools",
+    ROOT / ".github",
+)
+
+SKIP_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico", ".woff", ".woff2", ".lock"}
+SKIP_PARTS = {
+    "node_modules",
+    ".next",
+    "build",
+    "dist",
+    ".venv",
+    "__pycache__",
+    "grc-review-standalone",
+}
+
+
+def _iter_files() -> list[Path]:
+    files: list[Path] = []
+    for root in SCAN_ROOTS:
+        if root.is_file():
+            files.append(root)
+            continue
+        if not root.is_dir():
+            continue
+        for path in root.rglob("*"):
+            if not path.is_file():
+                continue
+            if path.name == "check_brand_compliance.py":
+                continue
+            if any(part in SKIP_PARTS for part in path.parts):
+                continue
+            if path.suffix.lower() in SKIP_SUFFIXES:
+                continue
+            files.append(path)
+    return sorted(set(files))
+
+
+def main() -> int:
+    violations: list[str] = []
+    for path in _iter_files():
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        for match in FORBIDDEN.finditer(text):
+            line = text.count("\n", 0, match.start()) + 1
+            violations.append(f"{path.relative_to(ROOT)}:{line}: {match.group(0)!r}")
+
+    if violations:
+        print("Brand compliance check failed — forbidden names in tracked copy:")
+        for line in violations:
+            print(f"  - {line}")
+        print('Use generic terms like "managed GRC SaaS" (see docs/BRAND.md).')
+        return 1
+
+    print(f"brand compliance check passed ({len(_iter_files())} files)")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

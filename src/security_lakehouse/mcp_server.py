@@ -442,6 +442,14 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             params["status"] = status
         return _server_api_request("GET", "/api/v1/policies", **params)
 
+    @trustops_tool(title="List Access Reviews")
+    def list_access_reviews(status: str = "", limit: int = 100) -> JsonObject:
+        """List periodic access-review campaigns (requires server API auth)."""
+        params: dict[str, Any] = {"limit": limit}
+        if status:
+            params["status"] = status
+        return _server_api_request("GET", "/api/v1/access-reviews", **params)
+
     @trustops_tool(title="Policy Attestation Summary")
     def get_policy_attestation_summary() -> JsonObject:
         """Return published vs acknowledged policy counts for audit prep."""

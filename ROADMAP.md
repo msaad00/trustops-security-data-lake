@@ -63,7 +63,7 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 - [x] Headless architecture guide (`docs/HEADLESS_GRC.md`)
 - [x] Unified v1 audit-log with stable event IDs (#339)
 - [x] Audit readiness API and audit room (#340)
-- [ ] MCP/API resource catalog parity for platform endpoints (partial: `list_audit_log`, `get_audit_readiness` shipped)
+- [x] MCP/API resource catalog parity for platform endpoints (access reviews, policies, vendor diligence, insights)
 
 ## P7 — Turnkey GRC loop + premium UX (open)
 
