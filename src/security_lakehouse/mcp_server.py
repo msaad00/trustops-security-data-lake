@@ -446,6 +446,16 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             params["status"] = status
         return _server_api_request("GET", "/api/v1/vendor-assessments", **params)
 
+    @trustops_tool(title="List Vendor Questionnaires")
+    def list_vendor_questionnaires() -> JsonObject:
+        """List bundled vendor diligence questionnaire templates."""
+        return _server_api_request("GET", "/api/v1/vendor-questionnaires")
+
+    @trustops_tool(title="POC Readiness")
+    def get_poc_readiness() -> JsonObject:
+        """Return platform POC readiness checklist and demo kit (requires admin API auth)."""
+        return _server_api_request("GET", "/api/v1/platform/poc-readiness")
+
     @trustops_tool(title="List Policies")
     def list_policies(status: str = "", limit: int = 100) -> JsonObject:
         """List tenant policy documents adopted from bundled templates."""

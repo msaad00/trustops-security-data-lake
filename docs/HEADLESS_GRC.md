@@ -46,13 +46,13 @@ compliance archives, and auditor packages — no UI scrape required.
 
 MCP tools wrap the same surface:
 
-| Cluster        | Tools                                                                                                                                |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Ingestion loop | `get_ingestion_status`, `list_eval_runs`, `run_lake_eval`, `run_scheduler_tick`, `sync_connector`, `list_connector_runs`             |
-| Posture / lake | `get_posture`, `posture_as_of`, `list_controls`, `list_evidence`, `list_violations`, `get_framework_detail`, `describe_api`          |
-| Audit / export | `list_audit_log`, `create_snapshot`, `list_snapshots`, `get_audit_readiness`, `get_evidence_freshness_summary`                       |
-| GRC programs   | `list_policies`, `get_policies_coverage`, `list_access_reviews`, `list_risks`, `list_remediation_exceptions`, `list_trust_shares`, … |
-| Agent harness  | `list_agent_runs`, `create_agent_run`, `approve_agent_decision`                                                                      |
+| Cluster        | Tools                                                                                                                                                                                                                                                                                                |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ingestion loop | `get_ingestion_status`, `list_eval_runs`, `run_lake_eval`, `run_scheduler_tick`, `sync_connector`, `list_connector_runs`                                                                                                                                                                             |
+| Posture / lake | `get_posture`, `posture_as_of`, `list_controls`, `list_evidence`, `list_violations`, `get_framework_detail`, `describe_api`                                                                                                                                                                          |
+| Audit / export | `list_audit_log`, `create_snapshot`, `list_snapshots`, `get_audit_readiness`, `get_evidence_freshness_summary`                                                                                                                                                                                       |
+| GRC programs   | `list_vendor_assessments`, `list_vendor_questionnaires`, `get_poc_readiness`, `list_policies`, `list_policy_templates`, `get_policies_coverage`, `list_access_reviews`, `get_access_reviews_coverage`, `list_evidence_requests`, `list_risks`, `list_remediation_exceptions`, `list_trust_shares`, … |
+| Agent harness  | `list_agent_runs`, `create_agent_run`, `approve_agent_decision`                                                                                                                                                                                                                                      |
 
 Use `describe_api` to enumerate the full `/api/v1` catalog.
 

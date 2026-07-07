@@ -52,6 +52,8 @@ EXPECTED_TOOLS = {
     "get_insights_framework_trends",
     "get_insights_sla_heatmap",
     "list_vendor_assessments",
+    "list_vendor_questionnaires",
+    "get_poc_readiness",
     "list_policies",
     "list_policy_templates",
     "list_access_reviews",
@@ -292,6 +294,32 @@ def test_get_insights_sla_heatmap_calls_api(tmp_path, monkeypatch):
 
     monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
     call_tool(server, "get_insights_sla_heatmap")
+
+
+def test_list_vendor_questionnaires_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/vendor-questionnaires"
+        return {"data": [{"template_id": "soc2-vendor"}], "meta": {"count": 1}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "list_vendor_questionnaires")
+    assert result["data"][0]["template_id"] == "soc2-vendor"
+
+
+def test_get_poc_readiness_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/platform/poc-readiness"
+        return {"data": {"demo_kit": {"ready": True}}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "get_poc_readiness")
+    assert result["data"]["demo_kit"]["ready"] is True
 
 
 def test_list_vendor_assessments_calls_api(tmp_path, monkeypatch):
