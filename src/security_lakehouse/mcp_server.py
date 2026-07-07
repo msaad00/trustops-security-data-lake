@@ -438,6 +438,11 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """Return remediation task counts by priority and SLA state for exec dashboards."""
         return _server_api_request("GET", "/api/v1/insights/sla-heatmap")
 
+    @trustops_tool(title="Capture Insights Point")
+    def capture_insights_point() -> JsonObject:
+        """Append a posture metric point to the insights timeseries (`write` scope)."""
+        return _server_api_request("POST", "/api/v1/insights/capture", {})
+
     @trustops_tool(title="List Vendor Assessments")
     def list_vendor_assessments(status: str = "", limit: int = 100) -> JsonObject:
         """List tenant vendor diligence questionnaires (requires server API auth)."""
@@ -451,10 +456,21 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """List bundled vendor diligence questionnaire templates."""
         return _server_api_request("GET", "/api/v1/vendor-questionnaires")
 
+    @trustops_tool(title="Get Vendor Questionnaire")
+    def get_vendor_questionnaire(template_id: str) -> JsonObject:
+        """Return one bundled vendor questionnaire template by id."""
+        path = f"/api/v1/vendor-questionnaires/{urllib.parse.quote(template_id, safe='')}"
+        return _server_api_request("GET", path)
+
     @trustops_tool(title="POC Readiness")
     def get_poc_readiness() -> JsonObject:
         """Return platform POC readiness checklist and demo kit (requires admin API auth)."""
         return _server_api_request("GET", "/api/v1/platform/poc-readiness")
+
+    @trustops_tool(title="Platform Usage")
+    def get_platform_usage() -> JsonObject:
+        """Return hosted plan tier and usage vs limits (requires admin API auth)."""
+        return _server_api_request("GET", "/api/v1/platform/usage")
 
     @trustops_tool(title="List Policies")
     def list_policies(status: str = "", limit: int = 100) -> JsonObject:
@@ -631,6 +647,17 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         if detail is None:
             raise ValueError(f"unknown framework_id {framework_id!r}")
         return detail
+
+    @trustops_tool(title="Control Remediation Guidance")
+    def get_control_remediation(control_id: str) -> JsonObject:
+        """Return actionable remediation steps for a control from the guidance catalog."""
+        from security_lakehouse.catalog import load_control_catalog
+        from security_lakehouse.remediation_guidance import guidance_for_control
+
+        control = load_control_catalog().get(control_id)
+        if control is None:
+            raise ValueError(f"unknown control_id {control_id!r}")
+        return guidance_for_control(control)
 
     # ------------------------------------------------------------------
     # Write tools — lake-backed actions an agent can take, not just read.
