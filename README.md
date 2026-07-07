@@ -42,7 +42,9 @@ Managed compliance SaaS excels at onboarding polish and integration breadth. Tru
 
 ## Read-only connector ecosystem
 
-Link real cloud and identity accounts — probe, discover scope, test, enable, sync. Vendor marks below use [Simple Icons](https://simpleicons.org/) (CC0) and public brand paths documented in [THIRD_PARTY_ASSETS.md](docs/THIRD_PARTY_ASSETS.md).
+Link real cloud and identity accounts — discover scope, probe access, enable, sync.
+The console **Test** step is the same **Probe** contract as the API and CLI.
+Vendor marks below use [Simple Icons](https://simpleicons.org/) (CC0) and public brand paths documented in [THIRD_PARTY_ASSETS.md](docs/THIRD_PARTY_ASSETS.md).
 
 <p align="center">
   <img src="docs/images/trustops-vendor-ecosystem.svg" alt="AWS, Azure, Google Cloud, Snowflake, GitHub, and Okta read-only connectors" width="96%">
@@ -136,7 +138,7 @@ Open **http://127.0.0.1:8787/console/dashboard/** on the machine where you ran `
 With credentials for your AWS, Azure, GCP, or Snowflake demo tenants:
 
 1. Open **Connectors** and pick a source (or use deep links above).
-2. Run **Probe → Discover → Test → Enable → Sync**.
+2. Run **Discover → Probe (Test) → Enable → Sync**.
 3. Watch **Trust Home** and **Audit room** update from live evidence.
 
 See [CONNECTORS.md](docs/CONNECTORS.md) and [SHAREABLE_DEMO.md](docs/SHAREABLE_DEMO.md) for hosted evaluator flows.
@@ -171,6 +173,8 @@ Production auth requires signed session cookies — see [SERVER_AUTH.md](docs/SE
 
 | Topic                 | Doc                                                                                   |
 | --------------------- | ------------------------------------------------------------------------------------- |
+| Headless architecture | [HEADLESS_GRC.md](docs/HEADLESS_GRC.md)                                               |
+| Continuous ingestion  | [CONTINUOUS_INGESTION.md](docs/CONTINUOUS_INGESTION.md)                             |
 | Parity vs managed GRC | [PRODUCT_SHAPE.md](docs/PRODUCT_SHAPE.md)                                             |
 | Product tour          | [PRODUCT_WALKTHROUGH.md](docs/PRODUCT_WALKTHROUGH.md)                                 |
 | Audit readiness       | [AUDIT_READINESS.md](docs/AUDIT_READINESS.md)                                         |

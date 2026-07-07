@@ -22,7 +22,7 @@ Set `TRUSTOPS_PUBLIC_URL` on the server (Helm `env` or process environment). The
 3. Open `/console/poc/` as admin — confirm gates turn green.
 4. Copy **Shareable demo links** (workspace, sign-in, connect accounts).
 5. Send evaluators the **Demo landing** or **Sign-in** URL.
-6. Link at least one source on **Connectors** (probe → discover scope → test → enable → sync).
+6. Link at least one source on **Connectors** (discover → probe → enable → sync).
 7. Confirm dashboard shows non-empty posture from live sync.
 8. Create a trust-center share for external reviewers.
 
@@ -31,7 +31,7 @@ Set `TRUSTOPS_PUBLIC_URL` on the server (Helm `env` or process environment). The
 TrustOps uses **read-only** connectors. The console walks:
 
 ```text
-Connect → Discover scope → Test → Enable → Sync → Posture updates
+Connect → Discover scope → Probe (Test) → Enable → Sync → Posture updates
 ```
 
 Recommended first links (deep-link from Launch page):

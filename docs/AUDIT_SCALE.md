@@ -55,7 +55,8 @@ security-lakehouse connectors configure \
   --lake /lake \
   --connector-id github-security \
   --state enabled \
-  --options-json '{"sync_schedule":"every 15m","eval_schedule":"every 6h"}'
+  --sync-schedule "every 15m" \
+  --eval-schedule "every 6h"
 
 security-lakehouse pipeline eval --lake /lake
 security-lakehouse scheduler tick --lake /lake
@@ -71,7 +72,7 @@ curl -X POST -H "Authorization: Bearer $TOKEN" \
   https://trustops.example/api/v1/scheduler/tick -d '{}'
 ```
 
-MCP tools: `get_ingestion_status`, `run_lake_eval`, `run_scheduler_tick`, `sync_connector`.
+MCP tools: `get_ingestion_status`, `list_eval_runs`, `run_lake_eval`, `run_scheduler_tick`, `sync_connector`, `list_connector_runs`.
 
 ### Warehouse tier above 100k events
 

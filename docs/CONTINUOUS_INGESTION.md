@@ -152,6 +152,7 @@ The headless path uses the same operations as the UI:
 
 | Operation                  | Route                                              | Scope              |
 | -------------------------- | -------------------------------------------------- | ------------------ |
+| Ingestion health           | `GET /api/v1/ingestion/status`                     | `read`             |
 | List connectors            | `GET /api/v1/connectors`                           | `read`             |
 | List connector run history | `GET /api/v1/connectors/{connector_id}/runs`       | `read`             |
 | Discover scope             | `POST /api/v1/connectors/{connector_id}/discover`  | `connector_manage` |

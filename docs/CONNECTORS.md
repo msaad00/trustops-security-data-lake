@@ -68,8 +68,8 @@ security-lakehouse connectors list
 
 ## Connector Runner
 
-TrustOps currently has **16 connector contracts**. **Eight** are executable
-runners (seven direct source/API runners plus the Snowflake existing-lake
+TrustOps currently has **17 connector contracts**. **Nine** are executable
+runners (eight direct source/API runners plus the Snowflake existing-lake
 reader). The remaining entries are read-only access contracts or managed
 evidence boundaries — probes validate configuration but **sync is not available**
 until a collection adapter ships.
@@ -77,6 +77,7 @@ until a collection adapter ships.
 | Connector ID                | Source                  | Runner status                 |
 | --------------------------- | ----------------------- | ----------------------------- |
 | `github-security`           | GitHub repo security    | executable                    |
+| `gitlab-security`           | GitLab repo security    | executable                    |
 | `aws-posture`               | AWS IAM/posture         | executable                    |
 | `okta-identity`             | Okta identity/MFA       | executable                    |
 | `google-workspace-identity` | Google Workspace users  | executable                    |

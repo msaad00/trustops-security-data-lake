@@ -93,13 +93,60 @@ agent action should be rendered back to humans with the same audit trail.
 | `POST` | `/api/v1/agent-runs/{run_id}/decisions/{decision_index}/approve` | approve one stored proposal and execute its allowlisted TrustOps write idempotently                                                |
 | `GET`  | `/api/v1/audit-log`                                              | unified activity stream (`event_id`, `occurred_at`, category filters)                                                              |
 | `GET`  | `/api/v1/connectors`                                             | connector catalog + live sync health                                                                                               |
+| `GET`  | `/api/v1/connectors/{id}/runs`                                   | probe, discover, and sync run history                                                                                              |
 | `POST` | `/api/v1/connectors/{id}/sync`                                   | trigger read-only connector sync (idempotent raw upsert on `event_id`)                                                             |
+| `POST` | `/api/v1/connectors/{id}/discover`                               | list selectable scope without enabling collection (`connector_manage`)                                                             |
+| `POST` | `/api/v1/connectors/{id}/probe`                                  | validate credentials and read scope; writes fingerprint (`connector_manage`)                                                       |
+| `POST` | `/api/v1/connectors/{id}/configure`                              | enable/disable connector after successful probe (`connector_manage`)                                                               |
+| `GET`  | `/api/v1/ingestion/status`                                       | continuous loop health: schedules, scale tier, connector freshness, last eval                                                       |
+| `POST` | `/api/v1/ingestion/eval`                                         | run lake-wide materialize + evaluate (`connector_manage`)                                                                          |
+| `GET`  | `/api/v1/ingestion/eval/runs`                                    | recent lake evaluation runs (split ingest/eval schedules)                                                                          |
+| `POST` | `/api/v1/scheduler/tick`                                       | fire due connector syncs, lake eval, and cron workflows once (`connector_manage`)                                                  |
+| `GET`  | `/api/v1/stream`                                                 | SSE continuous-eval stream (posture, freshness, audit-readiness on change)                                                       |
+| `GET`  | `/api/v1/snapshots/{snapshot_id}/export.pdf`                     | executive PDF export for a point-in-time snapshot (`read`)                                                                         |
 
 The unversioned `/api/*` routes remain for the bundled console and local
 compatibility. Prefer **`/api/v1/*`** for agents and CI.
 
-See [INGESTION_CONNECTORS_IDEMPOTENCY.md](../INGESTION_CONNECTORS_IDEMPOTENCY.md)
+Use the `describe_api` MCP tool or `GET /api/v1` index for the full resource
+catalog (50+ routes including insights, gov-compliance, vendor risk, and GRC).
+
+See [CONTINUOUS_INGESTION.md](../CONTINUOUS_INGESTION.md) for the production
+operating model and [INGESTION_CONNECTORS_IDEMPOTENCY.md](../INGESTION_CONNECTORS_IDEMPOTENCY.md)
 for connector registry, unique IDs, timestamps, and idempotency keys.
+
+### Ingestion and scheduler pattern
+
+```bash
+# Health check before acting
+curl -s -H "Authorization: Bearer $TOKEN" \
+  http://127.0.0.1:8787/api/v1/ingestion/status | jq .
+
+# Manual lake eval (same engine as split eval_schedule)
+curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+  http://127.0.0.1:8787/api/v1/ingestion/eval \
+  -H 'content-type: application/json' \
+  --data '{"actor":"ci"}' | jq .
+
+# Production CronJob / orchestrator tick
+curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+  http://127.0.0.1:8787/api/v1/scheduler/tick \
+  -H 'content-type: application/json' --data '{}' | jq .
+```
+
+MCP equivalents: `get_ingestion_status`, `list_eval_runs`, `run_lake_eval`,
+`run_scheduler_tick`, `sync_connector`, `list_connector_runs`.
+
+### Reports and exports
+
+| Output              | Route                                              | Notes                                      |
+| ------------------- | -------------------------------------------------- | ------------------------------------------ |
+| Activity / SIEM     | `GET /api/v1/audit-log`                            | `category`, `include_requests` filters     |
+| Executive PDF       | `GET /api/v1/snapshots/{id}/export.pdf`            | `Accept: application/pdf`                  |
+| SPRS score          | `GET /api/v1/gov-compliance/sprs`                  | CMMC Level 2 from failing 800-171 practices |
+| Audit readiness     | `GET /api/v1/platform/audit-readiness`             | audit-room score + workflow checklist      |
+| Remediation insight | `GET /api/v1/insights/remediation`                 | open/overdue task analytics                |
+| Scenario proof      | `security-lakehouse scenario run …`                | JSON report under `gold/scenario_reports/` |
 
 ## Agent Usage Pattern
 

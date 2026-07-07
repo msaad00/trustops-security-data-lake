@@ -23,10 +23,10 @@ no special surfaces.
 
 | Capability                                             | Automation surface                                           |
 | ------------------------------------------------------ | ------------------------------------------------------------ |
-| **851 controls** across 9 full framework packs         | `frameworks sync-packs`, eval engine                         |
+| **898 controls** across 9 full framework packs (active catalog) | `frameworks sync-packs`, eval engine                         |
 | **Continuous ingestion** (15m sync / 6h eval at scale) | Scheduler, connector runners, lake eval                      |
 | **Remediation + evidence requests**                    | API, UI, MCP write tools                                     |
-| **POA&M + SPRS** (CMMC / NIST 800-171)                 | `GET /gov-compliance/sprs`, `POST /gov-compliance/poam/sync` |
+| **POA&M + SPRS** (CMMC / NIST 800-171)                 | `GET /api/v1/gov-compliance/sprs`, `POST /api/v1/gov-compliance/poam/sync` |
 | **Audit readiness score**                              | Platform API + audit room                                    |
 | **Agent harness**                                      | MCP tools with approval gates                                |
 | **Executive PDF**                                      | Snapshot export                                              |

@@ -20,7 +20,7 @@ Sources (AWS, Azure, GCP, Snowflake, GitHub, Okta, Jira, …)
 
 | Layer           | Path / module                                               | Role                                                      |
 | --------------- | ----------------------------------------------------------- | --------------------------------------------------------- |
-| **Contracts**   | `connectors/catalog.json`                                   | 16 connector access contracts (8 implemented runners)     |
+| **Contracts**   | `connectors/catalog.json`                                   | 17 connector access contracts (9 implemented runners)     |
 | **Registry**    | `connector_runner.REGISTRY`                                 | Static dispatch — add `connectors_<vendor>.py` + one line |
 | **State**       | `connector_state.py`                                        | Probe-gated enablement, run history JSONL                 |
 | **Incremental** | `ingestion/watermark.py`                                    | Cursors in `gold/watermarks.jsonl`                        |
@@ -129,4 +129,4 @@ very large lake sizes is a follow-up for operator SIEM export.
 - [AUDIT_SCALE.md](AUDIT_SCALE.md)
 - [api/AGENT_API.md](api/AGENT_API.md)
 - [HEADLESS_GRC.md](HEADLESS_GRC.md)
-- [AUDIT_READINESS.md](AUDIT_READINESS.md) (when merged)
+- [AUDIT_READINESS.md](AUDIT_READINESS.md)
