@@ -16,10 +16,11 @@ redacted posture + gaps
 The MCP server is `trustops-mcp` (`security_lakehouse.mcp_server`). It exposes
 two transport surfaces:
 
-| Surface              | Env vars                               | Tools                                                                            |
-| -------------------- | -------------------------------------- | -------------------------------------------------------------------------------- |
-| Local lake reads     | `TRUSTOPS_LAKE` (default `./lake`)     | `get_posture`, `list_controls`, `list_evidence`, `create_snapshot`, …            |
-| Authenticated server | `TRUSTOPS_API_URL`, `TRUSTOPS_API_KEY` | `list_agent_runs`, `create_agent_run`, `get_agent_run`, `approve_agent_decision` |
+| Surface              | Env vars                               | Tools                                                                                             |
+| -------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Local lake reads     | `TRUSTOPS_LAKE` (default `./lake`)     | `get_posture`, `list_controls`, `list_evidence`, `create_snapshot`, …                             |
+| Ingestion loop       | `TRUSTOPS_LAKE`                        | `get_ingestion_status`, `list_eval_runs`, `run_lake_eval`, `run_scheduler_tick`, `sync_connector` |
+| Authenticated server | `TRUSTOPS_API_URL`, `TRUSTOPS_API_KEY` | `list_agent_runs`, `create_agent_run`, `get_agent_run`, `approve_agent_decision`                  |
 
 Evidence-request approvals are **server-backed**. They call the same
 `/api/v1/agent-runs*` contract as the console and curl examples in

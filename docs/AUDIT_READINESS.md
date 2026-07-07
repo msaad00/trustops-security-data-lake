@@ -79,6 +79,27 @@ State:
 
 Blocking gaps include: no connectors, failing controls, open evidence requests, no active access review, no auditor share, overdue or missing vendor diligence, unattested published policies.
 
+## Exports and continuous eval
+
+| Output           | Route / surface                                  | Notes                                             |
+| ---------------- | ------------------------------------------------ | ------------------------------------------------- |
+| Executive PDF    | `GET /api/v1/snapshots/{snapshot_id}/export.pdf` | Point-in-time board/vendor package (`read` scope) |
+| Activity stream  | `GET /api/v1/audit-log`                          | SIEM and compliance archive export                |
+| Live posture SSE | `GET /api/v1/stream`                             | Continuous-eval stream for dashboards             |
+| Ingestion health | `GET /api/v1/ingestion/status`                   | Schedules, scale tier, connector freshness        |
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" \
+  "http://127.0.0.1:8787/api/v1/snapshots/<snapshot_id>/export.pdf" \
+  -H 'accept: application/pdf' -o audit-snapshot.pdf
+```
+
+CLI snapshot creation (PDF requires the snapshot id from the API response or `list_snapshots`):
+
+```bash
+security-lakehouse assessment snapshot --lake build/lakehouse --reason vendor_due_diligence
+```
+
 ## Related
 
 - [PRODUCT_SHAPE.md](PRODUCT_SHAPE.md) — parity map, open issues, execution order

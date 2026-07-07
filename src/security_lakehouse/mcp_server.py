@@ -256,6 +256,11 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """
         return _get("/api/v1/ingestion/status", lake)
 
+    @trustops_tool(title="List Eval Runs")
+    def list_eval_runs(limit: int = 25) -> list[JsonObject]:
+        """Return recent lake-wide evaluation runs from split ingest/eval schedules."""
+        return _get("/api/v1/ingestion/eval/runs", lake, limit=str(limit))
+
     @trustops_tool(title="Run Lake Eval")
     def run_lake_eval(actor: str = "mcp") -> JsonObject:
         """Materialize and evaluate the lake on the scale-appropriate path.

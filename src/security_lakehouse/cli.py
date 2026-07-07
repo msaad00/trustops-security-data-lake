@@ -416,9 +416,11 @@ def _parser() -> argparse.ArgumentParser:
     )
     frameworks_sync_packs.set_defaults(func=_frameworks_sync_packs)
 
-    scheduler = sub.add_parser("scheduler", help="trigger.cron workflow scheduler")
+    scheduler = sub.add_parser("scheduler", help="connector sync, lake eval, and cron workflow scheduler")
     scheduler_sub = scheduler.add_subparsers(dest="scheduler_command", required=True)
-    scheduler_tick_cmd = scheduler_sub.add_parser("tick", help="fire every due cron workflow once")
+    scheduler_tick_cmd = scheduler_sub.add_parser(
+        "tick", help="fire every due connector sync, lake eval, and cron workflow once"
+    )
     scheduler_tick_cmd.add_argument("--lake", required=True, help="security data lake output directory")
     scheduler_tick_cmd.set_defaults(func=_scheduler_tick)
     scheduler_run_cmd = scheduler_sub.add_parser("run", help="run the scheduler daemon")

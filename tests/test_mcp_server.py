@@ -33,6 +33,7 @@ EXPECTED_TOOLS = {
     "list_audit_log",
     "list_frameworks",
     "get_ingestion_status",
+    "list_eval_runs",
     "run_lake_eval",
     "run_scheduler_tick",
     "sync_connector",
@@ -147,6 +148,12 @@ def test_get_ingestion_status_includes_scale(tmp_path):
     status = call_tool(server, "get_ingestion_status")
     assert "scale" in status
     assert status["scale"]["mode"]
+
+
+def test_list_eval_runs_returns_list(tmp_path):
+    server = _seeded_server(tmp_path)
+    runs = call_tool(server, "list_eval_runs", limit=10)
+    assert isinstance(runs, list)
 
 
 def test_posture_as_of_after_snapshot(tmp_path):
