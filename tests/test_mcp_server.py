@@ -63,6 +63,9 @@ EXPECTED_TOOLS = {
     "list_tags",
     "list_tag_entities",
     "list_saved_views",
+    "list_risks",
+    "list_remediation_exceptions",
+    "get_policies_coverage",
     "list_remediation_tasks",
     "create_remediation_task",
     "create_evidence_request",
@@ -366,6 +369,51 @@ def test_get_access_reviews_coverage_calls_api(tmp_path, monkeypatch):
     monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
     result = call_tool(server, "get_access_reviews_coverage")
     assert result["meta"]["count"] == 1
+
+
+def test_list_risks_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+    calls = []
+
+    def fake_request(method, path, body=None, **params):
+        calls.append({"method": method, "path": path, "params": params})
+        return {"data": [], "meta": {"count": 0}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    call_tool(server, "list_risks", status="open", severity="high", owner="alice", limit=50)
+    assert calls[0]["path"] == "/api/v1/risks"
+    assert calls[0]["params"]["status"] == "open"
+    assert calls[0]["params"]["severity"] == "high"
+    assert calls[0]["params"]["owner"] == "alice"
+    assert calls[0]["params"]["limit"] == 50
+
+
+def test_list_remediation_exceptions_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+    calls = []
+
+    def fake_request(method, path, body=None, **params):
+        calls.append({"method": method, "path": path, "params": params})
+        return {"data": [], "meta": {"count": 0}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    call_tool(server, "list_remediation_exceptions", active_only=True, limit=25)
+    assert calls[0]["path"] == "/api/v1/remediation/exceptions"
+    assert calls[0]["params"]["active"] == "true"
+    assert calls[0]["params"]["limit"] == 25
+
+
+def test_get_policies_coverage_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/policies/coverage"
+        return {"data": [{"control_id": "SOC2-CC6.1"}], "meta": {"count": 1}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "get_policies_coverage")
+    assert result["data"][0]["control_id"] == "SOC2-CC6.1"
 
 
 def test_list_evidence_requests_calls_api(tmp_path, monkeypatch):
