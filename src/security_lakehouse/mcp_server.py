@@ -450,6 +450,26 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             params["status"] = status
         return _server_api_request("GET", "/api/v1/access-reviews", **params)
 
+    @trustops_tool(title="Access Review Coverage")
+    def get_access_reviews_coverage() -> JsonObject:
+        """Return control coverage rows for active access-review campaigns."""
+        return _server_api_request("GET", "/api/v1/access-reviews/coverage")
+
+    @trustops_tool(title="List Evidence Requests")
+    def list_evidence_requests(status: str = "", limit: int = 100) -> JsonObject:
+        """List open or historical evidence requests tied to controls."""
+        params: dict[str, Any] = {"limit": limit}
+        if status:
+            params["status"] = status
+        return _server_api_request("GET", "/api/v1/remediation/evidence-requests", **params)
+
+    @trustops_tool(title="List Trust Shares")
+    def list_trust_shares(include_revoked: bool = False) -> list[JsonObject]:
+        """List auditor trust-center shares issued from this lake (tokens never returned)."""
+        from security_lakehouse.trust_share import list_shares
+
+        return list_shares(lake, include_revoked=include_revoked)
+
     @trustops_tool(title="Policy Attestation Summary")
     def get_policy_attestation_summary() -> JsonObject:
         """Return published vs acknowledged policy counts for audit prep."""
