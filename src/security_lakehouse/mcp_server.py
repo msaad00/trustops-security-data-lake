@@ -508,6 +508,31 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             params["surface"] = surface
         return _server_api_request("GET", "/api/v1/saved-views", **params)
 
+    @trustops_tool(title="List Risks")
+    def list_risks(limit: int = 100, status: str = "", severity: str = "", owner: str = "") -> JsonObject:
+        """List tenant risk register entries (requires server API auth)."""
+        params: dict[str, Any] = {"limit": limit}
+        if status:
+            params["status"] = status
+        if severity:
+            params["severity"] = severity
+        if owner:
+            params["owner"] = owner
+        return _server_api_request("GET", "/api/v1/risks", **params)
+
+    @trustops_tool(title="List Remediation Exceptions")
+    def list_remediation_exceptions(limit: int = 100, active_only: bool = False) -> JsonObject:
+        """List control exceptions (compensating controls) with optional active-only filter."""
+        params: dict[str, Any] = {"limit": limit}
+        if active_only:
+            params["active"] = "true"
+        return _server_api_request("GET", "/api/v1/remediation/exceptions", **params)
+
+    @trustops_tool(title="Policy Coverage")
+    def get_policies_coverage() -> JsonObject:
+        """Return control coverage rows for adopted policy documents."""
+        return _server_api_request("GET", "/api/v1/policies/coverage")
+
     @trustops_tool(title="List Remediation Tasks")
     def list_remediation_tasks(
         limit: int = 100, status: str = "", owner: str = "", overdue: bool = False
