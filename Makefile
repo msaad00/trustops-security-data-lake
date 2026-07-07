@@ -1,4 +1,4 @@
-.PHONY: compile lint format-check diff-check test validate validate-json validate-generated pipeline dashboard api-smoke smoke ci web-install web-dev web-typecheck web-build web-clean web-ci docker-build helm-lint helm-template terraform-fmt terraform-validate deploy-check uv-sync uv-lock pre-commit-install pre-commit-run pip-audit npm-audit security
+.PHONY: compile lint format-check diff-check test validate validate-json validate-generated validate-brand validate-doc-images pipeline dashboard api-smoke smoke ci web-install web-dev web-typecheck web-build web-clean web-ci docker-build helm-lint helm-template terraform-fmt terraform-validate deploy-check uv-sync uv-lock pre-commit-install pre-commit-run pip-audit npm-audit security
 
 test:
 	PYTHONPATH=src python -m pytest -q
@@ -30,6 +30,9 @@ validate-generated:
 validate-doc-images:
 	PYTHONPATH=src python tools/validate_doc_images.py
 
+validate-brand:
+	PYTHONPATH=src python tools/check_brand_compliance.py
+
 pipeline:
 	PYTHONPATH=src python -m security_lakehouse.cli pipeline run --raw data/raw/security_events.jsonl --out build/lakehouse
 
@@ -39,7 +42,7 @@ dashboard:
 api-smoke:
 	PYTHONPATH=src python tools/api_smoke.py
 
-smoke: validate validate-json validate-doc-images pipeline validate-generated dashboard api-smoke test
+smoke: validate validate-json validate-doc-images validate-brand pipeline validate-generated dashboard api-smoke test
 
 ci: diff-check compile lint format-check web-ci smoke
 

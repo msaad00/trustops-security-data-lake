@@ -46,7 +46,7 @@ compliance archives, and auditor packages — no UI scrape required.
 MCP tools wrap the same surface: lake-backed reads (`get_posture`, `get_framework_detail`,
 `list_audit_log`, …) and authenticated server APIs (`get_audit_readiness`,
 `get_evidence_freshness_summary`, `get_insights_remediation`, `list_vendor_assessments`,
-`list_policies`, agent harness operations). Use `describe_api` to enumerate paths.
+`list_policies`, `list_access_reviews`, agent harness operations). Use `describe_api` to enumerate paths.
 
 ### Point-in-time snapshots
 
