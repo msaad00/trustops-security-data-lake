@@ -98,11 +98,11 @@ agent action should be rendered back to humans with the same audit trail.
 | `POST` | `/api/v1/connectors/{id}/discover`                               | list selectable scope without enabling collection (`connector_manage`)                                                             |
 | `POST` | `/api/v1/connectors/{id}/probe`                                  | validate credentials and read scope; writes fingerprint (`connector_manage`)                                                       |
 | `POST` | `/api/v1/connectors/{id}/configure`                              | enable/disable connector after successful probe (`connector_manage`)                                                               |
-| `GET`  | `/api/v1/ingestion/status`                                       | continuous loop health: schedules, scale tier, connector freshness, last eval                                                       |
+| `GET`  | `/api/v1/ingestion/status`                                       | continuous loop health: schedules, scale tier, connector freshness, last eval                                                      |
 | `POST` | `/api/v1/ingestion/eval`                                         | run lake-wide materialize + evaluate (`connector_manage`)                                                                          |
 | `GET`  | `/api/v1/ingestion/eval/runs`                                    | recent lake evaluation runs (split ingest/eval schedules)                                                                          |
-| `POST` | `/api/v1/scheduler/tick`                                       | fire due connector syncs, lake eval, and cron workflows once (`connector_manage`)                                                  |
-| `GET`  | `/api/v1/stream`                                                 | SSE continuous-eval stream (posture, freshness, audit-readiness on change)                                                       |
+| `POST` | `/api/v1/scheduler/tick`                                         | fire due connector syncs, lake eval, and cron workflows once (`connector_manage`)                                                  |
+| `GET`  | `/api/v1/stream`                                                 | SSE continuous-eval stream (posture, freshness, audit-readiness on change)                                                         |
 | `GET`  | `/api/v1/snapshots/{snapshot_id}/export.pdf`                     | executive PDF export for a point-in-time snapshot (`read`)                                                                         |
 
 The unversioned `/api/*` routes remain for the bundled console and local
@@ -139,14 +139,14 @@ MCP equivalents: `get_ingestion_status`, `list_eval_runs`, `run_lake_eval`,
 
 ### Reports and exports
 
-| Output              | Route                                              | Notes                                      |
-| ------------------- | -------------------------------------------------- | ------------------------------------------ |
-| Activity / SIEM     | `GET /api/v1/audit-log`                            | `category`, `include_requests` filters     |
-| Executive PDF       | `GET /api/v1/snapshots/{id}/export.pdf`            | `Accept: application/pdf`                  |
-| SPRS score          | `GET /api/v1/gov-compliance/sprs`                  | CMMC Level 2 from failing 800-171 practices |
-| Audit readiness     | `GET /api/v1/platform/audit-readiness`             | audit-room score + workflow checklist      |
-| Remediation insight | `GET /api/v1/insights/remediation`                 | open/overdue task analytics                |
-| Scenario proof      | `security-lakehouse scenario run …`                | JSON report under `gold/scenario_reports/` |
+| Output              | Route                                   | Notes                                       |
+| ------------------- | --------------------------------------- | ------------------------------------------- |
+| Activity / SIEM     | `GET /api/v1/audit-log`                 | `category`, `include_requests` filters      |
+| Executive PDF       | `GET /api/v1/snapshots/{id}/export.pdf` | `Accept: application/pdf`                   |
+| SPRS score          | `GET /api/v1/gov-compliance/sprs`       | CMMC Level 2 from failing 800-171 practices |
+| Audit readiness     | `GET /api/v1/platform/audit-readiness`  | audit-room score + workflow checklist       |
+| Remediation insight | `GET /api/v1/insights/remediation`      | open/overdue task analytics                 |
+| Scenario proof      | `security-lakehouse scenario run …`     | JSON report under `gold/scenario_reports/`  |
 
 ## Agent Usage Pattern
 

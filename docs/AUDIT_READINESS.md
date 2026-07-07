@@ -81,12 +81,12 @@ Blocking gaps include: no connectors, failing controls, open evidence requests, 
 
 ## Exports and continuous eval
 
-| Output           | Route / surface                                      | Notes                                           |
-| ---------------- | ---------------------------------------------------- | ----------------------------------------------- |
-| Executive PDF    | `GET /api/v1/snapshots/{snapshot_id}/export.pdf`     | Point-in-time board/vendor package (`read` scope) |
-| Activity stream  | `GET /api/v1/audit-log`                              | SIEM and compliance archive export              |
-| Live posture SSE | `GET /api/v1/stream`                                 | Continuous-eval stream for dashboards           |
-| Ingestion health | `GET /api/v1/ingestion/status`                       | Schedules, scale tier, connector freshness      |
+| Output           | Route / surface                                  | Notes                                             |
+| ---------------- | ------------------------------------------------ | ------------------------------------------------- |
+| Executive PDF    | `GET /api/v1/snapshots/{snapshot_id}/export.pdf` | Point-in-time board/vendor package (`read` scope) |
+| Activity stream  | `GET /api/v1/audit-log`                          | SIEM and compliance archive export                |
+| Live posture SSE | `GET /api/v1/stream`                             | Continuous-eval stream for dashboards             |
+| Ingestion health | `GET /api/v1/ingestion/status`                   | Schedules, scale tier, connector freshness        |
 
 ```bash
 curl -s -H "Authorization: Bearer $TOKEN" \
