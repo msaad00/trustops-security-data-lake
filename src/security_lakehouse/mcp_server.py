@@ -509,9 +509,7 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         return _server_api_request("GET", "/api/v1/saved-views", **params)
 
     @trustops_tool(title="List Risks")
-    def list_risks(
-        limit: int = 100, status: str = "", severity: str = "", owner: str = ""
-    ) -> JsonObject:
+    def list_risks(limit: int = 100, status: str = "", severity: str = "", owner: str = "") -> JsonObject:
         """List tenant risk register entries (requires server API auth)."""
         params: dict[str, Any] = {"limit": limit}
         if status:
