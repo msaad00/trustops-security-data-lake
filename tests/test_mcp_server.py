@@ -52,6 +52,9 @@ EXPECTED_TOOLS = {
     "list_vendor_assessments",
     "list_policies",
     "list_access_reviews",
+    "get_access_reviews_coverage",
+    "list_evidence_requests",
+    "list_trust_shares",
     "get_policy_attestation_summary",
     "list_tags",
     "list_tag_entities",
@@ -301,6 +304,39 @@ def test_list_access_reviews_calls_api(tmp_path, monkeypatch):
     assert calls[0]["path"] == "/api/v1/access-reviews"
     assert calls[0]["params"]["status"] == "active"
     assert calls[0]["params"]["limit"] == 10
+
+
+def test_get_access_reviews_coverage_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/access-reviews/coverage"
+        return {"data": [{"control_id": "CC6.1"}], "meta": {"count": 1}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "get_access_reviews_coverage")
+    assert result["meta"]["count"] == 1
+
+
+def test_list_evidence_requests_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+    calls = []
+
+    def fake_request(method, path, body=None, **params):
+        calls.append({"method": method, "path": path, "params": params})
+        return {"data": [], "meta": {"count": 0}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    call_tool(server, "list_evidence_requests", status="open", limit=5)
+    assert calls[0]["path"] == "/api/v1/remediation/evidence-requests"
+    assert calls[0]["params"]["status"] == "open"
+
+
+def test_list_trust_shares_reads_lake(tmp_path):
+    server = _seeded_server(tmp_path)
+    result = call_tool(server, "list_trust_shares")
+    assert isinstance(result, list)
 
 
 def test_get_policy_attestation_summary_calls_api(tmp_path, monkeypatch):
