@@ -51,9 +51,12 @@ EXPECTED_TOOLS = {
     "get_insights_remediation",
     "get_insights_framework_trends",
     "get_insights_sla_heatmap",
+    "capture_insights_point",
     "list_vendor_assessments",
     "list_vendor_questionnaires",
+    "get_vendor_questionnaire",
     "get_poc_readiness",
+    "get_platform_usage",
     "list_policies",
     "list_policy_templates",
     "list_access_reviews",
@@ -73,6 +76,7 @@ EXPECTED_TOOLS = {
     "get_sprs_score",
     "list_poam_items",
     "sync_poam_from_posture",
+    "get_control_remediation",
 }
 
 
@@ -257,6 +261,13 @@ def test_get_framework_detail_soc2(tmp_path):
     assert detail["controls"]
 
 
+def test_get_control_remediation_known_control(tmp_path):
+    server = _seeded_server(tmp_path)
+    guidance = call_tool(server, "get_control_remediation", control_id="SOC2-CC6.1")
+    assert guidance["control_id"] == "SOC2-CC6.1"
+    assert guidance["steps"]
+
+
 def test_get_insights_remediation_calls_api(tmp_path, monkeypatch):
     server = _seeded_server(tmp_path)
 
@@ -320,6 +331,45 @@ def test_get_poc_readiness_calls_api(tmp_path, monkeypatch):
     monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
     result = call_tool(server, "get_poc_readiness")
     assert result["data"]["demo_kit"]["ready"] is True
+
+
+def test_get_vendor_questionnaire_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/vendor-questionnaires/soc2-vendor"
+        return {"data": {"template_id": "soc2-vendor"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "get_vendor_questionnaire", template_id="soc2-vendor")
+    assert result["data"]["template_id"] == "soc2-vendor"
+
+
+def test_get_platform_usage_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/platform/usage"
+        return {"data": {"plan": "pilot"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "get_platform_usage")
+    assert result["data"]["plan"] == "pilot"
+
+
+def test_capture_insights_point_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "POST"
+        assert path == "/api/v1/insights/capture"
+        return {"data": {"score": 82}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "capture_insights_point")
+    assert result["data"]["score"] == 82
 
 
 def test_list_vendor_assessments_calls_api(tmp_path, monkeypatch):

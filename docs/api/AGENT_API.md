@@ -103,6 +103,9 @@ agent action should be rendered back to humans with the same audit trail.
 | `GET`  | `/api/v1/ingestion/eval/runs`                                    | recent lake evaluation runs (split ingest/eval schedules)                                                                          |
 | `POST` | `/api/v1/scheduler/tick`                                         | fire due connector syncs, lake eval, and cron workflows once (`connector_manage`)                                                  |
 | `GET`  | `/api/v1/stream`                                                 | SSE continuous-eval stream (posture, freshness, audit-readiness on change)                                                         |
+| `GET`  | `/api/v1/controls/{control_id}/remediation`                      | per-control remediation guidance from bundled catalog (`read`)                                                                   |
+| `POST` | `/api/v1/insights/capture`                                       | append posture metric point for trends (`write`)                                                                                   |
+| `GET`  | `/api/v1/platform/usage`                                         | hosted plan tier and usage vs limits (`admin`)                                                                                     |
 | `GET`  | `/api/v1/snapshots/{snapshot_id}/export.pdf`                     | executive PDF export for a point-in-time snapshot (`read`)                                                                         |
 
 The unversioned `/api/*` routes remain for the bundled console and local
