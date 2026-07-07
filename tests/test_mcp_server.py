@@ -36,6 +36,7 @@ EXPECTED_TOOLS = {
     "run_lake_eval",
     "run_scheduler_tick",
     "sync_connector",
+    "list_connector_runs",
     "get_framework_detail",
     "describe_api",
     "list_agent_runs",
@@ -51,6 +52,7 @@ EXPECTED_TOOLS = {
     "get_insights_sla_heatmap",
     "list_vendor_assessments",
     "list_policies",
+    "list_policy_templates",
     "list_access_reviews",
     "get_access_reviews_coverage",
     "list_evidence_requests",
@@ -188,6 +190,12 @@ def test_list_snapshots_empty_without_snapshots(tmp_path):
     assert call_tool(server, "list_snapshots") == []
 
 
+def test_list_connector_runs_reads_lake(tmp_path):
+    server = _seeded_server(tmp_path)
+    runs = call_tool(server, "list_connector_runs", connector_id="aws-posture", limit=10)
+    assert isinstance(runs, list)
+
+
 def test_list_frameworks_non_empty(tmp_path):
     server = _seeded_server(tmp_path)
     frameworks = call_tool(server, "list_frameworks")
@@ -289,6 +297,19 @@ def test_list_vendor_assessments_calls_api(tmp_path, monkeypatch):
     assert calls[0]["path"] == "/api/v1/vendor-assessments"
     assert calls[0]["params"]["status"] == "completed"
     assert calls[0]["params"]["limit"] == 25
+
+
+def test_list_policy_templates_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/policy-templates"
+        return {"data": [{"template_id": "acceptable-use"}], "meta": {"count": 1}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "list_policy_templates")
+    assert result["data"][0]["template_id"] == "acceptable-use"
 
 
 def test_list_access_reviews_calls_api(tmp_path, monkeypatch):

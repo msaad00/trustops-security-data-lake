@@ -301,6 +301,13 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             raise ValueError(errors[0].get("detail", "connector sync failed"))
         return body["data"]
 
+    @trustops_tool(title="List Connector Runs")
+    def list_connector_runs(connector_id: str = "", limit: int = 50) -> list[JsonObject]:
+        """List probe, discover, and sync run history from the lake."""
+        from security_lakehouse.connector_state import list_runs
+
+        return list_runs(lake, connector_id or None, limit=limit)
+
     @trustops_tool(title="Describe API")
     def describe_api() -> list[JsonObject]:
         """Describe the available v1 resources so an agent can discover the surface.
@@ -441,6 +448,11 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         if status:
             params["status"] = status
         return _server_api_request("GET", "/api/v1/policies", **params)
+
+    @trustops_tool(title="List Policy Templates")
+    def list_policy_templates() -> JsonObject:
+        """List bundled policy templates available for adoption."""
+        return _server_api_request("GET", "/api/v1/policy-templates")
 
     @trustops_tool(title="List Access Reviews")
     def list_access_reviews(status: str = "", limit: int = 100) -> JsonObject:
