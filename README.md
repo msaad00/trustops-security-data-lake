@@ -1,17 +1,12 @@
 # TrustOps Security Data Lake
 
 <p align="center">
-  <img src="docs/images/trustops-logo.svg" alt="TrustOps — open-source trust operations platform" width="420">
+  <img src="docs/images/trustops-logo.svg" alt="TrustOps — open-source trust operations platform" width="360">
 </p>
 
 <p align="center">
-  <strong>Continuous compliance in your VPC</strong> — your evidence lake, deterministic control tests, audit-ready workflows;<br/>
-  same JSON for console, agents, CI gates, and auditors.
-</p>
-
-<p align="center">
-  <em>TrustOps</em> is the product (console · <code>/api/v1</code> · MCP · agents).<br/>
-  <code>security-lakehouse</code> is the engine CLI (connectors · lake pipeline · assessment).
+  <strong>Continuous compliance in your VPC</strong> — evidence lake, deterministic controls, audit-ready workflows.<br/>
+  <em>TrustOps</em> is the product (console · <code>/api/v1</code> · MCP); <code>security-lakehouse</code> is the engine CLI.
 </p>
 
 <p align="center">
@@ -20,11 +15,12 @@
   <a href="docs/SHAREABLE_DEMO.md"><strong>Live demo</strong></a> ·
   <a href="docs/CONNECTORS.md"><strong>Connectors</strong></a> ·
   <a href="docs/ARCHITECTURE.md"><strong>Architecture</strong></a> ·
+  <a href="deploy/README.md"><strong>Deploy</strong></a> ·
   <a href="CHANGELOG.md"><strong>Changelog</strong></a>
 </p>
 
 <p align="center">
-  <img src="docs/images/trustops-readme-banner.svg" alt="TrustOps platform — connectors, evidence lake, control tests, audit room, and headless API surfaces" width="100%">
+  <img src="docs/images/trustops-readme-banner.svg" alt="TrustOps — read-only connectors, evidence lake, control tests, audit room, console and API" width="100%">
 </p>
 
 ## Why teams pick TrustOps over managed GRC
@@ -116,14 +112,10 @@ Full route map: [PRODUCT_WALKTHROUGH.md](docs/PRODUCT_WALKTHROUGH.md) · Gap tra
 
 ## How it works
 
-```text
-Connect → Sync → Evaluate → Remediate → Review → Share → Prove
-```
-
-Connectors ingest **read-only**. Bronze → silver → gold normalization feeds deterministic control tests. The console, API, workflows, and agents read the same lake — models may summarize, but **never own the verdict**.
+Read-only connectors land facts in your lake; deterministic control tests own the verdict. Console, API, workflows, and agents read the same data — models may summarize, but never decide pass/fail.
 
 <p align="center">
-  <img src="docs/images/trustops-assessment-architecture.svg" alt="Sources, lake, assessment, API, console, workflows, trust shares" width="92%">
+  <img src="docs/images/trustops-assessment-architecture.svg" alt="Sources, lake, assessment, API, console, workflows, trust shares" width="96%">
 </p>
 
 ## Quick start (local demo)

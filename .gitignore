@@ -41,3 +41,4 @@ deploy/eks-terraform/*.tfvars
 !deploy/eks-terraform/terraform.tfvars.example
 deploy/eks-terraform/crash.log
 deploy/eks-terraform/crash.*.log
+grc-review-standalone/
