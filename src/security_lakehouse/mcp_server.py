@@ -132,6 +132,24 @@ def _server_api_request(method: str, path: str, body: dict[str, Any] | None = No
     return decoded
 
 
+def _parse_json_object(raw: str, field_name: str) -> dict[str, Any]:
+    try:
+        parsed = json.loads(raw or "{}")
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"{field_name} must be valid JSON") from exc
+    if not isinstance(parsed, dict):
+        raise ValueError(f"{field_name} must be a JSON object")
+    return parsed
+
+
+def _connector_post(path: str, lake: Path, payload: dict[str, Any]) -> JsonObject:
+    status, body = api_v1.handle_post(path, payload, lake)
+    if status != HTTPStatus.CREATED:
+        errors = body.get("errors") or [{"detail": "connector request failed"}]
+        raise ValueError(errors[0].get("detail", "connector request failed"))
+    return body["data"]
+
+
 def build_server(lake_dir: Path | None = None) -> FastMCP:
     """Construct the FastMCP server with the read tools bound to a lake directory.
 
@@ -323,6 +341,61 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             errors = body.get("errors") or [{"detail": "connector sync failed"}]
             raise ValueError(errors[0].get("detail", "connector sync failed"))
         return body["data"]
+
+    @trustops_tool(title="List Connectors")
+    def list_connectors(limit: int = 100, offset: int = 0) -> list[JsonObject]:
+        """List connector catalog rows with enablement, freshness, and last sync."""
+        return _get("/api/v1/connectors", lake, limit=str(limit), offset=str(offset))
+
+    @trustops_tool(title="Probe Connector")
+    def probe_connector(
+        connector_id: str,
+        actor: str = "mcp",
+        credentials_json: str = "{}",
+        options_json: str = "{}",
+    ) -> JsonObject:
+        """Validate connector credentials and scope without enabling collection."""
+        payload: dict[str, Any] = {
+            "actor": actor,
+            "credentials": _parse_json_object(credentials_json, "credentials_json"),
+            "options": _parse_json_object(options_json, "options_json"),
+        }
+        path = f"/api/v1/connectors/{urllib.parse.quote(connector_id, safe='')}/probe"
+        return _connector_post(path, lake, payload)
+
+    @trustops_tool(title="Discover Connector")
+    def discover_connector(
+        connector_id: str,
+        actor: str = "mcp",
+        credentials_json: str = "{}",
+        options_json: str = "{}",
+    ) -> JsonObject:
+        """Discover selectable scope candidates for a connector before enablement."""
+        payload: dict[str, Any] = {
+            "actor": actor,
+            "credentials": _parse_json_object(credentials_json, "credentials_json"),
+            "options": _parse_json_object(options_json, "options_json"),
+        }
+        path = f"/api/v1/connectors/{urllib.parse.quote(connector_id, safe='')}/discover"
+        return _connector_post(path, lake, payload)
+
+    @trustops_tool(title="Configure Connector")
+    def configure_connector(
+        connector_id: str,
+        state: str = "enabled",
+        actor: str = "mcp",
+        credentials_json: str = "{}",
+        options_json: str = "{}",
+    ) -> JsonObject:
+        """Enable or disable a connector and persist credentials/options to the lake."""
+        payload: dict[str, Any] = {
+            "state": state,
+            "actor": actor,
+            "credentials": _parse_json_object(credentials_json, "credentials_json"),
+            "options": _parse_json_object(options_json, "options_json"),
+        }
+        path = f"/api/v1/connectors/{urllib.parse.quote(connector_id, safe='')}/configure"
+        return _connector_post(path, lake, payload)
 
     @trustops_tool(title="List Connector Runs")
     def list_connector_runs(connector_id: str = "", limit: int = 50) -> list[JsonObject]:
