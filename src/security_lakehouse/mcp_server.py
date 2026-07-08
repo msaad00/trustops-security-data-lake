@@ -952,6 +952,33 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             payload["due_at"] = due_at
         return _server_api_request("POST", "/api/v1/remediation/tasks", payload)
 
+    @trustops_tool(title="Update Remediation Task")
+    def update_remediation_task(
+        task_id: str,
+        title: str = "",
+        description: str = "",
+        owner: str = "",
+        status: str = "",
+        priority: str = "",
+        due_at: str = "",
+    ) -> JsonObject:
+        """Patch remediation task fields such as owner, status, or due date."""
+        payload: dict[str, Any] = {}
+        for key, value in (
+            ("title", title),
+            ("description", description),
+            ("owner", owner),
+            ("status", status),
+            ("priority", priority),
+            ("due_at", due_at),
+        ):
+            if value:
+                payload[key] = value
+        if not payload:
+            raise ValueError("provide at least one field to update")
+        path = f"/api/v1/remediation/tasks/{urllib.parse.quote(task_id, safe='')}"
+        return _server_api_request("PATCH", path, payload)
+
     @trustops_tool(title="Create Evidence Request")
     def create_evidence_request(
         control_id: str,
@@ -968,6 +995,12 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         if due_at:
             payload["due_at"] = due_at
         return _server_api_request("POST", "/api/v1/remediation/evidence-requests", payload)
+
+    @trustops_tool(title="Update Evidence Request")
+    def update_evidence_request(request_id: str, status: str) -> JsonObject:
+        """Update evidence request workflow status (for example fulfilled or waived)."""
+        path = f"/api/v1/remediation/evidence-requests/{urllib.parse.quote(request_id, safe='')}"
+        return _server_api_request("PATCH", path, {"status": status})
 
     @trustops_tool(title="SPRS Score")
     def get_sprs_score() -> JsonObject:

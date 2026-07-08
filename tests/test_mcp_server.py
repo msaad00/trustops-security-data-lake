@@ -101,7 +101,9 @@ EXPECTED_TOOLS = {
     "list_remediation_tasks",
     "get_remediation_task",
     "create_remediation_task",
+    "update_remediation_task",
     "create_evidence_request",
+    "update_evidence_request",
     "get_sprs_score",
     "list_poam_items",
     "sync_poam_from_posture",
@@ -815,6 +817,40 @@ def test_get_remediation_task_calls_api(tmp_path, monkeypatch):
     monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
     result = call_tool(server, "get_remediation_task", task_id="task-42")
     assert result["data"]["id"] == "task-42"
+
+
+def test_update_remediation_task_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "PATCH"
+        assert path == "/api/v1/remediation/tasks/task-42"
+        assert body == {"status": "closed", "owner": "secops@example.com"}
+        return {"data": {"id": "task-42", "status": "closed"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(
+        server,
+        "update_remediation_task",
+        task_id="task-42",
+        status="closed",
+        owner="secops@example.com",
+    )
+    assert result["data"]["status"] == "closed"
+
+
+def test_update_evidence_request_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "PATCH"
+        assert path == "/api/v1/remediation/evidence-requests/req-7"
+        assert body == {"status": "fulfilled"}
+        return {"data": {"id": "req-7", "status": "fulfilled"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "update_evidence_request", request_id="req-7", status="fulfilled")
+    assert result["data"]["status"] == "fulfilled"
 
 
 def test_list_evidence_requests_calls_api(tmp_path, monkeypatch):
