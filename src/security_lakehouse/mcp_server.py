@@ -219,6 +219,19 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """Verify the assessment snapshot hash chain in the local lake."""
         return _get("/api/v1/snapshots/integrity", lake)
 
+    @trustops_tool(title="Snapshot Detail")
+    def get_snapshot_detail(snapshot_id: str) -> JsonObject:
+        """Return auditor-friendly summary for one point-in-time snapshot."""
+        from security_lakehouse.assessment import load_snapshot, snapshot_detail_summary
+
+        payload = load_snapshot(lake, snapshot_id)
+        return snapshot_detail_summary(snapshot_id, payload)
+
+    @trustops_tool(title="Tracking Integrity")
+    def get_tracking_integrity() -> JsonObject:
+        """Verify the append-only triage/tracking hash chain in the local lake."""
+        return _get("/api/v1/tracking/integrity", lake)
+
     @trustops_tool()
     def list_audit_log(category: str = "", limit: int = 100, include_requests: bool = False) -> list[JsonObject]:
         """List unified activity log entries from the lake (connectors, triage, workflows).
@@ -522,6 +535,15 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         path = f"/api/v1/access-reviews/{urllib.parse.quote(campaign_id, safe='')}"
         return _server_api_request("GET", path)
 
+    @trustops_tool(title="List Access Review Items")
+    def list_access_review_items(campaign_id: str, decision: str = "", limit: int = 100) -> JsonObject:
+        """List certification items for an access-review campaign."""
+        path = f"/api/v1/access-reviews/{urllib.parse.quote(campaign_id, safe='')}/items"
+        params: dict[str, Any] = {"limit": limit}
+        if decision:
+            params["decision"] = decision
+        return _server_api_request("GET", path, **params)
+
     @trustops_tool(title="Access Review Coverage")
     def get_access_reviews_coverage() -> JsonObject:
         """Return control coverage rows for active access-review campaigns."""
@@ -606,6 +628,12 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         if overdue:
             params["overdue"] = "true"
         return _server_api_request("GET", "/api/v1/remediation/tasks", **params)
+
+    @trustops_tool(title="Get Remediation Task")
+    def get_remediation_task(task_id: str) -> JsonObject:
+        """Return one remediation task by id."""
+        path = f"/api/v1/remediation/tasks/{urllib.parse.quote(task_id, safe='')}"
+        return _server_api_request("GET", path)
 
     @trustops_tool(title="Create Remediation Task")
     def create_remediation_task(

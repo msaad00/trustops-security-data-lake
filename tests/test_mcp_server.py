@@ -31,6 +31,8 @@ EXPECTED_TOOLS = {
     "list_violations",
     "list_snapshots",
     "get_snapshots_integrity",
+    "get_snapshot_detail",
+    "get_tracking_integrity",
     "list_audit_log",
     "list_frameworks",
     "get_ingestion_status",
@@ -65,6 +67,7 @@ EXPECTED_TOOLS = {
     "get_policy",
     "list_access_reviews",
     "get_access_review",
+    "list_access_review_items",
     "get_access_reviews_coverage",
     "list_evidence_requests",
     "list_trust_shares",
@@ -76,6 +79,7 @@ EXPECTED_TOOLS = {
     "list_remediation_exceptions",
     "get_policies_coverage",
     "list_remediation_tasks",
+    "get_remediation_task",
     "create_remediation_task",
     "create_evidence_request",
     "get_sprs_score",
@@ -216,6 +220,23 @@ def test_get_snapshots_integrity_returns_chain(tmp_path):
     integrity = call_tool(server, "get_snapshots_integrity")
     assert integrity["ok"] is True
     assert integrity["length"] == 0
+
+
+def test_get_tracking_integrity_returns_chain(tmp_path):
+    server = _seeded_server(tmp_path)
+    integrity = call_tool(server, "get_tracking_integrity")
+    assert integrity["ok"] is True
+    assert "length" in integrity
+
+
+def test_get_snapshot_detail_after_create(tmp_path):
+    server = _seeded_server(tmp_path)
+    created = call_tool(server, "create_snapshot", reason="mcp-detail")
+    snapshot_path = created["snapshot_path"]
+    snapshot_id = Path(snapshot_path).stem
+    detail = call_tool(server, "get_snapshot_detail", snapshot_id=snapshot_id)
+    assert detail["snapshot_id"] == snapshot_id
+    assert "posture" in detail
 
 
 def test_list_connector_runs_reads_lake(tmp_path):
@@ -479,6 +500,20 @@ def test_get_access_review_calls_api(tmp_path, monkeypatch):
     assert result["data"]["campaign_id"] == "camp-1"
 
 
+def test_list_access_review_items_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/access-reviews/camp-1/items"
+        assert params.get("decision") == "pending"
+        return {"data": [{"item_id": "item-1"}], "meta": {"count": 1}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "list_access_review_items", campaign_id="camp-1", decision="pending")
+    assert result["data"][0]["item_id"] == "item-1"
+
+
 def test_get_access_reviews_coverage_calls_api(tmp_path, monkeypatch):
     server = _seeded_server(tmp_path)
 
@@ -535,6 +570,19 @@ def test_get_policies_coverage_calls_api(tmp_path, monkeypatch):
     monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
     result = call_tool(server, "get_policies_coverage")
     assert result["data"][0]["control_id"] == "SOC2-CC6.1"
+
+
+def test_get_remediation_task_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/remediation/tasks/task-42"
+        return {"data": {"id": "task-42", "title": "Fix CC6.1"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "get_remediation_task", task_id="task-42")
+    assert result["data"]["id"] == "task-42"
 
 
 def test_list_evidence_requests_calls_api(tmp_path, monkeypatch):
