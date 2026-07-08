@@ -86,6 +86,7 @@ EXPECTED_TOOLS = {
     "list_tag_entities",
     "list_saved_views",
     "list_risks",
+    "create_risk",
     "list_remediation_exceptions",
     "get_policies_coverage",
     "list_remediation_tasks",
@@ -619,6 +620,27 @@ def test_list_risks_calls_api(tmp_path, monkeypatch):
     assert calls[0]["params"]["severity"] == "high"
     assert calls[0]["params"]["owner"] == "alice"
     assert calls[0]["params"]["limit"] == 50
+
+
+def test_create_risk_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "POST"
+        assert path == "/api/v1/risks"
+        assert body["title"] == "Third-party API outage"
+        assert body["severity"] == "high"
+        return {"data": {"id": "risk-1", "title": "Third-party API outage"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(
+        server,
+        "create_risk",
+        title="Third-party API outage",
+        severity="high",
+        owner="security@example.com",
+    )
+    assert result["data"]["id"] == "risk-1"
 
 
 def test_list_remediation_exceptions_calls_api(tmp_path, monkeypatch):
