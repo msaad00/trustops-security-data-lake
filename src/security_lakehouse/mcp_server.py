@@ -637,6 +637,41 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             params["owner"] = owner
         return _server_api_request("GET", "/api/v1/risks", **params)
 
+    @trustops_tool(title="Create Risk")
+    def create_risk(
+        title: str,
+        description: str = "",
+        category: str = "",
+        severity: str = "medium",
+        likelihood: str = "medium",
+        impact: str = "medium",
+        status: str = "open",
+        treatment: str = "",
+        owner: str = "",
+        control_id: str = "",
+        asset_id: str = "",
+        due_at: str = "",
+    ) -> JsonObject:
+        """Add a row to the tenant risk register."""
+        payload: dict[str, Any] = {
+            "title": title,
+            "description": description,
+            "category": category,
+            "severity": severity,
+            "likelihood": likelihood,
+            "impact": impact,
+            "status": status,
+            "treatment": treatment,
+            "owner": owner,
+        }
+        if control_id:
+            payload["control_id"] = control_id
+        if asset_id:
+            payload["asset_id"] = asset_id
+        if due_at:
+            payload["due_at"] = due_at
+        return _server_api_request("POST", "/api/v1/risks", payload)
+
     @trustops_tool(title="List Remediation Exceptions")
     def list_remediation_exceptions(limit: int = 100, active_only: bool = False) -> JsonObject:
         """List control exceptions (compensating controls) with optional active-only filter."""

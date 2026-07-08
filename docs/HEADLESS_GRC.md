@@ -51,7 +51,7 @@ MCP tools wrap the same surface:
 | Ingestion loop | `get_ingestion_status`, `list_eval_runs`, `run_lake_eval`, `run_scheduler_tick`, `sync_connector`, `list_connector_runs`                                                                                |
 | Posture / lake | `get_posture`, `posture_as_of`, `list_controls`, `list_evidence`, `list_violations`, `get_framework_detail`, `get_snapshots_integrity`, `get_snapshot_detail`, `get_tracking_integrity`, `describe_api` |
 | Audit / export | `list_audit_log`, `create_snapshot`, `list_snapshots`, `get_audit_readiness`, `get_evidence_freshness_summary`, `capture_insights_point`                                                                |
-| GRC programs   | `adopt_policy`, `publish_policy`, `acknowledge_policy`, `get_policy_template`, `get_policy`, `get_access_review`, `get_vendor_assessment`, …                                                            |
+| GRC programs   | `adopt_policy`, `publish_policy`, `create_risk`, `list_risks`, `get_policy_template`, `get_policy`, `get_access_review`, `get_vendor_assessment`, …                                                     |
 | Agent harness  | `list_agent_runs`, `create_agent_run`, `approve_agent_decision`                                                                                                                                         |
 
 Use `describe_api` to enumerate the full `/api/v1` catalog.
