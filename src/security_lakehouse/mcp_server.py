@@ -132,6 +132,24 @@ def _server_api_request(method: str, path: str, body: dict[str, Any] | None = No
     return decoded
 
 
+def _parse_json_object(raw: str, field_name: str) -> dict[str, Any]:
+    try:
+        parsed = json.loads(raw or "{}")
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"{field_name} must be valid JSON") from exc
+    if not isinstance(parsed, dict):
+        raise ValueError(f"{field_name} must be a JSON object")
+    return parsed
+
+
+def _connector_post(path: str, lake: Path, payload: dict[str, Any]) -> JsonObject:
+    status, body = api_v1.handle_post(path, payload, lake)
+    if status != HTTPStatus.CREATED:
+        errors = body.get("errors") or [{"detail": "connector request failed"}]
+        raise ValueError(errors[0].get("detail", "connector request failed"))
+    return body["data"]
+
+
 def build_server(lake_dir: Path | None = None) -> FastMCP:
     """Construct the FastMCP server with the read tools bound to a lake directory.
 
@@ -323,6 +341,61 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             errors = body.get("errors") or [{"detail": "connector sync failed"}]
             raise ValueError(errors[0].get("detail", "connector sync failed"))
         return body["data"]
+
+    @trustops_tool(title="List Connectors")
+    def list_connectors(limit: int = 100, offset: int = 0) -> list[JsonObject]:
+        """List connector catalog rows with enablement, freshness, and last sync."""
+        return _get("/api/v1/connectors", lake, limit=str(limit), offset=str(offset))
+
+    @trustops_tool(title="Probe Connector")
+    def probe_connector(
+        connector_id: str,
+        actor: str = "mcp",
+        credentials_json: str = "{}",
+        options_json: str = "{}",
+    ) -> JsonObject:
+        """Validate connector credentials and scope without enabling collection."""
+        payload: dict[str, Any] = {
+            "actor": actor,
+            "credentials": _parse_json_object(credentials_json, "credentials_json"),
+            "options": _parse_json_object(options_json, "options_json"),
+        }
+        path = f"/api/v1/connectors/{urllib.parse.quote(connector_id, safe='')}/probe"
+        return _connector_post(path, lake, payload)
+
+    @trustops_tool(title="Discover Connector")
+    def discover_connector(
+        connector_id: str,
+        actor: str = "mcp",
+        credentials_json: str = "{}",
+        options_json: str = "{}",
+    ) -> JsonObject:
+        """Discover selectable scope candidates for a connector before enablement."""
+        payload: dict[str, Any] = {
+            "actor": actor,
+            "credentials": _parse_json_object(credentials_json, "credentials_json"),
+            "options": _parse_json_object(options_json, "options_json"),
+        }
+        path = f"/api/v1/connectors/{urllib.parse.quote(connector_id, safe='')}/discover"
+        return _connector_post(path, lake, payload)
+
+    @trustops_tool(title="Configure Connector")
+    def configure_connector(
+        connector_id: str,
+        state: str = "enabled",
+        actor: str = "mcp",
+        credentials_json: str = "{}",
+        options_json: str = "{}",
+    ) -> JsonObject:
+        """Enable or disable a connector and persist credentials/options to the lake."""
+        payload: dict[str, Any] = {
+            "state": state,
+            "actor": actor,
+            "credentials": _parse_json_object(credentials_json, "credentials_json"),
+            "options": _parse_json_object(options_json, "options_json"),
+        }
+        path = f"/api/v1/connectors/{urllib.parse.quote(connector_id, safe='')}/configure"
+        return _connector_post(path, lake, payload)
 
     @trustops_tool(title="List Connector Runs")
     def list_connector_runs(connector_id: str = "", limit: int = 50) -> list[JsonObject]:
@@ -755,6 +828,51 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             payload["due_at"] = due_at
         return _server_api_request("POST", "/api/v1/risks", payload)
 
+    @trustops_tool(title="Update Risk")
+    def update_risk(
+        risk_id: str,
+        title: str = "",
+        description: str = "",
+        category: str = "",
+        severity: str = "",
+        likelihood: str = "",
+        impact: str = "",
+        status: str = "",
+        treatment: str = "",
+        owner: str = "",
+        control_id: str = "",
+        asset_id: str = "",
+        due_at: str = "",
+    ) -> JsonObject:
+        """Patch fields on an existing tenant risk register entry."""
+        payload: dict[str, Any] = {}
+        for key, value in (
+            ("title", title),
+            ("description", description),
+            ("category", category),
+            ("severity", severity),
+            ("likelihood", likelihood),
+            ("impact", impact),
+            ("status", status),
+            ("treatment", treatment),
+            ("owner", owner),
+            ("control_id", control_id),
+            ("asset_id", asset_id),
+            ("due_at", due_at),
+        ):
+            if value:
+                payload[key] = value
+        if not payload:
+            raise ValueError("provide at least one field to update")
+        path = f"/api/v1/risks/{urllib.parse.quote(risk_id, safe='')}"
+        return _server_api_request("PATCH", path, payload)
+
+    @trustops_tool(title="Delete Risk")
+    def delete_risk(risk_id: str) -> JsonObject:
+        """Remove a risk register row from the tenant catalog."""
+        path = f"/api/v1/risks/{urllib.parse.quote(risk_id, safe='')}"
+        return _server_api_request("DELETE", path, {})
+
     @trustops_tool(title="List Remediation Exceptions")
     def list_remediation_exceptions(limit: int = 100, active_only: bool = False) -> JsonObject:
         """List control exceptions (compensating controls) with optional active-only filter."""
@@ -762,6 +880,27 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         if active_only:
             params["active"] = "true"
         return _server_api_request("GET", "/api/v1/remediation/exceptions", **params)
+
+    @trustops_tool(title="Create Remediation Exception")
+    def create_remediation_exception(
+        control_id: str,
+        reason: str = "",
+        approved_by: str = "",
+        expires_at: str = "",
+    ) -> JsonObject:
+        """Record a compensating control exception for audit sign-off."""
+        payload: dict[str, Any] = {"control_id": control_id, "reason": reason}
+        if approved_by:
+            payload["approved_by"] = approved_by
+        if expires_at:
+            payload["expires_at"] = expires_at
+        return _server_api_request("POST", "/api/v1/remediation/exceptions", payload)
+
+    @trustops_tool(title="Revoke Remediation Exception")
+    def revoke_remediation_exception(exception_id: str) -> JsonObject:
+        """Revoke an active compensating control exception."""
+        path = f"/api/v1/remediation/exceptions/{urllib.parse.quote(exception_id, safe='')}"
+        return _server_api_request("DELETE", path, {})
 
     @trustops_tool(title="Policy Coverage")
     def get_policies_coverage() -> JsonObject:

@@ -10,6 +10,7 @@ pytest-asyncio plugin or extra configuration (``anyio`` ships with the MCP SDK).
 
 from __future__ import annotations
 
+from http import HTTPStatus
 from pathlib import Path
 
 import pytest
@@ -39,6 +40,10 @@ EXPECTED_TOOLS = {
     "list_eval_runs",
     "run_lake_eval",
     "run_scheduler_tick",
+    "list_connectors",
+    "probe_connector",
+    "discover_connector",
+    "configure_connector",
     "sync_connector",
     "list_connector_runs",
     "get_framework_detail",
@@ -87,7 +92,11 @@ EXPECTED_TOOLS = {
     "list_saved_views",
     "list_risks",
     "create_risk",
+    "update_risk",
+    "delete_risk",
     "list_remediation_exceptions",
+    "create_remediation_exception",
+    "revoke_remediation_exception",
     "get_policies_coverage",
     "list_remediation_tasks",
     "get_remediation_task",
@@ -256,6 +265,64 @@ def test_list_connector_runs_reads_lake(tmp_path):
     server = _seeded_server(tmp_path)
     runs = call_tool(server, "list_connector_runs", connector_id="aws-posture", limit=10)
     assert isinstance(runs, list)
+
+
+def test_list_connectors_returns_catalog(tmp_path):
+    server = _seeded_server(tmp_path)
+    connectors = call_tool(server, "list_connectors", limit=25)
+    assert isinstance(connectors, list)
+    assert any(row.get("connector_id") == "aws-posture" for row in connectors)
+
+
+def test_probe_connector_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+    calls = []
+
+    def fake_post(path, payload, lake_dir):
+        calls.append({"path": path, "payload": payload, "lake": lake_dir})
+        return HTTPStatus.CREATED, {"data": {"connector_id": "aws-posture", "result": "ok"}, "errors": []}
+
+    monkeypatch.setattr(mcp_server.api_v1, "handle_post", fake_post)
+    result = call_tool(
+        server,
+        "probe_connector",
+        connector_id="aws-posture",
+        credentials_json='{"role_arn":"arn:aws:iam::123:role/TrustOps"}',
+    )
+    assert result == "ok"
+    assert calls[0]["path"].endswith("/aws-posture/probe")
+    assert calls[0]["payload"]["credentials"]["role_arn"].startswith("arn:aws")
+
+
+def test_discover_connector_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_post(path, payload, lake_dir):
+        assert path.endswith("/github-security/discover")
+        return HTTPStatus.CREATED, {"data": {"connector_id": "github-security", "kind": "discover"}, "errors": []}
+
+    monkeypatch.setattr(mcp_server.api_v1, "handle_post", fake_post)
+    result = call_tool(server, "discover_connector", connector_id="github-security")
+    assert result["kind"] == "discover"
+
+
+def test_configure_connector_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_post(path, payload, lake_dir):
+        assert path.endswith("/aws-posture/configure")
+        assert payload["state"] == "enabled"
+        assert payload["options"]["sync_schedule"] == "every 15m"
+        return HTTPStatus.CREATED, {"data": {"connector_id": "aws-posture", "state": "enabled"}, "errors": []}
+
+    monkeypatch.setattr(mcp_server.api_v1, "handle_post", fake_post)
+    result = call_tool(
+        server,
+        "configure_connector",
+        connector_id="aws-posture",
+        options_json='{"sync_schedule":"every 15m"}',
+    )
+    assert result["state"] == "enabled"
 
 
 def test_list_frameworks_non_empty(tmp_path):
@@ -643,6 +710,72 @@ def test_create_risk_calls_api(tmp_path, monkeypatch):
         owner="security@example.com",
     )
     assert result["data"]["id"] == "risk-1"
+
+
+def test_update_risk_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "PATCH"
+        assert path == "/api/v1/risks/risk-1"
+        assert body == {"status": "mitigated", "owner": "grc@example.com"}
+        return {"data": {"id": "risk-1", "status": "mitigated"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(
+        server,
+        "update_risk",
+        risk_id="risk-1",
+        status="mitigated",
+        owner="grc@example.com",
+    )
+    assert result["data"]["status"] == "mitigated"
+
+
+def test_delete_risk_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "DELETE"
+        assert path == "/api/v1/risks/risk-9"
+        return {"data": {"id": "risk-9", "deleted": True}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "delete_risk", risk_id="risk-9")
+    assert result["data"]["deleted"] is True
+
+
+def test_create_remediation_exception_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "POST"
+        assert path == "/api/v1/remediation/exceptions"
+        assert body["control_id"] == "SOC2-CC6.1"
+        assert body["reason"] == "Compensating IAM review"
+        return {"data": {"id": "exc-1", "control_id": "SOC2-CC6.1"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(
+        server,
+        "create_remediation_exception",
+        control_id="SOC2-CC6.1",
+        reason="Compensating IAM review",
+    )
+    assert result["data"]["id"] == "exc-1"
+
+
+def test_revoke_remediation_exception_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "DELETE"
+        assert path == "/api/v1/remediation/exceptions/exc-1"
+        return {"data": {"id": "exc-1", "active": False}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "revoke_remediation_exception", exception_id="exc-1")
+    assert result["data"]["active"] is False
 
 
 def test_list_remediation_exceptions_calls_api(tmp_path, monkeypatch):
