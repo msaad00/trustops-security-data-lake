@@ -475,6 +475,32 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         path = f"/api/v1/vendor-assessments/{urllib.parse.quote(assessment_id, safe='')}"
         return _server_api_request("GET", path)
 
+    @trustops_tool(title="Create Vendor Assessment")
+    def create_vendor_assessment(
+        vendor_name: str,
+        template_id: str,
+        owner: str = "",
+        control_id: str = "",
+        due_at: str = "",
+    ) -> JsonObject:
+        """Start a vendor diligence assessment from a bundled questionnaire template."""
+        payload: dict[str, Any] = {
+            "vendor_name": vendor_name,
+            "template_id": template_id,
+            "owner": owner,
+        }
+        if control_id:
+            payload["control_id"] = control_id
+        if due_at:
+            payload["due_at"] = due_at
+        return _server_api_request("POST", "/api/v1/vendor-assessments", payload)
+
+    @trustops_tool(title="Submit Vendor Assessment")
+    def submit_vendor_assessment(assessment_id: str) -> JsonObject:
+        """Submit a completed vendor assessment for audit-room rollups."""
+        path = f"/api/v1/vendor-assessments/{urllib.parse.quote(assessment_id, safe='')}/submit"
+        return _server_api_request("POST", path, {})
+
     @trustops_tool(title="List Vendor Questionnaires")
     def list_vendor_questionnaires() -> JsonObject:
         """List bundled vendor diligence questionnaire templates."""
@@ -544,6 +570,38 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             params["decision"] = decision
         return _server_api_request("GET", path, **params)
 
+    @trustops_tool(title="Create Access Review")
+    def create_access_review(
+        campaign_name: str,
+        description: str = "",
+        scope: str = "all",
+        control_id: str = "",
+        due_at: str = "",
+    ) -> JsonObject:
+        """Create a periodic access-review campaign."""
+        payload: dict[str, Any] = {
+            "name": campaign_name,
+            "description": description,
+            "scope": scope,
+        }
+        if control_id:
+            payload["control_id"] = control_id
+        if due_at:
+            payload["due_at"] = due_at
+        return _server_api_request("POST", "/api/v1/access-reviews", payload)
+
+    @trustops_tool(title="Seed Access Review Items")
+    def seed_access_review(campaign_id: str) -> JsonObject:
+        """Populate access-review items from IdP connector evidence."""
+        path = f"/api/v1/access-reviews/{urllib.parse.quote(campaign_id, safe='')}/seed"
+        return _server_api_request("POST", path, {})
+
+    @trustops_tool(title="Record Access Review Decision")
+    def record_access_review_decision(item_id: str, decision: str, note: str = "") -> JsonObject:
+        """Certify, revoke, or flag one access-review item."""
+        path = f"/api/v1/access-reviews/items/{urllib.parse.quote(item_id, safe='')}/decision"
+        return _server_api_request("POST", path, {"decision": decision, "note": note})
+
     @trustops_tool(title="Access Review Coverage")
     def get_access_reviews_coverage() -> JsonObject:
         """Return control coverage rows for active access-review campaigns."""
@@ -563,6 +621,31 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         from security_lakehouse.trust_share import list_shares
 
         return list_shares(lake, include_revoked=include_revoked)
+
+    @trustops_tool(title="Create Trust Share")
+    def create_trust_share(
+        role: str = "auditor",
+        scope: str = "posture_full",
+        expires_in_hours: int = 24,
+        framework_id: str = "",
+        sensitivity_ceiling: str = "public",
+        idempotency_key: str = "",
+    ) -> JsonObject:
+        """Issue a scoped trust-center share link (token returned once)."""
+        from security_lakehouse.trust_share import create_share
+
+        kwargs: dict[str, Any] = {
+            "role": role,
+            "scope": scope,
+            "expires_in_hours": expires_in_hours,
+            "created_by": "mcp",
+            "sensitivity_ceiling": sensitivity_ceiling,
+        }
+        if framework_id:
+            kwargs["framework_id"] = framework_id
+        if idempotency_key:
+            kwargs["idempotency_key"] = idempotency_key
+        return create_share(lake, **kwargs)
 
     @trustops_tool(title="Policy Attestation Summary")
     def get_policy_attestation_summary() -> JsonObject:

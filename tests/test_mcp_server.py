@@ -57,6 +57,8 @@ EXPECTED_TOOLS = {
     "capture_insights_point",
     "list_vendor_assessments",
     "get_vendor_assessment",
+    "create_vendor_assessment",
+    "submit_vendor_assessment",
     "list_vendor_questionnaires",
     "get_vendor_questionnaire",
     "get_poc_readiness",
@@ -68,9 +70,13 @@ EXPECTED_TOOLS = {
     "list_access_reviews",
     "get_access_review",
     "list_access_review_items",
+    "create_access_review",
+    "seed_access_review",
+    "record_access_review_decision",
     "get_access_reviews_coverage",
     "list_evidence_requests",
     "list_trust_shares",
+    "create_trust_share",
     "get_policy_attestation_summary",
     "adopt_policy",
     "publish_policy",
@@ -437,6 +443,33 @@ def test_get_vendor_assessment_calls_api(tmp_path, monkeypatch):
     assert result["data"]["assessment_id"] == "va-99"
 
 
+def test_create_vendor_assessment_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "POST"
+        assert path == "/api/v1/vendor-assessments"
+        assert body["vendor_name"] == "Acme SaaS"
+        return {"data": {"assessment_id": "va-new"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "create_vendor_assessment", vendor_name="Acme SaaS", template_id="soc2-vendor")
+    assert result["data"]["assessment_id"] == "va-new"
+
+
+def test_submit_vendor_assessment_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "POST"
+        assert path == "/api/v1/vendor-assessments/va-99/submit"
+        return {"data": {"assessment_id": "va-99", "status": "submitted"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "submit_vendor_assessment", assessment_id="va-99")
+    assert result["data"]["status"] == "submitted"
+
+
 def test_list_policy_templates_calls_api(tmp_path, monkeypatch):
     server = _seeded_server(tmp_path)
 
@@ -502,6 +535,46 @@ def test_get_access_review_calls_api(tmp_path, monkeypatch):
     monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
     result = call_tool(server, "get_access_review", campaign_id="camp-1")
     assert result["data"]["campaign_id"] == "camp-1"
+
+
+def test_create_access_review_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "POST"
+        assert path == "/api/v1/access-reviews"
+        assert body["name"] == "Q3 SaaS access"
+        return {"data": {"campaign_id": "camp-new"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "create_access_review", campaign_name="Q3 SaaS access")
+    assert result["data"]["campaign_id"] == "camp-new"
+
+
+def test_seed_access_review_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "POST"
+        assert path == "/api/v1/access-reviews/camp-1/seed"
+        return {"data": {"seeded": 12}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "seed_access_review", campaign_id="camp-1")
+    assert result["data"]["seeded"] == 12
+
+
+def test_record_access_review_decision_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "POST"
+        assert path == "/api/v1/access-reviews/items/item-7/decision"
+        assert body == {"decision": "certify", "note": "still needed"}
+        return {"data": {"item_id": "item-7", "decision": "certify"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    call_tool(server, "record_access_review_decision", item_id="item-7", decision="certify", note="still needed")
 
 
 def test_list_access_review_items_calls_api(tmp_path, monkeypatch):
@@ -607,6 +680,15 @@ def test_list_trust_shares_reads_lake(tmp_path):
     server = _seeded_server(tmp_path)
     result = call_tool(server, "list_trust_shares")
     assert isinstance(result, list)
+
+
+def test_create_trust_share_writes_lake(tmp_path):
+    server = _seeded_server(tmp_path)
+    share = call_tool(server, "create_trust_share", expires_in_hours=48, idempotency_key="mcp-share-1")
+    assert share["share_id"]
+    assert share["token"].startswith("trust_")
+    again = call_tool(server, "create_trust_share", idempotency_key="mcp-share-1")
+    assert again.get("idempotent_replay") is True
 
 
 def test_get_policy_attestation_summary_calls_api(tmp_path, monkeypatch):
