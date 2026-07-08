@@ -72,6 +72,10 @@ EXPECTED_TOOLS = {
     "list_evidence_requests",
     "list_trust_shares",
     "get_policy_attestation_summary",
+    "adopt_policy",
+    "publish_policy",
+    "list_policy_acknowledgments",
+    "acknowledge_policy",
     "list_tags",
     "list_tag_entities",
     "list_saved_views",
@@ -616,6 +620,46 @@ def test_get_policy_attestation_summary_calls_api(tmp_path, monkeypatch):
     monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
     result = call_tool(server, "get_policy_attestation_summary")
     assert result["data"]["unattested"] == 1
+
+
+def test_adopt_policy_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+    calls = []
+
+    def fake_request(method, path, body=None, **params):
+        calls.append({"method": method, "path": path, "body": body})
+        return {"data": {"document_id": "doc-1"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    call_tool(server, "adopt_policy", template_id="acceptable-use", owner="security@example.com")
+    assert calls[0]["path"] == "/api/v1/policies"
+    assert calls[0]["body"]["template_id"] == "acceptable-use"
+
+
+def test_publish_policy_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "POST"
+        assert path == "/api/v1/policies/doc-1/publish"
+        return {"data": {"document_id": "doc-1", "status": "published"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "publish_policy", document_id="doc-1")
+    assert result["data"]["status"] == "published"
+
+
+def test_acknowledge_policy_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "POST"
+        assert path == "/api/v1/policies/doc-1/acknowledgments"
+        assert body == {"display_name": "Alice", "user_email": "alice@example.com"}
+        return {"data": {"user_email": "alice@example.com"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    call_tool(server, "acknowledge_policy", document_id="doc-1", user_email="alice@example.com", display_name="Alice")
 
 
 def test_mcp_agent_run_tools_call_authenticated_api(tmp_path, monkeypatch):
