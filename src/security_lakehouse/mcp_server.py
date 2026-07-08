@@ -500,6 +500,11 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """Return SLA breach rollups: fresh rate, stale counts, and top breaches by source."""
         return _server_api_request("GET", "/api/v1/evidence/freshness/summary")
 
+    @trustops_tool(title="List Evidence Freshness")
+    def list_evidence_freshness(limit: int = 100, offset: int = 0) -> list[JsonObject]:
+        """List per-evidence freshness SLA rows from the gold zone."""
+        return _get("/api/v1/evidence/freshness", lake, limit=str(limit), offset=str(offset))
+
     @trustops_tool(title="Escalate Stale Evidence")
     def escalate_stale_evidence(limit: int = 10) -> JsonObject:
         """Create remediation tasks for stale, expired, or missing evidence rows."""
@@ -773,6 +778,24 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             params["entity_type"] = entity_type
         return _server_api_request("GET", "/api/v1/tags/entities", **params)
 
+    @trustops_tool(title="Attach Tag")
+    def attach_tag(tag_id: str, entity_type: str, entity_id: str) -> JsonObject:
+        """Attach a tenant tag to a control, violation, asset, or other entity."""
+        return _server_api_request(
+            "POST",
+            "/api/v1/tags/attach",
+            {"tag_id": tag_id, "entity_type": entity_type, "entity_id": entity_id},
+        )
+
+    @trustops_tool(title="Detach Tag")
+    def detach_tag(tag_id: str, entity_type: str, entity_id: str) -> JsonObject:
+        """Remove a tag association from an entity."""
+        return _server_api_request(
+            "POST",
+            "/api/v1/tags/detach",
+            {"tag_id": tag_id, "entity_type": entity_type, "entity_id": entity_id},
+        )
+
     @trustops_tool(title="List Saved Views")
     def list_saved_views(surface: str = "") -> JsonObject:
         """List saved filter views for a console surface (e.g. controls, violations)."""
@@ -1019,6 +1042,65 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
     def sync_poam_from_posture() -> JsonObject:
         """Auto-create POA&M rows from failing CMMC control tests and refresh SPRS."""
         return _server_api_request("POST", "/api/v1/gov-compliance/poam/sync", {})
+
+    @trustops_tool(title="Create POA&M Item")
+    def create_poam_item(
+        requirement_id: str,
+        control_id: str,
+        title: str,
+        weakness: str = "",
+        framework_id: str = "cmmc-2-level2",
+        owner: str = "",
+        milestone: str = "",
+        sprs_points: int = 1,
+        poam_eligible: bool = True,
+        due_at: str = "",
+        remediation_task_id: str = "",
+    ) -> JsonObject:
+        """Add a Plan of Action & Milestones row for gov/defense programs."""
+        payload: dict[str, Any] = {
+            "requirement_id": requirement_id,
+            "control_id": control_id,
+            "title": title,
+            "weakness": weakness,
+            "framework_id": framework_id,
+            "owner": owner,
+            "milestone": milestone,
+            "sprs_points": sprs_points,
+            "poam_eligible": poam_eligible,
+        }
+        if due_at:
+            payload["due_at"] = due_at
+        if remediation_task_id:
+            payload["remediation_task_id"] = remediation_task_id
+        return _server_api_request("POST", "/api/v1/gov-compliance/poam", payload)
+
+    @trustops_tool(title="Update POA&M Item")
+    def update_poam_item(
+        item_id: str,
+        status: str = "",
+        owner: str = "",
+        milestone: str = "",
+        weakness: str = "",
+        due_at: str = "",
+        remediation_task_id: str = "",
+    ) -> JsonObject:
+        """Patch POA&M milestone fields or link a remediation task."""
+        payload: dict[str, Any] = {}
+        for key, value in (
+            ("status", status),
+            ("owner", owner),
+            ("milestone", milestone),
+            ("weakness", weakness),
+            ("due_at", due_at),
+            ("remediation_task_id", remediation_task_id),
+        ):
+            if value:
+                payload[key] = value
+        if not payload:
+            raise ValueError("provide at least one field to update")
+        path = f"/api/v1/gov-compliance/poam/{urllib.parse.quote(item_id, safe='')}"
+        return _server_api_request("PATCH", path, payload)
 
     @trustops_tool(title="Framework Drill-Down")
     def get_framework_detail(framework_id: str) -> JsonObject:

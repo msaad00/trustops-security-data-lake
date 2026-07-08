@@ -54,6 +54,7 @@ EXPECTED_TOOLS = {
     "approve_agent_decision",
     "get_audit_readiness",
     "get_evidence_freshness_summary",
+    "list_evidence_freshness",
     "escalate_stale_evidence",
     "get_insights_timeseries",
     "get_insights_remediation",
@@ -89,6 +90,8 @@ EXPECTED_TOOLS = {
     "acknowledge_policy",
     "list_tags",
     "list_tag_entities",
+    "attach_tag",
+    "detach_tag",
     "list_saved_views",
     "list_risks",
     "create_risk",
@@ -106,6 +109,8 @@ EXPECTED_TOOLS = {
     "update_evidence_request",
     "get_sprs_score",
     "list_poam_items",
+    "create_poam_item",
+    "update_poam_item",
     "sync_poam_from_posture",
     "get_control_remediation",
 }
@@ -984,3 +989,84 @@ def test_mcp_agent_run_tools_call_authenticated_api(tmp_path, monkeypatch):
     assert calls[2]["path"] == "/api/v1/agent-runs/run%2Fid%20with%20space"
     assert calls[3]["path"] == "/api/v1/agent-runs/run%2Fid%20with%20space/decisions/2/approve"
     assert calls[3]["body"] == {"note": "ok"}
+
+
+def test_list_evidence_freshness_reads_lake(tmp_path):
+    server = _seeded_server(tmp_path)
+    rows = call_tool(server, "list_evidence_freshness", limit=10)
+    assert isinstance(rows, list)
+
+
+def test_create_poam_item_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "POST"
+        assert path == "/api/v1/gov-compliance/poam"
+        assert body["requirement_id"] == "3.1.1"
+        assert body["title"] == "MFA gap"
+        return {"data": {"id": "poam-1", "title": "MFA gap"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(
+        server,
+        "create_poam_item",
+        requirement_id="3.1.1",
+        control_id="CMMC-AC-1",
+        title="MFA gap",
+    )
+    assert result["data"]["id"] == "poam-1"
+
+
+def test_update_poam_item_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "PATCH"
+        assert path == "/api/v1/gov-compliance/poam/poam-1"
+        assert body == {"status": "closed", "owner": "ciso@example.com"}
+        return {"data": {"id": "poam-1", "status": "closed"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(
+        server,
+        "update_poam_item",
+        item_id="poam-1",
+        status="closed",
+        owner="ciso@example.com",
+    )
+    assert result["data"]["status"] == "closed"
+
+
+def test_attach_tag_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "POST"
+        assert path == "/api/v1/tags/attach"
+        assert body == {"tag_id": "tag-1", "entity_type": "control", "entity_id": "SOC2-CC6.1"}
+        return {"data": {"tag_id": "tag-1"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(
+        server,
+        "attach_tag",
+        tag_id="tag-1",
+        entity_type="control",
+        entity_id="SOC2-CC6.1",
+    )
+    assert result["data"]["tag_id"] == "tag-1"
+
+
+def test_detach_tag_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "POST"
+        assert path == "/api/v1/tags/detach"
+        assert body == {"tag_id": "tag-1", "entity_type": "control", "entity_id": "SOC2-CC6.1"}
+        return {"data": {"detached": True}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "detach_tag", tag_id="tag-1", entity_type="control", entity_id="SOC2-CC6.1")
+    assert result["data"]["detached"] is True
