@@ -17,6 +17,7 @@ from security_lakehouse.lake_scale import (
     lake_eval_schedule,
     resolve_materialize_strategy,
 )
+from security_lakehouse.scheduler import eval_schedule_status
 
 JsonObject = dict[str, Any]
 
@@ -89,6 +90,7 @@ def build_ingestion_status(lake_dir: str | Path) -> JsonObject:
             "default_eval_schedule": DEFAULT_EVAL_SCHEDULE,
             "warehouse_row_threshold": WAREHOUSE_ROW_THRESHOLD,
             "latest_eval": _latest_eval_run(lake),
+            **eval_schedule_status(lake),
             "manifest": _manifest_summary(lake),
         },
     }

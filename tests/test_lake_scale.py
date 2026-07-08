@@ -17,7 +17,7 @@ from security_lakehouse.lake_scale import (
 )
 from security_lakehouse.pipeline import run_pipeline, run_pipeline_incremental
 from security_lakehouse.scale_synthesis import write_audit_scale_fixture
-from security_lakehouse.scheduler import tick
+from security_lakehouse.scheduler import eval_schedule_status, tick
 
 
 def test_apply_split_schedule_defaults_sets_eval_and_ingest_only() -> None:
@@ -142,6 +142,41 @@ def test_lake_eval_schedule_from_enabled_connector(tmp_path: Path) -> None:
         options={"sync_schedule": "every 15m"},
     )
     assert lake_eval_schedule(tmp_path) == DEFAULT_EVAL_SCHEDULE
+
+
+def test_eval_schedule_status_marks_never_fired_as_overdue(tmp_path: Path) -> None:
+    append_config_event(
+        tmp_path,
+        connector_id="github-security",
+        state="enabled",
+        actor="alice",
+        options={"sync_schedule": "every 15m", "eval_schedule": "every 6h"},
+    )
+    status = eval_schedule_status(tmp_path)
+    assert status["last_fired_at"] is None
+    assert status["next_eval_at"] is not None
+    assert status["eval_overdue"] is True
+
+
+def test_eval_schedule_status_tracks_next_due_after_tick(tmp_path: Path) -> None:
+    append_config_event(
+        tmp_path,
+        connector_id="github-security",
+        state="enabled",
+        actor="alice",
+        options={
+            "sync_schedule": "every 5m",
+            "eval_schedule": "every 1h",
+            "repo": "acme/model-service",
+            "fixture_dir": str(Path(__file__).parent / "fixtures" / "github-governance"),
+        },
+    )
+    base = datetime(2026, 5, 24, 12, 0, tzinfo=UTC)
+    tick(tmp_path, now=base)
+    status = eval_schedule_status(tmp_path, now=base)
+    assert status["last_fired_at"] is not None
+    assert status["eval_overdue"] is False
+    assert status["next_eval_at"] is not None
 
 
 def test_run_lake_eval_writes_scale_state(tmp_path: Path) -> None:
