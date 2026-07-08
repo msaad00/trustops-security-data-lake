@@ -30,6 +30,7 @@ EXPECTED_TOOLS = {
     "list_assets",
     "list_violations",
     "list_snapshots",
+    "get_snapshots_integrity",
     "list_audit_log",
     "list_frameworks",
     "get_ingestion_status",
@@ -53,13 +54,17 @@ EXPECTED_TOOLS = {
     "get_insights_sla_heatmap",
     "capture_insights_point",
     "list_vendor_assessments",
+    "get_vendor_assessment",
     "list_vendor_questionnaires",
     "get_vendor_questionnaire",
     "get_poc_readiness",
     "get_platform_usage",
     "list_policies",
     "list_policy_templates",
+    "get_policy_template",
+    "get_policy",
     "list_access_reviews",
+    "get_access_review",
     "get_access_reviews_coverage",
     "list_evidence_requests",
     "list_trust_shares",
@@ -204,6 +209,13 @@ def test_list_violations_open_only(tmp_path):
 def test_list_snapshots_empty_without_snapshots(tmp_path):
     server = _seeded_server(tmp_path)
     assert call_tool(server, "list_snapshots") == []
+
+
+def test_get_snapshots_integrity_returns_chain(tmp_path):
+    server = _seeded_server(tmp_path)
+    integrity = call_tool(server, "get_snapshots_integrity")
+    assert integrity["ok"] is True
+    assert integrity["length"] == 0
 
 
 def test_list_connector_runs_reads_lake(tmp_path):
@@ -387,6 +399,19 @@ def test_list_vendor_assessments_calls_api(tmp_path, monkeypatch):
     assert calls[0]["params"]["limit"] == 25
 
 
+def test_get_vendor_assessment_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/vendor-assessments/va-99"
+        return {"data": {"assessment_id": "va-99"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "get_vendor_assessment", assessment_id="va-99")
+    assert result["data"]["assessment_id"] == "va-99"
+
+
 def test_list_policy_templates_calls_api(tmp_path, monkeypatch):
     server = _seeded_server(tmp_path)
 
@@ -398,6 +423,32 @@ def test_list_policy_templates_calls_api(tmp_path, monkeypatch):
     monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
     result = call_tool(server, "list_policy_templates")
     assert result["data"][0]["template_id"] == "acceptable-use"
+
+
+def test_get_policy_template_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/policy-templates/acceptable-use"
+        return {"data": {"template_id": "acceptable-use"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "get_policy_template", template_id="acceptable-use")
+    assert result["data"]["template_id"] == "acceptable-use"
+
+
+def test_get_policy_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/policies/doc-123"
+        return {"data": {"document_id": "doc-123"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "get_policy", document_id="doc-123")
+    assert result["data"]["document_id"] == "doc-123"
 
 
 def test_list_access_reviews_calls_api(tmp_path, monkeypatch):
@@ -413,6 +464,19 @@ def test_list_access_reviews_calls_api(tmp_path, monkeypatch):
     assert calls[0]["path"] == "/api/v1/access-reviews"
     assert calls[0]["params"]["status"] == "active"
     assert calls[0]["params"]["limit"] == 10
+
+
+def test_get_access_review_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "GET"
+        assert path == "/api/v1/access-reviews/camp-1"
+        return {"data": {"campaign_id": "camp-1"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "get_access_review", campaign_id="camp-1")
+    assert result["data"]["campaign_id"] == "camp-1"
 
 
 def test_get_access_reviews_coverage_calls_api(tmp_path, monkeypatch):
