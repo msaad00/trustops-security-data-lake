@@ -42,6 +42,9 @@ export function ConnectorIngestionStrip() {
                 {ingestion.data.scale?.mode
                   ? ` · ${ingestion.data.scale.mode.replace(/_/g, " ")}`
                   : ""}
+                {ingestion.data.scale?.next_eval_at
+                  ? ` · next eval ${new Date(ingestion.data.scale.next_eval_at).toLocaleDateString()}`
+                  : ""}
               </p>
               <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-bold text-muted">
                 <span className="inline-flex items-center gap-1 rounded-full border border-line bg-white px-2 py-0.5">

@@ -140,6 +140,32 @@ def _scheduled_lake_eval(lake_dir: str | Path) -> ScheduledLakeEval | None:
     return ScheduledLakeEval(schedule=schedule, period=period)
 
 
+def eval_schedule_status(lake_dir: str | Path, *, now: datetime | None = None) -> dict[str, Any]:
+    """Return lake eval cadence and due/overdue signals for status surfaces."""
+    lake_eval = _scheduled_lake_eval(lake_dir)
+    if lake_eval is None:
+        return {
+            "last_fired_at": None,
+            "next_eval_at": None,
+            "eval_overdue": False,
+        }
+    state = _read_state(lake_dir)
+    last_fired = state.get(_state_key("lake_eval", "default"))
+    moment = now or _utc_now()
+    if last_fired is None:
+        return {
+            "last_fired_at": None,
+            "next_eval_at": _utc_iso(moment),
+            "eval_overdue": True,
+        }
+    next_due = last_fired + lake_eval.period
+    return {
+        "last_fired_at": _utc_iso(last_fired),
+        "next_eval_at": _utc_iso(next_due),
+        "eval_overdue": moment >= next_due,
+    }
+
+
 def _scheduled_from_connectors(lake_dir: str | Path) -> list[ScheduledConnector]:
     out: list[ScheduledConnector] = []
     for connector in build_catalog_view(lake_dir):

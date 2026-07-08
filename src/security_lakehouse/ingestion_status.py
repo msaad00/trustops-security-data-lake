@@ -9,6 +9,7 @@ from typing import Any
 
 from security_lakehouse.connector_health import build_connector_health
 from security_lakehouse.connector_state import build_catalog_view, list_runs
+from security_lakehouse.scheduler import eval_schedule_status
 from security_lakehouse.io import count_jsonl, jsonl_field_counts, read_json, read_jsonl
 from security_lakehouse.lake_scale import (
     DEFAULT_EVAL_SCHEDULE,
@@ -89,6 +90,7 @@ def build_ingestion_status(lake_dir: str | Path) -> JsonObject:
             "default_eval_schedule": DEFAULT_EVAL_SCHEDULE,
             "warehouse_row_threshold": WAREHOUSE_ROW_THRESHOLD,
             "latest_eval": _latest_eval_run(lake),
+            **eval_schedule_status(lake),
             "manifest": _manifest_summary(lake),
         },
     }

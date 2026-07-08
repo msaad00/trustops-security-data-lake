@@ -25,6 +25,7 @@ import { FrameworkBars } from "@/components/dashboard/FrameworkBars";
 import { ControlTestTable } from "@/components/dashboard/ControlTestTable";
 import { TrustLifecycle } from "@/components/dashboard/TrustLifecycle";
 import { IngestionStatusPanel } from "@/components/dashboard/IngestionStatusPanel";
+import { EvalRunsStrip } from "@/components/dashboard/EvalRunsStrip";
 import { ComplianceOverview } from "@/components/dashboard/ComplianceOverview";
 import { DataPipelineStrip } from "@/components/dashboard/DataPipelineStrip";
 import { KpiTile } from "@/components/ui/KpiTile";
@@ -216,6 +217,8 @@ export default function DashboardPage() {
         <QueryState queries={ingestion} label="ingestion status">
           <IngestionStatusPanel status={ingestion.data} />
         </QueryState>
+
+        <EvalRunsStrip />
 
         <DataPipelineStrip />
 

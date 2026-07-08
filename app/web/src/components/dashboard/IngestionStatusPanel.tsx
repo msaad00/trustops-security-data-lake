@@ -84,7 +84,9 @@ export function IngestionStatusPanel({
   const runTick = useRunSchedulerTickMutation();
   const summary = status?.summary;
   const scale = status?.scale;
+  const health = status?.health;
   const action = status?.recommended_actions?.[0];
+  const recentRuns = status?.latest_runs?.slice(0, 4) ?? [];
   const visibleConnectors =
     status?.connectors
       ?.filter(
@@ -163,8 +165,17 @@ export function IngestionStatusPanel({
                     {scale.latest_eval.mode} · {scale.latest_eval.result}
                   </p>
                 )}
+                {scale.next_eval_at && (
+                  <p className="mt-1 text-xs text-muted">
+                    Next eval {shortDate(scale.next_eval_at)}
+                    {scale.eval_overdue ? " · overdue" : ""}
+                  </p>
+                )}
               </div>
               <div className="flex flex-wrap gap-2">
+                {scale.eval_overdue ? (
+                  <Badge tone="critical">eval overdue</Badge>
+                ) : null}
                 <Button
                   size="sm"
                   variant="primary"
@@ -182,6 +193,65 @@ export function IngestionStatusPanel({
                   Scheduler tick
                 </Button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {health && (
+          <div className="grid gap-2 sm:grid-cols-4">
+            <Metric
+              label="Healthy"
+              value={health.summary.healthy}
+              detail={`of ${health.summary.enabled} enabled`}
+            />
+            <Metric
+              label="Degraded"
+              value={health.summary.degraded}
+              detail="past freshness SLO"
+            />
+            <Metric
+              label="Silent"
+              value={health.summary.silent}
+              detail="no recent success"
+            />
+            <Metric
+              label="Never synced"
+              value={health.summary.never_succeeded}
+              detail="awaiting first run"
+            />
+          </div>
+        )}
+
+        {recentRuns.length > 0 && (
+          <div className="rounded-lg border border-line">
+            <div className="border-b border-line px-3 py-2 text-xs font-black uppercase tracking-wide text-muted">
+              Recent connector runs
+            </div>
+            <div className="divide-y divide-line">
+              {recentRuns.map((run, index) => (
+                <div
+                  key={`${run.connector_id}-${run.occurred_at}-${index}`}
+                  className="grid gap-2 px-3 py-2 sm:grid-cols-[minmax(0,1fr)_120px_90px]"
+                >
+                  <div className="min-w-0 truncate text-sm font-bold text-ink">
+                    {run.connector_id} · {run.kind}
+                  </div>
+                  <div className="text-xs text-muted">
+                    {shortDate(run.occurred_at)}
+                  </div>
+                  <Badge
+                    tone={
+                      run.result === "ok"
+                        ? "ready"
+                        : run.result === "error"
+                          ? "critical"
+                          : "attention"
+                    }
+                  >
+                    {run.result}
+                  </Badge>
+                </div>
+              ))}
             </div>
           </div>
         )}

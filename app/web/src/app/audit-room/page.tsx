@@ -21,6 +21,7 @@ import {
 import { EvidenceFreshnessSlaPanel } from "@/components/evidence/EvidenceFreshnessSlaPanel";
 import { AuditRoomTrendsPanel } from "@/components/audit-room/AuditRoomTrendsPanel";
 import { AuditSnapshotTimeline } from "@/components/audit-room/AuditSnapshotTimeline";
+import { IngestionLoopStrip } from "@/components/audit-room/IngestionLoopStrip";
 import { RemediationSlaStrip } from "@/components/audit-room/RemediationSlaStrip";
 import { VendorRiskStrip } from "@/components/audit-room/VendorRiskStrip";
 import { PolicyAttestationStrip } from "@/components/audit-room/PolicyAttestationStrip";
@@ -106,6 +107,8 @@ export default function AuditRoomPage() {
             </div>
 
             <EvidenceFreshnessSlaPanel />
+
+            <IngestionLoopStrip />
 
             <AuditRoomTrendsPanel />
 

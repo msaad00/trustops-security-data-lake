@@ -556,5 +556,7 @@ def test_v1_ingestion_status_includes_scale(tmp_path: Path) -> None:
         assert "mode" in scale
         assert "eval_schedule" in scale
         assert "warehouse_row_threshold" in scale
+        assert "next_eval_at" in scale
+        assert "eval_overdue" in scale
     finally:
         server.shutdown()

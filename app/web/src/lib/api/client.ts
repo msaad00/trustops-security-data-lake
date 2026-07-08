@@ -51,6 +51,7 @@ import type {
   ReviewedCrosswalk,
   Health,
   IngestionStatus,
+  LakeEvalRun,
   NormalizedEvent,
   PocReadiness,
   AuditReadiness,
@@ -364,6 +365,10 @@ export const api = {
         strategy: Record<string, unknown>;
       };
     }>("/v1/ingestion/eval", payload).then((body) => body.data),
+  listEvalRuns: (limit = 10) =>
+    get<{ data: LakeEvalRun[] }>(
+      `/v1/ingestion/eval/runs?limit=${encodeURIComponent(String(limit))}`,
+    ).then((body) => body.data),
   runSchedulerTick: () =>
     post<{
       data: {

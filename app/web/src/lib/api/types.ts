@@ -563,6 +563,18 @@ export interface IngestionAction {
   reason: string;
 }
 
+export interface LakeEvalRun {
+  kind: "eval";
+  actor: string;
+  result: "ok" | "error" | string;
+  mode: string;
+  duration_ms: number | null;
+  event_count?: number | null;
+  silver_count?: number | null;
+  error: string | null;
+  occurred_at: string;
+}
+
 export interface IngestionScale {
   mode:
     | "local_full"
@@ -587,6 +599,9 @@ export interface IngestionScale {
     error?: string | null;
     occurred_at?: string;
   };
+  last_fired_at?: string | null;
+  next_eval_at?: string | null;
+  eval_overdue?: boolean;
   manifest?: {
     materialize_mode?: string | null;
     delta_count?: number | null;

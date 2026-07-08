@@ -39,6 +39,7 @@ import type {
   FrameworkView,
   FrameworkDetail,
   IngestionStatus,
+  LakeEvalRun,
   NormalizedEvent,
   PocReadiness,
   ProbePayload,
@@ -105,6 +106,17 @@ export function useIngestionStatus(opts?: Opts<IngestionStatus>) {
   return useQuery({
     queryKey: ["ingestion", "status"],
     queryFn: api.ingestionStatus,
+    staleTime: STALE,
+    refetchInterval: LIVE,
+    refetchOnWindowFocus: true,
+    ...opts,
+  });
+}
+
+export function useEvalRuns(limit = 10, opts?: Opts<LakeEvalRun[]>) {
+  return useQuery({
+    queryKey: ["ingestion", "eval-runs", limit],
+    queryFn: () => api.listEvalRuns(limit),
     staleTime: STALE,
     refetchInterval: LIVE,
     refetchOnWindowFocus: true,
@@ -510,6 +522,7 @@ export function useRunLakeEvalMutation() {
     mutationFn: (payload: { actor?: string } = {}) => api.runLakeEval(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["ingestion", "status"] });
+      qc.invalidateQueries({ queryKey: ["ingestion", "eval-runs"] });
       qc.invalidateQueries({ queryKey: ["posture", "current"] });
       qc.invalidateQueries({ queryKey: ["violations"] });
       qc.invalidateQueries({ queryKey: ["controls"] });
