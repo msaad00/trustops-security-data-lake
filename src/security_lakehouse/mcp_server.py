@@ -828,6 +828,51 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             payload["due_at"] = due_at
         return _server_api_request("POST", "/api/v1/risks", payload)
 
+    @trustops_tool(title="Update Risk")
+    def update_risk(
+        risk_id: str,
+        title: str = "",
+        description: str = "",
+        category: str = "",
+        severity: str = "",
+        likelihood: str = "",
+        impact: str = "",
+        status: str = "",
+        treatment: str = "",
+        owner: str = "",
+        control_id: str = "",
+        asset_id: str = "",
+        due_at: str = "",
+    ) -> JsonObject:
+        """Patch fields on an existing tenant risk register entry."""
+        payload: dict[str, Any] = {}
+        for key, value in (
+            ("title", title),
+            ("description", description),
+            ("category", category),
+            ("severity", severity),
+            ("likelihood", likelihood),
+            ("impact", impact),
+            ("status", status),
+            ("treatment", treatment),
+            ("owner", owner),
+            ("control_id", control_id),
+            ("asset_id", asset_id),
+            ("due_at", due_at),
+        ):
+            if value:
+                payload[key] = value
+        if not payload:
+            raise ValueError("provide at least one field to update")
+        path = f"/api/v1/risks/{urllib.parse.quote(risk_id, safe='')}"
+        return _server_api_request("PATCH", path, payload)
+
+    @trustops_tool(title="Delete Risk")
+    def delete_risk(risk_id: str) -> JsonObject:
+        """Remove a risk register row from the tenant catalog."""
+        path = f"/api/v1/risks/{urllib.parse.quote(risk_id, safe='')}"
+        return _server_api_request("DELETE", path, {})
+
     @trustops_tool(title="List Remediation Exceptions")
     def list_remediation_exceptions(limit: int = 100, active_only: bool = False) -> JsonObject:
         """List control exceptions (compensating controls) with optional active-only filter."""
@@ -835,6 +880,27 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         if active_only:
             params["active"] = "true"
         return _server_api_request("GET", "/api/v1/remediation/exceptions", **params)
+
+    @trustops_tool(title="Create Remediation Exception")
+    def create_remediation_exception(
+        control_id: str,
+        reason: str = "",
+        approved_by: str = "",
+        expires_at: str = "",
+    ) -> JsonObject:
+        """Record a compensating control exception for audit sign-off."""
+        payload: dict[str, Any] = {"control_id": control_id, "reason": reason}
+        if approved_by:
+            payload["approved_by"] = approved_by
+        if expires_at:
+            payload["expires_at"] = expires_at
+        return _server_api_request("POST", "/api/v1/remediation/exceptions", payload)
+
+    @trustops_tool(title="Revoke Remediation Exception")
+    def revoke_remediation_exception(exception_id: str) -> JsonObject:
+        """Revoke an active compensating control exception."""
+        path = f"/api/v1/remediation/exceptions/{urllib.parse.quote(exception_id, safe='')}"
+        return _server_api_request("DELETE", path, {})
 
     @trustops_tool(title="Policy Coverage")
     def get_policies_coverage() -> JsonObject:
