@@ -50,8 +50,8 @@ MCP tools wrap the same surface:
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Ingestion loop | `get_ingestion_status`, `list_eval_runs`, `run_lake_eval`, `run_scheduler_tick`, `sync_connector`, `list_connector_runs`                                                                                |
 | Posture / lake | `get_posture`, `posture_as_of`, `list_controls`, `list_evidence`, `list_violations`, `get_framework_detail`, `get_snapshots_integrity`, `get_snapshot_detail`, `get_tracking_integrity`, `describe_api` |
-| Audit / export | `list_audit_log`, `create_snapshot`, `list_snapshots`, `get_audit_readiness`, `get_evidence_freshness_summary`, `capture_insights_point`                                                                |
-| GRC programs   | `get_remediation_task`, `list_access_review_items`, `get_policy_template`, `get_policy`, `get_access_review`, `get_vendor_assessment`, …                                                                |
+| Audit / export | `list_audit_log`, `create_snapshot`, `create_trust_share`, `list_trust_shares`, `get_audit_readiness`, `capture_insights_point`                                                                         |
+| GRC programs   | `create_vendor_assessment`, `submit_vendor_assessment`, `create_access_review`, `seed_access_review`, `record_access_review_decision`, …                                                                |
 | Agent harness  | `list_agent_runs`, `create_agent_run`, `approve_agent_decision`                                                                                                                                         |
 
 Use `describe_api` to enumerate the full `/api/v1` catalog.
