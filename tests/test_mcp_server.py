@@ -87,7 +87,11 @@ EXPECTED_TOOLS = {
     "list_saved_views",
     "list_risks",
     "create_risk",
+    "update_risk",
+    "delete_risk",
     "list_remediation_exceptions",
+    "create_remediation_exception",
+    "revoke_remediation_exception",
     "get_policies_coverage",
     "list_remediation_tasks",
     "get_remediation_task",
@@ -641,6 +645,72 @@ def test_create_risk_calls_api(tmp_path, monkeypatch):
         owner="security@example.com",
     )
     assert result["data"]["id"] == "risk-1"
+
+
+def test_update_risk_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "PATCH"
+        assert path == "/api/v1/risks/risk-1"
+        assert body == {"status": "mitigated", "owner": "grc@example.com"}
+        return {"data": {"id": "risk-1", "status": "mitigated"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(
+        server,
+        "update_risk",
+        risk_id="risk-1",
+        status="mitigated",
+        owner="grc@example.com",
+    )
+    assert result["data"]["status"] == "mitigated"
+
+
+def test_delete_risk_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "DELETE"
+        assert path == "/api/v1/risks/risk-9"
+        return {"data": {"id": "risk-9", "deleted": True}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "delete_risk", risk_id="risk-9")
+    assert result["data"]["deleted"] is True
+
+
+def test_create_remediation_exception_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "POST"
+        assert path == "/api/v1/remediation/exceptions"
+        assert body["control_id"] == "SOC2-CC6.1"
+        assert body["reason"] == "Compensating IAM review"
+        return {"data": {"id": "exc-1", "control_id": "SOC2-CC6.1"}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(
+        server,
+        "create_remediation_exception",
+        control_id="SOC2-CC6.1",
+        reason="Compensating IAM review",
+    )
+    assert result["data"]["id"] == "exc-1"
+
+
+def test_revoke_remediation_exception_calls_api(tmp_path, monkeypatch):
+    server = _seeded_server(tmp_path)
+
+    def fake_request(method, path, body=None, **params):
+        assert method == "DELETE"
+        assert path == "/api/v1/remediation/exceptions/exc-1"
+        return {"data": {"id": "exc-1", "active": False}, "meta": {}, "errors": []}
+
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_request)
+    result = call_tool(server, "revoke_remediation_exception", exception_id="exc-1")
+    assert result["data"]["active"] is False
 
 
 def test_list_remediation_exceptions_calls_api(tmp_path, monkeypatch):
