@@ -569,6 +569,41 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """Return published vs acknowledged policy counts for audit prep."""
         return _server_api_request("GET", "/api/v1/policies/attestation-summary")
 
+    @trustops_tool(title="Adopt Policy Template")
+    def adopt_policy(template_id: str, owner: str = "", variables_json: str = "{}") -> JsonObject:
+        """Adopt a bundled policy template into the tenant policy library."""
+        import json as _json
+
+        try:
+            variables = _json.loads(variables_json or "{}")
+        except _json.JSONDecodeError as exc:
+            raise ValueError("variables_json must be valid JSON") from exc
+        if not isinstance(variables, dict):
+            raise ValueError("variables_json must be a JSON object")
+        payload: dict[str, Any] = {"template_id": template_id, "owner": owner, "variables": variables}
+        return _server_api_request("POST", "/api/v1/policies", payload)
+
+    @trustops_tool(title="Publish Policy")
+    def publish_policy(document_id: str) -> JsonObject:
+        """Publish an adopted policy document for employee attestation."""
+        path = f"/api/v1/policies/{urllib.parse.quote(document_id, safe='')}/publish"
+        return _server_api_request("POST", path, {})
+
+    @trustops_tool(title="List Policy Acknowledgments")
+    def list_policy_acknowledgments(document_id: str) -> JsonObject:
+        """List employee acknowledgments for a published policy."""
+        path = f"/api/v1/policies/{urllib.parse.quote(document_id, safe='')}/acknowledgments"
+        return _server_api_request("GET", path)
+
+    @trustops_tool(title="Acknowledge Policy")
+    def acknowledge_policy(document_id: str, user_email: str = "", display_name: str = "") -> JsonObject:
+        """Record employee acknowledgment for a published policy."""
+        path = f"/api/v1/policies/{urllib.parse.quote(document_id, safe='')}/acknowledgments"
+        payload: dict[str, Any] = {"display_name": display_name}
+        if user_email:
+            payload["user_email"] = user_email
+        return _server_api_request("POST", path, payload)
+
     @trustops_tool(title="List Tags")
     def list_tags() -> JsonObject:
         """List tenant tags for cross-entity navigation and filtering."""
