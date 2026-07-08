@@ -98,7 +98,7 @@ agent action should be rendered back to humans with the same audit trail.
 | `POST` | `/api/v1/connectors/{id}/discover`                               | list selectable scope without enabling collection (`connector_manage`)                                                             |
 | `POST` | `/api/v1/connectors/{id}/probe`                                  | validate credentials and read scope; writes fingerprint (`connector_manage`)                                                       |
 | `POST` | `/api/v1/connectors/{id}/configure`                              | enable/disable connector after successful probe (`connector_manage`)                                                               |
-| `GET`  | `/api/v1/ingestion/status`                                       | continuous loop health: schedules, scale tier, connector freshness, last eval, `next_eval_at`, `eval_overdue`                       |
+| `GET`  | `/api/v1/ingestion/status`                                       | continuous loop health: schedules, scale tier, connector freshness, last eval, `next_eval_at`, `eval_overdue`                      |
 | `POST` | `/api/v1/ingestion/eval`                                         | run lake-wide materialize + evaluate (`connector_manage`)                                                                          |
 | `GET`  | `/api/v1/ingestion/eval/runs`                                    | recent lake evaluation runs (split ingest/eval schedules)                                                                          |
 | `POST` | `/api/v1/scheduler/tick`                                         | fire due connector syncs, lake eval, and cron workflows once (`connector_manage`)                                                  |

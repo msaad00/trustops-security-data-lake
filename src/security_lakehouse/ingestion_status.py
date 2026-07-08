@@ -9,7 +9,6 @@ from typing import Any
 
 from security_lakehouse.connector_health import build_connector_health
 from security_lakehouse.connector_state import build_catalog_view, list_runs
-from security_lakehouse.scheduler import eval_schedule_status
 from security_lakehouse.io import count_jsonl, jsonl_field_counts, read_json, read_jsonl
 from security_lakehouse.lake_scale import (
     DEFAULT_EVAL_SCHEDULE,
@@ -18,6 +17,7 @@ from security_lakehouse.lake_scale import (
     lake_eval_schedule,
     resolve_materialize_strategy,
 )
+from security_lakehouse.scheduler import eval_schedule_status
 
 JsonObject = dict[str, Any]
 

@@ -62,7 +62,9 @@ export function IngestionLoopStrip() {
                 value={`${summary?.enabled_connectors ?? 0}/${summary?.connector_count ?? 0}`}
                 detail={`${summary?.failed_connectors ?? 0} failed · ${summary?.never_synced_connectors ?? 0} never synced`}
                 tone={
-                  (summary?.failed_connectors ?? 0) > 0 ? "attention" : "default"
+                  (summary?.failed_connectors ?? 0) > 0
+                    ? "attention"
+                    : "default"
                 }
               />
               <KpiTile
@@ -102,7 +104,7 @@ export function IngestionLoopStrip() {
                 value={
                   scale?.next_eval_at
                     ? shortDate(scale.next_eval_at)
-                    : scale?.eval_schedule ?? "—"
+                    : (scale?.eval_schedule ?? "—")
                 }
                 detail={
                   scale?.eval_overdue

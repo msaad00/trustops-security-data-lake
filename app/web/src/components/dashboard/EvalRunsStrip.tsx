@@ -118,9 +118,7 @@ export function EvalRunsStrip({ limit = 6 }: { limit?: number }) {
                     <div className="text-xs text-muted">
                       {shortDate(run.occurred_at)}
                     </div>
-                    <Badge tone={toneForResult(run.result)}>
-                      {run.result}
-                    </Badge>
+                    <Badge tone={toneForResult(run.result)}>{run.result}</Badge>
                     <div className="text-xs text-muted">
                       {run.event_count != null
                         ? `${run.event_count.toLocaleString()} events`
@@ -130,8 +128,8 @@ export function EvalRunsStrip({ limit = 6 }: { limit?: number }) {
                 ))
               ) : (
                 <div className="px-3 py-3 text-sm text-muted">
-                  No lake evaluation runs yet. Trigger one from source health
-                  or wait for the scheduler.
+                  No lake evaluation runs yet. Trigger one from source health or
+                  wait for the scheduler.
                 </div>
               )}
             </div>
