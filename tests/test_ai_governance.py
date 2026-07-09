@@ -139,3 +139,58 @@ def test_ai_governance_api(tmp_path: Path) -> None:
     inv = client.get("/api/v1/platform/ai-governance/inventory", headers=_bearer(token))
     assert inv.status_code == HTTPStatus.OK
     assert len(inv.json()["data"]) >= 2
+
+
+def test_build_ai_governance_empty_lake_gaps(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    _write_jsonl(
+        tmp_path / "silver" / "normalized_events.jsonl",
+        [
+            {
+                "event_id": "evt-non-ai",
+                "event_time": "2026-05-20T13:01:00Z",
+                "event_type": "identity.access_review",
+                "control_ids": ["SOC2-CC6.1"],
+                "asset_id": "aws:iam:role/admin",
+                "asset_owner": "security-platform",
+                "asset_type": "iam_role",
+                "environment": "prod",
+                "source": "okta",
+                "status": "open",
+                "severity": "high",
+                "severity_score": 80,
+                "evidence_ref": "s3://evidence/evt-non-ai.json",
+                "raw_sha256": "abc",
+            }
+        ],
+    )
+    data = build_ai_governance_status(lake=tmp_path)
+    assert data["state"] == "needs_work"
+    gap_ids = {gap["id"] for gap in data["gaps"]}
+    assert gap_ids == {"model_inventory", "model_lineage", "model_cards", "agent_governance"}
+    assert data["evidence_loops"]["inventory_events"] is False
+    assert data["aibom"]["shipped"] is False
+
+
+def test_build_ai_governance_governed_when_loops_complete(tmp_path: Path) -> None:
+    _seed_ai_events(tmp_path)
+    data = build_ai_governance_status(lake=tmp_path)
+    assert data["governance_score"] >= 85
+    assert data["state"] == "governed"
+    assert data["gaps"] == []
+
+
+def test_list_ai_inventory_pagination(tmp_path: Path) -> None:
+    _seed_ai_events(tmp_path)
+    page = list_ai_inventory(lake=tmp_path, limit=1, offset=0)
+    assert len(page) == 1
+    rest = list_ai_inventory(lake=tmp_path, limit=10, offset=1)
+    assert page[0]["asset_id"] != rest[0]["asset_id"]
+
+
+def test_ai_governance_api_requires_auth(tmp_path: Path) -> None:
+    _seed_ai_events(tmp_path)
+    app = create_app(tmp_path)
+    client = TestClient(app)
+    resp = client.get("/api/v1/platform/ai-governance")
+    assert resp.status_code == HTTPStatus.UNAUTHORIZED
