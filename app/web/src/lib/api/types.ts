@@ -639,6 +639,35 @@ export interface LakeEvalRun {
   silver_count?: number | null;
   error: string | null;
   occurred_at: string;
+  control_tests_total?: number | null;
+  control_tests_passing?: number | null;
+  control_tests_failing?: number | null;
+  pass_rate?: number | null;
+}
+
+export interface EvalAccuracy {
+  total_tests: number;
+  passing: number;
+  failing: number;
+  warning: number;
+  pass_rate: number | null;
+  framework_count: number;
+  evidence_source_count: number;
+  has_tests: boolean;
+}
+
+export interface CatalogCoverage {
+  total: number;
+  implemented: number;
+  enabled: number;
+  implementation_rate: number;
+  enabled_rate: number;
+  by_category: Array<{
+    category: string;
+    total: number;
+    implemented: number;
+    enabled: number;
+  }>;
 }
 
 export interface IngestionScale {
@@ -749,6 +778,8 @@ export interface IngestionStatus {
     recommended_actions: IngestionAction[];
   };
   recommended_actions: IngestionAction[];
+  eval_accuracy?: EvalAccuracy;
+  catalog_coverage?: CatalogCoverage;
   scale?: IngestionScale;
   health?: {
     evaluated_at: string;
