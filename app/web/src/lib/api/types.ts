@@ -476,6 +476,72 @@ export interface AuditReadiness {
   workflow_coverage: { score: number; checklist: AuditWorkflowItem[] };
 }
 
+export interface AiGovernanceFramework {
+  framework_id: string;
+  label: string;
+  controls_mapped: number;
+  controls_covered: number;
+  coverage_pct: number;
+  failing_controls: number;
+  score: number;
+}
+
+export interface AiGovernanceGap {
+  id: string;
+  label: string;
+  href: string;
+}
+
+export interface AiGovernance {
+  state: "governed" | "on_track" | "needs_work" | string;
+  governance_score: number;
+  evaluated_at: string;
+  inventory: {
+    total: number;
+    models: number;
+    agents: number;
+    with_model_card: number;
+    with_lineage: number;
+  };
+  events: {
+    model_inventory: number;
+    model_lineage: number;
+    agent_runtime: number;
+    repo_artifacts: number;
+  };
+  artifacts: {
+    model_cards: number;
+    repo_audit_signals: number;
+  };
+  frameworks: AiGovernanceFramework[];
+  frameworks_ready: number;
+  frameworks_total: number;
+  gaps: AiGovernanceGap[];
+  evidence_loops: {
+    inventory_events: boolean;
+    lineage_events: boolean;
+    model_cards: boolean;
+    agent_governance: boolean;
+  };
+  aibom: {
+    shipped: boolean;
+    note: string;
+  };
+}
+
+export interface AiInventoryItem {
+  asset_id: string;
+  asset_type: string;
+  owner: string;
+  environment: string;
+  model_card: boolean;
+  lineage_complete: boolean;
+  last_seen_at: string;
+  sources: string[];
+  control_ids: string[];
+  event_types: string[];
+}
+
 export interface SnapshotResponse {
   snapshot_path: string;
   reason: string;

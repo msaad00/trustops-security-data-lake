@@ -15,6 +15,8 @@ import type {
   AgentRun,
   Assessment,
   AuditReadiness,
+  AiGovernance,
+  AiInventoryItem,
   AssetRisk,
   AuthMethods,
   AuthApiKey,
@@ -141,6 +143,27 @@ export function useAuditReadiness(opts?: Opts<AuditReadiness>) {
     queryFn: api.auditReadiness,
     staleTime: STALE,
     refetchInterval: LIVE,
+    retry: false,
+    ...opts,
+  });
+}
+
+export function useAiGovernance(opts?: Opts<AiGovernance>) {
+  return useQuery({
+    queryKey: ["platform", "ai-governance"],
+    queryFn: api.aiGovernance,
+    staleTime: STALE,
+    refetchInterval: LIVE,
+    retry: false,
+    ...opts,
+  });
+}
+
+export function useAiInventory(limit = 8, opts?: Opts<AiInventoryItem[]>) {
+  return useQuery({
+    queryKey: ["platform", "ai-governance", "inventory", limit],
+    queryFn: () => api.aiInventory(`?limit=${limit}`),
+    staleTime: STALE,
     retry: false,
     ...opts,
   });
