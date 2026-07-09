@@ -68,11 +68,12 @@ security-lakehouse connectors list
 
 ## Connector Runner
 
-TrustOps currently has **17 connector contracts**. **Nine** are executable
-runners (eight direct source/API runners plus the Snowflake existing-lake
-reader). The remaining entries are read-only access contracts or managed
-evidence boundaries — probes validate configuration but **sync is not available**
-until a collection adapter ships.
+TrustOps currently has **17 connector contracts**. **Eleven** are executable
+runners (eight direct source/API runners plus Snowflake and ClickHouse
+existing-lake readers and the Okta System Log incremental adapter). The remaining
+entries are read-only access contracts or managed evidence boundaries — probes
+validate configuration but **sync is not available** until a collection adapter
+ships.
 
 | Connector ID                | Source                  | Runner status                 |
 | --------------------------- | ----------------------- | ----------------------------- |
@@ -85,7 +86,7 @@ until a collection adapter ships.
 | `azure-posture`             | Azure IAM/posture       | executable                    |
 | `jira-ticketing`            | Jira tickets/workflows  | executable                    |
 | `snowflake-evidence-lake`   | governed evidence lake  | executable existing-lake read |
-| `clickhouse-telemetry-lake` | telemetry analytics     | **contract only** (no sync)   |
+| `clickhouse-telemetry-lake` | telemetry analytics     | executable existing-lake read |
 | `okta-system-log`           | Okta System Log API     | **implemented** (incremental) |
 | `object-storage-evidence`   | object evidence store   | **contract only** (no sync)   |
 | `siem-alerts`               | SIEM/detection exports  | **contract only** (no sync)   |
@@ -208,6 +209,35 @@ security-lakehouse connectors sync \
   --connector-id snowflake-evidence-lake \
   --fixture-dir tests/fixtures/snowflake
 ```
+
+ClickHouse is the high-velocity telemetry lake reader. The fixture path mirrors
+`security.normalized_events` from `deploy/clickhouse/schema.sql` and uses
+append-mode ingestion with a high-water cursor:
+
+```bash
+security-lakehouse connectors probe \
+  --lake build/lakehouse \
+  --connector-id clickhouse-telemetry-lake \
+  --credentials-json '{"host":"https://cluster.example.clickhouse.cloud:8443","user":"trustops_reader","credential_ref":"TRUSTOPS_CLICKHOUSE_TOKEN"}' \
+  --options-json '{"database":"security","table":"normalized_events"}'
+
+security-lakehouse connectors configure \
+  --lake build/lakehouse \
+  --connector-id clickhouse-telemetry-lake \
+  --state enabled \
+  --credentials-json '{"host":"https://cluster.example.clickhouse.cloud:8443","user":"trustops_reader","credential_ref":"TRUSTOPS_CLICKHOUSE_TOKEN"}' \
+  --options-json '{"database":"security","table":"normalized_events"}'
+
+security-lakehouse connectors sync \
+  --lake build/lakehouse \
+  --connector-id clickhouse-telemetry-lake \
+  --fixture-dir tests/fixtures/clickhouse-telemetry-lake
+```
+
+For live ClickHouse collection, point the connector at your cluster HTTP endpoint
+and mount the read-only token via `TRUSTOPS_CLICKHOUSE_TOKEN` (or the
+`credential_ref` you configured). TrustOps only issues `SELECT` reads against
+the discovered table.
 
 For live Snowflake collection, install the cloud connector extra and use the
 fixed POC objects from [`docs/LIVE_CLOUD_POC.md`](LIVE_CLOUD_POC.md):

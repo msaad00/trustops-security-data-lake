@@ -50,6 +50,7 @@
       ],
       "default_route": "ClickHouse",
       "freshness_slo_minutes": 15,
+      "is_implemented": true,
       "production_status": "primary_lake",
       "velocity": "high_event_stream",
       "native_connector": true,

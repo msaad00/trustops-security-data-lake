@@ -1,0 +1,307 @@
+"""ClickHouse telemetry-lake collector.
+
+Read-only SELECT against TrustOps-shaped analytics tables (see
+``deploy/clickhouse/schema.sql``). Uses the HTTP interface so the base package
+does not require ``clickhouse-connect``; CI runs from fixtures.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+import urllib.error
+import urllib.parse
+import urllib.request
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Any
+
+from security_lakehouse.io import read_json
+from security_lakehouse.models import parse_event_time, utc_iso
+
+CONNECTOR_ID = "clickhouse-telemetry-lake"
+SOURCE = "clickhouse"
+DEFAULT_DATABASE = "security"
+DEFAULT_TABLE = "normalized_events"
+DEFAULT_CONTROLS = ["SOC2-CC7.2", "ISO27001-A.8.16"]
+DEFAULT_TIMEOUT = 30
+IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+
+
+class ClickHouseClient:
+    """Read-only ClickHouse HTTP client."""
+
+    def __init__(
+        self,
+        host: str,
+        *,
+        user: str,
+        password: str = "",
+        database: str = DEFAULT_DATABASE,
+        timeout: int = DEFAULT_TIMEOUT,
+    ) -> None:
+        self.base_url = host.rstrip("/")
+        self.user = user
+        self.password = password
+        self.database = database
+        self.timeout = timeout
+
+    def normalized_events(self, *, table: str = DEFAULT_TABLE, since: str | None = None) -> list[dict[str, Any]]:
+        safe_table = _safe_table_ref(self.database, table)
+        query = f"SELECT * FROM {safe_table}"
+        if since:
+            query += f" WHERE event_time > parseDateTime64BestEffort({_quote_literal(since)})"
+        query += " ORDER BY event_time FORMAT JSONEachRow"
+        return self._query_json_each_row(query)
+
+    def show_tables(self) -> list[str]:
+        rows = self._query_json_each_row(f"SHOW TABLES FROM {_safe_identifier(self.database)} FORMAT JSONEachRow")
+        return [str(row.get("name") or "") for row in rows if row.get("name")]
+
+    def probe(self, *, table: str = DEFAULT_TABLE) -> dict[str, Any]:
+        safe_table = _safe_table_ref(self.database, table)
+        try:
+            rows = self._query_json_each_row(f"SELECT count() AS row_count FROM {safe_table} FORMAT JSONEachRow")
+            count = int(rows[0].get("row_count") or 0) if rows else 0
+            return {"ok": True, "table": safe_table, "row_count": count, "error": None}
+        except Exception as exc:  # noqa: BLE001 - probe surfaces sanitized errors
+            return {"ok": False, "table": safe_table, "row_count": None, "error": exc.__class__.__name__}
+
+    def discover_scope(self) -> dict[str, Any]:
+        tables = [name for name in self.show_tables() if name]
+        selectors = [
+            {"kind": "database", "name": self.database, "required": True, "selected": True},
+            *[
+                {
+                    "kind": "table",
+                    "name": name,
+                    "required": name == DEFAULT_TABLE,
+                    "selected": name == DEFAULT_TABLE,
+                    "purpose": "normalized_events" if name == DEFAULT_TABLE else "table",
+                }
+                for name in tables
+            ],
+        ]
+        return {
+            "ok": True,
+            "selection_mode": "visible_tables",
+            "selectors": selectors,
+            "recommended_options": {"database": self.database, "table": DEFAULT_TABLE},
+        }
+
+    def _query_json_each_row(self, query: str) -> list[dict[str, Any]]:
+        url = f"{self.base_url}/?database={urllib.parse.quote(self.database)}"
+        request = urllib.request.Request(
+            url,
+            data=query.encode("utf-8"),
+            method="POST",
+            headers={
+                "content-type": "text/plain; charset=utf-8",
+                "user-agent": "trustops-security-data-lake",
+            },
+        )
+        if self.user:
+            request.add_header("X-ClickHouse-User", self.user)
+        if self.password:
+            request.add_header("X-ClickHouse-Key", self.password)
+        try:
+            with urllib.request.urlopen(request, timeout=self.timeout) as resp:  # noqa: S310
+                body = resp.read().decode("utf-8")
+        except urllib.error.HTTPError as exc:  # pragma: no cover - live only
+            raise ValueError(exc.__class__.__name__) from exc
+        rows: list[dict[str, Any]] = []
+        for line in body.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            payload = json.loads(line)
+            if isinstance(payload, dict):
+                rows.append(payload)
+        return rows
+
+
+class ClickHouseFixtureClient:
+    """Offline client backed by JSON fixtures."""
+
+    def __init__(self, fixture_dir: str | Path, *, database: str = DEFAULT_DATABASE) -> None:
+        self.fixture = Path(fixture_dir)
+        self.database = database
+
+    def normalized_events(self, *, table: str = DEFAULT_TABLE, since: str | None = None) -> list[dict[str, Any]]:
+        rows = self._read_table(table)
+        if not since:
+            return rows
+        return [row for row in rows if str(row.get("event_time") or "") > since]
+
+    def show_tables(self) -> list[str]:
+        return [path.stem for path in self.fixture.glob("*.json")]
+
+    def probe(self, *, table: str = DEFAULT_TABLE) -> dict[str, Any]:
+        rows = self.normalized_events(table=table)
+        return {
+            "ok": True,
+            "table": f"{self.database}.{table}",
+            "row_count": len(rows),
+            "error": None,
+        }
+
+    def discover_scope(self) -> dict[str, Any]:
+        tables = [name for name in self.show_tables() if name]
+        selectors = [
+            {"kind": "database", "name": self.database, "required": True, "selected": True},
+            *[
+                {
+                    "kind": "table",
+                    "name": name,
+                    "required": name == DEFAULT_TABLE,
+                    "selected": name == DEFAULT_TABLE,
+                    "purpose": "normalized_events" if name == DEFAULT_TABLE else "table",
+                }
+                for name in tables
+            ],
+        ]
+        return {
+            "ok": True,
+            "selection_mode": "visible_tables",
+            "selectors": selectors,
+            "recommended_options": {"database": self.database, "table": DEFAULT_TABLE},
+        }
+
+    def _read_table(self, table: str) -> list[dict[str, Any]]:
+        path = self.fixture / f"{table}.json"
+        if not path.is_file():
+            return []
+        payload = read_json(path)
+        if isinstance(payload, list):
+            return [row for row in payload if isinstance(row, dict)]
+        return []
+
+
+def collect_clickhouse_evidence(
+    client: ClickHouseClient | ClickHouseFixtureClient,
+    *,
+    table: str = DEFAULT_TABLE,
+    since: str | None = None,
+    collected_at: datetime | None = None,
+    tenant_id: str = "customer-managed",
+) -> list[dict[str, Any]]:
+    """Collect raw evidence rows from a ClickHouse telemetry table."""
+    _ = collected_at
+    rows: list[dict[str, Any]] = []
+    for row in client.normalized_events(table=table, since=since):
+        event = _raw_from_row(row, tenant_id=tenant_id)
+        if event is not None:
+            rows.append(event)
+    return rows
+
+
+def probe_clickhouse_access(
+    *,
+    credentials: dict[str, Any],
+    options: dict[str, Any],
+    env: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    host, user, password, database, table = _connection_params(credentials, options, env=env)
+    if not host:
+        raise ValueError("clickhouse-telemetry-lake probe requires host")
+    return ClickHouseClient(host, user=user, password=password, database=database).probe(table=table)
+
+
+def discover_clickhouse_scope(
+    *,
+    credentials: dict[str, Any],
+    options: dict[str, Any],
+    env: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    host, user, password, database, _table = _connection_params(credentials, options, env=env)
+    if not host:
+        return {"ok": False, "error": "host is required", "selectors": []}
+    try:
+        return ClickHouseClient(host, user=user, password=password, database=database).discover_scope()
+    except Exception as exc:  # noqa: BLE001
+        return {"ok": False, "error": exc.__class__.__name__, "selectors": []}
+
+
+def _connection_params(
+    credentials: dict[str, Any],
+    options: dict[str, Any],
+    *,
+    env: dict[str, str] | None = None,
+) -> tuple[str, str, str, str, str]:
+    environment = env or {}
+    host = str(credentials.get("host") or environment.get("CLICKHOUSE_HOST") or "").strip()
+    user = str(credentials.get("user") or environment.get("CLICKHOUSE_USER") or "default").strip() or "default"
+    credential_ref = str(credentials.get("credential_ref") or "CLICKHOUSE_PASSWORD").strip()
+    password = str(
+        credentials.get("token") or credentials.get("password") or environment.get(credential_ref) or ""
+    ).strip()
+    database = str(options.get("database") or DEFAULT_DATABASE).strip() or DEFAULT_DATABASE
+    table = str(options.get("table") or DEFAULT_TABLE).strip() or DEFAULT_TABLE
+    return host, user, password, database, table
+
+
+def _raw_from_row(row: dict[str, Any], *, tenant_id: str) -> dict[str, Any] | None:
+    event_id = str(row.get("event_id") or "").strip()
+    if not event_id:
+        return None
+    event_time = _event_time_iso(row.get("event_time"))
+    controls = [str(item) for item in row.get("control_ids") or row.get("controls") or DEFAULT_CONTROLS]
+    asset_id = str(row.get("asset_id") or f"clickhouse:event:{event_id}")
+    evidence_id = str(row.get("evidence_id") or f"ev-{event_id}")
+    evidence_ref = str(row.get("evidence_ref") or f"clickhouse://{event_id}")
+    evidence_collected_at = _event_time_iso(row.get("evidence_collected_at") or event_time)
+    return {
+        "event_id": event_id,
+        "tenant_id": str(row.get("tenant_id") or tenant_id),
+        "workspace_id": "default",
+        "event_time": event_time,
+        "source": str(row.get("source") or SOURCE),
+        "event_type": str(row.get("event_type") or "clickhouse.telemetry.event"),
+        "entity": {
+            "asset_id": asset_id,
+            "asset_type": str(row.get("asset_type") or "telemetry_asset"),
+            "asset_owner": str(row.get("asset_owner") or "security-platform"),
+            "environment": str(row.get("environment") or "prod"),
+            "org": SOURCE,
+        },
+        "severity": str(row.get("severity") or "info"),
+        "status": str(row.get("status") or "observed"),
+        "controls": controls or list(DEFAULT_CONTROLS),
+        "evidence": {
+            "evidence_id": evidence_id,
+            "evidence_ref": evidence_ref,
+            "evidence_collected_at": evidence_collected_at,
+        },
+        "attributes": {
+            "severity_score": row.get("severity_score"),
+            "raw_sha256": row.get("raw_sha256"),
+            "table": DEFAULT_TABLE,
+        },
+    }
+
+
+def _event_time_iso(value: Any) -> str:
+    if value is None:
+        return utc_iso(datetime.now(UTC))
+    text = str(value).strip()
+    if not text:
+        return utc_iso(datetime.now(UTC))
+    try:
+        return utc_iso(parse_event_time(text))
+    except ValueError:
+        return text.replace(" ", "T") + ("Z" if not text.endswith("Z") and "+" not in text else "")
+
+
+def _safe_identifier(value: str) -> str:
+    text = str(value or "").strip()
+    if not IDENTIFIER.fullmatch(text):
+        raise ValueError(f"unsafe ClickHouse identifier {value!r}")
+    return text
+
+
+def _safe_table_ref(database: str, table: str) -> str:
+    return f"{_safe_identifier(database)}.{_safe_identifier(table)}"
+
+
+def _quote_literal(value: str) -> str:
+    return "'" + str(value).replace("'", "''") + "'"
