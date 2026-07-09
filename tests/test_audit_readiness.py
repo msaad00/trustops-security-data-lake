@@ -105,3 +105,34 @@ def test_audit_readiness_personnel_summary(tmp_path: Path) -> None:
     assert any(gap["id"] == "personnel_idp" for gap in data["gaps"])
     personnel_row = next(row for row in data["workflow_coverage"]["checklist"] if row["id"] == "personnel_tracking")
     assert personnel_row["shipped"] is True
+
+
+def test_audit_readiness_stale_evidence_gap(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path)
+    with app.state.sessionmaker() as session:
+        tenant = create_tenant(session, slug="stale-audit", name="Stale Audit")
+        create_user(session, tenant_id=tenant.id, email="admin@stale-audit.test", role="admin")
+        session.commit()
+        data = build_audit_readiness(lake=tmp_path, session=session, tenant_id=tenant.id)
+    assert data["evidence_freshness"]["stale_count"] > 0
+    assert any(gap["id"] == "stale_evidence" for gap in data["gaps"])
+
+
+def test_audit_readiness_auditor_share_gap(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path)
+    with app.state.sessionmaker() as session:
+        tenant = create_tenant(session, slug="share-audit", name="Share Audit")
+        create_user(session, tenant_id=tenant.id, email="admin@share-audit.test", role="admin")
+        session.commit()
+        data = build_audit_readiness(lake=tmp_path, session=session, tenant_id=tenant.id)
+    assert any(gap["id"] == "auditor_share" for gap in data["gaps"])
+
+
+def test_audit_readiness_api_requires_auth(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path)
+    client = TestClient(app)
+    resp = client.get("/api/v1/platform/audit-readiness")
+    assert resp.status_code == HTTPStatus.UNAUTHORIZED
