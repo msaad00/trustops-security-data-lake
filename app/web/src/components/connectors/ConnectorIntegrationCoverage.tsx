@@ -33,6 +33,11 @@ export function ConnectorIntegrationCoverage() {
                   <Badge tone="info">
                     {coverage.implemented}/{coverage.total} implemented
                   </Badge>
+                  {(coverage.contract_only ?? 0) > 0 ? (
+                    <Badge tone="attention">
+                      {coverage.contract_only} contract-only
+                    </Badge>
+                  ) : null}
                 </div>
                 <p className="mt-1 text-xs leading-5 text-muted">
                   Catalog coverage vs live adapters and enabled sources — depth
