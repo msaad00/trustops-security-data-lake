@@ -60,6 +60,7 @@ from security_lakehouse.connectors_okta import (
     OktaClient,
     OktaFixtureClient,
     collect_okta_evidence,
+    collect_okta_system_log_evidence,
 )
 from security_lakehouse.connectors_snowflake import (
     DEFAULT_VIEWS as SNOWFLAKE_DEFAULT_VIEWS,
@@ -430,6 +431,16 @@ def _build_okta(inputs: SyncInputs) -> list[dict[str, Any]]:
     )
 
 
+def _build_okta_system_log(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_okta_system_log(
+        fixture_dir=inputs.fixture_dir,
+        token_env=inputs.token_env,
+        env=inputs.env,
+        credentials=inputs.credentials,
+        since=inputs.since,
+    )
+
+
 def _build_aws(inputs: SyncInputs) -> list[dict[str, Any]]:
     return _collect_aws(fixture_dir=inputs.fixture_dir, env=inputs.env, credentials=inputs.credentials)
 
@@ -486,6 +497,7 @@ REGISTRY: dict[str, ConnectorBuilder] = {
     "github-security": _build_github,
     "gitlab-security": _build_gitlab,
     "okta-identity": _build_okta,
+    "okta-system-log": _build_okta_system_log,
     "aws-posture": _build_aws,
     "google-workspace-identity": _build_google_workspace,
     "gcp-posture": _build_gcp,
@@ -552,6 +564,32 @@ def _collect_okta(
         netguard.assert_url_is_public(org_url, label="okta org url")
         client = OktaClient(org_url, token=token)
     return collect_okta_evidence(client)
+
+
+def _collect_okta_system_log(
+    *,
+    fixture_dir: str | Path | None,
+    token_env: str,
+    env: dict[str, str],
+    credentials: dict[str, Any] | None = None,
+    since: str | None = None,
+) -> list[dict[str, Any]]:
+    client: OktaClient | OktaFixtureClient
+    creds = credentials or {}
+    if fixture_dir:
+        client = OktaFixtureClient(fixture_dir)
+    else:
+        org_url = str(env.get(OKTA_ORG_URL_ENV) or creds.get("org_url") or "").strip()
+        effective_token_env = str(creds.get("credential_ref") or token_env)
+        token = _resolve_provider_token(effective_token_env, "OKTA_API_TOKEN", env)
+        if not org_url or not token:
+            raise ValueError(
+                "okta-system-log sync requires --fixture-dir, or "
+                f"{OKTA_ORG_URL_ENV}/org_url plus a read-only API token (OKTA_API_TOKEN or --token-env)"
+            )
+        netguard.assert_url_is_public(org_url, label="okta org url")
+        client = OktaClient(org_url, token=token)
+    return collect_okta_system_log_evidence(client, since=since)
 
 
 def _collect_aws(

@@ -1,0 +1,20 @@
+[
+  {
+    "uuid": "log-success-001",
+    "published": "2026-05-20T13:01:00.000Z",
+    "eventType": "user.session.start",
+    "displayMessage": "User login to Okta",
+    "outcome": { "result": "SUCCESS" },
+    "actor": { "id": "00u1", "alternateId": "alice@example.com" },
+    "client": { "ipAddress": "203.0.113.10" }
+  },
+  {
+    "uuid": "log-fail-002",
+    "published": "2026-05-20T13:05:00.000Z",
+    "eventType": "user.authentication.auth_via_mfa",
+    "displayMessage": "Authentication failed",
+    "outcome": { "result": "FAILURE" },
+    "actor": { "id": "00u2", "alternateId": "bob@example.com" },
+    "client": { "ipAddress": "203.0.113.44" }
+  }
+]

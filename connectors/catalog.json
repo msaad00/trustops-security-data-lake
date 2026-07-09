@@ -163,6 +163,7 @@
       "evidence_types": ["auth_event", "failed_login", "session_event"],
       "default_route": "dual",
       "freshness_slo_minutes": 15,
+      "is_implemented": true,
       "production_status": "supported_connector",
       "velocity": "medium_api",
       "native_connector": false,
