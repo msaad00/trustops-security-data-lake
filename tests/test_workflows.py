@@ -416,7 +416,7 @@ def test_workflow_endpoints_round_trip(tmp_path: Path) -> None:
     try:
         status, body = _request(server, "GET", "/api/workflows/actions")
         assert status == HTTPStatus.OK
-        assert len(body["actions"]) == 10
+        assert len(body["actions"]) == 11
 
         nodes, edges = _trivial_dag()
         status, body = _request(
