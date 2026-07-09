@@ -15,7 +15,9 @@ def test_build_eval_accuracy_from_control_tests(tmp_path: Path) -> None:
     lake = tmp_path / "lake"
     lake.mkdir()
     (lake / "raw").mkdir()
-    write_audit_scale_fixture(lake / "raw" / "connector_events.jsonl", 15, controls_per_event=1, open_ratio=0.25, seed=4)
+    write_audit_scale_fixture(
+        lake / "raw" / "connector_events.jsonl", 15, controls_per_event=1, open_ratio=0.25, seed=4
+    )
     run_lake_eval(lake, actor="test")
 
     accuracy = build_eval_accuracy(lake)

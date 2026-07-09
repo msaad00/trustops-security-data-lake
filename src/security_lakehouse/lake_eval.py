@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from security_lakehouse.connector_runner import CONNECTOR_RAW_FILE
+from security_lakehouse.ingestion_metrics import build_eval_accuracy
 from security_lakehouse.lake_scale import (
     LakeEvalError,
     append_jsonl,
@@ -18,7 +19,6 @@ from security_lakehouse.lake_scale import (
 )
 from security_lakehouse.models import PipelineResult, utc_iso
 from security_lakehouse.pipeline import run_pipeline, run_pipeline_incremental
-from security_lakehouse.ingestion_metrics import build_eval_accuracy
 from security_lakehouse.sinks import land_if_configured
 
 EVAL_RUNS_FILE = ("gold", "eval_runs.jsonl")
