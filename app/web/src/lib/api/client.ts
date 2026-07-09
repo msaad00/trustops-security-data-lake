@@ -55,6 +55,8 @@ import type {
   NormalizedEvent,
   PocReadiness,
   AuditReadiness,
+  AiGovernance,
+  AiInventoryItem,
   PolicyDocument,
   PolicyAcknowledgment,
   PolicyAttestationSummary,
@@ -217,6 +219,14 @@ export const api = {
     get<{ data: AuditReadiness }>("/v1/platform/audit-readiness").then(
       (body) => body.data,
     ),
+  aiGovernance: () =>
+    get<{ data: AiGovernance }>("/v1/platform/ai-governance").then(
+      (body) => body.data,
+    ),
+  aiInventory: (query = "") =>
+    get<{ data: AiInventoryItem[] }>(
+      `/v1/platform/ai-governance/inventory${query}`,
+    ).then((body) => body.data),
   remediationTasks: (query = "") =>
     get<{ data: RemediationTask[] }>(`/v1/remediation/tasks${query}`).then(
       (b) => b.data,

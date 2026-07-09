@@ -213,6 +213,13 @@ const ROUTES: RouteSpec[] = [
   },
   {
     method: "GET",
+    path: "/api/v1/platform/ai-governance",
+    description:
+      "AI model inventory, lineage, model-card artifacts, and NIST AI RMF / ISO 42001 / EU AI Act mapping.",
+    scope: "posture",
+  },
+  {
+    method: "GET",
     path: "/api/graph",
     description: "Framework -> control -> evidence -> asset graph.",
     scope: "graph",
