@@ -1,0 +1,298 @@
+"""AI governance evidence aggregation for inventory, lineage, and framework mapping.
+
+Rolls up ``ai.model_inventory``, ``model.lineage``, agent runtime signals, and
+public-repo ``ai_artifact`` evidence into a single headless-first status payload.
+Formal CycloneDX/SPDX AIBOM ingest is intentionally out of scope here — inventory
+plus lineage events are sufficient for ISO 42001 / EU AI Act audit parity.
+"""
+
+from __future__ import annotations
+
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Any
+
+from security_lakehouse.io import read_jsonl
+
+INVENTORY_EVENT_TYPES = frozenset(
+    {
+        "ai.model_inventory",
+        "model.inventory",
+    }
+)
+LINEAGE_EVENT_TYPES = frozenset({"model.lineage"})
+AGENT_EVENT_TYPES = frozenset({"runtime.tool_call"})
+REPO_ARTIFACT_EVENT_TYPES = frozenset({"repository.ai_artifact"})
+
+AI_ASSET_TYPES = frozenset({"ai_model", "ai_agent", "model"})
+
+AI_FRAMEWORKS: tuple[tuple[str, str, str], ...] = (
+    ("nist-ai-rmf", "NIST AI RMF", "NIST-AI-RMF"),
+    ("iso-42001", "ISO 42001", "ISO42001"),
+    ("eu-ai-act", "EU AI Act", "EU-AI-ACT"),
+)
+
+
+def _control_ids(row: dict[str, Any]) -> list[str]:
+    ids = row.get("control_ids") or row.get("controls") or []
+    return [str(item) for item in ids]
+
+
+def _asset_id(row: dict[str, Any]) -> str:
+    entity = row.get("entity") or {}
+    return str(row.get("asset_id") or entity.get("asset_id") or "")
+
+
+def _asset_type(row: dict[str, Any]) -> str:
+    entity = row.get("entity") or {}
+    return str(row.get("asset_type") or entity.get("asset_type") or "")
+
+
+def _asset_owner(row: dict[str, Any]) -> str:
+    entity = row.get("entity") or {}
+    return str(row.get("asset_owner") or entity.get("owner") or entity.get("asset_owner") or "")
+
+
+def _environment(row: dict[str, Any]) -> str:
+    entity = row.get("entity") or {}
+    return str(row.get("environment") or entity.get("environment") or "")
+
+
+def _attributes(row: dict[str, Any]) -> dict[str, Any]:
+    attrs = row.get("attributes")
+    return attrs if isinstance(attrs, dict) else {}
+
+
+def _is_ai_event(row: dict[str, Any]) -> bool:
+    event_type = str(row.get("event_type") or "")
+    if event_type in INVENTORY_EVENT_TYPES | LINEAGE_EVENT_TYPES | AGENT_EVENT_TYPES | REPO_ARTIFACT_EVENT_TYPES:
+        return True
+    asset_type = _asset_type(row)
+    return asset_type in AI_ASSET_TYPES
+
+
+def _framework_control_ids(controls: list[dict[str, Any]], prefix: str) -> set[str]:
+    return {str(row["control_id"]) for row in controls if str(row.get("control_id", "")).startswith(prefix)}
+
+
+def _event_control_ids(events: list[dict[str, Any]], prefix: str) -> set[str]:
+    found: set[str] = set()
+    for row in events:
+        for control_id in _control_ids(row):
+            if control_id.startswith(prefix):
+                found.add(control_id)
+    return found
+
+
+def _framework_rows(
+    *,
+    controls: list[dict[str, Any]],
+    events: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for framework_id, label, prefix in AI_FRAMEWORKS:
+        catalog_ids = _framework_control_ids(controls, prefix)
+        event_ids = _event_control_ids(events, prefix)
+        mapped = catalog_ids | event_ids
+        passing = {
+            str(row["control_id"])
+            for row in controls
+            if str(row.get("control_id", "")).startswith(prefix)
+            and str(row.get("status", "")).lower() in {"pass", "passed", "ready"}
+        }
+        covered = passing | event_ids
+        coverage_pct = round(100 * len(covered) / max(len(mapped), 1), 1)
+        failing = sum(
+            1
+            for row in controls
+            if str(row.get("control_id", "")).startswith(prefix)
+            and str(row.get("status", "")).lower() in {"fail", "failed", "open"}
+        )
+        score = max(0, min(100, round(coverage_pct - failing * 5)))
+        rows.append(
+            {
+                "framework_id": framework_id,
+                "label": label,
+                "controls_mapped": len(mapped),
+                "controls_covered": len(covered),
+                "coverage_pct": coverage_pct,
+                "failing_controls": failing,
+                "score": score,
+            }
+        )
+    return rows
+
+
+def _inventory_items(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    by_asset: dict[str, dict[str, Any]] = {}
+    for row in events:
+        if not _is_ai_event(row):
+            continue
+        asset_id = _asset_id(row)
+        if not asset_id:
+            continue
+        asset_type = _asset_type(row)
+        if asset_type not in AI_ASSET_TYPES and str(row.get("event_type") or "") not in INVENTORY_EVENT_TYPES:
+            continue
+        attrs = _attributes(row)
+        item = by_asset.setdefault(
+            asset_id,
+            {
+                "asset_id": asset_id,
+                "asset_type": asset_type or "ai_model",
+                "owner": _asset_owner(row),
+                "environment": _environment(row),
+                "model_card": False,
+                "lineage_complete": False,
+                "last_seen_at": str(row.get("event_time") or ""),
+                "sources": [],
+                "control_ids": [],
+                "event_types": [],
+            },
+        )
+        event_type = str(row.get("event_type") or "")
+        if event_type and event_type not in item["event_types"]:
+            item["event_types"].append(event_type)
+        source = str(row.get("source") or "")
+        if source and source not in item["sources"]:
+            item["sources"].append(source)
+        for control_id in _control_ids(row):
+            if control_id not in item["control_ids"]:
+                item["control_ids"].append(control_id)
+        if attrs.get("model_card"):
+            item["model_card"] = True
+        if attrs.get("lineage_complete"):
+            item["lineage_complete"] = True
+        event_time = str(row.get("event_time") or "")
+        if event_time > item["last_seen_at"]:
+            item["last_seen_at"] = event_time
+        if not item["owner"]:
+            item["owner"] = _asset_owner(row)
+        if not item["environment"]:
+            item["environment"] = _environment(row)
+    return sorted(by_asset.values(), key=lambda row: row["asset_id"])
+
+
+def build_ai_governance_status(*, lake: Path) -> dict[str, Any]:
+    """Aggregate AI inventory, lineage, artifacts, and framework coverage."""
+    events = read_jsonl(lake / "silver" / "normalized_events.jsonl", missing_ok=True)
+    controls = read_jsonl(lake / "gold" / "control_posture.jsonl", missing_ok=True)
+    ai_events = [row for row in events if _is_ai_event(row)]
+
+    inventory_events = [row for row in ai_events if str(row.get("event_type") or "") in INVENTORY_EVENT_TYPES]
+    lineage_events = [row for row in ai_events if str(row.get("event_type") or "") in LINEAGE_EVENT_TYPES]
+    agent_events = [row for row in ai_events if str(row.get("event_type") or "") in AGENT_EVENT_TYPES]
+    repo_artifacts = [row for row in ai_events if str(row.get("event_type") or "") in REPO_ARTIFACT_EVENT_TYPES]
+
+    inventory = _inventory_items(ai_events)
+    models = [row for row in inventory if row["asset_type"] in {"ai_model", "model"}]
+    agents = [row for row in inventory if row["asset_type"] == "ai_agent"]
+    with_model_card = sum(1 for row in inventory if row["model_card"])
+    with_lineage = sum(1 for row in inventory if row["lineage_complete"] or "model.lineage" in row["event_types"])
+
+    model_cards = with_model_card + len(repo_artifacts)
+    frameworks = _framework_rows(controls=controls, events=ai_events)
+
+    gaps: list[dict[str, str]] = []
+    if not inventory_events:
+        gaps.append(
+            {
+                "id": "model_inventory",
+                "label": "No ai.model_inventory events in the lake",
+                "href": "/console/connectors",
+            }
+        )
+    if not lineage_events and not with_lineage:
+        gaps.append(
+            {
+                "id": "model_lineage",
+                "label": "No model.lineage events or lineage_complete inventory signals",
+                "href": "/console/evidence",
+            }
+        )
+    if model_cards == 0:
+        gaps.append(
+            {
+                "id": "model_cards",
+                "label": "No model cards or repo ai_artifact evidence",
+                "href": "/console/evidence",
+            }
+        )
+    if not agent_events and not agents:
+        gaps.append(
+            {
+                "id": "agent_governance",
+                "label": "No AI agent runtime governance events",
+                "href": "/console/controls",
+            }
+        )
+
+    framework_ready = sum(1 for row in frameworks if int(row["score"]) >= 85)
+    inventory_score = round(
+        100
+        * (
+            (1 if inventory_events else 0)
+            + (1 if lineage_events or with_lineage else 0)
+            + (1 if model_cards else 0)
+            + (1 if agent_events or agents else 0)
+        )
+        / 4
+    )
+    framework_score = round(sum(int(row["score"]) for row in frameworks) / max(len(frameworks), 1))
+    governance_score = round(inventory_score * 0.55 + framework_score * 0.45)
+    state = (
+        "governed" if governance_score >= 85 and not gaps else ("on_track" if governance_score >= 60 else "needs_work")
+    )
+
+    return {
+        "state": state,
+        "governance_score": governance_score,
+        "evaluated_at": datetime.now(UTC).isoformat(),
+        "inventory": {
+            "total": len(inventory),
+            "models": len(models),
+            "agents": len(agents),
+            "with_model_card": with_model_card,
+            "with_lineage": with_lineage,
+        },
+        "events": {
+            "model_inventory": len(inventory_events),
+            "model_lineage": len(lineage_events),
+            "agent_runtime": len(agent_events),
+            "repo_artifacts": len(repo_artifacts),
+        },
+        "artifacts": {
+            "model_cards": model_cards,
+            "repo_audit_signals": len(repo_artifacts),
+        },
+        "frameworks": frameworks,
+        "frameworks_ready": framework_ready,
+        "frameworks_total": len(frameworks),
+        "gaps": gaps,
+        "evidence_loops": {
+            "inventory_events": bool(inventory_events),
+            "lineage_events": bool(lineage_events or with_lineage),
+            "model_cards": model_cards > 0,
+            "agent_governance": bool(agent_events or agents),
+        },
+        "aibom": {
+            "shipped": False,
+            "note": (
+                "CycloneDX/SPDX AIBOM ingest is roadmap. Inventory, lineage, and model-card "
+                "evidence cover ISO 42001 / EU AI Act audit parity without formal AIBOM files."
+            ),
+        },
+    }
+
+
+def list_ai_inventory(*, lake: Path, limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
+    """Return paginated AI model/agent inventory rows from normalized events."""
+    events = read_jsonl(lake / "silver" / "normalized_events.jsonl", missing_ok=True)
+    ai_events = [row for row in events if _is_ai_event(row)]
+    items = _inventory_items(ai_events)
+    start = max(offset, 0)
+    end = start + max(limit, 1)
+    return items[start:end]
+
+
+__all__ = ["build_ai_governance_status", "list_ai_inventory"]

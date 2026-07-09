@@ -53,6 +53,8 @@ EXPECTED_TOOLS = {
     "get_agent_run",
     "approve_agent_decision",
     "get_audit_readiness",
+    "get_ai_governance",
+    "list_ai_inventory",
     "get_evidence_freshness_summary",
     "list_evidence_freshness",
     "escalate_stale_evidence",
@@ -345,6 +347,7 @@ def test_describe_api_lists_resources(tmp_path):
     assert "/api/v1/controls" in paths
     assert "/api/v1/audit-log" in paths
     assert "/api/v1/platform/audit-readiness" in paths
+    assert "/api/v1/platform/ai-governance" in paths
     assert "/api/v1/insights/remediation" in paths
     assert "/api/v1/vendor-assessments" in paths
 
