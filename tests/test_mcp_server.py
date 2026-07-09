@@ -190,6 +190,9 @@ def test_get_ingestion_status_includes_scale(tmp_path):
     status = call_tool(server, "get_ingestion_status")
     assert "scale" in status
     assert status["scale"]["mode"]
+    assert "eval_accuracy" in status
+    assert "catalog_coverage" in status
+    assert status["catalog_coverage"]["total"] >= 1
 
 
 def test_get_ai_governance_local_lake(tmp_path):

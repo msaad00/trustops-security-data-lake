@@ -19,10 +19,16 @@ function toneForResult(result?: string): "ready" | "attention" | "critical" {
   return "attention";
 }
 
+function formatPassRate(rate: number | null | undefined) {
+  if (rate == null) return "—";
+  return `${Math.round(rate * 100)}%`;
+}
+
 export function EvalRunsStrip({ limit = 6 }: { limit?: number }) {
   const ingestion = useIngestionStatus();
   const evalRuns = useEvalRuns(limit);
   const scale = ingestion.data?.scale;
+  const accuracy = ingestion.data?.eval_accuracy;
 
   return (
     <QueryState queries={[ingestion, evalRuns]} label="evaluation history">
@@ -51,7 +57,7 @@ export function EvalRunsStrip({ limit = 6 }: { limit?: number }) {
             </div>
           </CardHeader>
           <CardContent className="grid gap-3">
-            <div className="grid gap-2 sm:grid-cols-3">
+            <div className="grid gap-2 sm:grid-cols-4">
               <div className="rounded-lg border border-line bg-panel px-3 py-2">
                 <div className="text-[10px] font-black uppercase tracking-wide text-muted">
                   Last eval
@@ -64,6 +70,19 @@ export function EvalRunsStrip({ limit = 6 }: { limit?: number }) {
                 <div className="mt-1 text-xs text-muted">
                   {scale?.latest_eval?.mode ?? "—"} ·{" "}
                   {scale?.latest_eval?.result ?? "pending"}
+                </div>
+              </div>
+              <div className="rounded-lg border border-line bg-panel px-3 py-2">
+                <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+                  Pass rate
+                </div>
+                <div className="mt-1 text-sm font-black text-ink">
+                  {formatPassRate(accuracy?.pass_rate)}
+                </div>
+                <div className="mt-1 text-xs text-muted">
+                  {accuracy?.has_tests
+                    ? `${accuracy.failing} failing · ${accuracy.evidence_source_count} sources`
+                    : "awaiting eval materialization"}
                 </div>
               </div>
               <div className="rounded-lg border border-line bg-panel px-3 py-2">
@@ -101,7 +120,7 @@ export function EvalRunsStrip({ limit = 6 }: { limit?: number }) {
                 evalRuns.data?.map((run, index) => (
                   <div
                     key={`${run.occurred_at}-${index}`}
-                    className="grid gap-2 px-3 py-2 sm:grid-cols-[minmax(0,1fr)_120px_100px_90px]"
+                    className="grid gap-2 px-3 py-2 sm:grid-cols-[minmax(0,1fr)_120px_100px_90px_80px]"
                   >
                     <div className="min-w-0">
                       <div className="truncate text-sm font-black text-ink">
@@ -123,6 +142,9 @@ export function EvalRunsStrip({ limit = 6 }: { limit?: number }) {
                       {run.event_count != null
                         ? `${run.event_count.toLocaleString()} events`
                         : "—"}
+                    </div>
+                    <div className="text-xs font-bold text-ink">
+                      {formatPassRate(run.pass_rate)}
                     </div>
                   </div>
                 ))

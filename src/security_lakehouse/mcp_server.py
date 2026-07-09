@@ -287,8 +287,9 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """Return live ingestion health, scale tier, schedules, and recommended actions.
 
         Includes connector freshness, pipeline artifact counts, split ingest/eval
-        schedules, warehouse tier (local incremental vs warehouse-required), and the
-        latest lake evaluation run — the same payload as ``GET /api/v1/ingestion/status``.
+        schedules, warehouse tier (local incremental vs warehouse-required), eval
+        accuracy rollups, connector catalog coverage, and the latest lake evaluation
+        run — the same payload as ``GET /api/v1/ingestion/status``.
         """
         return _get("/api/v1/ingestion/status", lake)
 
