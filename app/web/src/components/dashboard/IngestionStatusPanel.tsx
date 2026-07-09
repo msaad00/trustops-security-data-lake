@@ -75,6 +75,11 @@ function toneForScaleMode(mode?: string): "ready" | "attention" | "critical" {
   return "ready";
 }
 
+function formatPassRate(rate: number | null | undefined) {
+  if (rate == null) return "—";
+  return `${Math.round(rate * 100)}%`;
+}
+
 export function IngestionStatusPanel({
   status,
 }: {
@@ -85,6 +90,8 @@ export function IngestionStatusPanel({
   const summary = status?.summary;
   const scale = status?.scale;
   const health = status?.health;
+  const accuracy = status?.eval_accuracy;
+  const coverage = status?.catalog_coverage;
   const action = status?.recommended_actions?.[0];
   const recentRuns = status?.latest_runs?.slice(0, 4) ?? [];
   const visibleConnectors =
@@ -137,6 +144,47 @@ export function IngestionStatusPanel({
             detail={status?.proof?.scenario ?? "not run"}
           />
         </div>
+
+        {(accuracy || coverage) && (
+          <div className="grid gap-2 md:grid-cols-4">
+            <Metric
+              label="Control pass rate"
+              value={formatPassRate(accuracy?.pass_rate)}
+              detail={
+                accuracy?.has_tests
+                  ? `${accuracy.passing}/${accuracy.total_tests} passing`
+                  : "run lake eval to materialize"
+              }
+            />
+            <Metric
+              label="Failing tests"
+              value={accuracy?.failing ?? 0}
+              detail={`${accuracy?.framework_count ?? 0} frameworks covered`}
+            />
+            <Metric
+              label="Catalog adapters"
+              value={
+                coverage ? `${coverage.implemented}/${coverage.total}` : "—"
+              }
+              detail={
+                coverage
+                  ? `${Math.round(coverage.implementation_rate * 100)}% implemented`
+                  : "connector registry"
+              }
+            />
+            <Metric
+              label="Enabled adapters"
+              value={
+                coverage ? `${coverage.enabled}/${coverage.implemented}` : "—"
+              }
+              detail={
+                coverage
+                  ? `${Math.round(coverage.enabled_rate * 100)}% of implemented live`
+                  : "probe-gated enablement"
+              }
+            />
+          </div>
+        )}
 
         {scale && (
           <div className="rounded-lg border border-line bg-panel p-3">
