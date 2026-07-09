@@ -19,6 +19,7 @@ from http import HTTPStatus
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse.ai_governance import build_ai_governance_status, list_ai_inventory
 from security_lakehouse.assessment import (
     build_current_posture,
     posture_as_of,
@@ -101,6 +102,7 @@ SINGLETON_LOADERS: dict[str, tuple[str, Callable[[Path], Any]]] = {
     "/api/v1/ingestion/status": ("ingestion.status", build_ingestion_status),
     "/api/v1/posture/current": ("posture.current", build_current_posture),
     "/api/v1/graph/coverage": ("graph.coverage", analyze_coverage),
+    "/api/v1/platform/ai-governance": ("platform.ai-governance", lambda lake: build_ai_governance_status(lake=lake)),
 }
 
 # Route -> (resource name, loader) for endpoints returning a row collection.
@@ -128,6 +130,10 @@ COLLECTION_LOADERS: dict[str, tuple[str, Callable[[Path], list[JsonObject]]]] = 
     "/api/v1/violations": ("violations", lambda lake: build_current_posture(lake)["violations"]),
     "/api/v1/snapshots": ("snapshots", list_snapshots),
     "/api/v1/ingestion/eval/runs": ("ingestion.eval.runs", list_eval_runs),
+    "/api/v1/platform/ai-governance/inventory": (
+        "platform.ai-governance.inventory",
+        lambda lake: list_ai_inventory(lake=lake, limit=10_000, offset=0),
+    ),
 }
 
 # Resources that also accept writes via handle_post.
@@ -533,6 +539,21 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "kind": "singleton",
         "methods": ["GET"],
         "scopes": ["read"],
+    },
+    {
+        "resource": "platform.ai-governance",
+        "path": "/api/v1/platform/ai-governance",
+        "kind": "singleton",
+        "methods": ["GET"],
+        "scopes": ["read"],
+    },
+    {
+        "resource": "platform.ai-governance.inventory",
+        "path": "/api/v1/platform/ai-governance/inventory",
+        "kind": "collection",
+        "methods": ["GET"],
+        "scopes": ["read"],
+        "query": ["limit", "offset"],
     },
     {
         "resource": "evidence.freshness.summary",

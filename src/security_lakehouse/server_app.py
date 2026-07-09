@@ -1855,6 +1855,31 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         )
         return JSONResponse(api_v1.envelope("platform.audit-readiness", data))
 
+    @app.get("/api/v1/platform/ai-governance", tags=["platform"])
+    def ai_governance_route(identity: Identity = Depends(_require_read)) -> JSONResponse:
+        from security_lakehouse.ai_governance import build_ai_governance_status
+
+        data = build_ai_governance_status(lake=lake_for(identity))
+        return JSONResponse(api_v1.envelope("platform.ai-governance", data))
+
+    @app.get("/api/v1/platform/ai-governance/inventory", tags=["platform"])
+    def ai_governance_inventory_route(
+        request: Request,
+        identity: Identity = Depends(_require_read),
+    ) -> JSONResponse:
+        from security_lakehouse.ai_governance import list_ai_inventory
+
+        params = _params(request)
+        limit, offset = _pagination(params)
+        rows = list_ai_inventory(lake=lake_for(identity), limit=limit, offset=offset)
+        return JSONResponse(
+            api_v1.envelope(
+                "platform.ai-governance.inventory",
+                rows,
+                meta=_page_meta(limit, offset, len(rows)),
+            )
+        )
+
     @app.get("/api/v1/gov-compliance/sprs", tags=["gov-compliance"])
     def sprs_score_route(identity: Identity = Depends(_require_read)) -> JSONResponse:
         from security_lakehouse.sprs import build_sprs_report

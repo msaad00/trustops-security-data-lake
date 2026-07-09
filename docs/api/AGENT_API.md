@@ -142,14 +142,16 @@ MCP equivalents: `get_ingestion_status`, `list_eval_runs`, `run_lake_eval`,
 
 ### Reports and exports
 
-| Output              | Route                                   | Notes                                       |
-| ------------------- | --------------------------------------- | ------------------------------------------- |
-| Activity / SIEM     | `GET /api/v1/audit-log`                 | `category`, `include_requests` filters      |
-| Executive PDF       | `GET /api/v1/snapshots/{id}/export.pdf` | `Accept: application/pdf`                   |
-| SPRS score          | `GET /api/v1/gov-compliance/sprs`       | CMMC Level 2 from failing 800-171 practices |
-| Audit readiness     | `GET /api/v1/platform/audit-readiness`  | audit-room score + workflow checklist       |
-| Remediation insight | `GET /api/v1/insights/remediation`      | open/overdue task analytics                 |
-| Scenario proof      | `security-lakehouse scenario run …`     | JSON report under `gold/scenario_reports/`  |
+| Output              | Route                                          | Notes                                       |
+| ------------------- | ---------------------------------------------- | ------------------------------------------- |
+| Activity / SIEM     | `GET /api/v1/audit-log`                        | `category`, `include_requests` filters      |
+| Executive PDF       | `GET /api/v1/snapshots/{id}/export.pdf`        | `Accept: application/pdf`                   |
+| SPRS score          | `GET /api/v1/gov-compliance/sprs`              | CMMC Level 2 from failing 800-171 practices |
+| Audit readiness     | `GET /api/v1/platform/audit-readiness`         | audit-room score + workflow checklist       |
+| AI governance       | `GET /api/v1/platform/ai-governance`           | model inventory, lineage, framework mapping |
+| AI inventory        | `GET /api/v1/platform/ai-governance/inventory` | paginated model/agent inventory rows        |
+| Remediation insight | `GET /api/v1/insights/remediation`             | open/overdue task analytics                 |
+| Scenario proof      | `security-lakehouse scenario run …`            | JSON report under `gold/scenario_reports/`  |
 
 ## Agent Usage Pattern
 

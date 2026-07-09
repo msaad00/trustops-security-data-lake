@@ -495,6 +495,21 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """
         return _server_api_request("GET", "/api/v1/platform/audit-readiness")
 
+    @trustops_tool(title="AI Governance")
+    def get_ai_governance() -> JsonObject:
+        """Return AI inventory, lineage, model-card artifacts, and NIST AI RMF / ISO 42001 / EU AI Act coverage."""
+        return _get("/api/v1/platform/ai-governance", lake)
+
+    @trustops_tool(title="List AI Inventory")
+    def list_ai_inventory(limit: int = 100, offset: int = 0) -> list[JsonObject]:
+        """List model and agent inventory rows from ai.model_inventory and lineage events."""
+        return _get(
+            "/api/v1/platform/ai-governance/inventory",
+            lake,
+            limit=str(limit),
+            offset=str(offset),
+        )
+
     @trustops_tool(title="Evidence Freshness Summary")
     def get_evidence_freshness_summary() -> JsonObject:
         """Return SLA breach rollups: fresh rate, stale counts, and top breaches by source."""
