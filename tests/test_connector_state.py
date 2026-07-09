@@ -140,8 +140,8 @@ def test_probe_requires_enabled_connector(tmp_path: Path) -> None:
 def test_probe_without_adapter_is_skipped_not_fabricated(tmp_path: Path) -> None:
     # A connector with no collection adapter must report contract-validated only,
     # never a synthetic evidence_count implying live collection.
-    append_config_event(tmp_path, connector_id="object-storage-evidence", state="enabled", actor="a")
-    rec = run_probe(tmp_path, connector_id="object-storage-evidence")
+    append_config_event(tmp_path, connector_id="siem-alerts", state="enabled", actor="a")
+    rec = run_probe(tmp_path, connector_id="siem-alerts")
     assert rec["result"] == "skipped"
     assert rec["evidence_count"] is None
     assert "no collection adapter" in rec["error"]
@@ -807,6 +807,49 @@ def test_scoped_user_contract_requires_token_not_password() -> None:
     assert missing == ["host", "token"]
 
 
+def test_object_storage_enable_requires_live_probe(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_probe(*, credentials: dict, options: dict) -> dict:
+        return {
+            "ok": True,
+            "bucket": options["bucket"],
+            "prefix": options["prefix"],
+            "object_count": 2,
+            "error": None,
+        }
+
+    monkeypatch.setattr("security_lakehouse.connector_state.probe_s3_access", fake_probe)
+
+    server = _spin_handler(tmp_path)
+    try:
+        status, body = _request(
+            server,
+            "POST",
+            "/api/connectors/object-storage-evidence/probe",
+            body={
+                "credentials": {"role_arn": "arn:aws:iam::123456789012:role/TrustOpsEvidenceRead"},
+                "options": {"bucket": "trustops-evidence", "prefix": "bundles/"},
+            },
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["run"]["result"] == "ok"
+        assert body["run"]["access_fingerprint"]
+
+        status, body = _request(
+            server,
+            "POST",
+            "/api/connectors/object-storage-evidence/configure",
+            body={
+                "state": "enabled",
+                "credentials": {"role_arn": "arn:aws:iam::123456789012:role/TrustOpsEvidenceRead"},
+                "options": {"bucket": "trustops-evidence", "prefix": "bundles/"},
+            },
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["event"]["state"] == "enabled"
+    finally:
+        server.shutdown()
+
+
 def test_clickhouse_enable_requires_live_probe(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     def fake_probe(*, credentials: dict, options: dict) -> dict:
         return {"ok": True, "table": "security.normalized_events", "row_count": 1, "error": None}
@@ -850,7 +893,18 @@ def test_clickhouse_enable_requires_live_probe(tmp_path: Path, monkeypatch: pyte
         server.shutdown()
 
 
-def test_object_storage_enable_rejects_contract_only_probe(tmp_path: Path) -> None:
+def test_connector_probe_accepts_staged_payload_without_enable(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_probe(*, credentials: dict, options: dict) -> dict:
+        return {
+            "ok": True,
+            "bucket": options["bucket"],
+            "prefix": options["prefix"],
+            "object_count": 1,
+            "error": None,
+        }
+
+    monkeypatch.setattr("security_lakehouse.connector_state.probe_s3_access", fake_probe)
+
     server = _spin_handler(tmp_path)
     try:
         status, body = _request(
@@ -863,40 +917,9 @@ def test_object_storage_enable_rejects_contract_only_probe(tmp_path: Path) -> No
             },
         )
         assert status == HTTPStatus.CREATED
-        assert body["run"]["result"] == "skipped"
-        assert body["run"]["access_fingerprint"]
-
-        status, body = _request(
-            server,
-            "POST",
-            "/api/connectors/object-storage-evidence/configure",
-            body={
-                "state": "enabled",
-                "credentials": {"role_arn": "arn:aws:iam::123456789012:role/TrustOpsEvidenceRead"},
-                "options": {"bucket": "trustops-evidence", "prefix": "bundles/"},
-            },
-        )
-        assert status == HTTPStatus.BAD_REQUEST
-        assert "no live probe adapter" in body["reason"]
-    finally:
-        server.shutdown()
-
-
-def test_connector_probe_accepts_staged_payload_without_enable(tmp_path: Path) -> None:
-    server = _spin_handler(tmp_path)
-    try:
-        status, body = _request(
-            server,
-            "POST",
-            "/api/connectors/object-storage-evidence/probe",
-            body={
-                "credentials": {"role_arn": "arn:aws:iam::123456789012:role/TrustOpsEvidenceRead"},
-                "options": {"bucket": "trustops-evidence", "prefix": "bundles/"},
-            },
-        )
-        assert status == HTTPStatus.CREATED
-        assert body["run"]["result"] == "skipped"
-        assert "no collection adapter" in body["run"]["error"]
+        assert body["run"]["result"] == "ok"
+        assert body["run"]["evidence_count"] == 1
+        assert body["run"]["metadata"]["probe_mode"] == "live"
 
         status, body = _request(server, "GET", "/api/connectors")
         assert status == HTTPStatus.OK

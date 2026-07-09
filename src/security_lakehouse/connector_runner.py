@@ -62,6 +62,11 @@ from security_lakehouse.connectors_okta import (
     collect_okta_evidence,
     collect_okta_system_log_evidence,
 )
+from security_lakehouse.connectors_s3 import (
+    S3Client,
+    S3FixtureClient,
+    collect_s3_evidence,
+)
 from security_lakehouse.connectors_snowflake import (
     DEFAULT_VIEWS as SNOWFLAKE_DEFAULT_VIEWS,
 )
@@ -491,9 +496,19 @@ def _build_clickhouse(inputs: SyncInputs) -> list[dict[str, Any]]:
     )
 
 
+def _build_object_storage(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_s3(
+        fixture_dir=inputs.fixture_dir,
+        env=inputs.env,
+        credentials=inputs.credentials,
+        options=inputs.options,
+    )
+
+
 REGISTRY: dict[str, ConnectorBuilder] = {
     "snowflake-evidence-lake": _build_snowflake,
     "clickhouse-telemetry-lake": _build_clickhouse,
+    "object-storage-evidence": _build_object_storage,
     "github-security": _build_github,
     "gitlab-security": _build_gitlab,
     "okta-identity": _build_okta,
@@ -749,6 +764,36 @@ def _collect_clickhouse(
         netguard.assert_url_is_public(host, label="clickhouse host")
         client = ClickHouseClient(host, user=user, password=password, database=database)
     return collect_clickhouse_evidence(client, table=table, since=since)
+
+
+def _collect_s3(
+    *,
+    fixture_dir: str | Path | None,
+    env: dict[str, str],
+    credentials: dict[str, Any] | None = None,
+    options: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    credentials = credentials or {}
+    options = options or {}
+    bucket = str(options.get("bucket") or credentials.get("bucket") or "").strip()
+    prefix = str(options.get("prefix") or credentials.get("prefix") or "").strip()
+    if fixture_dir:
+        client: S3Client | S3FixtureClient = S3FixtureClient(fixture_dir, bucket=bucket or "trustops-evidence")
+    else:
+        if not bucket:
+            raise ValueError(
+                "object-storage-evidence sync requires --fixture-dir, or options.bucket plus read-only S3 credentials"
+            )
+        role_arn = (env.get(AWS_ROLE_ARN_ENV) or str(credentials.get("role_arn") or "")).strip() or None
+        external_id = (env.get(AWS_EXTERNAL_ID_ENV) or str(credentials.get("external_id") or "")).strip() or None
+        client = S3Client(
+            bucket=bucket,
+            prefix=prefix,
+            region_name=env.get(AWS_REGION_ENV) or str(credentials.get("region") or "").strip() or None,
+            role_arn=role_arn,
+            external_id=external_id,
+        )
+    return collect_s3_evidence(client, bucket=bucket or getattr(client, "bucket", None), prefix=prefix)
 
 
 def _collect_snowflake(

@@ -1,0 +1,35 @@
+[
+  {
+    "key": "bundles/access-review-q2.json",
+    "size": 2048,
+    "etag": "f0f3b2d52a0c6d8f3f33f620f7826c67",
+    "last_modified": "2026-06-01T10:00:00Z",
+    "bundle_id": "bundle-access-review-q2",
+    "evidence_type": "attestation",
+    "status": "pass",
+    "severity": "info",
+    "controls": ["SOC2-CC6.1", "ISO27001-A.5.15"]
+  },
+  {
+    "key": "bundles/runtime-monitoring.sarif",
+    "size": 4096,
+    "etag": "4314c4fe7aa825f1d40af401b4109b4cc",
+    "last_modified": "2026-06-01T11:30:00Z",
+    "bundle_id": "bundle-runtime-monitoring",
+    "evidence_type": "sarif",
+    "status": "open",
+    "severity": "high",
+    "controls": ["SOC2-CC7.2", "ISO27001-A.8.16"]
+  },
+  {
+    "key": "bundles/audit-export-june.ndjson",
+    "size": 8192,
+    "etag": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "last_modified": "2026-06-01T12:15:00Z",
+    "bundle_id": "audit-export-june",
+    "evidence_type": "audit_export",
+    "status": "observed",
+    "severity": "info",
+    "controls": ["SOC2-CC7.2"]
+  }
+]

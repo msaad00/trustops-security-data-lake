@@ -22,6 +22,7 @@ from security_lakehouse.validation import validate_raw_events
 REAL_ADAPTERS = {
     "snowflake-evidence-lake",
     "clickhouse-telemetry-lake",
+    "object-storage-evidence",
     "github-security",
     "gitlab-security",
     "okta-identity",
@@ -168,21 +169,19 @@ def test_has_adapter_agrees_with_registry() -> None:
     for connector_id in REAL_ADAPTERS:
         assert connector_state.has_adapter(connector_id) is True
     # A catalog connector without a registered builder is contract-only.
-    assert connector_state.has_adapter("object-storage-evidence") is False
+    assert connector_state.has_adapter("siem-alerts") is False
     assert connector_state.has_adapter("not-a-real-connector") is False
 
 
 def test_unknown_connector_id_raises_no_runner_registered(tmp_path: Path) -> None:
-    # An enabled connector that the catalog knows but the registry does not must
-    # still raise the exact "no sync runner registered" message via the runner.
     connector_state.append_config_event(
         tmp_path,
-        connector_id="object-storage-evidence",
+        connector_id="siem-alerts",
         state="enabled",
         actor="alice",
     )
     with pytest.raises(connector_runner.ConnectorSyncError, match="no sync runner registered") as exc:
-        connector_runner.run_connector_sync(tmp_path, connector_id="object-storage-evidence")
+        connector_runner.run_connector_sync(tmp_path, connector_id="siem-alerts")
     assert exc.value.run["result"] == "error"
 
 
@@ -193,6 +192,7 @@ def test_unknown_connector_id_raises_no_runner_registered(tmp_path: Path) -> Non
         ("gitlab-security", "gitlab-governance", {"repo": "acme/private-agent-api"}),
         ("snowflake-evidence-lake", "snowflake", {}),
         ("clickhouse-telemetry-lake", "clickhouse-telemetry-lake", {}),
+        ("object-storage-evidence", "object-storage-evidence", {}),
         ("okta-identity", "okta", {}),
         ("aws-posture", "aws", {}),
         ("google-workspace-identity", "google_workspace", {}),
