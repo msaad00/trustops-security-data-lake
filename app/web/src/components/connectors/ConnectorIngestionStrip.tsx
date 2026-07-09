@@ -1,6 +1,12 @@
 "use client";
 
-import { Activity, AlertTriangle, Database, Plug } from "lucide-react";
+import {
+  Activity,
+  AlertTriangle,
+  BarChart3,
+  Database,
+  Plug,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { QueryState } from "@/components/QueryState";
@@ -14,8 +20,15 @@ const toneForState = (state: string) => {
   return "default" as const;
 };
 
+function formatPassRate(rate: number | null | undefined) {
+  if (rate == null) return null;
+  return `${Math.round(rate * 100)}% pass`;
+}
+
 export function ConnectorIngestionStrip() {
   const ingestion = useIngestionStatus();
+  const accuracy = ingestion.data?.eval_accuracy;
+  const coverage = ingestion.data?.catalog_coverage;
 
   return (
     <QueryState queries={[ingestion]} label="ingestion status">
@@ -33,6 +46,21 @@ export function ConnectorIngestionStrip() {
                 <Badge tone={toneForState(ingestion.data.state)}>
                   {ingestion.data.state.replace(/_/g, " ")}
                 </Badge>
+                {coverage && (
+                  <Badge tone="info">
+                    {coverage.implemented}/{coverage.total} adapters
+                  </Badge>
+                )}
+                {formatPassRate(accuracy?.pass_rate) && (
+                  <Badge
+                    tone={
+                      accuracy && accuracy.failing > 0 ? "attention" : "ready"
+                    }
+                  >
+                    <BarChart3 className="mr-1 inline h-3 w-3" />
+                    {formatPassRate(accuracy?.pass_rate)}
+                  </Badge>
+                )}
               </div>
               <p className="mt-1 text-xs leading-5 text-muted">
                 {ingestion.data.summary.enabled_connectors} of{" "}
@@ -45,6 +73,7 @@ export function ConnectorIngestionStrip() {
                 {ingestion.data.scale?.next_eval_at
                   ? ` · next eval ${new Date(ingestion.data.scale.next_eval_at).toLocaleDateString()}`
                   : ""}
+                {ingestion.data.scale?.eval_overdue ? " · eval overdue" : ""}
               </p>
               <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-bold text-muted">
                 <span className="inline-flex items-center gap-1 rounded-full border border-line bg-white px-2 py-0.5">
@@ -65,6 +94,11 @@ export function ConnectorIngestionStrip() {
                   <Database className="h-3 w-3" />
                   {ingestion.data.summary.evidence_count} ingested
                 </span>
+                {accuracy?.has_tests && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-line bg-white px-2 py-0.5">
+                    {accuracy.failing} failing tests
+                  </span>
+                )}
               </div>
             </div>
           </CardContent>

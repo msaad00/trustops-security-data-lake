@@ -140,6 +140,16 @@ def call_tool(server, name: str, **arguments):
     return anyio.run(_call_async, server, name, arguments)
 
 
+def call_tool_payload(server, name: str, **arguments):
+    """Return the full structured MCP tool payload (no result-key unwrap)."""
+
+    async def _inner() -> object:
+        result = await server.call_tool(name, arguments)
+        return result[1] if isinstance(result, tuple) else result
+
+    return anyio.run(_inner)
+
+
 def tool_names(server) -> set[str]:
     tools = anyio.run(server.list_tools)
     return {tool.name for tool in tools}
@@ -190,6 +200,9 @@ def test_get_ingestion_status_includes_scale(tmp_path):
     status = call_tool(server, "get_ingestion_status")
     assert "scale" in status
     assert status["scale"]["mode"]
+    assert "eval_accuracy" in status
+    assert "catalog_coverage" in status
+    assert status["catalog_coverage"]["total"] >= 1
 
 
 def test_get_ai_governance_local_lake(tmp_path):
@@ -204,6 +217,44 @@ def test_list_eval_runs_returns_list(tmp_path):
     server = _seeded_server(tmp_path)
     runs = call_tool(server, "list_eval_runs", limit=10)
     assert isinstance(runs, list)
+
+
+def test_run_lake_eval_via_mcp_records_accuracy(tmp_path: Path) -> None:
+    from security_lakehouse.scale_synthesis import write_audit_scale_fixture
+
+    lake = tmp_path / "lake"
+    lake.mkdir()
+    (lake / "raw").mkdir()
+    write_audit_scale_fixture(
+        lake / "raw" / "connector_events.jsonl",
+        12,
+        controls_per_event=1,
+        open_ratio=0.15,
+        seed=8,
+    )
+    server = mcp_server.build_server(lake)
+    result = call_tool_payload(server, "run_lake_eval", actor="mcp-test")
+    assert isinstance(result, dict)
+    assert result["result"] == "ok"
+    assert result["mode"] in {"local_full", "local_incremental"}
+
+    runs = call_tool(server, "list_eval_runs", limit=3)
+    assert runs
+    latest = runs[0]
+    assert latest.get("control_tests_total") is not None
+    assert latest.get("pass_rate") is not None
+
+    status = call_tool(server, "get_ingestion_status")
+    assert status["eval_accuracy"]["total_tests"] > 0
+    assert status["catalog_coverage"]["contract_only"] >= 1
+
+
+def test_list_connectors_includes_contract_only_entries(tmp_path):
+    server = _seeded_server(tmp_path)
+    connectors = call_tool(server, "list_connectors", limit=50)
+    assert any(row["connector_id"] == "clickhouse-telemetry-lake" for row in connectors)
+    contract_only = [row for row in connectors if not row.get("is_implemented")]
+    assert len(contract_only) >= 1
 
 
 def test_posture_as_of_after_snapshot(tmp_path):

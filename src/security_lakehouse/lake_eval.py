@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from security_lakehouse.connector_runner import CONNECTOR_RAW_FILE
+from security_lakehouse.ingestion_metrics import build_eval_accuracy
 from security_lakehouse.lake_scale import (
     LakeEvalError,
     append_jsonl,
@@ -93,6 +94,7 @@ def run_lake_eval(
         write_lake_scale_state(lake, {**strategy, "last_error": error})
 
     duration_ms = max(0, int((time.perf_counter() - start) * 1000))
+    accuracy = build_eval_accuracy(lake) if result == "ok" else {}
     record = {
         "kind": "eval",
         "actor": actor,
@@ -103,6 +105,10 @@ def run_lake_eval(
         "silver_count": strategy.get("silver_count"),
         "error": error,
         "occurred_at": utc_iso(datetime.now(UTC)),
+        "control_tests_total": accuracy.get("total_tests"),
+        "control_tests_passing": accuracy.get("passing"),
+        "control_tests_failing": accuracy.get("failing"),
+        "pass_rate": accuracy.get("pass_rate"),
     }
     append_jsonl(lake.joinpath(*EVAL_RUNS_FILE), record)
     return LakeEvalResult(

@@ -639,6 +639,36 @@ export interface LakeEvalRun {
   silver_count?: number | null;
   error: string | null;
   occurred_at: string;
+  control_tests_total?: number | null;
+  control_tests_passing?: number | null;
+  control_tests_failing?: number | null;
+  pass_rate?: number | null;
+}
+
+export interface EvalAccuracy {
+  total_tests: number;
+  passing: number;
+  failing: number;
+  warning: number;
+  pass_rate: number | null;
+  framework_count: number;
+  evidence_source_count: number;
+  has_tests: boolean;
+}
+
+export interface CatalogCoverage {
+  total: number;
+  implemented: number;
+  enabled: number;
+  contract_only?: number;
+  implementation_rate: number;
+  enabled_rate: number;
+  by_category: Array<{
+    category: string;
+    total: number;
+    implemented: number;
+    enabled: number;
+  }>;
 }
 
 export interface IngestionScale {
@@ -749,6 +779,8 @@ export interface IngestionStatus {
     recommended_actions: IngestionAction[];
   };
   recommended_actions: IngestionAction[];
+  eval_accuracy?: EvalAccuracy;
+  catalog_coverage?: CatalogCoverage;
   scale?: IngestionScale;
   health?: {
     evaluated_at: string;
@@ -1210,6 +1242,48 @@ export interface PoamSyncResult {
   updated: number;
   closed: number;
   open_poam_count: number;
+}
+
+export interface PricingTierLimits {
+  max_users: number;
+  max_api_keys: number;
+  max_invites_pending: number;
+  max_connectors: number;
+  scim: boolean;
+}
+
+export interface PricingTier {
+  id: string;
+  name: string;
+  annual_usd: number | null;
+  annual_usd_label: string;
+  tagline: string;
+  limits: PricingTierLimits;
+  includes: string[];
+}
+
+export interface PlatformPricing {
+  currency: string;
+  billing_period: string;
+  note: string;
+  tiers: PricingTier[];
+}
+
+export interface PlatformUsage {
+  tenant_id: string;
+  plan_tier: string;
+  plan_name: string;
+  usage: {
+    users: number;
+    api_keys: number;
+    invites_pending: number;
+  };
+  limits: PricingTierLimits;
+  within_limits: {
+    users: boolean;
+    api_keys: boolean;
+    invites_pending: boolean;
+  };
 }
 
 export type RiskLevel = "low" | "medium" | "high" | "critical";

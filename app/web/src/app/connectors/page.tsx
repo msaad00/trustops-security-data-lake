@@ -14,6 +14,8 @@ import { QueryState } from "@/components/QueryState";
 import { ConnectorDrawer } from "@/components/drawers/ConnectorDrawer";
 import { ConnectorMark } from "@/components/connectors/ConnectorMark";
 import { ConnectorIngestionStrip } from "@/components/connectors/ConnectorIngestionStrip";
+import { ConnectorIntegrationCoverage } from "@/components/connectors/ConnectorIntegrationCoverage";
+import { ConnectorRegistryGapStrip } from "@/components/connectors/ConnectorRegistryGapStrip";
 import { ConnectorAccountLinkingStrip } from "@/components/connectors/ConnectorAccountLinkingStrip";
 import { ConnectorEcosystemStrip } from "@/components/connectors/ConnectorEcosystemStrip";
 import { notify } from "@/lib/toast";
@@ -307,6 +309,10 @@ export default function ConnectorsPage() {
       />
 
       <ConnectorIngestionStrip />
+
+      <ConnectorIntegrationCoverage />
+
+      <ConnectorRegistryGapStrip onSelect={setSelected} />
 
       <ConnectorEcosystemStrip compact />
 
