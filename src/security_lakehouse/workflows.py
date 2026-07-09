@@ -22,6 +22,7 @@ Action library (the registry is the extension point):
   check.control_pass           passes when a control_id's latest test is "pass"
   action.snapshot              freezes a point-in-time assessment snapshot
   action.assign_owner          appends a triage event with assignee + state
+  action.connector_sync        runs a configured connector sync into the raw lake
   action.webhook               POSTs to an allowlisted, SSRF-guarded URL
   action.slack                 posts a Slack incoming-webhook message
   action.jira                  creates a Jira issue (POST /rest/api/3/issue)
@@ -158,6 +159,32 @@ def _action_snapshot(lake: Path, params: dict[str, Any], *, dry_run: bool = Fals
         }
     path = write_assessment_snapshot(lake, reason=reason)
     return {"snapshot_path": str(path), "reason": reason}
+
+
+def _action_connector_sync(lake: Path, params: dict[str, Any], *, dry_run: bool = False) -> dict[str, Any]:
+    connector_id = str(params.get("connector_id") or "").strip()
+    if not connector_id:
+        raise ValueError("connector_id is required")
+    actor = str(params.get("actor") or "workflow")
+    if dry_run:
+        return {
+            "dry_run": True,
+            "would": f"sync connector {connector_id!r} (actor={actor!r})",
+            "connector_id": connector_id,
+            "result": None,
+            "evidence_count": None,
+            "error": None,
+        }
+    from security_lakehouse.connector_runner import run_connector_sync
+
+    sync = run_connector_sync(lake, connector_id=connector_id, actor=actor)
+    return {
+        "connector_id": connector_id,
+        "result": sync.result,
+        "evidence_count": sync.evidence_count,
+        "error": sync.error,
+        "watermark_cursor": sync.watermark_cursor,
+    }
 
 
 def _action_assign_owner(lake: Path, params: dict[str, Any], *, dry_run: bool = False) -> dict[str, Any]:
@@ -723,6 +750,26 @@ ACTION_LIBRARY: dict[str, dict[str, Any]] = {
         },
         "handler": _action_jira,
     },
+    "action.connector_sync": {
+        "kind": "action",
+        "label": "Sync connector",
+        "description": (
+            "Runs a configured connector sync into the managed raw lake using the "
+            "in-repo adapter registry (read-only collection adapters only)."
+        ),
+        "input_schema": {
+            "connector_id": {"type": "string", "label": "Connector id", "required": True},
+            "actor": {"type": "string", "label": "Actor", "default": "workflow"},
+        },
+        "output_schema": {
+            "connector_id": "string",
+            "result": "string",
+            "evidence_count": "number",
+            "error": "string",
+            "watermark_cursor": "string",
+        },
+        "handler": _action_connector_sync,
+    },
 }
 
 
@@ -751,7 +798,7 @@ def run_action(
     """Execute a single action node against the lake and return its output.
 
     When ``dry_run=True``, side-effecting actions (``action.snapshot``,
-    ``action.assign_owner``, ``action.webhook``, ``action.slack``,
+    ``action.assign_owner``, ``action.connector_sync``, ``action.webhook``, ``action.slack``,
     ``action.jira``) skip their side effect and return a ``{"dry_run": True,
     "would": ...}`` preview instead. Read-only checks and triggers run normally
     so downstream branching stays realistic.
