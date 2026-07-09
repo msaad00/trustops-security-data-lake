@@ -30,6 +30,17 @@ from security_lakehouse.connectors_azure import (
     AzureFixtureClient,
     collect_azure_evidence,
 )
+from security_lakehouse.connectors_clickhouse import (
+    DEFAULT_DATABASE as CLICKHOUSE_DEFAULT_DATABASE,
+)
+from security_lakehouse.connectors_clickhouse import (
+    DEFAULT_TABLE as CLICKHOUSE_DEFAULT_TABLE,
+)
+from security_lakehouse.connectors_clickhouse import (
+    ClickHouseClient,
+    ClickHouseFixtureClient,
+    collect_clickhouse_evidence,
+)
 from security_lakehouse.connectors_gcp import (
     GCPClient,
     GCPFixtureClient,
@@ -459,8 +470,19 @@ def _build_snowflake(inputs: SyncInputs) -> list[dict[str, Any]]:
     )
 
 
+def _build_clickhouse(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_clickhouse(
+        fixture_dir=inputs.fixture_dir,
+        env=inputs.env,
+        credentials=inputs.credentials,
+        options=inputs.options,
+        since=inputs.since,
+    )
+
+
 REGISTRY: dict[str, ConnectorBuilder] = {
     "snowflake-evidence-lake": _build_snowflake,
+    "clickhouse-telemetry-lake": _build_clickhouse,
     "github-security": _build_github,
     "gitlab-security": _build_gitlab,
     "okta-identity": _build_okta,
@@ -659,6 +681,36 @@ def _collect_jira(
         netguard.assert_url_is_public(base_url, label="jira base url")
         client = JiraClient(base_url, email=email, token=token)
     return collect_jira_evidence(client)
+
+
+def _collect_clickhouse(
+    *,
+    fixture_dir: str | Path | None,
+    env: dict[str, str],
+    credentials: dict[str, Any] | None = None,
+    options: dict[str, Any] | None = None,
+    since: str | None = None,
+) -> list[dict[str, Any]]:
+    credentials = credentials or {}
+    options = options or {}
+    database = str(options.get("database") or CLICKHOUSE_DEFAULT_DATABASE).strip() or CLICKHOUSE_DEFAULT_DATABASE
+    table = str(options.get("table") or CLICKHOUSE_DEFAULT_TABLE).strip() or CLICKHOUSE_DEFAULT_TABLE
+    if fixture_dir:
+        client: ClickHouseClient | ClickHouseFixtureClient = ClickHouseFixtureClient(fixture_dir, database=database)
+    else:
+        host = str(credentials.get("host") or env.get("CLICKHOUSE_HOST") or "").strip()
+        user = str(credentials.get("user") or env.get("CLICKHOUSE_USER") or "default").strip() or "default"
+        token_env = str(credentials.get("credential_ref") or "CLICKHOUSE_PASSWORD")
+        password = str(credentials.get("token") or credentials.get("password") or env.get(token_env) or "").strip()
+        if not host:
+            raise ValueError(
+                "clickhouse-telemetry-lake sync requires --fixture-dir, or host plus read-only credentials"
+            )
+        from security_lakehouse import netguard
+
+        netguard.assert_url_is_public(host, label="clickhouse host")
+        client = ClickHouseClient(host, user=user, password=password, database=database)
+    return collect_clickhouse_evidence(client, table=table, since=since)
 
 
 def _collect_snowflake(

@@ -23,6 +23,8 @@ from security_lakehouse.connectors import (
     SENSITIVE_FIELD_NAMES,
     load_connector_catalog,
 )
+from security_lakehouse.connectors_clickhouse import CONNECTOR_ID as CLICKHOUSE_CONNECTOR_ID
+from security_lakehouse.connectors_clickhouse import discover_clickhouse_scope, probe_clickhouse_access
 from security_lakehouse.connectors_snowflake import CONNECTOR_ID as SNOWFLAKE_CONNECTOR_ID
 from security_lakehouse.connectors_snowflake import discover_snowflake_scope, probe_snowflake_access
 from security_lakehouse.lake_scale import apply_split_schedule_defaults
@@ -325,6 +327,9 @@ def _missing_required_config(
             missing.append("credential_ref")
         return missing
 
+    if connector_id == "object-storage-evidence":
+        return [field for field in ("bucket", "prefix") if not _has_value(options, field)]
+
     if connector_id == "jira-ticketing":
         missing = []
         for field in ("base_url", "email"):
@@ -553,13 +558,19 @@ def _scope_candidates(
             "recommended_options": {},
         }
     if connector_id == "clickhouse-telemetry-lake":
+        live = discover_clickhouse_scope(credentials=credentials, options=options)
+        if live.get("ok"):
+            return live
+        database = str(options.get("database") or "security")
+        table = str(options.get("table") or "normalized_events")
         return {
             "selection_mode": "visible_tables",
             "selectors": [
-                {"kind": "database", "name": "<discovered>", "required": True, "selected": False},
-                {"kind": "table", "name": "<discovered>", "required": True, "selected": False},
+                {"kind": "database", "name": database, "required": True, "selected": bool(database)},
+                {"kind": "table", "name": table, "required": True, "selected": bool(table)},
             ],
-            "recommended_options": {},
+            "recommended_options": {"database": database, "table": table},
+            "live_discovery_error": live.get("error"),
         }
     return {
         "selection_mode": "configured_scope",
@@ -896,6 +907,51 @@ def run_probe(
             error="access contract validated; no collection adapter is implemented for this connector yet",
             access_fingerprint=staged_access_fingerprint,
             metadata={"probe_mode": "contract_only"},
+        )
+    if connector_id == CLICKHOUSE_CONNECTOR_ID:
+        if has_staged_payload:
+            effective_credentials = credentials or {}
+            effective_options = options or {}
+        else:
+            config = latest_config(lake_dir, connector_id) or {}
+            effective_credentials = dict(config.get("credentials") or {})
+            effective_options = dict(config.get("options") or {})
+        try:
+            probe = probe_clickhouse_access(
+                credentials=effective_credentials,
+                options=effective_options,
+            )
+        except ValueError as exc:
+            return append_run_event(
+                lake_dir,
+                connector_id=connector_id,
+                kind="probe",
+                result="error",
+                actor=actor,
+                error=_safe_run_error(exc),
+                access_fingerprint=staged_access_fingerprint,
+            )
+        if not probe.get("ok"):
+            return append_run_event(
+                lake_dir,
+                connector_id=connector_id,
+                kind="probe",
+                result="error",
+                actor=actor,
+                error=f"ClickHouse read scope is not ready: {probe.get('table') or 'normalized_events'}",
+                access_fingerprint=staged_access_fingerprint,
+                metadata={**probe, "probe_mode": "live"},
+            )
+        return append_run_event(
+            lake_dir,
+            connector_id=connector_id,
+            kind="probe",
+            result="ok",
+            actor=actor,
+            duration_ms=12,
+            evidence_count=int(probe.get("row_count") or 0),
+            access_fingerprint=staged_access_fingerprint,
+            metadata={**probe, "probe_mode": "live"},
         )
     if connector_id == SNOWFLAKE_CONNECTOR_ID:
         if has_staged_payload:
