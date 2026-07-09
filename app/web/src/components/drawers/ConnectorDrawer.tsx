@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   AlertCircle,
@@ -260,6 +261,26 @@ function LatestSyncProof({
           <p className="mt-1 max-w-2xl text-xs leading-5 text-muted">
             {detail}
           </p>
+          {failed && runnable ? (
+            <Link
+              href="https://github.com/msaad00/trustops-security-data-lake/blob/main/docs/runbooks/OBSERVABILITY_CONNECTOR_SYNC.md"
+              className="mt-2 inline-flex text-xs font-bold text-brand hover:underline"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Open connector sync runbook
+            </Link>
+          ) : null}
+          {!runnable ? (
+            <Link
+              href="https://github.com/msaad00/trustops-security-data-lake/blob/main/docs/ADDING_CONNECTORS.md"
+              className="mt-2 inline-flex text-xs font-bold text-brand hover:underline"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Contributor guide — add an adapter
+            </Link>
+          ) : null}
         </div>
         <Button
           variant={ok ? "default" : "primary"}

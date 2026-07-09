@@ -21,6 +21,7 @@ from security_lakehouse.validation import validate_raw_events
 
 REAL_ADAPTERS = {
     "snowflake-evidence-lake",
+    "clickhouse-telemetry-lake",
     "object-storage-evidence",
     "github-security",
     "gitlab-security",
@@ -167,7 +168,8 @@ def test_azure_posture_reader_bootstrap_matches_connector_contract() -> None:
 def test_has_adapter_agrees_with_registry() -> None:
     for connector_id in REAL_ADAPTERS:
         assert connector_state.has_adapter(connector_id) is True
-    assert connector_state.has_adapter("clickhouse-telemetry-lake") is False
+    # A catalog connector without a registered builder is contract-only.
+    assert connector_state.has_adapter("siem-alerts") is False
     assert connector_state.has_adapter("not-a-real-connector") is False
 
 
@@ -189,6 +191,7 @@ def test_unknown_connector_id_raises_no_runner_registered(tmp_path: Path) -> Non
         ("github-security", "github-governance", {"repo": "acme/model-service"}),
         ("gitlab-security", "gitlab-governance", {"repo": "acme/private-agent-api"}),
         ("snowflake-evidence-lake", "snowflake", {}),
+        ("clickhouse-telemetry-lake", "clickhouse-telemetry-lake", {}),
         ("object-storage-evidence", "object-storage-evidence", {}),
         ("okta-identity", "okta", {}),
         ("aws-posture", "aws", {}),
