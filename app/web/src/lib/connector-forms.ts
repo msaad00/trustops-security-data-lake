@@ -183,6 +183,20 @@ export const CONNECTOR_CREDENTIAL_FIELDS: Record<string, ConnectorFieldDef[]> =
         hint: "Read-only Jira Cloud API token for the service account.",
       },
     ],
+    "object-storage-evidence": [
+      {
+        name: "role_arn",
+        label: "Read-only role ARN (optional)",
+        placeholder:
+          "arn:aws:iam::123456789012:role/TrustOpsEvidenceReadOnlyRole",
+        hint: "Cross-account assume-role; ambient IAM works when omitted.",
+      },
+      {
+        name: "external_id",
+        label: "External ID (optional, with role ARN)",
+        placeholder: "shared secret used in the role trust policy",
+      },
+    ],
   };
 
 export const CONNECTOR_SCOPE_FIELDS: Record<string, ConnectorFieldDef[]> = {
@@ -259,6 +273,26 @@ export const CONNECTOR_SCOPE_FIELDS: Record<string, ConnectorFieldDef[]> = {
       label: "Evidence bundles view",
       placeholder: "TRUSTOPS_EVIDENCE_BUNDLES",
       required: true,
+    },
+  ],
+  "object-storage-evidence": [
+    {
+      name: "bucket",
+      label: "S3 bucket",
+      placeholder: "trustops-evidence",
+      required: true,
+    },
+    {
+      name: "prefix",
+      label: "Evidence prefix",
+      placeholder: "bundles/",
+      required: true,
+      hint: "LIST/GET scope; trailing slash recommended.",
+    },
+    {
+      name: "region",
+      label: "Region (optional)",
+      placeholder: "us-east-1",
     },
   ],
 };

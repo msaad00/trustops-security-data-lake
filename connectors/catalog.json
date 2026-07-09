@@ -69,6 +69,7 @@
       "evidence_types": ["sarif", "json", "attestation", "audit_export"],
       "default_route": "Snowflake",
       "freshness_slo_minutes": 120,
+      "is_implemented": true,
       "production_status": "supported_connector",
       "velocity": "low_current_state",
       "native_connector": true,

@@ -68,9 +68,9 @@ security-lakehouse connectors list
 
 ## Connector Runner
 
-TrustOps currently has **17 connector contracts**. **Nine** are executable
-runners (eight direct source/API runners plus the Snowflake existing-lake
-reader). The remaining entries are read-only access contracts or managed
+TrustOps currently has **17 connector contracts**. **Ten** are executable
+runners (eight direct source/API runners plus Snowflake and S3 existing-lake
+readers). The remaining entries are read-only access contracts or managed
 evidence boundaries — probes validate configuration but **sync is not available**
 until a collection adapter ships.
 
@@ -85,9 +85,9 @@ until a collection adapter ships.
 | `azure-posture`             | Azure IAM/posture       | executable                    |
 | `jira-ticketing`            | Jira tickets/workflows  | executable                    |
 | `snowflake-evidence-lake`   | governed evidence lake  | executable existing-lake read |
+| `object-storage-evidence`   | object evidence store   | executable existing-lake read |
 | `clickhouse-telemetry-lake` | telemetry analytics     | **contract only** (no sync)   |
 | `okta-system-log`           | Okta System Log API     | **contract only** (no sync)   |
-| `object-storage-evidence`   | object evidence store   | **contract only** (no sync)   |
 | `siem-alerts`               | SIEM/detection exports  | **contract only** (no sync)   |
 | `runtime-gateway`           | runtime policy events   | **contract only** (no sync)   |
 | `identity-provider`         | generic identity source | **contract only** (no sync)   |
@@ -258,6 +258,29 @@ security-lakehouse connectors sync \
 OAuth is also supported when the customer's runtime has a governed token broker:
 set `SNOWFLAKE_AUTHENTICATOR=oauth` and inject `SNOWFLAKE_OAUTH_TOKEN` from the
 secret manager at process start. The raw value is not written into the lake.
+
+Object storage evidence uses read-only LIST against an S3 prefix and syncs in
+**snapshot** mode so removed objects disappear from the lake on the next pull:
+
+```bash
+security-lakehouse connectors probe \
+  --lake build/lakehouse \
+  --connector-id object-storage-evidence \
+  --credentials-json '{"role_arn":"arn:aws:iam::123456789012:role/TrustOpsEvidenceRead"}' \
+  --options-json '{"bucket":"trustops-evidence","prefix":"bundles/"}'
+
+security-lakehouse connectors configure \
+  --lake build/lakehouse \
+  --connector-id object-storage-evidence \
+  --state enabled \
+  --credentials-json '{"role_arn":"arn:aws:iam::123456789012:role/TrustOpsEvidenceRead"}' \
+  --options-json '{"bucket":"trustops-evidence","prefix":"bundles/"}'
+
+security-lakehouse connectors sync \
+  --lake build/lakehouse \
+  --connector-id object-storage-evidence \
+  --fixture-dir tests/fixtures/object-storage-evidence
+```
 
 By default the runner rebuilds bronze, silver, gold, marts, and current posture
 from the managed raw connector file. Use `--no-materialize` when you only want

@@ -803,6 +803,49 @@ def test_scoped_user_contract_requires_token_not_password() -> None:
     assert missing == ["host", "token"]
 
 
+def test_object_storage_enable_requires_live_probe(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_probe(*, credentials: dict, options: dict) -> dict:
+        return {
+            "ok": True,
+            "bucket": options["bucket"],
+            "prefix": options["prefix"],
+            "object_count": 2,
+            "error": None,
+        }
+
+    monkeypatch.setattr("security_lakehouse.connector_state.probe_s3_access", fake_probe)
+
+    server = _spin_handler(tmp_path)
+    try:
+        status, body = _request(
+            server,
+            "POST",
+            "/api/connectors/object-storage-evidence/probe",
+            body={
+                "credentials": {"role_arn": "arn:aws:iam::123456789012:role/TrustOpsEvidenceRead"},
+                "options": {"bucket": "trustops-evidence", "prefix": "bundles/"},
+            },
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["run"]["result"] == "ok"
+        assert body["run"]["access_fingerprint"]
+
+        status, body = _request(
+            server,
+            "POST",
+            "/api/connectors/object-storage-evidence/configure",
+            body={
+                "state": "enabled",
+                "credentials": {"role_arn": "arn:aws:iam::123456789012:role/TrustOpsEvidenceRead"},
+                "options": {"bucket": "trustops-evidence", "prefix": "bundles/"},
+            },
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["event"]["state"] == "enabled"
+    finally:
+        server.shutdown()
+
+
 def test_clickhouse_enable_rejects_contract_only_probe(tmp_path: Path) -> None:
     server = _spin_handler(tmp_path)
     try:

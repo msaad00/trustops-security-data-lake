@@ -23,6 +23,8 @@ from security_lakehouse.connectors import (
     SENSITIVE_FIELD_NAMES,
     load_connector_catalog,
 )
+from security_lakehouse.connectors_s3 import CONNECTOR_ID as S3_CONNECTOR_ID
+from security_lakehouse.connectors_s3 import discover_s3_scope, probe_s3_access
 from security_lakehouse.connectors_snowflake import CONNECTOR_ID as SNOWFLAKE_CONNECTOR_ID
 from security_lakehouse.connectors_snowflake import discover_snowflake_scope, probe_snowflake_access
 from security_lakehouse.lake_scale import apply_split_schedule_defaults
@@ -325,6 +327,9 @@ def _missing_required_config(
             missing.append("credential_ref")
         return missing
 
+    if connector_id == "object-storage-evidence":
+        return [field for field in ("bucket", "prefix") if not _has_value(options, field)]
+
     if connector_id == "jira-ticketing":
         missing = []
         for field in ("base_url", "email"):
@@ -551,6 +556,21 @@ def _scope_candidates(
                 }
             ],
             "recommended_options": {},
+        }
+    if connector_id == "object-storage-evidence":
+        bucket = str(options.get("bucket") or credentials.get("bucket") or "")
+        prefix = str(options.get("prefix") or credentials.get("prefix") or "")
+        live = discover_s3_scope(credentials=credentials, options=options)
+        if live.get("ok"):
+            return live
+        return {
+            "selection_mode": "visible_prefixes",
+            "selectors": [
+                {"kind": "bucket", "name": bucket, "required": True, "selected": bool(bucket)},
+                {"kind": "prefix", "name": prefix, "required": True, "selected": bool(prefix)},
+            ],
+            "recommended_options": {"bucket": bucket, "prefix": prefix},
+            "live_discovery_error": live.get("error"),
         }
     if connector_id == "clickhouse-telemetry-lake":
         return {
@@ -896,6 +916,51 @@ def run_probe(
             error="access contract validated; no collection adapter is implemented for this connector yet",
             access_fingerprint=staged_access_fingerprint,
             metadata={"probe_mode": "contract_only"},
+        )
+    if connector_id == S3_CONNECTOR_ID:
+        if has_staged_payload:
+            effective_credentials = credentials or {}
+            effective_options = options or {}
+        else:
+            config = latest_config(lake_dir, connector_id) or {}
+            effective_credentials = dict(config.get("credentials") or {})
+            effective_options = dict(config.get("options") or {})
+        try:
+            probe = probe_s3_access(
+                credentials=effective_credentials,
+                options=effective_options,
+            )
+        except ValueError as exc:
+            return append_run_event(
+                lake_dir,
+                connector_id=connector_id,
+                kind="probe",
+                result="error",
+                actor=actor,
+                error=_safe_run_error(exc),
+                access_fingerprint=staged_access_fingerprint,
+            )
+        if not probe.get("ok"):
+            return append_run_event(
+                lake_dir,
+                connector_id=connector_id,
+                kind="probe",
+                result="error",
+                actor=actor,
+                error=f"S3 read scope is not ready: {probe.get('bucket') or 'bucket'}/{probe.get('prefix') or ''}",
+                access_fingerprint=staged_access_fingerprint,
+                metadata={**probe, "probe_mode": "live"},
+            )
+        return append_run_event(
+            lake_dir,
+            connector_id=connector_id,
+            kind="probe",
+            result="ok",
+            actor=actor,
+            duration_ms=12,
+            evidence_count=int(probe.get("object_count") or 0),
+            access_fingerprint=staged_access_fingerprint,
+            metadata={**probe, "probe_mode": "live"},
         )
     if connector_id == SNOWFLAKE_CONNECTOR_ID:
         if has_staged_payload:
