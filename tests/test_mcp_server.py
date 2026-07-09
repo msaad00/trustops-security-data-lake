@@ -192,6 +192,14 @@ def test_get_ingestion_status_includes_scale(tmp_path):
     assert status["scale"]["mode"]
 
 
+def test_get_ai_governance_local_lake(tmp_path):
+    server = _seeded_server(tmp_path)
+    status = call_tool(server, "get_ai_governance")
+    assert status["frameworks_total"] == 3
+    assert "governance_score" in status
+    assert status["aibom"]["shipped"] is False
+
+
 def test_list_eval_runs_returns_list(tmp_path):
     server = _seeded_server(tmp_path)
     runs = call_tool(server, "list_eval_runs", limit=10)

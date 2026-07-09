@@ -73,6 +73,28 @@ The console exists for:
 
 Console actions hit the **same API** as headless callers and appear in request audit.
 
+## MCP local trust boundary
+
+`trustops-mcp` can run in two modes:
+
+| Mode              | Env                                     | RBAC                                                               | Typical use                                         |
+| ----------------- | --------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------- |
+| **Local lake**    | `TRUSTOPS_LAKE`                         | Application RBAC **not** enforced for lake-backed read/write tools | Developer laptop, CI job with dedicated lake volume |
+| **Remote server** | `TRUSTOPS_API_URL` + `TRUSTOPS_API_KEY` | Same scopes as API keys (`read`, `write`, `admin`, …)              | Shared hosts, multi-tenant server mode              |
+
+**Lake-local write tools** (`create_snapshot`, `sync_connector`, `configure_connector`, `run_workflow`, `run_scheduler_tick`, `create_trust_share`, …) mutate files under `TRUSTOPS_LAKE` directly. They do not pass through FastAPI identity checks — security relies on **who can run the MCP process** and **filesystem permissions** on the lake directory.
+
+**Lake-local read tools** (`get_posture`, `get_ai_governance`, `list_evidence`, …) read the same JSONL artifacts as `GET /api/v1/*` without a bearer token.
+
+**Remote API tools** (`get_audit_readiness`, `create_remediation_task`, `create_poam_item`, …) require `TRUSTOPS_API_KEY` and inherit tenant scoping from the server.
+
+### Deployment guidance
+
+1. On shared machines, prefer **remote API mode** for MCP agents so writes are RBAC-gated and request-audited.
+2. When using local mode, run MCP under a **dedicated service account** with minimal lake ACL (no world-readable `gold/` or `silver/`).
+3. Never point `TRUSTOPS_LAKE` at a production lake path from an untrusted stdio client (IDE plugins, unvetted agent hosts).
+4. Rotate API keys used for remote MCP the same as CI deploy keys.
+
 ## Idempotency and traceability
 
 | Concern          | Mechanism                                |
