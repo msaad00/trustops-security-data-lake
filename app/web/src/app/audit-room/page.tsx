@@ -27,6 +27,7 @@ import { VendorRiskStrip } from "@/components/audit-room/VendorRiskStrip";
 import { PolicyAttestationStrip } from "@/components/audit-room/PolicyAttestationStrip";
 import { PersonnelComplianceStrip } from "@/components/audit-room/PersonnelComplianceStrip";
 import { GovComplianceStrip } from "@/components/audit-room/GovComplianceStrip";
+import { PoamWorkbench } from "@/components/audit-room/PoamWorkbench";
 import { AiGovernanceStrip } from "@/components/audit-room/AiGovernanceStrip";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
@@ -120,6 +121,7 @@ export default function AuditRoomPage() {
             <PersonnelComplianceStrip />
             <AiGovernanceStrip />
             <GovComplianceStrip />
+            <PoamWorkbench />
 
             <PolicyAttestationStrip />
 

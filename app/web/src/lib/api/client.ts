@@ -759,6 +759,12 @@ export const api = {
     post<{ data: PoamSyncResult }>("/v1/gov-compliance/poam/sync", {}).then(
       (b) => b.data,
     ),
+  updatePoamItem: (id: string, payload: Record<string, unknown>) =>
+    mutate<{ data: PoamItem }>(
+      `/v1/gov-compliance/poam/${encodeURIComponent(id)}`,
+      "PATCH",
+      payload,
+    ).then((b) => b.data),
   platformPricing: () =>
     get<{ data: PlatformPricing }>("/v1/platform/pricing").then((b) => b.data),
   platformUsage: () =>

@@ -188,12 +188,37 @@ export function useOpenPoamItems(
   frameworkId = "cmmc-2-level2",
   opts?: Opts<PoamItem[]>,
 ) {
+  return usePoamItems({ framework_id: frameworkId, status: "open" }, opts);
+}
+
+export function usePoamItems(
+  params?: { framework_id?: string; status?: string },
+  opts?: Opts<PoamItem[]>,
+) {
+  const frameworkId = params?.framework_id ?? "cmmc-2-level2";
+  const status = params?.status ?? "";
   return useQuery({
-    queryKey: ["gov-compliance", "poam", frameworkId, "open"],
-    queryFn: () => api.poamItems({ framework_id: frameworkId, status: "open" }),
+    queryKey: ["gov-compliance", "poam", frameworkId, status || "all"],
+    queryFn: () => api.poamItems(params),
     staleTime: STALE,
     retry: false,
     ...opts,
+  });
+}
+
+export function useUpdatePoamItemMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: Record<string, unknown>;
+    }) => api.updatePoamItem(id, payload),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["gov-compliance"] });
+    },
   });
 }
 
