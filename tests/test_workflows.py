@@ -123,6 +123,7 @@ def test_action_catalog_includes_all_nodes() -> None:
         "gate.approval",
         "action.snapshot",
         "action.assign_owner",
+        "action.connector_sync",
         "action.webhook",
         "action.slack",
         "action.jira",
@@ -153,6 +154,18 @@ def test_run_action_check_control_pass(tmp_path: Path) -> None:
 def test_run_action_unknown_node_raises(tmp_path: Path) -> None:
     with pytest.raises(ValueError):
         run_action(tmp_path, node_type="action.does_not_exist", params={})
+
+
+def test_run_action_connector_sync_dry_run(tmp_path: Path) -> None:
+    out = run_action(
+        tmp_path,
+        node_type="action.connector_sync",
+        params={"connector_id": "aws-posture"},
+        dry_run=True,
+    )
+    assert out["dry_run"] is True
+    assert out["connector_id"] == "aws-posture"
+    assert "sync connector" in out["would"]
 
 
 # --- workflow persistence + run -------------------------------------------------
@@ -403,7 +416,7 @@ def test_workflow_endpoints_round_trip(tmp_path: Path) -> None:
     try:
         status, body = _request(server, "GET", "/api/workflows/actions")
         assert status == HTTPStatus.OK
-        assert len(body["actions"]) == 10
+        assert len(body["actions"]) == 11
 
         nodes, edges = _trivial_dag()
         status, body = _request(

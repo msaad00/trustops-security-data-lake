@@ -64,6 +64,18 @@ def _parser() -> argparse.ArgumentParser:
     connectors_list = connectors_sub.add_parser("list", help="list connector access contracts")
     connectors_list.add_argument("--catalog", default=None, help="optional connector catalog JSON")
     connectors_list.set_defaults(func=_connectors_list)
+    connectors_scaffold = connectors_sub.add_parser(
+        "scaffold",
+        help="generate starter connector adapter files for the in-repo registry",
+    )
+    connectors_scaffold.add_argument("connector_id", help="connector id slug (e.g. okta-system-log)")
+    connectors_scaffold.add_argument("--title", default=None, help="human title for generated module docstring")
+    connectors_scaffold.add_argument(
+        "--output",
+        default="connector-scaffold",
+        help="directory to write starter files (default: ./connector-scaffold)",
+    )
+    connectors_scaffold.set_defaults(func=_connectors_scaffold)
     connectors_configure = connectors_sub.add_parser("configure", help="enable or disable a connector")
     connectors_configure.add_argument("--lake", required=True, help="security data lake output directory")
     connectors_configure.add_argument("--connector-id", required=True, help="connector id from connectors/catalog.json")
@@ -731,6 +743,14 @@ def _connectors_list(args: argparse.Namespace) -> int:
         for connector in connectors.values()
     ]
     print(json.dumps({"connectors": rows, "count": len(rows)}, indent=2, sort_keys=True))
+    return 0
+
+
+def _connectors_scaffold(args: argparse.Namespace) -> int:
+    from security_lakehouse.connectors_scaffold import scaffold_connector
+
+    result = scaffold_connector(args.connector_id, title=args.title, output_dir=args.output)
+    print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 
 
