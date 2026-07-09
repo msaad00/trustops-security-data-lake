@@ -660,6 +660,7 @@ export interface CatalogCoverage {
   total: number;
   implemented: number;
   enabled: number;
+  contract_only?: number;
   implementation_rate: number;
   enabled_rate: number;
   by_category: Array<{

@@ -37,7 +37,7 @@ def test_build_catalog_coverage_counts_implemented_and_enabled(tmp_path: Path) -
     assert coverage["total"] >= 10
     assert coverage["implemented"] >= 1
     assert coverage["enabled"] == 2
-    assert coverage["implementation_rate"] > 0
+    assert coverage["contract_only"] == coverage["total"] - coverage["implemented"]
     assert any(row["category"] for row in coverage["by_category"])
 
 
