@@ -22,6 +22,8 @@ import type {
   ControlExceptionItem,
   EvidenceRequestItem,
   PostureMetricPoint,
+  PlatformPricing,
+  PlatformUsage,
   PoamItem,
   PoamSyncResult,
   ProbePayload,
@@ -763,6 +765,10 @@ export const api = {
       "PATCH",
       payload,
     ).then((b) => b.data),
+  platformPricing: () =>
+    get<{ data: PlatformPricing }>("/v1/platform/pricing").then((b) => b.data),
+  platformUsage: () =>
+    get<{ data: PlatformUsage }>("/v1/platform/usage").then((b) => b.data),
 };
 
 export interface SnapshotSummary {

@@ -59,6 +59,8 @@ import type {
   Risk,
   PolicyDocument,
   PolicyTemplateSummary,
+  PlatformPricing,
+  PlatformUsage,
   PoamItem,
   PoamSyncResult,
   SprsReport,
@@ -227,6 +229,27 @@ export function useSyncPoamMutation() {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["gov-compliance"] });
     },
+  });
+}
+
+export function usePlatformPricing(opts?: Opts<PlatformPricing>) {
+  return useQuery({
+    queryKey: ["platform", "pricing"],
+    queryFn: api.platformPricing,
+    staleTime: 60_000,
+    retry: false,
+    ...opts,
+  });
+}
+
+export function usePlatformUsage(enabled = true, opts?: Opts<PlatformUsage>) {
+  return useQuery({
+    queryKey: ["platform", "usage"],
+    queryFn: api.platformUsage,
+    staleTime: STALE,
+    retry: false,
+    enabled,
+    ...opts,
   });
 }
 

@@ -1212,6 +1212,48 @@ export interface PoamSyncResult {
   open_poam_count: number;
 }
 
+export interface PricingTierLimits {
+  max_users: number;
+  max_api_keys: number;
+  max_invites_pending: number;
+  max_connectors: number;
+  scim: boolean;
+}
+
+export interface PricingTier {
+  id: string;
+  name: string;
+  annual_usd: number | null;
+  annual_usd_label: string;
+  tagline: string;
+  limits: PricingTierLimits;
+  includes: string[];
+}
+
+export interface PlatformPricing {
+  currency: string;
+  billing_period: string;
+  note: string;
+  tiers: PricingTier[];
+}
+
+export interface PlatformUsage {
+  tenant_id: string;
+  plan_tier: string;
+  plan_name: string;
+  usage: {
+    users: number;
+    api_keys: number;
+    invites_pending: number;
+  };
+  limits: PricingTierLimits;
+  within_limits: {
+    users: boolean;
+    api_keys: boolean;
+    invites_pending: boolean;
+  };
+}
+
 export type RiskLevel = "low" | "medium" | "high" | "critical";
 export type RiskStatus = "open" | "mitigating" | "accepted" | "closed";
 
