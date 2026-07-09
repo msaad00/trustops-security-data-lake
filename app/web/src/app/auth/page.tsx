@@ -16,6 +16,7 @@ import { AuthIdentityDiagram } from "@/components/diagrams/AuthIdentityDiagram";
 import { ApiKeysPanel } from "@/components/auth/ApiKeysPanel";
 import { InvitesPanel } from "@/components/auth/InvitesPanel";
 import { UsersPanel } from "@/components/auth/UsersPanel";
+import { PlatformUsageStrip } from "@/components/commercial/PlatformUsageStrip";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { useAuthMethods, useAuthWhoami } from "@/lib/api/hooks";
@@ -133,6 +134,8 @@ export default function AuthPage() {
           </Card>
         )}
       </QueryState>
+
+      {whoami.data?.role === "admin" ? <PlatformUsageStrip /> : null}
 
       <Card>
         <CardHeader>
