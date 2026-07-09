@@ -59,6 +59,9 @@ import type {
   Risk,
   PolicyDocument,
   PolicyTemplateSummary,
+  PoamItem,
+  PoamSyncResult,
+  SprsReport,
   VendorAssessment,
   VendorAssessmentStatus,
   VendorQuestionnaireTemplateSummary,
@@ -166,6 +169,39 @@ export function useAiInventory(limit = 8, opts?: Opts<AiInventoryItem[]>) {
     staleTime: STALE,
     retry: false,
     ...opts,
+  });
+}
+
+export function useSprsScore(opts?: Opts<SprsReport>) {
+  return useQuery({
+    queryKey: ["gov-compliance", "sprs"],
+    queryFn: api.sprsScore,
+    staleTime: STALE,
+    retry: false,
+    ...opts,
+  });
+}
+
+export function useOpenPoamItems(
+  frameworkId = "cmmc-2-level2",
+  opts?: Opts<PoamItem[]>,
+) {
+  return useQuery({
+    queryKey: ["gov-compliance", "poam", frameworkId, "open"],
+    queryFn: () => api.poamItems({ framework_id: frameworkId, status: "open" }),
+    staleTime: STALE,
+    retry: false,
+    ...opts,
+  });
+}
+
+export function useSyncPoamMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: api.syncPoam,
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["gov-compliance"] });
+    },
   });
 }
 

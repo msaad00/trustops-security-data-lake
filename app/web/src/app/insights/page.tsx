@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { EvidenceFreshnessTrendChart } from "@/components/insights/EvidenceFreshnessTrendChart";
 import { FrameworkReadinessTrendChart } from "@/components/insights/FrameworkReadinessTrendChart";
 import { SlaHeatmapPanel } from "@/components/insights/SlaHeatmapPanel";
+import { QueryState } from "@/components/QueryState";
 
 function fmtDate(iso: string): string {
   const d = new Date(iso);
@@ -113,160 +114,171 @@ export default function InsightsPage() {
         </Button>
       </div>
 
-      {/* remediation KPIs */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <StatCard
-          label="Open tasks"
-          value={ins ? String(ins.open) : "—"}
-          tone={ins && ins.open > 10 ? "warn" : "ok"}
-        />
-        <StatCard
-          label="Overdue tasks"
-          value={ins ? String(ins.overdue) : "—"}
-          tone={ins && ins.overdue > 0 ? "bad" : "ok"}
-        />
-        <StatCard
-          label="MTTR"
-          value={fmt(ins?.mttr_hours, 1, " h")}
-          tone={ins?.mttr_hours != null && ins.mttr_hours > 72 ? "warn" : "ok"}
-        />
-        <StatCard
-          label="SLA attainment"
-          value={fmt(ins?.sla_attainment_pct, 0, " %")}
-          tone={
-            ins?.sla_attainment_pct != null && ins.sla_attainment_pct < 80
-              ? "bad"
-              : ins?.sla_attainment_pct != null && ins.sla_attainment_pct < 95
-                ? "warn"
-                : "ok"
-          }
-        />
-      </div>
+      <QueryState queries={[timeseries, remediation]} label="insights metrics">
+        <>
+          {/* remediation KPIs */}
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <StatCard
+              label="Open tasks"
+              value={ins ? String(ins.open) : "—"}
+              tone={ins && ins.open > 10 ? "warn" : "ok"}
+            />
+            <StatCard
+              label="Overdue tasks"
+              value={ins ? String(ins.overdue) : "—"}
+              tone={ins && ins.overdue > 0 ? "bad" : "ok"}
+            />
+            <StatCard
+              label="MTTR"
+              value={fmt(ins?.mttr_hours, 1, " h")}
+              tone={
+                ins?.mttr_hours != null && ins.mttr_hours > 72 ? "warn" : "ok"
+              }
+            />
+            <StatCard
+              label="SLA attainment"
+              value={fmt(ins?.sla_attainment_pct, 0, " %")}
+              tone={
+                ins?.sla_attainment_pct != null && ins.sla_attainment_pct < 80
+                  ? "bad"
+                  : ins?.sla_attainment_pct != null &&
+                      ins.sla_attainment_pct < 95
+                    ? "warn"
+                    : "ok"
+              }
+            />
+          </div>
 
-      {/* posture score chart */}
-      <Card className="overflow-hidden">
-        <CardHeader>
-          <CardTitle>Posture score over time</CardTitle>
-          <CardDescription>
-            Continuous compliance score (0–100) and control pass rate captured
-            at each snapshot.
-          </CardDescription>
-        </CardHeader>
-        <div className="h-[240px] w-full px-2 pb-4">
-          {chartData.length === 0 ? (
-            <div className="flex h-full items-center justify-center text-sm text-muted">
-              No snapshots yet — click &ldquo;Capture now&rdquo; to record the
-              first point.
-            </div>
-          ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={chartData}
-                margin={{ top: 4, right: 16, left: 0, bottom: 4 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e9f0" />
-                <XAxis
-                  dataKey="date"
-                  tick={{ fontSize: 11 }}
-                  stroke="#94a3b8"
-                />
-                <YAxis
-                  domain={[0, 100]}
-                  tick={{ fontSize: 11 }}
-                  stroke="#94a3b8"
-                />
-                <Tooltip
-                  contentStyle={{
-                    fontSize: 12,
-                    borderRadius: 8,
-                    border: "1px solid #e2e8f0",
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="posture"
-                  name="Posture score"
-                  stroke="#4f7cff"
-                  strokeWidth={2}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="pass_rate"
-                  name="Control pass rate"
-                  stroke="#22c55e"
-                  strokeWidth={2}
-                  dot={false}
-                  strokeDasharray="4 2"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          )}
-        </div>
-      </Card>
-
-      {/* open violations chart */}
-      <Card className="overflow-hidden">
-        <CardHeader>
-          <CardTitle>Open violations over time</CardTitle>
-          <CardDescription>
-            Count of open violations at each captured snapshot.
-          </CardDescription>
-        </CardHeader>
-        <div className="h-[200px] w-full px-2 pb-4">
-          {chartData.length === 0 ? (
-            <div className="flex h-full items-center justify-center text-sm text-muted">
-              No data yet.
-            </div>
-          ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={chartData}
-                margin={{ top: 4, right: 16, left: 0, bottom: 4 }}
-              >
-                <defs>
-                  <linearGradient id="violGrad" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="#f87171" stopOpacity={0.35} />
-                    <stop
-                      offset="100%"
-                      stopColor="#f87171"
-                      stopOpacity={0.02}
+          {/* posture score chart */}
+          <Card className="overflow-hidden">
+            <CardHeader>
+              <CardTitle>Posture score over time</CardTitle>
+              <CardDescription>
+                Continuous compliance score (0–100) and control pass rate
+                captured at each snapshot.
+              </CardDescription>
+            </CardHeader>
+            <div className="h-[240px] w-full px-2 pb-4">
+              {chartData.length === 0 ? (
+                <div className="flex h-full items-center justify-center text-sm text-muted">
+                  No snapshots yet — click &ldquo;Capture now&rdquo; to record
+                  the first point.
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={chartData}
+                    margin={{ top: 4, right: 16, left: 0, bottom: 4 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e9f0" />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fontSize: 11 }}
+                      stroke="#94a3b8"
                     />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e9f0" />
-                <XAxis
-                  dataKey="date"
-                  tick={{ fontSize: 11 }}
-                  stroke="#94a3b8"
-                />
-                <YAxis tick={{ fontSize: 11 }} stroke="#94a3b8" />
-                <Tooltip
-                  contentStyle={{
-                    fontSize: 12,
-                    borderRadius: 8,
-                    border: "1px solid #e2e8f0",
-                  }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="open"
-                  name="Open violations"
-                  stroke="#ef4444"
-                  strokeWidth={2}
-                  fill="url(#violGrad)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          )}
-        </div>
-      </Card>
+                    <YAxis
+                      domain={[0, 100]}
+                      tick={{ fontSize: 11 }}
+                      stroke="#94a3b8"
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        fontSize: 12,
+                        borderRadius: 8,
+                        border: "1px solid #e2e8f0",
+                      }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="posture"
+                      name="Posture score"
+                      stroke="#4f7cff"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="pass_rate"
+                      name="Control pass rate"
+                      stroke="#22c55e"
+                      strokeWidth={2}
+                      dot={false}
+                      strokeDasharray="4 2"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </Card>
 
-      <FrameworkReadinessTrendChart />
+          {/* open violations chart */}
+          <Card className="overflow-hidden">
+            <CardHeader>
+              <CardTitle>Open violations over time</CardTitle>
+              <CardDescription>
+                Count of open violations at each captured snapshot.
+              </CardDescription>
+            </CardHeader>
+            <div className="h-[200px] w-full px-2 pb-4">
+              {chartData.length === 0 ? (
+                <div className="flex h-full items-center justify-center text-sm text-muted">
+                  No data yet.
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={chartData}
+                    margin={{ top: 4, right: 16, left: 0, bottom: 4 }}
+                  >
+                    <defs>
+                      <linearGradient id="violGrad" x1="0" x2="0" y1="0" y2="1">
+                        <stop
+                          offset="0%"
+                          stopColor="#f87171"
+                          stopOpacity={0.35}
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor="#f87171"
+                          stopOpacity={0.02}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e9f0" />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fontSize: 11 }}
+                      stroke="#94a3b8"
+                    />
+                    <YAxis tick={{ fontSize: 11 }} stroke="#94a3b8" />
+                    <Tooltip
+                      contentStyle={{
+                        fontSize: 12,
+                        borderRadius: 8,
+                        border: "1px solid #e2e8f0",
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="open"
+                      name="Open violations"
+                      stroke="#ef4444"
+                      strokeWidth={2}
+                      fill="url(#violGrad)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </Card>
 
-      <EvidenceFreshnessTrendChart limit={90} />
+          <FrameworkReadinessTrendChart />
 
-      <SlaHeatmapPanel />
+          <EvidenceFreshnessTrendChart limit={90} />
+
+          <SlaHeatmapPanel />
+        </>
+      </QueryState>
     </div>
   );
 }
