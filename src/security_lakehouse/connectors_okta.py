@@ -82,8 +82,13 @@ class OktaClient:
         return self._json_list(f"{self.org_url}/api/v1/users/{safe_id}/factors")
 
     def policies(self) -> list[dict[str, Any]]:
-        # MFA_ENROLL is the policy type that governs which factors are required.
         return self._json_list(f"{self.org_url}/api/v1/policies?type=MFA_ENROLL")
+
+    def logs(self, *, since: str | None = None) -> list[dict[str, Any]]:
+        query = f"{self.org_url}/api/v1/logs?limit=100"
+        if since:
+            query = f"{query}&since={urllib.parse.quote(since)}"
+        return self._json_list(query)
 
     def _json_list(self, url: str) -> list[dict[str, Any]]:
         # Okta cursor-paginates list endpoints via the Link header; follow
@@ -137,6 +142,12 @@ class OktaFixtureClient:
 
     def policies(self) -> list[dict[str, Any]]:
         return self._read_list("policies.json")
+
+    def logs(self, *, since: str | None = None) -> list[dict[str, Any]]:
+        rows = self._read_list("logs.json")
+        if not since:
+            return rows
+        return [row for row in rows if str(row.get("published") or "") > since]
 
     def _read(self, name: str) -> Any:
         path = self.fixture / name
@@ -369,3 +380,80 @@ def _stable_suffix(*, org: str, signal: str, asset_id: str, dedupe_key: str | No
     """
     seed = f"{org}:{signal}:{dedupe_key or asset_id}".lower()
     return re.sub(r"[^a-z0-9_.:-]+", "-", seed).strip("-")[:96] or "okta"
+
+
+SYSTEM_LOG_CONTROLS = ["SOC2-CC6.1", "FEDRAMP-AC-7"]
+FAILED_OUTCOMES = frozenset({"FAILURE", "FAIL"})
+
+
+def collect_okta_system_log_evidence(
+    client: OktaClient | OktaFixtureClient,
+    *,
+    collected_at: datetime | None = None,
+    tenant_id: str = "customer-managed",
+    since: str | None = None,
+) -> list[dict[str, Any]]:
+    """Collect authentication events from the Okta System Log API."""
+    moment = collected_at or datetime.now(UTC)
+    org_url = client.org_url
+    org = _org_slug(org_url)
+    rows: list[dict[str, Any]] = []
+    for entry in client.logs(since=since):
+        event = _system_log_event(org=org, org_url=org_url, entry=entry, collected_at=moment, tenant_id=tenant_id)
+        if event is not None:
+            rows.append(event)
+    return rows
+
+
+def _system_log_event(
+    *,
+    org: str,
+    org_url: str,
+    entry: dict[str, Any],
+    collected_at: datetime,
+    tenant_id: str,
+) -> dict[str, Any] | None:
+    published = str(entry.get("published") or "").strip()
+    if not published:
+        return None
+    event_type = str(entry.get("eventType") or "okta.system.log")
+    outcome = entry.get("outcome") if isinstance(entry.get("outcome"), dict) else {}
+    outcome_result = str(outcome.get("result") or "").upper()
+    actor = entry.get("actor") if isinstance(entry.get("actor"), dict) else {}
+    actor_id = str(actor.get("id") or actor.get("alternateId") or "unknown")
+    failed = outcome_result in FAILED_OUTCOMES
+    status = "open" if failed else "observed"
+    severity = "high" if failed else "info"
+    uuid = str(entry.get("uuid") or published)
+    return {
+        "event_id": f"okta-log-{uuid}",
+        "tenant_id": tenant_id,
+        "workspace_id": "default",
+        "event_time": published,
+        "source": "okta-system-log",
+        "event_type": "okta.auth.event",
+        "entity": {
+            "asset_id": f"okta:actor:{actor_id}",
+            "asset_type": "identity_session",
+            "asset_owner": org,
+            "environment": "prod",
+            "org": org,
+        },
+        "severity": severity,
+        "status": status,
+        "controls": SYSTEM_LOG_CONTROLS,
+        "evidence": {
+            "evidence_id": f"ev-log-{uuid}",
+            "evidence_ref": f"{org_url}/api/v1/logs/{uuid}",
+            "evidence_collected_at": utc_iso(collected_at),
+        },
+        "attributes": {
+            "okta_event_type": event_type,
+            "display_message": entry.get("displayMessage"),
+            "outcome_result": outcome_result or None,
+            "actor_id": actor_id,
+            "client_ip": (entry.get("client") or {}).get("ipAddress")
+            if isinstance(entry.get("client"), dict)
+            else None,
+        },
+    }

@@ -24,6 +24,7 @@ REAL_ADAPTERS = {
     "github-security",
     "gitlab-security",
     "okta-identity",
+    "okta-system-log",
     "aws-posture",
     "google-workspace-identity",
     "gcp-posture",

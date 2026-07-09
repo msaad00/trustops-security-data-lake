@@ -86,7 +86,7 @@ until a collection adapter ships.
 | `jira-ticketing`            | Jira tickets/workflows  | executable                    |
 | `snowflake-evidence-lake`   | governed evidence lake  | executable existing-lake read |
 | `clickhouse-telemetry-lake` | telemetry analytics     | **contract only** (no sync)   |
-| `okta-system-log`           | Okta System Log API     | **contract only** (no sync)   |
+| `okta-system-log`           | Okta System Log API     | **implemented** (incremental) |
 | `object-storage-evidence`   | object evidence store   | **contract only** (no sync)   |
 | `siem-alerts`               | SIEM/detection exports  | **contract only** (no sync)   |
 | `runtime-gateway`           | runtime policy events   | **contract only** (no sync)   |
@@ -357,10 +357,10 @@ A common misread is "Okta is high-volume, so stream it." Okta actually exposes
 **two sources at very different velocities**, and most access _controls_ read the
 slow one:
 
-| Source            | data_shape      | velocity            | freshness | ingestion                                                           | feeds                                              |
-| ----------------- | --------------- | ------------------- | --------- | ------------------------------------------------------------------- | -------------------------------------------------- |
-| `okta-identity`   | `current_state` | `low_current_state` | 1h        | scheduled pull                                                      | MFA-coverage, orphaned/terminated-account controls |
-| `okta-system-log` | `event_log`     | `medium_api`        | 15m       | **contract only** — incremental pull planned (cursor + 429 backoff) | failed-login / auth-anomaly controls (e.g. AC-7)   |
+| Source            | data_shape      | velocity            | freshness | ingestion                                                              | feeds                                              |
+| ----------------- | --------------- | ------------------- | --------- | ---------------------------------------------------------------------- | -------------------------------------------------- |
+| `okta-identity`   | `current_state` | `low_current_state` | 1h        | scheduled pull                                                         | MFA-coverage, orphaned/terminated-account controls |
+| `okta-system-log` | `event_log`     | `medium_api`        | 15m       | **implemented** — incremental pull with watermark cursor + 429 backoff | failed-login / auth-anomaly controls (e.g. AC-7)   |
 
 The current-state source (users, factors, policies) changes slowly, so an hourly
 scheduled pull is correct and cheapest. The System Log is event-shaped and needs
