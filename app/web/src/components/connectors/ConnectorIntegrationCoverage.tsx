@@ -59,7 +59,9 @@ export function ConnectorIntegrationCoverage() {
                 label="Implementation"
                 value={formatRate(coverage.implementation_rate)}
                 detail="share of catalog with collection code"
-                tone={coverage.implementation_rate >= 0.5 ? "ready" : "attention"}
+                tone={
+                  coverage.implementation_rate >= 0.5 ? "ready" : "attention"
+                }
               />
               <KpiTile
                 label="Enabled"
@@ -105,7 +107,9 @@ export function ConnectorIntegrationCoverage() {
                         <span className="truncate text-xs font-bold capitalize text-ink">
                           {row.category.replace(/_/g, " ")}
                         </span>
-                        <Badge tone={row.implemented > 0 ? "ready" : "attention"}>
+                        <Badge
+                          tone={row.implemented > 0 ? "ready" : "attention"}
+                        >
                           {row.implemented}/{row.total}
                         </Badge>
                       </div>

@@ -231,12 +231,14 @@ export function IngestionLoopStrip() {
                           </span>
                         )}
                       </div>
-                      {(run.event_count != null || run.control_tests_total != null) && (
+                      {(run.event_count != null ||
+                        run.control_tests_total != null) && (
                         <div className="mt-1 text-[10px] text-muted">
                           {run.event_count != null
                             ? `${run.event_count} events`
                             : ""}
-                          {run.event_count != null && run.control_tests_total != null
+                          {run.event_count != null &&
+                          run.control_tests_total != null
                             ? " · "
                             : ""}
                           {run.control_tests_total != null

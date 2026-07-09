@@ -1,6 +1,12 @@
 "use client";
 
-import { Activity, AlertTriangle, BarChart3, Database, Plug } from "lucide-react";
+import {
+  Activity,
+  AlertTriangle,
+  BarChart3,
+  Database,
+  Plug,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { QueryState } from "@/components/QueryState";
