@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { QueryState } from "@/components/QueryState";
 import {
   useCreateVendorAssessmentMutation,
   useSubmitVendorAssessmentMutation,
@@ -336,59 +337,61 @@ export default function VendorRiskPage() {
         description="Run standardized vendor diligence questionnaires, capture yes/partial/no answers, and score third-party readiness against SOC 2 vendor-risk controls."
       />
 
-      <Card className="p-5">
-        <CardHeader className="p-0">
-          <CardTitle>Questionnaire templates</CardTitle>
-        </CardHeader>
-        <div className="mt-3 grid gap-2 sm:grid-cols-2">
-          {templates.data?.map((template) => (
-            <div
-              key={template.template_id}
-              className="rounded-lg border border-line px-3 py-2 text-sm"
-            >
-              <p className="font-medium text-ink">{template.name}</p>
-              <p className="text-xs text-muted">
-                {template.template_id} · {template.question_count} questions
-              </p>
-            </div>
-          )) ?? <p className="text-sm text-muted">Loading templates…</p>}
-        </div>
-      </Card>
+      <QueryState queries={[templates, assessments]} label="vendor risk">
+        <Card className="p-5">
+          <CardHeader className="p-0">
+            <CardTitle>Questionnaire templates</CardTitle>
+          </CardHeader>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {templates.data?.map((template) => (
+              <div
+                key={template.template_id}
+                className="rounded-lg border border-line px-3 py-2 text-sm"
+              >
+                <p className="font-medium text-ink">{template.name}</p>
+                <p className="text-xs text-muted">
+                  {template.template_id} · {template.question_count} questions
+                </p>
+              </div>
+            )) ?? <p className="text-sm text-muted">Loading templates…</p>}
+          </div>
+        </Card>
 
-      <Card className="p-5">
-        <CardHeader className="p-0">
-          <CardTitle>New vendor assessment</CardTitle>
-        </CardHeader>
-        <div className="mt-3">
-          <CreateAssessmentForm defaultTemplateId={defaultTemplateId} />
-        </div>
-      </Card>
+        <Card className="p-5">
+          <CardHeader className="p-0">
+            <CardTitle>New vendor assessment</CardTitle>
+          </CardHeader>
+          <div className="mt-3">
+            <CreateAssessmentForm defaultTemplateId={defaultTemplateId} />
+          </div>
+        </Card>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="space-y-2">
-          {assessments.data?.length ? (
-            assessments.data.map((row) => (
-              <AssessmentRow
-                key={row.id}
-                assessment={row}
-                selected={row.id === selectedId}
-                onSelect={() => setSelectedId(row.id)}
-              />
-            ))
-          ) : (
-            <p className="text-sm text-muted">No vendor assessments yet.</p>
-          )}
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="space-y-2">
+            {assessments.data?.length ? (
+              assessments.data.map((row) => (
+                <AssessmentRow
+                  key={row.id}
+                  assessment={row}
+                  selected={row.id === selectedId}
+                  onSelect={() => setSelectedId(row.id)}
+                />
+              ))
+            ) : (
+              <p className="text-sm text-muted">No vendor assessments yet.</p>
+            )}
+          </div>
+          <div>
+            {selectedId ? (
+              <AssessmentDetail assessmentId={selectedId} />
+            ) : (
+              <Card className="p-5 text-sm text-muted">
+                Select an assessment to answer its questionnaire.
+              </Card>
+            )}
+          </div>
         </div>
-        <div>
-          {selectedId ? (
-            <AssessmentDetail assessmentId={selectedId} />
-          ) : (
-            <Card className="p-5 text-sm text-muted">
-              Select an assessment to answer its questionnaire.
-            </Card>
-          )}
-        </div>
-      </div>
+      </QueryState>
     </div>
   );
 }

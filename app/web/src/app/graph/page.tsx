@@ -41,6 +41,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { QueryState } from "@/components/QueryState";
 import {
   GraphCanvas,
   type ImperativeRef,
@@ -500,438 +501,445 @@ export default function GraphPage() {
         }
       />
 
-      <Card className="overflow-hidden">
-        <div className="flex flex-wrap items-center gap-2 p-2">
-          <div className="inline-flex items-center gap-1 rounded-lg border border-line bg-white p-0.5">
-            {(["compliance", "repository"] as const).map((mode) => (
-              <button
-                key={mode}
-                type="button"
-                onClick={() => setGraphMode(mode)}
-                className={[
-                  "inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-black",
-                  graphMode === mode
-                    ? "bg-ink text-white"
-                    : "text-slate-600 hover:bg-slate-50",
-                ].join(" ")}
-              >
-                {mode === "repository" ? (
-                  <GitBranch className="h-3.5 w-3.5" />
-                ) : (
-                  <Network className="h-3.5 w-3.5" />
-                )}
-                {mode === "repository" ? "Repository" : "Compliance"}
-              </button>
-            ))}
+      <QueryState queries={graph} label="compliance graph">
+        <Card className="overflow-hidden">
+          <div className="flex flex-wrap items-center gap-2 p-2">
+            <div className="inline-flex items-center gap-1 rounded-lg border border-line bg-white p-0.5">
+              {(["compliance", "repository"] as const).map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setGraphMode(mode)}
+                  className={[
+                    "inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-black",
+                    graphMode === mode
+                      ? "bg-ink text-white"
+                      : "text-slate-600 hover:bg-slate-50",
+                  ].join(" ")}
+                >
+                  {mode === "repository" ? (
+                    <GitBranch className="h-3.5 w-3.5" />
+                  ) : (
+                    <Network className="h-3.5 w-3.5" />
+                  )}
+                  {mode === "repository" ? "Repository" : "Compliance"}
+                </button>
+              ))}
+            </div>
+            <div className="relative min-w-[180px] flex-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search nodes (label, subtitle, owner)…"
+                className="w-full rounded-lg border border-line bg-white py-2 pl-9 pr-8 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => setSearch("")}
+                  aria-label="Clear search"
+                  className="absolute right-2 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded text-muted hover:bg-slate-100"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+            </div>
+            <div className="inline-flex items-center gap-1 rounded-lg border border-line bg-white p-0.5">
+              <Layout className="ml-1.5 h-3.5 w-3.5 text-muted" />
+              {(["LR", "TB", "BT"] as LayoutDir[]).map((dir) => (
+                <button
+                  key={dir}
+                  type="button"
+                  onClick={() => setLayout(dir)}
+                  className={[
+                    "rounded-md px-2 py-1 text-[11px] font-black uppercase tracking-wide",
+                    layout === dir
+                      ? "bg-ink text-white"
+                      : "text-slate-600 hover:bg-slate-50",
+                  ].join(" ")}
+                  title={LAYOUT_LABEL[dir]}
+                >
+                  {dir}
+                </button>
+              ))}
+            </div>
+            <Button
+              variant={pathMode ? "primary" : "default"}
+              size="sm"
+              onClick={() => {
+                if (pathFrom || pathTo) {
+                  clearPath();
+                } else {
+                  setPathMode("from");
+                }
+              }}
+              title="Click two nodes to highlight the shortest path between them"
+            >
+              <Route className="h-3.5 w-3.5" />
+              {pathFrom && pathTo
+                ? "Clear path"
+                : pathMode === "from"
+                  ? "Pick start node"
+                  : pathMode === "to"
+                    ? "Pick end node"
+                    : "Trace path"}
+            </Button>
+            <Button variant="default" size="sm" onClick={exportSVG}>
+              <ArrowDownToLine className="h-3.5 w-3.5" /> SVG
+            </Button>
+            <Button variant="default" size="sm" onClick={exportJSON}>
+              <Download className="h-3.5 w-3.5" /> JSON
+            </Button>
           </div>
-          <div className="relative min-w-[180px] flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search nodes (label, subtitle, owner)…"
-              className="w-full rounded-lg border border-line bg-white py-2 pl-9 pr-8 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
-            />
-            {search && (
-              <button
-                type="button"
-                onClick={() => setSearch("")}
-                aria-label="Clear search"
-                className="absolute right-2 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded text-muted hover:bg-slate-100"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            )}
-          </div>
-          <div className="inline-flex items-center gap-1 rounded-lg border border-line bg-white p-0.5">
-            <Layout className="ml-1.5 h-3.5 w-3.5 text-muted" />
-            {(["LR", "TB", "BT"] as LayoutDir[]).map((dir) => (
-              <button
-                key={dir}
-                type="button"
-                onClick={() => setLayout(dir)}
-                className={[
-                  "rounded-md px-2 py-1 text-[11px] font-black uppercase tracking-wide",
-                  layout === dir
-                    ? "bg-ink text-white"
-                    : "text-slate-600 hover:bg-slate-50",
-                ].join(" ")}
-                title={LAYOUT_LABEL[dir]}
-              >
-                {dir}
-              </button>
-            ))}
-          </div>
-          <Button
-            variant={pathMode ? "primary" : "default"}
-            size="sm"
-            onClick={() => {
-              if (pathFrom || pathTo) {
-                clearPath();
-              } else {
-                setPathMode("from");
-              }
-            }}
-            title="Click two nodes to highlight the shortest path between them"
-          >
-            <Route className="h-3.5 w-3.5" />
-            {pathFrom && pathTo
-              ? "Clear path"
-              : pathMode === "from"
-                ? "Pick start node"
-                : pathMode === "to"
-                  ? "Pick end node"
-                  : "Trace path"}
-          </Button>
-          <Button variant="default" size="sm" onClick={exportSVG}>
-            <ArrowDownToLine className="h-3.5 w-3.5" /> SVG
-          </Button>
-          <Button variant="default" size="sm" onClick={exportJSON}>
-            <Download className="h-3.5 w-3.5" /> JSON
-          </Button>
+        </Card>
+
+        <div className="grid min-w-0 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+          <Card className="p-2.5">
+            <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+              Focus
+            </div>
+            <div className="mt-0.5 truncate text-lg font-black text-ink">
+              {graphMode === "compliance"
+                ? filterFramework || "All frameworks"
+                : "Repository"}
+            </div>
+            <div className="mt-0.5 text-[11px] text-muted">
+              {visibleSummary.nodes} nodes / {visibleSummary.edges} edges
+            </div>
+          </Card>
+          <Card className="p-2.5">
+            <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+              {graphMode === "compliance" ? "Controls" : "Governance signals"}
+            </div>
+            <div className="mt-0.5 text-lg font-black text-ink">
+              {graphMode === "compliance"
+                ? visibleSummary.controls
+                : visibleSummary.signals}
+            </div>
+            <div className="mt-0.5 text-[11px] text-muted">
+              visible after filters
+            </div>
+          </Card>
+          <Card className="p-2.5">
+            <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+              {graphMode === "compliance" ? "Evidence types" : "Repositories"}
+            </div>
+            <div className="mt-0.5 text-lg font-black text-ink">
+              {graphMode === "compliance"
+                ? visibleSummary.evidenceTypes
+                : visibleSummary.repositories}
+            </div>
+            <div className="mt-0.5 text-[11px] text-muted">
+              mapped in this view
+            </div>
+          </Card>
+          <Card className="p-2.5">
+            <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+              {graphMode === "compliance" ? "Covered assets" : "Signal gaps"}
+            </div>
+            <div className="mt-0.5 text-lg font-black text-ink">
+              {graphMode === "compliance"
+                ? visibleSummary.assets
+                : (counts.signal_gap ?? 0)}
+            </div>
+            <div className="mt-0.5 text-[11px] text-muted">
+              {graphMode === "compliance"
+                ? "with evidence paths"
+                : "need authenticated sync"}
+            </div>
+          </Card>
         </div>
-      </Card>
 
-      <div className="grid min-w-0 gap-2 sm:grid-cols-2 xl:grid-cols-4">
-        <Card className="p-2.5">
-          <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-            Focus
+        {repoGraphEmpty && (
+          <div className="rounded-xl border border-dashed border-line bg-slate-50 p-4 text-sm text-muted">
+            <b className="text-ink">No repository graph yet.</b> Run a public
+            repo audit or sync GitHub/GitLab governance evidence, then reload
+            this workbench. Private signals stay explicit — the graph will show{" "}
+            <code>not_available_public_mode</code> gaps instead of inventing
+            data.
           </div>
-          <div className="mt-0.5 truncate text-lg font-black text-ink">
-            {graphMode === "compliance"
-              ? filterFramework || "All frameworks"
-              : "Repository"}
-          </div>
-          <div className="mt-0.5 text-[11px] text-muted">
-            {visibleSummary.nodes} nodes / {visibleSummary.edges} edges
-          </div>
-        </Card>
-        <Card className="p-2.5">
-          <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-            {graphMode === "compliance" ? "Controls" : "Governance signals"}
-          </div>
-          <div className="mt-0.5 text-lg font-black text-ink">
-            {graphMode === "compliance"
-              ? visibleSummary.controls
-              : visibleSummary.signals}
-          </div>
-          <div className="mt-0.5 text-[11px] text-muted">
-            visible after filters
-          </div>
-        </Card>
-        <Card className="p-2.5">
-          <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-            {graphMode === "compliance" ? "Evidence types" : "Repositories"}
-          </div>
-          <div className="mt-0.5 text-lg font-black text-ink">
-            {graphMode === "compliance"
-              ? visibleSummary.evidenceTypes
-              : visibleSummary.repositories}
-          </div>
-          <div className="mt-0.5 text-[11px] text-muted">
-            mapped in this view
-          </div>
-        </Card>
-        <Card className="p-2.5">
-          <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-            {graphMode === "compliance" ? "Covered assets" : "Signal gaps"}
-          </div>
-          <div className="mt-0.5 text-lg font-black text-ink">
-            {graphMode === "compliance"
-              ? visibleSummary.assets
-              : (counts.signal_gap ?? 0)}
-          </div>
-          <div className="mt-0.5 text-[11px] text-muted">
-            {graphMode === "compliance"
-              ? "with evidence paths"
-              : "need authenticated sync"}
-          </div>
-        </Card>
-      </div>
+        )}
 
-      {repoGraphEmpty && (
-        <div className="rounded-xl border border-dashed border-line bg-slate-50 p-4 text-sm text-muted">
-          <b className="text-ink">No repository graph yet.</b> Run a public repo
-          audit or sync GitHub/GitLab governance evidence, then reload this
-          workbench. Private signals stay explicit — the graph will show{" "}
-          <code>not_available_public_mode</code> gaps instead of inventing data.
-        </div>
-      )}
-
-      <div className="grid min-w-0 gap-3 xl:grid-cols-[220px_minmax(0,1fr)]">
-        <Card className="max-h-[clamp(380px,calc(100dvh-260px),620px)] min-h-[340px] overflow-auto">
-          <CardHeader className="p-3 pb-2">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Filter className="h-4 w-4 text-muted" /> Layers + facets
-            </CardTitle>
-            <CardDescription className="text-xs leading-5">
-              Persistent filters drive every other view.
-            </CardDescription>
-          </CardHeader>
-          <div className="grid gap-2 p-3 pt-0">
-            <section>
-              <div className="mb-2 text-[11px] font-black uppercase tracking-wide text-muted">
-                Layers
-              </div>
-              <div className="grid gap-1">
-                {activeKinds.map((kind) => {
-                  const on = visible.has(kind);
-                  const Icon = KIND_ICON[kind];
-                  const color = KIND_SWATCH[kind];
-                  return (
-                    <button
-                      key={kind}
-                      type="button"
-                      onClick={() => toggle(kind)}
-                      className={[
-                        "grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1.5 rounded-lg border px-2 py-1.5 text-left text-[11px] font-extrabold",
-                        on
-                          ? "bg-white text-ink shadow-sm"
-                          : "border-line bg-slate-50 text-muted hover:border-brand",
-                      ].join(" ")}
-                      style={on ? { borderColor: color } : undefined}
-                    >
-                      <span
-                        className="grid h-6 w-6 place-items-center rounded-lg"
-                        style={{ background: `${color}18`, color }}
+        <div className="grid min-w-0 gap-3 xl:grid-cols-[220px_minmax(0,1fr)]">
+          <Card className="max-h-[clamp(380px,calc(100dvh-260px),620px)] min-h-[340px] overflow-auto">
+            <CardHeader className="p-3 pb-2">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Filter className="h-4 w-4 text-muted" /> Layers + facets
+              </CardTitle>
+              <CardDescription className="text-xs leading-5">
+                Persistent filters drive every other view.
+              </CardDescription>
+            </CardHeader>
+            <div className="grid gap-2 p-3 pt-0">
+              <section>
+                <div className="mb-2 text-[11px] font-black uppercase tracking-wide text-muted">
+                  Layers
+                </div>
+                <div className="grid gap-1">
+                  {activeKinds.map((kind) => {
+                    const on = visible.has(kind);
+                    const Icon = KIND_ICON[kind];
+                    const color = KIND_SWATCH[kind];
+                    return (
+                      <button
+                        key={kind}
+                        type="button"
+                        onClick={() => toggle(kind)}
+                        className={[
+                          "grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1.5 rounded-lg border px-2 py-1.5 text-left text-[11px] font-extrabold",
+                          on
+                            ? "bg-white text-ink shadow-sm"
+                            : "border-line bg-slate-50 text-muted hover:border-brand",
+                        ].join(" ")}
+                        style={on ? { borderColor: color } : undefined}
                       >
-                        <Icon className="h-3.5 w-3.5" />
-                      </span>
-                      <span className="truncate">{KIND_LABEL[kind]}</span>
-                      <Badge tone={KIND_TONE[kind]}>{counts[kind] ?? 0}</Badge>
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
-
-            <section>
-              <div className="mb-2 text-[11px] font-black uppercase tracking-wide text-muted">
-                Framework
-              </div>
-              <select
-                value={filterFramework}
-                onChange={(e) => setFilterFramework(e.target.value)}
-                className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
-              >
-                <option value="">All frameworks (wide map)</option>
-                {frameworks.map((f) => (
-                  <option key={f} value={f}>
-                    {f}
-                  </option>
-                ))}
-              </select>
-            </section>
-
-            <section>
-              <div className="mb-2 text-[11px] font-black uppercase tracking-wide text-muted">
-                Owner
-              </div>
-              <select
-                value={filterOwner}
-                onChange={(e) => setFilterOwner(e.target.value)}
-                className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
-              >
-                <option value="">All owners</option>
-                {owners.map((o) => (
-                  <option key={o} value={o}>
-                    {o}
-                  </option>
-                ))}
-              </select>
-            </section>
-
-            <section>
-              <div className="mb-2 text-[11px] font-black uppercase tracking-wide text-muted">
-                Environment
-              </div>
-              <select
-                value={filterEnvironment}
-                onChange={(e) => setFilterEnvironment(e.target.value)}
-                className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
-              >
-                <option value="">All environments</option>
-                {environments.map((env) => (
-                  <option key={env} value={env}>
-                    {env}
-                  </option>
-                ))}
-              </select>
-            </section>
-
-            <section className="rounded-lg border border-line bg-slate-50/60 p-2.5 text-[11px] text-muted">
-              <div className="mb-1 font-black uppercase tracking-wide text-muted">
-                Legend
-              </div>
-              <div className="grid gap-1">
-                {activeKinds.map((kind) => (
-                  <div key={kind} className="flex items-center gap-2">
-                    {(() => {
-                      const Icon = KIND_ICON[kind];
-                      const color = KIND_SWATCH[kind];
-                      return (
                         <span
-                          className="grid h-5 w-5 place-items-center rounded-md"
-                          style={{ background: `${color}16`, color }}
+                          className="grid h-6 w-6 place-items-center rounded-lg"
+                          style={{ background: `${color}18`, color }}
                         >
-                          <Icon className="h-3 w-3" />
+                          <Icon className="h-3.5 w-3.5" />
                         </span>
-                      );
-                    })()}
-                    <span className="text-ink">{KIND_LABEL[kind]}</span>
-                  </div>
-                ))}
-                <div className="mt-1 border-t border-line pt-1">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded bg-amber-400" />
-                    <span>path trace</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded bg-emerald-500" />
-                    <span>search match</span>
+                        <span className="truncate">{KIND_LABEL[kind]}</span>
+                        <Badge tone={KIND_TONE[kind]}>
+                          {counts[kind] ?? 0}
+                        </Badge>
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+
+              <section>
+                <div className="mb-2 text-[11px] font-black uppercase tracking-wide text-muted">
+                  Framework
+                </div>
+                <select
+                  value={filterFramework}
+                  onChange={(e) => setFilterFramework(e.target.value)}
+                  className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
+                >
+                  <option value="">All frameworks (wide map)</option>
+                  {frameworks.map((f) => (
+                    <option key={f} value={f}>
+                      {f}
+                    </option>
+                  ))}
+                </select>
+              </section>
+
+              <section>
+                <div className="mb-2 text-[11px] font-black uppercase tracking-wide text-muted">
+                  Owner
+                </div>
+                <select
+                  value={filterOwner}
+                  onChange={(e) => setFilterOwner(e.target.value)}
+                  className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
+                >
+                  <option value="">All owners</option>
+                  {owners.map((o) => (
+                    <option key={o} value={o}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+              </section>
+
+              <section>
+                <div className="mb-2 text-[11px] font-black uppercase tracking-wide text-muted">
+                  Environment
+                </div>
+                <select
+                  value={filterEnvironment}
+                  onChange={(e) => setFilterEnvironment(e.target.value)}
+                  className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
+                >
+                  <option value="">All environments</option>
+                  {environments.map((env) => (
+                    <option key={env} value={env}>
+                      {env}
+                    </option>
+                  ))}
+                </select>
+              </section>
+
+              <section className="rounded-lg border border-line bg-slate-50/60 p-2.5 text-[11px] text-muted">
+                <div className="mb-1 font-black uppercase tracking-wide text-muted">
+                  Legend
+                </div>
+                <div className="grid gap-1">
+                  {activeKinds.map((kind) => (
+                    <div key={kind} className="flex items-center gap-2">
+                      {(() => {
+                        const Icon = KIND_ICON[kind];
+                        const color = KIND_SWATCH[kind];
+                        return (
+                          <span
+                            className="grid h-5 w-5 place-items-center rounded-md"
+                            style={{ background: `${color}16`, color }}
+                          >
+                            <Icon className="h-3 w-3" />
+                          </span>
+                        );
+                      })()}
+                      <span className="text-ink">{KIND_LABEL[kind]}</span>
+                    </div>
+                  ))}
+                  <div className="mt-1 border-t border-line pt-1">
+                    <div className="flex items-center gap-2">
+                      <span className="h-2.5 w-2.5 rounded bg-amber-400" />
+                      <span>path trace</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="h-2.5 w-2.5 rounded bg-emerald-500" />
+                      <span>search match</span>
+                    </div>
                   </div>
                 </div>
+              </section>
+            </div>
+          </Card>
+
+          <div className="grid min-w-0 gap-3 overflow-hidden">
+            {pathFrom && pathTo && (
+              <div className="min-w-0 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+                <b>Path trace:</b>{" "}
+                <code className="break-all text-ink">{pathFrom}</code> →{" "}
+                <code className="break-all text-ink">{pathTo}</code>. Dimmed
+                nodes/edges are outside the shortest path.{" "}
+                <button
+                  type="button"
+                  className="ml-1 underline"
+                  onClick={clearPath}
+                >
+                  clear
+                </button>
               </div>
-            </section>
+            )}
+            {pathMode && (
+              <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-xs text-blue-900">
+                {pathMode === "from"
+                  ? "Click any node in the canvas to set the path start."
+                  : "Click any node in the canvas to set the path end. Esc cancels."}
+              </div>
+            )}
+            <GraphCanvas
+              graph={data}
+              visibleKinds={visible}
+              layout={layout}
+              filterOwner={filterOwner}
+              filterEnvironment={filterEnvironment}
+              filterFramework={filterFramework}
+              searchQuery={search}
+              pathFrom={pathFrom}
+              pathTo={pathTo}
+              onSelectNode={handleSelect}
+              canvasRef={canvasRef}
+            />
           </div>
-        </Card>
-
-        <div className="grid min-w-0 gap-3 overflow-hidden">
-          {pathFrom && pathTo && (
-            <div className="min-w-0 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
-              <b>Path trace:</b>{" "}
-              <code className="break-all text-ink">{pathFrom}</code> →{" "}
-              <code className="break-all text-ink">{pathTo}</code>. Dimmed
-              nodes/edges are outside the shortest path.{" "}
-              <button
-                type="button"
-                className="ml-1 underline"
-                onClick={clearPath}
-              >
-                clear
-              </button>
-            </div>
-          )}
-          {pathMode && (
-            <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-xs text-blue-900">
-              {pathMode === "from"
-                ? "Click any node in the canvas to set the path start."
-                : "Click any node in the canvas to set the path end. Esc cancels."}
-            </div>
-          )}
-          <GraphCanvas
-            graph={data}
-            visibleKinds={visible}
-            layout={layout}
-            filterOwner={filterOwner}
-            filterEnvironment={filterEnvironment}
-            filterFramework={filterFramework}
-            searchQuery={search}
-            pathFrom={pathFrom}
-            pathTo={pathTo}
-            onSelectNode={handleSelect}
-            canvasRef={canvasRef}
-          />
         </div>
-      </div>
 
-      {(graphMode === "compliance" || graphMode === "repository") && (
-        <Card className="overflow-hidden">
-          <CardHeader>
-            <CardTitle>Mapping inspector</CardTitle>
-            <CardDescription>
-              {graphMode === "compliance"
-                ? "Control paths currently visible in the graph. Select a row to inspect the mapped control and keep the canvas focused."
-                : "Repository governance paths in the graph. Select a row to focus the canvas on repo signals, gaps, and linked controls."}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            {graphMode === "compliance" ? (
-              mappingRows.length > 0 ? (
+        {(graphMode === "compliance" || graphMode === "repository") && (
+          <Card className="overflow-hidden">
+            <CardHeader>
+              <CardTitle>Mapping inspector</CardTitle>
+              <CardDescription>
+                {graphMode === "compliance"
+                  ? "Control paths currently visible in the graph. Select a row to inspect the mapped control and keep the canvas focused."
+                  : "Repository governance paths in the graph. Select a row to focus the canvas on repo signals, gaps, and linked controls."}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              {graphMode === "compliance" ? (
+                mappingRows.length > 0 ? (
+                  <div className="grid gap-2 md:grid-cols-2 2xl:grid-cols-3">
+                    {mappingRows.map(
+                      ({ control, evidenceTypes, assetCount }) => (
+                        <button
+                          key={control.id}
+                          type="button"
+                          onClick={() => handleSelect(control)}
+                          className="min-w-0 rounded-lg border border-line bg-slate-50 p-3 text-left transition hover:border-brand hover:bg-white"
+                        >
+                          <div className="flex min-w-0 items-start justify-between gap-2">
+                            <div className="min-w-0">
+                              <div className="truncate text-sm font-black text-ink">
+                                {control.label}
+                              </div>
+                              <div className="mt-0.5 truncate text-[11px] text-muted">
+                                {control.subtitle}
+                              </div>
+                            </div>
+                            <Badge tone="info">{control.framework_id}</Badge>
+                          </div>
+                          <div className="mt-2 grid grid-cols-[minmax(0,1fr)_auto] gap-2 text-xs">
+                            <span className="truncate text-muted">
+                              {evidenceTypes.length > 0
+                                ? evidenceTypes.map((e) => e.label).join(", ")
+                                : "No evidence type mapped"}
+                            </span>
+                            <span className="font-black text-ink">
+                              {assetCount} assets
+                            </span>
+                          </div>
+                        </button>
+                      ),
+                    )}
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-dashed border-line bg-slate-50 p-4 text-sm text-muted">
+                    No mapped control paths match the active filters.
+                  </div>
+                )
+              ) : repoMappingRows.length > 0 ? (
                 <div className="grid gap-2 md:grid-cols-2 2xl:grid-cols-3">
-                  {mappingRows.map(({ control, evidenceTypes, assetCount }) => (
-                    <button
-                      key={control.id}
-                      type="button"
-                      onClick={() => handleSelect(control)}
-                      className="min-w-0 rounded-lg border border-line bg-slate-50 p-3 text-left transition hover:border-brand hover:bg-white"
-                    >
-                      <div className="flex min-w-0 items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <div className="truncate text-sm font-black text-ink">
-                            {control.label}
+                  {repoMappingRows.map(
+                    ({ repository, signalCount, gapCount, controlIds }) => (
+                      <button
+                        key={repository.id}
+                        type="button"
+                        onClick={() => handleSelect(repository)}
+                        className="min-w-0 rounded-lg border border-line bg-slate-50 p-3 text-left transition hover:border-brand hover:bg-white"
+                      >
+                        <div className="flex min-w-0 items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <div className="truncate text-sm font-black text-ink">
+                              {repository.label}
+                            </div>
+                            <div className="mt-0.5 truncate text-[11px] text-muted">
+                              {repository.subtitle ??
+                                repository.owner ??
+                                "repository"}
+                            </div>
                           </div>
-                          <div className="mt-0.5 truncate text-[11px] text-muted">
-                            {control.subtitle}
-                          </div>
+                          {repository.provider && (
+                            <Badge>{repository.provider}</Badge>
+                          )}
                         </div>
-                        <Badge tone="info">{control.framework_id}</Badge>
-                      </div>
-                      <div className="mt-2 grid grid-cols-[minmax(0,1fr)_auto] gap-2 text-xs">
-                        <span className="truncate text-muted">
-                          {evidenceTypes.length > 0
-                            ? evidenceTypes.map((e) => e.label).join(", ")
-                            : "No evidence type mapped"}
-                        </span>
-                        <span className="font-black text-ink">
-                          {assetCount} assets
-                        </span>
-                      </div>
-                    </button>
-                  ))}
+                        <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                          <Badge tone="info">{signalCount} signals</Badge>
+                          {gapCount > 0 && (
+                            <Badge tone="critical">{gapCount} auth gaps</Badge>
+                          )}
+                          <span className="font-black text-ink">
+                            {controlIds.length} controls
+                          </span>
+                        </div>
+                      </button>
+                    ),
+                  )}
                 </div>
               ) : (
                 <div className="rounded-xl border border-dashed border-line bg-slate-50 p-4 text-sm text-muted">
-                  No mapped control paths match the active filters.
+                  Link GitHub or GitLab governance connectors and sync a
+                  repository to populate the topology graph.
                 </div>
-              )
-            ) : repoMappingRows.length > 0 ? (
-              <div className="grid gap-2 md:grid-cols-2 2xl:grid-cols-3">
-                {repoMappingRows.map(
-                  ({ repository, signalCount, gapCount, controlIds }) => (
-                    <button
-                      key={repository.id}
-                      type="button"
-                      onClick={() => handleSelect(repository)}
-                      className="min-w-0 rounded-lg border border-line bg-slate-50 p-3 text-left transition hover:border-brand hover:bg-white"
-                    >
-                      <div className="flex min-w-0 items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <div className="truncate text-sm font-black text-ink">
-                            {repository.label}
-                          </div>
-                          <div className="mt-0.5 truncate text-[11px] text-muted">
-                            {repository.subtitle ??
-                              repository.owner ??
-                              "repository"}
-                          </div>
-                        </div>
-                        {repository.provider && (
-                          <Badge>{repository.provider}</Badge>
-                        )}
-                      </div>
-                      <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                        <Badge tone="info">{signalCount} signals</Badge>
-                        {gapCount > 0 && (
-                          <Badge tone="critical">{gapCount} auth gaps</Badge>
-                        )}
-                        <span className="font-black text-ink">
-                          {controlIds.length} controls
-                        </span>
-                      </div>
-                    </button>
-                  ),
-                )}
-              </div>
-            ) : (
-              <div className="rounded-xl border border-dashed border-line bg-slate-50 p-4 text-sm text-muted">
-                Link GitHub or GitLab governance connectors and sync a
-                repository to populate the topology graph.
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </QueryState>
 
       <GraphNodeDrawer
         node={selected}

@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { QueryState } from "@/components/QueryState";
 import {
   useCreateRiskMutation,
   useDeleteRiskMutation,
@@ -232,25 +233,18 @@ export default function RisksPage() {
           </CardDescription>
         </CardHeader>
         <CreateRiskForm />
-        <div className="divide-y divide-line border-t border-line">
-          {risks.isLoading && (
-            <div className="px-5 py-6 text-sm text-muted">Loading risks…</div>
-          )}
-          {risks.isError && (
-            <div className="m-5 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              Risk register could not be loaded. The register API is unavailable
-              — retrying automatically.
-            </div>
-          )}
-          {!risks.isLoading && !risks.isError && rows.length === 0 && (
-            <div className="m-5 rounded-lg border border-dashed border-line p-6 text-center text-sm text-muted">
-              No risks recorded yet. Add the first entry above to start the
-              register.
-            </div>
-          )}
-          {!risks.isError &&
-            rows.map((risk) => <RiskRow key={risk.id} risk={risk} />)}
-        </div>
+        <QueryState queries={risks} label="risk register">
+          <div className="divide-y divide-line border-t border-line">
+            {rows.length === 0 ? (
+              <div className="m-5 rounded-lg border border-dashed border-line p-6 text-center text-sm text-muted">
+                No risks recorded yet. Add the first entry above to start the
+                register.
+              </div>
+            ) : (
+              rows.map((risk) => <RiskRow key={risk.id} risk={risk} />)
+            )}
+          </div>
+        </QueryState>
       </Card>
     </div>
   );

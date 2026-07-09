@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { QueryState } from "@/components/QueryState";
 import {
   useControlExceptions,
   useCreateControlExceptionMutation,
@@ -146,58 +147,60 @@ function TasksSection() {
           Add task
         </Button>
       </div>
-      <div className="divide-y divide-line border-t border-line">
-        {rows.length === 0 && (
-          <div className="px-5 py-6 text-sm text-muted">No tasks yet.</div>
-        )}
-        {rows.map((task: RemediationTask) => (
-          <div
-            key={task.id}
-            className="flex flex-wrap items-center gap-3 px-5 py-3"
-          >
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-black text-ink">
-                {task.title}
+      <QueryState queries={tasks} label="remediation tasks">
+        <div className="divide-y divide-line border-t border-line">
+          {rows.length === 0 && (
+            <div className="px-5 py-6 text-sm text-muted">No tasks yet.</div>
+          )}
+          {rows.map((task: RemediationTask) => (
+            <div
+              key={task.id}
+              className="flex flex-wrap items-center gap-3 px-5 py-3"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-sm font-black text-ink">
+                  {task.title}
+                </div>
+                <div className="text-[11px] text-muted">
+                  {task.control_id ?? "no control"} ·{" "}
+                  {task.owner || "unassigned"} · due {fmtDate(task.due_at)}
+                </div>
               </div>
-              <div className="text-[11px] text-muted">
-                {task.control_id ?? "no control"} · {task.owner || "unassigned"}{" "}
-                · due {fmtDate(task.due_at)}
-              </div>
+              <Badge tone={PRIORITY_TONE[task.priority]}>{task.priority}</Badge>
+              <Badge tone={STATUS_TONE[task.status]}>{task.status}</Badge>
+              {task.overdue && <Badge tone="critical">overdue</Badge>}
+              {task.status !== "resolved" && task.status !== "dismissed" && (
+                <div className="flex gap-1.5">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() =>
+                      update.mutate({
+                        id: task.id,
+                        payload: { status: "resolved" },
+                      })
+                    }
+                  >
+                    Resolve
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() =>
+                      update.mutate({
+                        id: task.id,
+                        payload: { status: "dismissed" },
+                      })
+                    }
+                  >
+                    Dismiss
+                  </Button>
+                </div>
+              )}
             </div>
-            <Badge tone={PRIORITY_TONE[task.priority]}>{task.priority}</Badge>
-            <Badge tone={STATUS_TONE[task.status]}>{task.status}</Badge>
-            {task.overdue && <Badge tone="critical">overdue</Badge>}
-            {task.status !== "resolved" && task.status !== "dismissed" && (
-              <div className="flex gap-1.5">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() =>
-                    update.mutate({
-                      id: task.id,
-                      payload: { status: "resolved" },
-                    })
-                  }
-                >
-                  Resolve
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() =>
-                    update.mutate({
-                      id: task.id,
-                      payload: { status: "dismissed" },
-                    })
-                  }
-                >
-                  Dismiss
-                </Button>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </QueryState>
     </Card>
   );
 }
@@ -253,52 +256,54 @@ function EvidenceRequestsSection() {
           Request evidence
         </Button>
       </div>
-      <div className="divide-y divide-line border-t border-line">
-        {rows.length === 0 && (
-          <div className="px-5 py-6 text-sm text-muted">
-            No evidence requests.
-          </div>
-        )}
-        {rows.map((req: EvidenceRequestItem) => (
-          <div
-            key={req.id}
-            className="flex flex-wrap items-center gap-3 px-5 py-3"
-          >
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-black text-ink">
-                {req.control_id}
-              </div>
-              <div className="text-[11px] text-muted">
-                from {req.requested_from || "—"} · created{" "}
-                {fmtDate(req.created_at)}
-              </div>
+      <QueryState queries={requests} label="evidence requests">
+        <div className="divide-y divide-line border-t border-line">
+          {rows.length === 0 && (
+            <div className="px-5 py-6 text-sm text-muted">
+              No evidence requests.
             </div>
-            <Badge tone={STATUS_TONE[req.status]}>{req.status}</Badge>
-            {req.status === "open" && (
-              <div className="flex gap-1.5">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() =>
-                    setStatus.mutate({ id: req.id, status: "fulfilled" })
-                  }
-                >
-                  Fulfill
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() =>
-                    setStatus.mutate({ id: req.id, status: "cancelled" })
-                  }
-                >
-                  Cancel
-                </Button>
+          )}
+          {rows.map((req: EvidenceRequestItem) => (
+            <div
+              key={req.id}
+              className="flex flex-wrap items-center gap-3 px-5 py-3"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-sm font-black text-ink">
+                  {req.control_id}
+                </div>
+                <div className="text-[11px] text-muted">
+                  from {req.requested_from || "—"} · created{" "}
+                  {fmtDate(req.created_at)}
+                </div>
               </div>
-            )}
-          </div>
-        ))}
-      </div>
+              <Badge tone={STATUS_TONE[req.status]}>{req.status}</Badge>
+              {req.status === "open" && (
+                <div className="flex gap-1.5">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() =>
+                      setStatus.mutate({ id: req.id, status: "fulfilled" })
+                    }
+                  >
+                    Fulfill
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() =>
+                      setStatus.mutate({ id: req.id, status: "cancelled" })
+                    }
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </QueryState>
     </Card>
   );
 }
@@ -366,39 +371,41 @@ function ExceptionsSection() {
           Add exception
         </Button>
       </div>
-      <div className="divide-y divide-line border-t border-line">
-        {rows.length === 0 && (
-          <div className="px-5 py-6 text-sm text-muted">No exceptions.</div>
-        )}
-        {rows.map((exc: ControlExceptionItem) => (
-          <div
-            key={exc.id}
-            className="flex flex-wrap items-center gap-3 px-5 py-3"
-          >
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-black text-ink">
-                {exc.control_id}
+      <QueryState queries={exceptions} label="control exceptions">
+        <div className="divide-y divide-line border-t border-line">
+          {rows.length === 0 && (
+            <div className="px-5 py-6 text-sm text-muted">No exceptions.</div>
+          )}
+          {rows.map((exc: ControlExceptionItem) => (
+            <div
+              key={exc.id}
+              className="flex flex-wrap items-center gap-3 px-5 py-3"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-sm font-black text-ink">
+                  {exc.control_id}
+                </div>
+                <div className="text-[11px] text-muted">
+                  {exc.reason || "no reason"} · by {exc.approved_by || "—"} ·
+                  expires {fmtDate(exc.expires_at)}
+                </div>
               </div>
-              <div className="text-[11px] text-muted">
-                {exc.reason || "no reason"} · by {exc.approved_by || "—"} ·
-                expires {fmtDate(exc.expires_at)}
-              </div>
+              <Badge tone={exc.active ? "ready" : STATUS_TONE[exc.status]}>
+                {exc.active ? "active" : exc.status}
+              </Badge>
+              {exc.active && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => revoke.mutate(exc.id)}
+                >
+                  Revoke
+                </Button>
+              )}
             </div>
-            <Badge tone={exc.active ? "ready" : STATUS_TONE[exc.status]}>
-              {exc.active ? "active" : exc.status}
-            </Badge>
-            {exc.active && (
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => revoke.mutate(exc.id)}
-              >
-                Revoke
-              </Button>
-            )}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </QueryState>
     </Card>
   );
 }

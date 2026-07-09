@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { QueryState } from "@/components/QueryState";
 import {
   useAdoptPolicyMutation,
   usePolicies,
@@ -228,116 +229,123 @@ export default function PoliciesPage() {
         description="Browse bundled SOC 2 and ISO-aligned policy templates, adopt them for your tenant, edit markdown drafts, and publish to prove control coverage."
       />
 
-      {attestation.data && attestation.data.published > 0 && (
-        <Card className="grid gap-2 p-5 sm:grid-cols-4">
-          <div>
-            <p className="text-xs text-muted">Published policies</p>
-            <p className="text-lg font-bold text-ink">
-              {attestation.data.published}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs text-muted">With acknowledgments</p>
-            <p className="text-lg font-bold text-ink">
-              {attestation.data.acknowledged}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs text-muted">Unattested</p>
-            <p className="text-lg font-bold text-ink">
-              {attestation.data.unattested}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs text-muted">Total attestations</p>
-            <p className="text-lg font-bold text-ink">
-              {attestation.data.total_acknowledgments}
-            </p>
-          </div>
-        </Card>
-      )}
-
-      <Card className="p-5">
-        <CardHeader className="p-0">
-          <CardTitle>Templates</CardTitle>
-        </CardHeader>
-        <div className="mt-3 grid gap-2 sm:grid-cols-2">
-          {templates.data?.map((template) => (
-            <div
-              key={template.template_id}
-              className="rounded-lg border border-line px-3 py-2 text-sm"
-            >
-              <p className="font-medium text-ink">{template.title}</p>
-              <p className="text-xs text-muted">
-                {template.category} · {template.related_control_ids.length}{" "}
-                controls
+      <QueryState
+        queries={[templates, policies, coverage, attestation]}
+        label="policy library"
+      >
+        {attestation.data && attestation.data.published > 0 && (
+          <Card className="grid gap-2 p-5 sm:grid-cols-4">
+            <div>
+              <p className="text-xs text-muted">Published policies</p>
+              <p className="text-lg font-bold text-ink">
+                {attestation.data.published}
               </p>
-              <p className="mt-1 text-xs text-muted">{template.summary}</p>
             </div>
-          )) ?? <p className="text-sm text-muted">Loading templates…</p>}
-        </div>
-      </Card>
-
-      {firstTemplate ? (
-        <Card className="p-5">
-          <CardHeader className="p-0">
-            <CardTitle>Adopt a template</CardTitle>
-          </CardHeader>
-          <div className="mt-3">
-            <AdoptTemplateForm template={firstTemplate} />
-          </div>
-        </Card>
-      ) : null}
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="space-y-2">
-          {policies.data?.length ? (
-            policies.data.map((row) => (
-              <PolicyRow
-                key={row.id}
-                policy={row}
-                selected={row.id === selectedId}
-                onSelect={() => setSelectedId(row.id)}
-              />
-            ))
-          ) : (
-            <p className="text-sm text-muted">No adopted policies yet.</p>
-          )}
-        </div>
-        <div className="space-y-6">
-          {selectedId ? (
-            <PolicyDetail documentId={selectedId} />
-          ) : (
-            <Card className="p-5 text-sm text-muted">
-              Select a policy to edit or publish.
-            </Card>
-          )}
-          <Card className="p-5">
-            <CardHeader className="p-0">
-              <CardTitle>Control coverage gaps</CardTitle>
-            </CardHeader>
-            <div className="mt-3 space-y-2">
-              {gaps.length ? (
-                gaps.map((row) => (
-                  <div
-                    key={row.control_id}
-                    className="rounded-lg border border-line px-3 py-2 text-sm"
-                  >
-                    <span className="font-medium text-ink">
-                      {row.control_id}
-                    </span>
-                    <span className="ml-2 text-xs text-muted">{row.title}</span>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-muted">
-                  No policy coverage gaps detected.
-                </p>
-              )}
+            <div>
+              <p className="text-xs text-muted">With acknowledgments</p>
+              <p className="text-lg font-bold text-ink">
+                {attestation.data.acknowledged}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted">Unattested</p>
+              <p className="text-lg font-bold text-ink">
+                {attestation.data.unattested}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted">Total attestations</p>
+              <p className="text-lg font-bold text-ink">
+                {attestation.data.total_acknowledgments}
+              </p>
             </div>
           </Card>
+        )}
+
+        <Card className="p-5">
+          <CardHeader className="p-0">
+            <CardTitle>Templates</CardTitle>
+          </CardHeader>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {templates.data?.map((template) => (
+              <div
+                key={template.template_id}
+                className="rounded-lg border border-line px-3 py-2 text-sm"
+              >
+                <p className="font-medium text-ink">{template.title}</p>
+                <p className="text-xs text-muted">
+                  {template.category} · {template.related_control_ids.length}{" "}
+                  controls
+                </p>
+                <p className="mt-1 text-xs text-muted">{template.summary}</p>
+              </div>
+            )) ?? <p className="text-sm text-muted">Loading templates…</p>}
+          </div>
+        </Card>
+
+        {firstTemplate ? (
+          <Card className="p-5">
+            <CardHeader className="p-0">
+              <CardTitle>Adopt a template</CardTitle>
+            </CardHeader>
+            <div className="mt-3">
+              <AdoptTemplateForm template={firstTemplate} />
+            </div>
+          </Card>
+        ) : null}
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="space-y-2">
+            {policies.data?.length ? (
+              policies.data.map((row) => (
+                <PolicyRow
+                  key={row.id}
+                  policy={row}
+                  selected={row.id === selectedId}
+                  onSelect={() => setSelectedId(row.id)}
+                />
+              ))
+            ) : (
+              <p className="text-sm text-muted">No adopted policies yet.</p>
+            )}
+          </div>
+          <div className="space-y-6">
+            {selectedId ? (
+              <PolicyDetail documentId={selectedId} />
+            ) : (
+              <Card className="p-5 text-sm text-muted">
+                Select a policy to edit or publish.
+              </Card>
+            )}
+            <Card className="p-5">
+              <CardHeader className="p-0">
+                <CardTitle>Control coverage gaps</CardTitle>
+              </CardHeader>
+              <div className="mt-3 space-y-2">
+                {gaps.length ? (
+                  gaps.map((row) => (
+                    <div
+                      key={row.control_id}
+                      className="rounded-lg border border-line px-3 py-2 text-sm"
+                    >
+                      <span className="font-medium text-ink">
+                        {row.control_id}
+                      </span>
+                      <span className="ml-2 text-xs text-muted">
+                        {row.title}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted">
+                    No policy coverage gaps detected.
+                  </p>
+                )}
+              </div>
+            </Card>
+          </div>
         </div>
-      </div>
+      </QueryState>
     </div>
   );
 }
