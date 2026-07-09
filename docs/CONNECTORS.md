@@ -210,7 +210,7 @@ security-lakehouse connectors sync \
 ```
 
 ClickHouse is the high-velocity telemetry lake reader. The fixture path mirrors
-``security.normalized_events`` from ``deploy/clickhouse/schema.sql`` and uses
+`security.normalized_events` from `deploy/clickhouse/schema.sql` and uses
 append-mode ingestion with a high-water cursor:
 
 ```bash
@@ -234,8 +234,8 @@ security-lakehouse connectors sync \
 ```
 
 For live ClickHouse collection, point the connector at your cluster HTTP endpoint
-and mount the read-only token via ``TRUSTOPS_CLICKHOUSE_TOKEN`` (or the
-``credential_ref`` you configured). TrustOps only issues ``SELECT`` reads against
+and mount the read-only token via `TRUSTOPS_CLICKHOUSE_TOKEN` (or the
+`credential_ref` you configured). TrustOps only issues `SELECT` reads against
 the discovered table.
 
 For live Snowflake collection, install the cloud connector extra and use the
