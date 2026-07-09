@@ -45,7 +45,9 @@ export function ConnectorRegistryGapStrip({
                 <span className="text-sm font-black text-ink">
                   Registry gap — access contracts awaiting adapters
                 </span>
-                <Badge tone="attention">{contractOnly.length} contract-only</Badge>
+                <Badge tone="attention">
+                  {contractOnly.length} contract-only
+                </Badge>
               </div>
               <p className="mt-1 text-xs leading-5 text-muted">
                 Read-only access contracts are probe-gated today; collection
