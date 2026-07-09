@@ -9,6 +9,7 @@ from typing import Any
 
 from security_lakehouse.connector_health import build_connector_health
 from security_lakehouse.connector_state import build_catalog_view, list_runs
+from security_lakehouse.ingestion_metrics import build_catalog_coverage, build_eval_accuracy
 from security_lakehouse.io import count_jsonl, jsonl_field_counts, read_json, read_jsonl
 from security_lakehouse.lake_scale import (
     DEFAULT_EVAL_SCHEDULE,
@@ -50,6 +51,8 @@ def build_ingestion_status(lake_dir: str | Path) -> JsonObject:
         stale_count=stale_count,
         integrity=integrity,
     )
+    eval_accuracy = build_eval_accuracy(lake)
+    catalog_coverage = build_catalog_coverage(connectors=connectors)
     return {
         "state": state,
         "summary": {
@@ -82,7 +85,10 @@ def build_ingestion_status(lake_dir: str | Path) -> JsonObject:
             proof=proof,
             current_posture=current_posture,
             scale=scale,
+            eval_accuracy=eval_accuracy,
         ),
+        "eval_accuracy": eval_accuracy,
+        "catalog_coverage": catalog_coverage,
         "scale": {
             **scale,
             "eval_schedule": lake_eval_schedule(lake),
@@ -290,8 +296,25 @@ def _recommended_actions(
     proof: JsonObject,
     current_posture: JsonObject,
     scale: JsonObject,
+    eval_accuracy: JsonObject | None = None,
 ) -> list[JsonObject]:
     actions: list[JsonObject] = []
+    if scale.get("eval_overdue"):
+        actions.append(
+            {
+                "priority": "p1",
+                "action": "run_lake_eval",
+                "reason": "Lake evaluation is overdue — posture and control tests may be stale.",
+            }
+        )
+    if eval_accuracy and int(eval_accuracy.get("failing") or 0) > 0:
+        actions.append(
+            {
+                "priority": "p1",
+                "action": "triage_failing_control_tests",
+                "reason": f"{int(eval_accuracy['failing'])} control test(s) failing after the latest eval.",
+            }
+        )
     if scale.get("mode") == "warehouse_required":
         actions.append(
             {

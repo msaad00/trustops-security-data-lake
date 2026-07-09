@@ -558,5 +558,8 @@ def test_v1_ingestion_status_includes_scale(tmp_path: Path) -> None:
         assert "warehouse_row_threshold" in scale
         assert "next_eval_at" in scale
         assert "eval_overdue" in scale
+        assert "eval_accuracy" in body["data"]
+        assert "catalog_coverage" in body["data"]
+        assert body["data"]["catalog_coverage"]["total"] >= 1
     finally:
         server.shutdown()
