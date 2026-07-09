@@ -65,10 +65,12 @@ def build_catalog_coverage(
             bucket["enabled"] += 1
     total = len(catalog)
     enabled = len(enabled_ids)
+    contract_only = total - implemented
     return {
         "total": total,
         "implemented": implemented,
         "enabled": enabled,
+        "contract_only": contract_only,
         "implementation_rate": round(implemented / total, 4) if total else 0.0,
         "enabled_rate": round(enabled / implemented, 4) if implemented else 0.0,
         "by_category": [{"category": category, **counts} for category, counts in sorted(by_category.items())],
