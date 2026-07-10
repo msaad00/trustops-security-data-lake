@@ -1387,29 +1387,6 @@ export interface RemediationInsights {
 
 // --- Metrics & insights (populated by migration 0006_metrics) ---------------
 
-export interface PostureMetricPoint {
-  id: string;
-  tenant_id: string;
-  captured_at: string;
-  posture_score: number;
-  control_pass_rate: number;
-  open_violations: number;
-  critical_violations: number;
-  stale_controls: number;
-  evidence_fresh_pct: number;
-  remediation_open: number;
-  remediation_overdue: number;
-}
-
-export interface RemediationInsights {
-  open: number;
-  overdue: number;
-  mttr_hours: number | null;
-  sla_attainment_pct: number | null;
-  resolved_count: number;
-  sla_eligible_count: number;
-}
-
 export type SlaHeatmapColumn =
   | "open_on_track"
   | "open_overdue"

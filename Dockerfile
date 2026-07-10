@@ -5,7 +5,7 @@
 #   1. web-build  — Node 22 builds the static React export into
 #                   src/security_lakehouse/web/dist/
 #   2. py-build   — Python 3.12 installs the package + analytics extras into a
-#                   virtualenv that runtime mounts read-only
+#                   virtualenv that runtime mounts read-only (matches CI)
 #   3. runtime    — Python 3.12 slim, copies the venv + lake mount points,
 #                   runs `security-lakehouse serve` as a non-root user
 #
