@@ -23,6 +23,7 @@ REAL_ADAPTERS = {
     "snowflake-evidence-lake",
     "clickhouse-telemetry-lake",
     "object-storage-evidence",
+    "runtime-gateway",
     "github-security",
     "gitlab-security",
     "okta-identity",
@@ -170,6 +171,7 @@ def test_has_adapter_agrees_with_registry() -> None:
         assert connector_state.has_adapter(connector_id) is True
     # A catalog connector without a registered builder is contract-only.
     assert connector_state.has_adapter("siem-alerts") is False
+    assert connector_state.has_adapter("identity-provider") is False
     assert connector_state.has_adapter("not-a-real-connector") is False
 
 
@@ -193,6 +195,7 @@ def test_unknown_connector_id_raises_no_runner_registered(tmp_path: Path) -> Non
         ("snowflake-evidence-lake", "snowflake", {}),
         ("clickhouse-telemetry-lake", "clickhouse-telemetry-lake", {}),
         ("object-storage-evidence", "object-storage-evidence", {}),
+        ("runtime-gateway", "runtime-gateway", {}),
         ("okta-identity", "okta", {}),
         ("aws-posture", "aws", {}),
         ("google-workspace-identity", "google_workspace", {}),

@@ -62,6 +62,11 @@ from security_lakehouse.connectors_okta import (
     collect_okta_evidence,
     collect_okta_system_log_evidence,
 )
+from security_lakehouse.connectors_runtime import (
+    RuntimeGatewayClient,
+    RuntimeGatewayFixtureClient,
+    collect_runtime_gateway_evidence,
+)
 from security_lakehouse.connectors_s3 import (
     S3Client,
     S3FixtureClient,
@@ -505,10 +510,21 @@ def _build_object_storage(inputs: SyncInputs) -> list[dict[str, Any]]:
     )
 
 
+def _build_runtime_gateway(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_runtime_gateway(
+        fixture_dir=inputs.fixture_dir,
+        env=inputs.env,
+        credentials=inputs.credentials,
+        options=inputs.options,
+        since=inputs.since,
+    )
+
+
 REGISTRY: dict[str, ConnectorBuilder] = {
     "snowflake-evidence-lake": _build_snowflake,
     "clickhouse-telemetry-lake": _build_clickhouse,
     "object-storage-evidence": _build_object_storage,
+    "runtime-gateway": _build_runtime_gateway,
     "github-security": _build_github,
     "gitlab-security": _build_gitlab,
     "okta-identity": _build_okta,
@@ -794,6 +810,32 @@ def _collect_s3(
             external_id=external_id,
         )
     return collect_s3_evidence(client, bucket=bucket or getattr(client, "bucket", None), prefix=prefix)
+
+
+def _collect_runtime_gateway(
+    *,
+    fixture_dir: str | Path | None,
+    env: dict[str, str],
+    credentials: dict[str, Any] | None = None,
+    options: dict[str, Any] | None = None,
+    since: str | None = None,
+) -> list[dict[str, Any]]:
+    credentials = credentials or {}
+    options = options or {}
+    stream = str(options.get("stream") or "runtime-events").strip() or "runtime-events"
+    if fixture_dir:
+        client: RuntimeGatewayClient | RuntimeGatewayFixtureClient = RuntimeGatewayFixtureClient(
+            fixture_dir, stream=stream
+        )
+    else:
+        host = str(credentials.get("host") or env.get("RUNTIME_GATEWAY_URL") or "").strip()
+        token_env = str(credentials.get("credential_ref") or "TRUSTOPS_RUNTIME_GATEWAY_TOKEN")
+        token = str(credentials.get("token") or env.get(token_env) or "").strip()
+        if not host:
+            raise ValueError("runtime-gateway sync requires --fixture-dir, or host plus read-only credentials")
+        netguard.assert_url_is_public(host, label="runtime gateway url")
+        client = RuntimeGatewayClient(host, token=token, stream=stream)
+    return collect_runtime_gateway_evidence(client, since=since)
 
 
 def _collect_snowflake(

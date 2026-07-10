@@ -286,7 +286,8 @@
       "data_shape": "event_log",
       "vendor": "Runtime gateway",
       "description": "Tool calls, policy decisions, and runtime blocks.",
-      "setup_hint": "Read-only access to runtime decision logs."
+      "setup_hint": "Read-only access to runtime decision logs.",
+      "is_implemented": true
     },
     {
       "connector_id": "managed-local-evidence",

@@ -197,6 +197,21 @@ export const CONNECTOR_CREDENTIAL_FIELDS: Record<string, ConnectorFieldDef[]> =
         placeholder: "shared secret used in the role trust policy",
       },
     ],
+    "runtime-gateway": [
+      {
+        name: "host",
+        label: "Runtime gateway URL",
+        placeholder: "https://runtime.example.com",
+        required: true,
+      },
+      {
+        name: "credential_ref",
+        label: "Scoped credential reference",
+        placeholder: "TRUSTOPS_RUNTIME_GATEWAY_TOKEN",
+        required: true,
+        hint: "Environment variable name holding the read-only export token.",
+      },
+    ],
   };
 
 export const CONNECTOR_SCOPE_FIELDS: Record<string, ConnectorFieldDef[]> = {
@@ -293,6 +308,15 @@ export const CONNECTOR_SCOPE_FIELDS: Record<string, ConnectorFieldDef[]> = {
       name: "region",
       label: "Region (optional)",
       placeholder: "us-east-1",
+    },
+  ],
+  "runtime-gateway": [
+    {
+      name: "stream",
+      label: "Event stream",
+      placeholder: "runtime-events",
+      required: true,
+      hint: "Read-only runtime decision log stream.",
     },
   ],
 };
