@@ -2,12 +2,12 @@
   "schema_version": "trustops.catalog_bundle.v1",
   "as_of": null,
   "framework_count": 15,
-  "control_count": 898,
-  "crosswalk_count": 898,
+  "control_count": 942,
+  "crosswalk_count": 942,
   "components": {
     "frameworks": "9649c87eae9d47cd0dfe3b0d903337335863a47a9e7c9ec1bb04cb3903dfe52b",
-    "controls": "4343dbeca17c2fc0602c0259fd162e2c32eee6f5375f82bfe1289bca880b1e0c",
-    "crosswalk": "ae6effcf381afd0e7e116fc8740a2d6199614632668b98fe54a7c7d943fe5e58"
+    "controls": "8f67a3caa0628c3238b3a38a49ee1ae5985c6f0ff96eeb13e81d57500b40c5fc",
+    "crosswalk": "5d1a74ee7a345e5fee7adc7119baa02a1cf7485cc9b338a6f3e304ce4f06dd61"
   },
   "framework_versions": [
     {
@@ -1329,6 +1329,13 @@
       "lifecycle_status": "active"
     },
     {
+      "control_id": "EU-AI-ACT-Art.11",
+      "framework_id": "eu-ai-act-2024-1689",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
       "control_id": "EU-AI-ACT-Art.12",
       "framework_id": "eu-ai-act-2024-1689",
       "version": "1.0.0",
@@ -1354,6 +1361,62 @@
       "framework_id": "eu-ai-act-2024-1689",
       "version": "1.0.0",
       "valid_from": "2026-05-26",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.17",
+      "framework_id": "eu-ai-act-2024-1689",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.26",
+      "framework_id": "eu-ai-act-2024-1689",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.49",
+      "framework_id": "eu-ai-act-2024-1689",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.5",
+      "framework_id": "eu-ai-act-2024-1689",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.51",
+      "framework_id": "eu-ai-act-2024-1689",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.6",
+      "framework_id": "eu-ai-act-2024-1689",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.71",
+      "framework_id": "eu-ai-act-2024-1689",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.72",
+      "framework_id": "eu-ai-act-2024-1689",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
       "lifecycle_status": "active"
     },
     {
@@ -3373,6 +3436,48 @@
       "lifecycle_status": "active"
     },
     {
+      "control_id": "GDPR-Art.12",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.13",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.14",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.15",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.17",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.24",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
       "control_id": "GDPR-Art.25",
       "framework_id": "gdpr-2016-679",
       "version": "1.0.0",
@@ -3408,10 +3513,66 @@
       "lifecycle_status": "active"
     },
     {
+      "control_id": "GDPR-Art.34",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
       "control_id": "GDPR-Art.35",
       "framework_id": "gdpr-2016-679",
       "version": "1.0.0",
       "valid_from": "2026-05-26",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.37",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.44",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.45",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.46",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.5",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.6",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "GDPR-Art.7",
+      "framework_id": "gdpr-2016-679",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
       "lifecycle_status": "active"
     },
     {
@@ -3429,10 +3590,73 @@
       "lifecycle_status": "active"
     },
     {
+      "control_id": "HIPAA-164.308(a)(2)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(3)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
       "control_id": "HIPAA-164.308(a)(4)",
       "framework_id": "hipaa-security-rule",
       "version": "1.0.0",
       "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(5)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(6)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(7)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(8)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "HIPAA-164.308(b)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "HIPAA-164.310(a)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "HIPAA-164.312(a)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
       "lifecycle_status": "active"
     },
     {
@@ -3450,10 +3674,31 @@
       "lifecycle_status": "active"
     },
     {
+      "control_id": "HIPAA-164.312(c)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
       "control_id": "HIPAA-164.312(e)",
       "framework_id": "hipaa-security-rule",
       "version": "1.0.0",
       "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "HIPAA-164.314(a)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "HIPAA-164.314(b)",
+      "framework_id": "hipaa-security-rule",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
       "lifecycle_status": "active"
     },
     {
@@ -5956,6 +6201,13 @@
       "lifecycle_status": "active"
     },
     {
+      "control_id": "PCI-DSS-1",
+      "framework_id": "pci-dss-v4",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
       "control_id": "PCI-DSS-10",
       "framework_id": "pci-dss-v4",
       "version": "1.0.0",
@@ -5970,10 +6222,66 @@
       "lifecycle_status": "active"
     },
     {
+      "control_id": "PCI-DSS-12",
+      "framework_id": "pci-dss-v4",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "PCI-DSS-2",
+      "framework_id": "pci-dss-v4",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "PCI-DSS-3",
+      "framework_id": "pci-dss-v4",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "PCI-DSS-4",
+      "framework_id": "pci-dss-v4",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "PCI-DSS-5",
+      "framework_id": "pci-dss-v4",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "PCI-DSS-6",
+      "framework_id": "pci-dss-v4",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
       "control_id": "PCI-DSS-7",
       "framework_id": "pci-dss-v4",
       "version": "1.0.0",
       "valid_from": "2026-05-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "PCI-DSS-8",
+      "framework_id": "pci-dss-v4",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "PCI-DSS-9",
+      "framework_id": "pci-dss-v4",
+      "version": "1.0.0",
+      "valid_from": "2026-06-30",
       "lifecycle_status": "active"
     },
     {
@@ -6404,5 +6712,5 @@
       "lifecycle_status": "active"
     }
   ],
-  "bundle_sha256": "f1b005def7b726f256457c8a75d83db887ab1b1a3f48e30581cb65f681a00a83"
+  "bundle_sha256": "a8d281a39eccf225f73e3633a585787c6ac1da58a04beadbccb992bbfc7fb5bc"
 }

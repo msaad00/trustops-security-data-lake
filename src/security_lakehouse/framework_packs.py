@@ -577,6 +577,13 @@ PACK_BUILDERS = {
 }
 
 
+def all_pack_builders() -> dict[str, Any]:
+    """Return full + limited pack builders (lazy import avoids circular deps)."""
+    from security_lakehouse.limited_packs import LIMITED_PACK_BUILDERS
+
+    return {**PACK_BUILDERS, **LIMITED_PACK_BUILDERS}
+
+
 def pack_control_row(spec: PackControlSpec) -> JsonObject:
     return {
         "control_id": spec.control_id,
@@ -686,7 +693,7 @@ def sync_framework_packs(
     write_bundle: bool = True,
 ) -> dict[str, Any]:
     """Merge selected packs into catalog artifacts. Preserves hand-authored rows."""
-    selected = packs or list(PACK_BUILDERS.keys())
+    selected = packs or list(all_pack_builders().keys())
     catalog_path = catalog_path or DEFAULT_CONTROL_CATALOG
     mappings_path = mappings_path or DEFAULT_MAPPINGS
     control_map_path = control_map_path or DEFAULT_CONTROL_CATALOG.parent.parent / "mappings" / "control_map.json"
@@ -702,9 +709,9 @@ def sync_framework_packs(
     added_controls = 0
     added_mappings = 0
     for pack_id in selected:
-        builder = PACK_BUILDERS.get(pack_id)
+        builder = all_pack_builders().get(pack_id)
         if builder is None:
-            raise ValueError(f"unknown pack {pack_id!r}; choose from {sorted(PACK_BUILDERS)}")
+            raise ValueError(f"unknown pack {pack_id!r}; choose from {sorted(all_pack_builders())}")
         for spec in builder():
             if spec.control_id not in existing_controls:
                 existing_controls[spec.control_id] = pack_control_row(spec)
@@ -743,6 +750,10 @@ def sync_framework_packs(
             "iso-27001-2022",
             "iso-27017-2015",
             "iso-42001-2023",
+            "gdpr-2016-679",
+            "hipaa-security-rule",
+            "pci-dss-v4",
+            "eu-ai-act-2024-1689",
         )
     }
     return {

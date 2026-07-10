@@ -2426,6 +2426,20 @@
       ]
     },
     {
+      "control_id": "EU-AI-ACT-Art.11",
+      "framework_id": "eu-ai-act-2024-1689",
+      "articles": [
+        {
+          "article_id": "11",
+          "title": "Technical documentation maintained for high-risk AI",
+          "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to EU AI Act Art.11."
+        }
+      ]
+    },
+    {
       "control_id": "EU-AI-ACT-Art.12",
       "framework_id": "eu-ai-act-2024-1689",
       "articles": [
@@ -2478,6 +2492,118 @@
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-26T00:00:00Z",
           "rationale": "EU AI Act Article 15 is mapped for model evaluation, robustness, cybersecurity, and runtime-monitoring evidence."
+        }
+      ]
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.17",
+      "framework_id": "eu-ai-act-2024-1689",
+      "articles": [
+        {
+          "article_id": "17",
+          "title": "Quality management system for high-risk AI evidenced",
+          "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to EU AI Act Art.17."
+        }
+      ]
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.26",
+      "framework_id": "eu-ai-act-2024-1689",
+      "articles": [
+        {
+          "article_id": "26",
+          "title": "Deployer obligations for high-risk AI met",
+          "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to EU AI Act Art.26."
+        }
+      ]
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.49",
+      "framework_id": "eu-ai-act-2024-1689",
+      "articles": [
+        {
+          "article_id": "49",
+          "title": "Fundamental-rights impact assessment where required",
+          "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to EU AI Act Art.49."
+        }
+      ]
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.5",
+      "framework_id": "eu-ai-act-2024-1689",
+      "articles": [
+        {
+          "article_id": "5",
+          "title": "Prohibited AI practices not deployed",
+          "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to EU AI Act Art.5."
+        }
+      ]
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.51",
+      "framework_id": "eu-ai-act-2024-1689",
+      "articles": [
+        {
+          "article_id": "51",
+          "title": "GPAI provider obligations evidenced",
+          "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to EU AI Act Art.51."
+        }
+      ]
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.6",
+      "framework_id": "eu-ai-act-2024-1689",
+      "articles": [
+        {
+          "article_id": "6",
+          "title": "High-risk AI classification documented",
+          "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to EU AI Act Art.6."
+        }
+      ]
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.71",
+      "framework_id": "eu-ai-act-2024-1689",
+      "articles": [
+        {
+          "article_id": "71",
+          "title": "EU database registration where applicable",
+          "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to EU AI Act Art.71."
+        }
+      ]
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.72",
+      "framework_id": "eu-ai-act-2024-1689",
+      "articles": [
+        {
+          "article_id": "72",
+          "title": "Post-market monitoring plan active",
+          "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to EU AI Act Art.72."
         }
       ]
     },
@@ -6514,6 +6640,90 @@
       ]
     },
     {
+      "control_id": "GDPR-Art.12",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "12",
+          "title": "Transparent privacy notices published",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to GDPR Art.12."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.13",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "13",
+          "title": "Collection-time privacy information provided",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to GDPR Art.13."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.14",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "14",
+          "title": "Indirect collection privacy information provided",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to GDPR Art.14."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.15",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "15",
+          "title": "Data subject access rights supported",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to GDPR Art.15."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.17",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "17",
+          "title": "Erasure requests handled within SLA",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to GDPR Art.17."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.24",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "24",
+          "title": "Controller responsibility demonstrated",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to GDPR Art.24."
+        }
+      ]
+    },
+    {
       "control_id": "GDPR-Art.25",
       "framework_id": "gdpr-2016-679",
       "articles": [
@@ -6584,6 +6794,20 @@
       ]
     },
     {
+      "control_id": "GDPR-Art.34",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "34",
+          "title": "Communication of breach to data subjects",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to GDPR Art.34."
+        }
+      ]
+    },
+    {
       "control_id": "GDPR-Art.35",
       "framework_id": "gdpr-2016-679",
       "articles": [
@@ -6594,6 +6818,104 @@
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-26T00:00:00Z",
           "rationale": "GDPR Article 35 is mapped for DPIA evidence over high-risk processing activities and related remediation findings."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.37",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "37",
+          "title": "DPO designation evidenced where required",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to GDPR Art.37."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.44",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "44",
+          "title": "Cross-border transfer safeguards documented",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to GDPR Art.44."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.45",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "45",
+          "title": "Adequacy or transfer mechanism evidenced",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to GDPR Art.45."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.46",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "46",
+          "title": "Standard contractual clauses or BCRs in place",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to GDPR Art.46."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.5",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "5",
+          "title": "Processing principles evidenced",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to GDPR Art.5."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.6",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "6",
+          "title": "Lawful basis for processing documented",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to GDPR Art.6."
+        }
+      ]
+    },
+    {
+      "control_id": "GDPR-Art.7",
+      "framework_id": "gdpr-2016-679",
+      "articles": [
+        {
+          "article_id": "7",
+          "title": "Consent conditions evidenced where used",
+          "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to GDPR Art.7."
         }
       ]
     },
@@ -6626,6 +6948,34 @@
       ]
     },
     {
+      "control_id": "HIPAA-164.308(a)(2)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.308(a)(2)",
+          "title": "Assigned security responsibility documented",
+          "official_source_url": "https://www.hhs.gov/hipaa/for-professionals/security/index.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to 45 CFR \u00a7164.308(a)(2)."
+        }
+      ]
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(3)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.308(a)(3)",
+          "title": "Workforce security procedures evidenced",
+          "official_source_url": "https://www.hhs.gov/hipaa/for-professionals/security/index.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to 45 CFR \u00a7164.308(a)(3)."
+        }
+      ]
+    },
+    {
       "control_id": "HIPAA-164.308(a)(4)",
       "framework_id": "hipaa-security-rule",
       "articles": [
@@ -6636,6 +6986,104 @@
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
           "rationale": "45 CFR \u00a7164.308(a)(4) \u2014 Information access management standard."
+        }
+      ]
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(5)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.308(a)(5)",
+          "title": "Security awareness training completed",
+          "official_source_url": "https://www.hhs.gov/hipaa/for-professionals/security/index.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to 45 CFR \u00a7164.308(a)(5)."
+        }
+      ]
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(6)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.308(a)(6)",
+          "title": "Security incident procedures tested",
+          "official_source_url": "https://www.hhs.gov/hipaa/for-professionals/security/index.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to 45 CFR \u00a7164.308(a)(6)."
+        }
+      ]
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(7)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.308(a)(7)",
+          "title": "Contingency plan and backups evidenced",
+          "official_source_url": "https://www.hhs.gov/hipaa/for-professionals/security/index.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to 45 CFR \u00a7164.308(a)(7)."
+        }
+      ]
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(8)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.308(a)(8)",
+          "title": "Periodic evaluation performed",
+          "official_source_url": "https://www.hhs.gov/hipaa/for-professionals/security/index.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to 45 CFR \u00a7164.308(a)(8)."
+        }
+      ]
+    },
+    {
+      "control_id": "HIPAA-164.308(b)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.308(b)",
+          "title": "Business associate agreements current",
+          "official_source_url": "https://www.hhs.gov/hipaa/for-professionals/security/index.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to 45 CFR \u00a7164.308(b)."
+        }
+      ]
+    },
+    {
+      "control_id": "HIPAA-164.310(a)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.310(a)",
+          "title": "Facility access controls documented",
+          "official_source_url": "https://www.hhs.gov/hipaa/for-professionals/security/index.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to 45 CFR \u00a7164.310(a)."
+        }
+      ]
+    },
+    {
+      "control_id": "HIPAA-164.312(a)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.312(a)",
+          "title": "Access control mechanisms enforced",
+          "official_source_url": "https://www.hhs.gov/hipaa/for-professionals/security/index.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to 45 CFR \u00a7164.312(a)."
         }
       ]
     },
@@ -6668,6 +7116,20 @@
       ]
     },
     {
+      "control_id": "HIPAA-164.312(c)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.312(c)",
+          "title": "Integrity controls for ePHI evidenced",
+          "official_source_url": "https://www.hhs.gov/hipaa/for-professionals/security/index.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to 45 CFR \u00a7164.312(c)."
+        }
+      ]
+    },
+    {
       "control_id": "HIPAA-164.312(e)",
       "framework_id": "hipaa-security-rule",
       "articles": [
@@ -6678,6 +7140,34 @@
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
           "rationale": "45 CFR \u00a7164.312(e) \u2014 Guard against unauthorized access to ePHI transmitted over an electronic communications network."
+        }
+      ]
+    },
+    {
+      "control_id": "HIPAA-164.314(a)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.314(a)",
+          "title": "Business associate requirements enforced",
+          "official_source_url": "https://www.hhs.gov/hipaa/for-professionals/security/index.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to 45 CFR \u00a7164.314(a)."
+        }
+      ]
+    },
+    {
+      "control_id": "HIPAA-164.314(b)",
+      "framework_id": "hipaa-security-rule",
+      "articles": [
+        {
+          "article_id": "164.314(b)",
+          "title": "Group health plan requirements met",
+          "official_source_url": "https://www.hhs.gov/hipaa/for-professionals/security/index.html",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to 45 CFR \u00a7164.314(b)."
         }
       ]
     },
@@ -11680,6 +12170,20 @@
       ]
     },
     {
+      "control_id": "PCI-DSS-1",
+      "framework_id": "pci-dss-v4",
+      "articles": [
+        {
+          "article_id": "1",
+          "title": "Network security controls enforced",
+          "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4 Req 1."
+        }
+      ]
+    },
+    {
       "control_id": "PCI-DSS-10",
       "framework_id": "pci-dss-v4",
       "articles": [
@@ -11708,6 +12212,90 @@
       ]
     },
     {
+      "control_id": "PCI-DSS-12",
+      "framework_id": "pci-dss-v4",
+      "articles": [
+        {
+          "article_id": "12",
+          "title": "Information security policy maintained",
+          "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4 Req 12."
+        }
+      ]
+    },
+    {
+      "control_id": "PCI-DSS-2",
+      "framework_id": "pci-dss-v4",
+      "articles": [
+        {
+          "article_id": "2",
+          "title": "Secure configurations applied",
+          "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4 Req 2."
+        }
+      ]
+    },
+    {
+      "control_id": "PCI-DSS-3",
+      "framework_id": "pci-dss-v4",
+      "articles": [
+        {
+          "article_id": "3",
+          "title": "Stored account data protected",
+          "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4 Req 3."
+        }
+      ]
+    },
+    {
+      "control_id": "PCI-DSS-4",
+      "framework_id": "pci-dss-v4",
+      "articles": [
+        {
+          "article_id": "4",
+          "title": "Transmission encryption enforced",
+          "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4 Req 4."
+        }
+      ]
+    },
+    {
+      "control_id": "PCI-DSS-5",
+      "framework_id": "pci-dss-v4",
+      "articles": [
+        {
+          "article_id": "5",
+          "title": "Malicious software protections active",
+          "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4 Req 5."
+        }
+      ]
+    },
+    {
+      "control_id": "PCI-DSS-6",
+      "framework_id": "pci-dss-v4",
+      "articles": [
+        {
+          "article_id": "6",
+          "title": "Secure development practices evidenced",
+          "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4 Req 6."
+        }
+      ]
+    },
+    {
       "control_id": "PCI-DSS-7",
       "framework_id": "pci-dss-v4",
       "articles": [
@@ -11718,6 +12306,34 @@
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-24T00:00:00Z",
           "rationale": "PCI DSS v4.0 Requirement 7 \u2014 Restrict access by business need to know (sub-requirements 7.1\u20137.3)."
+        }
+      ]
+    },
+    {
+      "control_id": "PCI-DSS-8",
+      "framework_id": "pci-dss-v4",
+      "articles": [
+        {
+          "article_id": "8",
+          "title": "User identification and authentication enforced",
+          "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4 Req 8."
+        }
+      ]
+    },
+    {
+      "control_id": "PCI-DSS-9",
+      "framework_id": "pci-dss-v4",
+      "articles": [
+        {
+          "article_id": "9",
+          "title": "Physical access to cardholder data restricted",
+          "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
+          "reviewed_by": "internal-trust-team",
+          "reviewed_at": "2026-06-30T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4 Req 9."
         }
       ]
     },

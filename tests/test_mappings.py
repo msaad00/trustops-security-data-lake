@@ -40,9 +40,10 @@ def test_public_source_frameworks_have_reviewed_coverage_floor() -> None:
         "cis_aws": 62,
         "iso-27001-2022": 93,
         "iso-42001-2023": 38,
-        "hipaa-security-rule": 6,
-        "gdpr-2016-679": 6,
-        "eu-ai-act-2024-1689": 6,
+        "hipaa-security-rule": 18,
+        "gdpr-2016-679": 20,
+        "eu-ai-act-2024-1689": 15,
+        "pci-dss-v4": 12,
     }
 
     for framework_id, minimum in coverage_floor.items():

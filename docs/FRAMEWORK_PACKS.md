@@ -70,11 +70,17 @@ security-lakehouse catalog verify
 Full packs should show **100% seeded mapping coverage** with `seeded_control_count`
 equal to the pack sizes above.
 
+## Limited-mapping packs (GDPR, HIPAA, PCI, EU AI Act)
+
+Run `frameworks sync-packs --pack gdpr --pack hipaa --pack pci-dss --pack eu-ai-act`
+to merge expanded honest subsets (20 GDPR articles, 18 HIPAA sections, 12 PCI
+requirements, 15 EU AI Act articles as of v0.2.x). These are **not** full
+official catalogs — see [Framework Coverage](FRAMEWORK_COVERAGE.md) for counts.
+
 ## Other frameworks (add as you go)
 
-HIPAA, GDPR, EU AI Act, PCI, and others remain **seed packs** — expand
-incrementally using the same control schema. See
-[Framework Coverage](FRAMEWORK_COVERAGE.md) for current counts.
+ISO 27701 and SOC 1 remain **planned** in the registry. Expand additional
+frameworks incrementally using the same control schema.
 
 ## Custom frameworks
 

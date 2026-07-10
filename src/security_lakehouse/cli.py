@@ -418,13 +418,13 @@ def _parser() -> argparse.ArgumentParser:
         "sync-packs",
         help="merge full framework packs (SOC 2, NIST AI RMF, FedRAMP, CIS AWS, ISO) into the control catalog",
     )
-    from security_lakehouse.framework_packs import PACK_BUILDERS
+    from security_lakehouse.framework_packs import all_pack_builders
 
     frameworks_sync_packs.add_argument(
         "--pack",
         action="append",
-        choices=sorted(PACK_BUILDERS),
-        help="pack to sync (default: all full packs)",
+        choices=sorted(all_pack_builders()),
+        help="pack to sync (default: all full + limited packs)",
     )
     frameworks_sync_packs.set_defaults(func=_frameworks_sync_packs)
 
