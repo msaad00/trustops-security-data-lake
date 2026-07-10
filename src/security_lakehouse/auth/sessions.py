@@ -1,9 +1,9 @@
 """Browser session tokens and cookie helpers.
 
 Sessions are opaque tokens (``tops_sess_<hex>``) delivered to the browser in an
-httpOnly cookie. Only the SHA-256 hash is persisted, mirroring API keys, so a
-database leak never exposes a live session. Cookie values are always signed with
-``TRUSTOPS_COOKIE_SIGNING_KEY`` when authentication is enabled.
+httpOnly cookie. Only a PBKDF2 lookup digest is persisted (matching API key
+strength), so a database leak never exposes a live session. Cookie values are
+always signed with ``TRUSTOPS_COOKIE_SIGNING_KEY`` when authentication is enabled.
 """
 
 from __future__ import annotations
@@ -20,6 +20,10 @@ DEFAULT_SESSION_TTL_HOURS = 12
 _COOKIE_SIGNING_SALT = "trustops-session-cookie"
 
 
+_SESSION_HASH_SALT = b"trustops-session-token-v2"
+_SESSION_HASH_ITERATIONS = 210_000
+
+
 def generate_session_token() -> tuple[str, str]:
     """Return ``(token, token_hash)`` for a new browser session."""
     token = f"{SESSION_TOKEN_PREFIX}{secrets.token_hex(32)}"
@@ -27,8 +31,13 @@ def generate_session_token() -> tuple[str, str]:
 
 
 def hash_session_token(token: str) -> str:
-    """SHA-256 hex digest of a session token (the only form persisted)."""
-    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+    """PBKDF2 lookup digest of a session token (the only form persisted)."""
+    return hashlib.pbkdf2_hmac(
+        "sha256",
+        token.encode("utf-8"),
+        _SESSION_HASH_SALT,
+        _SESSION_HASH_ITERATIONS,
+    ).hex()
 
 
 def cookie_signing_key() -> str:

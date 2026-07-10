@@ -67,6 +67,19 @@ def _api_key() -> str:
     return token
 
 
+def _remote_api_configured() -> bool:
+    """True when MCP should route lake-backed reads through the authenticated server API."""
+    return bool(os.environ.get("TRUSTOPS_API_URL", "").strip() and os.environ.get("TRUSTOPS_API_KEY", "").strip())
+
+
+def _get_lake_or_remote(path: str, lake: Path, **params: str) -> Any:
+    """Read lake-backed v1 data locally or via the remote server when configured."""
+    if _remote_api_configured():
+        body = _server_api_request("GET", path, **params)
+        return body["data"]
+    return _get(path, lake, **params)
+
+
 def _get(path: str, lake: Path, **params: str) -> Any:
     """Run a v1 GET through the existing engine and unwrap the envelope ``data``.
 
@@ -499,12 +512,12 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
     @trustops_tool(title="AI Governance")
     def get_ai_governance() -> JsonObject:
         """Return AI inventory, lineage, model-card artifacts, and NIST AI RMF / ISO 42001 / EU AI Act coverage."""
-        return _get("/api/v1/platform/ai-governance", lake)
+        return _get_lake_or_remote("/api/v1/platform/ai-governance", lake)
 
     @trustops_tool(title="List AI Inventory")
     def list_ai_inventory(limit: int = 100, offset: int = 0) -> list[JsonObject]:
         """List model and agent inventory rows from ai.model_inventory and lineage events."""
-        return _get(
+        return _get_lake_or_remote(
             "/api/v1/platform/ai-governance/inventory",
             lake,
             limit=str(limit),
