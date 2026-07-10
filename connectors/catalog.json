@@ -264,7 +264,8 @@
       "data_shape": "event_log",
       "vendor": "SIEM",
       "description": "Alert and detection metadata from a SIEM index.",
-      "setup_hint": "Read-only service account on the alert index."
+      "setup_hint": "Read-only service account on the alert index.",
+      "is_implemented": true
     },
     {
       "connector_id": "runtime-gateway",

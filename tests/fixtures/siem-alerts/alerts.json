@@ -1,0 +1,50 @@
+[
+  {
+    "alert_id": "alert-009",
+    "event_time": "2026-05-20T16:10:00Z",
+    "tenant_id": "acme-prod",
+    "severity": "medium",
+    "status": "passed",
+    "controls": [
+      "SOC2-CC7.2",
+      "NIST-AI-RMF-MEASURE-2.7",
+      "NIST-AI-RMF-MEASURE-2.4",
+      "NIST-AI-RMF-MANAGE-4.3",
+      "ISO27001-A.8.16",
+      "HIPAA-164.312(b)",
+      "PCI-DSS-10",
+      "EU-AI-ACT-Art.12",
+      "EU-AI-ACT-Art.15"
+    ],
+    "entity": {
+      "asset_id": "agent:finance-research",
+      "asset_type": "ai_agent",
+      "owner": "ai-security",
+      "environment": "prod"
+    },
+    "rule": "ai-tool-call-anomaly",
+    "alert_state": "closed_true_positive",
+    "linked_event": "evt-003",
+    "evidence_id": "ev-siem-009",
+    "evidence_ref": "s3://security-evidence/acme-prod/siem/alert-evt-009.json"
+  },
+  {
+    "alert_id": "alert-010",
+    "event_time": "2026-05-20T17:30:00Z",
+    "tenant_id": "acme-prod",
+    "severity": "high",
+    "status": "open",
+    "controls": ["SOC2-CC7.2", "ISO27001-A.8.16"],
+    "entity": {
+      "asset_id": "agent:finance-research",
+      "asset_type": "ai_agent",
+      "owner": "ai-security",
+      "environment": "prod"
+    },
+    "rule": "credential-spray-detected",
+    "alert_state": "open",
+    "linked_event": "evt-002",
+    "evidence_id": "ev-siem-010",
+    "evidence_ref": "s3://security-evidence/acme-prod/siem/alert-evt-010.json"
+  }
+]
