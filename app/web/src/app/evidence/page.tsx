@@ -285,6 +285,7 @@ export default function EvidencePage() {
                     {hg.headers.map((h) => (
                       <th
                         key={h.id}
+                        scope="col"
                         onClick={h.column.getToggleSortingHandler()}
                         className="cursor-pointer px-3 py-2.5 text-left text-[10px] font-black uppercase tracking-wide text-muted"
                       >
