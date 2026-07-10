@@ -59,6 +59,7 @@ EXPECTED_TOOLS = {
     "list_evidence_freshness",
     "get_repository_graph",
     "escalate_stale_evidence",
+    "request_stale_evidence",
     "get_insights_timeseries",
     "get_insights_remediation",
     "get_insights_framework_trends",
