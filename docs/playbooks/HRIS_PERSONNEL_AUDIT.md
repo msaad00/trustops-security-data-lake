@@ -10,11 +10,11 @@ TrustOps does **not** ship a native HRIS connector today. For ISO 27001 and SOC 
 
 ## Prerequisites
 
-| Connector | Purpose |
-| --- | --- |
+| Connector                                      | Purpose                                      |
+| ---------------------------------------------- | -------------------------------------------- |
 | `okta-identity` or `google-workspace-identity` | Authoritative user roster + group membership |
-| `github-security` / `gitlab-security` | Repo access for engineering population |
-| Optional `aws-posture` / `azure-posture` | Cloud role assignments |
+| `github-security` / `gitlab-security`          | Repo access for engineering population       |
+| Optional `aws-posture` / `azure-posture`       | Cloud role assignments                       |
 
 Run at least one successful sync per connector before starting a campaign.
 
@@ -41,12 +41,12 @@ Run at least one successful sync per connector before starting a campaign.
 
 ### 4. Close gaps
 
-| Gap | Action |
-| --- | --- |
-| Stale IdP sync | Re-sync connector; check **Evidence freshness SLA** panel |
-| Orphan accounts | Create remediation task; revoke in IdP; re-sync |
-| Missing termination proof | Attach HR export manually to evidence room; tag `personnel` |
-| Repo access drift | Run GitHub/GitLab governance sync; inspect **Graph → Repository** mode |
+| Gap                       | Action                                                                 |
+| ------------------------- | ---------------------------------------------------------------------- |
+| Stale IdP sync            | Re-sync connector; check **Evidence freshness SLA** panel              |
+| Orphan accounts           | Create remediation task; revoke in IdP; re-sync                        |
+| Missing termination proof | Attach HR export manually to evidence room; tag `personnel`            |
+| Repo access drift         | Run GitHub/GitLab governance sync; inspect **Graph → Repository** mode |
 
 ### 5. Auditor package
 
@@ -68,11 +68,11 @@ list_evidence_freshness?status=stale
 
 ## Control mapping (examples)
 
-| Theme | Example controls | Primary evidence |
-| --- | --- | --- |
-| Screening / terms | ISO27001-A.6.1, SOC2-CC1.4 | HR policy attestation + manual hire packet |
-| Access during employment | ISO27001-A.6.2, SOC2-CC6.1 | IdP groups + access review campaign |
-| Termination | ISO27001-A.6.5, SOC2-CC6.2 | IdP deprovision events + ticket closure |
+| Theme                    | Example controls           | Primary evidence                           |
+| ------------------------ | -------------------------- | ------------------------------------------ |
+| Screening / terms        | ISO27001-A.6.1, SOC2-CC1.4 | HR policy attestation + manual hire packet |
+| Access during employment | ISO27001-A.6.2, SOC2-CC6.1 | IdP groups + access review campaign        |
+| Termination              | ISO27001-A.6.5, SOC2-CC6.2 | IdP deprovision events + ticket closure    |
 
 ## Roadmap
 
