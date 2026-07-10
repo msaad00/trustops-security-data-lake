@@ -1,11 +1,11 @@
 {
   "schema_version": "trustops.catalog_bundle.v1",
   "as_of": null,
-  "framework_count": 13,
+  "framework_count": 15,
   "control_count": 898,
   "crosswalk_count": 898,
   "components": {
-    "frameworks": "c599206ab2924f34e2e8204e37152e4915244e3844980b9a879a88e1a2502d1a",
+    "frameworks": "9649c87eae9d47cd0dfe3b0d903337335863a47a9e7c9ec1bb04cb3903dfe52b",
     "controls": "4343dbeca17c2fc0602c0259fd162e2c32eee6f5375f82bfe1289bca880b1e0c",
     "crosswalk": "ae6effcf381afd0e7e116fc8740a2d6199614632668b98fe54a7c7d943fe5e58"
   },
@@ -67,6 +67,13 @@
       "source_sha256": null
     },
     {
+      "framework_id": "iso-27701-2019",
+      "version": "2019 edition",
+      "effective_date": "2019-08-06",
+      "superseded_by": null,
+      "source_sha256": null
+    },
+    {
       "framework_id": "iso-42001-2023",
       "version": "2023 edition",
       "effective_date": "2023-12-18",
@@ -91,6 +98,13 @@
       "framework_id": "pci-dss-v4",
       "version": "v4.0",
       "effective_date": "2022-03-31",
+      "superseded_by": null,
+      "source_sha256": null
+    },
+    {
+      "framework_id": "soc1",
+      "version": "2017 TSC with revised points of focus 2022",
+      "effective_date": "2022-12-15",
       "superseded_by": null,
       "source_sha256": null
     },
@@ -6390,5 +6404,5 @@
       "lifecycle_status": "active"
     }
   ],
-  "bundle_sha256": "145e55e773bf45ae9226777ea6f1c185fe2ccd75bd6c04e1d87edf9b00501adc"
+  "bundle_sha256": "f1b005def7b726f256457c8a75d83db887ab1b1a3f48e30581cb65f681a00a83"
 }

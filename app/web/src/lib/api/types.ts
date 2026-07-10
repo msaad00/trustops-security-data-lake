@@ -1093,6 +1093,9 @@ export interface GraphNode {
   control_ids?: string[];
   event_type?: string;
   provider?: string;
+  severity?: string;
+  freshness_status?: string;
+  freshness_age_minutes?: number;
 }
 
 export interface GraphEdge {

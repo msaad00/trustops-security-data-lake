@@ -1850,6 +1850,25 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         session.commit()
         return JSONResponse(api_v1.envelope("evidence.freshness.escalate", data))
 
+    @app.post("/api/v1/evidence/freshness/request", tags=["platform"])
+    def evidence_freshness_request(
+        body: EscalateFreshnessRequest,
+        identity: Identity = Depends(_require_evidence_request),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        from security_lakehouse.evidence_freshness_workflows import request_stale_evidence
+
+        data = request_stale_evidence(
+            session,
+            tenant_id=identity.tenant_id,
+            lake_dir=str(lake_for(identity)),
+            actor_email=identity.email,
+            statuses=set(body.statuses),
+            limit=body.limit,
+        )
+        session.commit()
+        return JSONResponse(api_v1.envelope("evidence.freshness.request", data))
+
     @app.get("/api/v1/platform/audit-readiness", tags=["platform"])
     def audit_readiness_route(
         identity: Identity = Depends(_require_read),

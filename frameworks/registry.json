@@ -181,6 +181,34 @@
       "implementation_status": "implemented_full_pack",
       "copyright_guardrail": "ISO standard text is licensed. Pack stores clause identifiers and short internal titles only; customers must hold their own license for the official PDF.",
       "sync_cadence_days": 90
+    },
+    {
+      "framework_id": "iso-27701-2019",
+      "name": "ISO/IEC 27701:2019 Privacy information management",
+      "version": "2019 edition",
+      "effective_date": "2019-08-06",
+      "superseded_by": null,
+      "official_source_name": "ISO/IEC 27701:2019",
+      "official_source_url": "https://www.iso.org/standard/71670.html",
+      "source_sha256": null,
+      "pulled_at": null,
+      "implementation_status": "planned",
+      "copyright_guardrail": "ISO standard text is licensed. Planned pack will store clause identifiers and short internal titles only after customer license review.",
+      "sync_cadence_days": 90
+    },
+    {
+      "framework_id": "soc1",
+      "name": "SOC 1 Type II (ICFR)",
+      "version": "2017 TSC with revised points of focus 2022",
+      "effective_date": "2022-12-15",
+      "superseded_by": null,
+      "official_source_name": "AICPA SOC 1 Reporting on Controls at a Service Organization",
+      "official_source_url": "https://www.aicpa-cima.com/topic/audit-assurance/audit-and-assurance-greater-than-soc-2",
+      "source_sha256": null,
+      "pulled_at": null,
+      "implementation_status": "planned",
+      "copyright_guardrail": "Do not reproduce licensed criteria text. Planned pack will cite official AICPA SOC 1 guidance with local control IDs only.",
+      "sync_cadence_days": 90
     }
   ]
 }

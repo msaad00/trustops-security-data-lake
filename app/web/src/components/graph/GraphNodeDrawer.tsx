@@ -146,6 +146,18 @@ export function GraphNodeDrawer({ node, graphMode, onClose }: Props) {
                 <dd className="font-extrabold">{node.event_type}</dd>
               </>
             )}
+            {node.freshness_status && (
+              <>
+                <dt className="text-muted">Freshness</dt>
+                <dd className="font-extrabold">{node.freshness_status}</dd>
+              </>
+            )}
+            {node.severity && (
+              <>
+                <dt className="text-muted">Severity</dt>
+                <dd className="font-extrabold">{node.severity}</dd>
+              </>
+            )}
           </dl>
 
           {(node.control_ids?.length ?? 0) > 0 && (

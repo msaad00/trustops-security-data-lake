@@ -521,12 +521,28 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """List per-evidence freshness SLA rows from the gold zone."""
         return _get("/api/v1/evidence/freshness", lake, limit=str(limit), offset=str(offset))
 
+    @trustops_tool(title="Repository Governance Graph")
+    def get_repository_graph() -> JsonObject:
+        """Return repository topology and governance evidence as nodes and edges for agents."""
+        from security_lakehouse.graph import build_repository_graph
+
+        return build_repository_graph(lake)
+
     @trustops_tool(title="Escalate Stale Evidence")
     def escalate_stale_evidence(limit: int = 10) -> JsonObject:
         """Create remediation tasks for stale, expired, or missing evidence rows."""
         return _server_api_request(
             "POST",
             "/api/v1/evidence/freshness/escalate",
+            body={"limit": limit, "statuses": ["stale", "expired", "missing"]},
+        )
+
+    @trustops_tool(title="Request Stale Evidence")
+    def request_stale_evidence(limit: int = 10) -> JsonObject:
+        """Open evidence requests for controls tied to stale, expired, or missing proof."""
+        return _server_api_request(
+            "POST",
+            "/api/v1/evidence/freshness/request",
             body={"limit": limit, "statuses": ["stale", "expired", "missing"]},
         )
 
