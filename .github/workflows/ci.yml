@@ -27,6 +27,8 @@ jobs:
           cache-dependency-path: app/web/package-lock.json
       - name: Install
         run: npm ci
+      - name: ESLint
+        run: npm run lint
       - name: Typecheck
         run: npm run typecheck
       - name: Build static export
@@ -45,7 +47,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - uses: astral-sh/setup-uv@v7
         with:
           version: "latest"
@@ -77,7 +79,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - uses: actions/setup-node@v6
         with:
           node-version: "22"
@@ -99,7 +101,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - uses: astral-sh/setup-uv@v7
         with:
           version: "latest"
@@ -137,7 +139,7 @@ jobs:
           path: src/security_lakehouse/web/dist
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - uses: astral-sh/setup-uv@v7
         with:
           version: "latest"
