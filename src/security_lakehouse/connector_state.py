@@ -25,10 +25,10 @@ from security_lakehouse.connectors import (
 )
 from security_lakehouse.connectors_clickhouse import CONNECTOR_ID as CLICKHOUSE_CONNECTOR_ID
 from security_lakehouse.connectors_clickhouse import discover_clickhouse_scope, probe_clickhouse_access
-from security_lakehouse.connectors_s3 import CONNECTOR_ID as S3_CONNECTOR_ID
-from security_lakehouse.connectors_s3 import discover_s3_scope, probe_s3_access
 from security_lakehouse.connectors_runtime import CONNECTOR_ID as RUNTIME_GATEWAY_CONNECTOR_ID
 from security_lakehouse.connectors_runtime import discover_runtime_gateway_scope, probe_runtime_gateway_access
+from security_lakehouse.connectors_s3 import CONNECTOR_ID as S3_CONNECTOR_ID
+from security_lakehouse.connectors_s3 import discover_s3_scope, probe_s3_access
 from security_lakehouse.connectors_snowflake import CONNECTOR_ID as SNOWFLAKE_CONNECTOR_ID
 from security_lakehouse.connectors_snowflake import discover_snowflake_scope, probe_snowflake_access
 from security_lakehouse.lake_scale import apply_split_schedule_defaults
