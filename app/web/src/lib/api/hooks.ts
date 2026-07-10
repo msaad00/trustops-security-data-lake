@@ -860,6 +860,14 @@ export function useReviewedCrosswalk() {
   });
 }
 
+export function useFrameworkEquivalence() {
+  return useQuery({
+    queryKey: ["mappings", "equivalence"],
+    queryFn: api.frameworkEquivalence,
+    staleTime: 60_000,
+  });
+}
+
 export function useMappings() {
   return useQuery({
     queryKey: ["mappings"],

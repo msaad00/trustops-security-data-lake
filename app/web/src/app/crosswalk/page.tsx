@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ExternalLink, FileCheck2, Layers, Search } from "lucide-react";
+import { ExternalLink, FileCheck2, GitCompareArrows, Layers, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -14,6 +14,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { FrameworkBadge } from "@/components/framework/FrameworkBadge";
 import {
   useCrosswalk,
+  useFrameworkEquivalence,
   useMappings,
   useReviewedCrosswalk,
 } from "@/lib/api/hooks";
@@ -21,6 +22,7 @@ import {
 export default function CrosswalkPage() {
   const heuristic = useCrosswalk();
   const reviewed = useReviewedCrosswalk();
+  const equivalence = useFrameworkEquivalence();
   const mappings = useMappings();
   const [query, setQuery] = useState("");
   const [framework, setFramework] = useState("all");
@@ -68,6 +70,7 @@ export default function CrosswalkPage() {
   const reviewedArticleCount = new Set(
     mappingRows.map((row) => `${row.framework_id}:${row.article_id}`),
   ).size;
+  const equivalenceGroups = equivalence.data?.groups ?? [];
 
   return (
     <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
@@ -82,12 +85,63 @@ export default function CrosswalkPage() {
               {mappings.data?.length ?? 0} reviewed mappings
             </Badge>
             <Badge tone="info">
+              <GitCompareArrows className="mr-1 h-3 w-3" />{" "}
+              {equivalenceGroups.length} equivalence groups
+            </Badge>
+            <Badge tone="info">
               <Layers className="mr-1 h-3 w-3" /> {heuristicFrameworks.length} ×{" "}
               {heuristicFrameworks.length} heuristic
             </Badge>
           </div>
         }
       />
+
+      <Card className="overflow-hidden border-brand/20">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <GitCompareArrows className="h-5 w-5 text-brand" />
+            Cross-framework control equivalence
+          </CardTitle>
+          <CardDescription>
+            Curated answer-once groups linking SOC 2, ISO, NIST CSF, FedRAMP,
+            CIS, HIPAA, GDPR, PCI, and AI governance controls — the mapping layer
+            managed GRC platforms use for multi-framework posture.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-3">
+          {equivalenceGroups.map((group) => (
+            <div
+              key={group.group_id}
+              className="rounded-lg border border-line bg-slate-50/80 p-3"
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm font-black text-ink">{group.label}</span>
+                <Badge tone="info">{group.risk_domain}</Badge>
+                <Badge>{group.controls.length} controls</Badge>
+              </div>
+              <p className="mt-2 text-xs leading-5 text-muted">{group.rationale}</p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {group.controls.map((ref) => (
+                  <span
+                    key={ref.control_id}
+                    className="inline-flex items-center gap-1 rounded-full border border-line bg-white px-2 py-0.5 text-[11px] font-bold text-ink"
+                  >
+                    <FrameworkBadge
+                      frameworkId={ref.framework_id}
+                      fallbackLabel={ref.framework_id}
+                      size={14}
+                    />
+                    {ref.control_id}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+          {equivalenceGroups.length === 0 && (
+            <p className="text-sm text-muted">No equivalence groups loaded.</p>
+          )}
+        </CardContent>
+      </Card>
 
       <Card className="overflow-hidden">
         <CardHeader>

@@ -295,6 +295,16 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             posture = build_current_posture(lake)
             return posture.get("frameworks", [])
 
+    @trustops_tool(title="Framework Equivalence")
+    def get_framework_equivalence() -> JsonObject:
+        """Return curated cross-framework control equivalence groups.
+
+        Each group links controls that address the same audit theme across SOC 2,
+        ISO, NIST CSF, FedRAMP, CIS, HIPAA, GDPR, PCI, and AI frameworks — the
+        answer-once-satisfy-many mapping layer used for multi-framework posture.
+        """
+        return _get("/api/mappings/equivalence", lake)
+
     @trustops_tool(title="Ingestion Status")
     def get_ingestion_status() -> JsonObject:
         """Return live ingestion health, scale tier, schedules, and recommended actions.

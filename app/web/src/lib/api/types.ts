@@ -1182,6 +1182,39 @@ export interface ReviewedCrosswalk {
   matrix: ReviewedCrosswalkRow[];
 }
 
+export interface EquivalenceControlRef {
+  control_id: string;
+  framework_id: string;
+  role?: string;
+}
+
+export interface FrameworkEquivalenceGroup {
+  group_id: string;
+  label: string;
+  risk_domain: string;
+  rationale: string;
+  reviewed_by: string;
+  reviewed_at: string;
+  controls: EquivalenceControlRef[];
+}
+
+export interface FrameworkEquivalence {
+  schema?: string;
+  group_count: number;
+  groups: FrameworkEquivalenceGroup[];
+  index: Record<
+    string,
+    {
+      group_id: string;
+      label?: string;
+      risk_domain?: string;
+      role?: string;
+      equivalent_controls: string[];
+      group_controls: string[];
+    }
+  >;
+}
+
 export type ReadinessStage =
   | "source_pulled"
   | "mapped"

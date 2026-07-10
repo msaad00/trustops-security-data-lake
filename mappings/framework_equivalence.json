@@ -1,0 +1,371 @@
+{
+  "schema": "trustops.framework_equivalence.v1",
+  "note": "Curated control-equivalence groups for answer-once-satisfy-many posture. Each group links controls across frameworks that address the same audit theme. Review before expanding.",
+  "groups": [
+    {
+      "group_id": "logical-access-mfa",
+      "label": "Logical access and MFA",
+      "risk_domain": "identity",
+      "rationale": "Logical access restrictions and MFA are assessed across SOC 2 CC6, ISO 27001 A.5.15, NIST CSF PR.AA, FedRAMP AC-2, CIS IAM, and HIPAA access management.",
+      "reviewed_by": "internal-trust-team",
+      "reviewed_at": "2026-07-10T00:00:00Z",
+      "controls": [
+        {
+          "control_id": "SOC2-CC6.1",
+          "framework_id": "soc2",
+          "role": "primary"
+        },
+        {
+          "control_id": "ISO27001-A.5.15",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "NIST-CSF-PR.AA-01",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "FEDRAMP-AC-2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "CIS-AWS-1.10",
+          "framework_id": "cis_aws",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "HIPAA-164.308(a)(4)",
+          "framework_id": "hipaa-security-rule",
+          "role": "equivalent"
+        }
+      ]
+    },
+    {
+      "group_id": "access-review",
+      "label": "Access review and recertification",
+      "risk_domain": "identity",
+      "rationale": "Periodic access reviews map to SOC 2 CC6.2, ISO 27001 A.8.2, and NIST CSF PR.AA-05.",
+      "reviewed_by": "internal-trust-team",
+      "reviewed_at": "2026-07-10T00:00:00Z",
+      "controls": [
+        {
+          "control_id": "SOC2-CC6.2",
+          "framework_id": "soc2",
+          "role": "primary"
+        },
+        {
+          "control_id": "ISO27001-A.8.2",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "NIST-CSF-PR.AA-05",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent"
+        }
+      ]
+    },
+    {
+      "group_id": "encryption-data-protection",
+      "label": "Encryption and data protection",
+      "risk_domain": "data-protection",
+      "rationale": "Data encryption in transit and at rest spans SOC 2 CC6.7, ISO 27001 A.8.24, PCI DSS Req 7, HIPAA 164.312(e), and GDPR Art.32.",
+      "reviewed_by": "internal-trust-team",
+      "reviewed_at": "2026-07-10T00:00:00Z",
+      "controls": [
+        {
+          "control_id": "SOC2-CC6.7",
+          "framework_id": "soc2",
+          "role": "primary"
+        },
+        {
+          "control_id": "ISO27001-A.8.24",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "PCI-DSS-7",
+          "framework_id": "pci-dss-v4",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "HIPAA-164.312(e)",
+          "framework_id": "hipaa-security-rule",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "GDPR-Art.32",
+          "framework_id": "gdpr-2016-679",
+          "role": "equivalent"
+        }
+      ]
+    },
+    {
+      "group_id": "monitoring-incident-detection",
+      "label": "Monitoring and incident detection",
+      "risk_domain": "detection",
+      "rationale": "Security monitoring and anomaly detection align across SOC 2 CC7.2, ISO 27001 A.8.16, PCI DSS Req 10, NIST CSF DE.AE, and FedRAMP AU-6.",
+      "reviewed_by": "internal-trust-team",
+      "reviewed_at": "2026-07-10T00:00:00Z",
+      "controls": [
+        {
+          "control_id": "SOC2-CC7.2",
+          "framework_id": "soc2",
+          "role": "primary"
+        },
+        {
+          "control_id": "ISO27001-A.8.16",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "PCI-DSS-10",
+          "framework_id": "pci-dss-v4",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "NIST-CSF-DE.AE-02",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "FEDRAMP-AU-6",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent"
+        }
+      ]
+    },
+    {
+      "group_id": "audit-logging",
+      "label": "Audit logging and traceability",
+      "risk_domain": "logging",
+      "rationale": "Immutable audit trails map to SOC 2 CC7.2, ISO 27001 A.8.15, PCI DSS Req 10, and FedRAMP AU-2.",
+      "reviewed_by": "internal-trust-team",
+      "reviewed_at": "2026-07-10T00:00:00Z",
+      "controls": [
+        {
+          "control_id": "SOC2-CC7.2",
+          "framework_id": "soc2",
+          "role": "primary"
+        },
+        {
+          "control_id": "ISO27001-A.8.15",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "PCI-DSS-10",
+          "framework_id": "pci-dss-v4",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "FEDRAMP-AU-2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent"
+        }
+      ]
+    },
+    {
+      "group_id": "change-management",
+      "label": "Change management",
+      "risk_domain": "change-management",
+      "rationale": "Controlled changes to production systems map to SOC 2 CC8.1, ISO 27001 A.8.32, NIST CSF PR.DS-01, and FedRAMP CM-3.",
+      "reviewed_by": "internal-trust-team",
+      "reviewed_at": "2026-07-10T00:00:00Z",
+      "controls": [
+        {
+          "control_id": "SOC2-CC8.1",
+          "framework_id": "soc2",
+          "role": "primary"
+        },
+        {
+          "control_id": "ISO27001-A.8.32",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "NIST-CSF-PR.DS-01",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "FEDRAMP-CM-3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent"
+        }
+      ]
+    },
+    {
+      "group_id": "vulnerability-management",
+      "label": "Vulnerability management",
+      "risk_domain": "vulnerability-management",
+      "rationale": "Vulnerability identification and remediation spans SOC 2 CC7.1, ISO 27001 A.8.8, PCI DSS Req 11, NIST CSF ID.RA-01, and CIS AWS logging/monitoring.",
+      "reviewed_by": "internal-trust-team",
+      "reviewed_at": "2026-07-10T00:00:00Z",
+      "controls": [
+        {
+          "control_id": "SOC2-CC7.1",
+          "framework_id": "soc2",
+          "role": "primary"
+        },
+        {
+          "control_id": "ISO27001-A.8.8",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "PCI-DSS-11",
+          "framework_id": "pci-dss-v4",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "NIST-CSF-ID.RA-01",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "CIS-AWS-5.1",
+          "framework_id": "cis_aws",
+          "role": "equivalent"
+        }
+      ]
+    },
+    {
+      "group_id": "vendor-third-party",
+      "label": "Vendor and third-party risk",
+      "risk_domain": "third-party-risk",
+      "rationale": "Third-party oversight maps to SOC 2 CC9.2, ISO 27001 A.5.19, GDPR Art.28, and NIST CSF GV.SC-05.",
+      "reviewed_by": "internal-trust-team",
+      "reviewed_at": "2026-07-10T00:00:00Z",
+      "controls": [
+        {
+          "control_id": "SOC2-CC9.2",
+          "framework_id": "soc2",
+          "role": "primary"
+        },
+        {
+          "control_id": "ISO27001-A.5.19",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "GDPR-Art.28",
+          "framework_id": "gdpr-2016-679",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "NIST-CSF-GV.SC-05",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent"
+        }
+      ]
+    },
+    {
+      "group_id": "risk-assessment",
+      "label": "Risk assessment",
+      "risk_domain": "risk-management",
+      "rationale": "Formal risk assessment aligns SOC 2 CC3.2, ISO 27001 A.5.8, NIST CSF ID.RA-01, and HIPAA 164.308 risk analysis.",
+      "reviewed_by": "internal-trust-team",
+      "reviewed_at": "2026-07-10T00:00:00Z",
+      "controls": [
+        {
+          "control_id": "SOC2-CC3.2",
+          "framework_id": "soc2",
+          "role": "primary"
+        },
+        {
+          "control_id": "ISO27001-A.5.8",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "NIST-CSF-ID.RA-01",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "HIPAA-164.308(a)(1)(ii)(A)",
+          "framework_id": "hipaa-security-rule",
+          "role": "equivalent"
+        }
+      ]
+    },
+    {
+      "group_id": "backup-availability",
+      "label": "Backup and availability",
+      "risk_domain": "availability",
+      "rationale": "Backup and recovery evidence maps to SOC 2 A1.2, ISO 27001 A.8.13, and NIST CSF PR.DS-01.",
+      "reviewed_by": "internal-trust-team",
+      "reviewed_at": "2026-07-10T00:00:00Z",
+      "controls": [
+        {
+          "control_id": "SOC2-A1.2",
+          "framework_id": "soc2",
+          "role": "primary"
+        },
+        {
+          "control_id": "ISO27001-A.8.13",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "NIST-CSF-PR.DS-01",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent"
+        }
+      ]
+    },
+    {
+      "group_id": "ai-governance",
+      "label": "AI governance and model inventory",
+      "risk_domain": "ai-governance",
+      "rationale": "AI system governance spans NIST AI RMF GOVERN-1.1, ISO 42001 operational planning, and EU AI Act technical documentation.",
+      "reviewed_by": "internal-trust-team",
+      "reviewed_at": "2026-07-10T00:00:00Z",
+      "controls": [
+        {
+          "control_id": "NIST-AI-RMF-GOVERN-1.1",
+          "framework_id": "nist-ai-rmf",
+          "role": "primary"
+        },
+        {
+          "control_id": "ISO42001-8.1",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "EU-AI-ACT-Art.10",
+          "framework_id": "eu-ai-act-2024-1689",
+          "role": "equivalent"
+        }
+      ]
+    },
+    {
+      "group_id": "privacy-breach-notification",
+      "label": "Privacy breach notification",
+      "risk_domain": "incident-response",
+      "rationale": "Breach notification obligations align GDPR Art.33, SOC 2 privacy criteria P3.2, and HIPAA remediation planning.",
+      "reviewed_by": "internal-trust-team",
+      "reviewed_at": "2026-07-10T00:00:00Z",
+      "controls": [
+        {
+          "control_id": "GDPR-Art.33",
+          "framework_id": "gdpr-2016-679",
+          "role": "primary"
+        },
+        {
+          "control_id": "SOC2-P3.2",
+          "framework_id": "soc2",
+          "role": "equivalent"
+        },
+        {
+          "control_id": "HIPAA-164.308(a)(1)(ii)(B)",
+          "framework_id": "hipaa-security-rule",
+          "role": "equivalent"
+        }
+      ]
+    }
+  ]
+}

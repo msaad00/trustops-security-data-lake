@@ -18,6 +18,7 @@ from security_lakehouse.catalog import _data_root, load_control_catalog
 
 ROOT = _data_root()
 DEFAULT_MAPPINGS = ROOT / "mappings" / "control_articles.json"
+DEFAULT_EQUIVALENCE = ROOT / "mappings" / "framework_equivalence.json"
 
 
 def load_control_article_mappings(
@@ -126,3 +127,92 @@ def build_reviewed_crosswalk(
             )
         matrix.append(row)
     return {"frameworks": frameworks, "matrix": matrix}
+
+
+def load_framework_equivalence(
+    path: str | Path | None = None,
+) -> dict[str, Any]:
+    """Return the framework equivalence payload (groups of related controls)."""
+    payload = json.loads(Path(path or DEFAULT_EQUIVALENCE).read_text(encoding="utf-8"))
+    groups = payload.get("groups")
+    if not isinstance(groups, list):
+        raise ValueError("framework equivalence must contain a `groups` list")
+    return payload
+
+
+def validate_framework_equivalence(
+    path: str | Path | None = None,
+    catalog_path: str | Path | None = None,
+) -> list[str]:
+    """Return validation errors for equivalence groups."""
+    errors: list[str] = []
+    payload = load_framework_equivalence(path)
+    catalog = load_control_catalog(catalog_path)
+    for group in payload.get("groups", []):
+        group_id = str(group.get("group_id") or "")
+        if not group_id:
+            errors.append("equivalence group missing group_id")
+            continue
+        controls = group.get("controls") or []
+        if len(controls) < 2:
+            errors.append(f"group {group_id} needs at least two controls")
+        for entry in controls:
+            cid = str(entry.get("control_id") or "")
+            if not cid:
+                errors.append(f"group {group_id} has empty control_id")
+                continue
+            if cid not in catalog:
+                errors.append(f"group {group_id} references unknown control {cid}")
+            fw = str(entry.get("framework_id") or "")
+            if fw and catalog.get(cid, {}).get("framework_id") != fw:
+                errors.append(f"group {group_id} framework_id mismatch for {cid}")
+        for required in ("label", "risk_domain", "rationale", "reviewed_by", "reviewed_at"):
+            if not str(group.get(required) or "").strip():
+                errors.append(f"group {group_id} missing {required}")
+    return errors
+
+
+def build_equivalence_index(
+    path: str | Path | None = None,
+) -> dict[str, dict[str, Any]]:
+    """Map each control_id to its equivalence group and sibling controls."""
+    payload = load_framework_equivalence(path)
+    index: dict[str, dict[str, Any]] = {}
+    for group in payload.get("groups", []):
+        group_id = str(group["group_id"])
+        controls = group.get("controls") or []
+        control_ids = [str(c["control_id"]) for c in controls if c.get("control_id")]
+        for entry in controls:
+            cid = str(entry.get("control_id") or "")
+            if not cid:
+                continue
+            siblings = [other for other in control_ids if other != cid]
+            existing = index.get(cid)
+            if existing and existing["group_id"] != group_id:
+                merged = sorted(set(existing["equivalent_controls"]) | set(siblings))
+                existing["equivalent_controls"] = merged
+                existing["group_controls"] = sorted(set(existing["group_controls"]) | set(control_ids))
+                existing.setdefault("also_in_groups", []).append(group_id)
+                continue
+            index[cid] = {
+                "group_id": group_id,
+                "label": group.get("label"),
+                "risk_domain": group.get("risk_domain"),
+                "role": entry.get("role", "equivalent"),
+                "equivalent_controls": siblings,
+                "group_controls": control_ids,
+            }
+    return index
+
+
+def build_framework_equivalence(
+    path: str | Path | None = None,
+) -> dict[str, Any]:
+    """Return equivalence groups plus a lookup index for API consumers."""
+    payload = load_framework_equivalence(path)
+    return {
+        "schema": payload.get("schema"),
+        "group_count": len(payload.get("groups", [])),
+        "groups": payload.get("groups", []),
+        "index": build_equivalence_index(path),
+    }
