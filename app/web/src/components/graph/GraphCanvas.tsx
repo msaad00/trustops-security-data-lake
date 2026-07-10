@@ -309,23 +309,27 @@ function InnerGraphCanvas({
     return ids;
   }, [graph, filterFramework]);
 
-  const expandScope = useCallback((seed: Set<string>, hops: number) => {
-    if (!graph) return seed;
-    const ids = new Set(seed);
-    for (let depth = 0; depth < hops; depth += 1) {
-      for (const edge of graph.edges) {
-        if (ids.has(edge.source)) ids.add(edge.target);
-        if (ids.has(edge.target)) ids.add(edge.source);
+  const expandScope = useCallback(
+    (seed: Set<string>, hops: number) => {
+      if (!graph) return seed;
+      const ids = new Set(seed);
+      for (let depth = 0; depth < hops; depth += 1) {
+        for (const edge of graph.edges) {
+          if (ids.has(edge.source)) ids.add(edge.target);
+          if (ids.has(edge.target)) ids.add(edge.source);
+        }
       }
-    }
-    return ids;
-  }, [graph]);
+      return ids;
+    },
+    [graph],
+  );
 
   const controlScopeIds = useMemo(() => {
     if (!graph || !filterControl) return null;
     const seed = new Set<string>();
     for (const node of graph.nodes) {
-      if (node.kind === "control" && node.label === filterControl) seed.add(node.id);
+      if (node.kind === "control" && node.label === filterControl)
+        seed.add(node.id);
       if (node.control_ids?.includes(filterControl)) seed.add(node.id);
     }
     return expandScope(seed, 3);

@@ -292,9 +292,7 @@ def test_build_repository_graph_attaches_freshness_from_gold(tmp_path: Path) -> 
     )
     graph = build_repository_graph(tmp_path)
     codeowners = next(
-        node
-        for node in graph["nodes"]
-        if node.get("kind") == "evidence" and node.get("evidence_id") == "ev-codeowners"
+        node for node in graph["nodes"] if node.get("kind") == "evidence" and node.get("evidence_id") == "ev-codeowners"
     )
     assert codeowners["freshness_status"] == "stale"
     assert codeowners["freshness_age_minutes"] == 9000
