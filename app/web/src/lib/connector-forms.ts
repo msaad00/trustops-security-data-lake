@@ -197,6 +197,21 @@ export const CONNECTOR_CREDENTIAL_FIELDS: Record<string, ConnectorFieldDef[]> =
         placeholder: "shared secret used in the role trust policy",
       },
     ],
+    "siem-alerts": [
+      {
+        name: "host",
+        label: "SIEM export URL",
+        placeholder: "https://siem.example.com",
+        required: true,
+      },
+      {
+        name: "credential_ref",
+        label: "Scoped credential reference",
+        placeholder: "TRUSTOPS_SIEM_TOKEN",
+        required: true,
+        hint: "Environment variable name holding the read-only export token.",
+      },
+    ],
   };
 
 export const CONNECTOR_SCOPE_FIELDS: Record<string, ConnectorFieldDef[]> = {
@@ -293,6 +308,15 @@ export const CONNECTOR_SCOPE_FIELDS: Record<string, ConnectorFieldDef[]> = {
       name: "region",
       label: "Region (optional)",
       placeholder: "us-east-1",
+    },
+  ],
+  "siem-alerts": [
+    {
+      name: "index",
+      label: "Alert index",
+      placeholder: "alerts",
+      required: true,
+      hint: "Read-only SIEM index or export namespace.",
     },
   ],
 };

@@ -67,6 +67,11 @@ from security_lakehouse.connectors_s3 import (
     S3FixtureClient,
     collect_s3_evidence,
 )
+from security_lakehouse.connectors_siem import (
+    SiemClient,
+    SiemFixtureClient,
+    collect_siem_evidence,
+)
 from security_lakehouse.connectors_snowflake import (
     DEFAULT_VIEWS as SNOWFLAKE_DEFAULT_VIEWS,
 )
@@ -505,10 +510,21 @@ def _build_object_storage(inputs: SyncInputs) -> list[dict[str, Any]]:
     )
 
 
+def _build_siem(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_siem(
+        fixture_dir=inputs.fixture_dir,
+        env=inputs.env,
+        credentials=inputs.credentials,
+        options=inputs.options,
+        since=inputs.since,
+    )
+
+
 REGISTRY: dict[str, ConnectorBuilder] = {
     "snowflake-evidence-lake": _build_snowflake,
     "clickhouse-telemetry-lake": _build_clickhouse,
     "object-storage-evidence": _build_object_storage,
+    "siem-alerts": _build_siem,
     "github-security": _build_github,
     "gitlab-security": _build_gitlab,
     "okta-identity": _build_okta,
@@ -794,6 +810,30 @@ def _collect_s3(
             external_id=external_id,
         )
     return collect_s3_evidence(client, bucket=bucket or getattr(client, "bucket", None), prefix=prefix)
+
+
+def _collect_siem(
+    *,
+    fixture_dir: str | Path | None,
+    env: dict[str, str],
+    credentials: dict[str, Any] | None = None,
+    options: dict[str, Any] | None = None,
+    since: str | None = None,
+) -> list[dict[str, Any]]:
+    credentials = credentials or {}
+    options = options or {}
+    index = str(options.get("index") or "alerts").strip() or "alerts"
+    if fixture_dir:
+        client: SiemClient | SiemFixtureClient = SiemFixtureClient(fixture_dir, index=index)
+    else:
+        host = str(credentials.get("host") or env.get("SIEM_EXPORT_URL") or "").strip()
+        token_env = str(credentials.get("credential_ref") or "TRUSTOPS_SIEM_TOKEN")
+        token = str(credentials.get("token") or env.get(token_env) or "").strip()
+        if not host:
+            raise ValueError("siem-alerts sync requires --fixture-dir, or host plus read-only credentials")
+        netguard.assert_url_is_public(host, label="siem export url")
+        client = SiemClient(host, token=token, index=index)
+    return collect_siem_evidence(client, since=since)
 
 
 def _collect_snowflake(
