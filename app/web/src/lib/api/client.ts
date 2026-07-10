@@ -584,6 +584,10 @@ export const api = {
     get<{ data: SlaHeatmap }>("/v1/insights/sla-heatmap").then((b) => b.data),
   agentRuns: (query = "") =>
     get<{ data: AgentRun[] }>(`/v1/agent-runs${query}`).then((b) => b.data),
+  agentRun: (runId: string) =>
+    get<{ data: AgentRun }>(`/v1/agent-runs/${encodeURIComponent(runId)}`).then(
+      (b) => b.data,
+    ),
   createAgentRun: (payload: CreateAgentRunPayload) =>
     post<{ data: AgentRun }>("/v1/agent-runs", payload).then((b) => b.data),
   approveAgentDecision: (runId: string, decisionIndex: number, note = "") =>

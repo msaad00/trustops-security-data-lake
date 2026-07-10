@@ -54,11 +54,11 @@ export function AiGovernanceStrip() {
                 </p>
               </div>
               <Link
-                href="/controls?domain=ai-governance"
+                href="/ai-governance"
                 className="inline-flex items-center gap-1 text-xs font-bold text-brand hover:underline"
               >
                 <Bot className="h-3.5 w-3.5" />
-                AI controls
+                Full inventory
               </Link>
             </div>
 

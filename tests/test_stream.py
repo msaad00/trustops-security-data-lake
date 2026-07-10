@@ -57,6 +57,19 @@ def test_platform_event_stream_emits_freshness_frame(tmp_path: Path) -> None:
     assert any(frame.startswith("event: freshness") for frame in frames)
 
 
+def test_platform_event_stream_emits_ai_governance_frame(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+
+    async def collect() -> list[str]:
+        frames: list[str] = []
+        async for frame in platform_event_stream(tmp_path, _FakeRequest(alive_checks=1), interval=0):
+            frames.append(frame)
+        return frames
+
+    frames = asyncio.run(collect())
+    assert any(frame.startswith("event: ai-governance") for frame in frames)
+
+
 def test_stream_requires_auth(tmp_path: Path) -> None:
     _seed_lake(tmp_path)
     client = TestClient(create_app(tmp_path))  # auth required; 401 before any streaming
