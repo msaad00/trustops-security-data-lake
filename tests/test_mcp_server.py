@@ -57,6 +57,7 @@ EXPECTED_TOOLS = {
     "list_ai_inventory",
     "get_evidence_freshness_summary",
     "list_evidence_freshness",
+    "get_repository_graph",
     "escalate_stale_evidence",
     "get_insights_timeseries",
     "get_insights_remediation",
@@ -1057,6 +1058,14 @@ def test_list_evidence_freshness_reads_lake(tmp_path):
     server = _seeded_server(tmp_path)
     rows = call_tool(server, "list_evidence_freshness", limit=10)
     assert isinstance(rows, list)
+
+
+def test_get_repository_graph_reads_lake(tmp_path):
+    server = _seeded_server(tmp_path)
+    graph = call_tool(server, "get_repository_graph")
+    assert isinstance(graph, dict)
+    assert "nodes" in graph and "edges" in graph
+    assert isinstance(graph["nodes"], list)
 
 
 def test_create_poam_item_calls_api(tmp_path, monkeypatch):

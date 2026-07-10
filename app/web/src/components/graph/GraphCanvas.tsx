@@ -242,6 +242,9 @@ interface Props {
   filterOwner: string;
   filterEnvironment: string;
   filterFramework: string;
+  filterControl: string;
+  filterWorkflow: string;
+  filterStaleOnly: boolean;
   searchQuery: string;
   pathFrom: string | null;
   pathTo: string | null;
@@ -272,6 +275,9 @@ function InnerGraphCanvas({
   filterOwner,
   filterEnvironment,
   filterFramework,
+  filterControl,
+  filterWorkflow,
+  filterStaleOnly,
   searchQuery,
   pathFrom,
   pathTo,
@@ -303,6 +309,57 @@ function InnerGraphCanvas({
     return ids;
   }, [graph, filterFramework]);
 
+  const expandScope = useCallback((seed: Set<string>, hops: number) => {
+    if (!graph) return seed;
+    const ids = new Set(seed);
+    for (let depth = 0; depth < hops; depth += 1) {
+      for (const edge of graph.edges) {
+        if (ids.has(edge.source)) ids.add(edge.target);
+        if (ids.has(edge.target)) ids.add(edge.source);
+      }
+    }
+    return ids;
+  }, [graph]);
+
+  const controlScopeIds = useMemo(() => {
+    if (!graph || !filterControl) return null;
+    const seed = new Set<string>();
+    for (const node of graph.nodes) {
+      if (node.kind === "control" && node.label === filterControl) seed.add(node.id);
+      if (node.control_ids?.includes(filterControl)) seed.add(node.id);
+    }
+    return expandScope(seed, 3);
+  }, [graph, filterControl, expandScope]);
+
+  const workflowScopeIds = useMemo(() => {
+    if (!graph || !filterWorkflow) return null;
+    const seed = new Set<string>();
+    for (const node of graph.nodes) {
+      const isWorkflow =
+        node.kind === "workflow" ||
+        (node.kind === "evidence_signal" &&
+          (node.label.includes("workflow") ||
+            node.event_type?.includes("ci_workflow")));
+      if (isWorkflow && node.label === filterWorkflow) seed.add(node.id);
+    }
+    return expandScope(seed, 2);
+  }, [graph, filterWorkflow, expandScope]);
+
+  const staleScopeIds = useMemo(() => {
+    if (!graph || !filterStaleOnly) return null;
+    const staleStatuses = new Set(["stale", "expired", "missing"]);
+    const seed = new Set<string>();
+    for (const node of graph.nodes) {
+      if (
+        node.kind === "signal_gap" ||
+        (node.freshness_status && staleStatuses.has(node.freshness_status))
+      ) {
+        seed.add(node.id);
+      }
+    }
+    return expandScope(seed, 2);
+  }, [graph, filterStaleOnly, expandScope]);
+
   // Apply layer + facet filters in one place so the canvas + path-trace + search agree.
   const filteredNodes = useMemo(() => {
     if (!graph) return [];
@@ -312,9 +369,21 @@ function InnerGraphCanvas({
       if (filterEnvironment && (n.environment ?? "") !== filterEnvironment)
         return false;
       if (frameworkScopeIds && !frameworkScopeIds.has(n.id)) return false;
+      if (controlScopeIds && !controlScopeIds.has(n.id)) return false;
+      if (workflowScopeIds && !workflowScopeIds.has(n.id)) return false;
+      if (staleScopeIds && !staleScopeIds.has(n.id)) return false;
       return true;
     });
-  }, [graph, visibleKinds, filterOwner, filterEnvironment, frameworkScopeIds]);
+  }, [
+    graph,
+    visibleKinds,
+    filterOwner,
+    filterEnvironment,
+    frameworkScopeIds,
+    controlScopeIds,
+    workflowScopeIds,
+    staleScopeIds,
+  ]);
 
   const allowedIds = useMemo(
     () => new Set(filteredNodes.map((n) => n.id)),

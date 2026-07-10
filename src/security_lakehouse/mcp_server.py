@@ -521,6 +521,13 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """List per-evidence freshness SLA rows from the gold zone."""
         return _get("/api/v1/evidence/freshness", lake, limit=str(limit), offset=str(offset))
 
+    @trustops_tool(title="Repository Governance Graph")
+    def get_repository_graph() -> JsonObject:
+        """Return repository topology and governance evidence as nodes and edges for agents."""
+        from security_lakehouse.graph import build_repository_graph
+
+        return build_repository_graph(lake)
+
     @trustops_tool(title="Escalate Stale Evidence")
     def escalate_stale_evidence(limit: int = 10) -> JsonObject:
         """Create remediation tasks for stale, expired, or missing evidence rows."""
