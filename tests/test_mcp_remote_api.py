@@ -6,6 +6,7 @@ import io
 import json
 import urllib.error
 import urllib.request
+from pathlib import Path
 
 import pytest
 
@@ -83,3 +84,28 @@ def test_server_api_request_redacts_token_from_error(monkeypatch: pytest.MonkeyP
     message = str(exc.value)
     assert "forbidden" in message
     assert "secret-token" not in message
+
+
+def test_get_lake_or_remote_uses_server_when_configured(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[tuple[str, str]] = []
+
+    def fake_server(method: str, path: str, body=None, **params):
+        calls.append((method, path))
+        return {"data": {"inventory_count": 2}, "meta": {"resource": "platform.ai-governance"}, "errors": []}
+
+    monkeypatch.setenv("TRUSTOPS_API_URL", "https://trustops.example.test")
+    monkeypatch.setenv("TRUSTOPS_API_KEY", "secret-token")
+    monkeypatch.setattr(mcp_server, "_server_api_request", fake_server)
+
+    data = mcp_server._get_lake_or_remote("/api/v1/platform/ai-governance", Path("/tmp/lake"))
+    assert data["inventory_count"] == 2
+    assert calls == [("GET", "/api/v1/platform/ai-governance")]
+
+
+def test_session_hash_uses_pbkdf2_not_sha256() -> None:
+    from security_lakehouse.auth.sessions import hash_session_token
+
+    token = "tops_sess_" + "a" * 64
+    digest = hash_session_token(token)
+    assert len(digest) == 64
+    assert digest != __import__("hashlib").sha256(token.encode()).hexdigest()
