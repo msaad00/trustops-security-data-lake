@@ -11,7 +11,8 @@ export function PlatformStreamLiveRegion() {
       return;
     }
     const es = new EventSource("/api/v1/stream", { withCredentials: true });
-    const announce = (label: string) => setMessage(`${label} updated ${new Date().toLocaleTimeString()}`);
+    const announce = (label: string) =>
+      setMessage(`${label} updated ${new Date().toLocaleTimeString()}`);
     es.addEventListener("posture", () => announce("Posture"));
     es.addEventListener("freshness", () => announce("Evidence freshness"));
     es.addEventListener("audit-readiness", () => announce("Audit readiness"));

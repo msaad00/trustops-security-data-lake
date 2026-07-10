@@ -100,7 +100,11 @@ export default function SignupPage() {
               </select>
             </label>
             <Button type="submit" variant="primary" disabled={pending}>
-              {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create workspace"}
+              {pending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Create workspace"
+              )}
             </Button>
           </form>
           <p className="mt-4 text-sm text-muted">

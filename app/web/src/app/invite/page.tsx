@@ -61,7 +61,11 @@ function InviteAcceptForm() {
               />
             </label>
             <Button type="submit" variant="primary" disabled={pending}>
-              {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Join workspace"}
+              {pending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Join workspace"
+              )}
             </Button>
           </form>
         )}
@@ -78,7 +82,9 @@ function InviteAcceptForm() {
 export default function InvitePage() {
   return (
     <div className="mx-auto grid min-h-screen max-w-lg place-items-center px-4 py-10">
-      <Suspense fallback={<div className="text-sm text-muted">Loading invite…</div>}>
+      <Suspense
+        fallback={<div className="text-sm text-muted">Loading invite…</div>}
+      >
         <InviteAcceptForm />
       </Suspense>
     </div>

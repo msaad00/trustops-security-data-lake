@@ -20,6 +20,7 @@ import {
   ShieldAlert,
   ShieldCheck,
   Sparkles,
+  Users,
   Workflow,
   Zap,
 } from "lucide-react";
