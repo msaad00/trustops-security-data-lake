@@ -868,8 +868,8 @@ async def platform_event_stream(
     sessionmaker=None,
     interval: float = 10.0,
 ) -> AsyncIterator[str]:
-    """SSE frames for continuous eval: posture, freshness, and audit-readiness on change."""
-    last = {"posture": "", "freshness": "", "audit_readiness": ""}
+    """SSE frames for continuous eval: posture, freshness, audit-readiness, and AI governance on change."""
+    last = {"posture": "", "freshness": "", "audit_readiness": "", "ai_governance": ""}
     while not await request.is_disconnected():
         emitted = False
 
@@ -904,6 +904,15 @@ async def platform_event_stream(
                 last["audit_readiness"] = audit_payload
                 yield f"event: audit-readiness\ndata: {audit_payload}\n\n"
                 emitted = True
+
+        from security_lakehouse.ai_governance import build_ai_governance_status
+
+        ai_data = await run_in_threadpool(build_ai_governance_status, lake=lake)
+        ai_payload = json.dumps(ai_data, default=str, sort_keys=True)
+        if ai_payload != last["ai_governance"]:
+            last["ai_governance"] = ai_payload
+            yield f"event: ai-governance\ndata: {ai_payload}\n\n"
+            emitted = True
 
         if not emitted:
             yield ": ping\n\n"

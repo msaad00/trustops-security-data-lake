@@ -894,11 +894,24 @@ export function useAgentRuns(opts?: Opts<AgentRun[]>) {
   });
 }
 
+export function useAgentRun(runId: string | null, opts?: Opts<AgentRun>) {
+  return useQuery({
+    queryKey: ["agent-run", runId],
+    queryFn: () => api.agentRun(runId as string),
+    enabled: Boolean(runId),
+    staleTime: STALE,
+    ...opts,
+  });
+}
+
 export function useCreateAgentRunMutation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (payload: CreateAgentRunPayload) => api.createAgentRun(payload),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["agent-runs"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["agent-runs"] });
+      qc.invalidateQueries({ queryKey: ["agent-run"] });
+    },
   });
 }
 
@@ -916,6 +929,7 @@ export function useApproveAgentDecisionMutation() {
     }) => api.approveAgentDecision(runId, decisionIndex, note),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["agent-runs"] });
+      qc.invalidateQueries({ queryKey: ["agent-run"] });
       qc.invalidateQueries({ queryKey: ["remediation", "evidence-requests"] });
       qc.invalidateQueries({ queryKey: ["remediation", "tasks"] });
       qc.invalidateQueries({ queryKey: ["snapshots"] });
@@ -1287,6 +1301,17 @@ export function usePlatformStream(): { connected: boolean } {
       try {
         const data = JSON.parse((event as MessageEvent).data) as AuditReadiness;
         qc.setQueryData(["platform", "audit-readiness"], data);
+      } catch {
+        /* ignore malformed frame */
+      }
+    });
+    es.addEventListener("ai-governance", (event) => {
+      try {
+        const data = JSON.parse((event as MessageEvent).data) as AiGovernance;
+        qc.setQueryData(["platform", "ai-governance"], data);
+        qc.invalidateQueries({
+          queryKey: ["platform", "ai-governance", "inventory"],
+        });
       } catch {
         /* ignore malformed frame */
       }

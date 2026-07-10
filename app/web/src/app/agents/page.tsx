@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
 import { McpSetupStrip } from "@/components/agents/McpSetupStrip";
+import { AgentRunDrawer } from "@/components/drawers/AgentRunDrawer";
 import { useAuditorMode } from "@/lib/state/auditor";
 import {
   useAgentRuns,
@@ -364,6 +365,7 @@ export default function AgentsPage() {
   const createRun = useCreateAgentRunMutation();
   const approveDecision = useApproveAgentDecisionMutation();
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
+  const [drawerRunId, setDrawerRunId] = useState<string | null>(null);
   const [selected, setSelected] = useState<RouteSpec>(ROUTES[0]);
   const [pathParams, setPathParams] = useState<Record<string, string>>({});
   const [body, setBody] = useState(
@@ -661,33 +663,51 @@ export default function AgentsPage() {
               </div>
             ) : (
               runs.map((run) => (
-                <button
+                <div
                   key={run.id}
-                  type="button"
-                  onClick={() => setSelectedRunId(run.id)}
                   className={[
-                    "grid min-w-0 gap-2 rounded-lg border px-3 py-3 text-left transition",
+                    "grid min-w-0 gap-2 rounded-lg border px-3 py-3 transition",
                     selectedRun?.id === run.id
                       ? "border-brand bg-blue-50"
                       : "border-line bg-white hover:bg-slate-50",
                   ].join(" ")}
                 >
-                  <div className="flex min-w-0 flex-wrap items-center gap-2">
-                    <span className="truncate text-sm font-black capitalize text-ink">
-                      {harnessLabel(run.harness)}
-                    </span>
-                    <Badge tone={toneForStatus(run.status)}>{run.status}</Badge>
-                    <Badge tone={toneForConfidence(run.evaluation.confidence)}>
-                      {run.evaluation.confidence ?? "no confidence"}
-                    </Badge>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedRunId(run.id)}
+                    className="grid min-w-0 gap-2 text-left"
+                  >
+                    <div className="flex min-w-0 flex-wrap items-center gap-2">
+                      <span className="truncate text-sm font-black capitalize text-ink">
+                        {harnessLabel(run.harness)}
+                      </span>
+                      <Badge tone={toneForStatus(run.status)}>
+                        {run.status}
+                      </Badge>
+                      <Badge
+                        tone={toneForConfidence(run.evaluation.confidence)}
+                      >
+                        {run.evaluation.confidence ?? "no confidence"}
+                      </Badge>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-xs font-bold text-muted md:grid-cols-4">
+                      <span>{run.decisions.length} decisions</span>
+                      <span>{run.evaluation.score ?? 0} score</span>
+                      <span>{shortHash(run.input_hash)}</span>
+                      <span>{formatTime(run.created_at)}</span>
+                    </div>
+                  </button>
+                  <div className="flex justify-end">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setDrawerRunId(run.id)}
+                    >
+                      View details
+                    </Button>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-xs font-bold text-muted md:grid-cols-4">
-                    <span>{run.decisions.length} decisions</span>
-                    <span>{run.evaluation.score ?? 0} score</span>
-                    <span>{shortHash(run.input_hash)}</span>
-                    <span>{formatTime(run.created_at)}</span>
-                  </div>
-                </button>
+                </div>
               ))
             )}
           </div>
@@ -973,6 +993,11 @@ export default function AgentsPage() {
           </div>
         </div>
       </details>
+
+      <AgentRunDrawer
+        runId={drawerRunId}
+        onClose={() => setDrawerRunId(null)}
+      />
     </div>
   );
 }

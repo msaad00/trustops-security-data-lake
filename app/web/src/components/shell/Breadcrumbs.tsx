@@ -20,6 +20,8 @@ const LABEL: Record<string, string> = {
   crosswalk: "Crosswalk",
   "trust-center": "Trust center",
   agents: "Agent API",
+  "ai-governance": "AI governance",
+  "audit-room": "Audit room",
   auth: "Access",
   deploy: "Deploy",
   demo: "Demo",

@@ -8,6 +8,7 @@ import {
   AlertOctagon,
   Bot,
   BookOpen,
+  BrainCircuit,
   Camera,
   FileSearch,
   LayoutDashboard,
@@ -125,6 +126,20 @@ const ROUTE_ITEMS: PaletteItem[] = [
     label: "Trust center",
     href: "/trust-center",
     Icon: Sparkles,
+  },
+  {
+    id: "r:audit-room",
+    group: "Routes",
+    label: "Audit room",
+    href: "/audit-room",
+    Icon: ShieldCheck,
+  },
+  {
+    id: "r:ai-governance",
+    group: "Routes",
+    label: "AI governance",
+    href: "/ai-governance",
+    Icon: BrainCircuit,
   },
   {
     id: "r:agents",
