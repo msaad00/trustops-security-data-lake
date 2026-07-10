@@ -272,6 +272,32 @@ def test_build_repository_graph_fixture_includes_link_metadata() -> None:
     assert branch.get("evidence_ref", "").startswith("https://")
 
 
+def test_build_repository_graph_attaches_freshness_from_gold(tmp_path: Path) -> None:
+    _write_repo_bronze(tmp_path)
+    (tmp_path / "gold").mkdir(parents=True, exist_ok=True)
+    (tmp_path / "gold" / "evidence_freshness.jsonl").write_text(
+        json.dumps(
+            {
+                "event_id": "repo-codeowners",
+                "evidence_id": "ev-codeowners",
+                "status": "stale",
+                "age_minutes": 9000,
+                "source": "github-public-repo",
+                "connector_id": "github-security",
+                "freshness_slo_minutes": 1440,
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    graph = build_repository_graph(tmp_path)
+    codeowners = next(
+        node for node in graph["nodes"] if node.get("kind") == "evidence" and node.get("evidence_id") == "ev-codeowners"
+    )
+    assert codeowners["freshness_status"] == "stale"
+    assert codeowners["freshness_age_minutes"] == 9000
+
+
 def test_crosswalk_returns_self_diagonal_and_shared_dimensions() -> None:
     crosswalk = build_framework_crosswalk()
     fids = crosswalk["frameworks"]

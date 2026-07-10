@@ -224,6 +224,9 @@ export default function GraphPage() {
   const [filterOwner, setFilterOwner] = useState("");
   const [filterEnvironment, setFilterEnvironment] = useState("");
   const [filterFramework, setFilterFramework] = useState("");
+  const [filterControl, setFilterControl] = useState("");
+  const [filterWorkflow, setFilterWorkflow] = useState("");
+  const [filterStaleOnly, setFilterStaleOnly] = useState(false);
   const [search, setSearch] = useState("");
   const [pathMode, setPathMode] = useState<null | "from" | "to">(null);
   const [pathFrom, setPathFrom] = useState<string | null>(null);
@@ -235,6 +238,9 @@ export default function GraphPage() {
     setVisible(new Set(activeKinds));
     setSelected(null);
     setFilterFramework("");
+    setFilterControl("");
+    setFilterWorkflow("");
+    setFilterStaleOnly(false);
     setLayout(graphMode === "compliance" ? "TB" : "LR");
     clearPath();
   }, [graphMode]);
@@ -273,6 +279,35 @@ export default function GraphPage() {
           (data?.nodes ?? [])
             .map((n) => n.framework_id)
             .filter((id): id is string => Boolean(id)),
+        ),
+      ).sort(),
+    [data],
+  );
+  const linkedControls = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          (data?.nodes ?? []).flatMap((n) => {
+            if (n.kind === "control") return [n.label];
+            return n.control_ids ?? [];
+          }),
+        ),
+      ).sort(),
+    [data],
+  );
+  const workflowSignals = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          (data?.nodes ?? [])
+            .filter(
+              (n) =>
+                n.kind === "workflow" ||
+                (n.kind === "evidence_signal" &&
+                  (n.label.includes("workflow") ||
+                    n.event_type?.includes("ci_workflow"))),
+            )
+            .map((n) => n.label),
         ),
       ).sort(),
     [data],
@@ -717,7 +752,8 @@ export default function GraphPage() {
                 <select
                   value={filterFramework}
                   onChange={(e) => setFilterFramework(e.target.value)}
-                  className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
+                  disabled={graphMode === "repository"}
+                  className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand disabled:bg-slate-50 disabled:text-muted"
                 >
                   <option value="">All frameworks (wide map)</option>
                   {frameworks.map((f) => (
@@ -727,6 +763,58 @@ export default function GraphPage() {
                   ))}
                 </select>
               </section>
+
+              {graphMode === "repository" && (
+                <>
+                  <section>
+                    <div className="mb-2 text-[11px] font-black uppercase tracking-wide text-muted">
+                      Control
+                    </div>
+                    <select
+                      value={filterControl}
+                      onChange={(e) => setFilterControl(e.target.value)}
+                      className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
+                    >
+                      <option value="">All linked controls</option>
+                      {linkedControls.map((controlId) => (
+                        <option key={controlId} value={controlId}>
+                          {controlId}
+                        </option>
+                      ))}
+                    </select>
+                  </section>
+
+                  <section>
+                    <div className="mb-2 text-[11px] font-black uppercase tracking-wide text-muted">
+                      Workflow signal
+                    </div>
+                    <select
+                      value={filterWorkflow}
+                      onChange={(e) => setFilterWorkflow(e.target.value)}
+                      className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
+                    >
+                      <option value="">All workflows</option>
+                      {workflowSignals.map((signal) => (
+                        <option key={signal} value={signal}>
+                          {signal}
+                        </option>
+                      ))}
+                    </select>
+                  </section>
+
+                  <section>
+                    <label className="flex items-center gap-2 rounded-lg border border-line bg-white px-2 py-2 text-xs font-extrabold text-ink">
+                      <input
+                        type="checkbox"
+                        checked={filterStaleOnly}
+                        onChange={(e) => setFilterStaleOnly(e.target.checked)}
+                        className="h-3.5 w-3.5 rounded border-line"
+                      />
+                      Stale or auth-gap evidence only
+                    </label>
+                  </section>
+                </>
+              )}
 
               <section>
                 <div className="mb-2 text-[11px] font-black uppercase tracking-wide text-muted">
@@ -831,6 +919,9 @@ export default function GraphPage() {
               filterOwner={filterOwner}
               filterEnvironment={filterEnvironment}
               filterFramework={filterFramework}
+              filterControl={filterControl}
+              filterWorkflow={filterWorkflow}
+              filterStaleOnly={filterStaleOnly}
               searchQuery={search}
               pathFrom={pathFrom}
               pathTo={pathTo}
