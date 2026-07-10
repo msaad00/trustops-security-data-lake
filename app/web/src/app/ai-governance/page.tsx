@@ -85,7 +85,9 @@ export default function AiGovernancePage() {
                               item.event_types.includes("model.lineage") ? (
                                 <Badge tone="ready">lineage</Badge>
                               ) : null}
-                              {item.event_types.includes("runtime.tool_call") ? (
+                              {item.event_types.includes(
+                                "runtime.tool_call",
+                              ) ? (
                                 <Badge tone="attention">runtime</Badge>
                               ) : null}
                             </div>

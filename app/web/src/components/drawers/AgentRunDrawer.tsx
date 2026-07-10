@@ -4,10 +4,7 @@ import { CheckCircle2, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Drawer } from "@/components/ui/drawer";
-import {
-  useAgentRun,
-  useApproveAgentDecisionMutation,
-} from "@/lib/api/hooks";
+import { useAgentRun, useApproveAgentDecisionMutation } from "@/lib/api/hooks";
 import type { AgentRun } from "@/lib/api/types";
 
 interface Props {
