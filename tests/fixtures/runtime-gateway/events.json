@@ -1,0 +1,52 @@
+[
+  {
+    "event_id": "evt-003",
+    "event_time": "2026-05-20T13:11:00Z",
+    "event_type": "runtime.tool_call",
+    "tenant_id": "acme-prod",
+    "severity": "high",
+    "status": "blocked",
+    "controls": [
+      "SOC2-CC7.2",
+      "NIST-AI-RMF-MEASURE-2.7",
+      "NIST-AI-RMF-MEASURE-2.4",
+      "NIST-AI-RMF-MANAGE-4.3",
+      "EU-AI-ACT-Art.12",
+      "EU-AI-ACT-Art.13",
+      "EU-AI-ACT-Art.14",
+      "EU-AI-ACT-Art.15",
+      "ISO42001-8.1"
+    ],
+    "entity": {
+      "asset_id": "agent:finance-research",
+      "asset_type": "ai_agent",
+      "owner": "ai-security",
+      "environment": "prod"
+    },
+    "tool": "sql.query",
+    "policy": "deny-pii-exfiltration",
+    "reason": "Prompt attempted to export cardholder data",
+    "evidence_id": "ev-runtime-003",
+    "evidence_ref": "s3://security-evidence/acme-prod/runtime/evt-003.json"
+  },
+  {
+    "event_id": "evt-011",
+    "event_time": "2026-05-20T18:05:00Z",
+    "event_type": "runtime.policy_decision",
+    "tenant_id": "acme-prod",
+    "severity": "info",
+    "status": "allowed",
+    "controls": ["SOC2-CC7.2", "NIST-AI-RMF-MEASURE-2.7"],
+    "entity": {
+      "asset_id": "agent:customer-support",
+      "asset_type": "ai_agent",
+      "owner": "ai-security",
+      "environment": "prod"
+    },
+    "tool": "search.knowledge_base",
+    "policy": "allow-internal-docs",
+    "reason": "Query matched approved retrieval scope",
+    "evidence_id": "ev-runtime-011",
+    "evidence_ref": "s3://security-evidence/acme-prod/runtime/evt-011.json"
+  }
+]

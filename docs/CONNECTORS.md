@@ -68,9 +68,9 @@ security-lakehouse connectors list
 
 ## Connector Runner
 
-TrustOps currently has **17 connector contracts**. **Thirteen** are executable
-runners (eight direct source/API runners plus Snowflake, ClickHouse, S3, and
-SIEM existing-lake readers and the Okta System Log incremental adapter). The remaining
+TrustOps currently has **17 connector contracts**. **Fourteen** are executable
+runners (eight direct source/API runners plus Snowflake, ClickHouse, S3, SIEM,
+and runtime-gateway existing-lake readers and the Okta System Log incremental adapter). The remaining
 entries are read-only access contracts or managed evidence boundaries — probes
 validate configuration but **sync is not available** until a collection adapter
 ships.
@@ -90,7 +90,7 @@ ships.
 | `object-storage-evidence`   | object evidence store   | executable existing-lake read |
 | `okta-system-log`           | Okta System Log API     | **implemented** (incremental) |
 | `siem-alerts`               | SIEM/detection exports  | executable existing-lake read |
-| `runtime-gateway`           | runtime policy events   | **contract only** (no sync)   |
+| `runtime-gateway`           | runtime policy events   | executable existing-lake read |
 | `identity-provider`         | generic identity source | **contract only** (no sync)   |
 | `ticketing`                 | generic ticketing       | **contract only** (no sync)   |
 | `managed-local-evidence`    | local starter evidence  | managed evidence object       |
