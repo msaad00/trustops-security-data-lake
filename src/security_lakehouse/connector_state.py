@@ -29,6 +29,8 @@ from security_lakehouse.connectors_runtime import CONNECTOR_ID as RUNTIME_GATEWA
 from security_lakehouse.connectors_runtime import discover_runtime_gateway_scope, probe_runtime_gateway_access
 from security_lakehouse.connectors_s3 import CONNECTOR_ID as S3_CONNECTOR_ID
 from security_lakehouse.connectors_s3 import discover_s3_scope, probe_s3_access
+from security_lakehouse.connectors_siem import CONNECTOR_ID as SIEM_CONNECTOR_ID
+from security_lakehouse.connectors_siem import discover_siem_scope, probe_siem_access
 from security_lakehouse.connectors_snowflake import CONNECTOR_ID as SNOWFLAKE_CONNECTOR_ID
 from security_lakehouse.connectors_snowflake import discover_snowflake_scope, probe_snowflake_access
 from security_lakehouse.lake_scale import apply_split_schedule_defaults
@@ -334,6 +336,14 @@ def _missing_required_config(
     if connector_id == "object-storage-evidence":
         return [field for field in ("bucket", "prefix") if not _has_value(options, field)]
 
+    if connector_id == "siem-alerts":
+        missing = ["host"] if not _has_value(credentials, "host") else []
+        if not (_has_value(credentials, "credential_ref") or _has_value(credentials, "token")):
+            missing.append("credential_ref")
+        if not _has_value(options, "index"):
+            missing.append("index")
+        return missing
+
     if connector_id == "runtime-gateway":
         missing = ["host"] if not _has_value(credentials, "host") else []
         if not (_has_value(credentials, "credential_ref") or _has_value(credentials, "token")):
@@ -597,6 +607,17 @@ def _scope_candidates(
                 {"kind": "table", "name": table, "required": True, "selected": bool(table)},
             ],
             "recommended_options": {"database": database, "table": table},
+            "live_discovery_error": live.get("error"),
+        }
+    if connector_id == "siem-alerts":
+        live = discover_siem_scope(credentials=credentials, options=options)
+        if live.get("ok"):
+            return live
+        index = str(options.get("index") or "alerts")
+        return {
+            "selection_mode": "visible_indexes",
+            "selectors": [{"kind": "index", "name": index, "required": True, "selected": bool(index)}],
+            "recommended_options": {"index": index},
             "live_discovery_error": live.get("error"),
         }
     if connector_id == "runtime-gateway":
@@ -1033,6 +1054,51 @@ def run_probe(
             actor=actor,
             duration_ms=12,
             evidence_count=int(probe.get("object_count") or 0),
+            access_fingerprint=staged_access_fingerprint,
+            metadata={**probe, "probe_mode": "live"},
+        )
+    if connector_id == SIEM_CONNECTOR_ID:
+        if has_staged_payload:
+            effective_credentials = credentials or {}
+            effective_options = options or {}
+        else:
+            config = latest_config(lake_dir, connector_id) or {}
+            effective_credentials = dict(config.get("credentials") or {})
+            effective_options = dict(config.get("options") or {})
+        try:
+            probe = probe_siem_access(
+                credentials=effective_credentials,
+                options=effective_options,
+            )
+        except ValueError as exc:
+            return append_run_event(
+                lake_dir,
+                connector_id=connector_id,
+                kind="probe",
+                result="error",
+                actor=actor,
+                error=_safe_run_error(exc),
+                access_fingerprint=staged_access_fingerprint,
+            )
+        if not probe.get("ok"):
+            return append_run_event(
+                lake_dir,
+                connector_id=connector_id,
+                kind="probe",
+                result="error",
+                actor=actor,
+                error=f"SIEM read scope is not ready: {probe.get('index') or 'alerts'}",
+                access_fingerprint=staged_access_fingerprint,
+                metadata={**probe, "probe_mode": "live"},
+            )
+        return append_run_event(
+            lake_dir,
+            connector_id=connector_id,
+            kind="probe",
+            result="ok",
+            actor=actor,
+            duration_ms=12,
+            evidence_count=int(probe.get("alert_count") or 0),
             access_fingerprint=staged_access_fingerprint,
             metadata={**probe, "probe_mode": "live"},
         )

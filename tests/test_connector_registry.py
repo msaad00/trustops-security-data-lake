@@ -23,6 +23,7 @@ REAL_ADAPTERS = {
     "snowflake-evidence-lake",
     "clickhouse-telemetry-lake",
     "object-storage-evidence",
+    "siem-alerts",
     "runtime-gateway",
     "github-security",
     "gitlab-security",
@@ -170,7 +171,6 @@ def test_has_adapter_agrees_with_registry() -> None:
     for connector_id in REAL_ADAPTERS:
         assert connector_state.has_adapter(connector_id) is True
     # A catalog connector without a registered builder is contract-only.
-    assert connector_state.has_adapter("siem-alerts") is False
     assert connector_state.has_adapter("identity-provider") is False
     assert connector_state.has_adapter("not-a-real-connector") is False
 
@@ -178,12 +178,12 @@ def test_has_adapter_agrees_with_registry() -> None:
 def test_unknown_connector_id_raises_no_runner_registered(tmp_path: Path) -> None:
     connector_state.append_config_event(
         tmp_path,
-        connector_id="siem-alerts",
+        connector_id="identity-provider",
         state="enabled",
         actor="alice",
     )
     with pytest.raises(connector_runner.ConnectorSyncError, match="no sync runner registered") as exc:
-        connector_runner.run_connector_sync(tmp_path, connector_id="siem-alerts")
+        connector_runner.run_connector_sync(tmp_path, connector_id="identity-provider")
     assert exc.value.run["result"] == "error"
 
 
@@ -195,6 +195,7 @@ def test_unknown_connector_id_raises_no_runner_registered(tmp_path: Path) -> Non
         ("snowflake-evidence-lake", "snowflake", {}),
         ("clickhouse-telemetry-lake", "clickhouse-telemetry-lake", {}),
         ("object-storage-evidence", "object-storage-evidence", {}),
+        ("siem-alerts", "siem-alerts", {}),
         ("runtime-gateway", "runtime-gateway", {}),
         ("okta-identity", "okta", {}),
         ("aws-posture", "aws", {}),
