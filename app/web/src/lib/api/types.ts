@@ -706,6 +706,24 @@ export interface IngestionScale {
   };
 }
 
+export interface PlatformJob {
+  id: string;
+  kind: "connector_sync" | "lake_eval" | "workflow" | "agent_run" | string;
+  status: string;
+  label: string;
+  started_at?: string | null;
+  finished_at?: string | null;
+  actor?: string | null;
+  detail?: string | null;
+}
+
+export interface PlatformJobsFeed {
+  jobs: PlatformJob[];
+  count: number;
+  running_count: number;
+  counts_by_kind: Record<string, number>;
+}
+
 export interface IngestionStatus {
   state:
     | "active"
