@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { CommandPalette } from "./CommandPalette";
+import { PlatformStreamLiveRegion } from "./PlatformStreamLiveRegion";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import { ApiHealthBanner } from "@/components/ApiHealthBanner";
@@ -18,7 +19,12 @@ export function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const normalizedPathname = pathname.replace(/\/$/, "");
   const isLoginRoute =
-    normalizedPathname === "/login" || normalizedPathname.endsWith("/login");
+    normalizedPathname === "/login" ||
+    normalizedPathname.endsWith("/login") ||
+    normalizedPathname === "/signup" ||
+    normalizedPathname.endsWith("/signup") ||
+    normalizedPathname === "/invite" ||
+    normalizedPathname.endsWith("/invite");
   // The public trust center is rendered for unauthenticated external reviewers
   // holding a token; it must bypass the authed Shell (nav, auditor banner,
   // API-health probes) entirely, the same way /login does.
@@ -50,6 +56,13 @@ export function Shell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex h-dvh min-h-0 w-full min-w-0 max-w-none flex-col overflow-hidden bg-rail">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:font-bold focus:text-ink focus:shadow-hero"
+      >
+        Skip to main content
+      </a>
+      <PlatformStreamLiveRegion />
       <TopBar
         onRefresh={onRefresh}
         onSnapshot={onSnapshot}
@@ -60,7 +73,10 @@ export function Shell({ children }: { children: ReactNode }) {
         <Sidebar />
         <div className="grid min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden">
           <Breadcrumbs />
-          <main className="min-h-0 min-w-0 max-w-full overflow-auto bg-panel">
+          <main
+            id="main-content"
+            className="min-h-0 min-w-0 max-w-full overflow-auto bg-panel"
+          >
             <ApiHealthBanner />
             <AnimatePresence mode="wait">
               <motion.div

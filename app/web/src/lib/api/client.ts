@@ -201,6 +201,21 @@ export const api = {
     post<{ data: TenantInvite }>("/v1/invites", payload).then(
       (body) => body.data,
     ),
+  acceptInvite: (payload: { token: string; display_name?: string }) =>
+    post<{ data: { email?: string; tenant_slug?: string } }>(
+      "/v1/invites/accept",
+      payload,
+    ).then((body) => body.data),
+  signup: (payload: {
+    org_slug: string;
+    org_name: string;
+    admin_email: string;
+    admin_name?: string;
+    plan_tier?: string;
+  }) =>
+    post<{ data: Record<string, unknown> }>("/v1/signup", payload).then(
+      (body) => body.data,
+    ),
   authLogout: () =>
     post<{ data: { ok: boolean } }>("/v1/auth/logout", {}).then(
       (body) => body.data,

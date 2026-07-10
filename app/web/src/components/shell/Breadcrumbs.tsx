@@ -22,10 +22,21 @@ const LABEL: Record<string, string> = {
   agents: "Agent API",
   "ai-governance": "AI governance",
   "audit-room": "Audit room",
+  remediation: "Remediation",
+  policies: "Policies",
+  "vendor-risk": "Vendor risk",
+  onboarding: "Onboarding",
+  poc: "Launch",
+  demo: "Demo",
+  pricing: "Pricing",
+  insights: "Insights",
+  login: "Sign in",
+  signup: "Sign up",
+  invite: "Accept invite",
+  "access-reviews": "Access reviews",
+  risks: "Risk register",
   auth: "Access",
   deploy: "Deploy",
-  demo: "Demo",
-  poc: "Launch",
 };
 
 export function Breadcrumbs() {
