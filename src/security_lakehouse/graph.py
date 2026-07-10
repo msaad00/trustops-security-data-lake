@@ -56,6 +56,19 @@ def _bronze_raw_rows(lake_dir: Path) -> list[dict[str, Any]]:
     return rows
 
 
+def _freshness_index(lake: Path) -> dict[str, dict[str, Any]]:
+    """Map evidence_id / event_id to gold freshness rows for graph enrichment."""
+    path = lake / "gold" / "evidence_freshness.jsonl"
+    if not path.is_file():
+        return {}
+    index: dict[str, dict[str, Any]] = {}
+    for row in read_jsonl(path):
+        for key in (row.get("evidence_id"), row.get("event_id")):
+            if key:
+                index[str(key)] = row
+    return index
+
+
 def build_compliance_graph(lake_dir: str | Path) -> dict[str, Any]:
     """Return a serialisable graph spanning frameworks → controls → evidence → assets."""
     lake = Path(lake_dir)
@@ -347,6 +360,7 @@ def build_repository_graph(lake_dir: str | Path) -> dict[str, Any]:
         if str(row.get("event_type") or "").startswith("repository.")
         or str((row.get("entity") or {}).get("asset_type") or "") == "repository"
     ]
+    freshness_index = _freshness_index(lake)
     nodes: dict[str, dict[str, Any]] = {}
     edges: dict[str, dict[str, Any]] = {}
 
@@ -383,16 +397,26 @@ def build_repository_graph(lake_dir: str | Path) -> dict[str, Any]:
         evidence = event.get("evidence") or {}
         evidence_id = str(evidence.get("evidence_id") or event.get("event_id") or f"{repo_id}:{event_type}")
         evidence_node = f"evidence:{evidence_id}"
+        freshness = freshness_index.get(evidence_id) or freshness_index.get(str(event.get("event_id") or ""))
+        evidence_extra: dict[str, Any] = {
+            "event_count": 1,
+            "evidence_id": evidence.get("evidence_id") or evidence_id,
+            "evidence_ref": evidence.get("evidence_ref"),
+            "control_ids": [str(c) for c in event.get("controls") or []],
+            "event_type": event_type,
+        }
+        if severity := event.get("severity"):
+            evidence_extra["severity"] = str(severity)
+        if freshness:
+            evidence_extra["freshness_status"] = str(freshness.get("status") or "")
+            if freshness.get("age_minutes") is not None:
+                evidence_extra["freshness_age_minutes"] = int(freshness["age_minutes"])
         add_node(
             evidence_node,
             "evidence",
             event_type.replace("repository.", ""),
             subtitle=str(event.get("status") or "observed"),
-            event_count=1,
-            evidence_id=evidence.get("evidence_id") or evidence_id,
-            evidence_ref=evidence.get("evidence_ref"),
-            control_ids=[str(c) for c in event.get("controls") or []],
-            event_type=event_type,
+            **evidence_extra,
         )
         add_edge(repo_id, evidence_node, "has_evidence")
 
