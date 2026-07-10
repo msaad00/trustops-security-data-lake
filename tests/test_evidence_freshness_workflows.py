@@ -18,6 +18,7 @@ from security_lakehouse.evidence_freshness import build_freshness_summary  # noq
 from security_lakehouse.evidence_freshness_workflows import (  # noqa: E402
     escalate_stale_evidence,
     load_freshness_records,
+    request_stale_evidence,
 )
 from security_lakehouse.server_app import create_app  # noqa: E402
 from test_api_v1 import _seed_lake  # noqa: E402
@@ -90,6 +91,42 @@ def test_escalate_creates_tasks_when_breaches_exist(env) -> None:
 
     resp = client.post(
         "/api/v1/evidence/freshness/escalate",
+        json={"limit": 3},
+        headers=_bearer(tokens["contributor"]),
+    )
+    assert resp.status_code == HTTPStatus.OK
+    assert "created_count" in resp.json()["data"]
+
+
+def test_request_requires_evidence_request_scope(env) -> None:
+    client, tokens, _lake = env
+    resp = client.post(
+        "/api/v1/evidence/freshness/request",
+        json={"limit": 5},
+        headers=_bearer(tokens["read_only"]),
+    )
+    assert resp.status_code == HTTPStatus.FORBIDDEN
+
+
+def test_request_creates_evidence_requests_when_breaches_exist(env) -> None:
+    client, tokens, lake = env
+    records = load_freshness_records(str(lake))
+    summary = build_freshness_summary(records)
+    if summary["sla_breach_count"] == 0:
+        pytest.skip("fixture has no SLA breaches")
+    with client.app.state.sessionmaker() as session:
+        result = request_stale_evidence(
+            session,
+            tenant_id=tokens["tenant_id"],
+            lake_dir=str(lake),
+            actor_email="contributor@fresh.test",
+            limit=3,
+        )
+        session.commit()
+    assert result["created_count"] >= 0
+
+    resp = client.post(
+        "/api/v1/evidence/freshness/request",
         json={"limit": 3},
         headers=_bearer(tokens["contributor"]),
     )

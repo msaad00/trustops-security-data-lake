@@ -530,6 +530,15 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             body={"limit": limit, "statuses": ["stale", "expired", "missing"]},
         )
 
+    @trustops_tool(title="Request Stale Evidence")
+    def request_stale_evidence(limit: int = 10) -> JsonObject:
+        """Open evidence requests for controls tied to stale, expired, or missing proof."""
+        return _server_api_request(
+            "POST",
+            "/api/v1/evidence/freshness/request",
+            body={"limit": limit, "statuses": ["stale", "expired", "missing"]},
+        )
+
     @trustops_tool(title="Insights Timeseries")
     def get_insights_timeseries(limit: int = 14) -> JsonObject:
         """Return captured posture trend points (score, fresh rate, violations)."""
