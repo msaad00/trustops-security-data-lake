@@ -41,6 +41,7 @@ import type {
   FrameworkView,
   FrameworkDetail,
   IngestionStatus,
+  PlatformJobsFeed,
   LakeEvalRun,
   NormalizedEvent,
   PocReadiness,
@@ -114,6 +115,17 @@ export function useIngestionStatus(opts?: Opts<IngestionStatus>) {
     queryKey: ["ingestion", "status"],
     queryFn: api.ingestionStatus,
     staleTime: STALE,
+    refetchInterval: LIVE,
+    refetchOnWindowFocus: true,
+    ...opts,
+  });
+}
+
+export function usePlatformJobs(limit = 8, opts?: Opts<PlatformJobsFeed>) {
+  return useQuery({
+    queryKey: ["platform", "jobs", limit],
+    queryFn: () => api.platformJobs(`?limit=${limit}`),
+    staleTime: 5_000,
     refetchInterval: LIVE,
     refetchOnWindowFocus: true,
     ...opts,

@@ -56,6 +56,7 @@ import type {
   LakeEvalRun,
   NormalizedEvent,
   PocReadiness,
+  PlatformJobsFeed,
   AuditReadiness,
   AiGovernance,
   AiInventoryItem,
@@ -300,6 +301,10 @@ export const api = {
   posture: () => get<Assessment>("/posture/current"),
   ingestionStatus: () =>
     get<{ data: IngestionStatus }>("/v1/ingestion/status").then(
+      (body) => body.data,
+    ),
+  platformJobs: (query = "") =>
+    get<{ data: PlatformJobsFeed }>(`/v1/platform/jobs${query}`).then(
       (body) => body.data,
     ),
   controls: () => get<{ controls: ControlPosture[] }>("/controls"),

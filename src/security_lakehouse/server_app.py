@@ -1883,6 +1883,32 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         )
         return JSONResponse(api_v1.envelope("platform.audit-readiness", data))
 
+    @app.get("/api/v1/platform/jobs", tags=["platform"])
+    def platform_jobs_route(
+        request: Request,
+        identity: Identity = Depends(_require_read),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        from security_lakehouse.platform_jobs import build_platform_jobs
+
+        params = _params(request)
+        limit_raw = (params.get("limit") or ["50"])[0]
+        kind = (params.get("kind") or [None])[0]
+        status = (params.get("status") or [None])[0]
+        try:
+            limit = max(1, min(int(limit_raw or 50), 500))
+        except ValueError:
+            limit = 50
+        agent_rows = agent_runs_db.list_agent_runs(session, tenant_id=identity.tenant_id, limit=limit)
+        data = build_platform_jobs(
+            str(lake_for(identity)),
+            agent_runs=[agent_runs_db.agent_run_to_dict(row) for row in agent_rows],
+            limit=limit,
+            kind=kind,
+            status=status,
+        )
+        return JSONResponse(api_v1.envelope("platform.jobs", data))
+
     @app.get("/api/v1/platform/ai-governance", tags=["platform"])
     def ai_governance_route(identity: Identity = Depends(_require_read)) -> JSONResponse:
         from security_lakehouse.ai_governance import build_ai_governance_status

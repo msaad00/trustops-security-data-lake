@@ -541,6 +541,16 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
 
         return build_repository_graph(lake)
 
+    @trustops_tool(title="List Platform Jobs")
+    def list_platform_jobs(limit: int = 25, kind: str = "", status: str = "") -> JsonObject:
+        """Return unified mid-run jobs: connector syncs, lake evals, workflows, and agent runs."""
+        params: dict[str, Any] = {"limit": limit}
+        if kind:
+            params["kind"] = kind
+        if status:
+            params["status"] = status
+        return _server_api_request("GET", "/api/v1/platform/jobs", **params)
+
     @trustops_tool(title="Escalate Stale Evidence")
     def escalate_stale_evidence(limit: int = 10) -> JsonObject:
         """Create remediation tasks for stale, expired, or missing evidence rows."""

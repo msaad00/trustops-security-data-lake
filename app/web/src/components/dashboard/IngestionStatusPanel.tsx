@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import type { IngestionStatus } from "@/lib/api/types";
 import {
+  usePlatformJobs,
   useRunLakeEvalMutation,
   useRunSchedulerTickMutation,
 } from "@/lib/api/hooks";
@@ -87,6 +88,7 @@ export function IngestionStatusPanel({
 }) {
   const runEval = useRunLakeEvalMutation();
   const runTick = useRunSchedulerTickMutation();
+  const platformJobs = usePlatformJobs(6);
   const summary = status?.summary;
   const scale = status?.scale;
   const health = status?.health;
@@ -405,6 +407,49 @@ export function IngestionStatusPanel({
             </div>
           </div>
         </div>
+
+        {(platformJobs.data?.jobs.length ?? 0) > 0 && (
+          <div className="rounded-lg border border-line bg-white p-3">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <div className="text-xs font-black uppercase tracking-wide text-muted">
+                Recent platform jobs
+              </div>
+              <Badge tone="info">
+                {platformJobs.data?.running_count ?? 0} running ·{" "}
+                {platformJobs.data?.count ?? 0} total
+              </Badge>
+            </div>
+            <div className="grid gap-2">
+              {platformJobs.data?.jobs.slice(0, 4).map((job) => (
+                <div
+                  key={job.id}
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-line bg-panel px-2.5 py-2 text-xs"
+                >
+                  <div className="min-w-0">
+                    <div className="truncate font-black text-ink">
+                      {job.label}
+                    </div>
+                    <div className="truncate text-muted">
+                      {job.kind.replace(/_/g, " ")} ·{" "}
+                      {shortDate(job.started_at ?? undefined)}
+                    </div>
+                  </div>
+                  <Badge
+                    tone={
+                      job.status === "failed"
+                        ? "critical"
+                        : job.status === "completed"
+                          ? "ready"
+                          : "attention"
+                    }
+                  >
+                    {job.status}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

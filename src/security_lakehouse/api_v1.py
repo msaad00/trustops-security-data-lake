@@ -541,6 +541,13 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "scopes": ["read"],
     },
     {
+        "resource": "platform.jobs",
+        "path": "/api/v1/platform/jobs",
+        "kind": "collection",
+        "methods": ["GET"],
+        "scopes": ["read"],
+    },
+    {
         "resource": "platform.ai-governance",
         "path": "/api/v1/platform/ai-governance",
         "kind": "singleton",
