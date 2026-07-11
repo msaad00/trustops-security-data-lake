@@ -23,6 +23,8 @@ import { PageHeader } from "@/components/PageHeader";
 import { DemoShareKit } from "@/components/demo/DemoShareKit";
 import { ConnectorEcosystemStrip } from "@/components/connectors/ConnectorEcosystemStrip";
 import { useAuthMethods, usePocReadiness } from "@/lib/api/hooks";
+import { resolveSignInTarget } from "@/lib/auth/sign-in";
+import { BRAND } from "@/lib/brand";
 
 const STEPS = [
   {
@@ -58,15 +60,13 @@ export default function DemoLandingPage() {
   const auth = useAuthMethods();
   const readiness = usePocReadiness();
   const kit = readiness.data?.demo_kit;
-  const loginUrl =
-    auth.data?.methods.find((m) => m.id === "oidc")?.login_url ??
-    auth.data?.methods[0]?.login_url;
+  const signIn = resolveSignInTarget(auth.data);
 
   return (
     <div className="mx-auto grid w-full max-w-[1200px] min-w-0 gap-3 px-3 py-3 sm:px-4 lg:px-5">
       <PageHeader
         eyebrow="Hosted demo"
-        title="TrustOps live demo"
+        title={`${BRAND.name} live demo`}
         description="Evaluate continuous compliance with real account linking and evidence ingestion — not a static screenshot tour."
         actions={
           readiness.data?.shareable ? (
@@ -90,23 +90,23 @@ export default function DemoLandingPage() {
               Link accounts, ingest evidence, share proof
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-              TrustOps keeps evidence in your boundary. Connect read-only
+              {BRAND.name} keeps evidence in your boundary. Connect read-only
               sources, evaluate controls deterministically, and share redacted
               trust links without handing auditors raw lake access.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
-              {loginUrl ? (
+              {signIn.external ? (
                 <Button asChild variant="primary">
-                  <a href={loginUrl}>
+                  <a href={signIn.href}>
                     <LogIn className="h-4 w-4" />
-                    Sign in to workspace
+                    {signIn.label}
                   </a>
                 </Button>
               ) : (
                 <Button asChild variant="primary">
-                  <Link href="/login">
+                  <Link href={signIn.href}>
                     <LogIn className="h-4 w-4" />
-                    Sign in
+                    {signIn.label}
                   </Link>
                 </Button>
               )}
