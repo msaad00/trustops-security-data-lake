@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
-import { TrustOpsMark } from "@/components/brand/TrustOpsMark";
+import { KodaMark } from "@/components/brand/KodaMark";
 import { BRAND } from "@/lib/brand";
 
 const LABEL: Record<string, string> = {
@@ -62,7 +62,7 @@ export function Breadcrumbs() {
         href="/dashboard"
         className="inline-flex items-center gap-1.5 rounded px-1 py-0.5 font-extrabold text-muted hover:bg-slate-100 hover:text-ink"
       >
-        <TrustOpsMark size="xs" gradientId="trustops-crumb-gradient" />
+        <KodaMark size="xs" gradientId="koda-crumb-gradient" />
         {BRAND.name}
       </Link>
       {crumbs.map((crumb, idx) => (

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { BRAND } from "@/lib/brand";
-import { TrustOpsMark } from "./TrustOpsMark";
+import { KodaMark } from "./KodaMark";
 
 interface Props {
   /** Show wordmark text beside the monogram. */
@@ -30,7 +30,7 @@ export function TrustOpsLogo({
 }: Props) {
   const content = (
     <>
-      <TrustOpsMark size={markSize} gradientId={gradientId} />
+      <KodaMark size={markSize} gradientId={gradientId} />
       {showWordmark && (
         <span className={cn("min-w-0 leading-tight", wordmarkClassName)}>
           <span
