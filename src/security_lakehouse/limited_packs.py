@@ -7,7 +7,7 @@ or CFR section with short internal titles only.
 
 from __future__ import annotations
 
-from typing import Iterator
+from collections.abc import Iterator
 
 from security_lakehouse.framework_packs import PackControlSpec
 
@@ -23,20 +23,38 @@ GDPR_ARTICLES: tuple[tuple[str, str, str, str, tuple[str, ...]], ...] = (
     ("Art.7", "Consent conditions evidenced where used", "privacy-engineering", "privacy-office", ("service",)),
     ("Art.12", "Transparent privacy notices published", "privacy-engineering", "privacy-office", ("service",)),
     ("Art.13", "Collection-time privacy information provided", "privacy-engineering", "privacy-office", ("service",)),
-    ("Art.14", "Indirect collection privacy information provided", "privacy-engineering", "privacy-office", ("service",)),
+    (
+        "Art.14",
+        "Indirect collection privacy information provided",
+        "privacy-engineering",
+        "privacy-office",
+        ("service",),
+    ),
     ("Art.15", "Data subject access rights supported", "privacy-engineering", "privacy-office", ("data_store",)),
     ("Art.17", "Erasure requests handled within SLA", "privacy-engineering", "privacy-office", ("data_store",)),
     ("Art.24", "Controller responsibility demonstrated", "governance", "privacy-office", ("service",)),
     ("Art.34", "Communication of breach to data subjects", "incident-response", "privacy-office", ("service",)),
     ("Art.37", "DPO designation evidenced where required", "governance", "privacy-office", ("service",)),
-    ("Art.44", "Cross-border transfer safeguards documented", "data-protection", "privacy-office", ("data_store", "service")),
+    (
+        "Art.44",
+        "Cross-border transfer safeguards documented",
+        "data-protection",
+        "privacy-office",
+        ("data_store", "service"),
+    ),
     ("Art.45", "Adequacy or transfer mechanism evidenced", "data-protection", "privacy-office", ("data_store",)),
     ("Art.46", "Standard contractual clauses or BCRs in place", "third-party-risk", "privacy-office", ("service",)),
 )
 
 HIPAA_SECTIONS: tuple[tuple[str, str, str, str, tuple[str, ...]], ...] = (
     ("164.308(a)(2)", "Assigned security responsibility documented", "governance", "security-operations", ("service",)),
-    ("164.308(a)(3)", "Workforce security procedures evidenced", "identity", "security-operations", ("user", "service")),
+    (
+        "164.308(a)(3)",
+        "Workforce security procedures evidenced",
+        "identity",
+        "security-operations",
+        ("user", "service"),
+    ),
     ("164.308(a)(5)", "Security awareness training completed", "governance", "security-operations", ("user",)),
     ("164.308(a)(6)", "Security incident procedures tested", "incident-response", "security-operations", ("service",)),
     ("164.308(a)(7)", "Contingency plan and backups evidenced", "availability", "security-operations", ("data_store",)),
@@ -65,7 +83,13 @@ EU_AI_ACT_ARTICLES: tuple[tuple[str, str, str, str, tuple[str, ...]], ...] = (
     ("Art.5", "Prohibited AI practices not deployed", "ai-governance", "ai-security", ("ai_model", "ai_agent")),
     ("Art.6", "High-risk AI classification documented", "ai-governance", "ai-security", ("ai_model",)),
     ("Art.11", "Technical documentation maintained for high-risk AI", "ai-governance", "ai-security", ("ai_model",)),
-    ("Art.17", "Quality management system for high-risk AI evidenced", "ai-governance", "ai-security", ("ai_model", "service")),
+    (
+        "Art.17",
+        "Quality management system for high-risk AI evidenced",
+        "ai-governance",
+        "ai-security",
+        ("ai_model", "service"),
+    ),
     ("Art.26", "Deployer obligations for high-risk AI met", "ai-governance", "ai-security", ("ai_model", "service")),
     ("Art.49", "Fundamental-rights impact assessment where required", "ai-governance", "privacy-office", ("ai_model",)),
     ("Art.51", "GPAI provider obligations evidenced", "ai-governance", "ai-security", ("ai_model",)),
@@ -106,13 +130,12 @@ def _limited_spec(
 
 def gdpr_limited_pack_specs() -> Iterator[PackControlSpec]:
     for article_ref, title, domain, owner, assets in GDPR_ARTICLES:
-        article_id = article_ref.replace("Art.", "")
         yield _limited_spec(
             control_id=f"GDPR-{article_ref}",
             framework_id="gdpr-2016-679",
             framework="GDPR",
             framework_ref=f"GDPR {article_ref}",
-            article_id=article_id,
+            article_id=article_ref,
             title=title,
             risk_domain=domain,
             owner=owner,
@@ -144,7 +167,7 @@ def pci_dss_limited_pack_specs() -> Iterator[PackControlSpec]:
             framework_id="pci-dss-v4",
             framework="PCI DSS",
             framework_ref=f"PCI DSS v4 Req {req}",
-            article_id=req,
+            article_id=f"Req-{req}",
             title=title,
             risk_domain=domain,
             owner=owner,
@@ -155,13 +178,12 @@ def pci_dss_limited_pack_specs() -> Iterator[PackControlSpec]:
 
 def eu_ai_act_limited_pack_specs() -> Iterator[PackControlSpec]:
     for article_ref, title, domain, owner, assets in EU_AI_ACT_ARTICLES:
-        article_id = article_ref.replace("Art.", "")
         yield _limited_spec(
             control_id=f"EU-AI-ACT-{article_ref}",
             framework_id="eu-ai-act-2024-1689",
             framework="EU AI Act",
             framework_ref=f"EU AI Act {article_ref}",
-            article_id=article_id,
+            article_id=article_ref,
             title=title,
             risk_domain=domain,
             owner=owner,

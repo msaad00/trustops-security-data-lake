@@ -2430,7 +2430,7 @@
       "framework_id": "eu-ai-act-2024-1689",
       "articles": [
         {
-          "article_id": "11",
+          "article_id": "Art.11",
           "title": "Technical documentation maintained for high-risk AI",
           "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
           "reviewed_by": "internal-trust-team",
@@ -2500,7 +2500,7 @@
       "framework_id": "eu-ai-act-2024-1689",
       "articles": [
         {
-          "article_id": "17",
+          "article_id": "Art.17",
           "title": "Quality management system for high-risk AI evidenced",
           "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
           "reviewed_by": "internal-trust-team",
@@ -2514,7 +2514,7 @@
       "framework_id": "eu-ai-act-2024-1689",
       "articles": [
         {
-          "article_id": "26",
+          "article_id": "Art.26",
           "title": "Deployer obligations for high-risk AI met",
           "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
           "reviewed_by": "internal-trust-team",
@@ -2528,7 +2528,7 @@
       "framework_id": "eu-ai-act-2024-1689",
       "articles": [
         {
-          "article_id": "49",
+          "article_id": "Art.49",
           "title": "Fundamental-rights impact assessment where required",
           "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
           "reviewed_by": "internal-trust-team",
@@ -2542,7 +2542,7 @@
       "framework_id": "eu-ai-act-2024-1689",
       "articles": [
         {
-          "article_id": "5",
+          "article_id": "Art.5",
           "title": "Prohibited AI practices not deployed",
           "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
           "reviewed_by": "internal-trust-team",
@@ -2556,7 +2556,7 @@
       "framework_id": "eu-ai-act-2024-1689",
       "articles": [
         {
-          "article_id": "51",
+          "article_id": "Art.51",
           "title": "GPAI provider obligations evidenced",
           "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
           "reviewed_by": "internal-trust-team",
@@ -2570,7 +2570,7 @@
       "framework_id": "eu-ai-act-2024-1689",
       "articles": [
         {
-          "article_id": "6",
+          "article_id": "Art.6",
           "title": "High-risk AI classification documented",
           "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
           "reviewed_by": "internal-trust-team",
@@ -2584,7 +2584,7 @@
       "framework_id": "eu-ai-act-2024-1689",
       "articles": [
         {
-          "article_id": "71",
+          "article_id": "Art.71",
           "title": "EU database registration where applicable",
           "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
           "reviewed_by": "internal-trust-team",
@@ -2598,7 +2598,7 @@
       "framework_id": "eu-ai-act-2024-1689",
       "articles": [
         {
-          "article_id": "72",
+          "article_id": "Art.72",
           "title": "Post-market monitoring plan active",
           "official_source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
           "reviewed_by": "internal-trust-team",
@@ -6644,7 +6644,7 @@
       "framework_id": "gdpr-2016-679",
       "articles": [
         {
-          "article_id": "12",
+          "article_id": "Art.12",
           "title": "Transparent privacy notices published",
           "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
           "reviewed_by": "internal-trust-team",
@@ -6658,7 +6658,7 @@
       "framework_id": "gdpr-2016-679",
       "articles": [
         {
-          "article_id": "13",
+          "article_id": "Art.13",
           "title": "Collection-time privacy information provided",
           "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
           "reviewed_by": "internal-trust-team",
@@ -6672,7 +6672,7 @@
       "framework_id": "gdpr-2016-679",
       "articles": [
         {
-          "article_id": "14",
+          "article_id": "Art.14",
           "title": "Indirect collection privacy information provided",
           "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
           "reviewed_by": "internal-trust-team",
@@ -6686,7 +6686,7 @@
       "framework_id": "gdpr-2016-679",
       "articles": [
         {
-          "article_id": "15",
+          "article_id": "Art.15",
           "title": "Data subject access rights supported",
           "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
           "reviewed_by": "internal-trust-team",
@@ -6700,7 +6700,7 @@
       "framework_id": "gdpr-2016-679",
       "articles": [
         {
-          "article_id": "17",
+          "article_id": "Art.17",
           "title": "Erasure requests handled within SLA",
           "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
           "reviewed_by": "internal-trust-team",
@@ -6714,7 +6714,7 @@
       "framework_id": "gdpr-2016-679",
       "articles": [
         {
-          "article_id": "24",
+          "article_id": "Art.24",
           "title": "Controller responsibility demonstrated",
           "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
           "reviewed_by": "internal-trust-team",
@@ -6798,7 +6798,7 @@
       "framework_id": "gdpr-2016-679",
       "articles": [
         {
-          "article_id": "34",
+          "article_id": "Art.34",
           "title": "Communication of breach to data subjects",
           "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
           "reviewed_by": "internal-trust-team",
@@ -6826,7 +6826,7 @@
       "framework_id": "gdpr-2016-679",
       "articles": [
         {
-          "article_id": "37",
+          "article_id": "Art.37",
           "title": "DPO designation evidenced where required",
           "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
           "reviewed_by": "internal-trust-team",
@@ -6840,7 +6840,7 @@
       "framework_id": "gdpr-2016-679",
       "articles": [
         {
-          "article_id": "44",
+          "article_id": "Art.44",
           "title": "Cross-border transfer safeguards documented",
           "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
           "reviewed_by": "internal-trust-team",
@@ -6854,7 +6854,7 @@
       "framework_id": "gdpr-2016-679",
       "articles": [
         {
-          "article_id": "45",
+          "article_id": "Art.45",
           "title": "Adequacy or transfer mechanism evidenced",
           "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
           "reviewed_by": "internal-trust-team",
@@ -6868,7 +6868,7 @@
       "framework_id": "gdpr-2016-679",
       "articles": [
         {
-          "article_id": "46",
+          "article_id": "Art.46",
           "title": "Standard contractual clauses or BCRs in place",
           "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
           "reviewed_by": "internal-trust-team",
@@ -6882,7 +6882,7 @@
       "framework_id": "gdpr-2016-679",
       "articles": [
         {
-          "article_id": "5",
+          "article_id": "Art.5",
           "title": "Processing principles evidenced",
           "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
           "reviewed_by": "internal-trust-team",
@@ -6896,7 +6896,7 @@
       "framework_id": "gdpr-2016-679",
       "articles": [
         {
-          "article_id": "6",
+          "article_id": "Art.6",
           "title": "Lawful basis for processing documented",
           "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
           "reviewed_by": "internal-trust-team",
@@ -6910,7 +6910,7 @@
       "framework_id": "gdpr-2016-679",
       "articles": [
         {
-          "article_id": "7",
+          "article_id": "Art.7",
           "title": "Consent conditions evidenced where used",
           "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
           "reviewed_by": "internal-trust-team",
@@ -12174,7 +12174,7 @@
       "framework_id": "pci-dss-v4",
       "articles": [
         {
-          "article_id": "1",
+          "article_id": "Req-1",
           "title": "Network security controls enforced",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
@@ -12216,7 +12216,7 @@
       "framework_id": "pci-dss-v4",
       "articles": [
         {
-          "article_id": "12",
+          "article_id": "Req-12",
           "title": "Information security policy maintained",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
@@ -12230,7 +12230,7 @@
       "framework_id": "pci-dss-v4",
       "articles": [
         {
-          "article_id": "2",
+          "article_id": "Req-2",
           "title": "Secure configurations applied",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
@@ -12244,7 +12244,7 @@
       "framework_id": "pci-dss-v4",
       "articles": [
         {
-          "article_id": "3",
+          "article_id": "Req-3",
           "title": "Stored account data protected",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
@@ -12258,7 +12258,7 @@
       "framework_id": "pci-dss-v4",
       "articles": [
         {
-          "article_id": "4",
+          "article_id": "Req-4",
           "title": "Transmission encryption enforced",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
@@ -12272,7 +12272,7 @@
       "framework_id": "pci-dss-v4",
       "articles": [
         {
-          "article_id": "5",
+          "article_id": "Req-5",
           "title": "Malicious software protections active",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
@@ -12286,7 +12286,7 @@
       "framework_id": "pci-dss-v4",
       "articles": [
         {
-          "article_id": "6",
+          "article_id": "Req-6",
           "title": "Secure development practices evidenced",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
@@ -12314,7 +12314,7 @@
       "framework_id": "pci-dss-v4",
       "articles": [
         {
-          "article_id": "8",
+          "article_id": "Req-8",
           "title": "User identification and authentication enforced",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
@@ -12328,7 +12328,7 @@
       "framework_id": "pci-dss-v4",
       "articles": [
         {
-          "article_id": "9",
+          "article_id": "Req-9",
           "title": "Physical access to cardholder data restricted",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
