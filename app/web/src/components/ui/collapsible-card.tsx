@@ -31,7 +31,6 @@ export function CollapsibleCard({
   className,
   contentClassName,
 }: Props) {
-  // Two-mode state so non-storage callers don't pay the localStorage cost.
   const [localOpen, setLocalOpen] = useState(defaultOpen);
   const [persistedOpen, setPersistedOpen] = usePersistentState(
     storageKey ? `trustops:section:${storageKey}` : "trustops:section:_unused",
@@ -42,35 +41,37 @@ export function CollapsibleCard({
 
   return (
     <Card className={cn("overflow-hidden", className)}>
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="flex w-full items-start justify-between gap-3 p-5 text-left"
-      >
-        <span className="grid min-w-0 gap-1">
-          <span className="flex items-center gap-2 text-lg font-black leading-tight">
-            {open ? (
-              <ChevronDown className="h-4 w-4 text-muted" />
-            ) : (
-              <ChevronRight className="h-4 w-4 text-muted" />
-            )}
-            {title}
-          </span>
-          {description && (
-            <span className="block text-sm text-muted">{description}</span>
+      <div className="flex w-full items-start justify-between gap-3 px-4 py-3">
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          aria-expanded={open}
+          className="flex min-w-0 flex-1 items-start gap-2 text-left"
+        >
+          {open ? (
+            <ChevronDown className="mt-0.5 h-4 w-4 shrink-0 text-muted" />
+          ) : (
+            <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-muted" />
           )}
-        </span>
-        {actions && (
-          <span
-            className="flex items-center gap-2"
-            onClick={(event) => event.stopPropagation()}
-          >
-            {actions}
+          <span className="grid min-w-0 gap-0.5">
+            <span className="text-base font-black leading-tight text-ink">
+              {title}
+            </span>
+            {description && (
+              <span className="block text-sm leading-5 text-muted">
+                {description}
+              </span>
+            )}
           </span>
+        </button>
+        {actions && (
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            {actions}
+          </div>
         )}
-      </button>
+      </div>
       {open && (
-        <div className={cn("border-t border-line p-5", contentClassName)}>
+        <div className={cn("border-t border-line p-4", contentClassName)}>
           {children}
         </div>
       )}

@@ -15,7 +15,7 @@ export function DashboardStripsRow() {
       description="Audit room, evidence freshness, and remediation SLA"
       contentClassName="p-3 sm:p-4"
     >
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-3 lg:grid-cols-3">
         <AuditReadinessStrip />
         <EvidenceFreshnessStrip />
         <InsightsRemediationStrip />

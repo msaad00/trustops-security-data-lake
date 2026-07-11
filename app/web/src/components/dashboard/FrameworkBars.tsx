@@ -25,10 +25,61 @@ function color(score: number) {
   return "#d92d20";
 }
 
+function ScoreboardChart({
+  data,
+  height,
+}: {
+  data: Array<{ name: string; score: number; color: string }>;
+  height: number;
+}) {
+  return (
+    <ResponsiveContainer width="100%" height={height}>
+      <BarChart
+        data={data}
+        layout="vertical"
+        margin={{ top: 4, right: 12, left: 0, bottom: 4 }}
+      >
+        <CartesianGrid stroke="#eef2f7" horizontal={false} />
+        <XAxis
+          type="number"
+          domain={[0, 100]}
+          tickFormatter={(v) => `${v}%`}
+          stroke="#a0aec0"
+        />
+        <YAxis
+          type="category"
+          dataKey="name"
+          width={152}
+          stroke="#475569"
+          tickLine={false}
+        />
+        <Tooltip
+          cursor={{ fill: "rgba(79,124,255,0.06)" }}
+          formatter={(v: number) => [`${v}%`, "score"]}
+          contentStyle={{
+            background: "#101623",
+            color: "#fff",
+            border: 0,
+            borderRadius: 8,
+            fontSize: 12,
+          }}
+        />
+        <Bar dataKey="score" radius={[6, 6, 6, 6]} barSize={18}>
+          {data.map((d) => (
+            <Cell key={d.name} fill={d.color} />
+          ))}
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
 export function FrameworkBars({
   frameworks,
+  embedded = false,
 }: {
   frameworks: FrameworkPosture[];
+  embedded?: boolean;
 }) {
   const data = frameworks.map((f) => {
     const visual = frameworkVisual(
@@ -43,55 +94,26 @@ export function FrameworkBars({
       accent: visual.accent,
     };
   });
+  const chartHeight = Math.min(360, Math.max(160, data.length * 34));
+
+  if (embedded) {
+    return (
+      <div className="px-4 pb-4">
+        <ScoreboardChart data={data} height={chartHeight} />
+      </div>
+    );
+  }
 
   return (
     <Card className="overflow-hidden">
       <CardHeader>
         <CardTitle>Framework scoreboard</CardTitle>
         <CardDescription>
-          Per-program readiness — managed GRC-style compliance bars with failing
-          control overlay.
+          Per-program readiness — compliance bars with failing control overlay.
         </CardDescription>
       </CardHeader>
-      <div className="h-[230px] w-full px-4 pb-4">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={data}
-            layout="vertical"
-            margin={{ top: 4, right: 12, left: 0, bottom: 4 }}
-          >
-            <CartesianGrid stroke="#eef2f7" horizontal={false} />
-            <XAxis
-              type="number"
-              domain={[0, 100]}
-              tickFormatter={(v) => `${v}%`}
-              stroke="#a0aec0"
-            />
-            <YAxis
-              type="category"
-              dataKey="name"
-              width={140}
-              stroke="#475569"
-              tickLine={false}
-            />
-            <Tooltip
-              cursor={{ fill: "rgba(79,124,255,0.06)" }}
-              formatter={(v: number) => [`${v}%`, "score"]}
-              contentStyle={{
-                background: "#101623",
-                color: "#fff",
-                border: 0,
-                borderRadius: 8,
-                fontSize: 12,
-              }}
-            />
-            <Bar dataKey="score" radius={[6, 6, 6, 6]} barSize={18}>
-              {data.map((d) => (
-                <Cell key={d.name} fill={d.color} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+      <div className="w-full px-4 pb-4" style={{ height: chartHeight }}>
+        <ScoreboardChart data={data} height={chartHeight} />
       </div>
     </Card>
   );

@@ -15,6 +15,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { BRAND } from "@/lib/brand";
 import { Button } from "@/components/ui/button";
 import { Drawer } from "@/components/ui/drawer";
 import {
@@ -899,7 +900,7 @@ export function ConnectorDrawer({
                   </div>
                   <div className="mt-1 text-xs font-semibold text-muted">
                     Click <b>Discover objects</b> after entering the service
-                    identity. TrustOps will show only Snowflake objects visible
+                    identity. {BRAND.name} will show only Snowflake objects visible
                     to that role, then prefill the recommended read scope.
                   </div>
                 </div>
@@ -997,7 +998,7 @@ export function ConnectorDrawer({
                         Advanced view mapping
                       </summary>
                       <div className="mt-2 text-xs leading-5 text-muted">
-                        Defaults work for the TrustOps Snowflake schema. Change
+                        Defaults work for the {BRAND.name} Snowflake schema. Change
                         these only when your evidence lake uses custom view
                         names.
                       </div>

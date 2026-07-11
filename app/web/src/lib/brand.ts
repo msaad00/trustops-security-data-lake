@@ -32,4 +32,8 @@ export const BRAND = {
   mcpCommand: "trustops-mcp",
   /** Legacy product name kept for migration / repo continuity. */
   legacyName: "TrustOps",
+  /** Dashboard home eyebrow (feature area, not product name). */
+  homeEyebrow: "Home",
+  /** Short label under the wordmark in chrome. */
+  consoleSubtitle: "Console",
 } as const;

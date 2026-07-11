@@ -78,7 +78,7 @@ function FrameworkCard({
     return (
       <Link
         href={frameworkDetailHref(unmonitored.framework_id)}
-        className="flex min-h-[132px] min-w-[280px] shrink-0 snap-start flex-col gap-2 rounded-xl border border-dashed border-line bg-surfaceMuted p-4 transition-colors hover:border-brand sm:min-w-0"
+        className="flex min-h-[132px] min-w-[260px] shrink-0 snap-start flex-col gap-2 rounded-xl border border-dashed border-line bg-surfaceMuted p-4 transition-colors hover:border-brand sm:min-w-0"
       >
         <div className="flex items-start gap-3">
           <FrameworkBadge
@@ -115,7 +115,7 @@ function FrameworkCard({
     <Link
       href={frameworkDetailHref(frameworkIdFor(framework.framework))}
       className={cn(
-        "flex min-h-[132px] min-w-[280px] shrink-0 snap-start flex-col gap-3 rounded-xl border border-line bg-surface p-4 transition-shadow hover:border-brand hover:shadow-card sm:min-w-0",
+        "flex min-h-[132px] min-w-[260px] shrink-0 snap-start flex-col gap-3 rounded-xl border border-line bg-surface p-4 transition-shadow hover:border-brand hover:shadow-card sm:min-w-0",
         framework.state !== "ready" && "border-l-4",
       )}
       style={
@@ -218,7 +218,7 @@ export function ReadinessGrid({
       storageKey="dashboard-framework-readiness"
       defaultOpen
       title="Framework readiness"
-      description="Worst gaps first — scroll sideways or expand for full catalog"
+      description="Worst gaps first — swipe on mobile or use Priority / All"
       contentClassName="space-y-3 p-3 sm:p-4"
       actions={
         <div className="flex flex-wrap items-center gap-2">
@@ -253,13 +253,16 @@ export function ReadinessGrid({
 
       {totalCount > 0 ? (
         <>
-          <div
-            className={cn(
-              showAll
-                ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
-                : "flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:thin] sm:snap-none sm:grid sm:grid-cols-2 sm:overflow-visible xl:grid-cols-2",
-            )}
-          >
+          <div className="relative">
+            <div
+              className={cn(
+                showAll
+                  ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
+                  : "flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:thin] sm:snap-none sm:grid sm:grid-cols-2 sm:overflow-visible xl:grid-cols-2",
+              )}
+              role="region"
+              aria-label="Framework readiness cards"
+            >
             {visibleFrameworks.map((f) => (
               <FrameworkCard key={f.framework} framework={f} />
             ))}
@@ -269,6 +272,13 @@ export function ReadinessGrid({
                 unmonitored={framework}
               />
             ))}
+            </div>
+            {!showAll && (
+              <div
+                className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-surface to-transparent sm:hidden"
+                aria-hidden
+              />
+            )}
           </div>
           {hiddenCount > 0 && (
             <Button

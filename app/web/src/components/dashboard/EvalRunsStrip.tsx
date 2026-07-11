@@ -24,7 +24,13 @@ function formatPassRate(rate: number | null | undefined) {
   return `${Math.round(rate * 100)}%`;
 }
 
-export function EvalRunsStrip({ limit = 6 }: { limit?: number }) {
+export function EvalRunsStrip({
+  limit = 6,
+  embedded = false,
+}: {
+  limit?: number;
+  embedded?: boolean;
+}) {
   const ingestion = useIngestionStatus();
   const evalRuns = useEvalRuns(limit);
   const scale = ingestion.data?.scale;
@@ -33,7 +39,13 @@ export function EvalRunsStrip({ limit = 6 }: { limit?: number }) {
   return (
     <QueryState queries={[ingestion, evalRuns]} label="evaluation history">
       {ingestion.data && (
-        <Card>
+        <Card
+          className={
+            embedded
+              ? "rounded-none border-0 shadow-none"
+              : undefined
+          }
+        >
           <CardHeader className="flex-row items-start justify-between gap-3">
             <div className="min-w-0">
               <CardTitle className="flex items-center gap-2 text-base">

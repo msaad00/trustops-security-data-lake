@@ -73,7 +73,7 @@ export const CONNECTOR_CREDENTIAL_FIELDS: Record<string, ConnectorFieldDef[]> =
         name: "role_arn",
         label: "Read-only role ARN (optional)",
         placeholder:
-          "arn:aws:iam::123456789012:role/TrustOpsPostureReadOnlyRole",
+          "arn:aws:iam::123456789012:role/KodaPostureReadOnlyRole",
         hint: "Cross-account assume-role; pair with external ID in the trust policy.",
       },
       {

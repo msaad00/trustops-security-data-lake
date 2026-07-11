@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { QueryState } from "@/components/QueryState";
+import { BRAND } from "@/lib/brand";
 import {
   useAuthUsers,
   useAuthWhoami,
@@ -137,7 +138,7 @@ export function UsersPanel() {
             Users & roles
           </CardTitle>
           <CardDescription>
-            Assign TrustOps roles within your tenant — separate from IdP groups
+            Assign {BRAND.name} roles within your tenant — separate from IdP groups
             unless role sync is enabled server-side.
           </CardDescription>
         </CardHeader>

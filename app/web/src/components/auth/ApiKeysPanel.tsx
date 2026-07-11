@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
 import { QueryState } from "@/components/QueryState";
+import { BRAND } from "@/lib/brand";
 import {
   useAuthKeys,
   useAuthWhoami,
@@ -190,7 +191,7 @@ export function ApiKeysPanel() {
             </CardTitle>
             <CardDescription>
               Mint bearer tokens for MCP, CI, and agents. The secret is shown
-              once — TrustOps stores only a hash.
+              once — {BRAND.name} stores only a hash.
             </CardDescription>
           </div>
           <Button

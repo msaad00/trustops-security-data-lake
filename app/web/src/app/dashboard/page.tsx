@@ -24,13 +24,12 @@ import { ControlTestTable } from "@/components/dashboard/ControlTestTable";
 import { TrustLifecycle } from "@/components/dashboard/TrustLifecycle";
 import { IngestionStatusPanel } from "@/components/dashboard/IngestionStatusPanel";
 import { EvalRunsStrip } from "@/components/dashboard/EvalRunsStrip";
-import { ComplianceOverview } from "@/components/dashboard/ComplianceOverview";
 import { DataPipelineStrip } from "@/components/dashboard/DataPipelineStrip";
 import { KpiTile } from "@/components/ui/KpiTile";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import { CollapsibleCard } from "@/components/ui/collapsible-card";
 import { QueryState } from "@/components/QueryState";
+import { BRAND } from "@/lib/brand";
 import { shortDate } from "@/lib/utils";
 
 function stateHeadline(state?: string) {
@@ -74,11 +73,11 @@ export default function DashboardPage() {
       : "No framework posture yet";
 
   return (
-    <div className="mx-auto grid w-full max-w-[1500px] gap-4 px-3 py-4 sm:px-4 lg:gap-5 lg:px-5 lg:py-5">
+    <div className="mx-auto grid w-full max-w-[1500px] gap-3 px-3 py-4 sm:px-4 lg:gap-4 lg:px-5 lg:py-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0">
           <div className="text-[12px] font-black uppercase tracking-wider text-brand">
-            Trust Home
+            {BRAND.name} {BRAND.homeEyebrow}
           </div>
           <h1 className="mt-1 text-[clamp(24px,2.5vw,32px)] font-black leading-tight text-ink">
             Posture, proof, and what to fix next
@@ -111,7 +110,13 @@ export default function DashboardPage() {
       <DashboardStripsRow />
 
       <QueryState queries={[posture]} label="posture">
-        <Card className="overflow-hidden border-line shadow-card">
+        <CollapsibleCard
+          storageKey="dashboard-posture-hero"
+          defaultOpen
+          title="Posture assessment"
+          description="Trust score, KPIs, and program readiness summary"
+          contentClassName="p-0"
+        >
           <div className="grid lg:grid-cols-[260px_minmax(0,1fr)]">
             <div className="flex items-center gap-4 border-b border-line bg-surfaceMuted p-4 lg:block lg:border-b-0 lg:border-r">
               <PostureRing
@@ -153,7 +158,6 @@ export default function DashboardPage() {
                   {p?.state === "ready" ? "shareable" : "internal review"}
                 </Badge>
               </div>
-              <ComplianceOverview frameworks={frameworks} />
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <KpiTile
                   label="Framework readiness"
@@ -209,7 +213,7 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
-        </Card>
+        </CollapsibleCard>
 
         <QueryState queries={[ingestion]} label="ingestion status">
           <CollapsibleCard
@@ -219,9 +223,9 @@ export default function DashboardPage() {
             description="Connector health, eval runs, and warehouse scale mode"
             contentClassName="p-0"
           >
-            <IngestionStatusPanel status={ingestion.data} />
-            <div className="border-t border-line p-3 sm:p-4">
-              <EvalRunsStrip />
+            <IngestionStatusPanel status={ingestion.data} embedded />
+            <div className="border-t border-line px-3 py-3 sm:px-4">
+              <EvalRunsStrip embedded />
             </div>
           </CollapsibleCard>
         </QueryState>
@@ -238,7 +242,15 @@ export default function DashboardPage() {
           <EvidenceTrend />
         </div>
 
-        <FrameworkBars frameworks={frameworks} />
+        <CollapsibleCard
+          storageKey="dashboard-framework-bars"
+          defaultOpen={false}
+          title="Framework scoreboard"
+          description="Per-program compliance bars — expand for chart view"
+          contentClassName="p-0"
+        >
+          <FrameworkBars frameworks={frameworks} embedded />
+        </CollapsibleCard>
 
         <CollapsibleCard
           storageKey="dashboard-control-tests"

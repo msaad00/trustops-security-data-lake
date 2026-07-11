@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Building2, Loader2 } from "lucide-react";
-import { TrustOpsLogo } from "@/components/brand/TrustOpsLogo";
+import { KodaLogo } from "@/components/brand/TrustOpsLogo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/lib/api/client";
@@ -41,7 +41,7 @@ export default function SignupPage() {
     <div className="mx-auto grid min-h-screen max-w-lg place-items-center px-4 py-10">
       <Card className="w-full">
         <CardHeader>
-          <TrustOpsLogo className="mb-3 h-8 w-auto" />
+          <KodaLogo className="mb-3 h-8 w-auto" />
           <CardTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5 text-brand" />
             Create workspace

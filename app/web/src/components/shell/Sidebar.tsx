@@ -30,7 +30,8 @@ import {
   Zap,
 } from "lucide-react";
 import { SidebarFooter } from "./SidebarFooter";
-import { TrustOpsLogo } from "@/components/brand/TrustOpsLogo";
+import { KodaLogo } from "@/components/brand/TrustOpsLogo";
+import { BRAND } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import { usePersistentState } from "@/lib/state/preferences";
 
@@ -218,11 +219,11 @@ export function Sidebar() {
     >
       <div className="flex items-center justify-between border-b border-railLine p-2.5">
         {!effectiveCollapsed && (
-          <TrustOpsLogo
+          <KodaLogo
             href="/dashboard"
             inverted
             markSize="sm"
-            subtitle="Console"
+            subtitle={BRAND.consoleSubtitle}
             wordmarkClassName="max-w-[140px]"
             gradientId="trustops-sidebar-gradient"
           />

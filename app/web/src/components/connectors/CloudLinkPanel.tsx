@@ -10,6 +10,7 @@ import {
 } from "@/lib/api/hooks";
 import type { CloudLinkSession } from "@/lib/api/types";
 import type { ConnectorView } from "@/lib/api/types";
+import { BRAND } from "@/lib/brand";
 
 const CLOUD_LINK_IDS = new Set(["aws-posture", "azure-posture", "gcp-posture"]);
 
@@ -29,7 +30,7 @@ function linkDescription(connectorId: string): string {
     return "Launch the read-only CloudFormation stack, then enter your AWS account ID to stage the assume-role connector.";
   }
   if (connectorId === "azure-posture") {
-    return "Grant admin consent for the TrustOps Azure app, then enter the subscription ID to stage the connector.";
+    return `Grant admin consent for the ${BRAND.name} Azure app, then enter the subscription ID to stage the connector.`;
   }
   return "Apply the read-only Terraform reader identity in your GCP project, then enter the project ID to stage the connector.";
 }
