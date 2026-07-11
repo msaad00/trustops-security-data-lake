@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
-from security_lakehouse.framework_packs import PackControlSpec
+from security_lakehouse.pack_spec import PackControlSpec
 
 GDPR_SOURCE = "https://eur-lex.europa.eu/eli/reg/2016/679/oj"
 HIPAA_SOURCE = "https://www.hhs.gov/hipaa/for-professionals/security/index.html"

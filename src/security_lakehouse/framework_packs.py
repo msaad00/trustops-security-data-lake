@@ -9,7 +9,6 @@ or richer hand-authored control definitions.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -19,6 +18,7 @@ from security_lakehouse.catalog_versions import (
     write_bundle_lock,
 )
 from security_lakehouse.mappings import DEFAULT_MAPPINGS
+from security_lakehouse.pack_spec import PackControlSpec
 from security_lakehouse.pack_data import (
     CIS_AWS_SOURCE,
     CMMC_2_LEVEL2_SOURCE,
@@ -62,23 +62,6 @@ SOC2_COMMON_CRITERIA_COUNT = 33
 SOC2_TSC_EXTENSION_COUNT = 28
 SOC2_FULL_PACK_COUNT = SOC2_COMMON_CRITERIA_COUNT + SOC2_TSC_EXTENSION_COUNT
 NIST_AI_RMF_SUBCATEGORY_COUNT = 72
-
-
-@dataclass(frozen=True)
-class PackControlSpec:
-    control_id: str
-    framework_id: str
-    framework: str
-    framework_ref: str
-    article_id: str
-    title: str
-    risk_domain: str
-    owner: str
-    evaluation_rule: str
-    evidence_requirement: str
-    asset_types: tuple[str, ...]
-    source_url: str
-    official_source_ref: str
 
 
 def _soc2_risk_domain(cc: str) -> str:
@@ -576,12 +559,9 @@ PACK_BUILDERS = {
     "iso-42001-2023": iso_42001_2023_specs,
 }
 
+from security_lakehouse.limited_packs import LIMITED_PACK_BUILDERS  # noqa: E402
 
-def all_pack_builders() -> dict[str, Any]:
-    """Return full + limited pack builders (lazy import avoids circular deps)."""
-    from security_lakehouse.limited_packs import LIMITED_PACK_BUILDERS
-
-    return {**PACK_BUILDERS, **LIMITED_PACK_BUILDERS}
+PACK_BUILDERS = {**PACK_BUILDERS, **LIMITED_PACK_BUILDERS}
 
 
 def pack_control_row(spec: PackControlSpec) -> JsonObject:
@@ -693,7 +673,7 @@ def sync_framework_packs(
     write_bundle: bool = True,
 ) -> dict[str, Any]:
     """Merge selected packs into catalog artifacts. Preserves hand-authored rows."""
-    selected = packs or list(all_pack_builders().keys())
+    selected = packs or list(PACK_BUILDERS.keys())
     catalog_path = catalog_path or DEFAULT_CONTROL_CATALOG
     mappings_path = mappings_path or DEFAULT_MAPPINGS
     control_map_path = control_map_path or DEFAULT_CONTROL_CATALOG.parent.parent / "mappings" / "control_map.json"
@@ -709,9 +689,9 @@ def sync_framework_packs(
     added_controls = 0
     added_mappings = 0
     for pack_id in selected:
-        builder = all_pack_builders().get(pack_id)
+        builder = PACK_BUILDERS.get(pack_id)
         if builder is None:
-            raise ValueError(f"unknown pack {pack_id!r}; choose from {sorted(all_pack_builders())}")
+            raise ValueError(f"unknown pack {pack_id!r}; choose from {sorted(PACK_BUILDERS)}")
         for spec in builder():
             if spec.control_id not in existing_controls:
                 existing_controls[spec.control_id] = pack_control_row(spec)
