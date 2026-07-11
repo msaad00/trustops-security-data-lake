@@ -18,6 +18,7 @@ interface Props {
   defaultOpen?: boolean;
   children: ReactNode;
   className?: string;
+  contentClassName?: string;
 }
 
 export function CollapsibleCard({
@@ -28,6 +29,7 @@ export function CollapsibleCard({
   defaultOpen = true,
   children,
   className,
+  contentClassName,
 }: Props) {
   // Two-mode state so non-storage callers don't pay the localStorage cost.
   const [localOpen, setLocalOpen] = useState(defaultOpen);
@@ -67,7 +69,11 @@ export function CollapsibleCard({
           </span>
         )}
       </button>
-      {open && <div className="border-t border-line p-5">{children}</div>}
+      {open && (
+        <div className={cn("border-t border-line p-5", contentClassName)}>
+          {children}
+        </div>
+      )}
     </Card>
   );
 }

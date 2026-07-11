@@ -13,9 +13,7 @@ import {
   usePosture,
   usePostureStream,
 } from "@/lib/api/hooks";
-import { AuditReadinessStrip } from "@/components/dashboard/AuditReadinessStrip";
-import { EvidenceFreshnessStrip } from "@/components/dashboard/EvidenceFreshnessStrip";
-import { InsightsRemediationStrip } from "@/components/dashboard/InsightsRemediationStrip";
+import { DashboardStripsRow } from "@/components/dashboard/DashboardStripsRow";
 import { TrustHomeQuickLinks } from "@/components/dashboard/TrustHomeQuickLinks";
 import { PostureRing } from "@/components/dashboard/PostureRing";
 import { ReadinessGrid } from "@/components/dashboard/ReadinessGrid";
@@ -31,6 +29,7 @@ import { DataPipelineStrip } from "@/components/dashboard/DataPipelineStrip";
 import { KpiTile } from "@/components/ui/KpiTile";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { CollapsibleCard } from "@/components/ui/collapsible-card";
 import { QueryState } from "@/components/QueryState";
 import { shortDate } from "@/lib/utils";
 
@@ -75,7 +74,7 @@ export default function DashboardPage() {
       : "No framework posture yet";
 
   return (
-    <div className="mx-auto grid w-full max-w-[1500px] gap-3 px-3 py-3 sm:px-4 lg:px-5">
+    <div className="mx-auto grid w-full max-w-[1500px] gap-4 px-3 py-4 sm:px-4 lg:gap-5 lg:px-5 lg:py-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0">
           <div className="text-[12px] font-black uppercase tracking-wider text-brand">
@@ -109,9 +108,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <AuditReadinessStrip />
-      <EvidenceFreshnessStrip />
-      <InsightsRemediationStrip />
+      <DashboardStripsRow />
 
       <QueryState queries={[posture]} label="posture">
         <Card className="overflow-hidden border-line shadow-card">
@@ -214,11 +211,20 @@ export default function DashboardPage() {
           </div>
         </Card>
 
-        <QueryState queries={ingestion} label="ingestion status">
-          <IngestionStatusPanel status={ingestion.data} />
+        <QueryState queries={[ingestion]} label="ingestion status">
+          <CollapsibleCard
+            storageKey="dashboard-ingestion"
+            defaultOpen={false}
+            title="Ingestion & lake eval"
+            description="Connector health, eval runs, and warehouse scale mode"
+            contentClassName="p-0"
+          >
+            <IngestionStatusPanel status={ingestion.data} />
+            <div className="border-t border-line p-3 sm:p-4">
+              <EvalRunsStrip />
+            </div>
+          </CollapsibleCard>
         </QueryState>
-
-        <EvalRunsStrip />
 
         <DataPipelineStrip />
 
@@ -227,16 +233,32 @@ export default function DashboardPage() {
           catalog={registeredFrameworks.data ?? []}
         />
 
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-4 xl:grid-cols-2">
           <FixNext violations={data?.violations ?? []} />
           <EvidenceTrend />
         </div>
 
         <FrameworkBars frameworks={frameworks} />
 
-        <ControlTestTable rows={tests.data ?? []} />
+        <CollapsibleCard
+          storageKey="dashboard-control-tests"
+          defaultOpen={false}
+          title="Control test results"
+          description="Failing and warning tests sorted by severity"
+          contentClassName="p-0"
+        >
+          <ControlTestTable rows={tests.data ?? []} />
+        </CollapsibleCard>
 
-        <TrustLifecycle posture={p} assessmentHash={data?.assessment_hash} />
+        <CollapsibleCard
+          storageKey="dashboard-trust-lifecycle"
+          defaultOpen={false}
+          title="Trust lifecycle"
+          description="Assessment hash, snapshot cadence, and share readiness"
+          contentClassName="p-3 sm:p-4"
+        >
+          <TrustLifecycle posture={p} assessmentHash={data?.assessment_hash} />
+        </CollapsibleCard>
       </QueryState>
     </div>
   );

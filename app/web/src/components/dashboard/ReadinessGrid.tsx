@@ -4,13 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronUp, LayoutGrid, ListFilter } from "lucide-react";
 import type { FrameworkPosture, FrameworkView } from "@/lib/api/types";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { CollapsibleCard } from "@/components/ui/collapsible-card";
 import { FrameworkBadge } from "@/components/framework/FrameworkBadge";
 import { resolveFrameworkId } from "@/lib/framework-visuals";
 import { frameworkDetailHref } from "@/lib/framework-links";
@@ -19,9 +13,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 function barColor(score: number) {
-  if (score >= 85) return "#16b364";
-  if (score >= 65) return "#f79009";
-  return "#d92d20";
+  if (score >= 85) return "#059669";
+  if (score >= 65) return "#d97706";
+  return "#dc2626";
 }
 
 const FRAMEWORK_IDS: Record<string, string> = {
@@ -73,6 +67,103 @@ function worstFirst(a: FrameworkPosture, b: FrameworkPosture) {
   );
 }
 
+function FrameworkCard({
+  framework,
+  unmonitored,
+}: {
+  framework?: FrameworkPosture;
+  unmonitored?: FrameworkView;
+}) {
+  if (unmonitored) {
+    return (
+      <Link
+        href={frameworkDetailHref(unmonitored.framework_id)}
+        className="flex min-h-[132px] min-w-[280px] shrink-0 snap-start flex-col gap-2 rounded-xl border border-dashed border-line bg-surfaceMuted p-4 transition-colors hover:border-brand sm:min-w-0"
+      >
+        <div className="flex items-start gap-3">
+          <FrameworkBadge
+            frameworkId={unmonitored.framework_id}
+            fallbackLabel={frameworkLabel(unmonitored)}
+            size={40}
+            className="bg-surface shadow-sm"
+          />
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-sm font-black text-ink">
+              {frameworkLabel(unmonitored)}
+            </div>
+            <Badge tone="default" className="mt-1.5">
+              Not monitored
+            </Badge>
+          </div>
+        </div>
+        <p className="text-xs leading-5 text-muted">
+          {unmonitored.implemented_control_count} mapped controls · no live eval
+          yet
+        </p>
+      </Link>
+    );
+  }
+
+  if (!framework) return null;
+
+  const score = Math.round(framework.score);
+  const color = barColor(framework.score);
+  const status = statusFor(framework);
+  const gapCount = framework.failing_control_count + framework.stale_control_count;
+
+  return (
+    <Link
+      href={frameworkDetailHref(frameworkIdFor(framework.framework))}
+      className={cn(
+        "flex min-h-[132px] min-w-[280px] shrink-0 snap-start flex-col gap-3 rounded-xl border border-line bg-surface p-4 transition-shadow hover:border-brand hover:shadow-card sm:min-w-0",
+        framework.state !== "ready" && "border-l-4",
+      )}
+      style={
+        framework.state !== "ready" ? { borderLeftColor: color } : undefined
+      }
+    >
+      <div className="flex items-start gap-3">
+        <FrameworkBadge
+          frameworkId={frameworkIdFor(framework.framework)}
+          fallbackLabel={framework.framework}
+          size={40}
+          className="bg-surface shadow-sm"
+        />
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-sm font-black text-ink">
+            {framework.framework}
+          </div>
+          <div className="mt-1 flex flex-wrap items-center gap-1.5">
+            <Badge tone={status.tone}>{status.label}</Badge>
+            <span className="text-xs font-semibold text-muted">
+              {framework.control_count} controls
+            </span>
+          </div>
+        </div>
+        <div className="shrink-0 text-right">
+          <div
+            className="text-2xl font-black leading-none tabular-nums"
+            style={{ color }}
+          >
+            {score}%
+          </div>
+        </div>
+      </div>
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-surfaceMuted">
+        <div
+          className="h-full rounded-full transition-all"
+          style={{ width: `${score}%`, background: color }}
+        />
+      </div>
+      <p className="text-xs font-semibold leading-5 text-muted">
+        {gapCount === 0
+          ? "No gaps blocking external share"
+          : `${framework.failing_control_count} failing · ${framework.stale_control_count} stale · ${gapCount} gap${gapCount === 1 ? "" : "s"}`}
+      </p>
+    </Link>
+  );
+}
+
 export function ReadinessGrid({
   frameworks,
   catalog = [],
@@ -102,7 +193,7 @@ export function ReadinessGrid({
   const readyCount = sorted.filter((f) => f.state === "ready").length;
   const workCount = sorted.length - readyCount;
   const totalCount = sorted.length + unmonitored.length;
-  const visibleLimit = showAll || expanded ? totalCount : 6;
+  const visibleLimit = showAll || expanded ? totalCount : 4;
   const visibleFrameworks = sorted.slice(0, visibleLimit);
   const visibleUnmonitored = unmonitored.slice(
     0,
@@ -120,32 +211,16 @@ export function ReadinessGrid({
         )
       : 0;
 
+  const summary = `${totalCount} programs · ${avgScore}% avg · ${readyCount} ready · ${workCount} gaps${unmonitored.length > 0 ? ` · ${unmonitored.length} unmonitored` : ""}`;
+
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="gap-3 border-b border-line bg-white">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-          <div>
-            <CardTitle>Framework readiness</CardTitle>
-            <CardDescription>
-              Worst gaps first across the registered audit and assurance scope.
-            </CardDescription>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge tone="default">{totalCount} programs</Badge>
-            <Badge tone={avgScore >= 85 ? "ready" : "attention"}>
-              {avgScore}% avg
-            </Badge>
-            <Badge tone={readyCount > 0 ? "ready" : "default"}>
-              {readyCount} ready
-            </Badge>
-            <Badge tone={workCount > 0 ? "critical" : "ready"}>
-              {workCount} monitored gaps
-            </Badge>
-            {unmonitored.length > 0 && (
-              <Badge tone="default">{unmonitored.length} not monitored</Badge>
-            )}
-          </div>
-        </div>
+    <CollapsibleCard
+      storageKey="dashboard-framework-readiness"
+      defaultOpen
+      title="Framework readiness"
+      description="Worst gaps first — scroll sideways or expand for full catalog"
+      contentClassName="space-y-3 p-3 sm:p-4"
+      actions={
         <div className="flex flex-wrap items-center gap-2">
           <Button
             type="button"
@@ -172,169 +247,61 @@ export function ReadinessGrid({
             All
           </Button>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-3 p-3">
-        {totalCount > 0 && (
-          <div className="grid gap-2.5 lg:grid-cols-2 2xl:grid-cols-3">
-            {visibleFrameworks.map((f) => {
-              const score = Math.round(f.score);
-              const color = barColor(f.score);
-              const status = statusFor(f);
-              const gapCount = f.failing_control_count + f.stale_control_count;
-              return (
-                <Link
-                  key={f.framework}
-                  href={frameworkDetailHref(frameworkIdFor(f.framework))}
-                  className={cn(
-                    "grid gap-3 rounded-lg border border-line bg-white p-3 transition-shadow hover:border-brand hover:shadow-card",
-                    f.state !== "ready" && "border-l-4",
-                  )}
-                  style={
-                    f.state !== "ready" ? { borderLeftColor: color } : undefined
-                  }
-                >
-                  <div className="flex min-w-0 items-start justify-between gap-3">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <FrameworkBadge
-                        frameworkId={frameworkIdFor(f.framework)}
-                        fallbackLabel={f.framework}
-                        size={36}
-                        className="bg-white shadow-sm"
-                      />
-                      <div className="min-w-0">
-                        <div className="truncate text-sm font-black text-ink">
-                          {f.framework}
-                        </div>
-                        <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                          <Badge tone={status.tone}>{status.label}</Badge>
-                          <span className="text-xs font-bold text-muted">
-                            {f.control_count} controls
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <div
-                        className="text-2xl font-black leading-none tabular-nums"
-                        style={{ color }}
-                      >
-                        {score}%
-                      </div>
-                      <div className="mt-1 text-[10px] font-black uppercase tracking-wide text-muted">
-                        ready
-                      </div>
-                    </div>
-                  </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
-                    <div
-                      className="h-full rounded-full transition-all"
-                      style={{ width: `${score}%`, background: color }}
-                    />
-                  </div>
-                  <div className="grid gap-2 text-xs sm:grid-cols-3">
-                    <div className="rounded-md bg-panel px-2.5 py-2">
-                      <div className="font-black text-ink tabular-nums">
-                        {f.control_count}
-                      </div>
-                      <div className="font-bold text-muted">controls</div>
-                    </div>
-                    <div className="rounded-md bg-rose-50 px-2.5 py-2">
-                      <div className="font-black text-rose-700 tabular-nums">
-                        {f.failing_control_count}
-                      </div>
-                      <div className="font-bold text-rose-700">failing</div>
-                    </div>
-                    <div className="rounded-md bg-amber-50 px-2.5 py-2">
-                      <div className="font-black text-amber-800 tabular-nums">
-                        {f.stale_control_count}
-                      </div>
-                      <div className="font-bold text-amber-800">stale</div>
-                    </div>
-                  </div>
-                  <div className="text-xs font-bold text-muted">
-                    {gapCount === 0
-                      ? "No current gaps detected for this program."
-                      : `${gapCount} gap${gapCount === 1 ? "" : "s"} blocking external share.`}
-                  </div>
-                </Link>
-              );
-            })}
+      }
+    >
+      <p className="text-xs font-semibold text-muted">{summary}</p>
+
+      {totalCount > 0 ? (
+        <>
+          <div
+            className={cn(
+              showAll
+                ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
+                : "flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:thin] sm:snap-none sm:grid sm:grid-cols-2 sm:overflow-visible xl:grid-cols-2",
+            )}
+          >
+            {visibleFrameworks.map((f) => (
+              <FrameworkCard key={f.framework} framework={f} />
+            ))}
             {visibleUnmonitored.map((framework) => (
-              <Link
+              <FrameworkCard
                 key={framework.framework_id}
-                href={frameworkDetailHref(framework.framework_id)}
-                className="grid gap-3 rounded-lg border border-dashed border-line bg-panel p-3 transition-colors hover:border-brand"
-              >
-                <div className="flex min-w-0 items-start justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <FrameworkBadge
-                      frameworkId={framework.framework_id}
-                      fallbackLabel={frameworkLabel(framework)}
-                      size={36}
-                      className="bg-white shadow-sm"
-                    />
-                    <div className="min-w-0">
-                      <div className="truncate text-sm font-black text-ink">
-                        {frameworkLabel(framework)}
-                      </div>
-                      <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                        <Badge tone="default">Not monitored yet</Badge>
-                        <span className="text-xs font-bold text-muted">
-                          {framework.implemented_control_count} mapped controls
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="shrink-0 text-right">
-                    <div className="text-lg font-black leading-none text-muted">
-                      --
-                    </div>
-                    <div className="mt-1 text-[10px] font-black uppercase tracking-wide text-muted">
-                      ready
-                    </div>
-                  </div>
-                </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100" />
-                <div className="text-xs font-bold text-muted">
-                  Registered in the catalog, but no live evidence has evaluated
-                  this program in the current lake.
-                </div>
-              </Link>
+                unmonitored={framework}
+              />
             ))}
           </div>
-        )}
-        {hiddenCount > 0 && (
-          <Button
-            type="button"
-            variant="default"
-            className="w-full"
-            aria-expanded={expanded}
-            onClick={() => setExpanded(true)}
-          >
-            <ChevronDown className="h-4 w-4" />
-            Show {hiddenCount} more programs
-          </Button>
-        )}
-        {(expanded || showAll) && totalCount > 6 && (
-          <Button
-            type="button"
-            variant="ghost"
-            className="w-full"
-            onClick={() => {
-              setExpanded(false);
-              setShowAll(false);
-            }}
-          >
-            <ChevronUp className="h-4 w-4" />
-            Collapse to priority
-          </Button>
-        )}
-        {totalCount === 0 && (
-          <div className="rounded-lg border border-dashed border-line bg-panel p-4 text-sm font-bold text-muted">
-            No framework posture yet.
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          {hiddenCount > 0 && (
+            <Button
+              type="button"
+              variant="default"
+              className="w-full"
+              aria-expanded={expanded}
+              onClick={() => setExpanded(true)}
+            >
+              <ChevronDown className="h-4 w-4" />
+              Show {hiddenCount} more programs
+            </Button>
+          )}
+          {(expanded || showAll) && totalCount > 4 && (
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full"
+              onClick={() => {
+                setExpanded(false);
+                setShowAll(false);
+              }}
+            >
+              <ChevronUp className="h-4 w-4" />
+              Collapse to priority
+            </Button>
+          )}
+        </>
+      ) : (
+        <div className="rounded-lg border border-dashed border-line bg-surfaceMuted p-4 text-sm font-semibold text-muted">
+          No framework posture yet.
+        </div>
+      )}
+    </CollapsibleCard>
   );
 }
