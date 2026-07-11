@@ -75,3 +75,11 @@ def test_multi_replica_allowed_with_read_only_lake() -> None:
     result = _helm_template(["replicaCount=2", "lake.readOnly=true"])
     assert result.returncode == 0
     assert "readOnly: true" in result.stdout
+
+
+def test_rate_limit_redis_url_rendered_when_configured() -> None:
+    result = _helm_template(["rateLimit.redisUrl=redis://redis:6379/0"])
+    assert result.returncode == 0
+    assert "TRUSTOPS_API_RATE_LIMIT_REDIS_URL" in result.stdout
+    assert "redis://redis:6379/0" in result.stdout
+    assert "TRUSTOPS_API_RATE_LIMIT_RPS" in result.stdout

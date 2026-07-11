@@ -82,6 +82,25 @@ def test_from_env_defaults_enabled() -> None:
     assert cfg.rps > 0 and cfg.burst > 0
 
 
+def test_build_rate_limiter_uses_memory_by_default() -> None:
+    from security_lakehouse.auth.rate_limit_redis import build_rate_limiter
+
+    limiter = build_rate_limiter(RateLimitConfig(rps=5.0, burst=5), {})
+    assert isinstance(limiter, RateLimiter)
+
+
+def test_redis_limiters_share_budget_across_instances() -> None:
+    fakeredis = pytest.importorskip("fakeredis")
+    from security_lakehouse.auth.rate_limit_redis import RedisRateLimiter
+
+    fake = fakeredis.FakeRedis(decode_responses=False)
+    config = RateLimitConfig(rps=1.0, burst=1)
+    first = RedisRateLimiter(config, "redis://test", client=fake)
+    second = RedisRateLimiter(config, "redis://test", client=fake)
+    assert first.check("shared-key")[0] is True
+    assert second.check("shared-key")[0] is False
+
+
 # --- middleware integration --------------------------------------------------
 
 

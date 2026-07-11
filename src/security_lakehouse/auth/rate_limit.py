@@ -13,8 +13,9 @@ and dependency-free:
 * **Bounded memory.** Buckets live in an LRU map capped at ``max_keys`` so the
   limiter itself cannot leak memory under a flood of distinct keys.
 
-Distributed deployments need a shared store (Redis); that is out of scope for
-the single-node default and called out in the operator docs.
+Distributed deployments can share one budget across replicas by setting
+``TRUSTOPS_API_RATE_LIMIT_REDIS_URL`` (see :mod:`security_lakehouse.auth.rate_limit_redis`).
+The in-process limiter remains the default when that URL is unset.
 """
 
 from __future__ import annotations
@@ -29,6 +30,7 @@ from dataclasses import dataclass
 # blunt a runaway loop or a leaked credential.
 ENV_RPS = "TRUSTOPS_API_RATE_LIMIT_RPS"
 ENV_BURST = "TRUSTOPS_API_RATE_LIMIT_BURST"
+ENV_REDIS_URL = "TRUSTOPS_API_RATE_LIMIT_REDIS_URL"
 DEFAULT_RPS = 50.0
 DEFAULT_BURST = 100
 MAX_TRACKED_KEYS = 10_000
