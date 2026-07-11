@@ -18,7 +18,6 @@ from security_lakehouse.catalog_versions import (
     write_bundle_lock,
 )
 from security_lakehouse.mappings import DEFAULT_MAPPINGS
-from security_lakehouse.pack_spec import PackControlSpec
 from security_lakehouse.pack_data import (
     CIS_AWS_SOURCE,
     CMMC_2_LEVEL2_SOURCE,
@@ -41,6 +40,7 @@ from security_lakehouse.pack_data import (
     nist_800_53_rev5_moderate_ids,
     nist_family_risk_domain,
 )
+from security_lakehouse.pack_spec import PackControlSpec
 
 JsonObject = dict[str, Any]
 
