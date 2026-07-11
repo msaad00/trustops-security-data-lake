@@ -1,8 +1,10 @@
-"""Published hosted pricing tiers for managed SaaS."""
+"""Published hosted pricing tiers for managed SaaS (commercial hosted only)."""
 
 from __future__ import annotations
 
 from typing import Any
+
+from security_lakehouse.commercial.email import commercial_hosted_enabled
 
 TIER_IDS = ("starter", "team", "business", "enterprise")
 
@@ -132,11 +134,21 @@ def tier_limits(tier_id: str) -> dict[str, Any]:
 
 
 def pricing_payload() -> dict[str, Any]:
+    if not commercial_hosted_enabled():
+        return {
+            "currency": "USD",
+            "billing_period": "annual",
+            "note": (
+                "Koda is open source — run locally or self-host in your cloud. "
+                "Managed cloud pricing is not published in the OSS console."
+            ),
+            "tiers": [],
+        }
     return {
         "currency": "USD",
         "billing_period": "annual",
         "note": (
-            "Published list prices for managed hosted TrustOps. Self-hosted OSS remains $0 license. "
+            "Published list prices for managed hosted Koda workspaces. "
             "Contact sales for enterprise quotes and multi-year discounts."
         ),
         "tiers": list_pricing_tiers(),

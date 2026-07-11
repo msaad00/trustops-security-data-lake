@@ -192,13 +192,6 @@ const ROUTE_ITEMS: PaletteItem[] = [
     Icon: Sparkles,
   },
   {
-    id: "r:pricing",
-    group: "Routes",
-    label: "Pricing",
-    href: "/pricing",
-    Icon: Sparkles,
-  },
-  {
     id: "r:deploy",
     group: "Routes",
     label: "Deploy",

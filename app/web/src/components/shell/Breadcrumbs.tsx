@@ -28,7 +28,6 @@ const LABEL: Record<string, string> = {
   onboarding: "Onboarding",
   poc: "Launch",
   demo: "Demo",
-  pricing: "Pricing",
   insights: "Insights",
   login: "Sign in",
   signup: "Sign up",

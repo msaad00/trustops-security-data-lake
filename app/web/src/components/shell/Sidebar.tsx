@@ -28,7 +28,6 @@ import {
   Rocket,
   UserCheck,
   Zap,
-  DollarSign,
 } from "lucide-react";
 import { SidebarFooter } from "./SidebarFooter";
 import { TrustOpsLogo } from "@/components/brand/TrustOpsLogo";
@@ -75,12 +74,6 @@ const ITEMS: RailItem[] = [
     href: "/deploy",
     label: "Deploy",
     Icon: BookOpen,
-    group: "Trust",
-  },
-  {
-    href: "/pricing",
-    label: "Pricing",
-    Icon: DollarSign,
     group: "Trust",
   },
   {
