@@ -9,7 +9,8 @@
     "start": "next start -p 5173",
     "typecheck": "tsc --noEmit",
     "lint": "next lint --dir src",
-    "demo-screenshots": "node scripts/capture_demo_screenshots.mjs"
+    "demo-screenshots": "node scripts/capture_demo_screenshots.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@dagrejs/dagre": "^3.0.0",
@@ -36,6 +37,7 @@
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@types/node": "^26.1.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.0.2",

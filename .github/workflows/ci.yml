@@ -207,3 +207,38 @@ jobs:
           tags: trustops:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: web
+    steps:
+      - uses: actions/checkout@v7
+      - name: Download React bundle
+        uses: actions/download-artifact@v8
+        with:
+          name: web-dist
+          path: src/security_lakehouse/web/dist
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+          enable-cache: true
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: app/web/package-lock.json
+      - name: Install Python (frozen)
+        run: uv sync --frozen --all-extras
+      - name: Install web deps
+        working-directory: app/web
+        run: npm ci
+      - name: Install Playwright Chromium
+        working-directory: app/web
+        run: npx playwright install chromium --with-deps
+      - name: Console Playwright smoke
+        env:
+          TRUSTOPS_COOKIE_SIGNING_KEY: ci-e2e-cookie-signing-key
+        run: bash tools/run_e2e_console.sh
