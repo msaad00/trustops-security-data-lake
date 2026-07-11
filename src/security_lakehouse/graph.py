@@ -565,33 +565,35 @@ def _add_governance_signal(
 
 
 def _framework_from_control(control_id: str) -> str | None:
-    if control_id.startswith("SOC2-"):
-        return "soc2"
-    if control_id.startswith("ISO27001-"):
-        return "iso-27001-2022"
-    if control_id.startswith("PCI-DSS-"):
-        return "pci-dss-v4"
-    if control_id.startswith("NIST-AI-RMF-"):
-        return "nist-ai-rmf"
-    if control_id.startswith("GDPR-"):
-        return "gdpr-2016-679"
-    if control_id.startswith("EU-AI-ACT-"):
-        return "eu-ai-act-2024-1689"
-    if control_id.startswith("HIPAA-"):
-        return "hipaa-security-rule"
-    if control_id.startswith("ISO42001-"):
-        return "iso-42001-2023"
+    """Resolve framework_id from control_id prefix conventions."""
+    prefixes = (
+        ("SOC2-", "soc2"),
+        ("ISO27001-", "iso-27001-2022"),
+        ("ISO27017-", "iso-27017-2015"),
+        ("ISO42001-", "iso-42001-2023"),
+        ("PCI-DSS-", "pci-dss-v4"),
+        ("NIST-AI-RMF-", "nist-ai-rmf"),
+        ("NIST-CSF-", "nist-csf-2.0"),
+        ("FEDRAMP-", "fedramp-moderate"),
+        ("CIS-AWS-", "cis_aws"),
+        ("CMMC-", "cmmc-2-level2"),
+        ("GDPR-", "gdpr-2016-679"),
+        ("EU-AI-ACT-", "eu-ai-act-2024-1689"),
+        ("HIPAA-", "hipaa-security-rule"),
+    )
+    for prefix, framework_id in prefixes:
+        if control_id.startswith(prefix):
+            return framework_id
     return None
 
 
 def build_framework_crosswalk(controls_path: str | Path | None = None) -> dict[str, Any]:
-    """Compute a framework × framework matrix of shared owners and shared risk domains.
+    """Compute a heuristic framework × framework matrix of shared risk domains.
 
-    The catalog ships local control IDs only (no licensed text reproduced), so
-    the crosswalk currently joins on ``risk_domain`` + ``owner`` heuristics —
-    the same dimensions an auditor uses to point at "this maps to that."
-    PR 8 swaps this for reviewed control_id↔article mappings once the
-    framework sync job lands.
+    Prefer :func:`security_lakehouse.mappings.build_reviewed_crosswalk` for
+    auditor-reviewed mappings and
+    :func:`security_lakehouse.mappings.build_framework_equivalence` for curated
+    control-equivalence groups (managed GRC-style answer-once mapping).
     """
     controls = load_control_catalog(controls_path)
     by_framework: dict[str, list[dict[str, Any]]] = {}

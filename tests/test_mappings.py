@@ -12,9 +12,12 @@ from pathlib import Path
 from security_lakehouse.catalog import load_control_catalog
 from security_lakehouse.fixtures import find_fixture, list_fixtures
 from security_lakehouse.mappings import (
+    build_equivalence_index,
+    build_framework_equivalence,
     build_reviewed_crosswalk,
     load_control_article_mappings,
     validate_control_article_mappings,
+    validate_framework_equivalence,
 )
 from security_lakehouse.server import _Handler
 
@@ -36,9 +39,12 @@ def test_public_source_frameworks_have_reviewed_coverage_floor() -> None:
     coverage_floor = {
         "soc2": 61,
         "nist-ai-rmf": 72,
+        "nist-csf-2.0": 106,
         "fedramp-moderate": 287,
         "cis_aws": 62,
+        "cmmc-2-level2": 110,
         "iso-27001-2022": 93,
+        "iso-27017-2015": 47,
         "iso-42001-2023": 38,
         "hipaa-security-rule": 18,
         "gdpr-2016-679": 20,
@@ -126,5 +132,28 @@ def test_mapping_endpoints_round_trip(tmp_path: Path) -> None:
         status, body = _get(server, "/api/crosswalk/reviewed")
         assert status == HTTPStatus.OK
         assert "frameworks" in body and "matrix" in body
+
+        status, body = _get(server, "/api/mappings/equivalence")
+        assert status == HTTPStatus.OK
+        assert body["group_count"] >= 10
+        assert "SOC2-CC6.1" in body["index"]
     finally:
         server.shutdown()
+
+
+def test_framework_equivalence_is_valid() -> None:
+    errors = validate_framework_equivalence()
+    assert errors == [], errors
+
+
+def test_equivalence_links_soc2_and_iso_access() -> None:
+    index = build_equivalence_index()
+    soc2 = index["SOC2-CC6.1"]
+    assert "ISO27001-A.5.15" in soc2["equivalent_controls"]
+    assert soc2["group_id"] == "logical-access-mfa"
+
+
+def test_framework_equivalence_payload_shape() -> None:
+    payload = build_framework_equivalence()
+    assert payload["group_count"] == len(payload["groups"])
+    assert len(payload["index"]) >= 30

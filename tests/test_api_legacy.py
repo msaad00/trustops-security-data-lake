@@ -37,6 +37,7 @@ LEGACY_DETERMINISTIC = [
     "/api/readiness",
     "/api/crosswalk",
     "/api/crosswalk/reviewed",
+    "/api/mappings/equivalence",
     "/api/mappings",
     "/api/workflows",
     "/api/workflows/actions",
