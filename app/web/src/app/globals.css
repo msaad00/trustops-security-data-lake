@@ -4,39 +4,42 @@
 
 @layer base {
   :root {
-    --color-ink: #101623;
-    --color-muted: #667085;
-    --color-line: #d9e1ec;
+    /* Light — Vanta/Drata-style crisp enterprise surfaces */
+    --color-ink: #0f172a;
+    --color-muted: #64748b;
+    --color-line: #e2e8f0;
     --color-panel: #f8fafc;
-    --color-rail: #0b1218;
-    --color-rail-line: #243244;
+    --color-rail: #0f172a;
+    --color-rail-line: #1e293b;
     --color-surface: #ffffff;
     --color-surface-muted: #f1f5f9;
     --color-brand: #4f7cff;
     --color-brand-cyan: #30c7d2;
-    --color-ready: #16b364;
-    --color-attention: #f79009;
-    --color-critical: #d92d20;
+    --color-ready: #059669;
+    --color-attention: #d97706;
+    --color-critical: #dc2626;
     --radius-sm: 0.5rem;
     --radius-md: 0.75rem;
     --radius-lg: 1rem;
     --radius-xl: 1.25rem;
-    --shadow-card: 0 18px 45px rgba(15, 23, 42, 0.08);
-    --shadow-hero: 0 24px 65px rgba(2, 6, 23, 0.22);
+    --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.06);
+    --shadow-hero: 0 16px 48px rgba(15, 23, 42, 0.12);
     --motion-fast: 150ms;
     --motion-base: 220ms;
     --motion-slow: 320ms;
   }
 
   .dark {
-    --color-ink: #e8eef5;
+    /* Dark — high-contrast cards on deep rail (readable, not muddy) */
+    --color-ink: #f1f5f9;
     --color-muted: #94a3b8;
     --color-line: #334155;
     --color-panel: #0f172a;
     --color-rail: #020617;
     --color-rail-line: #1e293b;
     --color-surface: #1e293b;
-    --color-surface-muted: #334155;
+    --color-surface-muted: #273549;
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2), 0 8px 24px rgba(0, 0, 0, 0.25);
   }
 
   html,
@@ -47,6 +50,8 @@
     font-family: theme(fontFamily.sans);
     color: var(--color-ink);
     background: var(--color-panel);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   code {
     font-family: theme(fontFamily.mono);

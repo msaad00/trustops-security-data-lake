@@ -17,9 +17,9 @@ const config: Config = {
         brand: {
           DEFAULT: "#4f7cff",
           cyan: "#30c7d2",
-          green: "#16b364",
-          red: "#d92d20",
-          orange: "#f79009",
+          green: "#059669",
+          red: "#dc2626",
+          orange: "#d97706",
           purple: "#7a35ff",
         },
       },

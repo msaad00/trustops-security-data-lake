@@ -6,9 +6,15 @@
     </linearGradient>
   </defs>
   <rect width="32" height="32" rx="8" fill="url(#koda-icon-gradient)"/>
-  <ellipse cx="11" cy="8.2" rx="2.4" ry="2.1" fill="#fff" opacity="0.95"/>
-  <ellipse cx="19.5" cy="7.8" rx="2.4" ry="2.1" fill="#fff" opacity="0.95"/>
-  <path d="M8.5 9h4.2v5.1L19.8 9h4.9l-7.8 7.2 8.1 9.8h-5.1l-6.2-7.6V26H8.5z" fill="#fff"/>
-  <circle cx="24.5" cy="24.5" r="6.2" fill="#fff"/>
-  <path d="M21.5 24.5l1.8 1.8 3.8-3.8" stroke="#047857" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <ellipse cx="16" cy="16.5" rx="10.5" ry="9.8" fill="#fff"/>
+  <circle cx="9.2" cy="9.5" r="2.6" fill="#fff"/>
+  <circle cx="22.8" cy="9.5" r="2.6" fill="#fff"/>
+  <circle cx="12.4" cy="15.2" r="1.45" fill="#101623"/>
+  <circle cx="19.6" cy="15.2" r="1.45" fill="#101623"/>
+  <ellipse cx="16" cy="19.8" rx="3.4" ry="2.4" fill="#f1f5f9"/>
+  <ellipse cx="16" cy="19.4" rx="1.5" ry="1" fill="#101623"/>
+  <ellipse cx="16" cy="22.2" rx="4.8" ry="3.6" fill="#eef4ff"/>
+  <path d="M13.4 20.2h1.8v2.1l2.6-2.1h2.1l-2.8 2.5 2.9 3.5h-2.1l-2.4-2.9v2.9h-1.8z" fill="#4f7cff"/>
+  <circle cx="24.5" cy="24.5" r="5.8" fill="#fff"/>
+  <path d="M22 24.5l1.6 1.6 3.4-3.4" stroke="#047857" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

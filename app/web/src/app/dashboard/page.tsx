@@ -94,7 +94,7 @@ export default function DashboardPage() {
         </div>
         <div className="flex items-center gap-2">
           <span
-            className={`inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-black ${connected ? "text-emerald-600" : "text-amber-600"}`}
+            className={`inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-black ${connected ? "text-emerald-600" : "text-amber-600"}`}
           >
             <span
               className={`h-1.5 w-1.5 rounded-full ${connected ? "animate-pulse bg-emerald-500" : "bg-amber-500"}`}
@@ -102,7 +102,7 @@ export default function DashboardPage() {
             {connected ? "Live" : "Polling"}
           </span>
           {data?.evaluated_at && (
-            <span className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-black text-slate-500">
+            <span className="rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-black text-muted">
               as of {shortDate(data.evaluated_at)}
             </span>
           )}
@@ -116,7 +116,7 @@ export default function DashboardPage() {
       <QueryState queries={[posture]} label="posture">
         <Card className="overflow-hidden border-line shadow-card">
           <div className="grid lg:grid-cols-[260px_minmax(0,1fr)]">
-            <div className="flex items-center gap-4 border-b border-line bg-gradient-to-b from-slate-50 to-white p-4 lg:block lg:border-b-0 lg:border-r">
+            <div className="flex items-center gap-4 border-b border-line bg-surfaceMuted p-4 lg:block lg:border-b-0 lg:border-r">
               <PostureRing
                 score={p?.score ?? 0}
                 state={p?.state ?? "attention_required"}
