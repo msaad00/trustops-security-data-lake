@@ -109,6 +109,13 @@ scheduler:
 # Optional: extra env vars (e.g. for SCIM / OIDC integration in future PRs).
 env: []
 
+# Per-replica API rate limits. Set ``redisUrl`` for a shared budget across
+# replicas (requires the ``redis`` package in the server image).
+rateLimit:
+  rps: 50
+  burst: 100
+  redisUrl: ""
+
 # Production guard: never enable insecure no-auth on a shareable hosted URL.
 # Override only for local `helm template` experiments with an explicit token.
 security:

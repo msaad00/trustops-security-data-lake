@@ -82,6 +82,40 @@ def test_from_env_defaults_enabled() -> None:
     assert cfg.rps > 0 and cfg.burst > 0
 
 
+def test_build_rate_limiter_uses_memory_by_default() -> None:
+    from security_lakehouse.auth.rate_limit_redis import build_rate_limiter
+
+    limiter = build_rate_limiter(RateLimitConfig(rps=5.0, burst=5), {})
+    assert isinstance(limiter, RateLimiter)
+
+
+def test_build_rate_limiter_selects_redis_when_url_configured(monkeypatch: pytest.MonkeyPatch) -> None:
+    from security_lakehouse.auth.rate_limit import ENV_REDIS_URL
+    from security_lakehouse.auth.rate_limit_redis import build_rate_limiter
+
+    created: list[str] = []
+
+    class _StubRedisLimiter:
+        def __init__(self, config, redis_url, **kwargs) -> None:
+            created.append(redis_url)
+
+        @property
+        def enabled(self) -> bool:
+            return True
+
+        def check(self, key: str) -> tuple[bool, float]:
+            return True, 0.0
+
+    monkeypatch.setattr(
+        "security_lakehouse.auth.rate_limit_redis.RedisRateLimiter",
+        _StubRedisLimiter,
+    )
+    env = {ENV_REDIS_URL: "redis://redis:6379/0"}
+    limiter = build_rate_limiter(RateLimitConfig(rps=5.0, burst=5), env)
+    assert isinstance(limiter, _StubRedisLimiter)
+    assert created == ["redis://redis:6379/0"]
+
+
 # --- middleware integration --------------------------------------------------
 
 
