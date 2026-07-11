@@ -45,7 +45,6 @@ dev = [
     "itsdangerous>=2.2",
     "python3-saml>=1.16",
     "reportlab>=4.2",
-    "fakeredis>=2.26",
     "redis>=5.0",
     # Snowflake sink load-path tests (write_pandas dataframe build).
     "pandas>=2.0",

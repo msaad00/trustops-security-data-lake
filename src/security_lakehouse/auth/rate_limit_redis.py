@@ -69,7 +69,6 @@ class RedisRateLimiter:
         self._clock = clock
         self._prefix = key_prefix
         self._client = client if client is not None else redis.Redis.from_url(redis_url, decode_responses=False)
-        self._script = self._client.register_script(_TOKEN_BUCKET_LUA)
 
     @property
     def enabled(self) -> bool:
@@ -85,9 +84,14 @@ class RedisRateLimiter:
         now = self._clock()
         tokens_key = f"{self._prefix}{key}:tokens"
         last_key = f"{self._prefix}{key}:last"
-        allowed_raw, retry_raw = self._script(
-            keys=[tokens_key, last_key],
-            args=[now, self._config.rps, self._config.burst],
+        allowed_raw, retry_raw = self._client.eval(
+            _TOKEN_BUCKET_LUA,
+            2,
+            tokens_key,
+            last_key,
+            now,
+            self._config.rps,
+            self._config.burst,
         )
         allowed = int(allowed_raw) == 1
         retry_after = float(retry_raw)

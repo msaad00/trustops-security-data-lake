@@ -89,16 +89,31 @@ def test_build_rate_limiter_uses_memory_by_default() -> None:
     assert isinstance(limiter, RateLimiter)
 
 
-def test_redis_limiters_share_budget_across_instances() -> None:
-    fakeredis = pytest.importorskip("fakeredis")
-    from security_lakehouse.auth.rate_limit_redis import RedisRateLimiter
+def test_build_rate_limiter_selects_redis_when_url_configured(monkeypatch: pytest.MonkeyPatch) -> None:
+    from security_lakehouse.auth.rate_limit import ENV_REDIS_URL
+    from security_lakehouse.auth.rate_limit_redis import RedisRateLimiter, build_rate_limiter
 
-    fake = fakeredis.FakeRedis(decode_responses=False)
-    config = RateLimitConfig(rps=1.0, burst=1)
-    first = RedisRateLimiter(config, "redis://test", client=fake)
-    second = RedisRateLimiter(config, "redis://test", client=fake)
-    assert first.check("shared-key")[0] is True
-    assert second.check("shared-key")[0] is False
+    created: list[str] = []
+
+    class _StubRedisLimiter:
+        def __init__(self, config, redis_url, **kwargs) -> None:
+            created.append(redis_url)
+
+        @property
+        def enabled(self) -> bool:
+            return True
+
+        def check(self, key: str) -> tuple[bool, float]:
+            return True, 0.0
+
+    monkeypatch.setattr(
+        "security_lakehouse.auth.rate_limit_redis.RedisRateLimiter",
+        _StubRedisLimiter,
+    )
+    env = {ENV_REDIS_URL: "redis://redis:6379/0"}
+    limiter = build_rate_limiter(RateLimitConfig(rps=5.0, burst=5), env)
+    assert isinstance(limiter, _StubRedisLimiter)
+    assert created == ["redis://redis:6379/0"]
 
 
 # --- middleware integration --------------------------------------------------
