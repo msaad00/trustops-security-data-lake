@@ -33,7 +33,7 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import Field
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -75,10 +75,10 @@ from security_lakehouse.demo_links import build_demo_kit
 from security_lakehouse.ingestion_status import build_ingestion_status
 from security_lakehouse.io import resolve_path
 from security_lakehouse.public_url import normalize_public_url
+from security_lakehouse.server_routes.schemas.base import StrictModel as _StrictModel
 from security_lakehouse.services import NotFound, ValidationError
 from security_lakehouse.services import access_reviews as access_review_services
 from security_lakehouse.services import grc as grc_services
-from security_lakehouse.services import poam as poam_services
 from security_lakehouse.services import policy_documents as policy_document_services
 from security_lakehouse.services import vendor_risk as vendor_risk_services
 from security_lakehouse.web import web_dist_dir, web_dist_index
@@ -119,18 +119,6 @@ _require_write = require_scope("write")
 _require_admin = require_scope("auth_admin")
 _require_evidence_request = require_scope("evidence_request")
 _require_control_manage = require_scope("control_manage")
-
-
-class _StrictModel(BaseModel):
-    """Base for request bodies: reject unknown fields.
-
-    Without this, Pydantic's default ``extra="ignore"`` silently drops a
-    misnamed key, so an agent that sends the wrong field gets a ``201`` with the
-    wrong persisted state and no error. Forbidding extras turns that into a
-    ``422`` naming the offending field.
-    """
-
-    model_config = ConfigDict(extra="forbid")
 
 
 class CreateKeyRequest(_StrictModel):
@@ -207,29 +195,6 @@ class CreateExceptionRequest(_StrictModel):
     reason: str = ""
     approved_by: str = ""
     expires_at: str | None = None
-
-
-class CreatePoamItemRequest(_StrictModel):
-    requirement_id: str
-    control_id: str
-    title: str
-    weakness: str = ""
-    framework_id: str = "cmmc-2-level2"
-    owner: str = ""
-    milestone: str = ""
-    sprs_points: int = 1
-    poam_eligible: bool = True
-    due_at: str | None = None
-    remediation_task_id: str | None = None
-
-
-class UpdatePoamItemRequest(_StrictModel):
-    status: str | None = None
-    owner: str | None = None
-    milestone: str | None = None
-    weakness: str | None = None
-    due_at: str | None = None
-    remediation_task_id: str | None = None
 
 
 class CreateRiskRequest(_StrictModel):
@@ -1055,6 +1020,10 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             api_v1.error_envelope("unprocessable_entity", detail),
             status_code=422,
         )
+
+    from security_lakehouse.server_routes.routers.gov_compliance import build_gov_compliance_router
+
+    app.include_router(build_gov_compliance_router(lake_for=lake_for))
 
     # --- open health checks (registered before the authenticated catch-all) ---
     @app.get("/api/healthz")
@@ -1933,95 +1902,6 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
                 meta=_page_meta(limit, offset, len(rows)),
             )
         )
-
-    @app.get("/api/v1/gov-compliance/sprs", tags=["gov-compliance"])
-    def sprs_score_route(identity: Identity = Depends(_require_read)) -> JSONResponse:
-        from security_lakehouse.sprs import build_sprs_report
-
-        data = build_sprs_report(lake_for(identity))
-        return JSONResponse(api_v1.envelope("gov-compliance.sprs", data))
-
-    @app.get("/api/v1/gov-compliance/poam", tags=["gov-compliance"])
-    def list_poam_route(
-        request: Request,
-        identity: Identity = Depends(_require_read),
-        session: Session = Depends(get_session),
-    ) -> JSONResponse:
-        params = _params(request)
-        limit, offset = _pagination(params)
-        rows = poam_services.list_poam_items(
-            session,
-            identity.tenant_id,
-            framework_id=(params.get("framework_id") or [None])[0],
-            status=(params.get("status") or [None])[0],
-            limit=limit,
-            offset=offset,
-        )
-        return JSONResponse(
-            api_v1.envelope(
-                "gov-compliance.poam",
-                _redact_payload(rows, identity),
-                meta=_page_meta(limit, offset, len(rows)),
-            )
-        )
-
-    @app.post("/api/v1/gov-compliance/poam", status_code=status.HTTP_201_CREATED, tags=["gov-compliance"])
-    def create_poam_route(
-        body: CreatePoamItemRequest,
-        identity: Identity = Depends(_require_write),
-        session: Session = Depends(get_session),
-    ) -> JSONResponse:
-        try:
-            item = poam_services.create_poam_item(
-                session,
-                identity.tenant_id,
-                requirement_id=body.requirement_id,
-                control_id=body.control_id,
-                title=body.title,
-                weakness=body.weakness,
-                framework_id=body.framework_id,
-                owner=body.owner,
-                milestone=body.milestone,
-                sprs_points=body.sprs_points,
-                poam_eligible=body.poam_eligible,
-                due_at=_parse_dt(body.due_at),
-                remediation_task_id=body.remediation_task_id,
-                created_by=identity.email,
-            )
-        except ValidationError as exc:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
-        return JSONResponse(api_v1.envelope("gov-compliance.poam", item), status_code=status.HTTP_201_CREATED)
-
-    @app.post("/api/v1/gov-compliance/poam/sync", tags=["gov-compliance"])
-    def sync_poam_route(
-        identity: Identity = Depends(_require_write),
-        session: Session = Depends(get_session),
-    ) -> JSONResponse:
-        data = poam_services.sync_poam_from_posture(
-            session,
-            identity.tenant_id,
-            lake_for(identity),
-            created_by=identity.email,
-        )
-        return JSONResponse(api_v1.envelope("gov-compliance.poam.sync", data))
-
-    @app.patch("/api/v1/gov-compliance/poam/{item_id}", tags=["gov-compliance"])
-    def update_poam_route(
-        item_id: str,
-        body: UpdatePoamItemRequest,
-        identity: Identity = Depends(_require_write),
-        session: Session = Depends(get_session),
-    ) -> JSONResponse:
-        changes = body.model_dump(exclude_unset=True)
-        if "due_at" in changes:
-            changes["due_at"] = _parse_dt(changes["due_at"])
-        try:
-            item = poam_services.update_poam_item(session, identity.tenant_id, item_id, changes=changes)
-        except ValidationError as exc:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
-        except NotFound as exc:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
-        return JSONResponse(api_v1.envelope("gov-compliance.poam", item))
 
     @app.get("/api/v1/audit-log", tags=["platform"])
     def audit_log_v1(
