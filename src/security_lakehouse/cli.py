@@ -424,7 +424,7 @@ def _parser() -> argparse.ArgumentParser:
         "--pack",
         action="append",
         choices=sorted(PACK_BUILDERS),
-        help="pack to sync (default: all full packs)",
+        help="pack to sync (default: all full + limited packs)",
     )
     frameworks_sync_packs.set_defaults(func=_frameworks_sync_packs)
 

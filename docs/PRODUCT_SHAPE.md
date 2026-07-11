@@ -137,16 +137,16 @@ Rough comparison vs mature managed GRC SaaS on capability + UX reality:
 
 Rough comparison vs mature managed GRC SaaS on capability + UX reality:
 
-| Area                        | vs mature SaaS | TrustOps strength                                    |
-| --------------------------- | -------------- | ---------------------------------------------------- |
-| SOC 2 / ISO control library | ~80%           | Depth good; framework packs as code                  |
-| Continuous monitoring       | ~75%           | Core cloud/IdP connectors runnable                   |
-| Auditor experience          | ~70%           | Trust shares, PDF, audit room trends; no marketplace |
-| Personnel / devices / HR    | ~30%           | Workarounds only                                     |
-| Policy program              | ~70%           | Templates + attestation MVP                          |
-| Vendor risk                 | ~65%           | Questionnaires + audit-room rollups                  |
-| Self-host / API / agents    | **~120%**      | Ahead — they don't lead here                         |
-| SaaS polish / onboarding    | ~65–70%        | #96 shipped; incremental polish remains              |
+| Area                        | vs mature SaaS | TrustOps strength                                                            |
+| --------------------------- | -------------- | ---------------------------------------------------------------------------- |
+| SOC 2 / ISO control library | ~85%           | Depth good; 942 seeded controls, equivalence groups, framework packs as code |
+| Continuous monitoring       | ~75%           | Core cloud/IdP connectors runnable                                           |
+| Auditor experience          | ~70%           | Trust shares, PDF, audit room trends; no marketplace                         |
+| Personnel / devices / HR    | ~30%           | Workarounds only                                                             |
+| Policy program              | ~70%           | Templates + attestation MVP                                                  |
+| Vendor risk                 | ~65%           | Questionnaires + audit-room rollups                                          |
+| Self-host / API / agents    | **~120%**      | Ahead — they don't lead here                                                 |
+| SaaS polish / onboarding    | ~65–70%        | #96 shipped; incremental polish remains                                      |
 
 ## Where TrustOps matches well (shipped)
 

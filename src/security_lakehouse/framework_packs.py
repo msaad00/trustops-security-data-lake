@@ -9,7 +9,6 @@ or richer hand-authored control definitions.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -41,6 +40,7 @@ from security_lakehouse.pack_data import (
     nist_800_53_rev5_moderate_ids,
     nist_family_risk_domain,
 )
+from security_lakehouse.pack_spec import PackControlSpec
 
 JsonObject = dict[str, Any]
 
@@ -62,23 +62,6 @@ SOC2_COMMON_CRITERIA_COUNT = 33
 SOC2_TSC_EXTENSION_COUNT = 28
 SOC2_FULL_PACK_COUNT = SOC2_COMMON_CRITERIA_COUNT + SOC2_TSC_EXTENSION_COUNT
 NIST_AI_RMF_SUBCATEGORY_COUNT = 72
-
-
-@dataclass(frozen=True)
-class PackControlSpec:
-    control_id: str
-    framework_id: str
-    framework: str
-    framework_ref: str
-    article_id: str
-    title: str
-    risk_domain: str
-    owner: str
-    evaluation_rule: str
-    evidence_requirement: str
-    asset_types: tuple[str, ...]
-    source_url: str
-    official_source_ref: str
 
 
 def _soc2_risk_domain(cc: str) -> str:
@@ -576,6 +559,10 @@ PACK_BUILDERS = {
     "iso-42001-2023": iso_42001_2023_specs,
 }
 
+from security_lakehouse.limited_packs import LIMITED_PACK_BUILDERS  # noqa: E402
+
+PACK_BUILDERS = {**PACK_BUILDERS, **LIMITED_PACK_BUILDERS}
+
 
 def pack_control_row(spec: PackControlSpec) -> JsonObject:
     return {
@@ -743,6 +730,10 @@ def sync_framework_packs(
             "iso-27001-2022",
             "iso-27017-2015",
             "iso-42001-2023",
+            "gdpr-2016-679",
+            "hipaa-security-rule",
+            "pci-dss-v4",
+            "eu-ai-act-2024-1689",
         )
     }
     return {

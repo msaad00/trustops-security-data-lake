@@ -1205,6 +1205,69 @@
       "owner": "grc"
     },
     {
+      "control_id": "EU-AI-ACT-Art.11",
+      "framework": "EU AI Act",
+      "title": "Technical documentation maintained for high-risk AI",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.17",
+      "framework": "EU AI Act",
+      "title": "Quality management system for high-risk AI evidenced",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.26",
+      "framework": "EU AI Act",
+      "title": "Deployer obligations for high-risk AI met",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.49",
+      "framework": "EU AI Act",
+      "title": "Fundamental-rights impact assessment where required",
+      "risk_domain": "ai-governance",
+      "owner": "privacy-office"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.5",
+      "framework": "EU AI Act",
+      "title": "Prohibited AI practices not deployed",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.51",
+      "framework": "EU AI Act",
+      "title": "GPAI provider obligations evidenced",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.6",
+      "framework": "EU AI Act",
+      "title": "High-risk AI classification documented",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.71",
+      "framework": "EU AI Act",
+      "title": "EU database registration where applicable",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
+      "control_id": "EU-AI-ACT-Art.72",
+      "framework": "EU AI Act",
+      "title": "Post-market monitoring plan active",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security"
+    },
+    {
       "control_id": "FEDRAMP-AC-1",
       "framework": "FedRAMP Moderate",
       "title": "FedRAMP Moderate AC-1 \u2014 assessed from cloud posture and audit evidence",
@@ -3212,6 +3275,188 @@
       "title": "FedRAMP Moderate SR-8 \u2014 assessed from cloud posture and audit evidence",
       "risk_domain": "vendor-risk",
       "owner": "grc"
+    },
+    {
+      "control_id": "GDPR-Art.12",
+      "framework": "GDPR",
+      "title": "Transparent privacy notices published",
+      "risk_domain": "privacy-engineering",
+      "owner": "privacy-office"
+    },
+    {
+      "control_id": "GDPR-Art.13",
+      "framework": "GDPR",
+      "title": "Collection-time privacy information provided",
+      "risk_domain": "privacy-engineering",
+      "owner": "privacy-office"
+    },
+    {
+      "control_id": "GDPR-Art.14",
+      "framework": "GDPR",
+      "title": "Indirect collection privacy information provided",
+      "risk_domain": "privacy-engineering",
+      "owner": "privacy-office"
+    },
+    {
+      "control_id": "GDPR-Art.15",
+      "framework": "GDPR",
+      "title": "Data subject access rights supported",
+      "risk_domain": "privacy-engineering",
+      "owner": "privacy-office"
+    },
+    {
+      "control_id": "GDPR-Art.17",
+      "framework": "GDPR",
+      "title": "Erasure requests handled within SLA",
+      "risk_domain": "privacy-engineering",
+      "owner": "privacy-office"
+    },
+    {
+      "control_id": "GDPR-Art.24",
+      "framework": "GDPR",
+      "title": "Controller responsibility demonstrated",
+      "risk_domain": "governance",
+      "owner": "privacy-office"
+    },
+    {
+      "control_id": "GDPR-Art.34",
+      "framework": "GDPR",
+      "title": "Communication of breach to data subjects",
+      "risk_domain": "incident-response",
+      "owner": "privacy-office"
+    },
+    {
+      "control_id": "GDPR-Art.37",
+      "framework": "GDPR",
+      "title": "DPO designation evidenced where required",
+      "risk_domain": "governance",
+      "owner": "privacy-office"
+    },
+    {
+      "control_id": "GDPR-Art.44",
+      "framework": "GDPR",
+      "title": "Cross-border transfer safeguards documented",
+      "risk_domain": "data-protection",
+      "owner": "privacy-office"
+    },
+    {
+      "control_id": "GDPR-Art.45",
+      "framework": "GDPR",
+      "title": "Adequacy or transfer mechanism evidenced",
+      "risk_domain": "data-protection",
+      "owner": "privacy-office"
+    },
+    {
+      "control_id": "GDPR-Art.46",
+      "framework": "GDPR",
+      "title": "Standard contractual clauses or BCRs in place",
+      "risk_domain": "third-party-risk",
+      "owner": "privacy-office"
+    },
+    {
+      "control_id": "GDPR-Art.5",
+      "framework": "GDPR",
+      "title": "Processing principles evidenced",
+      "risk_domain": "privacy-engineering",
+      "owner": "privacy-office"
+    },
+    {
+      "control_id": "GDPR-Art.6",
+      "framework": "GDPR",
+      "title": "Lawful basis for processing documented",
+      "risk_domain": "privacy-engineering",
+      "owner": "privacy-office"
+    },
+    {
+      "control_id": "GDPR-Art.7",
+      "framework": "GDPR",
+      "title": "Consent conditions evidenced where used",
+      "risk_domain": "privacy-engineering",
+      "owner": "privacy-office"
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(2)",
+      "framework": "HIPAA",
+      "title": "Assigned security responsibility documented",
+      "risk_domain": "governance",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(3)",
+      "framework": "HIPAA",
+      "title": "Workforce security procedures evidenced",
+      "risk_domain": "identity",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(5)",
+      "framework": "HIPAA",
+      "title": "Security awareness training completed",
+      "risk_domain": "governance",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(6)",
+      "framework": "HIPAA",
+      "title": "Security incident procedures tested",
+      "risk_domain": "incident-response",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(7)",
+      "framework": "HIPAA",
+      "title": "Contingency plan and backups evidenced",
+      "risk_domain": "availability",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "HIPAA-164.308(a)(8)",
+      "framework": "HIPAA",
+      "title": "Periodic evaluation performed",
+      "risk_domain": "risk-management",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "HIPAA-164.308(b)",
+      "framework": "HIPAA",
+      "title": "Business associate agreements current",
+      "risk_domain": "third-party-risk",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "HIPAA-164.310(a)",
+      "framework": "HIPAA",
+      "title": "Facility access controls documented",
+      "risk_domain": "physical-security",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "HIPAA-164.312(a)",
+      "framework": "HIPAA",
+      "title": "Access control mechanisms enforced",
+      "risk_domain": "identity",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "HIPAA-164.312(c)",
+      "framework": "HIPAA",
+      "title": "Integrity controls for ePHI evidenced",
+      "risk_domain": "data-protection",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "HIPAA-164.314(a)",
+      "framework": "HIPAA",
+      "title": "Business associate requirements enforced",
+      "risk_domain": "third-party-risk",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "HIPAA-164.314(b)",
+      "framework": "HIPAA",
+      "title": "Group health plan requirements met",
+      "risk_domain": "governance",
+      "owner": "security-operations"
     },
     {
       "control_id": "ISO27001-A.5.1",
@@ -5704,6 +5949,69 @@
       "title": "NIST CSF 2.0 RS.MI-02 \u2014 assessed from cybersecurity program and operational evidence",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
+    },
+    {
+      "control_id": "PCI-DSS-1",
+      "framework": "PCI DSS",
+      "title": "Network security controls enforced",
+      "risk_domain": "network-security",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "PCI-DSS-12",
+      "framework": "PCI DSS",
+      "title": "Information security policy maintained",
+      "risk_domain": "governance",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "PCI-DSS-2",
+      "framework": "PCI DSS",
+      "title": "Secure configurations applied",
+      "risk_domain": "configuration-management",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "PCI-DSS-3",
+      "framework": "PCI DSS",
+      "title": "Stored account data protected",
+      "risk_domain": "data-protection",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "PCI-DSS-4",
+      "framework": "PCI DSS",
+      "title": "Transmission encryption enforced",
+      "risk_domain": "data-protection",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "PCI-DSS-5",
+      "framework": "PCI DSS",
+      "title": "Malicious software protections active",
+      "risk_domain": "malware-defense",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "PCI-DSS-6",
+      "framework": "PCI DSS",
+      "title": "Secure development practices evidenced",
+      "risk_domain": "change-management",
+      "owner": "engineering"
+    },
+    {
+      "control_id": "PCI-DSS-8",
+      "framework": "PCI DSS",
+      "title": "User identification and authentication enforced",
+      "risk_domain": "identity",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "PCI-DSS-9",
+      "framework": "PCI DSS",
+      "title": "Physical access to cardholder data restricted",
+      "risk_domain": "physical-security",
+      "owner": "security-operations"
     },
     {
       "control_id": "SOC2-A1.1",
