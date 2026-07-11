@@ -547,6 +547,52 @@ export interface SnapshotResponse {
   reason: string;
 }
 
+export interface SnapshotSummary {
+  snapshot_id: string;
+  snapshot_path: string;
+  evaluated_at: string;
+  reason: string;
+  assessment_hash: string;
+  posture_score: number | null;
+  open_violation_count: number | null;
+  critical_violation_count: number | null;
+}
+
+export interface SnapshotDetail {
+  snapshot_id: string;
+  evaluated_at: string | null;
+  reason: string;
+  assessment_hash: string | null;
+  prev_hash: string | null;
+  posture: Record<string, unknown> | null;
+  frameworks: Array<{ framework?: string; score?: number; name?: string }>;
+  violations: Array<{ control_id?: string; severity?: string }>;
+  violation_count: number;
+  stale_control_count: number;
+  evidence_refs: string[];
+  evidence_freshness?: unknown;
+}
+
+export interface CloudLinkSession {
+  session_id: string;
+  connector_id: string;
+  status: string;
+  external_id?: string | null;
+  quick_create_url?: string | null;
+  template_url?: string | null;
+  consent_url?: string | null;
+  manual_template_path?: string | null;
+  azure_tenant_id?: string | null;
+  role_name?: string | null;
+  deploy_command?: string | null;
+  workload_identity_member?: string | null;
+}
+
+export interface CloudLinkCompleteResult {
+  session: CloudLinkSession;
+  configure: Record<string, unknown>;
+}
+
 export type TrackingState =
   "open" | "triaged" | "in_progress" | "resolved" | "dismissed";
 
