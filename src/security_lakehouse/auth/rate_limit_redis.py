@@ -43,7 +43,7 @@ return {0, retry_after}
 
 class RateLimiterBackend(Protocol):
     @property
-    def enabled(self) -> bool: raise NotImplementedError
+    def enabled(self) -> bool: ...
 
     def check(self, key: str) -> tuple[bool, float]: ...
 
