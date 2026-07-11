@@ -1,12 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { Database, Layers, Sparkles, Table2 } from "lucide-react";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { CollapsibleCard } from "@/components/ui/collapsible-card";
 import { cn } from "@/lib/utils";
 
 const STAGES = [
@@ -16,7 +12,7 @@ const STAGES = [
     detail: "Raw evidence ingest",
     icon: Database,
     accent: "#64748b",
-    bg: "#f8fafc",
+    bg: "var(--color-surface-muted)",
   },
   {
     id: "silver",
@@ -24,7 +20,7 @@ const STAGES = [
     detail: "Normalized events",
     icon: Layers,
     accent: "#2563eb",
-    bg: "#eff6ff",
+    bg: "var(--color-surface-muted)",
   },
   {
     id: "gold",
@@ -32,7 +28,7 @@ const STAGES = [
     detail: "Control posture + tests",
     icon: Sparkles,
     accent: "#7c3aed",
-    bg: "#f5f3ff",
+    bg: "var(--color-surface-muted)",
   },
   {
     id: "mart",
@@ -40,46 +36,56 @@ const STAGES = [
     detail: "SQLite / DuckDB / lake",
     icon: Table2,
     accent: "#0f766e",
-    bg: "#f0fdfa",
+    bg: "var(--color-surface-muted)",
   },
 ] as const;
 
 export function DataPipelineStrip({ className }: { className?: string }) {
+  const [scrollHint, setScrollHint] = useState(true);
+
   return (
-    <Card className={cn("overflow-hidden", className)}>
-      <CardHeader className="border-b border-line bg-gradient-to-r from-slate-50 to-white pb-3">
-        <CardTitle className="text-base">Evidence data plane</CardTitle>
-        <CardDescription>
-          Bronze → silver → gold lakehouse with deterministic assessment marts
-          (managed GRC-style continuous monitoring path).
-        </CardDescription>
-      </CardHeader>
-      <div className="grid gap-0 sm:grid-cols-4">
+    <CollapsibleCard
+      storageKey="dashboard-data-pipeline"
+      defaultOpen={false}
+      title="Evidence data plane"
+      description="Bronze → silver → gold lakehouse with deterministic assessment marts"
+      className={className}
+      contentClassName="p-0"
+    >
+      <div
+        className="relative flex snap-x snap-mandatory gap-0 overflow-x-auto pb-1 sm:grid sm:snap-none sm:grid-cols-4 sm:overflow-visible"
+        onScroll={() => setScrollHint(false)}
+      >
+        {scrollHint && (
+          <div
+            className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-surface to-transparent sm:hidden"
+            aria-hidden
+          />
+        )}
         {STAGES.map((stage, index) => {
           const Icon = stage.icon;
           return (
             <div
               key={stage.id}
               className={cn(
-                "relative border-line p-4 sm:border-r last:sm:border-r-0",
-                index > 0 && "border-t sm:border-t-0",
+                "relative min-w-[72%] shrink-0 snap-start border-line p-4 sm:min-w-0 sm:shrink sm:border-r last:sm:border-r-0",
+                index > 0 && "border-l sm:border-l-0 sm:border-t-0",
               )}
             >
-              {index < STAGES.length - 1 && (
-                <div className="absolute -right-2 top-1/2 z-10 hidden h-0.5 w-4 -translate-y-1/2 bg-line sm:block" />
-              )}
               <div
-                className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl shadow-sm"
+                className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-line shadow-sm"
                 style={{ background: stage.bg, color: stage.accent }}
               >
                 <Icon className="h-5 w-5" strokeWidth={2.25} />
               </div>
               <div className="text-sm font-black text-ink">{stage.label}</div>
-              <div className="mt-0.5 text-xs text-muted">{stage.detail}</div>
+              <div className="mt-0.5 text-xs leading-5 text-muted">
+                {stage.detail}
+              </div>
             </div>
           );
         })}
       </div>
-    </Card>
+    </CollapsibleCard>
   );
 }

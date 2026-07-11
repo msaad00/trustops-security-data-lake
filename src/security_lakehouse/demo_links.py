@@ -121,13 +121,23 @@ def build_share_links(
                 "audience": "operator",
             }
         )
-        if sso_configured or require_auth:
+        if sso_configured:
             links.append(
                 {
                     "kind": "login",
                     "label": "Sign-in link",
                     "description": "Browser SSO entry for evaluators and workspace members.",
                     "url": f"{public_url.rstrip('/')}{login_path}",
+                    "audience": "evaluator",
+                }
+            )
+        elif require_auth:
+            links.append(
+                {
+                    "kind": "login",
+                    "label": "Sign-in page",
+                    "description": "Console sign-in — SSO when configured, or API key session.",
+                    "url": _console_path("/login/", public_url=public_url),
                     "audience": "evaluator",
                 }
             )

@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
+import { BRAND } from "@/lib/brand";
 
 const SAAS_STEPS = [
   "Read-only IAM role / OAuth / API token",
@@ -9,12 +10,14 @@ const SAAS_STEPS = [
   "Automated control tests",
 ] as const;
 
-const TRUSTOPS_STEPS = [
-  "Same read-only roles & tokens",
-  "Your TrustOps scheduler syncs",
-  "Evidence in your /lake or warehouse",
-  "Deterministic control tests",
-] as const;
+function customerSteps(name: string) {
+  return [
+    "Same read-only roles & tokens",
+    `Your ${name} scheduler syncs`,
+    "Evidence in your /lake or warehouse",
+    "Deterministic control tests",
+  ] as const;
+}
 
 function Column({
   title,
@@ -57,6 +60,7 @@ function Column({
 }
 
 export function ConnectionCompareDiagram() {
+  const steps = customerSteps(BRAND.name);
   return (
     <div className="grid min-w-0 gap-3 overflow-hidden">
       <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-stretch">
@@ -71,16 +75,16 @@ export function ConnectionCompareDiagram() {
           aria-hidden
         />
         <Column
-          eyebrow="TrustOps"
+          eyebrow={BRAND.name}
           title="Customer-owned lake"
-          steps={TRUSTOPS_STEPS}
+          steps={steps}
           accent="customer"
         />
       </div>
       <p className="line-clamp-3 text-xs leading-5 text-muted">
         AWS cross-account IAM, GitHub App tokens, and Okta/Google read-only
-        scopes use the same connection patterns — TrustOps stores raw events in
-        your boundary.
+        scopes use the same connection patterns — {BRAND.name} stores raw events
+        in your boundary.
       </p>
     </div>
   );

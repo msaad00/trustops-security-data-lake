@@ -21,7 +21,7 @@ export function EvidenceFreshnessStrip() {
     data.stale_count + data.expired_count + data.missing_count;
 
   return (
-    <Card className="border-line bg-surface p-3">
+    <Card className="h-full border-line bg-surface p-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
           <Clock className="h-5 w-5 text-brand" />

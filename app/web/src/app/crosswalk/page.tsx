@@ -17,6 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
+import { BRAND } from "@/lib/brand";
 import { FrameworkBadge } from "@/components/framework/FrameworkBadge";
 import {
   useCrosswalk,
@@ -83,7 +84,7 @@ export default function CrosswalkPage() {
       <PageHeader
         eyebrow="Crosswalk"
         title="Control mapping coverage"
-        description="Reviewed mappings from TrustOps controls to framework source articles, with fallback framework-to-framework diagnostics kept separate."
+        description={`Reviewed mappings from ${BRAND.name} controls to framework source articles, with fallback framework-to-framework diagnostics kept separate.`}
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone="ready">

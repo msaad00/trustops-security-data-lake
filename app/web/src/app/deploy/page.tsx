@@ -5,7 +5,6 @@ import {
   ArrowRight,
   Bot,
   Cloud,
-  DollarSign,
   GitBranch,
   Monitor,
   Plug,
@@ -24,25 +23,26 @@ import {
 import { PageHeader } from "@/components/PageHeader";
 import { ConnectionCompareDiagram } from "@/components/diagrams/ConnectionCompareDiagram";
 import { FlowStrip, type FlowStep } from "@/components/diagrams/FlowStrip";
+import { BRAND } from "@/lib/brand";
 
 const DEPLOYMENT_MODELS = [
   {
     title: "OSS local",
-    detail: "Fixtures + console on laptop or CI. $0 license.",
+    detail: "Fixtures + console on laptop or CI. Open-source license.",
     icon: GitBranch,
-    badge: "Free",
+    badge: "Available",
   },
   {
     title: "Self-hosted",
     detail: "Helm in your VPC. Evidence in your lake or warehouse.",
     icon: Server,
-    badge: "Infra only",
+    badge: "Available",
   },
   {
-    title: "Managed hosted",
-    detail: "Operator workspace URL, SSO, scheduler, support.",
+    title: "Managed cloud",
+    detail: "Operator-run workspace with SSO, scheduler, and support.",
     icon: Cloud,
-    badge: "Commercial",
+    badge: "Coming soon",
   },
 ] as const;
 
@@ -69,7 +69,7 @@ const EDITIONS = [
     name: "OSS",
     deploy: "Local / CI",
     headless: "Full API + CLI + MCP",
-    console: "Static workbench",
+    console: "Full workbench",
     support: "Community",
   },
   {
@@ -81,20 +81,12 @@ const EDITIONS = [
     support: "Your ops team",
   },
   {
-    id: "starter",
-    name: "Hosted Starter",
-    deploy: "Managed URL",
+    id: "managed",
+    name: "Managed cloud",
+    deploy: "Operator URL (future)",
     headless: "API keys + audit log",
     console: "Full workbench + SSO",
-    support: "Community",
-  },
-  {
-    id: "team",
-    name: "Hosted Team",
-    deploy: "Managed URL",
-    headless: "MCP + workflows + agents",
-    console: "Full workbench + SSO",
-    support: "Business hours",
+    support: "Commercial (future)",
   },
 ] as const;
 
@@ -102,7 +94,7 @@ const DEPLOY_FLOW: FlowStep[] = [
   {
     step: "01",
     title: "Choose model",
-    detail: "OSS local, self-hosted Helm, or managed hosted.",
+    detail: "OSS local or self-hosted Helm today; managed cloud later.",
     tone: "brand",
   },
   {
@@ -131,12 +123,7 @@ export default function DeployPage() {
       <PageHeader
         eyebrow="Platform"
         title="Deployment models"
-        description="OSS-first: run locally, self-host in your cloud, or use managed hosted. Same lake and API everywhere."
-        actions={
-          <Button asChild variant="default" size="sm">
-            <Link href="/pricing">View editions</Link>
-          </Button>
-        }
+        description={`${BRAND.name} is open source — continuous compliance for AI, cloud, and modern infra. Run locally, self-host in your VPC, or wait for managed cloud.`}
       />
 
       <div className="grid gap-3 lg:grid-cols-3">
@@ -151,7 +138,9 @@ export default function DeployPage() {
                   <span className="truncate text-sm font-black text-ink">
                     {title}
                   </span>
-                  <Badge tone="default">{badge}</Badge>
+                  <Badge tone={badge === "Coming soon" ? "default" : "ready"}>
+                    {badge}
+                  </Badge>
                 </span>
                 <span className="mt-0.5 line-clamp-2 block text-xs leading-5 text-muted">
                   {detail}
@@ -209,8 +198,7 @@ export default function DeployPage() {
         <CardHeader>
           <CardTitle className="text-base">Editions</CardTitle>
           <CardDescription>
-            Feature matrix by deployment — details and pricing on the pricing
-            page.
+            Feature matrix by deployment — OSS and self-hosted ship today.
           </CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto">
@@ -238,13 +226,13 @@ export default function DeployPage() {
           </table>
           <div className="mt-4 flex flex-wrap gap-2">
             <Button asChild variant="primary" size="sm">
-              <Link href="/pricing">
-                Pricing tiers
+              <Link href="/agents">
+                Agent API reference
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
             <Button asChild variant="default" size="sm">
-              <Link href="/agents">Agent API reference</Link>
+              <Link href="/connectors">Connector registry</Link>
             </Button>
           </div>
         </CardContent>
@@ -272,8 +260,8 @@ export default function DeployPage() {
         <CardHeader>
           <CardTitle className="text-base">Go-live path</CardTitle>
           <CardDescription>
-            From zero to operating posture — OSS license, your infra, your
-            evidence.
+            From zero to operating posture — open-source license, your infra,
+            your evidence.
           </CardDescription>
         </CardHeader>
         <CardContent className="min-w-0 overflow-hidden">
@@ -295,10 +283,7 @@ export default function DeployPage() {
 
       <Card className="overflow-hidden">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <DollarSign className="h-4 w-4" />
-            Launch checklist
-          </CardTitle>
+          <CardTitle className="text-base">Launch checklist</CardTitle>
           <CardDescription>
             POC readiness gates, demo kit links, and shareable URLs.
           </CardDescription>

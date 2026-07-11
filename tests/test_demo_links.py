@@ -43,6 +43,17 @@ def test_share_links_include_login_and_connect_when_hosted() -> None:
         assert parsed.netloc == "trustops.example.test"
 
 
+def test_share_links_use_console_login_when_auth_required_without_sso() -> None:
+    links = build_share_links(
+        public_url="https://trustops.example.test",
+        sso_configured=False,
+        require_auth=True,
+        active_share_count=0,
+    )
+    login = next(row for row in links if row["kind"] == "login")
+    assert login["url"] == "https://trustops.example.test/console/login/"
+
+
 def test_share_links_use_saml_login_when_configured() -> None:
     links = build_share_links(
         public_url="https://trustops.example.test",

@@ -13,7 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { TrustOpsMark } from "@/components/brand/TrustOpsMark";
+import { KodaMark } from "@/components/brand/KodaMark";
 import type { PocReadinessStep } from "@/lib/api/types";
 
 const STAGES = [
@@ -55,7 +55,7 @@ export function OnboardingProgressHero({
       <div className="grid gap-5 p-5 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
-            <TrustOpsMark size="lg" gradientId="onboarding-mark-gradient" />
+            <KodaMark size="lg" gradientId="onboarding-mark-gradient" />
             <div>
               <div className="text-[10px] font-black uppercase tracking-[0.16em] text-sky-300">
                 First-run setup

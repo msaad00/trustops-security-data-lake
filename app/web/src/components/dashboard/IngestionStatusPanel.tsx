@@ -83,8 +83,10 @@ function formatPassRate(rate: number | null | undefined) {
 
 export function IngestionStatusPanel({
   status,
+  embedded = false,
 }: {
   status: IngestionStatus | undefined;
+  embedded?: boolean;
 }) {
   const runEval = useRunLakeEvalMutation();
   const runTick = useRunSchedulerTickMutation();
@@ -108,7 +110,13 @@ export function IngestionStatusPanel({
   const proofReady = Boolean(status?.proof?.proof_pack_exists);
 
   return (
-    <Card>
+    <Card
+      className={
+        embedded
+          ? "rounded-none border-0 border-b border-line shadow-none"
+          : undefined
+      }
+    >
       <CardHeader className="flex-row items-start justify-between gap-3">
         <div className="min-w-0">
           <CardTitle className="flex items-center gap-2">

@@ -9,6 +9,7 @@ import {
   TrendingUp,
   Workflow,
 } from "lucide-react";
+import { BRAND } from "@/lib/brand";
 
 const LINKS = [
   {
@@ -45,20 +46,26 @@ const LINKS = [
 
 export function TrustHomeQuickLinks() {
   return (
-    <nav
-      aria-label="Trust Home shortcuts"
-      className="flex flex-wrap items-center gap-2"
-    >
-      {LINKS.map(({ href, label, icon: Icon }) => (
-        <Link
-          key={href}
-          href={href}
-          className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-black text-ink transition-colors hover:border-brand hover:text-brand"
-        >
-          <Icon className="h-3.5 w-3.5" aria-hidden />
-          {label}
-        </Link>
-      ))}
-    </nav>
+    <div className="relative min-w-0">
+      <nav
+        aria-label={`${BRAND.name} ${BRAND.homeEyebrow} shortcuts`}
+        className="flex snap-x snap-mandatory gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:thin]"
+      >
+        {LINKS.map(({ href, label, icon: Icon }) => (
+          <Link
+            key={href}
+            href={href}
+            className="inline-flex shrink-0 snap-start items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-black text-ink transition-colors hover:border-brand hover:text-brand"
+          >
+            <Icon className="h-3.5 w-3.5" aria-hidden />
+            {label}
+          </Link>
+        ))}
+      </nav>
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-panel to-transparent sm:hidden"
+        aria-hidden
+      />
+    </div>
   );
 }

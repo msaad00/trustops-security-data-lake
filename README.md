@@ -1,12 +1,12 @@
-# TrustOps Security Data Lake
+# Koda (TrustOps Security Data Lake)
 
 <p align="center">
-  <img src="docs/images/trustops-logo.svg" alt="TrustOps — open-source trust operations platform" width="360">
+  <img src="docs/images/trustops-logo.svg" alt="Koda — open-source trust operations platform" width="360">
 </p>
 
 <p align="center">
   <strong>Continuous compliance in your VPC</strong> — evidence lake, deterministic controls, audit-ready workflows.<br/>
-  <em>TrustOps</em> is the product (console · <code>/api/v1</code> · MCP); <code>security-lakehouse</code> is the engine CLI.
+  <em>Koda</em> is the product (console · <code>/api/v1</code> · MCP); <code>security-lakehouse</code> is the engine CLI.
 </p>
 
 <p align="center">
@@ -23,11 +23,11 @@
   <img src="docs/images/trustops-readme-banner.svg" alt="TrustOps — read-only connectors, evidence lake, control tests, audit room, console and API" width="100%">
 </p>
 
-## Why teams pick TrustOps over managed GRC
+## Why teams pick Koda over managed GRC
 
-Managed compliance SaaS excels at onboarding polish and integration breadth. TrustOps targets the same **audit loop** with a different contract: **your evidence lake**, **headless-first APIs**, and **deterministic control tests** — not connector pass/fail widgets alone.
+Managed GRC SaaS excels at onboarding polish and integration breadth. **Koda** targets the same **audit loop** for **AI, cloud, and modern infra** with a different contract: **your evidence lake**, **headless-first APIs**, and **deterministic control tests** — not connector pass/fail widgets alone.
 
-|                       | Managed GRC SaaS   | TrustOps (self-host + headless)                         |
+|                       | Managed GRC SaaS   | Koda (OSS + self-host)                                  |
 | --------------------- | ------------------ | ------------------------------------------------------- |
 | **Evidence custody**  | Vendor-hosted      | Customer bronze/silver/gold lake                        |
 | **Verdict engine**    | Platform widgets   | Lake-backed control tests + hashes                      |
@@ -35,8 +35,8 @@ Managed compliance SaaS excels at onboarding polish and integration breadth. Tru
 | **Integrations**      | 100+ long tail     | AWS · Azure · GCP · Snowflake · GitHub · Okta + catalog |
 | **Agents / CI / MCP** | Add-on             | First-class `/api/v1` + MCP catalog                     |
 | **Framework packs**   | Curated in-product | SOC 2 · NIST AI RMF · FedRAMP · CIS AWS · ISO — as code |
-| **HRIS / devices**    | Native             | IdP + access reviews (gap)                              |
-| **Billing / SCIM**    | Full SaaS          | Hosted scaffold (P5 roadmap)                            |
+| **AI governance**     | Emerging add-ons   | NIST AI RMF + agent harness built in                    |
+| **Billing / SCIM**    | Full SaaS          | Managed cloud (future — not in OSS console)             |
 
 **Honest score:** ~**75–80%** core GRC capability · ~**65–70%** managed-SaaS polish. Strongest where data residency, agents, and CI gates matter.
 
@@ -161,13 +161,13 @@ Production auth requires signed session cookies — see [SERVER_AUTH.md](docs/SE
 
 ## At a glance
 
-|                |                                                                                       |
-| -------------- | ------------------------------------------------------------------------------------- |
-| **Release**    | `0.2.x` — OSS demos, self-hosted pilots, hosted scaffold                              |
-| **Catalog**    | 11 framework families · **741** controls · 18 asset types                             |
-| **Console**    | **28 routes** — dashboard, audit room, controls, evidence, connectors, …              |
-| **Deployment** | Local · Helm self-hosted · managed hosted ([pricing](docs/DEPLOYMENT_AND_PRICING.md)) |
-| **Surfaces**   | Console · `/api/v1` · SDK · MCP · agents ([API](docs/api/AGENT_API.md))               |
+|                |                                                                          |
+| -------------- | ------------------------------------------------------------------------ |
+| **Release**    | `0.2.x` — OSS demos, self-hosted pilots, hosted scaffold                 |
+| **Catalog**    | 11 framework families · **741** controls · 18 asset types                |
+| **Console**    | **28 routes** — dashboard, audit room, controls, evidence, connectors, … |
+| **Deployment** | Local · Helm self-hosted · managed cloud (future)                        |
+| **Surfaces**   | Console · `/api/v1` · SDK · MCP · agents ([API](docs/api/AGENT_API.md))  |
 
 ## Documentation
 

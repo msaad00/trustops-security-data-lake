@@ -13,9 +13,7 @@ import {
   usePosture,
   usePostureStream,
 } from "@/lib/api/hooks";
-import { AuditReadinessStrip } from "@/components/dashboard/AuditReadinessStrip";
-import { EvidenceFreshnessStrip } from "@/components/dashboard/EvidenceFreshnessStrip";
-import { InsightsRemediationStrip } from "@/components/dashboard/InsightsRemediationStrip";
+import { DashboardStripsRow } from "@/components/dashboard/DashboardStripsRow";
 import { TrustHomeQuickLinks } from "@/components/dashboard/TrustHomeQuickLinks";
 import { PostureRing } from "@/components/dashboard/PostureRing";
 import { ReadinessGrid } from "@/components/dashboard/ReadinessGrid";
@@ -26,12 +24,12 @@ import { ControlTestTable } from "@/components/dashboard/ControlTestTable";
 import { TrustLifecycle } from "@/components/dashboard/TrustLifecycle";
 import { IngestionStatusPanel } from "@/components/dashboard/IngestionStatusPanel";
 import { EvalRunsStrip } from "@/components/dashboard/EvalRunsStrip";
-import { ComplianceOverview } from "@/components/dashboard/ComplianceOverview";
 import { DataPipelineStrip } from "@/components/dashboard/DataPipelineStrip";
 import { KpiTile } from "@/components/ui/KpiTile";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { CollapsibleCard } from "@/components/ui/collapsible-card";
 import { QueryState } from "@/components/QueryState";
+import { BRAND } from "@/lib/brand";
 import { shortDate } from "@/lib/utils";
 
 function stateHeadline(state?: string) {
@@ -75,11 +73,11 @@ export default function DashboardPage() {
       : "No framework posture yet";
 
   return (
-    <div className="mx-auto grid w-full max-w-[1500px] gap-3 px-3 py-3 sm:px-4 lg:px-5">
+    <div className="mx-auto grid w-full max-w-[1500px] gap-3 px-3 py-4 sm:px-4 lg:gap-4 lg:px-5 lg:py-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0">
           <div className="text-[12px] font-black uppercase tracking-wider text-brand">
-            Trust Home
+            {BRAND.name} {BRAND.homeEyebrow}
           </div>
           <h1 className="mt-1 text-[clamp(24px,2.5vw,32px)] font-black leading-tight text-ink">
             Posture, proof, and what to fix next
@@ -94,7 +92,7 @@ export default function DashboardPage() {
         </div>
         <div className="flex items-center gap-2">
           <span
-            className={`inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-black ${connected ? "text-emerald-600" : "text-amber-600"}`}
+            className={`inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-black ${connected ? "text-emerald-600" : "text-amber-600"}`}
           >
             <span
               className={`h-1.5 w-1.5 rounded-full ${connected ? "animate-pulse bg-emerald-500" : "bg-amber-500"}`}
@@ -102,21 +100,25 @@ export default function DashboardPage() {
             {connected ? "Live" : "Polling"}
           </span>
           {data?.evaluated_at && (
-            <span className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-black text-slate-500">
+            <span className="rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-black text-muted">
               as of {shortDate(data.evaluated_at)}
             </span>
           )}
         </div>
       </div>
 
-      <AuditReadinessStrip />
-      <EvidenceFreshnessStrip />
-      <InsightsRemediationStrip />
+      <DashboardStripsRow />
 
       <QueryState queries={[posture]} label="posture">
-        <Card className="overflow-hidden border-line shadow-card">
+        <CollapsibleCard
+          storageKey="dashboard-posture-hero"
+          defaultOpen
+          title="Posture assessment"
+          description="Trust score, KPIs, and program readiness summary"
+          contentClassName="p-0"
+        >
           <div className="grid lg:grid-cols-[260px_minmax(0,1fr)]">
-            <div className="flex items-center gap-4 border-b border-line bg-gradient-to-b from-slate-50 to-white p-4 lg:block lg:border-b-0 lg:border-r">
+            <div className="flex items-center gap-4 border-b border-line bg-surfaceMuted p-4 lg:block lg:border-b-0 lg:border-r">
               <PostureRing
                 score={p?.score ?? 0}
                 state={p?.state ?? "attention_required"}
@@ -156,7 +158,6 @@ export default function DashboardPage() {
                   {p?.state === "ready" ? "shareable" : "internal review"}
                 </Badge>
               </div>
-              <ComplianceOverview frameworks={frameworks} />
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <KpiTile
                   label="Framework readiness"
@@ -212,13 +213,22 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
-        </Card>
+        </CollapsibleCard>
 
-        <QueryState queries={ingestion} label="ingestion status">
-          <IngestionStatusPanel status={ingestion.data} />
+        <QueryState queries={[ingestion]} label="ingestion status">
+          <CollapsibleCard
+            storageKey="dashboard-ingestion"
+            defaultOpen={false}
+            title="Ingestion & lake eval"
+            description="Connector health, eval runs, and warehouse scale mode"
+            contentClassName="p-0"
+          >
+            <IngestionStatusPanel status={ingestion.data} embedded />
+            <div className="border-t border-line px-3 py-3 sm:px-4">
+              <EvalRunsStrip embedded />
+            </div>
+          </CollapsibleCard>
         </QueryState>
-
-        <EvalRunsStrip />
 
         <DataPipelineStrip />
 
@@ -227,16 +237,40 @@ export default function DashboardPage() {
           catalog={registeredFrameworks.data ?? []}
         />
 
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-4 xl:grid-cols-2">
           <FixNext violations={data?.violations ?? []} />
           <EvidenceTrend />
         </div>
 
-        <FrameworkBars frameworks={frameworks} />
+        <CollapsibleCard
+          storageKey="dashboard-framework-bars"
+          defaultOpen={false}
+          title="Framework scoreboard"
+          description="Per-program compliance bars — expand for chart view"
+          contentClassName="p-0"
+        >
+          <FrameworkBars frameworks={frameworks} embedded />
+        </CollapsibleCard>
 
-        <ControlTestTable rows={tests.data ?? []} />
+        <CollapsibleCard
+          storageKey="dashboard-control-tests"
+          defaultOpen={false}
+          title="Control test results"
+          description="Failing and warning tests sorted by severity"
+          contentClassName="p-0"
+        >
+          <ControlTestTable rows={tests.data ?? []} />
+        </CollapsibleCard>
 
-        <TrustLifecycle posture={p} assessmentHash={data?.assessment_hash} />
+        <CollapsibleCard
+          storageKey="dashboard-trust-lifecycle"
+          defaultOpen={false}
+          title="Trust lifecycle"
+          description="Assessment hash, snapshot cadence, and share readiness"
+          contentClassName="p-3 sm:p-4"
+        >
+          <TrustLifecycle posture={p} assessmentHash={data?.assessment_hash} />
+        </CollapsibleCard>
       </QueryState>
     </div>
   );

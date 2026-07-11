@@ -31,7 +31,7 @@ function ComplianceRing({
   return (
     <Link
       href={frameworkDetailHref(frameworkId)}
-      className="flex min-w-[108px] flex-col items-center gap-2 rounded-xl border border-line bg-white p-3 shadow-sm transition-colors hover:border-brand hover:shadow-card"
+      className="flex min-w-[108px] shrink-0 snap-start flex-col items-center gap-2 rounded-xl border border-line bg-surface p-3 shadow-sm transition-colors hover:border-brand hover:shadow-card"
     >
       <div className="relative h-[72px] w-[72px]">
         <svg className="h-full w-full -rotate-90" viewBox="0 0 72 72">
@@ -94,7 +94,7 @@ export function ComplianceOverview({
   return (
     <div
       className={cn(
-        "flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+        "flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:thin]",
         className,
       )}
     >

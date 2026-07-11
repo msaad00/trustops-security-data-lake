@@ -17,7 +17,7 @@ export function PageHeader({ eyebrow, title, description, actions }: Props) {
         <h1 className="mt-0.5 max-w-full text-[clamp(22px,2.4vw,30px)] font-black leading-tight text-ink">
           {title}
         </h1>
-        <p className="mt-1 max-w-[min(820px,100%)] text-sm leading-5 text-muted">
+        <p className="mt-1 max-w-[min(820px,100%)] text-sm leading-6 text-muted">
           {description}
         </p>
       </div>

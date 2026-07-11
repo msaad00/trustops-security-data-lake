@@ -65,10 +65,10 @@ export function PlatformUsageStrip() {
           </CardContent>
           <CardContent className="border-t border-line pt-3">
             <Link
-              href="/pricing"
+              href="/deploy"
               className="text-xs font-bold text-brand hover:underline"
             >
-              View published pricing tiers →
+              Deployment models →
             </Link>
           </CardContent>
         </Card>

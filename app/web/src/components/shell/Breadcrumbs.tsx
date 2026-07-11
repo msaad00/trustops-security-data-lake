@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
-import { TrustOpsMark } from "@/components/brand/TrustOpsMark";
+import { KodaMark } from "@/components/brand/KodaMark";
 import { BRAND } from "@/lib/brand";
 
 const LABEL: Record<string, string> = {
@@ -28,7 +28,6 @@ const LABEL: Record<string, string> = {
   onboarding: "Onboarding",
   poc: "Launch",
   demo: "Demo",
-  pricing: "Pricing",
   insights: "Insights",
   login: "Sign in",
   signup: "Sign up",
@@ -56,13 +55,13 @@ export function Breadcrumbs() {
   return (
     <nav
       aria-label="Breadcrumb"
-      className="flex min-w-0 items-center gap-1.5 border-b border-line bg-white/80 px-4 py-2 text-xs text-muted backdrop-blur sm:px-5 lg:px-7"
+      className="flex min-w-0 items-center gap-1.5 border-b border-line bg-surface/90 px-4 py-2 text-xs text-muted backdrop-blur sm:px-5 lg:px-7"
     >
       <Link
         href="/dashboard"
         className="inline-flex items-center gap-1.5 rounded px-1 py-0.5 font-extrabold text-muted hover:bg-slate-100 hover:text-ink"
       >
-        <TrustOpsMark size="xs" gradientId="trustops-crumb-gradient" />
+        <KodaMark size="xs" gradientId="koda-crumb-gradient" />
         {BRAND.name}
       </Link>
       {crumbs.map((crumb, idx) => (
