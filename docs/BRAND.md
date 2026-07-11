@@ -31,21 +31,21 @@ customer-facing product names.
 The Koda mark is a gradient square with an **otter mascot**, **K monogram on the
 chest**, and a **proof check badge** (deterministic verdict / audit proof).
 
-| Token          | Value                                                                             |
-| -------------- | --------------------------------------------------------------------------------- |
-| Gradient start | `#4f7cff`                                                                         |
-| Gradient end   | `#30c7d2`                                                                         |
-| Proof badge    | White circle + `#047857` check (bottom-right of mark)                             |
-| Wordmark ink   | `#101623` on light UI; gradient or `#f8fafc` on dark rails                        |
-| Corner radius  | 8px at 32×32 (scales with size)                                                   |
+| Token          | Value                                                      |
+| -------------- | ---------------------------------------------------------- |
+| Gradient start | `#4f7cff`                                                  |
+| Gradient end   | `#30c7d2`                                                  |
+| Proof badge    | White circle + `#047857` check (bottom-right of mark)      |
+| Wordmark ink   | `#101623` on light UI; gradient or `#f8fafc` on dark rails |
+| Corner radius  | 8px at 32×32 (scales with size)                            |
 
 ### Assets
 
-| File                                            | Use                           |
-| ----------------------------------------------- | ----------------------------- |
-| `app/web/src/app/icon.svg`                      | Favicon (Next.js App Router)  |
-| `app/web/src/components/brand/KodaMark.tsx`     | In-app otter mark component   |
-| `app/web/src/components/brand/TrustOpsLogo.tsx` | Monogram + wordmark lockup    |
+| File                                            | Use                          |
+| ----------------------------------------------- | ---------------------------- |
+| `app/web/src/app/icon.svg`                      | Favicon (Next.js App Router) |
+| `app/web/src/components/brand/KodaMark.tsx`     | In-app otter mark component  |
+| `app/web/src/components/brand/TrustOpsLogo.tsx` | Monogram + wordmark lockup   |
 
 ### Usage rules
 

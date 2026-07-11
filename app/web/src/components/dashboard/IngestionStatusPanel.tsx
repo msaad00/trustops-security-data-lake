@@ -112,7 +112,9 @@ export function IngestionStatusPanel({
   return (
     <Card
       className={
-        embedded ? "rounded-none border-0 border-b border-line shadow-none" : undefined
+        embedded
+          ? "rounded-none border-0 border-b border-line shadow-none"
+          : undefined
       }
     >
       <CardHeader className="flex-row items-start justify-between gap-3">

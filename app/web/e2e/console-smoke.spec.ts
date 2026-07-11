@@ -4,7 +4,7 @@ test.describe("console smoke", () => {
   test("dashboard shows trust home shell", async ({ page }) => {
     await page.goto("/console/dashboard/");
     await expect(page.getByRole("main")).toBeVisible({ timeout: 20_000 });
-    await expect(page.getByText("Trust Home")).toBeVisible();
+    await expect(page.getByText("Koda Home")).toBeVisible();
     await expect(
       page.getByRole("heading", {
         level: 1,
@@ -26,7 +26,7 @@ test.describe("console smoke", () => {
     await page.goto("/console/dashboard/");
     await expect(page.getByRole("main")).toBeVisible({ timeout: 20_000 });
     await page
-      .getByRole("navigation", { name: "Trust Home shortcuts" })
+      .getByRole("navigation", { name: "Koda Home shortcuts" })
       .getByRole("link", { name: "Audit room" })
       .click();
     await expect(page).toHaveURL(/\/console\/audit-room\/?$/);

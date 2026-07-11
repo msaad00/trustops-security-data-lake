@@ -109,7 +109,8 @@ function FrameworkCard({
   const score = Math.round(framework.score);
   const color = barColor(framework.score);
   const status = statusFor(framework);
-  const gapCount = framework.failing_control_count + framework.stale_control_count;
+  const gapCount =
+    framework.failing_control_count + framework.stale_control_count;
 
   return (
     <Link
@@ -263,15 +264,15 @@ export function ReadinessGrid({
               role="region"
               aria-label="Framework readiness cards"
             >
-            {visibleFrameworks.map((f) => (
-              <FrameworkCard key={f.framework} framework={f} />
-            ))}
-            {visibleUnmonitored.map((framework) => (
-              <FrameworkCard
-                key={framework.framework_id}
-                unmonitored={framework}
-              />
-            ))}
+              {visibleFrameworks.map((f) => (
+                <FrameworkCard key={f.framework} framework={f} />
+              ))}
+              {visibleUnmonitored.map((framework) => (
+                <FrameworkCard
+                  key={framework.framework_id}
+                  unmonitored={framework}
+                />
+              ))}
             </div>
             {!showAll && (
               <div

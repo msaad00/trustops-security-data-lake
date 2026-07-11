@@ -50,8 +50,8 @@ export function McpSetupStrip() {
       </div>
       <p className="max-w-3xl text-sm leading-6 text-muted">
         Connect {BRAND.name} to Cursor, Claude Desktop, or any MCP host. Each
-        tool advertises the {BRAND.name} mark in clients that support MCP icons —
-        the same headless surface as this console and{" "}
+        tool advertises the {BRAND.name} mark in clients that support MCP icons
+        — the same headless surface as this console and{" "}
         <code className="text-ink">/api/v1</code>.
       </p>
       <div className="grid gap-3 lg:grid-cols-2">

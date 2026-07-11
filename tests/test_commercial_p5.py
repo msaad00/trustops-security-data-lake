@@ -39,9 +39,7 @@ def test_platform_pricing_public(tmp_path: Path) -> None:
     assert data["tiers"] == []
 
 
-def test_platform_pricing_commercial_hosted(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_platform_pricing_commercial_hosted(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("TRUSTOPS_COMMERCIAL_HOSTED", "1")
     _seed_lake(tmp_path)
     client = TestClient(create_app(tmp_path))

@@ -138,8 +138,8 @@ export function UsersPanel() {
             Users & roles
           </CardTitle>
           <CardDescription>
-            Assign {BRAND.name} roles within your tenant — separate from IdP groups
-            unless role sync is enabled server-side.
+            Assign {BRAND.name} roles within your tenant — separate from IdP
+            groups unless role sync is enabled server-side.
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -40,11 +40,7 @@ export function EvalRunsStrip({
     <QueryState queries={[ingestion, evalRuns]} label="evaluation history">
       {ingestion.data && (
         <Card
-          className={
-            embedded
-              ? "rounded-none border-0 shadow-none"
-              : undefined
-          }
+          className={embedded ? "rounded-none border-0 shadow-none" : undefined}
         >
           <CardHeader className="flex-row items-start justify-between gap-3">
             <div className="min-w-0">

@@ -161,13 +161,13 @@ Production auth requires signed session cookies — see [SERVER_AUTH.md](docs/SE
 
 ## At a glance
 
-|                |                                                                                       |
-| -------------- | ------------------------------------------------------------------------------------- |
-| **Release**    | `0.2.x` — OSS demos, self-hosted pilots, hosted scaffold                              |
-| **Catalog**    | 11 framework families · **741** controls · 18 asset types                             |
-| **Console**    | **28 routes** — dashboard, audit room, controls, evidence, connectors, …              |
-| **Deployment** | Local · Helm self-hosted · managed cloud (future) |
-| **Surfaces**   | Console · `/api/v1` · SDK · MCP · agents ([API](docs/api/AGENT_API.md))               |
+|                |                                                                          |
+| -------------- | ------------------------------------------------------------------------ |
+| **Release**    | `0.2.x` — OSS demos, self-hosted pilots, hosted scaffold                 |
+| **Catalog**    | 11 framework families · **741** controls · 18 asset types                |
+| **Console**    | **28 routes** — dashboard, audit room, controls, evidence, connectors, … |
+| **Deployment** | Local · Helm self-hosted · managed cloud (future)                        |
+| **Surfaces**   | Console · `/api/v1` · SDK · MCP · agents ([API](docs/api/AGENT_API.md))  |
 
 ## Documentation
 
