@@ -28,7 +28,7 @@ def test_framework_coverage_ledger_counts_seeded_mappings(capsys) -> None:
     assert summary["reviewed_mapping_count"] == len(seeded_controls)
     assert summary["missing_mapping_count"] == 0
     assert summary["seeded_mapping_coverage_pct"] == 100.0
-    assert summary["asset_type_count"] == 18
+    assert summary["asset_type_count"] == 20
     assert summary["control_asset_applicability_link_count"] == sum(
         row["applicable_control_count"] for row in applicability
     )
@@ -50,7 +50,7 @@ def test_framework_coverage_markdown_is_source_linked_not_logo_based() -> None:
     markdown = render_framework_coverage_markdown(build_framework_coverage(), applicability)
 
     assert "Seeded mapping coverage: 100.0%" in markdown
-    assert "Asset types modeled: 18" in markdown
+    assert "Asset types modeled: 20" in markdown
     assert f"Control-to-asset applicability links: {summary['control_asset_applicability_link_count']}" in markdown
     assert "## Control-To-Asset Applicability" in markdown
     assert f"| `service` | {applicability[0]['applicable_control_count']} |" in markdown
