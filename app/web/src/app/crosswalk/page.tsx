@@ -1,7 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ExternalLink, FileCheck2, GitCompareArrows, Layers, Search } from "lucide-react";
+import {
+  ExternalLink,
+  FileCheck2,
+  GitCompareArrows,
+  Layers,
+  Search,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -104,8 +110,8 @@ export default function CrosswalkPage() {
           </CardTitle>
           <CardDescription>
             Curated answer-once groups linking SOC 2, ISO, NIST CSF, FedRAMP,
-            CIS, HIPAA, GDPR, PCI, and AI governance controls — the mapping layer
-            managed GRC platforms use for multi-framework posture.
+            CIS, HIPAA, GDPR, PCI, and AI governance controls — the mapping
+            layer managed GRC platforms use for multi-framework posture.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3">
@@ -115,11 +121,15 @@ export default function CrosswalkPage() {
               className="rounded-lg border border-line bg-slate-50/80 p-3"
             >
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm font-black text-ink">{group.label}</span>
+                <span className="text-sm font-black text-ink">
+                  {group.label}
+                </span>
                 <Badge tone="info">{group.risk_domain}</Badge>
                 <Badge>{group.controls.length} controls</Badge>
               </div>
-              <p className="mt-2 text-xs leading-5 text-muted">{group.rationale}</p>
+              <p className="mt-2 text-xs leading-5 text-muted">
+                {group.rationale}
+              </p>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {group.controls.map((ref) => (
                   <span

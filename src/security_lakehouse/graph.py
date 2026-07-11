@@ -593,7 +593,7 @@ def build_framework_crosswalk(controls_path: str | Path | None = None) -> dict[s
     Prefer :func:`security_lakehouse.mappings.build_reviewed_crosswalk` for
     auditor-reviewed mappings and
     :func:`security_lakehouse.mappings.build_framework_equivalence` for curated
-    control-equivalence groups (Drata/Vanta-style answer-once mapping).
+    control-equivalence groups (managed GRC-style answer-once mapping).
     """
     controls = load_control_catalog(controls_path)
     by_framework: dict[str, list[dict[str, Any]]] = {}

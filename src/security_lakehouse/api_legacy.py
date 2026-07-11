@@ -32,7 +32,11 @@ from security_lakehouse.framework_detail import build_framework_detail
 from security_lakehouse.framework_provenance import build_framework_view
 from security_lakehouse.graph import build_compliance_graph, build_framework_crosswalk, build_repository_graph
 from security_lakehouse.io import read_jsonl, resolve_path
-from security_lakehouse.mappings import build_reviewed_crosswalk, build_framework_equivalence, load_control_article_mappings
+from security_lakehouse.mappings import (
+    build_framework_equivalence,
+    build_reviewed_crosswalk,
+    load_control_article_mappings,
+)
 from security_lakehouse.readiness import build_readiness_view
 from security_lakehouse.scheduler import tick as scheduler_tick
 from security_lakehouse.tracking import ALLOWED_STATES, append_event, latest_state, list_events
