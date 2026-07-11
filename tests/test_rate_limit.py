@@ -91,7 +91,7 @@ def test_build_rate_limiter_uses_memory_by_default() -> None:
 
 def test_build_rate_limiter_selects_redis_when_url_configured(monkeypatch: pytest.MonkeyPatch) -> None:
     from security_lakehouse.auth.rate_limit import ENV_REDIS_URL
-    from security_lakehouse.auth.rate_limit_redis import RedisRateLimiter, build_rate_limiter
+    from security_lakehouse.auth.rate_limit_redis import build_rate_limiter
 
     created: list[str] = []
 
