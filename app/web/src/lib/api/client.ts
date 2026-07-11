@@ -509,7 +509,8 @@ export const api = {
     get<{ count: number; frameworks: FrameworkReadiness[] }>("/readiness"),
   crosswalk: () => get<Crosswalk>("/crosswalk"),
   reviewedCrosswalk: () => get<ReviewedCrosswalk>("/crosswalk/reviewed"),
-  frameworkEquivalence: () => get<FrameworkEquivalence>("/mappings/equivalence"),
+  frameworkEquivalence: () =>
+    get<FrameworkEquivalence>("/mappings/equivalence"),
   mappings: () =>
     get<{ count: number; mappings: ControlArticleMapping[] }>("/mappings"),
   auditLog: (
