@@ -43,6 +43,8 @@ def build_ingestion_status(lake_dir: str | Path) -> JsonObject:
     silent_count = int(health["summary"]["silent"]) + int(health["summary"]["never_succeeded"])
     raw_path = lake / "raw" / "connector_events.jsonl"
     scale = resolve_materialize_strategy(lake, raw_path)
+    eval_status = eval_schedule_status(lake)
+    scale_with_eval = {**scale, **eval_status}
     state = _overall_state(
         enabled=enabled,
         evidence_count=evidence_count,
@@ -84,7 +86,7 @@ def build_ingestion_status(lake_dir: str | Path) -> JsonObject:
             silent_count=silent_count,
             proof=proof,
             current_posture=current_posture,
-            scale=scale,
+            scale=scale_with_eval,
             eval_accuracy=eval_accuracy,
         ),
         "eval_accuracy": eval_accuracy,
