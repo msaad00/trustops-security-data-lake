@@ -44,7 +44,8 @@ from security_lakehouse.auth.api_key_session import ApiKeySessionError, exchange
 from security_lakehouse.auth.dependencies import get_session, require_scope
 from security_lakehouse.auth.oidc import OIDCLoginError, build_oauth, complete_oidc_login, load_oidc_config
 from security_lakehouse.auth.presentation import build_auth_methods_payload
-from security_lakehouse.auth.rate_limit import RateLimitConfig, RateLimiter
+from security_lakehouse.auth.rate_limit import RateLimitConfig
+from security_lakehouse.auth.rate_limit_redis import RateLimiterBackend, build_rate_limiter
 from security_lakehouse.auth.rbac import Identity, scopes_for_role
 from security_lakehouse.auth.request_audit import append_request_audit
 from security_lakehouse.auth.saml import (
@@ -926,7 +927,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     app.state.require_auth = require_auth and not _insecure_requested()
     if app.state.require_auth:
         ensure_cookie_signing_configured()
-    app.state.rate_limiter = RateLimiter(RateLimitConfig.from_env(dict(os.environ)))
+    app.state.rate_limiter = build_rate_limiter(RateLimitConfig.from_env(dict(os.environ)), dict(os.environ))
 
     def lake_for(identity: Identity) -> Path:
         """Resolve the per-request lake for ``identity`` so one tenant can never
@@ -987,7 +988,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     # before it reaches the audit threadpool write or a route handler.
     @app.middleware("http")
     async def _rate_limit(request: Request, call_next):
-        limiter: RateLimiter = app.state.rate_limiter
+        limiter: RateLimiterBackend = app.state.rate_limiter
         path = request.url.path
         if limiter.enabled and path.startswith("/api/") and path not in _RATE_LIMIT_EXEMPT:
             allowed, retry_after = limiter.check(_rate_limit_key(request))

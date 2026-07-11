@@ -72,12 +72,12 @@ Today the server uses one SQLAlchemy URL. Split read/write URLs are on the roadm
 
 ## Shared state caveats
 
-| Mechanism        | Single-node today | Multi-replica note                                         |
-| ---------------- | ----------------- | ---------------------------------------------------------- |
-| Rate limiting    | In-process        | Per-pod buckets; use ingress rate limits or Redis (future) |
-| Session cookies  | Postgres/SQLite   | Sticky sessions or shared session store                    |
-| Scheduler        | CronJob → lake    | Must not run on read-only replicas                         |
-| Idempotency keys | DB                | Safe across replicas when all use same Postgres            |
+| Mechanism        | Single-node today                                                          | Multi-replica note                                               |
+| ---------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Rate limiting    | In-process default; optional Redis via `TRUSTOPS_API_RATE_LIMIT_REDIS_URL` | Shared budget when Redis URL is set (Helm: `rateLimit.redisUrl`) |
+| Session cookies  | Postgres/SQLite                                                            | Sticky sessions or shared session store                          |
+| Scheduler        | CronJob → lake                                                             | Must not run on read-only replicas                               |
+| Idempotency keys | DB                                                                         | Safe across replicas when all use same Postgres                  |
 
 ## Example: auditor read pool
 

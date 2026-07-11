@@ -53,6 +53,14 @@ spec:
           env:
             - name: TRUSTOPS_LAKE
               value: {{ .Values.lake.mountPath | quote }}
+            - name: TRUSTOPS_API_RATE_LIMIT_RPS
+              value: {{ .Values.rateLimit.rps | quote }}
+            - name: TRUSTOPS_API_RATE_LIMIT_BURST
+              value: {{ .Values.rateLimit.burst | quote }}
+            {{- if .Values.rateLimit.redisUrl }}
+            - name: TRUSTOPS_API_RATE_LIMIT_REDIS_URL
+              value: {{ .Values.rateLimit.redisUrl | quote }}
+            {{- end }}
             {{- if .Values.defaultTrustRole }}
             - name: TRUSTOPS_DEFAULT_ROLE
               value: {{ .Values.defaultTrustRole | quote }}
