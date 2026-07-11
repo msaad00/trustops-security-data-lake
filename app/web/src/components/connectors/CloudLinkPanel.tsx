@@ -8,7 +8,7 @@ import {
   useCloudLinkCompleteMutation,
   useCloudLinkStartMutation,
 } from "@/lib/api/hooks";
-import type { CloudLinkSession } from "@/lib/api/client";
+import type { CloudLinkSession } from "@/lib/api/types";
 import type { ConnectorView } from "@/lib/api/types";
 
 const CLOUD_LINK_IDS = new Set(["aws-posture", "azure-posture", "gcp-posture"]);
