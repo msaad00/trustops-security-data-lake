@@ -211,4 +211,3 @@ export function usePlatformUsage(enabled = true, opts?: Opts<PlatformUsage>) {
     ...opts,
   });
 }
-
