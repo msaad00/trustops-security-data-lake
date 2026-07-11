@@ -25,7 +25,7 @@
 
 ## Why teams pick Koda over managed GRC
 
-Managed compliance SaaS (Drata, Vanta, and peers) excels at onboarding polish and integration breadth. **Koda** targets the same **audit loop** for **AI, cloud, and modern infra** with a different contract: **your evidence lake**, **headless-first APIs**, and **deterministic control tests** — not connector pass/fail widgets alone.
+Managed GRC SaaS excels at onboarding polish and integration breadth. **Koda** targets the same **audit loop** for **AI, cloud, and modern infra** with a different contract: **your evidence lake**, **headless-first APIs**, and **deterministic control tests** — not connector pass/fail widgets alone.
 
 |                       | Managed GRC SaaS   | Koda (OSS + self-host)                                  |
 | --------------------- | ------------------ | ------------------------------------------------------- |

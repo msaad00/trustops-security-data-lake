@@ -69,3 +69,6 @@ export function TrustOpsLogo({
 
   return <div className={classes}>{content}</div>;
 }
+
+/** Preferred export name for the Koda wordmark lockup. */
+export { TrustOpsLogo as KodaLogo };

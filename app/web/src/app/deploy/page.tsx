@@ -123,7 +123,7 @@ export default function DeployPage() {
       <PageHeader
         eyebrow="Platform"
         title="Deployment models"
-        description={`${BRAND.name} is open source — the Drata/Vanta-style audit loop for AI, cloud, and modern infra. Run locally, self-host in your VPC, or wait for managed cloud.`}
+        description={`${BRAND.name} is open source — continuous compliance for AI, cloud, and modern infra. Run locally, self-host in your VPC, or wait for managed cloud.`}
       />
 
       <div className="grid gap-3 lg:grid-cols-3">
