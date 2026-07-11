@@ -43,9 +43,11 @@ return {0, retry_after}
 
 class RateLimiterBackend(Protocol):
     @property
-    def enabled(self) -> bool: ...
+    def enabled(self) -> bool:
+        pass
 
-    def check(self, key: str) -> tuple[bool, float]: ...
+    def check(self, key: str) -> tuple[bool, float]:
+        pass
 
 
 __all__ = ["RateLimiterBackend", "RedisRateLimiter", "build_rate_limiter"]
