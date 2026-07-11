@@ -1,24 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  type UseQueryOptions,
-} from "@tanstack/react-query";
-import { api, bootstrapAssessment } from "../client";
-import { LIVE, STALE, type Opts } from "./shared";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { api } from "../client";
+import { LIVE, STALE } from "./shared";
 import type {
   AccessReviewCampaign,
   AccessReviewDecision,
   AccessReviewStatus,
   ControlRemediation,
-  PolicyDocument,
-  PolicyTemplateSummary,
-  VendorAssessment,
-  VendorAssessmentStatus,
-  VendorQuestionnaireTemplateSummary,
 } from "../types";
 
 export function useAccessReviews(query = "") {

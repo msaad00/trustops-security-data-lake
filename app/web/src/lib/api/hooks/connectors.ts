@@ -1,13 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  type UseQueryOptions,
-} from "@tanstack/react-query";
-import { api, bootstrapAssessment } from "../client";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { api } from "../client";
 import { LIVE, STALE, type Opts } from "./shared";
 import type {
   ConfigurePayload,
