@@ -344,6 +344,21 @@ export function ConnectorDrawer({
   const [options, setOptions] = useState<Record<string, string>>({});
   const [accessValidated, setAccessValidated] = useState(false);
   const [discoveryRun, setDiscoveryRun] = useState<ConnectorRun | null>(null);
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
+
+  const markTouched = (name: string) => {
+    setTouchedFields((prev) => new Set(prev).add(name));
+  };
+
+  const credentialFieldError = (
+    name: string,
+    label: string,
+    required?: boolean,
+  ) => {
+    if (!required || !touchedFields.has(name)) return null;
+    if ((creds[name] ?? "").trim()) return null;
+    return `${label} is required`;
+  };
 
   useEffect(() => {
     setAccessValidated(false);
@@ -695,92 +710,60 @@ export function ConnectorDrawer({
         )
       }
     >
-      <div className="grid gap-3 text-sm">
-        <section className="rounded-xl border border-line bg-white p-4">
-          <ConnectorMark
-            connectorId={connector.connector_id}
-            name={connector.name}
-            category={connector.category}
-            size="lg"
-            showVendor
-          />
-          {(connector.description || connector.setup_hint) && (
-            <div className="mt-3 space-y-2 text-xs leading-5 text-muted">
-              {connector.description && (
-                <p className="text-sm text-ink">{connector.description}</p>
-              )}
-              {connector.setup_hint && (
-                <p>
-                  <span className="font-black uppercase tracking-wide text-muted">
-                    Connection:{" "}
-                  </span>
+      <div className="grid gap-2 text-sm">
+        <section className="rounded-lg border border-line bg-surface p-3">
+          <div className="flex flex-wrap items-start gap-3">
+            <ConnectorMark
+              connectorId={connector.connector_id}
+              name={connector.name}
+              category={connector.category}
+              size="md"
+              showVendor
+            />
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap gap-1.5">
+                <Badge tone={isEnabled ? "ready" : "default"}>
+                  {connector.state}
+                </Badge>
+                <Badge tone={isRunnable ? "ready" : "attention"}>
+                  {isRunnable ? "Runnable" : "Contract only"}
+                </Badge>
+                <Badge>{labelForStatus(connector.production_status)}</Badge>
+              </div>
+              {connector.setup_hint ? (
+                <p className="mt-1.5 text-xs leading-4 text-muted">
                   {connector.setup_hint}
                 </p>
-              )}
-              <p>
-                <span className="font-black uppercase tracking-wide text-muted">
-                  Ingestion route:{" "}
-                </span>
-                {connector.default_route} ·{" "}
-                {connector.collection_mode.replace(/_/g, " ")}
-              </p>
+              ) : null}
             </div>
-          )}
-        </section>
-
-        {!isRunnable && (
-          <section className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-950">
-            <div className="flex items-start gap-2">
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-              <div>
-                <div className="font-black uppercase tracking-wide">
-                  Access contract only
-                </div>
-                <p className="mt-1">
-                  Probes and discovery validate read-only scope. Evidence sync
-                  and enablement require a collection adapter — tracked in the
-                  connector catalog roadmap.
-                </p>
-              </div>
-            </div>
-          </section>
-        )}
-
-        <section className="rounded-xl border border-line bg-slate-50 p-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge tone={isEnabled ? "ready" : "default"}>
-              {connector.state}
-            </Badge>
-            <Badge tone={isRunnable ? "ready" : "attention"}>
-              {isRunnable ? "Runnable" : "Contract only"}
-            </Badge>
-            <Badge>{labelForStatus(connector.production_status)}</Badge>
-            <Badge tone="info">
-              {connector.access_boundary.replace("_", " ")}
-            </Badge>
-            <Badge>freshness {connector.freshness_slo_minutes}m</Badge>
           </div>
-          <div className="mt-3 grid gap-2 sm:grid-cols-4">
+          <div className="mt-2 flex flex-wrap gap-1.5">
             {setupSteps.map((step, index) => (
-              <div
+              <span
                 key={step.label}
-                className="rounded-lg border border-line bg-white p-2.5"
+                className="inline-flex items-center gap-1 rounded-md border border-line bg-surface-muted px-2 py-1 text-xs"
               >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[10px] font-black uppercase tracking-wide text-muted">
-                    {index + 1}. {step.label}
-                  </span>
-                  <Badge tone={step.tone}>
-                    {step.tone === "ready" ? "done" : "next"}
-                  </Badge>
-                </div>
-                <div className="mt-1 truncate text-xs font-bold text-ink">
-                  {step.detail}
-                </div>
-              </div>
+                <span className="text-muted">{index + 1}.</span>
+                <span className="font-medium text-ink">{step.label}</span>
+                <Badge tone={step.tone} className="!px-1.5 !py-0 text-[10px]">
+                  {step.tone === "ready" ? "ok" : "—"}
+                </Badge>
+              </span>
             ))}
           </div>
         </section>
+
+        {!isRunnable && (
+          <section className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs leading-4 text-amber-950">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+              <p>
+                Contract only — probes validate scope; sync requires a
+                collection adapter.
+              </p>
+            </div>
+          </section>
+        )}
 
         <details className="rounded-xl border border-line p-3">
           <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
@@ -826,9 +809,9 @@ export function ConnectorDrawer({
         )}
 
         {!auditor && (
-          <section className="rounded-xl border border-line p-3">
-            <div className="text-xs font-black uppercase tracking-wide text-muted">
-              Scoped access · {connector.credential_type.replace(/_/g, " ")}
+          <section className="rounded-lg border border-line p-3">
+            <div className="ui-label">
+              Credentials · {connector.credential_type.replace(/_/g, " ")}
             </div>
             {connector.connector_id === "snowflake-evidence-lake" && (
               <div className="mt-2">
@@ -841,32 +824,38 @@ export function ConnectorDrawer({
             <div className="mt-2 grid gap-2">
               {requiredFirst(credentialFields)
                 .filter((field) => field.required)
-                .map((field) => (
-                  <label
-                    key={field.name}
-                    className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
-                  >
-                    {field.label}
-                    <input
-                      type={field.secret ? "password" : "text"}
-                      value={creds[field.name] ?? ""}
-                      onChange={(e) => {
-                        setAccessValidated(false);
-                        setCreds((c) => ({
-                          ...c,
-                          [field.name]: e.target.value,
-                        }));
-                      }}
-                      className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
-                      placeholder={field.placeholder}
-                    />
-                    {field.hint && (
-                      <span className="font-normal normal-case tracking-normal text-muted">
-                        {field.hint}
-                      </span>
-                    )}
-                  </label>
-                ))}
+                .map((field) => {
+                  const error = credentialFieldError(
+                    field.name,
+                    field.label,
+                    field.required,
+                  );
+                  return (
+                    <label key={field.name} className="grid gap-1">
+                      <span className="ui-label">{field.label}</span>
+                      <input
+                        type={field.secret ? "password" : "text"}
+                        value={creds[field.name] ?? ""}
+                        onChange={(e) => {
+                          setAccessValidated(false);
+                          setCreds((c) => ({
+                            ...c,
+                            [field.name]: e.target.value,
+                          }));
+                        }}
+                        onBlur={() => markTouched(field.name)}
+                        aria-invalid={Boolean(error)}
+                        className={`ui-input ${error ? "ui-input-error" : ""}`}
+                        placeholder={field.placeholder}
+                      />
+                      {error ? (
+                        <span className="text-xs text-rose-700">{error}</span>
+                      ) : field.hint ? (
+                        <span className="text-xs text-muted">{field.hint}</span>
+                      ) : null}
+                    </label>
+                  );
+                })}
               {credentialFields.some((field) => !field.required) && (
                 <details className="rounded-lg border border-line bg-slate-50 p-3">
                   <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-muted">

@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export type KpiTone = "default" | "critical" | "attention" | "ready" | "brand";
@@ -14,16 +13,8 @@ const TONE_VALUE: Record<KpiTone, string> = {
   brand: "text-brand",
 };
 
-const TONE_BG: Record<KpiTone, string> = {
-  default: "from-white to-slate-50",
-  critical: "from-rose-50 to-white",
-  attention: "from-amber-50 to-white",
-  ready: "from-emerald-50 to-white",
-  brand: "from-blue-50 to-white",
-};
-
 const TONE_ACCENT: Record<KpiTone, string> = {
-  default: "#4f7cff",
+  default: "#64748b",
   critical: "#d92d20",
   attention: "#f79009",
   ready: "#16b364",
@@ -36,7 +27,6 @@ export function KpiTile({
   detail,
   tone = "default",
   icon,
-  delay = 0,
   className,
 }: {
   label: string;
@@ -48,46 +38,37 @@ export function KpiTile({
   className?: string;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.28 }}
+    <div
       className={cn(
-        "relative min-w-0 overflow-hidden rounded-xl border border-line bg-gradient-to-br p-3.5 shadow-card",
-        TONE_BG[tone],
+        "relative min-w-0 overflow-hidden rounded-lg border border-line bg-surface px-3 py-2.5",
         className,
       )}
     >
       <div
-        className="absolute inset-y-0 left-0 w-1 rounded-l-xl"
+        className="absolute inset-y-0 left-0 w-0.5"
         style={{ background: TONE_ACCENT[tone] }}
       />
-      <div className="flex items-start justify-between gap-2 pl-2">
+      <div className="flex items-start justify-between gap-2 pl-1.5">
         <div className="min-w-0 flex-1">
-          <div className="text-[10px] font-black uppercase tracking-wider text-muted">
-            {label}
-          </div>
-          <div
-            className={cn(
-              "mt-1 text-2xl font-black leading-none tabular-nums",
-              TONE_VALUE[tone],
-            )}
-          >
+          <div className="ui-label">{label}</div>
+          <div className={cn("ui-kpi-value mt-0.5", TONE_VALUE[tone])}>
             {value}
           </div>
-          {detail && (
-            <div className="mt-1.5 text-xs leading-4 text-muted">{detail}</div>
-          )}
+          {detail ? (
+            <div className="mt-1 line-clamp-2 text-xs leading-4 text-muted">
+              {detail}
+            </div>
+          ) : null}
         </div>
-        {icon && (
+        {icon ? (
           <div
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white shadow-sm"
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-white"
             style={{ background: TONE_ACCENT[tone] }}
           >
             {icon}
           </div>
-        )}
+        ) : null}
       </div>
-    </motion.div>
+    </div>
   );
 }

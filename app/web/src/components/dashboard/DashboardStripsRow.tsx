@@ -10,12 +10,12 @@ export function DashboardStripsRow() {
   return (
     <CollapsibleCard
       storageKey="dashboard-at-a-glance"
-      defaultOpen
+      defaultOpen={false}
       title="At a glance"
       description="Audit room, evidence freshness, and remediation SLA"
-      contentClassName="p-3 sm:p-4"
+      contentClassName="p-2 sm:p-3"
     >
-      <div className="grid gap-3 lg:grid-cols-3">
+      <div className="grid gap-2 lg:grid-cols-3">
         <AuditReadinessStrip />
         <EvidenceFreshnessStrip />
         <InsightsRemediationStrip />

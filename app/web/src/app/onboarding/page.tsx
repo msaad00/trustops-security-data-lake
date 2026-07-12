@@ -9,15 +9,8 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
-import { ConnectorEcosystemStrip } from "@/components/connectors/ConnectorEcosystemStrip";
 import { OnboardingProgressHero } from "@/components/onboarding/OnboardingProgressHero";
 import { OnboardingQuickConnect } from "@/components/onboarding/OnboardingQuickConnect";
 import { usePocReadiness } from "@/lib/api/hooks";
@@ -35,24 +28,24 @@ export default function OnboardingPage() {
   const current = data?.next_step ?? null;
 
   return (
-    <div className="mx-auto grid w-full max-w-4xl min-w-0 gap-4 px-3 py-4 sm:px-4">
+    <div className="mx-auto grid w-full max-w-3xl min-w-0 gap-2 px-3 py-2 sm:px-4">
       <PageHeader
         eyebrow="Getting started"
-        title="First-run onboarding"
-        description="Connect live cloud and identity sources, prove sync, and reach a shareable trust workspace."
+        title="Onboarding"
+        description="Connect sources, prove sync, reach a shareable workspace."
       />
 
       {readiness.isLoading && (
         <Card>
-          <CardContent className="p-6 text-sm font-bold text-muted">
-            Loading onboarding progress...
+          <CardContent className="p-4 text-sm text-muted">
+            Loading progress…
           </CardContent>
         </Card>
       )}
 
       {readiness.isError && (
         <Card>
-          <CardContent className="p-6 text-sm text-muted">
+          <CardContent className="p-4 text-sm text-muted">
             Admin access is required to view onboarding progress.
           </CardContent>
         </Card>
@@ -69,46 +62,47 @@ export default function OnboardingPage() {
             currentHref={current ? stepHref(current) : null}
           />
 
-          <ConnectorEcosystemStrip compact />
-
           <OnboardingQuickConnect />
 
           <Card>
-            <CardHeader>
-              <CardTitle>Onboarding checklist</CardTitle>
-              <CardDescription>
-                Complete blocking steps to reach a shareable trust workspace.
-              </CardDescription>
+            <CardHeader className="p-3 pb-2">
+              <CardTitle className="ui-section-title">Checklist</CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-2">
+            <CardContent className="grid gap-1.5 p-3 pt-0">
               {onboarding.steps.map((step) => {
                 const ready = step.status === "ready";
                 const href = stepHref(step);
                 return (
                   <div
                     key={step.id}
-                    className="flex items-start gap-3 rounded-xl border border-line bg-white p-3"
+                    className="flex items-start gap-2 rounded-md border border-line bg-surface px-2.5 py-2"
                   >
                     {ready ? (
-                      <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
                     ) : (
-                      <CircleAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+                      <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
                     )}
                     <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <div className="font-black text-ink">{step.label}</div>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-sm font-medium text-ink">
+                          {step.label}
+                        </span>
                         <Badge tone={ready ? "ready" : "attention"}>
                           {ready ? "done" : "todo"}
                         </Badge>
-                        {!step.blocking && <Badge tone="info">optional</Badge>}
+                        {!step.blocking ? (
+                          <Badge tone="info">optional</Badge>
+                        ) : null}
                       </div>
-                      <p className="mt-1 text-sm text-muted">{step.detail}</p>
+                      <p className="mt-0.5 text-xs leading-4 text-muted">
+                        {step.detail}
+                      </p>
                     </div>
-                    {href && !ready && (
+                    {href && !ready ? (
                       <Button asChild variant="default" size="sm">
                         <Link href={href}>Open</Link>
                       </Button>
-                    )}
+                    ) : null}
                   </div>
                 );
               })}
@@ -116,20 +110,20 @@ export default function OnboardingPage() {
           </Card>
 
           <div className="flex flex-wrap gap-2">
-            <Button asChild variant="default">
+            <Button asChild variant="default" size="sm">
               <Link href="/poc">
                 <ListChecks className="h-4 w-4" />
-                Full launch checklist
+                Full checklist
               </Link>
             </Button>
-            {data.shareable && (
-              <Button asChild variant="primary">
+            {data.shareable ? (
+              <Button asChild variant="primary" size="sm">
                 <Link href="/demo">
-                  Open demo landing
+                  Demo landing
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-            )}
+            ) : null}
           </div>
         </>
       )}

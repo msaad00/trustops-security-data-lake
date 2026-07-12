@@ -59,3 +59,27 @@
     font-family: theme(fontFamily.mono);
   }
 }
+
+@layer components {
+  .ui-eyebrow {
+    @apply text-xs font-semibold tracking-wide text-brand;
+  }
+  .ui-label {
+    @apply text-xs font-medium text-muted;
+  }
+  .ui-section-title {
+    @apply text-sm font-semibold text-ink;
+  }
+  .ui-page-title {
+    @apply text-xl font-semibold leading-snug text-ink sm:text-2xl;
+  }
+  .ui-kpi-value {
+    @apply text-xl font-semibold tabular-nums leading-none text-ink;
+  }
+  .ui-input {
+    @apply rounded-md border border-line bg-white px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand;
+  }
+  .ui-input-error {
+    @apply border-rose-300 focus:ring-rose-400;
+  }
+}

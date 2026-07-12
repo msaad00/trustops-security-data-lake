@@ -4,11 +4,13 @@ test.describe("console smoke", () => {
   test("dashboard shows trust home shell", async ({ page }) => {
     await page.goto("/console/dashboard/");
     await expect(page.getByRole("main")).toBeVisible({ timeout: 20_000 });
-    await expect(page.getByText("Koda Home")).toBeVisible();
+    await expect(
+      page.getByRole("navigation", { name: "Koda Home shortcuts" }),
+    ).toBeVisible();
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: /Posture, proof, and what to fix next/,
+        name: /^Dashboard$/,
       }),
     ).toBeVisible();
   });
