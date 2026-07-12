@@ -105,6 +105,43 @@ def test_v1_connector_actions_require_connector_manage_scope(tmp_path: Path) -> 
     assert sync_denied.json()["errors"][0]["detail"] == "requires scope: connector_manage"
 
 
+def test_v1_headless_github_security_probe_enable_lifecycle(tmp_path: Path) -> None:
+    """Headless path: probe before enable, same contract as console (#475)."""
+    app = create_app(tmp_path)
+    client = TestClient(app)
+    admin_token = _token_for_role(app, tmp_path, "security_admin")
+    headers = _bearer(admin_token)
+    payload = {
+        "actor": "headless-test",
+        "credentials": {"credential_ref": "TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN"},
+        "options": {"repo": "acme/platform"},
+    }
+
+    blocked = client.post(
+        "/api/v1/connectors/github-security/configure",
+        json={"state": "enabled", **payload},
+        headers=headers,
+    )
+    assert blocked.status_code == HTTPStatus.BAD_REQUEST
+    assert "Test connection" in blocked.json()["errors"][0]["detail"]
+
+    probe = client.post(
+        "/api/v1/connectors/github-security/probe",
+        json=payload,
+        headers=headers,
+    )
+    assert probe.status_code == HTTPStatus.CREATED
+    assert probe.json()["data"]["result"] == "ok"
+
+    enabled = client.post(
+        "/api/v1/connectors/github-security/configure",
+        json={"state": "enabled", **payload},
+        headers=headers,
+    )
+    assert enabled.status_code == HTTPStatus.CREATED
+    assert enabled.json()["data"]["state"] == "enabled"
+
+
 def test_openapi_schema_documents_surface(tmp_path: Path) -> None:
     _seed_lake(tmp_path)
     spec = create_app(tmp_path, require_auth=False).openapi()

@@ -52,15 +52,16 @@ export function IngestionLoopStrip() {
       const result = await runEval.mutateAsync({ actor: "audit-room" });
       if (result.result === "ok") {
         notify.success(
-          `Lake eval complete (${result.mode}, ${result.duration_ms} ms).`,
+          `Control eval complete (${result.mode}, ${result.duration_ms} ms).`,
         );
       } else {
         notify.error(
-          result.error ?? `Lake eval finished with result: ${result.result}.`,
+          result.error ??
+            `Control eval finished with result: ${result.result}.`,
         );
       }
     } catch (err) {
-      notify.error(`Lake eval failed: ${(err as Error).message}`);
+      notify.error(`Control eval failed: ${(err as Error).message}`);
     }
   };
 
@@ -103,7 +104,7 @@ export function IngestionLoopStrip() {
                   ) : null}
                 </div>
                 <p className="mt-1 text-xs leading-5 text-muted">
-                  Connector syncs land raw evidence; lake eval materializes
+                  Connector syncs land raw evidence; control eval materializes
                   posture on a separate schedule — same split loop as managed
                   GRC platforms.
                   {coverage
@@ -119,7 +120,7 @@ export function IngestionLoopStrip() {
                   onClick={handleRunEval}
                 >
                   <Play className="mr-1 h-3.5 w-3.5" />
-                  Run lake eval
+                  Run control eval
                 </Button>
                 <Button
                   size="sm"
@@ -180,7 +181,7 @@ export function IngestionLoopStrip() {
                 detail={
                   accuracy?.has_tests
                     ? `${accuracy.passing}/${accuracy.total_tests} passing · ${accuracy.framework_count} frameworks`
-                    : "run lake eval to materialize tests"
+                    : "run control eval to materialize tests"
                 }
                 tone={
                   accuracy && (accuracy.failing ?? 0) > 0
