@@ -123,3 +123,4 @@ See [INGESTION_CONNECTORS_IDEMPOTENCY.md](INGESTION_CONNECTORS_IDEMPOTENCY.md).
 - [AUDIT_SCALE.md](AUDIT_SCALE.md) — large-finding workloads
 - [CONNECTORS.md](CONNECTORS.md) — connector catalog and registry model
 - [playbooks/HEADLESS_CONNECTOR_SETUP.md](playbooks/HEADLESS_CONNECTOR_SETUP.md) — curl/CLI/MCP connect flow
+- [api/AGENT_SKILLS.md](api/AGENT_SKILLS.md) — agent skill catalog + OpenAPI

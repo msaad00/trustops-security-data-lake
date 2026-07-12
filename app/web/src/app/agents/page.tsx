@@ -143,17 +143,59 @@ const ROUTES: RouteSpec[] = [
   },
   {
     method: "GET",
-    path: "/api/connectors",
-    description: "Connector registry joined with state + last probe.",
+    path: "/api/v1/connectors",
+    description: "Connector catalog with live sync health.",
     scope: "controls",
   },
   {
     method: "POST",
-    path: "/api/connectors/{id}/probe",
-    description: "Run a probe against a connector.",
+    path: "/api/v1/connectors/{connector_id}/probe",
+    description: "Test read-only access before enablement.",
     scope: "controls",
-    path_params: [{ name: "id", placeholder: "github-security" }],
-    body_example: {},
+    path_params: [{ name: "connector_id", placeholder: "github-security" }],
+    body_example: {
+      actor: "coding-agent",
+      credentials: {
+        credential_ref: "TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN",
+      },
+      options: { repo: "acme/platform" },
+    },
+  },
+  {
+    method: "POST",
+    path: "/api/v1/connectors/{connector_id}/configure",
+    description: "Enable or disable after a successful probe.",
+    scope: "controls",
+    path_params: [{ name: "connector_id", placeholder: "github-security" }],
+    body_example: {
+      state: "enabled",
+      actor: "coding-agent",
+      credentials: {
+        credential_ref: "TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN",
+      },
+      options: { repo: "acme/platform" },
+    },
+  },
+  {
+    method: "POST",
+    path: "/api/v1/connectors/{connector_id}/sync",
+    description: "Sync evidence from an enabled connector.",
+    scope: "controls",
+    path_params: [{ name: "connector_id", placeholder: "github-security" }],
+    body_example: { actor: "coding-agent" },
+  },
+  {
+    method: "POST",
+    path: "/api/v1/ingestion/eval",
+    description: "Run control evaluation over synced evidence.",
+    scope: "controls",
+    body_example: { actor: "coding-agent" },
+  },
+  {
+    method: "GET",
+    path: "/api/v1/ingestion/status",
+    description: "Source sync health, schedules, and eval runs.",
+    scope: "posture",
   },
   {
     method: "GET",
@@ -230,6 +272,50 @@ const ROUTES: RouteSpec[] = [
     path: "/api/crosswalk",
     description: "Framework x framework cross-mapping matrix.",
     scope: "graph",
+  },
+];
+
+interface AgentSkill {
+  id: string;
+  label: string;
+  detail: string;
+  mcp_tools: string[];
+  route_path: string;
+}
+
+const AGENT_SKILLS: AgentSkill[] = [
+  {
+    id: "ingestion.connect",
+    label: "Connect source",
+    detail: "Agentless read-only: probe → enable → sync → eval",
+    mcp_tools: [
+      "probe_connector",
+      "configure_connector",
+      "sync_connector",
+      "run_lake_eval",
+    ],
+    route_path: "/api/v1/connectors/{connector_id}/probe",
+  },
+  {
+    id: "posture.read",
+    label: "Read posture",
+    detail: "Posture, failing tests, violations, evidence freshness",
+    mcp_tools: ["get_posture", "list_violations", "get_ingestion_status"],
+    route_path: "/api/v1/posture/current",
+  },
+  {
+    id: "audit.prove",
+    label: "Audit prove",
+    detail: "Snapshots, trust shares, activity export",
+    mcp_tools: ["create_snapshot", "list_audit_log", "create_trust_share"],
+    route_path: "/api/v1/snapshots",
+  },
+  {
+    id: "remediate.propose",
+    label: "Propose remediation",
+    detail: "Harness runs with approval-gated writes",
+    mcp_tools: ["create_agent_run", "approve_agent_decision"],
+    route_path: "/api/v1/agent-runs",
   },
 ];
 
@@ -492,6 +578,12 @@ export default function AgentsPage() {
     setStatus(null);
   };
 
+  const selectSkill = (skill: AgentSkill) => {
+    const match =
+      ROUTES.find((route) => route.path === skill.route_path) ?? ROUTES[0];
+    selectRoute(match);
+  };
+
   return (
     <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
       <PageHeader
@@ -509,6 +601,49 @@ export default function AgentsPage() {
           </div>
         }
       />
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">Agent skills</CardTitle>
+          <CardDescription className="text-xs">
+            Headless-first bundles — same routes as MCP and CI. See{" "}
+            <a
+              href="https://github.com/msaad00/trustops-security-data-lake/blob/main/docs/api/AGENT_SKILLS.md"
+              className="font-bold text-brand hover:underline"
+              target="_blank"
+              rel="noreferrer"
+            >
+              AGENT_SKILLS.md
+            </a>
+            .
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+          {AGENT_SKILLS.map((skill) => (
+            <button
+              key={skill.id}
+              type="button"
+              onClick={() => selectSkill(skill)}
+              className="rounded-lg border border-line bg-white p-3 text-left transition-colors hover:border-brand"
+            >
+              <div className="text-xs font-black text-brand">{skill.id}</div>
+              <div className="mt-1 text-sm font-black text-ink">
+                {skill.label}
+              </div>
+              <div className="mt-1 text-xs leading-4 text-muted">
+                {skill.detail}
+              </div>
+              <div className="mt-2 flex flex-wrap gap-1">
+                {skill.mcp_tools.slice(0, 2).map((tool) => (
+                  <Badge key={tool} tone="info" className="!text-[10px]">
+                    {tool}
+                  </Badge>
+                ))}
+              </div>
+            </button>
+          ))}
+        </CardContent>
+      </Card>
 
       <McpSetupStrip />
 
