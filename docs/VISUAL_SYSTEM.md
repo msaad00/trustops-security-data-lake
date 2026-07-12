@@ -82,7 +82,7 @@ Full index: [diagrams/README.md](diagrams/README.md)
 - [Auth identity (mermaid)](diagrams/auth-identity.md)
 - [Identity boundary (SVG)](images/trustops-identity-boundary.svg)
 - [Deployment models (mermaid)](diagrams/deployment-models.md)
-- [Deployment & pricing](DEPLOYMENT_AND_PRICING.md)
+- [Deployment](DEPLOYMENT.md)
 
 ### Hero SVGs
 

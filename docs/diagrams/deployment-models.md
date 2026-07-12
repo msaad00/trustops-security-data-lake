@@ -4,7 +4,7 @@ OSS local, self-hosted, and managed hosted — same product, different ops bound
 
 ```mermaid
 flowchart TB
-  subgraph OSS["OSS local — $0 license"]
+  subgraph OSS["OSS local"]
     LAP["Laptop / CI"]
     FIX["Fixtures + SQLite"]
     DEMO["Console demo"]
@@ -34,20 +34,4 @@ flowchart TB
   LAKE --> WH
 ```
 
-## Cost boundary vs GRC SaaS
-
-```mermaid
-quadrantChart
-  title Deployment flexibility vs platform TCO
-  x-axis Low vendor lock-in --> High vendor lock-in
-  y-axis Low platform fee --> High platform fee
-  quadrant-1 Premium managed
-  quadrant-2 Typical managed GRC SaaS
-  quadrant-3 OSS self-hosted
-  quadrant-4 Hosted alternative
-  TrustOps self-hosted: [0.2, 0.15]
-  TrustOps managed target: [0.35, 0.35]
-  Managed GRC SaaS: [0.85, 0.8]
-```
-
-See [DEPLOYMENT_AND_PRICING.md](../DEPLOYMENT_AND_PRICING.md).
+See [DEPLOYMENT.md](../DEPLOYMENT.md).

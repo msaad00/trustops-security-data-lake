@@ -55,11 +55,13 @@ When `TRUSTOPS_COMMERCIAL_HOSTED` is unset, invite routes return **501 Not Imple
 
 | Method | Path                       | Auth                                | Description                  |
 | ------ | -------------------------- | ----------------------------------- | ---------------------------- |
-| `GET`  | `/api/v1/platform/pricing` | none                                | Published tier list + limits |
+| `GET`  | `/api/v1/platform/pricing` | none                                | Tier list + limits (gated)   |
 | `POST` | `/api/v1/signup`           | optional `X-TrustOps-Signup-Secret` | Create tenant + admin user   |
 | `GET`  | `/api/v1/platform/usage`   | `auth_admin`                        | Plan tier, usage vs limits   |
 
-See [HOSTED_PRICING.md](HOSTED_PRICING.md) for tier details and console `/console/pricing/`.
+These routes return **501 Not Implemented** unless `TRUSTOPS_COMMERCIAL_HOSTED=1`.
+Tier definitions and dollar amounts are operator-managed and not published in the
+OSS repository or console.
 
 ## Email delivery
 
@@ -93,8 +95,6 @@ security-lakehouse db migrate --lake build/lakehouse
 
 ## Related docs
 
-- [Hosted pricing tiers](HOSTED_PRICING.md)
-
+- [Deployment](DEPLOYMENT.md) — OSS vs self-hosted positioning
 - [HA read replicas](../runbooks/HA_READ_REPLICAS.md) — single-writer lake + read replicas
-- [Deployment and pricing](DEPLOYMENT_AND_PRICING.md) — OSS vs hosted positioning
 - [Helm security guards](../deploy/README.md) — auth + replica guards

@@ -105,5 +105,5 @@ security-lakehouse assessment snapshot --lake build/lakehouse --reason vendor_du
 - [PRODUCT_SHAPE.md](PRODUCT_SHAPE.md) — parity map, open issues, execution order
 - [HEADLESS_GRC.md](HEADLESS_GRC.md)
 - [RELEASE_READINESS.md](RELEASE_READINESS.md)
-- [DEPLOYMENT_AND_PRICING.md](DEPLOYMENT_AND_PRICING.md)
+- [DEPLOYMENT.md](DEPLOYMENT.md)
 - Epic [#96](https://github.com/msaad00/trustops-security-data-lake/issues/96)

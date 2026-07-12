@@ -1352,23 +1352,6 @@ export interface PricingTierLimits {
   scim: boolean;
 }
 
-export interface PricingTier {
-  id: string;
-  name: string;
-  annual_usd: number | null;
-  annual_usd_label: string;
-  tagline: string;
-  limits: PricingTierLimits;
-  includes: string[];
-}
-
-export interface PlatformPricing {
-  currency: string;
-  billing_period: string;
-  note: string;
-  tiers: PricingTier[];
-}
-
 export interface PlatformUsage {
   tenant_id: string;
   plan_tier: string;

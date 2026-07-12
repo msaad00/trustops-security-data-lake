@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { KeyRound, Loader2, LogIn, ShieldCheck, Terminal } from "lucide-react";
 import { AuthMark } from "@/components/auth/AuthMark";
@@ -224,12 +223,6 @@ export default function LoginPage() {
                 Auth discovery is unavailable on this server.
               </div>
             )}
-            <p className="text-sm text-muted">
-              Need a workspace?{" "}
-              <Link href="/signup" className="font-bold text-brand underline">
-                Create one
-              </Link>
-            </p>
           </CardContent>
         </Card>
       </div>

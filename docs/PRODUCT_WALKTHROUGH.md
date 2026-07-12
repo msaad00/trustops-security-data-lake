@@ -8,7 +8,7 @@ TrustOps is an open-source trust operations workbench for security evidence
 lakes. It turns local or lake-backed evidence into posture files, control tests,
 owner queues, graph views, snapshots, workflow actions, trust-center shares, and
 agent-readable API responses. You can run it locally, self-host in your cloud, or
-use managed hosted — see [Deployment and Pricing](DEPLOYMENT_AND_PRICING.md).
+use managed hosted — see [Deployment](DEPLOYMENT.md).
 
 This walkthrough is intentionally honest about what is shipped versus planned.
 TrustOps is not presented as a hosted enterprise GRC replacement. The shipped

@@ -44,7 +44,7 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 
 - [x] Shareable demo guide
 - [x] Markdown image CI validation
-- [x] OSS / self-hosted / hosted positioning (`docs/DEPLOYMENT_AND_PRICING.md`)
+- [x] OSS / self-hosted / hosted positioning (`docs/DEPLOYMENT.md`)
 - [x] Console `/deploy` deployment summary page
 - [x] Connector + auth flow diagrams (mermaid, SVG, console strips)
 - [x] Commit demo PNG screenshots (`make demo-screenshots`)
@@ -53,7 +53,7 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 
 ## P5 — Commercial hosted
 
-- [x] Published hosted pricing tiers
+- [x] Commercial pricing API scaffold (gated env; not in OSS console)
 - [x] Self-serve signup and tenant lifecycle
 - [x] Usage limits enforcement scaffold
 - [ ] Billing (Stripe) and SCIM provisioning
