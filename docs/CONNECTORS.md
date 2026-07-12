@@ -6,13 +6,30 @@ For ingestion idempotency, unique event IDs, headless/agent vs console surfaces,
 and security-finding flow, see
 [INGESTION_CONNECTORS_IDEMPOTENCY.md](INGESTION_CONNECTORS_IDEMPOTENCY.md).
 
-## Access Priority
+## Default path (most teams)
 
-| Priority | Mode                             | Best for                                              | Boundary                          |
-| -------- | -------------------------------- | ----------------------------------------------------- | --------------------------------- |
-| 1        | Existing security data lake read | Snowflake, ClickHouse, object storage, SIEM exports   | read-only role                    |
-| 2        | Managed evidence objects         | one-company rollout, local proof, starter deployments | dedicated schema/output directory |
-| 3        | Direct tool API read             | source systems that are the evidence authority        | scoped token or app installation  |
+**No customer security data lake required.** Connect read-only to source systems
+(GitHub, AWS, Okta, …), sync evidence into TrustOps's assessment store, then run
+control evaluation:
+
+```text
+discover scope → probe → enable → sync → eval
+```
+
+This is the same agentless model as typical GRC SaaS — scoped tokens and
+read-only roles, not agents or broad cloud admin. TrustOps keeps the assessment
+store in **your** boundary (`/lake` volume or self-hosted storage), not an opaque
+vendor database.
+
+Headless setup (curl, CLI, MCP): [playbooks/HEADLESS_CONNECTOR_SETUP.md](playbooks/HEADLESS_CONNECTOR_SETUP.md).
+
+## Access modes (pick one)
+
+| Mode                             | When to use                                           | Boundary                          |
+| -------------------------------- | ----------------------------------------------------- | --------------------------------- |
+| **Direct tool API read**         | **Default** — no existing evidence lake               | scoped token or app installation  |
+| Existing security data lake read | You already have Snowflake/ClickHouse/S3/SIEM exports | read-only role                    |
+| Managed evidence objects         | Local proof, starter deployments, demos               | dedicated schema/output directory |
 
 Avoid broad cloud permissions. Connectors should not need admin, delete, owner,
 or unrestricted write access to evaluate posture.

@@ -115,15 +115,16 @@ export function IngestionStatusPanel({
       const result = await runEval.mutateAsync({ actor: "console" });
       if (result.result === "ok") {
         notify.success(
-          `Lake eval complete (${result.mode}, ${result.duration_ms} ms).`,
+          `Control eval complete (${result.mode}, ${result.duration_ms} ms).`,
         );
       } else {
         notify.error(
-          result.error ?? `Lake eval finished with result: ${result.result}.`,
+          result.error ??
+            `Control eval finished with result: ${result.result}.`,
         );
       }
     } catch (err) {
-      notify.error(`Lake eval failed: ${(err as Error).message}`);
+      notify.error(`Control eval failed: ${(err as Error).message}`);
     }
   };
 
@@ -194,7 +195,7 @@ export function IngestionStatusPanel({
               detail={
                 accuracy?.has_tests
                   ? `${accuracy.passing}/${accuracy.total_tests} passing`
-                  : "run lake eval to materialize"
+                  : "run control eval to materialize"
               }
             />
             <Metric
@@ -271,7 +272,7 @@ export function IngestionStatusPanel({
                   disabled={runEval.isPending}
                   onClick={handleRunEval}
                 >
-                  Run lake eval
+                  Run control eval
                 </Button>
                 <Button
                   size="sm"

@@ -60,20 +60,24 @@ test.describe("connectors workflow", () => {
     expect(enabled?.state).toBe("enabled");
   });
 
-  test("lake eval runs from dashboard ingestion panel", async ({ page }) => {
+  test("control eval runs from dashboard source sync panel", async ({
+    page,
+  }) => {
     await page.goto("/console/dashboard/");
     await expect(page.getByRole("main")).toBeVisible({ timeout: 20_000 });
 
     const ingestionToggle = page.getByRole("button", {
-      name: /Ingestion & lake eval/i,
+      name: /Source sync & control eval/i,
     });
     if ((await ingestionToggle.getAttribute("aria-expanded")) !== "true") {
       await ingestionToggle.click();
     }
 
-    await page.getByRole("button", { name: "Run lake eval" }).click();
+    await page.getByRole("button", { name: "Run control eval" }).click();
     await expect(
-      page.getByText(/Lake eval complete|Lake eval failed|Lake eval finished/i),
+      page.getByText(
+        /Control eval complete|Control eval failed|Control eval finished/i,
+      ),
     ).toBeVisible({
       timeout: 30_000,
     });

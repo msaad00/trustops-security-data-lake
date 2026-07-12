@@ -66,8 +66,8 @@ export default function DashboardPage() {
     Boolean(ingestion.data?.scale?.eval_overdue);
   const ingestionDescription = ingestionNeedsAttention
     ? (ingestion.data?.recommended_actions?.[0]?.reason ??
-      "Connector health or lake eval needs attention")
-    : "Connector health and eval runs";
+      "Connector health or control eval needs attention")
+    : "Source sync health and control eval runs";
 
   return (
     <div className="mx-auto grid w-full max-w-[1600px] gap-2 px-3 py-2 sm:px-4 lg:px-5">
@@ -195,7 +195,7 @@ export default function DashboardPage() {
           <CollapsibleCard
             storageKey="dashboard-ingestion"
             defaultOpen={ingestionNeedsAttention}
-            title="Ingestion & lake eval"
+            title="Source sync & control eval"
             description={ingestionDescription}
             actions={
               ingestionNeedsAttention ? (

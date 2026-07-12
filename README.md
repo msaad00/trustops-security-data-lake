@@ -114,7 +114,13 @@ Full route map: [PRODUCT_WALKTHROUGH.md](docs/PRODUCT_WALKTHROUGH.md) · Gap tra
 
 ## How it works
 
-Read-only connectors land facts in your lake; deterministic control tests own the verdict. Console, API, workflows, and agents read the same data — models may summarize, but never decide pass/fail.
+**Headless-first:** agents, CI, MCP, and CLI use the same `/api/v1` contract as the
+console. **Default connect path:** read-only API connectors (GitHub, AWS, Okta, …) —
+no customer security data lake required. Optional lake readers apply when you already
+store evidence in Snowflake or ClickHouse.
+
+Source sync lands facts in your assessment store; deterministic control tests own
+the verdict. Models may summarize, but never decide pass/fail.
 
 <p align="center">
   <img src="docs/images/trustops-assessment-architecture.svg" alt="Sources, lake, assessment, API, console, workflows, trust shares" width="96%">
@@ -135,11 +141,12 @@ Open **http://127.0.0.1:8787/console/dashboard/** on the machine where you ran `
 
 ### Connect live cloud accounts
 
-With credentials for your AWS, Azure, GCP, or Snowflake demo tenants:
+**Agentless read-only** — same workflow as typical GRC SaaS, without a pre-built SDL:
 
-1. Open **Connectors** and pick a source (or use deep links above).
-2. Run **Discover → Probe (Test) → Enable → Sync**.
-3. Watch **Trust Home** and **Audit room** update from live evidence.
+1. **Headless:** [HEADLESS_CONNECTOR_SETUP.md](docs/playbooks/HEADLESS_CONNECTOR_SETUP.md) — curl/CLI/MCP probe → enable → sync → eval.
+2. **Console:** open **Connectors**, pick a source (deep links above), **Discover → Test → Enable → Sync**.
+
+Snowflake/ClickHouse connectors are optional when you already govern evidence in those stores.
 
 See [CONNECTORS.md](docs/CONNECTORS.md) and [SHAREABLE_DEMO.md](docs/SHAREABLE_DEMO.md) for hosted evaluator flows.
 
@@ -171,20 +178,20 @@ Production auth requires signed session cookies — see [SERVER_AUTH.md](docs/SE
 
 ## Documentation
 
-| Topic                 | Doc                                                                                   |
-| --------------------- | ------------------------------------------------------------------------------------- |
-| Headless architecture | [HEADLESS_GRC.md](docs/HEADLESS_GRC.md)                                               |
-| Continuous ingestion  | [CONTINUOUS_INGESTION.md](docs/CONTINUOUS_INGESTION.md)                               |
-| Parity vs managed GRC | [PRODUCT_SHAPE.md](docs/PRODUCT_SHAPE.md)                                             |
-| Product tour          | [PRODUCT_WALKTHROUGH.md](docs/PRODUCT_WALKTHROUGH.md)                                 |
-| Audit readiness       | [AUDIT_READINESS.md](docs/AUDIT_READINESS.md)                                         |
-| Connectors            | [CONNECTORS.md](docs/CONNECTORS.md)                                                   |
-| Framework packs       | [FRAMEWORK_PACKS.md](docs/FRAMEWORK_PACKS.md)                                         |
-| GRC automation        | [GRC_AUTOMATION.md](docs/GRC_AUTOMATION.md)                                           |
-| Auth & tenancy        | [SERVER_AUTH.md](docs/SERVER_AUTH.md)                                                 |
-| Shareable POC         | [SHAREABLE_DEMO.md](docs/SHAREABLE_DEMO.md)                                           |
-| MCP cookbook          | [cookbook/MCP_EVIDENCE_AND_APPROVALS.md](docs/cookbook/MCP_EVIDENCE_AND_APPROVALS.md) |
-| Roadmap               | [ROADMAP.md](ROADMAP.md)                                                              |
+| Topic                 | Doc                                                                                                              |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Headless architecture | [HEADLESS_GRC.md](docs/HEADLESS_GRC.md) · [Headless connector setup](docs/playbooks/HEADLESS_CONNECTOR_SETUP.md) |
+| Continuous ingestion  | [CONTINUOUS_INGESTION.md](docs/CONTINUOUS_INGESTION.md)                                                          |
+| Parity vs managed GRC | [PRODUCT_SHAPE.md](docs/PRODUCT_SHAPE.md)                                                                        |
+| Product tour          | [PRODUCT_WALKTHROUGH.md](docs/PRODUCT_WALKTHROUGH.md)                                                            |
+| Audit readiness       | [AUDIT_READINESS.md](docs/AUDIT_READINESS.md)                                                                    |
+| Connectors            | [CONNECTORS.md](docs/CONNECTORS.md)                                                                              |
+| Framework packs       | [FRAMEWORK_PACKS.md](docs/FRAMEWORK_PACKS.md)                                                                    |
+| GRC automation        | [GRC_AUTOMATION.md](docs/GRC_AUTOMATION.md)                                                                      |
+| Auth & tenancy        | [SERVER_AUTH.md](docs/SERVER_AUTH.md)                                                                            |
+| Shareable POC         | [SHAREABLE_DEMO.md](docs/SHAREABLE_DEMO.md)                                                                      |
+| MCP cookbook          | [cookbook/MCP_EVIDENCE_AND_APPROVALS.md](docs/cookbook/MCP_EVIDENCE_AND_APPROVALS.md)                            |
+| Roadmap               | [ROADMAP.md](ROADMAP.md)                                                                                         |
 
 ## Verify
 

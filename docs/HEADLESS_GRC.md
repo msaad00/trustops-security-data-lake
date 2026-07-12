@@ -23,9 +23,20 @@ approval gates for remediation, trust shares, or workflow side effects.
 
 ## Headless workflows
 
-### Continuous ingestion
+### Connect read-only (default — no customer SDL required)
 
-Connectors **discover → probe → enable → sync** on schedule; lake eval runs on a
+Most teams use **direct API connectors** (`github-security`, `aws-posture`,
+`okta-identity`, …): agentless, read-only, same probe-gated flow as the console.
+You do not need Snowflake or a security data lake first.
+
+Step-by-step curl, CLI, and MCP: [playbooks/HEADLESS_CONNECTOR_SETUP.md](playbooks/HEADLESS_CONNECTOR_SETUP.md).
+
+Optional **existing-lake readers** (Snowflake, ClickHouse) apply only when evidence
+is already materialized in customer-owned stores.
+
+### Continuous source sync
+
+Connectors **discover → probe → enable → sync** on schedule; control eval runs on a
 separate `eval_schedule`. Raw evidence upserts by `event_id`; gold posture
 materializes without console interaction. See [CONTINUOUS_INGESTION.md](CONTINUOUS_INGESTION.md).
 
@@ -111,3 +122,4 @@ See [INGESTION_CONNECTORS_IDEMPOTENCY.md](INGESTION_CONNECTORS_IDEMPOTENCY.md).
 - [AUDIT_READINESS.md](AUDIT_READINESS.md) — audit-room score and workflow checklist
 - [AUDIT_SCALE.md](AUDIT_SCALE.md) — large-finding workloads
 - [CONNECTORS.md](CONNECTORS.md) — connector catalog and registry model
+- [playbooks/HEADLESS_CONNECTOR_SETUP.md](playbooks/HEADLESS_CONNECTOR_SETUP.md) — curl/CLI/MCP connect flow
