@@ -180,7 +180,7 @@ Production auth requires signed session cookies — see [SERVER_AUTH.md](docs/SE
 
 | Topic                 | Doc                                                                                                                                                         |
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Headless architecture | [HEADLESS_GRC.md](docs/HEADLESS_GRC.md) · [Agent skills](docs/api/AGENT_SKILLS.md) · [Headless connector setup](docs/playbooks/HEADLESS_CONNECTOR_SETUP.md) |
+| Headless architecture | [HEADLESS_GRC.md](docs/HEADLESS_GRC.md) · [Agent skills](docs/api/AGENT_SKILLS.md) · [Issue map](docs/ISSUE_CONSOLIDATION.md) |
 | Continuous ingestion  | [CONTINUOUS_INGESTION.md](docs/CONTINUOUS_INGESTION.md)                                                                                                     |
 | Parity vs managed GRC | [PRODUCT_SHAPE.md](docs/PRODUCT_SHAPE.md)                                                                                                                   |
 | Product tour          | [PRODUCT_WALKTHROUGH.md](docs/PRODUCT_WALKTHROUGH.md)                                                                                                       |
