@@ -14,9 +14,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "token"
-        ],
+        "required": ["token"],
         "title": "AcceptInviteRequest",
         "type": "object"
       },
@@ -43,9 +41,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "subject_id"
-        ],
+        "required": ["subject_id"],
         "title": "AddReviewItemRequest",
         "type": "object"
       },
@@ -68,9 +64,7 @@
             "type": "object"
           }
         },
-        "required": [
-          "template_id"
-        ],
+        "required": ["template_id"],
         "title": "AdoptPolicyTemplateRequest",
         "type": "object"
       },
@@ -102,11 +96,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "tag_id",
-          "entity_type",
-          "entity_id"
-        ],
+        "required": ["tag_id", "entity_type", "entity_id"],
         "title": "AttachTagRequest",
         "type": "object"
       },
@@ -118,9 +108,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "status"
-        ],
+        "required": ["status"],
         "title": "CampaignStatusRequest",
         "type": "object"
       },
@@ -202,9 +190,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "harness"
-        ],
+        "required": ["harness"],
         "title": "CreateAgentRunRequest",
         "type": "object"
       },
@@ -248,9 +234,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "CreateCampaignRequest",
         "type": "object"
       },
@@ -283,9 +267,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "control_id"
-        ],
+        "required": ["control_id"],
         "title": "CreateEvidenceRequestRequest",
         "type": "object"
       },
@@ -318,9 +300,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "control_id"
-        ],
+        "required": ["control_id"],
         "title": "CreateExceptionRequest",
         "type": "object"
       },
@@ -337,9 +317,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "email"
-        ],
+        "required": ["email"],
         "title": "CreateInviteRequest",
         "type": "object"
       },
@@ -372,9 +350,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "user_email"
-        ],
+        "required": ["user_email"],
         "title": "CreateKeyRequest",
         "type": "object"
       },
@@ -446,11 +422,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "requirement_id",
-          "control_id",
-          "title"
-        ],
+        "required": ["requirement_id", "control_id", "title"],
         "title": "CreatePoamItemRequest",
         "type": "object"
       },
@@ -535,9 +507,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "title"
-        ],
+        "required": ["title"],
         "title": "CreateRiskRequest",
         "type": "object"
       },
@@ -559,10 +529,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "surface",
-          "name"
-        ],
+        "required": ["surface", "name"],
         "title": "CreateSavedViewRequest",
         "type": "object"
       },
@@ -579,9 +546,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "CreateTagRequest",
         "type": "object"
       },
@@ -641,9 +606,7 @@
             "title": "Violation Id"
           }
         },
-        "required": [
-          "title"
-        ],
+        "required": ["title"],
         "title": "CreateTaskRequest",
         "type": "object"
       },
@@ -686,10 +649,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "vendor_name",
-          "template_id"
-        ],
+        "required": ["vendor_name", "template_id"],
         "title": "CreateVendorAssessmentRequest",
         "type": "object"
       },
@@ -722,9 +682,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "status"
-        ],
+        "required": ["status"],
         "title": "EvidenceRequestStatusRequest",
         "type": "object"
       },
@@ -777,9 +735,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "decision"
-        ],
+        "required": ["decision"],
         "title": "ReviewDecisionRequest",
         "type": "object"
       },
@@ -793,9 +749,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "api_key"
-        ],
+        "required": ["api_key"],
         "title": "SessionFromKeyRequest",
         "type": "object"
       },
@@ -825,11 +779,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "org_slug",
-          "org_name",
-          "admin_email"
-        ],
+        "required": ["org_slug", "org_name", "admin_email"],
         "title": "SignupRequest",
         "type": "object"
       },
@@ -1328,11 +1278,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
+        "required": ["loc", "msg", "type"],
         "title": "ValidationError",
         "type": "object"
       }
@@ -1424,9 +1370,7 @@
           }
         },
         "summary": "Public Trust",
-        "tags": [
-          "discovery"
-        ]
+        "tags": ["discovery"]
       }
     },
     "/api/v1": {
@@ -1448,9 +1392,7 @@
           }
         ],
         "summary": "V1 Index",
-        "tags": [
-          "discovery"
-        ]
+        "tags": ["discovery"]
       }
     },
     "/api/v1/access-reviews": {
@@ -1831,9 +1773,7 @@
           }
         ],
         "summary": "List Agent Runs",
-        "tags": [
-          "agents"
-        ]
+        "tags": ["agents"]
       },
       "post": {
         "operationId": "create_agent_run_api_v1_agent_runs_post",
@@ -1873,9 +1813,7 @@
           }
         ],
         "summary": "Create Agent Run",
-        "tags": [
-          "agents"
-        ]
+        "tags": ["agents"]
       }
     },
     "/api/v1/agent-runs/{run_id}": {
@@ -1918,9 +1856,7 @@
           }
         ],
         "summary": "Get Agent Run",
-        "tags": [
-          "agents"
-        ]
+        "tags": ["agents"]
       }
     },
     "/api/v1/agent-runs/{run_id}/decisions/{decision_index}/approve": {
@@ -1989,9 +1925,7 @@
           }
         ],
         "summary": "Approve Agent Decision",
-        "tags": [
-          "agents"
-        ]
+        "tags": ["agents"]
       }
     },
     "/api/v1/audit-log": {
@@ -2013,9 +1947,7 @@
           }
         ],
         "summary": "Audit Log V1",
-        "tags": [
-          "platform"
-        ]
+        "tags": ["platform"]
       }
     },
     "/api/v1/auth/callback": {
@@ -2377,9 +2309,7 @@
           }
         },
         "summary": "Aws Link Template",
-        "tags": [
-          "connectors"
-        ]
+        "tags": ["connectors"]
       }
     },
     "/api/v1/connectors/azure-posture/link/callback": {
@@ -2444,9 +2374,7 @@
           }
         },
         "summary": "Azure Link Callback",
-        "tags": [
-          "connectors"
-        ]
+        "tags": ["connectors"]
       }
     },
     "/api/v1/connectors/gcp-posture/link/template.tf": {
@@ -2463,9 +2391,7 @@
           }
         },
         "summary": "Gcp Link Template",
-        "tags": [
-          "connectors"
-        ]
+        "tags": ["connectors"]
       }
     },
     "/api/v1/controls/{control_id}/remediation": {
@@ -2549,9 +2475,7 @@
           }
         ],
         "summary": "Evidence Freshness Escalate",
-        "tags": [
-          "platform"
-        ]
+        "tags": ["platform"]
       }
     },
     "/api/v1/evidence/freshness/request": {
@@ -2593,9 +2517,7 @@
           }
         ],
         "summary": "Evidence Freshness Request",
-        "tags": [
-          "platform"
-        ]
+        "tags": ["platform"]
       }
     },
     "/api/v1/evidence/freshness/summary": {
@@ -2617,9 +2539,7 @@
           }
         ],
         "summary": "Evidence Freshness Summary",
-        "tags": [
-          "platform"
-        ]
+        "tags": ["platform"]
       }
     },
     "/api/v1/frameworks/{framework_id}/detail": {
@@ -2662,9 +2582,7 @@
           }
         ],
         "summary": "V1 Framework Detail",
-        "tags": [
-          "data"
-        ]
+        "tags": ["data"]
       }
     },
     "/api/v1/gov-compliance/poam": {
@@ -2686,9 +2604,7 @@
           }
         ],
         "summary": "List Poam Route",
-        "tags": [
-          "gov-compliance"
-        ]
+        "tags": ["gov-compliance"]
       },
       "post": {
         "operationId": "create_poam_route_api_v1_gov_compliance_poam_post",
@@ -2728,9 +2644,7 @@
           }
         ],
         "summary": "Create Poam Route",
-        "tags": [
-          "gov-compliance"
-        ]
+        "tags": ["gov-compliance"]
       }
     },
     "/api/v1/gov-compliance/poam/sync": {
@@ -2752,9 +2666,7 @@
           }
         ],
         "summary": "Sync Poam Route",
-        "tags": [
-          "gov-compliance"
-        ]
+        "tags": ["gov-compliance"]
       }
     },
     "/api/v1/gov-compliance/poam/{item_id}": {
@@ -2807,9 +2719,7 @@
           }
         ],
         "summary": "Update Poam Route",
-        "tags": [
-          "gov-compliance"
-        ]
+        "tags": ["gov-compliance"]
       }
     },
     "/api/v1/gov-compliance/sprs": {
@@ -2831,9 +2741,7 @@
           }
         ],
         "summary": "Sprs Score Route",
-        "tags": [
-          "gov-compliance"
-        ]
+        "tags": ["gov-compliance"]
       }
     },
     "/api/v1/healthz": {
@@ -2850,9 +2758,7 @@
           }
         },
         "summary": "V1 Healthz",
-        "tags": [
-          "discovery"
-        ]
+        "tags": ["discovery"]
       }
     },
     "/api/v1/insights/capture": {
@@ -2979,9 +2885,7 @@
           }
         ],
         "summary": "List Invites Route",
-        "tags": [
-          "commercial"
-        ]
+        "tags": ["commercial"]
       },
       "post": {
         "operationId": "create_invite_route_api_v1_invites_post",
@@ -3021,9 +2925,7 @@
           }
         ],
         "summary": "Create Invite Route",
-        "tags": [
-          "commercial"
-        ]
+        "tags": ["commercial"]
       }
     },
     "/api/v1/invites/accept": {
@@ -3060,9 +2962,7 @@
           }
         },
         "summary": "Accept Invite Route",
-        "tags": [
-          "commercial"
-        ]
+        "tags": ["commercial"]
       }
     },
     "/api/v1/platform/ai-governance": {
@@ -3084,9 +2984,7 @@
           }
         ],
         "summary": "Ai Governance Route",
-        "tags": [
-          "platform"
-        ]
+        "tags": ["platform"]
       }
     },
     "/api/v1/platform/ai-governance/inventory": {
@@ -3108,9 +3006,7 @@
           }
         ],
         "summary": "Ai Governance Inventory Route",
-        "tags": [
-          "platform"
-        ]
+        "tags": ["platform"]
       }
     },
     "/api/v1/platform/audit-readiness": {
@@ -3132,9 +3028,7 @@
           }
         ],
         "summary": "Audit Readiness Route",
-        "tags": [
-          "platform"
-        ]
+        "tags": ["platform"]
       }
     },
     "/api/v1/platform/jobs": {
@@ -3156,9 +3050,7 @@
           }
         ],
         "summary": "Platform Jobs Route",
-        "tags": [
-          "platform"
-        ]
+        "tags": ["platform"]
       }
     },
     "/api/v1/platform/poc-readiness": {
@@ -3196,9 +3088,7 @@
           }
         },
         "summary": "Platform Pricing",
-        "tags": [
-          "commercial"
-        ]
+        "tags": ["commercial"]
       }
     },
     "/api/v1/platform/scim": {
@@ -3220,9 +3110,7 @@
           }
         ],
         "summary": "Scim Platform Config",
-        "tags": [
-          "commercial"
-        ]
+        "tags": ["commercial"]
       }
     },
     "/api/v1/platform/usage": {
@@ -3244,9 +3132,7 @@
           }
         ],
         "summary": "Platform Usage",
-        "tags": [
-          "commercial"
-        ]
+        "tags": ["commercial"]
       }
     },
     "/api/v1/policies": {
@@ -4274,9 +4160,7 @@
           }
         },
         "summary": "Scim Service Provider Config",
-        "tags": [
-          "commercial"
-        ]
+        "tags": ["commercial"]
       }
     },
     "/api/v1/scim/v2/Users": {
@@ -4293,9 +4177,7 @@
           }
         },
         "summary": "Scim List Users",
-        "tags": [
-          "commercial"
-        ]
+        "tags": ["commercial"]
       },
       "post": {
         "operationId": "scim_create_user_api_v1_scim_v2_Users_post",
@@ -4310,9 +4192,7 @@
           }
         },
         "summary": "Scim Create User",
-        "tags": [
-          "commercial"
-        ]
+        "tags": ["commercial"]
       }
     },
     "/api/v1/scim/v2/Users/{user_id}": {
@@ -4345,9 +4225,7 @@
           }
         },
         "summary": "Scim Delete User",
-        "tags": [
-          "commercial"
-        ]
+        "tags": ["commercial"]
       },
       "get": {
         "operationId": "scim_get_user_api_v1_scim_v2_Users__user_id__get",
@@ -4383,9 +4261,7 @@
           }
         },
         "summary": "Scim Get User",
-        "tags": [
-          "commercial"
-        ]
+        "tags": ["commercial"]
       },
       "patch": {
         "operationId": "scim_patch_user_api_v1_scim_v2_Users__user_id__patch",
@@ -4421,9 +4297,7 @@
           }
         },
         "summary": "Scim Patch User",
-        "tags": [
-          "commercial"
-        ]
+        "tags": ["commercial"]
       }
     },
     "/api/v1/signup": {
@@ -4460,9 +4334,7 @@
           }
         },
         "summary": "Self Serve Signup",
-        "tags": [
-          "commercial"
-        ]
+        "tags": ["commercial"]
       }
     },
     "/api/v1/snapshots/{snapshot_id}": {
@@ -4505,9 +4377,7 @@
           }
         ],
         "summary": "Snapshot Detail",
-        "tags": [
-          "assessment"
-        ]
+        "tags": ["assessment"]
       }
     },
     "/api/v1/snapshots/{snapshot_id}/export.pdf": {
@@ -4550,9 +4420,7 @@
           }
         ],
         "summary": "Snapshot Export Pdf",
-        "tags": [
-          "assessment"
-        ]
+        "tags": ["assessment"]
       }
     },
     "/api/v1/stream": {

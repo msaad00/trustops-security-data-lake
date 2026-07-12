@@ -37,15 +37,15 @@ validate access, enable collection, sync evidence, run control eval.
 
 **Default path:** direct API connectors (`github-security`, `aws-posture`, …).
 
-| Step | REST | MCP tool |
-| ---- | ---- | -------- |
-| List catalog | `GET /api/v1/connectors` | `list_connectors` |
-| Discover scope | `POST /api/v1/connectors/{id}/discover` | `discover_connector` |
-| Test access | `POST /api/v1/connectors/{id}/probe` | `probe_connector` |
-| Enable | `POST /api/v1/connectors/{id}/configure` | `configure_connector` |
-| Sync | `POST /api/v1/connectors/{id}/sync` | `sync_connector` |
-| Control eval | `POST /api/v1/ingestion/eval` | `run_lake_eval` |
-| Scheduler | `POST /api/v1/scheduler/tick` | `run_scheduler_tick` |
+| Step           | REST                                     | MCP tool              |
+| -------------- | ---------------------------------------- | --------------------- |
+| List catalog   | `GET /api/v1/connectors`                 | `list_connectors`     |
+| Discover scope | `POST /api/v1/connectors/{id}/discover`  | `discover_connector`  |
+| Test access    | `POST /api/v1/connectors/{id}/probe`     | `probe_connector`     |
+| Enable         | `POST /api/v1/connectors/{id}/configure` | `configure_connector` |
+| Sync           | `POST /api/v1/connectors/{id}/sync`      | `sync_connector`      |
+| Control eval   | `POST /api/v1/ingestion/eval`            | `run_lake_eval`       |
+| Scheduler      | `POST /api/v1/scheduler/tick`            | `run_scheduler_tick`  |
 
 **Scope:** `connector_manage` for mutate steps; `read` for list/status.
 
@@ -90,16 +90,16 @@ Full walkthrough: [HEADLESS_CONNECTOR_SETUP.md](../playbooks/HEADLESS_CONNECTOR_
 **Intent:** Explain current trust posture, failing control tests, and open
 violations — read-only, safe for any agent context window.
 
-| Resource | REST | MCP tool |
-| -------- | ---- | -------- |
-| Posture summary | `GET /api/v1/posture/current` | `get_posture` |
-| Point-in-time | `GET /api/v1/posture/as-of` | `posture_as_of` |
-| Control tests | `GET /api/v1/control-tests?result=fail` | (via SDK / fetch) |
-| Violations | `GET /api/v1/violations` | `list_violations` |
-| Evidence | `GET /api/v1/evidence` | `list_evidence` |
-| Freshness | `GET /api/v1/evidence/freshness` | `list_evidence_freshness` |
-| Ingestion health | `GET /api/v1/ingestion/status` | `get_ingestion_status` |
-| Audit readiness | `GET /api/v1/platform/audit-readiness` | `get_audit_readiness` |
+| Resource         | REST                                    | MCP tool                  |
+| ---------------- | --------------------------------------- | ------------------------- |
+| Posture summary  | `GET /api/v1/posture/current`           | `get_posture`             |
+| Point-in-time    | `GET /api/v1/posture/as-of`             | `posture_as_of`           |
+| Control tests    | `GET /api/v1/control-tests?result=fail` | (via SDK / fetch)         |
+| Violations       | `GET /api/v1/violations`                | `list_violations`         |
+| Evidence         | `GET /api/v1/evidence`                  | `list_evidence`           |
+| Freshness        | `GET /api/v1/evidence/freshness`        | `list_evidence_freshness` |
+| Ingestion health | `GET /api/v1/ingestion/status`          | `get_ingestion_status`    |
+| Audit readiness  | `GET /api/v1/platform/audit-readiness`  | `get_audit_readiness`     |
 
 **Scope:** `read`
 
@@ -120,15 +120,15 @@ curl -sS "$TRUSTOPS_API_URL/api/v1/control-tests?result=fail&limit=10" \
 **Intent:** Produce auditor-ready artifacts — snapshots, trust shares, activity
 export — usually after explicit human or policy approval.
 
-| Action | REST | MCP tool |
-| ------ | ---- | -------- |
-| Create snapshot | `POST /api/v1/snapshots` | `create_snapshot` |
-| List snapshots | `GET /api/v1/snapshots` | `list_snapshots` |
-| Snapshot detail | `GET /api/v1/snapshots/{id}` | `get_snapshot_detail` |
-| Executive PDF | `GET /api/v1/snapshots/{id}/export.pdf` | — |
-| Trust share | `POST /api/v1/trust-shares` | `create_trust_share` |
-| Activity log | `GET /api/v1/audit-log` | `list_audit_log` |
-| Integrity | `GET /api/v1/snapshots/integrity` | `get_snapshots_integrity` |
+| Action          | REST                                    | MCP tool                  |
+| --------------- | --------------------------------------- | ------------------------- |
+| Create snapshot | `POST /api/v1/snapshots`                | `create_snapshot`         |
+| List snapshots  | `GET /api/v1/snapshots`                 | `list_snapshots`          |
+| Snapshot detail | `GET /api/v1/snapshots/{id}`            | `get_snapshot_detail`     |
+| Executive PDF   | `GET /api/v1/snapshots/{id}/export.pdf` | —                         |
+| Trust share     | `POST /api/v1/trust-shares`             | `create_trust_share`      |
+| Activity log    | `GET /api/v1/audit-log`                 | `list_audit_log`          |
+| Integrity       | `GET /api/v1/snapshots/integrity`       | `get_snapshots_integrity` |
 
 **Scope:** `read` for list/export; `write` or `admin` for create/revoke.
 
@@ -149,13 +149,13 @@ curl -sS -X POST "$TRUSTOPS_API_URL/api/v1/snapshots" \
 **Intent:** Propose governed remediation via the agent harness — evaluations and
 write proposals stay **approval-gated** until a human approves.
 
-| Action | REST | MCP tool |
-| ------ | ---- | -------- |
-| Run harness | `POST /api/v1/agent-runs` | `create_agent_run` |
-| Inspect run | `GET /api/v1/agent-runs/{id}` | (SDK) |
-| Approve decision | `POST /api/v1/agent-runs/{id}/decisions/{i}/approve` | `approve_agent_decision` |
-| Remediation task | `POST /api/v1/remediation/tasks` | `create_remediation_task` |
-| Evidence request | `POST /api/v1/remediation/evidence-requests` | — |
+| Action           | REST                                                 | MCP tool                  |
+| ---------------- | ---------------------------------------------------- | ------------------------- |
+| Run harness      | `POST /api/v1/agent-runs`                            | `create_agent_run`        |
+| Inspect run      | `GET /api/v1/agent-runs/{id}`                        | (SDK)                     |
+| Approve decision | `POST /api/v1/agent-runs/{id}/decisions/{i}/approve` | `approve_agent_decision`  |
+| Remediation task | `POST /api/v1/remediation/tasks`                     | `create_remediation_task` |
+| Evidence request | `POST /api/v1/remediation/evidence-requests`         | —                         |
 
 **Scope:** `agents` for harness; `write` for approved side effects.
 
@@ -180,28 +180,28 @@ Console: `/console/agents/` — same routes with curl builder.
 
 ## Headers agents should send
 
-| Header | When |
-| ------ | ---- |
-| `Authorization: Bearer <api_key>` | Always (except local `--allow-insecure-no-auth`) |
-| `X-Correlation-ID` | Every mutating call — one ID per logical attempt |
-| `Idempotency-Key` | Retries of POST configure, snapshot, agent-run, approve |
-| `X-Trust-Role` | Optional role override for local dev |
+| Header                            | When                                                    |
+| --------------------------------- | ------------------------------------------------------- |
+| `Authorization: Bearer <api_key>` | Always (except local `--allow-insecure-no-auth`)        |
+| `X-Correlation-ID`                | Every mutating call — one ID per logical attempt        |
+| `Idempotency-Key`                 | Retries of POST configure, snapshot, agent-run, approve |
+| `X-Trust-Role`                    | Optional role override for local dev                    |
 
 ## MCP vs REST
 
-| Mode | Env | RBAC |
-| ---- | --- | ---- |
-| Remote API | `TRUSTOPS_API_URL` + `TRUSTOPS_API_KEY` | Enforced — **preferred for agents** |
-| Local lake | `TRUSTOPS_LAKE` | Filesystem trust boundary — dev/CI only |
+| Mode       | Env                                     | RBAC                                    |
+| ---------- | --------------------------------------- | --------------------------------------- |
+| Remote API | `TRUSTOPS_API_URL` + `TRUSTOPS_API_KEY` | Enforced — **preferred for agents**     |
+| Local lake | `TRUSTOPS_LAKE`                         | Filesystem trust boundary — dev/CI only |
 
 See [HEADLESS_GRC.md](../HEADLESS_GRC.md#mcp-local-trust-boundary).
 
 ## OpenAPI and resource catalog
 
-| Artifact | Contents |
-| -------- | -------- |
+| Artifact                                             | Contents                                                                   |
+| ---------------------------------------------------- | -------------------------------------------------------------------------- |
 | [resource-catalog.v1.json](resource-catalog.v1.json) | Full `/api/v1` self-describing catalog (connector probe, posture, eval, …) |
-| [openapi.v1.json](openapi.v1.json) | FastAPI OpenAPI schema (auth, agent-runs, remediation, …) |
+| [openapi.v1.json](openapi.v1.json)                   | FastAPI OpenAPI schema (auth, agent-runs, remediation, …)                  |
 
 Live server also serves `/openapi.json`. CI validates both committed files match
 generators (`make openapi-export`).

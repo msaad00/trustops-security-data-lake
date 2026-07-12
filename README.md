@@ -178,20 +178,20 @@ Production auth requires signed session cookies — see [SERVER_AUTH.md](docs/SE
 
 ## Documentation
 
-| Topic                 | Doc                                                                                                                                                         |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Topic                 | Doc                                                                                                                           |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | Headless architecture | [HEADLESS_GRC.md](docs/HEADLESS_GRC.md) · [Agent skills](docs/api/AGENT_SKILLS.md) · [Issue map](docs/ISSUE_CONSOLIDATION.md) |
-| Continuous ingestion  | [CONTINUOUS_INGESTION.md](docs/CONTINUOUS_INGESTION.md)                                                                                                     |
-| Parity vs managed GRC | [PRODUCT_SHAPE.md](docs/PRODUCT_SHAPE.md)                                                                                                                   |
-| Product tour          | [PRODUCT_WALKTHROUGH.md](docs/PRODUCT_WALKTHROUGH.md)                                                                                                       |
-| Audit readiness       | [AUDIT_READINESS.md](docs/AUDIT_READINESS.md)                                                                                                               |
-| Connectors            | [CONNECTORS.md](docs/CONNECTORS.md)                                                                                                                         |
-| Framework packs       | [FRAMEWORK_PACKS.md](docs/FRAMEWORK_PACKS.md)                                                                                                               |
-| GRC automation        | [GRC_AUTOMATION.md](docs/GRC_AUTOMATION.md)                                                                                                                 |
-| Auth & tenancy        | [SERVER_AUTH.md](docs/SERVER_AUTH.md)                                                                                                                       |
-| Shareable POC         | [SHAREABLE_DEMO.md](docs/SHAREABLE_DEMO.md)                                                                                                                 |
-| MCP cookbook          | [cookbook/MCP_EVIDENCE_AND_APPROVALS.md](docs/cookbook/MCP_EVIDENCE_AND_APPROVALS.md)                                                                       |
-| Roadmap               | [ROADMAP.md](ROADMAP.md)                                                                                                                                    |
+| Continuous ingestion  | [CONTINUOUS_INGESTION.md](docs/CONTINUOUS_INGESTION.md)                                                                       |
+| Parity vs managed GRC | [PRODUCT_SHAPE.md](docs/PRODUCT_SHAPE.md)                                                                                     |
+| Product tour          | [PRODUCT_WALKTHROUGH.md](docs/PRODUCT_WALKTHROUGH.md)                                                                         |
+| Audit readiness       | [AUDIT_READINESS.md](docs/AUDIT_READINESS.md)                                                                                 |
+| Connectors            | [CONNECTORS.md](docs/CONNECTORS.md)                                                                                           |
+| Framework packs       | [FRAMEWORK_PACKS.md](docs/FRAMEWORK_PACKS.md)                                                                                 |
+| GRC automation        | [GRC_AUTOMATION.md](docs/GRC_AUTOMATION.md)                                                                                   |
+| Auth & tenancy        | [SERVER_AUTH.md](docs/SERVER_AUTH.md)                                                                                         |
+| Shareable POC         | [SHAREABLE_DEMO.md](docs/SHAREABLE_DEMO.md)                                                                                   |
+| MCP cookbook          | [cookbook/MCP_EVIDENCE_AND_APPROVALS.md](docs/cookbook/MCP_EVIDENCE_AND_APPROVALS.md)                                         |
+| Roadmap               | [ROADMAP.md](ROADMAP.md)                                                                                                      |
 
 ## Verify
 

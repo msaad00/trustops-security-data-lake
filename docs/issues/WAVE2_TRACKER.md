@@ -10,14 +10,14 @@ Default connect: agentless read-only API — no customer SDL required
 
 ## PR streams (max 4 in flight)
 
-| Stream | Branch | Issue | Status |
-| ------ | ------ | ----- | ------ |
-| **I — Headless connectors** | `cursor/headless-connectors-d259` | #475 | 🟡 PR ready |
-| **J — Agent contracts** | `cursor/agent-contracts-d259` | #476 | 🟡 PR ready |
-| **K — CI posture gates** | `cursor/ci-posture-gates-d259` | #477 | 🔲 Next |
-| **L — Agent harness** | `cursor/agent-harness-d259` | #478 | 🔲 Closes #16 |
-| **M — Human connect** | `cursor/human-connect-ux-d259` | #479 | 🔲 Wizard |
-| **N — Console copy** | `cursor/console-human-polish-d259` | #480 | 🔲 Partial in #475 |
+| Stream                      | Branch                             | Issue | Status             |
+| --------------------------- | ---------------------------------- | ----- | ------------------ |
+| **I — Headless connectors** | `cursor/headless-connectors-d259`  | #475  | 🟡 PR ready        |
+| **J — Agent contracts**     | `cursor/agent-contracts-d259`      | #476  | 🟡 PR ready        |
+| **K — CI posture gates**    | `cursor/ci-posture-gates-d259`     | #477  | 🔲 Next            |
+| **L — Agent harness**       | `cursor/agent-harness-d259`        | #478  | 🔲 Closes #16      |
+| **M — Human connect**       | `cursor/human-connect-ux-d259`     | #479  | 🔲 Wizard          |
+| **N — Console copy**        | `cursor/console-human-polish-d259` | #480  | 🔲 Partial in #475 |
 
 ## Supersedes
 
@@ -26,11 +26,11 @@ Default connect: agentless read-only API — no customer SDL required
 
 ## Does not duplicate
 
-| Epic / issue | Scope |
-| ------------ | ----- |
-| **#96** | Human UX only (#479, #480, #18) — not headless |
-| **#429** | Closed #451 — polish lives in #478 |
-| **#473** | Console connector drawer — #479 is onboarding wizard |
+| Epic / issue | Scope                                                |
+| ------------ | ---------------------------------------------------- |
+| **#96**      | Human UX only (#479, #480, #18) — not headless       |
+| **#429**     | Closed #451 — polish lives in #478                   |
+| **#473**     | Console connector drawer — #479 is onboarding wizard |
 
 Full close list: [ISSUE_CONSOLIDATION.md](../ISSUE_CONSOLIDATION.md)
 
