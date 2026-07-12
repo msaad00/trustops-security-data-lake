@@ -41,7 +41,7 @@ export function CollapsibleCard({
 
   return (
     <Card className={cn("overflow-hidden", className)}>
-      <div className="flex w-full items-start justify-between gap-3 px-4 py-3">
+      <div className="flex w-full items-start justify-between gap-2 px-3 py-2">
         <button
           type="button"
           onClick={() => setOpen(!open)}
@@ -54,9 +54,7 @@ export function CollapsibleCard({
             <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-muted" />
           )}
           <span className="grid min-w-0 gap-0.5">
-            <span className="text-base font-black leading-tight text-ink">
-              {title}
-            </span>
+            <span className="ui-section-title block">{title}</span>
             {description && (
               <span className="block text-sm leading-5 text-muted">
                 {description}
@@ -71,7 +69,7 @@ export function CollapsibleCard({
         )}
       </div>
       {open && (
-        <div className={cn("border-t border-line p-4", contentClassName)}>
+        <div className={cn("border-t border-line p-3", contentClassName)}>
           {children}
         </div>
       )}

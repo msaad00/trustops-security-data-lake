@@ -8,7 +8,7 @@ test.describe("console smoke", () => {
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: /Posture, proof, and what to fix next/,
+        name: /^Dashboard$/,
       }),
     ).toBeVisible();
   });
