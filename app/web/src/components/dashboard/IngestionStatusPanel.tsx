@@ -16,6 +16,7 @@ import {
   useRunSchedulerTickMutation,
 } from "@/lib/api/hooks";
 import { shortDate } from "@/lib/utils";
+import { notify } from "@/lib/toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -108,6 +109,36 @@ export function IngestionStatusPanel({
       )
       .slice(0, 4) ?? [];
   const proofReady = Boolean(status?.proof?.proof_pack_exists);
+
+  const handleRunEval = async () => {
+    try {
+      const result = await runEval.mutateAsync({ actor: "console" });
+      if (result.result === "ok") {
+        notify.success(
+          `Lake eval complete (${result.mode}, ${result.duration_ms} ms).`,
+        );
+      } else {
+        notify.error(
+          result.error ?? `Lake eval finished with result: ${result.result}.`,
+        );
+      }
+    } catch (err) {
+      notify.error(`Lake eval failed: ${(err as Error).message}`);
+    }
+  };
+
+  const handleSchedulerTick = async () => {
+    try {
+      const result = await runTick.mutateAsync();
+      notify.success(
+        result.count > 0
+          ? `Scheduler tick fired ${result.count} job(s).`
+          : "Scheduler tick complete — no jobs due.",
+      );
+    } catch (err) {
+      notify.error(`Scheduler tick failed: ${(err as Error).message}`);
+    }
+  };
 
   return (
     <Card
@@ -238,7 +269,7 @@ export function IngestionStatusPanel({
                   size="sm"
                   variant="primary"
                   disabled={runEval.isPending}
-                  onClick={() => runEval.mutate({ actor: "console" })}
+                  onClick={handleRunEval}
                 >
                   Run lake eval
                 </Button>
@@ -246,7 +277,7 @@ export function IngestionStatusPanel({
                   size="sm"
                   variant="default"
                   disabled={runTick.isPending}
-                  onClick={() => runTick.mutate()}
+                  onClick={handleSchedulerTick}
                 >
                   Scheduler tick
                 </Button>

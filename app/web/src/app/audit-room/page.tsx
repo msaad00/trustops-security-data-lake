@@ -32,6 +32,7 @@ import { AiGovernanceStrip } from "@/components/audit-room/AiGovernanceStrip";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { KpiTile } from "@/components/ui/KpiTile";
+import { CollapsibleCard } from "@/components/ui/collapsible-card";
 import { useAuditReadiness, usePlatformStream } from "@/lib/api/hooks";
 
 function consoleHref(href: string) {
@@ -52,7 +53,7 @@ export default function AuditRoomPage() {
   const { connected } = usePlatformStream();
 
   return (
-    <div className="mx-auto grid max-w-6xl gap-6 p-6 md:p-8">
+    <div className="mx-auto grid w-full max-w-[1600px] gap-2 px-3 py-2 sm:px-4 lg:px-5">
       <PageHeader
         eyebrow="Audit center"
         title="Audit readiness room"
@@ -116,14 +117,20 @@ export default function AuditRoomPage() {
 
             <RemediationSlaStrip />
 
-            <VendorRiskStrip />
-
-            <PersonnelComplianceStrip />
-            <AiGovernanceStrip />
-            <GovComplianceStrip />
-            <PoamWorkbench />
-
-            <PolicyAttestationStrip />
+            <CollapsibleCard
+              storageKey="audit-room-extended-programs"
+              defaultOpen={false}
+              title="Extended audit programs"
+              description="Vendor risk, personnel, AI governance, POA&M, and policy attestation."
+              contentClassName="grid gap-2 p-0"
+            >
+              <VendorRiskStrip />
+              <PersonnelComplianceStrip />
+              <AiGovernanceStrip />
+              <GovComplianceStrip />
+              <PoamWorkbench />
+              <PolicyAttestationStrip />
+            </CollapsibleCard>
 
             <AuditSnapshotTimeline />
 

@@ -23,6 +23,7 @@ import {
   useRunSchedulerTickMutation,
 } from "@/lib/api/hooks";
 import { shortDate } from "@/lib/utils";
+import { notify } from "@/lib/toast";
 
 function toneForState(state?: string): "ready" | "attention" | "critical" {
   if (state === "active") return "ready";
@@ -45,6 +46,36 @@ export function IngestionLoopStrip() {
   const health = ingestion.data?.health;
   const accuracy = ingestion.data?.eval_accuracy;
   const coverage = ingestion.data?.catalog_coverage;
+
+  const handleRunEval = async () => {
+    try {
+      const result = await runEval.mutateAsync({ actor: "audit-room" });
+      if (result.result === "ok") {
+        notify.success(
+          `Lake eval complete (${result.mode}, ${result.duration_ms} ms).`,
+        );
+      } else {
+        notify.error(
+          result.error ?? `Lake eval finished with result: ${result.result}.`,
+        );
+      }
+    } catch (err) {
+      notify.error(`Lake eval failed: ${(err as Error).message}`);
+    }
+  };
+
+  const handleSchedulerTick = async () => {
+    try {
+      const result = await runTick.mutateAsync();
+      notify.success(
+        result.count > 0
+          ? `Scheduler tick fired ${result.count} job(s).`
+          : "Scheduler tick complete — no jobs due.",
+      );
+    } catch (err) {
+      notify.error(`Scheduler tick failed: ${(err as Error).message}`);
+    }
+  };
 
   return (
     <QueryState queries={[ingestion, evalRuns]} label="ingestion loop">
@@ -85,7 +116,7 @@ export function IngestionLoopStrip() {
                   size="sm"
                   variant="primary"
                   disabled={runEval.isPending}
-                  onClick={() => runEval.mutate({ actor: "audit-room" })}
+                  onClick={handleRunEval}
                 >
                   <Play className="mr-1 h-3.5 w-3.5" />
                   Run lake eval
@@ -94,7 +125,7 @@ export function IngestionLoopStrip() {
                   size="sm"
                   variant="default"
                   disabled={runTick.isPending}
-                  onClick={() => runTick.mutate()}
+                  onClick={handleSchedulerTick}
                 >
                   <RefreshCw className="mr-1 h-3.5 w-3.5" />
                   Scheduler tick

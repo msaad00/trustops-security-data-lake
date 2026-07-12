@@ -284,6 +284,23 @@ export default function ConnectorsPage() {
     ? (data.find((c) => c.connector_id === selected.connector_id) ?? selected)
     : null;
 
+  const clearDeepLinkParams = () => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    if (
+      !url.searchParams.has("connect") &&
+      !url.searchParams.has("link_session")
+    ) {
+      return;
+    }
+    url.searchParams.delete("connect");
+    url.searchParams.delete("link_session");
+    const next = `${url.pathname}${url.search}${url.hash}`;
+    window.history.replaceState({}, "", next);
+    setConnectId(null);
+    setLinkSessionId(null);
+  };
+
   return (
     <div className="mx-auto grid w-full max-w-[1600px] min-w-0 gap-2 px-3 py-2 sm:px-4 lg:px-5">
       <PageHeader
@@ -354,7 +371,7 @@ export default function ConnectorsPage() {
           className="min-w-[160px] rounded-lg border border-line bg-white px-3 py-2.5 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand"
         >
           <option value="all">All runners</option>
-          <option value="runnable">Runnable (8)</option>
+          <option value="runnable">Runnable ({totals.runnable})</option>
           <option value="contract">Contract only</option>
         </select>
       </div>
@@ -390,7 +407,10 @@ export default function ConnectorsPage() {
       <ConnectorDrawer
         connector={selectedLive}
         linkSessionId={linkSessionId}
-        onClose={() => setSelected(null)}
+        onClose={() => {
+          setSelected(null);
+          clearDeepLinkParams();
+        }}
         onToast={connectorNotify}
       />
     </div>
