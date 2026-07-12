@@ -158,12 +158,12 @@ curl -sS -X POST "$TRUSTOPS_API_URL/api/v1/scheduler/tick" \
 
 ## Troubleshooting
 
-| Symptom | Fix |
-| ------- | --- |
-| `configure` returns 400 “Test connection” | Run `probe` first with the same credentials + options |
-| `403 requires scope: connector_manage` | Use `security_admin` API key or role with connector_manage |
-| Sync ok but posture empty | Run `POST /api/v1/ingestion/eval` or `pipeline eval` |
-| Probe ok, enable still blocked | Credential fingerprint mismatch — re-probe after changing scope |
+| Symptom                                   | Fix                                                             |
+| ----------------------------------------- | --------------------------------------------------------------- |
+| `configure` returns 400 “Test connection” | Run `probe` first with the same credentials + options           |
+| `403 requires scope: connector_manage`    | Use `security_admin` API key or role with connector_manage      |
+| Sync ok but posture empty                 | Run `POST /api/v1/ingestion/eval` or `pipeline eval`            |
+| Probe ok, enable still blocked            | Credential fingerprint mismatch — re-probe after changing scope |
 
 ## Related
 
