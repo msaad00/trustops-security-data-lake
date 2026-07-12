@@ -45,7 +45,7 @@ Avoid duplicate PRs. Before opening work, check this table.
 | Epic     | Owns                                       | Does not own                                 |
 | -------- | ------------------------------------------ | -------------------------------------------- |
 | **#474** | Wave 2 streams I–N                         | —                                            |
-| **#96**  | Human Drata/Vanta polish (#479, #480, #18) | Headless (#475–#477), agent contracts (#476) |
+| **#96**  | Human console polish (#479, #480, #18)     | Headless (#475–#477), agent contracts (#476) |
 | **#16**  | Harness AC                                 | Close when #478 merges                       |
 | **#411** | Backend audit items                        | Console UX                                   |
 | **#22**  | Org-level GitHub/GitLab governance         | Per-repo `github-security` (shipped)         |

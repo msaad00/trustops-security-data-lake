@@ -1,6 +1,6 @@
 # Wave 2 tracker (#474)
 
-**Positioning:** headless/agents/CI first; human Drata/Vanta console second.
+**Positioning:** headless/agents/CI first; human console (managed GRC SaaS tier) second.
 
 ```text
 Primary:   agents · CI · MCP · CLI  →  assessment store  →  audit trail
