@@ -114,6 +114,10 @@ compatibility. Prefer **`/api/v1/*`** for agents and CI.
 Use the `describe_api` MCP tool or `GET /api/v1` index for the full resource
 catalog (50+ routes including insights, gov-compliance, vendor risk, and GRC).
 
+**Agent skill bundles** (intent → routes → MCP): [AGENT_SKILLS.md](AGENT_SKILLS.md)
+
+**Committed OpenAPI:** [openapi.v1.json](openapi.v1.json) — regenerate with `make openapi-export`
+
 See [CONTINUOUS_INGESTION.md](../CONTINUOUS_INGESTION.md) for the production
 operating model and [INGESTION_CONNECTORS_IDEMPOTENCY.md](../INGESTION_CONNECTORS_IDEMPOTENCY.md)
 for connector registry, unique IDs, timestamps, and idempotency keys.

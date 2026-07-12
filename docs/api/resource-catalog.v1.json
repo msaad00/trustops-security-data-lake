@@ -1,0 +1,619 @@
+{
+  "resources": [
+    {
+      "kind": "collection",
+      "methods": ["GET", "POST"],
+      "path": "/api/v1/access-reviews",
+      "resource": "access-reviews",
+      "scopes": ["read", "control_manage"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/access-reviews/coverage",
+      "resource": "access-reviews.coverage",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["POST"],
+      "path": "/api/v1/access-reviews/items/{item_id}/decision",
+      "path_params": ["item_id"],
+      "resource": "access-reviews.items",
+      "scopes": ["control_manage"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET", "PATCH"],
+      "path": "/api/v1/access-reviews/{campaign_id}",
+      "path_params": ["campaign_id"],
+      "resource": "access-reviews",
+      "scopes": ["read", "control_manage"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET", "POST"],
+      "path": "/api/v1/access-reviews/{campaign_id}/items",
+      "path_params": ["campaign_id"],
+      "resource": "access-reviews.items",
+      "scopes": ["read", "control_manage"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["POST"],
+      "path": "/api/v1/access-reviews/{campaign_id}/seed",
+      "path_params": ["campaign_id"],
+      "resource": "access-reviews",
+      "scopes": ["control_manage"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET", "POST"],
+      "path": "/api/v1/agent-runs",
+      "query": ["limit", "harness", "status"],
+      "resource": "agent-runs",
+      "scopes": ["read", "write"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/agent-runs/{run_id}",
+      "path_params": ["run_id"],
+      "resource": "agent-runs",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "action",
+      "methods": ["POST"],
+      "path": "/api/v1/agent-runs/{run_id}/decisions/{decision_index}/approve",
+      "path_params": ["run_id", "decision_index"],
+      "resource": "agent-runs.decisions",
+      "scopes": ["write"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/assets",
+      "query": ["limit", "offset", "sort", "<field>=<value>"],
+      "resource": "assets"
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/audit-log",
+      "query_params": ["category", "actor", "limit", "include_requests"],
+      "resource": "audit-log",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/catalog/bundle",
+      "query": ["as_of", "full"],
+      "resource": "catalog.bundle"
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/connectors",
+      "resource": "connectors",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "action",
+      "methods": ["POST"],
+      "path": "/api/v1/connectors/{connector_id}/configure",
+      "path_params": ["connector_id"],
+      "resource": "connector.configure",
+      "scopes": ["connector_manage"]
+    },
+    {
+      "kind": "action",
+      "methods": ["POST"],
+      "path": "/api/v1/connectors/{connector_id}/discover",
+      "path_params": ["connector_id"],
+      "resource": "connector.discover",
+      "scopes": ["connector_manage"]
+    },
+    {
+      "kind": "action",
+      "methods": ["POST"],
+      "path": "/api/v1/connectors/{connector_id}/link/complete",
+      "path_params": ["connector_id"],
+      "resource": "connector.link.complete",
+      "scopes": ["connector_manage"]
+    },
+    {
+      "kind": "action",
+      "methods": ["POST"],
+      "path": "/api/v1/connectors/{connector_id}/link/start",
+      "path_params": ["connector_id"],
+      "resource": "connector.link.start",
+      "scopes": ["connector_manage"]
+    },
+    {
+      "kind": "action",
+      "methods": ["POST"],
+      "path": "/api/v1/connectors/{connector_id}/probe",
+      "path_params": ["connector_id"],
+      "resource": "connector.probe",
+      "scopes": ["connector_manage"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/connectors/{connector_id}/runs",
+      "path_params": ["connector_id"],
+      "resource": "connector.runs",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "action",
+      "methods": ["POST"],
+      "path": "/api/v1/connectors/{connector_id}/sync",
+      "path_params": ["connector_id"],
+      "resource": "connector.sync",
+      "scopes": ["connector_manage"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/control-tests",
+      "query": ["limit", "offset", "sort", "<field>=<value>"],
+      "resource": "control-tests"
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/controls",
+      "query": ["limit", "offset", "sort", "<field>=<value>"],
+      "resource": "controls"
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/controls/as-of",
+      "query": ["as_of"],
+      "resource": "controls.as_of"
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/controls/{control_id}/history",
+      "path_params": ["control_id"],
+      "resource": "control.history"
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/controls/{control_id}/remediation",
+      "path_params": ["control_id"],
+      "resource": "controls.remediation",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/evidence",
+      "query": ["limit", "offset", "sort", "<field>=<value>"],
+      "resource": "evidence"
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/evidence/freshness",
+      "query": ["limit", "offset", "sort", "<field>=<value>"],
+      "resource": "evidence.freshness"
+    },
+    {
+      "kind": "action",
+      "methods": ["POST"],
+      "path": "/api/v1/evidence/freshness/escalate",
+      "resource": "evidence.freshness.escalate",
+      "scopes": ["write"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/evidence/freshness/summary",
+      "resource": "evidence.freshness.summary",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/frameworks/{framework_id}/detail",
+      "path_params": ["framework_id"],
+      "resource": "framework.detail"
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET", "POST"],
+      "path": "/api/v1/gov-compliance/poam",
+      "resource": "gov-compliance.poam",
+      "scopes": ["read", "write"]
+    },
+    {
+      "kind": "action",
+      "methods": ["POST"],
+      "path": "/api/v1/gov-compliance/poam/sync",
+      "resource": "gov-compliance.poam.sync",
+      "scopes": ["write"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["PATCH"],
+      "path": "/api/v1/gov-compliance/poam/{item_id}",
+      "path_params": ["item_id"],
+      "resource": "gov-compliance.poam",
+      "scopes": ["write"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/gov-compliance/sprs",
+      "resource": "gov-compliance.sprs",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/graph/coverage",
+      "resource": "graph.coverage"
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/healthz",
+      "resource": "healthz"
+    },
+    {
+      "kind": "action",
+      "methods": ["POST"],
+      "path": "/api/v1/ingestion/eval",
+      "resource": "ingestion.eval",
+      "scopes": ["connector_manage"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/ingestion/eval/runs",
+      "query": ["limit", "offset", "sort", "<field>=<value>"],
+      "resource": "ingestion.eval.runs"
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/ingestion/status",
+      "resource": "ingestion.status"
+    },
+    {
+      "kind": "singleton",
+      "methods": ["POST"],
+      "path": "/api/v1/insights/capture",
+      "resource": "insights.capture",
+      "scopes": ["write"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/insights/remediation",
+      "resource": "insights.remediation",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/insights/timeseries",
+      "query": ["limit"],
+      "resource": "insights.timeseries",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/platform/ai-governance",
+      "resource": "platform.ai-governance"
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/platform/ai-governance",
+      "resource": "platform.ai-governance",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/platform/ai-governance/inventory",
+      "query": ["limit", "offset", "sort", "<field>=<value>"],
+      "resource": "platform.ai-governance.inventory"
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/platform/ai-governance/inventory",
+      "query": ["limit", "offset"],
+      "resource": "platform.ai-governance.inventory",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/platform/audit-readiness",
+      "resource": "platform.audit-readiness",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/platform/jobs",
+      "resource": "platform.jobs",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/platform/poc-readiness",
+      "resource": "platform.poc-readiness",
+      "scopes": ["auth_admin"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET", "POST"],
+      "path": "/api/v1/policies",
+      "resource": "policies",
+      "scopes": ["read", "control_manage"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/policies/coverage",
+      "resource": "policies.coverage",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET", "PATCH"],
+      "path": "/api/v1/policies/{document_id}",
+      "path_params": ["document_id"],
+      "resource": "policies",
+      "scopes": ["read", "control_manage"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["POST"],
+      "path": "/api/v1/policies/{document_id}/publish",
+      "path_params": ["document_id"],
+      "resource": "policies",
+      "scopes": ["control_manage"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/policy-templates",
+      "resource": "policy-templates",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/policy-templates/{template_id}",
+      "path_params": ["template_id"],
+      "resource": "policy-templates",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/posture/as-of",
+      "query": ["as_of"],
+      "resource": "posture.as_of"
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/posture/current",
+      "resource": "posture.current"
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET", "POST"],
+      "path": "/api/v1/remediation/evidence-requests",
+      "resource": "remediation.evidence-requests",
+      "scopes": ["read", "evidence_request"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["PATCH"],
+      "path": "/api/v1/remediation/evidence-requests/{request_id}",
+      "path_params": ["request_id"],
+      "resource": "remediation.evidence-requests",
+      "scopes": ["evidence_request"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET", "POST"],
+      "path": "/api/v1/remediation/exceptions",
+      "resource": "remediation.exceptions",
+      "scopes": ["read", "control_manage"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["DELETE"],
+      "path": "/api/v1/remediation/exceptions/{exception_id}",
+      "path_params": ["exception_id"],
+      "resource": "remediation.exceptions",
+      "scopes": ["control_manage"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET", "POST"],
+      "path": "/api/v1/remediation/tasks",
+      "resource": "remediation.tasks",
+      "scopes": ["read", "write"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET", "PATCH"],
+      "path": "/api/v1/remediation/tasks/{task_id}",
+      "path_params": ["task_id"],
+      "resource": "remediation.tasks",
+      "scopes": ["read", "write"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET", "POST"],
+      "path": "/api/v1/risks",
+      "resource": "risks",
+      "scopes": ["read", "write"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["PATCH", "DELETE"],
+      "path": "/api/v1/risks/{risk_id}",
+      "path_params": ["risk_id"],
+      "resource": "risks",
+      "scopes": ["write"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET", "POST"],
+      "path": "/api/v1/saved-views",
+      "resource": "saved-views",
+      "scopes": ["read", "write"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["DELETE"],
+      "path": "/api/v1/saved-views/{view_id}",
+      "path_params": ["view_id"],
+      "resource": "saved-views",
+      "scopes": ["write"]
+    },
+    {
+      "kind": "action",
+      "methods": ["POST"],
+      "path": "/api/v1/scheduler/tick",
+      "resource": "scheduler.tick",
+      "scopes": ["connector_manage"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET", "POST"],
+      "path": "/api/v1/snapshots",
+      "query": ["limit", "offset", "sort", "<field>=<value>"],
+      "resource": "snapshots"
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/snapshots/integrity",
+      "resource": "snapshots.integrity"
+    },
+    {
+      "kind": "action",
+      "methods": ["GET"],
+      "path": "/api/v1/snapshots/{snapshot_id}/export.pdf",
+      "path_params": ["snapshot_id"],
+      "resource": "snapshots.export",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET", "POST"],
+      "path": "/api/v1/tags",
+      "resource": "tags",
+      "scopes": ["read", "write"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["POST"],
+      "path": "/api/v1/tags/attach",
+      "resource": "tags.attach",
+      "scopes": ["write"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["POST"],
+      "path": "/api/v1/tags/detach",
+      "resource": "tags.detach",
+      "scopes": ["write"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/tags/entities",
+      "query": ["tag_id", "entity_type"],
+      "resource": "tags.entities",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/tags/for",
+      "query": ["entity_type", "entity_id"],
+      "resource": "tags.for",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["DELETE"],
+      "path": "/api/v1/tags/{tag_id}",
+      "path_params": ["tag_id"],
+      "resource": "tags",
+      "scopes": ["write"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/tracking/integrity",
+      "resource": "tracking.integrity"
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET", "POST"],
+      "path": "/api/v1/vendor-assessments",
+      "resource": "vendor-assessments",
+      "scopes": ["read", "control_manage"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET", "PATCH"],
+      "path": "/api/v1/vendor-assessments/{assessment_id}",
+      "path_params": ["assessment_id"],
+      "resource": "vendor-assessments",
+      "scopes": ["read", "control_manage"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["POST"],
+      "path": "/api/v1/vendor-assessments/{assessment_id}/submit",
+      "path_params": ["assessment_id"],
+      "resource": "vendor-assessments",
+      "scopes": ["control_manage"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/vendor-questionnaires",
+      "resource": "vendor-questionnaires",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/vendor-questionnaires/{template_id}",
+      "path_params": ["template_id"],
+      "resource": "vendor-questionnaires",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/violations",
+      "query": ["limit", "offset", "sort", "<field>=<value>"],
+      "resource": "violations"
+    }
+  ]
+}

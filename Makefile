@@ -1,4 +1,4 @@
-.PHONY: compile lint format-check diff-check test validate validate-json validate-generated validate-brand validate-doc-images pipeline dashboard api-smoke smoke ci web-install web-dev web-typecheck web-build web-clean web-ci docker-build helm-lint helm-template terraform-fmt terraform-validate deploy-check uv-sync uv-lock pre-commit-install pre-commit-run pip-audit npm-audit security
+.PHONY: compile lint format-check diff-check test validate validate-json validate-generated validate-brand validate-doc-images pipeline dashboard api-smoke smoke ci web-install web-dev web-typecheck web-build web-clean web-ci docker-build helm-lint helm-template terraform-fmt terraform-validate deploy-check uv-sync uv-lock pre-commit-install pre-commit-run pip-audit npm-audit security openapi-export
 
 test:
 	PYTHONPATH=src python -m pytest -q
@@ -41,6 +41,10 @@ dashboard:
 
 api-smoke:
 	PYTHONPATH=src python tools/api_smoke.py
+
+openapi-export:
+	uv run security-lakehouse openapi --out docs/api/openapi.v1.json
+	uv run python -c "import json; from security_lakehouse import api_v1; json.dump({'resources': api_v1.resource_catalog()}, open('docs/api/resource-catalog.v1.json','w'), indent=2, sort_keys=True); print('wrote docs/api/resource-catalog.v1.json')"
 
 smoke: validate validate-json validate-doc-images validate-brand pipeline validate-generated dashboard api-smoke test
 
