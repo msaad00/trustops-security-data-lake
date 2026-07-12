@@ -60,6 +60,14 @@ export default function DashboardPage() {
     frameworks.length > 0
       ? `${frameworkAvg}% avg · ${frameworks.length}/${registeredCount} frameworks`
       : "No framework posture yet";
+  const ingestionNeedsAttention =
+    ingestion.data?.state !== "active" ||
+    Boolean(ingestion.data?.recommended_actions?.length) ||
+    Boolean(ingestion.data?.scale?.eval_overdue);
+  const ingestionDescription = ingestionNeedsAttention
+    ? (ingestion.data?.recommended_actions?.[0]?.reason ??
+      "Connector health or lake eval needs attention")
+    : "Connector health and eval runs";
 
   return (
     <div className="mx-auto grid w-full max-w-[1600px] gap-2 px-3 py-2 sm:px-4 lg:px-5">
@@ -186,9 +194,14 @@ export default function DashboardPage() {
         <QueryState queries={[ingestion]} label="ingestion status">
           <CollapsibleCard
             storageKey="dashboard-ingestion"
-            defaultOpen={false}
+            defaultOpen={ingestionNeedsAttention}
             title="Ingestion & lake eval"
-            description="Connector health and eval runs"
+            description={ingestionDescription}
+            actions={
+              ingestionNeedsAttention ? (
+                <Badge tone="attention">Action needed</Badge>
+              ) : undefined
+            }
             contentClassName="p-0"
           >
             <IngestionStatusPanel status={ingestion.data} embedded />

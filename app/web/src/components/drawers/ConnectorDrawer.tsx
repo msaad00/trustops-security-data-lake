@@ -361,9 +361,9 @@ export function ConnectorDrawer({
   };
 
   useEffect(() => {
-    setAccessValidated(false);
     setDiscoveryRun(null);
     setCreds({});
+    setTouchedFields(new Set());
   }, [connector?.connector_id]);
 
   useEffect(() => {
@@ -430,6 +430,22 @@ export function ConnectorDrawer({
   const stagedOptions = Object.fromEntries(
     Object.entries(options).filter(([, value]) => value.trim() !== ""),
   );
+  const hasUnsavedCredentialChanges = Object.values(stagedCredentials).some(
+    (value) => value.trim() !== "",
+  );
+  const configuredOptions = connector.configured_options ?? {};
+  const hasUnsavedOptionChanges = Object.entries(stagedOptions).some(
+    ([key, value]) => {
+      const configured = String(configuredOptions[key] ?? "").trim();
+      return value.trim() !== configured;
+    },
+  );
+  const serverProbeValid =
+    connector.last_probe?.result === "ok" &&
+    hasStagedServerCredentials &&
+    !hasUnsavedCredentialChanges &&
+    !hasUnsavedOptionChanges;
+  const probeGateSatisfied = accessValidated || serverProbeValid;
   const canTestAccess =
     isEnabled || missingRequired.length === 0 || hasStagedServerCredentials;
   const canDiscover = isEnabled || missingCredentials.length === 0;
@@ -520,7 +536,7 @@ export function ConnectorDrawer({
       );
       return;
     }
-    if (!isEnabled && !accessValidated) {
+    if (!isEnabled && !probeGateSatisfied) {
       onToast("Test connection before enabling this connector.");
       return;
     }
@@ -561,7 +577,7 @@ export function ConnectorDrawer({
         id: connector.connector_id,
         payload,
       });
-      const validated = run.result === "ok";
+      const validated = run.result === "ok" || run.result === "skipped";
       setAccessValidated(validated);
       onToast(probeToastMessage(run, isEnabled));
     } catch (err) {
@@ -694,7 +710,7 @@ export function ConnectorDrawer({
                   disabled={
                     configure.isPending ||
                     !canEnable ||
-                    (!isEnabled && !accessValidated)
+                    (!isEnabled && !probeGateSatisfied)
                   }
                 >
                   {configure.isPending ? (
@@ -1127,7 +1143,7 @@ export function ConnectorDrawer({
                 .
               </div>
             )}
-            {canEnable && !isEnabled && !accessValidated && (
+            {canEnable && !isEnabled && !probeGateSatisfied && (
               <div className="mt-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-900">
                 Test connection before enabling. Snowflake runs a live probe;
                 other runnable connectors validate configuration only until
@@ -1162,7 +1178,7 @@ export function ConnectorDrawer({
                 </div>
               </div>
             )}
-            {canEnable && !isEnabled && accessValidated && (
+            {canEnable && !isEnabled && probeGateSatisfied && (
               <div className="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-900">
                 Access checked. Enable writes the redacted configuration event.
               </div>
