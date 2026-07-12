@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Copy, ExternalLink, Link2, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,15 @@ import {
 import type { CloudLinkSession } from "@/lib/api/types";
 import type { ConnectorView } from "@/lib/api/types";
 import { BRAND } from "@/lib/brand";
+import {
+  awsAccountIdError,
+  azureSubscriptionIdError,
+  cloudLinkFieldError,
+  gcpProjectIdError,
+  sanitizeAwsAccountId,
+  sanitizeAzureSubscriptionId,
+  sanitizeGcpProjectId,
+} from "@/lib/cloud-link-validation";
 
 const CLOUD_LINK_IDS = new Set(["aws-posture", "azure-posture", "gcp-posture"]);
 
@@ -47,21 +56,39 @@ export function CloudLinkPanel({
   const [accountId, setAccountId] = useState("");
   const [subscriptionId, setSubscriptionId] = useState("");
   const [projectId, setProjectId] = useState("");
+  const [fieldError, setFieldError] = useState<string | null>(null);
+  const [touched, setTouched] = useState(false);
 
   useEffect(() => {
-    if (!linkSessionId || session?.session_id === linkSessionId) return;
-    setSession((prev) =>
-      prev
-        ? { ...prev, session_id: linkSessionId, status: "consented" }
-        : {
-            session_id: linkSessionId,
-            connector_id: connector.connector_id,
-            status: "consented",
-          },
-    );
-  }, [connector.connector_id, linkSessionId, session?.session_id]);
+    if (!linkSessionId) return;
+    setSession((prev) => {
+      if (prev?.session_id === linkSessionId) return prev;
+      return {
+        session_id: linkSessionId,
+        connector_id: connector.connector_id,
+        status: "pending",
+      };
+    });
+  }, [connector.connector_id, linkSessionId]);
+
+  const validationError = useMemo(
+    () =>
+      cloudLinkFieldError(connector.connector_id, {
+        accountId,
+        subscriptionId,
+        projectId,
+      }),
+    [accountId, connector.connector_id, projectId, subscriptionId],
+  );
+
+  const canComplete =
+    Boolean(session?.session_id) &&
+    !complete.isPending &&
+    validationError === null;
 
   const begin = async () => {
+    setFieldError(null);
+    setTouched(false);
     try {
       const row = await start.mutateAsync({
         id: connector.connector_id,
@@ -69,7 +96,7 @@ export function CloudLinkPanel({
           typeof window !== "undefined" ? window.location.origin : undefined,
       });
       setSession(row);
-      onToast("Cloud link session started");
+      onToast("Cloud link session started — complete the steps below");
     } catch (err) {
       onToast(`Cloud link failed: ${(err as Error).message}`);
     }
@@ -77,25 +104,41 @@ export function CloudLinkPanel({
 
   const finish = async () => {
     if (!session?.session_id) return;
+    setTouched(true);
+    const error = cloudLinkFieldError(connector.connector_id, {
+      accountId,
+      subscriptionId,
+      projectId,
+    });
+    if (error) {
+      setFieldError(error);
+      onToast(error);
+      return;
+    }
+    setFieldError(null);
     try {
       const result = await complete.mutateAsync({
         id: connector.connector_id,
         sessionId: session.session_id,
         accountId:
-          connector.connector_id === "aws-posture" ? accountId : undefined,
+          connector.connector_id === "aws-posture"
+            ? sanitizeAwsAccountId(accountId)
+            : undefined,
         subscriptionId:
           connector.connector_id === "azure-posture"
-            ? subscriptionId
+            ? sanitizeAzureSubscriptionId(subscriptionId)
             : undefined,
         projectId:
-          connector.connector_id === "gcp-posture" ? projectId : undefined,
+          connector.connector_id === "gcp-posture"
+            ? sanitizeGcpProjectId(projectId)
+            : undefined,
       });
       const creds = (result.configure?.credentials ?? {}) as Record<
         string,
         string
       >;
       onLinked(creds);
-      onToast("Account linked — credentials staged for test connection");
+      onToast("Credentials staged — run Test connection to verify access");
     } catch (err) {
       onToast(`Complete link failed: ${(err as Error).message}`);
     }
@@ -111,25 +154,29 @@ export function CloudLinkPanel({
     }
   };
 
+  const showFieldError =
+    fieldError ?? (touched && validationError ? validationError : null);
+
   if (!supportsCloudLink(connector.connector_id)) return null;
 
   return (
-    <section className="rounded-xl border border-brand/30 bg-brand/5 p-3">
+    <section className="rounded-lg border border-brand/30 bg-brand/5 p-3">
       <div className="flex flex-wrap items-center gap-2">
         <Link2 className="h-4 w-4 text-brand" />
         <div className="text-xs font-black uppercase tracking-wide text-ink">
-          One-click cloud linking
+          Cloud account linking
         </div>
-        <Badge tone="info">OAuth link</Badge>
+        <Badge tone="info">Guided setup</Badge>
       </div>
-      <p className="mt-2 text-xs font-semibold text-muted">
+      <p className="mt-1.5 text-xs leading-5 text-muted">
         {linkDescription(connector.connector_id)}
       </p>
       {!session ? (
         <Button
           type="button"
           variant="primary"
-          className="mt-3"
+          size="sm"
+          className="mt-2"
           onClick={begin}
           disabled={start.isPending}
         >
@@ -138,10 +185,16 @@ export function CloudLinkPanel({
           ) : (
             <Link2 className="h-4 w-4" />
           )}{" "}
-          Start cloud linking
+          Start linking
         </Button>
       ) : (
-        <div className="mt-3 grid gap-3 text-sm">
+        <div className="mt-2 grid gap-2 text-sm">
+          {linkSessionId && session.status === "pending" && (
+            <p className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs text-amber-950">
+              Returned from identity provider — confirm consent completed, then
+              enter your account identifier below.
+            </p>
+          )}
           {session.external_id && (
             <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
               External ID
@@ -154,6 +207,7 @@ export function CloudLinkPanel({
             <Button
               type="button"
               variant="default"
+              size="sm"
               onClick={() =>
                 window.open(
                   session.quick_create_url!,
@@ -170,6 +224,7 @@ export function CloudLinkPanel({
             <Button
               type="button"
               variant="default"
+              size="sm"
               onClick={() =>
                 window.open(
                   session.consent_url!,
@@ -186,6 +241,7 @@ export function CloudLinkPanel({
             <Button
               type="button"
               variant="default"
+              size="sm"
               onClick={() =>
                 window.open(
                   session.template_url!,
@@ -209,6 +265,7 @@ export function CloudLinkPanel({
                   <Button
                     type="button"
                     variant="default"
+                    size="sm"
                     className="shrink-0"
                     onClick={copyDeployCommand}
                   >
@@ -241,7 +298,17 @@ export function CloudLinkPanel({
               AWS account ID
               <input
                 value={accountId}
-                onChange={(e) => setAccountId(e.target.value)}
+                onChange={(e) => {
+                  setAccountId(sanitizeAwsAccountId(e.target.value));
+                  setFieldError(null);
+                }}
+                onBlur={() => {
+                  setTouched(true);
+                  setFieldError(awsAccountIdError(accountId));
+                }}
+                inputMode="numeric"
+                autoComplete="off"
+                aria-invalid={Boolean(showFieldError)}
                 placeholder="123456789012"
                 className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
               />
@@ -252,7 +319,18 @@ export function CloudLinkPanel({
               Azure subscription ID
               <input
                 value={subscriptionId}
-                onChange={(e) => setSubscriptionId(e.target.value)}
+                onChange={(e) => {
+                  setSubscriptionId(
+                    sanitizeAzureSubscriptionId(e.target.value),
+                  );
+                  setFieldError(null);
+                }}
+                onBlur={() => {
+                  setTouched(true);
+                  setFieldError(azureSubscriptionIdError(subscriptionId));
+                }}
+                autoComplete="off"
+                aria-invalid={Boolean(showFieldError)}
                 placeholder="00000000-0000-0000-0000-000000000000"
                 className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
               />
@@ -263,24 +341,39 @@ export function CloudLinkPanel({
               GCP project ID
               <input
                 value={projectId}
-                onChange={(e) => setProjectId(e.target.value)}
+                onChange={(e) => {
+                  setProjectId(sanitizeGcpProjectId(e.target.value));
+                  setFieldError(null);
+                }}
+                onBlur={() => {
+                  setTouched(true);
+                  setFieldError(gcpProjectIdError(projectId));
+                }}
+                autoComplete="off"
+                aria-invalid={Boolean(showFieldError)}
                 placeholder="my-gcp-project"
                 className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </label>
           )}
+          {showFieldError && (
+            <p className="text-xs font-semibold text-rose-700">
+              {showFieldError}
+            </p>
+          )}
           <Button
             type="button"
             variant="primary"
+            size="sm"
             onClick={finish}
-            disabled={complete.isPending}
+            disabled={!canComplete}
           >
             {complete.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Link2 className="h-4 w-4" />
             )}{" "}
-            Complete account linking
+            Stage credentials
           </Button>
         </div>
       )}

@@ -26,15 +26,18 @@ const RECOMMENDED_IDS = [
 ] as const;
 
 function accountStatus(connector: ConnectorView | undefined) {
-  if (!connector || connector.state !== "enabled") {
+  if (!connector) {
     return { label: "Not linked", tone: "attention" as const };
   }
   const success = connector.last_successful_sync ?? connector.last_sync;
-  if (success?.result === "ok") {
+  if (connector.state === "enabled" && success?.result === "ok") {
     return { label: "Live ingestion", tone: "ready" as const };
   }
-  if (connector.last_probe?.result === "ok") {
-    return { label: "Connected", tone: "info" as const };
+  if (connector.credential_fingerprint?.trim()) {
+    return { label: "Staged", tone: "info" as const };
+  }
+  if (connector.state === "enabled") {
+    return { label: "Enabled", tone: "info" as const };
   }
   if (
     connector.last_sync?.result === "error" ||
@@ -42,7 +45,7 @@ function accountStatus(connector: ConnectorView | undefined) {
   ) {
     return { label: "Error", tone: "critical" as const };
   }
-  return { label: "Enabled", tone: "info" as const };
+  return { label: "Not linked", tone: "attention" as const };
 }
 
 function AccountCard({ connector }: { connector: ConnectorView | undefined }) {
@@ -58,9 +61,9 @@ function AccountCard({ connector }: { connector: ConnectorView | undefined }) {
   return (
     <Link
       href={`/connectors/?connect=${connectorId}`}
-      className="group flex min-h-[128px] flex-col overflow-hidden rounded-xl border border-line bg-white transition-all hover:border-brand hover:shadow-card"
+      className="group flex min-h-[96px] flex-col overflow-hidden rounded-lg border border-line bg-white transition-all hover:border-brand hover:shadow-card"
     >
-      <div className="flex flex-1 items-start gap-3 p-4">
+      <div className="flex flex-1 items-start gap-2.5 p-3">
         <ConnectorMark
           connectorId={connectorId}
           name={connector?.name}
@@ -108,7 +111,7 @@ export function ConnectorAccountLinkingStrip() {
   return (
     <QueryState queries={[connectors]} label="account linking">
       <Card className="overflow-hidden">
-        <CardHeader className="pb-2">
+        <CardHeader className="p-3 pb-2">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-2">
               <Link2 className="h-4 w-4 text-brand" />
@@ -127,7 +130,7 @@ export function ConnectorAccountLinkingStrip() {
             Read-only cloud, identity, and warehouse sources.
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <CardContent className="grid gap-2 p-3 pt-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {RECOMMENDED_IDS.map((id) => (
             <AccountCard key={id} connector={byId.get(id)} />
           ))}

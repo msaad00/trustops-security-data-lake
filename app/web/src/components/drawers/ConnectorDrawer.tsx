@@ -69,8 +69,8 @@ function probeToastMessage(run: ConnectorRun, isEnabled: boolean): string {
     }
     if (mode === "config_only") {
       return isEnabled
-        ? "Configuration validated (probe does not call the vendor API)."
-        : "Configuration validated. Enable when ready; sync performs live collection.";
+        ? "Configuration validated (no live vendor call)."
+        : "Configuration shape validated — run a live probe after enabling credentials.";
     }
     return isEnabled
       ? "Probe ok."
@@ -346,9 +346,12 @@ export function ConnectorDrawer({
   const [discoveryRun, setDiscoveryRun] = useState<ConnectorRun | null>(null);
 
   useEffect(() => {
-    setCreds({});
     setAccessValidated(false);
     setDiscoveryRun(null);
+    setCreds({});
+  }, [connector?.connector_id]);
+
+  useEffect(() => {
     const configured = connector?.configured_options ?? {};
     setOptions(
       Object.fromEntries(
@@ -357,7 +360,7 @@ export function ConnectorDrawer({
           .map(([key, value]) => [key, String(value ?? "")]),
       ),
     );
-  }, [connector?.connector_id, connector?.configured_options]);
+  }, [connector?.configured_options, connector?.connector_id]);
 
   useEffect(() => {
     if (!connector?.connector_id || !runs.data?.length) return;
@@ -393,9 +396,14 @@ export function ConnectorDrawer({
     connector.connector_id === "clickhouse-telemetry-lake" || isSnowflake;
   const isEnabled = connector.state === "enabled";
   const isRunnable = isRunnableConnector(connector);
-  const missingCredentials = credentialFields
-    .filter((field) => field.required && !(creds[field.name] ?? "").trim())
-    .map((field) => field.label);
+  const hasStagedServerCredentials = Boolean(
+    connector.credential_fingerprint?.trim(),
+  );
+  const missingCredentials = hasStagedServerCredentials
+    ? []
+    : credentialFields
+        .filter((field) => field.required && !(creds[field.name] ?? "").trim())
+        .map((field) => field.label);
   const missingScope = scopeFields
     .filter((field) => field.required && !(options[field.name] ?? "").trim())
     .map((field) => field.label);
@@ -407,7 +415,8 @@ export function ConnectorDrawer({
   const stagedOptions = Object.fromEntries(
     Object.entries(options).filter(([, value]) => value.trim() !== ""),
   );
-  const canTestAccess = isEnabled || missingRequired.length === 0;
+  const canTestAccess =
+    isEnabled || missingRequired.length === 0 || hasStagedServerCredentials;
   const canDiscover = isEnabled || missingCredentials.length === 0;
   const discoveryMetadata = discoveryRun?.metadata;
   const showSnowflakeScopeFields =
@@ -445,7 +454,9 @@ export function ConnectorDrawer({
       label: "Access",
       detail:
         missingCredentials.length === 0
-          ? "Identity staged"
+          ? hasStagedServerCredentials
+            ? "Credentials staged on server"
+            : "Identity staged"
           : `${missingCredentials.length} field(s) needed`,
       tone: missingCredentials.length === 0 ? "ready" : "attention",
     },
@@ -684,7 +695,7 @@ export function ConnectorDrawer({
         )
       }
     >
-      <div className="grid gap-5 text-sm">
+      <div className="grid gap-3 text-sm">
         <section className="rounded-xl border border-line bg-white p-4">
           <ConnectorMark
             connectorId={connector.connector_id}
@@ -1175,17 +1186,25 @@ export function ConnectorDrawer({
                 </div>
               </div>
             )}
-            {isEnabled && connector.credential_fingerprint ? (
+            {connector.credential_fingerprint ? (
               <div className="mt-2 text-xs text-muted">
-                Last fingerprint:{" "}
+                Credential fingerprint:{" "}
                 <code className="text-ink">
                   {connector.credential_fingerprint}
-                </code>{" "}
-                · configured {connector.configured_at ?? "—"}
+                </code>
+                {connector.configured_at && (
+                  <> · configured {connector.configured_at}</>
+                )}
+                {!isEnabled && (
+                  <span className="block mt-1 text-amber-800">
+                    Staged but not enabled — run Test connection, then Enable.
+                  </span>
+                )}
               </div>
             ) : (
               <div className="mt-2 text-xs text-muted">
-                No active credential configured.
+                No credential staged yet — complete the fields above or use
+                cloud linking.
               </div>
             )}
           </section>
