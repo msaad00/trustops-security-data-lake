@@ -18,7 +18,8 @@ import { ConnectorIntegrationCoverage } from "@/components/connectors/ConnectorI
 import { ConnectorRegistryGapStrip } from "@/components/connectors/ConnectorRegistryGapStrip";
 import { ConnectorAccountLinkingStrip } from "@/components/connectors/ConnectorAccountLinkingStrip";
 import { ConnectorEcosystemStrip } from "@/components/connectors/ConnectorEcosystemStrip";
-import { notify } from "@/lib/toast";
+import { CollapsibleCard } from "@/components/ui/collapsible-card";
+import { connectorNotify } from "@/lib/connector-notify";
 import { useConnectors } from "@/lib/api/hooks";
 import type { ConnectorView } from "@/lib/api/types";
 
@@ -123,31 +124,31 @@ function ConnectorSetupRail() {
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base">Setup steps</CardTitle>
-        <CardDescription>
-          Each connector follows the same probe-gated workflow.
+      <CardHeader className="p-3 pb-2">
+        <CardTitle className="text-sm">Setup steps</CardTitle>
+        <CardDescription className="text-xs">
+          Probe-gated workflow for every connector.
         </CardDescription>
       </CardHeader>
-      <div className="grid gap-2 p-4 pt-0 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-2 p-3 pt-0 sm:grid-cols-2 lg:grid-cols-4">
         {steps.map(({ step, label, detail, Icon }) => (
           <div
             key={step}
-            className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-start gap-3 overflow-hidden rounded-xl border border-line bg-white p-3"
+            className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-start gap-2 overflow-hidden rounded-lg border border-line bg-white p-2.5"
           >
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-panel text-brand ring-1 ring-line">
-              <Icon className="h-4 w-4" />
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-panel text-brand ring-1 ring-line">
+              <Icon className="h-3.5 w-3.5" />
             </span>
             <span className="min-w-0 overflow-hidden">
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-1.5">
                 <span className="shrink-0 text-[10px] font-black text-muted">
                   {step}
                 </span>
-                <span className="truncate text-sm font-black text-ink">
+                <span className="truncate text-xs font-black text-ink">
                   {label}
                 </span>
               </span>
-              <span className="mt-0.5 line-clamp-2 text-xs leading-5 text-muted">
+              <span className="mt-0.5 line-clamp-2 text-[11px] leading-4 text-muted">
                 {detail}
               </span>
             </span>
@@ -284,7 +285,7 @@ export default function ConnectorsPage() {
     : null;
 
   return (
-    <div className="mx-auto grid w-full max-w-[1500px] min-w-0 gap-3 px-3 py-3 sm:px-4 lg:px-5">
+    <div className="mx-auto grid w-full max-w-[1600px] min-w-0 gap-2 px-3 py-2 sm:px-4 lg:px-5">
       <PageHeader
         eyebrow="Connectors"
         title="Connector registry"
@@ -308,19 +309,25 @@ export default function ConnectorsPage() {
         }
       />
 
-      <ConnectorIngestionStrip />
+      <div className="grid gap-2 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+        <ConnectorAccountLinkingStrip />
+        <ConnectorSetupRail />
+      </div>
 
-      <ConnectorIntegrationCoverage />
+      <CollapsibleCard
+        storageKey="connectors-overview"
+        title="Registry overview"
+        description="Ingestion health, coverage gaps, and ecosystem map."
+        defaultOpen={false}
+        contentClassName="grid gap-2 p-3 pt-0"
+      >
+        <ConnectorIngestionStrip />
+        <ConnectorIntegrationCoverage />
+        <ConnectorRegistryGapStrip onSelect={setSelected} />
+        <ConnectorEcosystemStrip compact />
+      </CollapsibleCard>
 
-      <ConnectorRegistryGapStrip onSelect={setSelected} />
-
-      <ConnectorEcosystemStrip compact />
-
-      <ConnectorAccountLinkingStrip />
-
-      <ConnectorSetupRail />
-
-      <div className="flex min-w-0 flex-wrap items-center gap-2 overflow-hidden rounded-xl border border-line bg-white p-2.5 shadow-card">
+      <div className="flex min-w-0 flex-wrap items-center gap-2 overflow-hidden rounded-lg border border-line bg-white p-2 shadow-card">
         <div className="relative min-w-[min(100%,260px)] flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
@@ -384,7 +391,7 @@ export default function ConnectorsPage() {
         connector={selectedLive}
         linkSessionId={linkSessionId}
         onClose={() => setSelected(null)}
-        onToast={notify.success}
+        onToast={connectorNotify}
       />
     </div>
   );
