@@ -6,14 +6,14 @@ Last updated: **2026-07-12**
 
 ## Active wave — agent-first (#474)
 
-| Stream                      | Branch                             | Issue | Status                    |
-| --------------------------- | ---------------------------------- | ----- | ------------------------- |
-| **I — Headless connectors** | `cursor/headless-connectors-d259`  | #475  | 🟡 PR ready               |
-| **J — Agent contracts**     | `cursor/agent-contracts-d259`      | #476  | 🟡 PR ready (stacks I)    |
-| **K — CI posture gates**    | `cursor/ci-posture-gates-d259`     | #477  | 🔲 Next                   |
-| **L — Agent harness UI**    | `cursor/agent-harness-d259`        | #478  | 🔲 Absorbs #16; #429 done |
+| Stream                      | Branch                             | Issue | Status                     |
+| --------------------------- | ---------------------------------- | ----- | -------------------------- |
+| **I — Headless connectors** | `cursor/headless-connectors-d259`  | #475  | 🟡 PR ready                |
+| **J — Agent contracts**     | `cursor/agent-contracts-d259`      | #476  | 🟡 PR ready (stacks I)     |
+| **K — CI posture gates**    | `cursor/ci-posture-gates-d259`     | #477  | 🔲 Next                    |
+| **L — Agent harness UI**    | `cursor/agent-harness-d259`        | #478  | 🔲 Absorbs #16; #429 done  |
 | **M — Human connect UX**    | `cursor/human-connect-ux-d259`     | #479  | 🔲 managed GRC SaaS wizard |
-| **N — Console copy**        | `cursor/console-human-polish-d259` | #480  | 🔲 Partial in #475        |
+| **N — Console copy**        | `cursor/console-human-polish-d259` | #480  | 🔲 Partial in #475         |
 
 **Positioning:** headless/agents/CI first; human console second. Default connect path is **agentless read-only API** — no customer SDL required ([CONNECTORS.md](CONNECTORS.md), [HEADLESS_CONNECTOR_SETUP.md](playbooks/HEADLESS_CONNECTOR_SETUP.md)).
 
