@@ -53,11 +53,11 @@ When `TRUSTOPS_COMMERCIAL_HOSTED` is unset, invite routes return **501 Not Imple
 
 ## Pricing and signup
 
-| Method | Path                       | Auth                                | Description                  |
-| ------ | -------------------------- | ----------------------------------- | ---------------------------- |
-| `GET`  | `/api/v1/platform/pricing` | none                                | Tier list + limits (gated)   |
-| `POST` | `/api/v1/signup`           | optional `X-TrustOps-Signup-Secret` | Create tenant + admin user   |
-| `GET`  | `/api/v1/platform/usage`   | `auth_admin`                        | Plan tier, usage vs limits   |
+| Method | Path                       | Auth                                | Description                |
+| ------ | -------------------------- | ----------------------------------- | -------------------------- |
+| `GET`  | `/api/v1/platform/pricing` | none                                | Tier list + limits (gated) |
+| `POST` | `/api/v1/signup`           | optional `X-TrustOps-Signup-Secret` | Create tenant + admin user |
+| `GET`  | `/api/v1/platform/usage`   | `auth_admin`                        | Plan tier, usage vs limits |
 
 These routes return **501 Not Implemented** unless `TRUSTOPS_COMMERCIAL_HOSTED=1`.
 Tier definitions and dollar amounts are operator-managed and not published in the

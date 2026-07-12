@@ -7,11 +7,11 @@ sharing, and agent APIs — without locking evidence in a vendor silo.
 
 ## Deployment models
 
-| Model           | Who runs it                        | Best for                                                          |
-| --------------- | ---------------------------------- | ----------------------------------------------------------------- |
-| **OSS local**   | You, on a laptop or CI runner      | Contributors, evaluators, pipeline proofs                         |
-| **Self-hosted** | You, in your VPC / cluster         | Teams that need data residency, custom connectors, full control    |
-| **Managed hosted** | TrustOps operator (future)      | Teams that want a live URL without running Kubernetes themselves  |
+| Model              | Who runs it                   | Best for                                                         |
+| ------------------ | ----------------------------- | ---------------------------------------------------------------- |
+| **OSS local**      | You, on a laptop or CI runner | Contributors, evaluators, pipeline proofs                        |
+| **Self-hosted**    | You, in your VPC / cluster    | Teams that need data residency, custom connectors, full control  |
+| **Managed hosted** | TrustOps operator (future)    | Teams that want a live URL without running Kubernetes themselves |
 
 Evidence stays in **your boundary** in every model: local files, customer-owned
 Snowflake/ClickHouse/DuckDB, or a tenant-scoped `/lake` volume on your cluster.
