@@ -22,7 +22,6 @@ import type {
   ControlExceptionItem,
   EvidenceRequestItem,
   PostureMetricPoint,
-  PlatformPricing,
   PlatformUsage,
   PoamItem,
   PoamSyncResult,
@@ -211,16 +210,6 @@ export const api = {
       "/v1/invites/accept",
       payload,
     ).then((body) => body.data),
-  signup: (payload: {
-    org_slug: string;
-    org_name: string;
-    admin_email: string;
-    admin_name?: string;
-    plan_tier?: string;
-  }) =>
-    post<{ data: Record<string, unknown> }>("/v1/signup", payload).then(
-      (body) => body.data,
-    ),
   authLogout: () =>
     post<{ data: { ok: boolean } }>("/v1/auth/logout", {}).then(
       (body) => body.data,
@@ -796,8 +785,6 @@ export const api = {
       "PATCH",
       payload,
     ).then((b) => b.data),
-  platformPricing: () =>
-    get<{ data: PlatformPricing }>("/v1/platform/pricing").then((b) => b.data),
   platformUsage: () =>
     get<{ data: PlatformUsage }>("/v1/platform/usage").then((b) => b.data),
 };

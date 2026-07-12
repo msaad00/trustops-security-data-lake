@@ -21,7 +21,7 @@ TrustOps ships a Next.js console at `/console/*` backed by `/api/v1/*` and legac
 | `/console/poc/`            | Launch checklist         | `usePocReadiness`                                                                          | Copyable invite URLs                |
 | `/console/demo/`           | Live demo landing        | `useAuthMethods`, `usePocReadiness`                                                        | Evaluator entry                     |
 | `/console/deploy/`         | Deployment models        | —                                                                                          | Static OSS / hosted explainer       |
-| `/console/pricing/`        | Pricing tiers            | `usePlatformPricing`                                                                       | Commercial metadata                 |
+| `/console/pricing/`        | Redirect to deploy       | —                                                                                          | Not surfaced in OSS console         |
 | `/console/trust-center/`   | Trust shares             | `useTrustShares`, `usePosture`, `useCreateTrustShare`, `useRevokeTrustShare`               | External share preview              |
 | `/console/controls/`       | Control workbench        | `useControls`, `useControlTests`, `usePosture`, `useTags`, `useTagEntityIds`               | Saved views + tags                  |
 | `/console/evidence/`       | Evidence room            | `useEvidence`, `useEvidenceFreshness`, `useControls`, `useTags`, `useTagEntityIds`         | Freshness column + filters          |

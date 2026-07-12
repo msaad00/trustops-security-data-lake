@@ -11,7 +11,6 @@ import type {
   IngestionStatus,
   LakeEvalRun,
   PlatformJobsFeed,
-  PlatformPricing,
   PlatformUsage,
   PoamItem,
   PocReadiness,
@@ -182,16 +181,6 @@ export function useSyncPoamMutation() {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["gov-compliance"] });
     },
-  });
-}
-
-export function usePlatformPricing(opts?: Opts<PlatformPricing>) {
-  return useQuery({
-    queryKey: ["platform", "pricing"],
-    queryFn: api.platformPricing,
-    staleTime: 60_000,
-    retry: false,
-    ...opts,
   });
 }
 
