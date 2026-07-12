@@ -12,8 +12,8 @@ Default connect: agentless read-only API — no customer SDL required
 
 | Stream                      | Branch                             | Issue | Status             |
 | --------------------------- | ---------------------------------- | ----- | ------------------ |
-| **I — Headless connectors** | `cursor/headless-connectors-d259`  | #475  | 🟡 PR ready        |
-| **J — Agent contracts**     | `cursor/agent-contracts-d259`      | #476  | 🟡 PR ready        |
+| **I — Headless connectors** | `cursor/headless-connectors-d259`  | #475  | ✅ #482 merged     |
+| **J — Agent contracts**     | `cursor/agent-contracts-d259`      | #476  | ✅ #481 merged     |
 | **K — CI posture gates**    | `cursor/ci-posture-gates-d259`     | #477  | 🔲 Next            |
 | **L — Agent harness**       | `cursor/agent-harness-d259`        | #478  | 🔲 Closes #16      |
 | **M — Human connect**       | `cursor/human-connect-ux-d259`     | #479  | 🔲 Wizard          |
@@ -36,8 +36,8 @@ Full close list: [ISSUE_CONSOLIDATION.md](../ISSUE_CONSOLIDATION.md)
 
 ## Acceptance
 
-- [ ] #475 — curl/CLI/MCP lifecycle documented + tested
-- [ ] #476 — AGENT_SKILLS.md + openapi + resource-catalog committed
+- [x] #475 — curl/CLI/MCP lifecycle documented + tested (#482)
+- [x] #476 — AGENT_SKILLS.md + openapi + resource-catalog committed (#481)
 - [ ] #477 — CI gate template fails on control regression
 - [ ] #478 — #16 AC (skills page, fixture mode, approvals)
 - [ ] #479 — onboarding wizard for agentless connect

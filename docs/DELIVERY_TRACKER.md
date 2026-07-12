@@ -2,18 +2,18 @@
 
 **Single source of truth:** GitHub issue **#474** (Wave 2). Wave 1 tracker **#449** is retired — do not open new work against #449 streams.
 
-Last updated: **2026-07-12**
+Last updated: **2026-07-12** (post #482 + #481 merge)
 
 ## Active wave — agent-first (#474)
 
-| Stream                      | Branch                             | Issue | Status                     |
-| --------------------------- | ---------------------------------- | ----- | -------------------------- |
-| **I — Headless connectors** | `cursor/headless-connectors-d259`  | #475  | 🟡 PR ready                |
-| **J — Agent contracts**     | `cursor/agent-contracts-d259`      | #476  | 🟡 PR ready (stacks I)     |
-| **K — CI posture gates**    | `cursor/ci-posture-gates-d259`     | #477  | 🔲 Next                    |
-| **L — Agent harness UI**    | `cursor/agent-harness-d259`        | #478  | 🔲 Absorbs #16; #429 done  |
-| **M — Human connect UX**    | `cursor/human-connect-ux-d259`     | #479  | 🔲 managed GRC SaaS wizard |
-| **N — Console copy**        | `cursor/console-human-polish-d259` | #480  | 🔲 Partial in #475         |
+| Stream                      | Branch                             | Issue | Status                        |
+| --------------------------- | ---------------------------------- | ----- | ----------------------------- |
+| **I — Headless connectors** | `cursor/headless-connectors-d259`  | #475  | ✅ #482 merged — close #475   |
+| **J — Agent contracts**     | `cursor/agent-contracts-d259`      | #476  | ✅ #481 merged — close #476   |
+| **K — CI posture gates**    | `cursor/ci-posture-gates-d259`     | #477  | 🔲 Next                       |
+| **L — Agent harness UI**    | `cursor/agent-harness-d259`        | #478  | 🔲 Absorbs #16; #429 done     |
+| **M — Human connect UX**    | `cursor/human-connect-ux-d259`     | #479  | 🔲 managed GRC SaaS wizard    |
+| **N — Console copy**        | `cursor/console-human-polish-d259` | #480  | 🔲 Partial in #475; rest open |
 
 **Positioning:** headless/agents/CI first; human console second. Default connect path is **agentless read-only API** — no customer SDL required ([CONNECTORS.md](CONNECTORS.md), [HEADLESS_CONNECTOR_SETUP.md](playbooks/HEADLESS_CONNECTOR_SETUP.md)).
 
@@ -26,7 +26,7 @@ All Wave 1 streams merged (#447–#473). See [ISSUE_CONSOLIDATION.md](ISSUE_CONS
 | Keep open     | Role                                                       |
 | ------------- | ---------------------------------------------------------- |
 | **#474**      | Wave 2 epic tracker (only tracker to use)                  |
-| **#475–#480** | Wave 2 child issues                                        |
+| **#475–#480** | Wave 2 child issues (#475–#476 close after closeout)       |
 | **#96**       | Human UX epic rollup only (#479, #480, #18) — not headless |
 | **#16**       | Closes when #478 merges (harness workbench AC)             |
 | **#14**       | Framework expansion (ongoing packs)                        |
@@ -39,6 +39,8 @@ All Wave 1 streams merged (#447–#473). See [ISSUE_CONSOLIDATION.md](ISSUE_CONS
 
 | Close (duplicate / shipped) | Shipped by                           |
 | --------------------------- | ------------------------------------ |
+| **#475**                    | #482                                 |
+| **#476**                    | #481                                 |
 | #449                        | Superseded by #474                   |
 | #417                        | Duplicate of #22 + #23               |
 | #416, #423, #424            | #450                                 |
