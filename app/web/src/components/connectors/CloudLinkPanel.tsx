@@ -357,7 +357,9 @@ export function CloudLinkPanel({
             </label>
           )}
           {showFieldError && (
-            <p className="text-xs font-semibold text-rose-700">{showFieldError}</p>
+            <p className="text-xs font-semibold text-rose-700">
+              {showFieldError}
+            </p>
           )}
           <Button
             type="button"

@@ -1203,8 +1203,8 @@ export function ConnectorDrawer({
               </div>
             ) : (
               <div className="mt-2 text-xs text-muted">
-                No credential staged yet — complete the fields above or use cloud
-                linking.
+                No credential staged yet — complete the fields above or use
+                cloud linking.
               </div>
             )}
           </section>
