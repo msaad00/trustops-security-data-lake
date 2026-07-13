@@ -178,6 +178,44 @@ Console: `/console/agents/` — same routes with curl builder.
 
 ---
 
+## Skill: `ci.gate`
+
+**Intent:** Fail CI/CD when posture regresses — read-only gate for platform engineers.
+
+| Check                  | REST                                              | Threshold input             |
+| ---------------------- | ------------------------------------------------- | --------------------------- |
+| Posture score          | `GET /api/v1/posture/current`                     | `min-score`                 |
+| Critical violations    | posture summary                                   | `max-critical-violations`   |
+| **Control regression** | posture + `GET /api/v1/control-tests?result=fail` | `max-failing-control-tests` |
+| Stale evidence         | posture freshness                                 | `fail-on-stale-evidence`    |
+
+**Scope:** `read` (optional `write` only for post-pass snapshot)
+
+**GitHub Action:**
+
+```yaml
+- uses: ./.github/actions/posture-gate
+  with:
+    trustops-url: ${{ secrets.TRUSTOPS_URL }}
+    api-token: ${{ secrets.TRUSTOPS_API_TOKEN }}
+    correlation-id: deploy-${{ github.run_id }}
+    min-score: "70"
+    max-failing-control-tests: "0"
+```
+
+**Shell:**
+
+```bash
+TRUSTOPS_URL="$TRUSTOPS_API_URL" \
+CORRELATION_ID="ci-$(date +%s)" \
+MAX_FAILING_CONTROL_TESTS=0 \
+./tools/ci/posture-gate.sh
+```
+
+Playbook: [CI_POSTURE_GATE.md](../playbooks/CI_POSTURE_GATE.md)
+
+---
+
 ## Headers agents should send
 
 | Header                            | When                                                    |
