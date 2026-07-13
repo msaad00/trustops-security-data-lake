@@ -1,41 +1,48 @@
 #!/usr/bin/env bash
-# TrustOps posture gate — evaluate /api/v1/posture/current against thresholds.
+# Koda posture gate — evaluate /api/v1/posture/current and control-tests against thresholds.
 set -euo pipefail
 
 TRUSTOPS_URL="${TRUSTOPS_URL:-}"
 TRUSTOPS_API_TOKEN="${TRUSTOPS_API_TOKEN:-}"
+CORRELATION_ID="${CORRELATION_ID:-}"
 MIN_SCORE="${MIN_SCORE:-0}"
 MAX_CRITICAL_VIOLATIONS="${MAX_CRITICAL_VIOLATIONS:-0}"
 MAX_OPEN_VIOLATIONS="${MAX_OPEN_VIOLATIONS:--1}"
+MAX_FAILING_CONTROL_TESTS="${MAX_FAILING_CONTROL_TESTS:-0}"
+ALLOWED_FAILING_CONTROLS="${ALLOWED_FAILING_CONTROLS:-}"
+FRAMEWORK="${FRAMEWORK:-}"
 FAIL_ON_STALE_EVIDENCE="${FAIL_ON_STALE_EVIDENCE:-false}"
 
 if [[ -z "${TRUSTOPS_URL}" ]]; then
-  echo "::error title=TrustOps posture gate::TRUSTOPS_URL is required"
+  echo "::error title=Koda posture gate::TRUSTOPS_URL is required"
   exit 1
 fi
 
 if ! command -v jq >/dev/null 2>&1; then
-  echo "::error title=TrustOps posture gate::jq is required on the runner"
+  echo "::error title=Koda posture gate::jq is required on the runner"
   exit 1
 fi
 
 base="${TRUSTOPS_URL%/}"
-endpoint="${base}/api/v1/posture/current"
+posture_endpoint="${base}/api/v1/posture/current"
 
 curl_args=(-fsS -H "Accept: application/json")
 if [[ -n "${TRUSTOPS_API_TOKEN}" ]]; then
   curl_args+=(-H "Authorization: Bearer ${TRUSTOPS_API_TOKEN}")
 fi
+if [[ -n "${CORRELATION_ID}" ]]; then
+  curl_args+=(-H "X-Correlation-ID: ${CORRELATION_ID}")
+fi
 
 response=""
-if ! response="$(curl "${curl_args[@]}" "${endpoint}")"; then
-  echo "::error title=TrustOps posture gate::Failed to reach ${endpoint}"
+if ! response="$(curl "${curl_args[@]}" "${posture_endpoint}")"; then
+  echo "::error title=Koda posture gate::Failed to reach ${posture_endpoint}"
   exit 1
 fi
 
 if ! echo "${response}" | jq -e '.data.posture' >/dev/null 2>&1; then
   detail="$(echo "${response}" | jq -r '.errors[0].detail // "unexpected response"')"
-  echo "::error title=TrustOps posture gate::${detail}"
+  echo "::error title=Koda posture gate::${detail}"
   exit 1
 fi
 
@@ -44,11 +51,50 @@ score="$(echo "${posture}" | jq -r '.score // empty')"
 state="$(echo "${posture}" | jq -r '.state // "unknown"')"
 open_count="$(echo "${posture}" | jq -r '.open_violation_count // 0')"
 critical_count="$(echo "${posture}" | jq -r '.critical_violation_count // 0')"
+failed_tests="$(echo "${posture}" | jq -r '.failed_control_test_count // 0')"
 stale_count="$(echo "${response}" | jq -r '.data.posture.stale_evidence_count // .data.evidence_freshness.stale_count // 0')"
 
 if [[ -z "${score}" ]]; then
-  echo "::error title=TrustOps posture gate::Posture score missing from TrustOps response"
+  echo "::error title=Koda posture gate::Posture score missing from response"
   exit 1
+fi
+
+failing_controls=()
+if [[ "${MAX_FAILING_CONTROL_TESTS}" != "-1" || -n "${ALLOWED_FAILING_CONTROLS}" ]]; then
+  control_args=(-G "${curl_args[@]}" "${base}/api/v1/control-tests")
+  control_args+=(--data-urlencode "result=fail")
+  control_args+=(--data-urlencode "sort=-confidence_score")
+  control_args+=(--data-urlencode "limit=50")
+  if [[ -n "${FRAMEWORK}" ]]; then
+    control_args+=(--data-urlencode "framework=${FRAMEWORK}")
+  fi
+  control_response=""
+  if control_response="$(curl "${control_args[@]}")"; then
+    while IFS= read -r control_id; do
+      [[ -n "${control_id}" ]] && failing_controls+=("${control_id}")
+    done < <(echo "${control_response}" | jq -r '.data[]?.control_id // empty')
+  fi
+fi
+
+gate_failing_count="${failed_tests}"
+if [[ -n "${ALLOWED_FAILING_CONTROLS}" ]]; then
+  IFS=',' read -ra allowed <<<"${ALLOWED_FAILING_CONTROLS}"
+  unexpected_failures=()
+  for control_id in "${failing_controls[@]}"; do
+    allowed_match=false
+    for item in "${allowed[@]}"; do
+      trimmed="$(echo "${item}" | xargs)"
+      if [[ "${control_id}" == "${trimmed}" ]]; then
+        allowed_match=true
+        break
+      fi
+    done
+    if [[ "${allowed_match}" == "false" ]]; then
+      unexpected_failures+=("${control_id}")
+    fi
+  done
+  gate_failing_count="${#unexpected_failures[@]}"
+  failing_controls=("${unexpected_failures[@]}")
 fi
 
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
@@ -57,15 +103,25 @@ if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
     echo "posture_state=${state}"
     echo "open_violation_count=${open_count}"
     echo "critical_violation_count=${critical_count}"
+    echo "failed_control_test_count=${gate_failing_count}"
   } >>"${GITHUB_OUTPUT}"
 fi
 
-echo "TrustOps posture gate"
+echo "Koda posture gate"
+echo "  correlation: ${CORRELATION_ID:-<none>}"
 echo "  score: ${score}"
 echo "  state: ${state}"
 echo "  open violations: ${open_count}"
 echo "  critical violations: ${critical_count}"
+echo "  failing control tests: ${gate_failing_count}"
 echo "  stale evidence rows: ${stale_count}"
+
+if ((${#failing_controls[@]} > 0)); then
+  echo "  failing controls:"
+  for control_id in "${failing_controls[@]}"; do
+    echo "    - ${control_id}"
+  done
+fi
 
 failures=()
 
@@ -89,13 +145,29 @@ if [[ "${MAX_OPEN_VIOLATIONS}" != "-1" ]]; then
   fi
 fi
 
+if [[ "${MAX_FAILING_CONTROL_TESTS}" != "-1" ]]; then
+  if awk -v count="${gate_failing_count}" -v max="${MAX_FAILING_CONTROL_TESTS}" 'BEGIN { exit (count + 0 <= max + 0) ? 0 : 1 }'; then
+    :
+  else
+    if ((${#failing_controls[@]} > 0)); then
+      failures+=(
+        "failing control tests ${gate_failing_count} exceed maximum ${MAX_FAILING_CONTROL_TESTS} (${failing_controls[*]})"
+      )
+    else
+      failures+=(
+        "failing control tests ${gate_failing_count} exceed maximum ${MAX_FAILING_CONTROL_TESTS}"
+      )
+    fi
+  fi
+fi
+
 if [[ "${FAIL_ON_STALE_EVIDENCE}" == "true" && "${stale_count}" != "0" ]]; then
   failures+=("stale or expired evidence on ${stale_count} control(s)")
 fi
 
 if ((${#failures[@]} > 0)); then
   for reason in "${failures[@]}"; do
-    echo "::error title=TrustOps posture gate::${reason}"
+    echo "::error title=Koda posture gate::${reason}"
   done
   exit 1
 fi

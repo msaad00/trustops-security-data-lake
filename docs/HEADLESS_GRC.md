@@ -43,7 +43,8 @@ materializes without console interaction. See [CONTINUOUS_INGESTION.md](CONTINUO
 ### Posture gates in CI
 
 Use API keys and correlation IDs to fail builds or deployments when control tests
-fail or violations exceed thresholds. See [api/AGENT_API.md](api/AGENT_API.md).
+fail or violations exceed thresholds. See [playbooks/CI_POSTURE_GATE.md](playbooks/CI_POSTURE_GATE.md)
+and [api/AGENT_API.md](api/AGENT_API.md).
 
 ### Agent remediation (approval-gated)
 
