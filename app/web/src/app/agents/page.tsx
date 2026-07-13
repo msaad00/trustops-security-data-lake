@@ -523,10 +523,6 @@ function AgentsPageContent() {
     }
   };
 
-  const approve = async (_run: AgentRun, _decisionIndex: number) => {
-    /* approval handled in AgentDecisionCard */
-  };
-
   const execute = async () => {
     setBusy(true);
     setResponse(null);

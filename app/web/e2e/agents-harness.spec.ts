@@ -20,11 +20,15 @@ test.describe("agents harness", () => {
 
     await page.goto("/console/agents/");
     await expect(page.getByRole("main")).toBeVisible({ timeout: 20_000 });
-    await expect(page.getByRole("heading", { name: "Governed runs" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Governed runs" }),
+    ).toBeVisible();
     await expect(page.getByText(/fixture/i).first()).toBeVisible({
       timeout: 15_000,
     });
-    await expect(page.getByRole("button", { name: "Approve" }).first()).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Approve" }).first(),
+    ).toBeVisible();
 
     const approve = await request.post(
       `/api/v1/agent-runs/${run.id}/decisions/0/approve`,
