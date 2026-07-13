@@ -18,6 +18,7 @@ import { ConnectorIntegrationCoverage } from "@/components/connectors/ConnectorI
 import { ConnectorRegistryGapStrip } from "@/components/connectors/ConnectorRegistryGapStrip";
 import { ConnectorAccountLinkingStrip } from "@/components/connectors/ConnectorAccountLinkingStrip";
 import { ConnectorEcosystemStrip } from "@/components/connectors/ConnectorEcosystemStrip";
+import { OnboardingGuideBanner } from "@/components/onboarding/OnboardingGuideBanner";
 import { CollapsibleCard } from "@/components/ui/collapsible-card";
 import { connectorNotify } from "@/lib/connector-notify";
 import { useConnectors } from "@/lib/api/hooks";
@@ -241,6 +242,7 @@ export default function ConnectorsPage() {
     "all" | "runnable" | "contract"
   >("all");
   const [selected, setSelected] = useState<ConnectorView | null>(null);
+  const [onboarding, setOnboarding] = useState(false);
 
   const data = connectors.data ?? [];
 
@@ -249,6 +251,7 @@ export default function ConnectorsPage() {
     const params = new URLSearchParams(window.location.search);
     setConnectId(params.get("connect"));
     setLinkSessionId(params.get("link_session"));
+    setOnboarding(params.get("onboarding") === "1");
   }, []);
 
   useEffect(() => {
@@ -256,6 +259,14 @@ export default function ConnectorsPage() {
     const match = data.find((c) => c.connector_id === connectId);
     if (match) setSelected(match);
   }, [connectId, data]);
+
+  useEffect(() => {
+    if (!onboarding || !connectId) return;
+    document.getElementById("connector-drawer-anchor")?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+    });
+  }, [onboarding, connectId, selected]);
 
   const filtered = useMemo(
     () =>
@@ -303,6 +314,13 @@ export default function ConnectorsPage() {
 
   return (
     <div className="mx-auto grid w-full max-w-[1600px] min-w-0 gap-2 px-3 py-2 sm:px-4 lg:px-5">
+      {onboarding && (
+        <OnboardingGuideBanner
+          step={1}
+          title="Connect a read-only source"
+          detail="Pick a connector, test access, enable, then sync evidence — the same probe → enable → sync loop as MCP and CI."
+        />
+      )}
       <PageHeader
         eyebrow="Connectors"
         title="Connector registry"
@@ -404,9 +422,11 @@ export default function ConnectorsPage() {
         </Card>
       </QueryState>
 
+      <div id="connector-drawer-anchor" />
       <ConnectorDrawer
         connector={selectedLive}
         linkSessionId={linkSessionId}
+        onboarding={onboarding}
         onClose={() => {
           setSelected(null);
           clearDeepLinkParams();
