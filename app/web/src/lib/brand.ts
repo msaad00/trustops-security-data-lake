@@ -36,4 +36,14 @@ export const BRAND = {
   homeEyebrow: "Home",
   /** Short label under the wordmark in chrome. */
   consoleSubtitle: "Console",
+  /** Name meaning — friend / ally (Sioux); loyal trust partner. */
+  nameMeaning: "friend · ally · trust partner",
+  otterColors: {
+    furDark: "#4a3420",
+    furMid: "#7a5c3a",
+    furLight: "#e2c9a0",
+    muzzle: "#f5ead8",
+    belly: "#faf3e8",
+    ink: "#101623",
+  },
 } as const;
