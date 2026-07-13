@@ -33,6 +33,7 @@ import type {
   ProbePayload,
 } from "@/lib/api/types";
 import { ConnectorMark } from "@/components/connectors/ConnectorMark";
+import { OnboardingGuideBanner } from "@/components/onboarding/OnboardingGuideBanner";
 import { CloudLinkPanel } from "@/components/connectors/CloudLinkPanel";
 import {
   credentialFieldsFor,
@@ -44,6 +45,7 @@ import {
 interface Props {
   connector: ConnectorView | null;
   linkSessionId?: string | null;
+  onboarding?: boolean;
   onClose: () => void;
   onToast: (msg: string) => void;
 }
@@ -331,6 +333,7 @@ function LatestSyncProof({
 export function ConnectorDrawer({
   connector,
   linkSessionId,
+  onboarding = false,
   onClose,
   onToast,
 }: Props) {
@@ -523,6 +526,21 @@ export function ConnectorDrawer({
             : "default",
     },
   ];
+  const onboardingStep = !latestProbeOk ? 2 : !isEnabled ? 3 : 4;
+  const onboardingTitle = !latestProbeOk
+    ? "Test read-only access"
+    : !isEnabled
+      ? "Enable this source"
+      : latestSyncOk
+        ? "Source connected"
+        : "Sync evidence into your assessment store";
+  const onboardingDetail = !latestProbeOk
+    ? "Run Test connection — enable stays locked until access is verified."
+    : !isEnabled
+      ? "When the test passes, enable the connector to allow scheduled sync."
+      : latestSyncOk
+        ? "Open the dashboard to run control eval on the synced evidence."
+        : "Run sync to land evidence, then evaluate controls on the dashboard.";
   const enable = async () => {
     if (!isRunnable) {
       onToast(
@@ -594,7 +612,9 @@ export function ConnectorDrawer({
       });
       onToast(
         result.result === "ok"
-          ? `Sync complete: ${result.evidence_count ?? 0} evidence item(s) landed.`
+          ? onboarding
+            ? "Sync complete — review posture on the dashboard."
+            : `Sync complete: ${result.evidence_count ?? 0} evidence item(s) landed.`
           : "Sync finished with errors; see history.",
       );
     } catch (err) {
@@ -727,6 +747,14 @@ export function ConnectorDrawer({
       }
     >
       <div className="grid gap-2 text-sm">
+        {onboarding ? (
+          <OnboardingGuideBanner
+            step={onboardingStep}
+            title={onboardingTitle}
+            detail={onboardingDetail}
+            dismissHref="/connectors"
+          />
+        ) : null}
         <section className="rounded-lg border border-line bg-surface p-3">
           <div className="flex flex-wrap items-start gap-3">
             <ConnectorMark

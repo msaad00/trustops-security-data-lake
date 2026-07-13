@@ -91,7 +91,7 @@ function LaunchStep({
   active: boolean;
 }) {
   const Icon = stepIcon(step);
-  const href = internalHref(step.href);
+  const href = step.console_href ?? internalHref(step.href);
   const ready = step.status === "ready";
   const content = (
     <div
