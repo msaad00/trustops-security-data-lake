@@ -10,9 +10,10 @@ test.describe("console smoke", () => {
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: /^Dashboard$/,
+        name: /^Executive trust overview$/,
       }),
     ).toBeVisible();
+    await expect(page.getByText("Trust Command Center")).toBeVisible();
   });
 
   test("audit room shows readiness score", async ({ page }) => {
