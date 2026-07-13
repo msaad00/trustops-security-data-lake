@@ -1,11 +1,14 @@
 "use client";
 
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Drawer } from "@/components/ui/drawer";
-import { useAgentRun, useApproveAgentDecisionMutation } from "@/lib/api/hooks";
-import type { AgentRun } from "@/lib/api/types";
+import {
+  AgentDecisionCard,
+  modeLabel,
+  modeTone,
+} from "@/components/agents/AgentDecisionCard";
+import { useAgentRun } from "@/lib/api/hooks";
 
 interface Props {
   runId: string | null;
@@ -29,16 +32,7 @@ function jsonPreview(value: unknown): string {
 
 export function AgentRunDrawer({ runId, onClose }: Props) {
   const detail = useAgentRun(runId);
-  const approveDecision = useApproveAgentDecisionMutation();
   const run = detail.data;
-
-  const approve = async (target: AgentRun, decisionIndex: number) => {
-    await approveDecision.mutateAsync({
-      runId: target.id,
-      decisionIndex,
-      note: "approved from console drawer",
-    });
-  };
 
   return (
     <Drawer
@@ -72,6 +66,10 @@ export function AgentRunDrawer({ runId, onClose }: Props) {
             <dt className="text-muted">Status</dt>
             <dd>
               <Badge tone={toneForStatus(run.status)}>{run.status}</Badge>
+            </dd>
+            <dt className="text-muted">Mode</dt>
+            <dd>
+              <Badge tone={modeTone(run.mode)}>{modeLabel(run.mode)}</Badge>
             </dd>
             <dt className="text-muted">Confidence</dt>
             <dd>{run.evaluation.confidence ?? "none"}</dd>
@@ -123,41 +121,13 @@ export function AgentRunDrawer({ runId, onClose }: Props) {
               </div>
             ) : (
               run.decisions.map((decision, index) => (
-                <div
+                <AgentDecisionCard
                   key={`${run.id}-${index}`}
-                  className="grid gap-2 rounded-lg border border-line bg-white p-3"
-                >
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-black text-ink">
-                      {decision.action}
-                    </span>
-                    <Badge tone={toneForStatus(decision.status)}>
-                      {decision.status ?? "proposed"}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted">
-                    {decision.reason ?? "No reason provided."}
-                  </p>
-                  <pre className="max-h-32 overflow-auto rounded-lg bg-slate-50 p-3 text-xs text-ink">
-                    {jsonPreview(decision.payload)}
-                  </pre>
-                  {decision.status === "proposed" ? (
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      className="w-fit"
-                      disabled={approveDecision.isPending}
-                      onClick={() => approve(run, index)}
-                    >
-                      {approveDecision.isPending ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <CheckCircle2 className="h-4 w-4" />
-                      )}
-                      Approve
-                    </Button>
-                  ) : null}
-                </div>
+                  run={run}
+                  decision={decision}
+                  decisionIndex={index}
+                  compact
+                />
               ))
             )}
           </div>

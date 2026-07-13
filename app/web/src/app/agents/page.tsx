@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Bot,
-  CheckCircle2,
   ClipboardCopy,
   Gauge,
   GitBranch,
@@ -25,13 +25,14 @@ import {
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
 import { McpSetupStrip } from "@/components/agents/McpSetupStrip";
+import {
+  AgentDecisionCard,
+  modeLabel,
+  modeTone,
+} from "@/components/agents/AgentDecisionCard";
 import { AgentRunDrawer } from "@/components/drawers/AgentRunDrawer";
 import { useAuditorMode } from "@/lib/state/auditor";
-import {
-  useAgentRuns,
-  useApproveAgentDecisionMutation,
-  useCreateAgentRunMutation,
-} from "@/lib/api/hooks";
+import { useAgentRuns, useCreateAgentRunMutation } from "@/lib/api/hooks";
 import type { AgentHarness, AgentRun } from "@/lib/api/types";
 
 type BadgeTone = "ready" | "info" | "attention" | "critical" | "default";
@@ -445,11 +446,12 @@ const BUDGETS: Record<
   },
 };
 
-export default function AgentsPage() {
+function AgentsPageContent() {
+  const searchParams = useSearchParams();
+  const onboarding = searchParams.get("onboarding") === "1";
   const auditor = useAuditorMode();
   const agentRuns = useAgentRuns();
   const createRun = useCreateAgentRunMutation();
-  const approveDecision = useApproveAgentDecisionMutation();
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
   const [drawerRunId, setDrawerRunId] = useState<string | null>(null);
   const [selected, setSelected] = useState<RouteSpec>(ROUTES[0]);
@@ -481,6 +483,13 @@ export default function AgentsPage() {
     if (!selectedRunId && runs[0]) setSelectedRunId(runs[0].id);
   }, [runs, selectedRunId]);
 
+  useEffect(() => {
+    if (!onboarding) return;
+    document
+      .getElementById("start-harness")
+      ?.scrollIntoView({ behavior: "smooth" });
+  }, [onboarding]);
+
   const flash = (msg: string) => notify.message(msg);
 
   const path = useMemo(
@@ -500,7 +509,6 @@ export default function AgentsPage() {
       const run = await createRun.mutateAsync({
         harness,
         objective: spec.objective,
-        role: "analyst",
         orchestrator: safeOrchestrator,
         use_model: useModel,
         idempotency_key: `console-${harness}-${Date.now()}`,
@@ -515,18 +523,8 @@ export default function AgentsPage() {
     }
   };
 
-  const approve = async (run: AgentRun, decisionIndex: number) => {
-    try {
-      const updated = await approveDecision.mutateAsync({
-        runId: run.id,
-        decisionIndex,
-        note: "approved from console",
-      });
-      setSelectedRunId(updated.id);
-      flash("Decision approved.");
-    } catch (err) {
-      flash(String((err as Error).message));
-    }
+  const approve = async (_run: AgentRun, _decisionIndex: number) => {
+    /* approval handled in AgentDecisionCard */
   };
 
   const execute = async () => {
@@ -648,12 +646,13 @@ export default function AgentsPage() {
       <McpSetupStrip />
 
       <div className="grid gap-5 xl:grid-cols-[360px_minmax(0,1fr)]">
-        <Card className="overflow-hidden">
+        <Card className="overflow-hidden" id="start-harness">
           <CardHeader>
             <CardTitle>Start a harness</CardTitle>
             <CardDescription>
-              Choose orchestration and budget, then run an approval-gated
-              review.
+              {onboarding
+                ? "Step 1 — run a fixture-mode review (no model required), then approve any proposed writes."
+                : "Choose orchestration and budget, then run an approval-gated review."}
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3">
@@ -695,11 +694,12 @@ export default function AgentsPage() {
                 />
                 <span className="min-w-0">
                   <span className="block text-xs font-black text-ink">
-                    Use configured model
+                    Fixture mode (rules-only, no model)
                   </span>
                   <span className="mt-0.5 block text-xs leading-5 text-muted">
-                    Off means rules-only. On still keeps decisions budgeted,
-                    evaluated, and approval-gated.
+                    Default for analyst runs — deterministic evals against the
+                    loaded lake. Enable only when a configured model provider is
+                    required.
                   </span>
                 </span>
               </label>
@@ -764,8 +764,8 @@ export default function AgentsPage() {
                     <span className="block">{spec.label}</span>
                     <span className="block truncate text-xs font-bold text-muted">
                       {harness === "posture_review"
-                        ? `${orchestrator} · ${useModel ? "model assisted" : "rules only"}`
-                        : `${orchestrator} · ${useModel ? "model assisted" : "rules only"}`}
+                        ? `${orchestrator} · ${useModel ? "model assisted" : "fixture mode"}`
+                        : `${orchestrator} · ${useModel ? "model assisted" : "fixture mode"}`}
                     </span>
                   </span>
                 </Button>
@@ -819,6 +819,9 @@ export default function AgentsPage() {
                       <Badge tone={toneForStatus(run.status)}>
                         {run.status}
                       </Badge>
+                      <Badge tone={modeTone(run.mode)}>
+                        {modeLabel(run.mode)}
+                      </Badge>
                       <Badge
                         tone={toneForConfidence(run.evaluation.confidence)}
                       >
@@ -858,9 +861,14 @@ export default function AgentsPage() {
             </CardDescription>
           </div>
           {selectedRun && (
-            <Badge tone={toneForStatus(selectedRun.status)}>
-              {selectedRun.status}
-            </Badge>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge tone={toneForStatus(selectedRun.status)}>
+                {selectedRun.status}
+              </Badge>
+              <Badge tone={modeTone(selectedRun.mode)}>
+                {modeLabel(selectedRun.mode)}
+              </Badge>
+            </div>
           )}
         </CardHeader>
         <CardContent>
@@ -911,6 +919,41 @@ export default function AgentsPage() {
                 </div>
               )}
 
+              {selectedRun.state &&
+              typeof selectedRun.state === "object" &&
+              (
+                selectedRun.state as {
+                  data_readiness?: {
+                    status?: string;
+                    recommended_next_steps?: string[];
+                  };
+                }
+              ).data_readiness?.status === "needs_ingestion" ? (
+                <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-950">
+                  <div className="font-black">Lake needs ingestion</div>
+                  <p className="mt-1 font-bold leading-5">
+                    Fixture mode is ready, but this lake has no assessment data
+                    yet. Load the golden fixture or connect a source, then
+                    re-run the harness.
+                  </p>
+                  <ul className="mt-2 list-disc pl-5 text-xs font-bold">
+                    {(
+                      (
+                        selectedRun.state as {
+                          data_readiness?: {
+                            recommended_next_steps?: string[];
+                          };
+                        }
+                      ).data_readiness?.recommended_next_steps ?? []
+                    )
+                      .slice(0, 3)
+                      .map((step) => (
+                        <li key={step}>{step}</li>
+                      ))}
+                  </ul>
+                </div>
+              ) : null}
+
               <div className="grid gap-3">
                 {selectedRun.decisions.length === 0 ? (
                   <div className="rounded-lg border border-dashed border-line px-4 py-6 text-sm font-bold text-muted">
@@ -918,51 +961,12 @@ export default function AgentsPage() {
                   </div>
                 ) : (
                   selectedRun.decisions.map((decision, index) => (
-                    <div
+                    <AgentDecisionCard
                       key={`${selectedRun.id}-${index}`}
-                      className="grid min-w-0 gap-3 rounded-lg border border-line bg-white p-3 lg:grid-cols-[minmax(0,1fr)_auto]"
-                    >
-                      <div className="min-w-0">
-                        <div className="flex min-w-0 flex-wrap items-center gap-2">
-                          <span className="truncate text-sm font-black text-ink">
-                            {decision.action}
-                          </span>
-                          <Badge tone={toneForStatus(decision.status)}>
-                            {decision.status ?? "proposed"}
-                          </Badge>
-                          {decision.requires_approval && (
-                            <Badge tone="attention">approval</Badge>
-                          )}
-                        </div>
-                        <p className="mt-1 text-sm font-bold leading-5 text-muted">
-                          {decision.reason ?? "No reason provided."}
-                        </p>
-                        <pre className="mt-2 max-h-32 overflow-auto rounded-lg bg-slate-50 p-3 text-xs text-ink">
-                          {jsonPreview(decision.payload)}
-                        </pre>
-                      </div>
-                      <div className="flex items-start justify-end">
-                        {decision.status === "proposed" ? (
-                          <Button
-                            variant="primary"
-                            size="sm"
-                            disabled={approveDecision.isPending}
-                            onClick={() => approve(selectedRun, index)}
-                          >
-                            {approveDecision.isPending ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <CheckCircle2 className="h-4 w-4" />
-                            )}
-                            Approve
-                          </Button>
-                        ) : (
-                          <Badge tone={toneForStatus(decision.status)}>
-                            {decision.status ?? "done"}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
+                      run={selectedRun}
+                      decision={decision}
+                      decisionIndex={index}
+                    />
                   ))
                 )}
               </div>
@@ -1134,5 +1138,19 @@ export default function AgentsPage() {
         onClose={() => setDrawerRunId(null)}
       />
     </div>
+  );
+}
+
+export default function AgentsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="px-7 py-5 text-sm text-muted">
+          Loading agent harness…
+        </div>
+      }
+    >
+      <AgentsPageContent />
+    </Suspense>
   );
 }
