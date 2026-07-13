@@ -1,4 +1,4 @@
-# Wave 2 tracker (#474)
+# Wave 2 tracker (#474) — complete
 
 **Positioning:** headless/agents/CI first; human console (managed GRC SaaS tier) second.
 
@@ -8,7 +8,7 @@ Secondary: console (reviewers, auditors, GRC leads)
 Default connect: agentless read-only API — no customer SDL required
 ```
 
-## PR streams (max 4 in flight)
+## PR streams
 
 | Stream                      | Branch                             | Issue | Status         |
 | --------------------------- | ---------------------------------- | ----- | -------------- |
@@ -17,28 +17,26 @@ Default connect: agentless read-only API — no customer SDL required
 | **K — CI posture gates**    | `cursor/ci-posture-gates-d259`     | #477  | ✅ #484 merged |
 | **L — Agent harness**       | `cursor/agent-harness-d259`        | #478  | ✅ #485 merged |
 | **M — Human connect**       | `cursor/human-connect-ux-d259`     | #479  | ✅ #486 merged |
-| **N — Console copy**        | `cursor/console-human-polish-d259` | #480  | 🟡 PR #487     |
+| **N — Console copy**        | `cursor/console-human-polish-d259` | #480  | ✅ #487 merged |
+| **Brand**                   | `cursor/koda-otter-logo-d259`      | —     | ✅ #488 merged |
 
-## Supersedes
-
-- **#449** — Wave 1 complete; use this issue only
-- **#93** — OpenAPI/skills extended by #476 (do not reopen)
-
-## Does not duplicate
-
-| Epic / issue | Scope                                                |
-| ------------ | ---------------------------------------------------- |
-| **#96**      | Human UX only (#479, #480, #18) — not headless       |
-| **#429**     | Closed #451 — polish lives in #478                   |
-| **#473**     | Console connector drawer — #479 is onboarding wizard |
-
-Full close list: [ISSUE_CONSOLIDATION.md](../ISSUE_CONSOLIDATION.md)
-
-## Acceptance
+## Acceptance — all complete
 
 - [x] #475 — curl/CLI/MCP lifecycle documented + tested (#482)
 - [x] #476 — AGENT_SKILLS.md + openapi + resource-catalog committed (#481)
 - [x] #477 — CI gate template fails on control regression (#484)
 - [x] #478 — #16 AC (skills page, fixture mode, approvals) (#485)
 - [x] #479 — onboarding wizard for agentless connect (#486)
-- [ ] #480 — source-sync copy, empty states, notifications (#487)
+- [x] #480 — source-sync copy, empty states, notifications (#487)
+
+## Maintainer closeout
+
+```bash
+./tools/close_shipped_issues.sh
+```
+
+Closes child issues **#475–#480** and harness parent **#16**. See [ISSUE_CLOSEOUT.md](../ISSUE_CLOSEOUT.md).
+
+## Next wave
+
+Human GRC console polish (Drata/Vanta-grade trust command center) → [WAVE3_TRACKER.md](WAVE3_TRACKER.md) under epic **#96**.
