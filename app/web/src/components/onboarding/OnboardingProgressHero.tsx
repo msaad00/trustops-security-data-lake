@@ -79,10 +79,18 @@ export function OnboardingProgressHero({
             const Icon = stage.icon;
             const done = index < stageIndex || shareable;
             const active = index === stageIndex && !shareable;
+            const href =
+              active && currentHref
+                ? currentHref
+                : stage.id === "connect"
+                  ? "/connectors?onboarding=1"
+                  : stage.id === "sync"
+                    ? "/connectors?onboarding=1"
+                    : stage.href;
             return (
               <Link
                 key={stage.id}
-                href={stage.href}
+                href={href}
                 className={`rounded-xl border p-3 transition-colors ${
                   active
                     ? "border-sky-400/60 bg-sky-500/10"
