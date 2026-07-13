@@ -41,4 +41,11 @@ close_issue 431 "Shipped in #456 — accessibility pass (skip link, aria-live, t
 close_issue 432 "Shipped in #456 — command palette and breadcrumbs expanded."
 
 echo ""
-echo "Done. Remaining open work: #474 epic, #477–#480 Wave 2 streams, epics #96 #16 #411 #22 #14 #18 #15 #434 #436."
+echo "Wave 2 batch 3 (close after #484–#486 merge on main)"
+close_issue 477 "Shipped in #484 — CI posture gate fails on control regression; see docs/playbooks/CI_POSTURE_GATE.md."
+close_issue 478 "Shipped in #485 — agent harness workbench: fixture mode, approval UX, E2E. Closes #16 AC."
+close_issue 479 "Shipped in #486 — human connect onboarding wizard (?onboarding=1 guided flow)."
+close_issue 480 "Shipped in #487 — console agent-first copy, source-sync empty states, notifications."
+
+echo ""
+echo "Done. Remaining open work: #474 epic, epics #96 #411 #22 #14 #18 #15 #434 #436."

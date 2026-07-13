@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   Activity,
   AlertTriangle,
@@ -10,6 +11,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import type { IngestionStatus } from "@/lib/api/types";
+import { CONNECT_FLOW } from "@/lib/console-copy";
 import {
   usePlatformJobs,
   useRunLakeEvalMutation,
@@ -222,7 +224,7 @@ export function IngestionStatusPanel({
               detail={
                 coverage
                   ? `${Math.round(coverage.enabled_rate * 100)}% of implemented live`
-                  : "probe-gated enablement"
+                  : "test-before-enable"
               }
             />
           </div>
@@ -372,7 +374,13 @@ export function IngestionStatusPanel({
                 ))
               ) : (
                 <span className="text-sm text-muted">
-                  No evidence has landed yet.
+                  {CONNECT_FLOW.emptyEvidence}{" "}
+                  <Link
+                    href="/connectors?onboarding=1"
+                    className="font-bold text-brand hover:underline"
+                  >
+                    Connect a source
+                  </Link>
                 </span>
               )}
             </div>
@@ -410,7 +418,7 @@ export function IngestionStatusPanel({
                 ))
               ) : (
                 <div className="px-3 py-3 text-sm text-muted">
-                  Enable a connector or sync an existing lake.
+                  {CONNECT_FLOW.emptyEvidence}
                 </div>
               )}
             </div>
