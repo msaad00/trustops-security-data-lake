@@ -64,8 +64,9 @@ export function OnboardingProgressHero({
                 Launch your trust workspace
               </div>
               <p className="mt-1 max-w-xl text-sm font-medium text-slate-300">
-                Connect a live source, prove sync, review posture, and publish
-                auditor-ready proof — same evaluator loop as managed GRC SaaS.
+                Connect read-only sources (no lake build required), sync
+                evidence, and share auditor-ready proof — same loop agents run
+                headlessly.
               </p>
             </div>
           </div>

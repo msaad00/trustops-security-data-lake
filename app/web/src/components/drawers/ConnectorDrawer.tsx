@@ -511,7 +511,7 @@ export function ConnectorDrawer({
     {
       label: "Sync",
       detail: !isRunnable
-        ? "Contract only"
+        ? "Access contract"
         : latestSyncOk
           ? "Evidence landed"
           : isEnabled
@@ -770,7 +770,7 @@ export function ConnectorDrawer({
                   {connector.state}
                 </Badge>
                 <Badge tone={isRunnable ? "ready" : "attention"}>
-                  {isRunnable ? "Runnable" : "Contract only"}
+                  {isRunnable ? "Live source" : "Access contract"}
                 </Badge>
                 <Badge>{labelForStatus(connector.production_status)}</Badge>
               </div>

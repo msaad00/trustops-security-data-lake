@@ -2,18 +2,18 @@
 
 **Single source of truth:** GitHub issue **#474** (Wave 2). Wave 1 tracker **#449** is retired — do not open new work against #449 streams.
 
-Last updated: **2026-07-12** (post #482 + #481 merge)
+Last updated: **2026-07-13** (post #486 merge; #487 in flight)
 
 ## Active wave — agent-first (#474)
 
-| Stream                      | Branch                             | Issue | Status                        |
-| --------------------------- | ---------------------------------- | ----- | ----------------------------- |
-| **I — Headless connectors** | `cursor/headless-connectors-d259`  | #475  | ✅ #482 merged — close #475   |
-| **J — Agent contracts**     | `cursor/agent-contracts-d259`      | #476  | ✅ #481 merged — close #476   |
-| **K — CI posture gates**    | `cursor/ci-posture-gates-d259`     | #477  | 🔲 Next                       |
-| **L — Agent harness UI**    | `cursor/agent-harness-d259`        | #478  | 🔲 Absorbs #16; #429 done     |
-| **M — Human connect UX**    | `cursor/human-connect-ux-d259`     | #479  | 🔲 managed GRC SaaS wizard    |
-| **N — Console copy**        | `cursor/console-human-polish-d259` | #480  | 🔲 Partial in #475; rest open |
+| Stream                      | Branch                             | Issue | Status               |
+| --------------------------- | ---------------------------------- | ----- | -------------------- |
+| **I — Headless connectors** | `cursor/headless-connectors-d259`  | #475  | ✅ #482 — close #475 |
+| **J — Agent contracts**     | `cursor/agent-contracts-d259`      | #476  | ✅ #481 — close #476 |
+| **K — CI posture gates**    | `cursor/ci-posture-gates-d259`     | #477  | ✅ #484 — close #477 |
+| **L — Agent harness UI**    | `cursor/agent-harness-d259`        | #478  | 🟡 PR #485           |
+| **M — Human connect UX**    | `cursor/human-connect-ux-d259`     | #479  | 🟡 PR ready          |
+| **N — Console copy**        | `cursor/console-human-polish-d259` | #480  | 🟡 stacks #479       |
 
 **Positioning:** headless/agents/CI first; human console second. Default connect path is **agentless read-only API** — no customer SDL required ([CONNECTORS.md](CONNECTORS.md), [HEADLESS_CONNECTOR_SETUP.md](playbooks/HEADLESS_CONNECTOR_SETUP.md)).
 

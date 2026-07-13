@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { Plug, RefreshCw, Search, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
@@ -21,6 +23,7 @@ import { ConnectorEcosystemStrip } from "@/components/connectors/ConnectorEcosys
 import { OnboardingGuideBanner } from "@/components/onboarding/OnboardingGuideBanner";
 import { CollapsibleCard } from "@/components/ui/collapsible-card";
 import { connectorNotify } from "@/lib/connector-notify";
+import { CONNECT_FLOW } from "@/lib/console-copy";
 import { useConnectors } from "@/lib/api/hooks";
 import type { ConnectorView } from "@/lib/api/types";
 
@@ -399,16 +402,23 @@ export default function ConnectorsPage() {
           <CardHeader>
             <CardTitle>{filtered.length} connectors</CardTitle>
             <CardDescription>
-              Runnable connectors support probe, enable, and sync. Contract-only
-              entries validate access boundaries before adapters ship.
+              Live sources support test, enable, and sync. Catalog entries
+              validate access before adapters ship.
             </CardDescription>
           </CardHeader>
           <div className="grid gap-2 p-4 pt-0">
             {filtered.length === 0 && (
               <div className="rounded-lg border border-dashed border-line p-4 text-sm text-muted">
-                {totals.enabled === 0
-                  ? "No connectors enabled yet. Use Link accounts above or pick a connector to connect, test, and sync."
-                  : "No connectors match the current filter."}
+                {totals.enabled === 0 ? (
+                  <div className="grid gap-3">
+                    <p>{CONNECT_FLOW.emptySources}</p>
+                    <Button asChild size="sm" className="w-fit">
+                      <Link href="/onboarding">Open setup guide</Link>
+                    </Button>
+                  </div>
+                ) : (
+                  "No connectors match the current filter."
+                )}
               </div>
             )}
             {filtered.map((c) => (

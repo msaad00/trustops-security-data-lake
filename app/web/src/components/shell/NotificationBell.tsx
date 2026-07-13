@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuditLog } from "@/lib/api/hooks";
 import { usePersistentState } from "@/lib/state/preferences";
 import type { AuditLogEntry } from "@/lib/api/types";
+import { CONNECT_FLOW } from "@/lib/console-copy";
 
 const CATEGORY_TONE: Record<
   AuditLogEntry["category"],
@@ -75,7 +76,7 @@ export function NotificationBell() {
           </DropdownMenu.Label>
           {entries.length === 0 && (
             <div className="px-3 py-6 text-center text-xs text-muted">
-              No events yet. Run a workflow or triage a violation.
+              No activity yet. {CONNECT_FLOW.emptyActivity}
             </div>
           )}
           {entries.map((entry) => (
