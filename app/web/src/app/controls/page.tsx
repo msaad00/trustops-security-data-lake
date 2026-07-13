@@ -27,6 +27,8 @@ import {
 } from "@/lib/api/hooks";
 import { useToolbar } from "@/lib/state/filters";
 import { cn } from "@/lib/utils";
+import { ControlMonitoringSummary } from "@/components/controls/ControlMonitoringSummary";
+import { ControlTestTable } from "@/components/dashboard/ControlTestTable";
 import type { ControlPosture, Violation } from "@/lib/api/types";
 
 const SURFACE = "controls";
@@ -125,10 +127,16 @@ export default function ControlsPage() {
   return (
     <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
       <PageHeader
-        eyebrow="Controls"
+        eyebrow="Continuous control monitoring"
         title="Control workbench"
-        description="Per-framework control catalog. Click any row to open the control drawer, then drill into violations to record triage events."
+        description="Filter by result, framework, and owner. KPI summary mirrors managed GRC control monitoring — drill into any control for evidence and remediation."
       />
+      <QueryState queries={[tests]} label="control tests">
+        <ControlMonitoringSummary rows={tests.data ?? []} />
+        {(tests.data ?? []).some((t) => t.result !== "pass") ? (
+          <ControlTestTable rows={tests.data ?? []} />
+        ) : null}
+      </QueryState>
       <TagFilterBar
         tags={tags}
         activeTagId={activeTagId}

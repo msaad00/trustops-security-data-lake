@@ -21,7 +21,8 @@ FedRAMP, CIS AWS, etc.) without shipping official certification logos. See
 
 Shared KPI tiles use `KpiTile` with tone accents (default / ready / attention /
 critical / brand). Compliance rings and bar scoreboards mirror managed GRC-style
-program dashboards on the trust command center.
+program dashboards on the **Trust Command Center** (`/dashboard`) and
+**Continuous control monitoring** summary (`/controls`).
 
 ## Out-Of-Box Views
 
