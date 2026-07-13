@@ -164,7 +164,7 @@ const ITEMS: RailItem[] = [
   { href: "/audit-log", label: "Audit log", Icon: Activity, group: "Review" },
   {
     href: "/agents",
-    label: "Agent API",
+    label: "Agent harness",
     Icon: Bot,
     badge: "JSON",
     group: "Review",

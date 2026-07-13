@@ -14,8 +14,8 @@ Default connect: agentless read-only API — no customer SDL required
 | --------------------------- | ---------------------------------- | ----- | ------------------ |
 | **I — Headless connectors** | `cursor/headless-connectors-d259`  | #475  | ✅ #482 merged     |
 | **J — Agent contracts**     | `cursor/agent-contracts-d259`      | #476  | ✅ #481 merged     |
-| **K — CI posture gates**    | `cursor/ci-posture-gates-d259`     | #477  | 🔲 Next            |
-| **L — Agent harness**       | `cursor/agent-harness-d259`        | #478  | 🔲 Closes #16      |
+| **K — CI posture gates**    | `cursor/ci-posture-gates-d259`     | #477  | 🟡 PR #484         |
+| **L — Agent harness**       | `cursor/agent-harness-d259`        | #478  | 🟡 In progress     |
 | **M — Human connect**       | `cursor/human-connect-ux-d259`     | #479  | 🔲 Wizard          |
 | **N — Console copy**        | `cursor/console-human-polish-d259` | #480  | 🔲 Partial in #475 |
 
