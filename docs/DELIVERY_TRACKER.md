@@ -11,9 +11,9 @@ Last updated: **2026-07-13** (post #486 merge; #487 in flight)
 | **I — Headless connectors** | `cursor/headless-connectors-d259`  | #475  | ✅ #482 — close #475 |
 | **J — Agent contracts**     | `cursor/agent-contracts-d259`      | #476  | ✅ #481 — close #476 |
 | **K — CI posture gates**    | `cursor/ci-posture-gates-d259`     | #477  | ✅ #484 — close #477 |
-| **L — Agent harness UI**    | `cursor/agent-harness-d259`        | #478  | 🟡 PR #485           |
-| **M — Human connect UX**    | `cursor/human-connect-ux-d259`     | #479  | 🟡 PR ready          |
-| **N — Console copy**        | `cursor/console-human-polish-d259` | #480  | 🟡 stacks #479       |
+| **L — Agent harness UI**    | `cursor/agent-harness-d259`        | #478  | ✅ #485 — close #478 |
+| **M — Human connect UX**    | `cursor/human-connect-ux-d259`     | #479  | ✅ #486 — close #479 |
+| **N — Console copy**        | `cursor/console-human-polish-d259` | #480  | 🟡 PR #487           |
 
 **Positioning:** headless/agents/CI first; human console second. Default connect path is **agentless read-only API** — no customer SDL required ([CONNECTORS.md](CONNECTORS.md), [HEADLESS_CONNECTOR_SETUP.md](playbooks/HEADLESS_CONNECTOR_SETUP.md)).
 

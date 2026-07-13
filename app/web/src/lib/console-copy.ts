@@ -2,8 +2,7 @@
 
 export const CONNECT_FLOW = {
   cycle: "Connect → test → enable → sync → evaluate",
-  agentless:
-    "Read-only API access — no customer evidence lake build required.",
+  agentless: "Read-only API access — no customer evidence lake build required.",
   test: "Test connection",
   enable: "Enable source",
   sync: "Sync evidence",
