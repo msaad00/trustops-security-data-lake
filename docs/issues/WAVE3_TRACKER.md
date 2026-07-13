@@ -1,6 +1,6 @@
 # Wave 3 tracker (#96)
 
-**Goal:** Drata/Vanta-grade **trust command center** on the same `/api/v1` — KPI tiles, framework readiness rings, control-test scoreboards, and connector health strips. Headless/agent paths stay primary; this wave polishes the human peer surface.
+**Goal:** Managed GRC-grade **trust command center** on the same `/api/v1` — KPI tiles, framework readiness rings, control-test scoreboards, and connector health strips. Headless/agent paths stay primary; this wave polishes the human peer surface.
 
 ## Inspiration (managed GRC patterns)
 

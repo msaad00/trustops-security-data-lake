@@ -39,4 +39,4 @@ Closes child issues **#475–#480** and harness parent **#16**. See [ISSUE_CLOSE
 
 ## Next wave
 
-Human GRC console polish (Drata/Vanta-grade trust command center) → [WAVE3_TRACKER.md](WAVE3_TRACKER.md) under epic **#96**.
+Human GRC console polish (managed GRC-grade trust command center) → [WAVE3_TRACKER.md](WAVE3_TRACKER.md) under epic **#96**.

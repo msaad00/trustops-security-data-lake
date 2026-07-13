@@ -20,7 +20,7 @@ Last updated: **2026-07-13** (Wave 2 merged #482–#488; maintainer closeout pen
 
 ## Wave 3 — managed GRC console (#96)
 
-Drata/Vanta-inspired trust command center and connector health. See [issues/WAVE3_TRACKER.md](issues/WAVE3_TRACKER.md).
+Managed GRC-style trust command center and connector health. See [issues/WAVE3_TRACKER.md](issues/WAVE3_TRACKER.md).
 
 | Stream                      | Branch                             | Issue | Status     |
 | --------------------------- | ---------------------------------- | ----- | ---------- |
