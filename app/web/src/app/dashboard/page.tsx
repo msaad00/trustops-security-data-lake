@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  AlertTriangle,
-  ClipboardCheck,
-  Layers,
-  ShieldCheck,
-} from "lucide-react";
+import { AlertTriangle, ClipboardCheck, ShieldCheck } from "lucide-react";
 import {
   useControlTests,
   useFrameworks,
@@ -14,7 +9,6 @@ import {
   usePostureStream,
 } from "@/lib/api/hooks";
 import { DashboardStripsRow } from "@/components/dashboard/DashboardStripsRow";
-import { TrustHomeQuickLinks } from "@/components/dashboard/TrustHomeQuickLinks";
 import { PostureRing } from "@/components/dashboard/PostureRing";
 import { ComplianceOverview } from "@/components/dashboard/ComplianceOverview";
 import { ReadinessGrid } from "@/components/dashboard/ReadinessGrid";
@@ -60,18 +54,6 @@ export default function DashboardPage() {
   const frameworks = data?.frameworks ?? [];
   const registeredCount =
     registeredFrameworks.data?.length ?? frameworks.length;
-  const readyFrameworks = frameworks.filter((f) => f.score >= 85).length;
-  const frameworkAvg =
-    frameworks.length > 0
-      ? Math.round(
-          frameworks.reduce((sum, framework) => sum + framework.score, 0) /
-            frameworks.length,
-        )
-      : 0;
-  const frameworkDetail =
-    frameworks.length > 0
-      ? `${frameworkAvg}% avg · ${frameworks.length}/${registeredCount} frameworks`
-      : "No framework posture yet";
   const ingestionNeedsAttention =
     ingestion.data?.state !== "active" ||
     Boolean(ingestion.data?.recommended_actions?.length) ||
@@ -90,8 +72,7 @@ export default function DashboardPage() {
           </div>
           <h1 className="ui-page-title mt-0.5">Executive trust overview</h1>
           <p className="text-sm text-muted">
-            Live readiness, control monitoring, evidence freshness, and owner
-            action — managed GRC-style continuous compliance at a glance.
+            Current posture, exceptions, and the next owner action.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -110,8 +91,6 @@ export default function DashboardPage() {
           ) : null}
         </div>
       </div>
-
-      <TrustHomeQuickLinks />
 
       <QueryState queries={[posture]} label="posture">
         <Card className="overflow-hidden border-line shadow-card">
@@ -152,24 +131,11 @@ export default function DashboardPage() {
                   {stateHeadline(p?.state)}
                 </Badge>
               </div>
-              <ComplianceOverview frameworks={frameworks} />
-              <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-2 sm:grid-cols-3">
                 <KpiTile
-                  label="Framework readiness"
-                  value={`${readyFrameworks} ready`}
-                  detail={frameworkDetail}
-                  tone={
-                    frameworks.length > 0 &&
-                    readyFrameworks === frameworks.length
-                      ? "ready"
-                      : "attention"
-                  }
-                  icon={<Layers className="h-3.5 w-3.5" />}
-                />
-                <KpiTile
-                  label="Control tests"
-                  value={p?.control_count ?? 0}
-                  detail={`${p?.failed_control_test_count ?? 0} failing`}
+                  label="Failing tests"
+                  value={p?.failed_control_test_count ?? 0}
+                  detail={`${p?.control_count ?? 0} controls monitored`}
                   tone={
                     (p?.failed_control_test_count ?? 0) > 0
                       ? "critical"
@@ -178,7 +144,7 @@ export default function DashboardPage() {
                   icon={<ClipboardCheck className="h-3.5 w-3.5" />}
                 />
                 <KpiTile
-                  label="Open risk"
+                  label="Critical findings"
                   value={`${p?.critical_violation_count ?? 0} critical`}
                   detail={`${p?.open_violation_count ?? 0} open findings`}
                   tone={
@@ -191,7 +157,7 @@ export default function DashboardPage() {
                   icon={<AlertTriangle className="h-3.5 w-3.5" />}
                 />
                 <KpiTile
-                  label="Evidence freshness"
+                  label="Stale evidence"
                   value={`${p?.stale_evidence_count ?? 0} stale`}
                   detail={`${p?.stale_control_count ?? 0} controls need proof`}
                   tone={
@@ -207,17 +173,7 @@ export default function DashboardPage() {
           </div>
         </Card>
 
-        <ReadinessGrid
-          frameworks={frameworks}
-          catalog={registeredFrameworks.data ?? []}
-        />
-
-        <div className="grid gap-2 xl:grid-cols-2">
-          <FixNext violations={data?.violations ?? []} />
-          <EvidenceTrend />
-        </div>
-
-        <DashboardStripsRow />
+        <FixNext violations={data?.violations ?? []} />
 
         <QueryState queries={[ingestion]} label="ingestion status">
           <CollapsibleCard
@@ -239,18 +195,6 @@ export default function DashboardPage() {
           </CollapsibleCard>
         </QueryState>
 
-        <DataPipelineStrip />
-
-        <CollapsibleCard
-          storageKey="dashboard-framework-bars"
-          defaultOpen={false}
-          title="Framework scoreboard"
-          description="Per-program compliance bars"
-          contentClassName="p-0"
-        >
-          <FrameworkBars frameworks={frameworks} embedded />
-        </CollapsibleCard>
-
         <CollapsibleCard
           storageKey="dashboard-control-tests"
           defaultOpen={(p?.failed_control_test_count ?? 0) > 0}
@@ -262,12 +206,21 @@ export default function DashboardPage() {
         </CollapsibleCard>
 
         <CollapsibleCard
-          storageKey="dashboard-trust-lifecycle"
+          storageKey="dashboard-operational-detail"
           defaultOpen={false}
-          title="Trust lifecycle"
-          description="Assessment hash and share readiness"
-          contentClassName="p-3"
+          title="Operational detail"
+          description={`${frameworks.length}/${registeredCount} frameworks · source health · trends · assessment provenance`}
+          contentClassName="grid gap-2 p-3"
         >
+          <ComplianceOverview frameworks={frameworks} />
+          <ReadinessGrid
+            frameworks={frameworks}
+            catalog={registeredFrameworks.data ?? []}
+          />
+          <EvidenceTrend />
+          <DashboardStripsRow />
+          <DataPipelineStrip />
+          <FrameworkBars frameworks={frameworks} embedded />
           <TrustLifecycle posture={p} assessmentHash={data?.assessment_hash} />
         </CollapsibleCard>
       </QueryState>
