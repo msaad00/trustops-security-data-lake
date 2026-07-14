@@ -5,15 +5,21 @@ test.describe("console smoke", () => {
     await page.goto("/console/dashboard/");
     await expect(page.getByRole("main")).toBeVisible({ timeout: 20_000 });
     await expect(
-      page.getByRole("navigation", { name: "Koda Home shortcuts" }),
-    ).toBeVisible();
-    await expect(
       page.getByRole("heading", {
         level: 1,
         name: /^Executive trust overview$/,
       }),
     ).toBeVisible();
     await expect(page.getByText("Trust Command Center")).toBeVisible();
+    await expect(
+      page.getByText("Failing tests", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Critical findings", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Stale evidence", { exact: true }),
+    ).toBeVisible();
   });
 
   test("audit room shows readiness score", async ({ page }) => {
@@ -25,17 +31,16 @@ test.describe("console smoke", () => {
     await expect(page.getByText("Audit score", { exact: true })).toBeVisible();
   });
 
-  test("trust home shortcut navigates to audit room", async ({ page }) => {
+  test("dashboard progressively discloses operational detail", async ({
+    page,
+  }) => {
     await page.goto("/console/dashboard/");
     await expect(page.getByRole("main")).toBeVisible({ timeout: 20_000 });
-    await page
-      .getByRole("navigation", { name: "Koda Home shortcuts" })
-      .getByRole("link", { name: "Audit room" })
-      .click();
-    await expect(page).toHaveURL(/\/console\/audit-room\/?$/);
-    await expect(
-      page.getByRole("heading", { level: 1, name: "Audit readiness room" }),
-    ).toBeVisible();
+    const detail = page.getByRole("button", { name: /Operational detail/ });
+    await expect(detail).toHaveAttribute("aria-expanded", "false");
+    await detail.click();
+    await expect(detail).toHaveAttribute("aria-expanded", "true");
+    await expect(page.getByText("Framework readiness")).toBeVisible();
   });
 
   test("shell exposes skip link and main landmark", async ({ page }) => {
