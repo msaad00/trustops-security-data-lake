@@ -15,6 +15,7 @@ import re
 import urllib.error
 import urllib.parse
 import urllib.request
+from collections import Counter
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -34,9 +35,16 @@ CONTROL_MAP = {
     "teams": ["SOC2-CC6.1", "ISO27001-A.5.15"],
     "workflow_permissions": ["SOC2-CC7.2", "ISO27001-A.8.16"],
     "security_settings": ["SOC2-CC7.2", "PCI-DSS-11", "GDPR-Art.32"],
+    "security_findings": ["SOC2-CC7.2", "PCI-DSS-11", "ISO27001-A.8.16"],
 }
 
-GITHUB_READ_ONLY_SCOPES = ["metadata:read", "contents:read", "administration:read", "security_events:read"]
+GITHUB_READ_ONLY_SCOPES = [
+    "metadata:read",
+    "administration:read",
+    "code_scanning_alerts:read",
+    "secret_scanning_alerts:read",
+    "dependabot_alerts:read",
+]
 GITLAB_READ_ONLY_SCOPES = ["read_api", "read_repository", "read_user", "read_registry"]
 
 
@@ -76,6 +84,9 @@ class GovernanceClient(Protocol):
         pass
 
     def vulnerability_alerts(self) -> dict[str, Any]:
+        pass
+
+    def security_findings(self) -> dict[str, Any]:
         pass
 
 
@@ -127,6 +138,14 @@ class GitHubGovernanceClient:
     def vulnerability_alerts(self) -> dict[str, Any]:
         return self._json(f"https://api.github.com/repos/{self.spec.slug}/vulnerability-alerts")
 
+    def security_findings(self) -> dict[str, Any]:
+        base = f"https://api.github.com/repos/{self.spec.slug}"
+        return {
+            "code_scanning": _safe_call(lambda: self._json_list_paginated(f"{base}/code-scanning/alerts")),
+            "secret_scanning": _safe_call(lambda: self._json_list_paginated(f"{base}/secret-scanning/alerts")),
+            "dependabot": _safe_call(lambda: self._json_list_paginated(f"{base}/dependabot/alerts")),
+        }
+
     def _json(self, url: str) -> dict[str, Any]:
         payload = self._request(url)
         if isinstance(payload, dict):
@@ -138,6 +157,21 @@ class GitHubGovernanceClient:
         if isinstance(payload, list):
             return [item for item in payload if isinstance(item, dict)]
         raise ValueError(f"GitHub returned non-list JSON for {url}")
+
+    def _json_list_paginated(self, url: str, *, max_pages: int = 10) -> list[dict[str, Any]]:
+        """Read a bounded GitHub list endpoint without silently truncating page one."""
+
+        rows: list[dict[str, Any]] = []
+        separator = "&" if "?" in url else "?"
+        for page in range(1, max_pages + 1):
+            payload = self._request(f"{url}{separator}per_page=100&page={page}")
+            if not isinstance(payload, list):
+                raise ValueError(f"GitHub returned non-list JSON for {url}")
+            page_rows = [item for item in payload if isinstance(item, dict)]
+            rows.extend(page_rows)
+            if len(payload) < 100:
+                break
+        return rows
 
     def _request(self, url: str) -> object:
         request = urllib.request.Request(
@@ -219,6 +253,15 @@ class GitLabGovernanceClient:
         enabled = bool(project.get("security_and_compliance_enabled"))
         return {"enabled": enabled, "security_and_compliance_enabled": enabled}
 
+    def security_findings(self) -> dict[str, Any]:
+        # GitLab exposes vulnerability detail through tier- and permission-dependent
+        # APIs. Keep this signal honest until a stable read contract is configured.
+        return {
+            "available": False,
+            "requires_scope_or_permission": True,
+            "reason": "GitLab vulnerability findings require a supported security tier and API scope",
+        }
+
     def _json(self, url: str) -> dict[str, Any]:
         payload = self._request(url)
         if isinstance(payload, dict):
@@ -294,6 +337,9 @@ class FixtureGovernanceClient:
 
     def vulnerability_alerts(self) -> dict[str, Any]:
         return self._read("vulnerability_alerts.json")
+
+    def security_findings(self) -> dict[str, Any]:
+        return self._read("security_findings.json")
 
     def _read(self, name: str) -> Any:
         path = self.fixture / name
@@ -373,6 +419,7 @@ def _build_events(
         "teams": _safe_call(client.teams),
         "workflow_permissions": _safe_call(client.workflow_permissions),
         "security_settings": _safe_call(client.vulnerability_alerts),
+        "security_findings": _safe_call(client.security_findings),
     }
     return [
         _event(
@@ -385,7 +432,11 @@ def _build_events(
             attributes={
                 "default_branch": branch,
                 "source_health": source_health,
-                "governance": _normalize_signal(signal, payload),
+                "governance": (
+                    _normalize_security_findings(payload)
+                    if signal == "security_findings"
+                    else _normalize_signal(signal, payload)
+                ),
             },
             status=_status_for(payload),
         )
@@ -416,6 +467,48 @@ def _normalize_signal(signal: str, payload: dict[str, Any] | list[dict[str, Any]
     if payload.get("available") is False:
         return {"signal": signal, **payload}
     return {"signal": signal, "available": True, **_redact_item(payload)}
+
+
+def _normalize_security_findings(payload: dict[str, Any] | list[dict[str, Any]]) -> dict[str, Any]:
+    """Emit aggregate alert posture without copying secret- or code-bearing details."""
+
+    if not isinstance(payload, dict) or payload.get("available") is False:
+        return _normalize_signal("security_findings", payload)
+
+    categories: dict[str, Any] = {}
+    for category in ("code_scanning", "secret_scanning", "dependabot"):
+        alerts = payload.get(category)
+        if isinstance(alerts, dict) and alerts.get("available") is False:
+            categories[category] = _redact_item(alerts)
+            continue
+        if not isinstance(alerts, list):
+            alerts = []
+        states = Counter(str(item.get("state") or "unknown") for item in alerts if isinstance(item, dict))
+        severities = Counter(
+            severity
+            for item in alerts
+            if isinstance(item, dict)
+            for severity in [_alert_severity(category, item)]
+            if severity
+        )
+        categories[category] = {
+            "count": len(alerts),
+            "by_state": dict(sorted(states.items())),
+            "by_severity": dict(sorted(severities.items())),
+        }
+    return {"signal": "security_findings", "available": True, "categories": categories}
+
+
+def _alert_severity(category: str, alert: dict[str, Any]) -> str | None:
+    if category == "code_scanning":
+        rule = alert.get("rule")
+        value = rule.get("security_severity_level") if isinstance(rule, dict) else None
+    elif category == "dependabot":
+        advisory = alert.get("security_advisory")
+        value = advisory.get("severity") if isinstance(advisory, dict) else None
+    else:
+        value = None
+    return str(value).lower() if value else None
 
 
 def _redact_item(item: dict[str, Any]) -> dict[str, Any]:

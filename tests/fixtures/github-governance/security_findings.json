@@ -1,0 +1,29 @@
+{
+  "code_scanning": [
+    {
+      "state": "open",
+      "rule": {
+        "security_severity_level": "high"
+      }
+    },
+    {
+      "state": "dismissed",
+      "rule": {
+        "security_severity_level": "medium"
+      }
+    }
+  ],
+  "dependabot": [
+    {
+      "security_advisory": {
+        "severity": "critical"
+      },
+      "state": "fixed"
+    }
+  ],
+  "secret_scanning": [
+    {
+      "state": "open"
+    }
+  ]
+}

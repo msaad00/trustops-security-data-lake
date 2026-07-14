@@ -165,6 +165,20 @@ For live GitHub collection, use a GitHub App installation token from the
 selected environment variable or secret manager. The configure payload should
 store the reference name, not the raw token:
 
+The minimum GitHub App repository permissions are:
+
+| Permission                   | Access unlocked                                                            |
+| ---------------------------- | -------------------------------------------------------------------------- |
+| Metadata: read               | Repository identity, visibility, and default branch                        |
+| Administration: read         | Branch protection, collaborators, teams, and Actions workflow defaults     |
+| Code scanning alerts: read   | Aggregate code-scanning counts by state and severity                       |
+| Secret scanning alerts: read | Aggregate secret-scanning counts by state; alert details are not persisted |
+| Dependabot alerts: read      | Aggregate dependency-alert counts by state and severity                    |
+
+TrustOps follows GitHub list pagination for these alert APIs, capped at 1,000
+records per category per sync. It persists aggregate counts only; alert payloads,
+secret material, and tokens are not copied into evidence.
+
 ```bash
 security-lakehouse connectors probe \
   --lake build/lakehouse \
