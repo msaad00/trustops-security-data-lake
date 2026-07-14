@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   Card,
   CardDescription,
@@ -37,15 +38,15 @@ function cellClass(tone: "ok" | "warn" | "bad" | "neutral", active: boolean) {
 export function SlaHeatmapPanel() {
   const heatmap = useInsightsSlaHeatmap();
   const columns = heatmap.data?.columns ?? [];
-  const rows = heatmap.data?.rows ?? [];
+  const rows = heatmap.data?.owner_rows ?? [];
 
   return (
     <Card className="overflow-hidden">
       <CardHeader>
         <CardTitle>Remediation SLA heatmap</CardTitle>
         <CardDescription>
-          Task counts by priority and SLA state — open on-track vs overdue, plus
-          on-time vs late resolution.
+          Task counts by owner and SLA state. Select a cell to open that
+          owner&apos;s remediation workbench.
         </CardDescription>
       </CardHeader>
       <div className="overflow-x-auto px-4 pb-4">
@@ -62,7 +63,7 @@ export function SlaHeatmapPanel() {
             <thead>
               <tr>
                 <th className="px-2 py-2 text-left text-[11px] font-black uppercase tracking-wider text-muted">
-                  Priority
+                  Owner
                 </th>
                 {columns.map((column) => (
                   <th
@@ -76,20 +77,30 @@ export function SlaHeatmapPanel() {
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.priority}>
-                  <td className="px-2 py-2 font-semibold capitalize text-ink">
-                    {row.priority}
+                <tr key={row.owner}>
+                  <td className="max-w-48 truncate px-2 py-2 font-semibold text-ink">
+                    {row.owner}
                   </td>
                   {columns.map((column) => {
                     const value = row[column];
                     const tone = COLUMN_TONE[column];
                     return (
                       <td key={column} className="px-2 py-2 text-center">
-                        <span
-                          className={`inline-flex min-w-[2.25rem] justify-center rounded-lg px-2 py-1 text-xs font-bold ${cellClass(tone, value > 0)}`}
-                        >
-                          {value}
-                        </span>
+                        {value > 0 ? (
+                          <Link
+                            href={`/remediation?owner=${encodeURIComponent(row.owner === "Unassigned" ? "" : row.owner)}`}
+                            aria-label={`${row.owner}: ${value} ${COLUMN_LABELS[column].toLowerCase()} remediation task${value === 1 ? "" : "s"}`}
+                            className={`inline-flex min-w-[2.25rem] justify-center rounded-lg px-2 py-1 text-xs font-bold ring-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-brand ${cellClass(tone, true)}`}
+                          >
+                            {value}
+                          </Link>
+                        ) : (
+                          <span
+                            className={`inline-flex min-w-[2.25rem] justify-center rounded-lg px-2 py-1 text-xs font-bold ${cellClass(tone, false)}`}
+                          >
+                            0
+                          </span>
+                        )}
                       </td>
                     );
                   })}
