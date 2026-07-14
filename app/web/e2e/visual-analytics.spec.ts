@@ -31,14 +31,20 @@ test.describe("visual analytics", () => {
     expect(created.ok()).toBeTruthy();
 
     await page.goto("/console/insights/");
-    await expect(page.getByRole("heading", { name: "Remediation SLA heatmap" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Remediation SLA heatmap" }),
+    ).toBeVisible();
     const ownerRow = page.getByRole("row").filter({ hasText: owner });
     await expect(ownerRow).toBeVisible();
     await ownerRow.getByRole("link").click();
 
-    await expect(page).toHaveURL(new RegExp(`/console/remediation/\\?owner=${owner}`));
+    await expect(page).toHaveURL(
+      new RegExp(`/console/remediation/\\?owner=${owner}`),
+    );
     await expect(page.getByText(`Filtered to ${owner}.`)).toBeVisible();
-    await expect(page.getByText("Rotate repository deployment credential")).toBeVisible();
+    await expect(
+      page.getByText("Rotate repository deployment credential"),
+    ).toBeVisible();
   });
 
   for (const viewport of VIEWPORTS) {
