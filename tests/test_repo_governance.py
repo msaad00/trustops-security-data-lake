@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import urllib.error
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -10,7 +11,7 @@ import pytest
 
 from security_lakehouse.cli import main
 from security_lakehouse.io import read_jsonl
-from security_lakehouse.repo_governance import sync_repo_governance
+from security_lakehouse.repo_governance import GitHubGovernanceClient, GovernanceRepoSpec, sync_repo_governance
 from security_lakehouse.validation import validate_raw_events
 
 
@@ -56,6 +57,17 @@ def _fixture(tmp_path: Path) -> Path:
         {"default_workflow_permissions": "read", "can_approve_pull_request_reviews": False},
     )
     _write_json(fixture / "vulnerability_alerts.json", {"enabled": True})
+    _write_json(
+        fixture / "security_findings.json",
+        {
+            "code_scanning": [
+                {"state": "open", "rule": {"security_severity_level": "high"}, "secret": "drop-me"},
+                {"state": "dismissed", "rule": {"security_severity_level": "medium"}},
+            ],
+            "secret_scanning": [{"state": "open", "secret": "never-copy-alert-details"}],
+            "dependabot": [{"state": "fixed", "security_advisory": {"severity": "critical"}}],
+        },
+    )
     return fixture
 
 
@@ -71,12 +83,21 @@ def test_governance_sync_fixture_emits_valid_raw_events(tmp_path: Path) -> None:
         "repository.governance.branch_protection",
         "repository.governance.collaborators",
         "repository.governance.security_settings",
+        "repository.governance.security_findings",
         "repository.governance.teams",
         "repository.governance.workflow_permissions",
     }
     branch = by_type["repository.governance.branch_protection"]
     assert branch["controls"] == ["SOC2-CC6.1", "ISO27001-A.5.15", "PCI-DSS-7"]
     assert branch["attributes"]["governance"]["required_pull_request_reviews"]["required_approving_review_count"] == 2
+    findings = by_type["repository.governance.security_findings"]["attributes"]["governance"]
+    assert findings["categories"]["code_scanning"] == {
+        "count": 2,
+        "by_state": {"dismissed": 1, "open": 1},
+        "by_severity": {"high": 1, "medium": 1},
+    }
+    assert findings["categories"]["secret_scanning"]["count"] == 1
+    assert "never-copy-alert-details" not in json.dumps(rows)
 
 
 def test_governance_sync_redacts_secret_like_fields(tmp_path: Path) -> None:
@@ -100,6 +121,55 @@ def test_governance_sync_requires_fixture_or_token(monkeypatch: pytest.MonkeyPat
         sync_repo_governance("acme/private-agent-api")
 
 
+def test_github_security_findings_paginates_with_a_hard_limit(monkeypatch: pytest.MonkeyPatch) -> None:
+    client = GitHubGovernanceClient(
+        GovernanceRepoSpec(provider="github", owner="acme", repo="private-agent-api"),
+        token="not-persisted",
+    )
+    requested: list[str] = []
+
+    def fake_request(url: str) -> object:
+        requested.append(url)
+        if url.endswith("page=1"):
+            return [{"state": "open"}] * 100
+        return [{"state": "fixed"}]
+
+    monkeypatch.setattr(client, "_request", fake_request)
+    findings = client.security_findings()
+
+    assert {key: len(value) for key, value in findings.items()} == {
+        "code_scanning": 101,
+        "secret_scanning": 101,
+        "dependabot": 101,
+    }
+    assert len(requested) == 6
+    assert all("per_page=100" in url for url in requested)
+
+
+def test_github_security_findings_preserves_partial_permission_results(monkeypatch: pytest.MonkeyPatch) -> None:
+    client = GitHubGovernanceClient(
+        GovernanceRepoSpec(provider="github", owner="acme", repo="private-agent-api"),
+        token="not-persisted",
+    )
+
+    def fake_request(url: str) -> object:
+        if "secret-scanning" in url:
+            raise urllib.error.HTTPError(url, 403, "forbidden", {}, None)
+        return [{"state": "open"}]
+
+    monkeypatch.setattr(client, "_request", fake_request)
+    findings = client.security_findings()
+
+    assert findings["code_scanning"] == [{"state": "open"}]
+    assert findings["dependabot"] == [{"state": "open"}]
+    assert findings["secret_scanning"] == {
+        "available": False,
+        "requires_scope_or_permission": True,
+        "http_status": 403,
+        "reason": "authenticated API did not authorize this signal",
+    }
+
+
 def test_gitlab_governance_sync_fixture_emits_valid_raw_events(tmp_path: Path) -> None:
     rows = sync_repo_governance(
         "https://gitlab.com/acme/private-agent-api",
@@ -110,7 +180,7 @@ def test_gitlab_governance_sync_fixture_emits_valid_raw_events(tmp_path: Path) -
     assert validate_raw_events(rows) == []
     assert rows[0]["source"] == "gitlab-repo-governance"
     assert rows[0]["entity"]["asset_id"] == "gitlab:repo:acme/private-agent-api"
-    assert len(rows) == 5
+    assert len(rows) == 6
 
 
 def test_gitlab_governance_sync_redacts_secret_like_fields(tmp_path: Path) -> None:
@@ -141,6 +211,6 @@ def test_governance_sync_cli_writes_jsonl(tmp_path: Path, capsys) -> None:  # ty
     )
     assert code == 0
     payload = json.loads(capsys.readouterr().out)
-    assert payload["count"] == 5
+    assert payload["count"] == 6
     rows = read_jsonl(out)
     assert validate_raw_events(rows) == []

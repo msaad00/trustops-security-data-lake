@@ -87,15 +87,18 @@
       "access_boundary": "scoped_token",
       "credential_type": "github_app_installation_token",
       "minimum_permissions": [
-        "read code scanning alerts",
-        "read secret scanning alerts",
-        "read dependabot alerts",
-        "read repository metadata"
+        "metadata:read",
+        "administration:read",
+        "code_scanning_alerts:read",
+        "secret_scanning_alerts:read",
+        "dependabot_alerts:read"
       ],
       "evidence_types": [
         "code_scan",
         "secret_finding",
         "dependency_alert",
+        "code_scanning_summary",
+        "secret_scanning_summary",
         "repository"
       ],
       "default_route": "dual",

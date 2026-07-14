@@ -16,6 +16,7 @@ VALID_ACCESS_BOUNDARIES = {"read_only_role", "scoped_token", "dedicated_schema"}
 VALID_ROUTES = {"Snowflake", "ClickHouse", "dual", "local"}
 VALID_PRODUCTION_STATUSES = {"primary_lake", "supported_connector", "local_demo"}
 DENIED_PERMISSION_WORDS = {"admin", "delete", "drop", "modify", "owner", "write all", "root"}
+EXPLICIT_READ_ONLY_PERMISSIONS = {"administration:read"}
 SENSITIVE_FIELD_NAMES = {"password", "secret", "token", "private_key", "client_secret", "api_key"}
 
 
@@ -71,7 +72,9 @@ def validate_connector_catalog(path: str | Path | None = None) -> list[str]:
             errors.append(f"connector {connector_id} managed_evidence_object must use dedicated_schema")
 
         for permission in permissions:
-            if any(word in permission for word in DENIED_PERMISSION_WORDS):
+            if permission not in EXPLICIT_READ_ONLY_PERMISSIONS and any(
+                word in permission for word in DENIED_PERMISSION_WORDS
+            ):
                 errors.append(f"connector {connector_id} permission is too broad: {permission}")
 
         for field_name, value in _flatten(connector):

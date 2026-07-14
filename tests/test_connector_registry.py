@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 from security_lakehouse import connector_runner, connector_state
-from security_lakehouse.connectors import load_connector_catalog
+from security_lakehouse.connectors import load_connector_catalog, validate_connector_catalog
 from security_lakehouse.io import read_jsonl
 from security_lakehouse.validation import validate_raw_events
 
@@ -53,6 +53,12 @@ def test_implemented_adapters_catalog_flags_agree_with_registry() -> None:
     }
     assert connector_runner.registered_connector_ids() == frozenset(implemented_from_catalog)
     assert frozenset(REAL_ADAPTERS) == connector_state.IMPLEMENTED_ADAPTERS
+
+
+def test_connector_catalog_accepts_scoped_github_administration_read() -> None:
+    assert validate_connector_catalog() == []
+    permissions = load_connector_catalog()["github-security"]["minimum_permissions"]
+    assert "administration:read" in permissions
 
 
 def test_cloud_connector_credentials_prefer_keyless_or_reference_auth() -> None:
