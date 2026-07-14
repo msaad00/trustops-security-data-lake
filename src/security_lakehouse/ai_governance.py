@@ -2,8 +2,8 @@
 
 Rolls up ``ai.model_inventory``, ``model.lineage``, agent runtime signals, and
 public-repo ``ai_artifact`` evidence into a single headless-first status payload.
-Formal CycloneDX/SPDX AIBOM ingest is intentionally out of scope here — inventory
-plus lineage events are sufficient for ISO 42001 / EU AI Act audit parity.
+The local AIBOM store adds stable CycloneDX/SPDX interchange without changing
+the event-backed inventory and lineage evidence model.
 """
 
 from __future__ import annotations
@@ -12,6 +12,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse.aibom import aibom_status, list_aibom_items
 from security_lakehouse.io import read_jsonl
 
 INVENTORY_EVENT_TYPES = frozenset(
@@ -173,6 +174,26 @@ def _inventory_items(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return sorted(by_asset.values(), key=lambda row: row["asset_id"])
 
 
+def _aibom_inventory_items(*, lake: Path) -> list[dict[str, Any]]:
+    rows = []
+    for item in list_aibom_items(lake=lake):
+        rows.append(
+            {
+                "asset_id": str(item.get("id") or item.get("name")),
+                "asset_type": "model" if item.get("type") == "machine-learning-model" else str(item.get("type")),
+                "owner": "",
+                "environment": "",
+                "model_card": bool(item.get("model_card")),
+                "lineage_complete": False,
+                "last_seen_at": "",
+                "sources": [str(item.get("source_format") or "aibom")],
+                "control_ids": [],
+                "event_types": ["aibom.inventory"],
+            }
+        )
+    return rows
+
+
 def build_ai_governance_status(*, lake: Path) -> dict[str, Any]:
     """Aggregate AI inventory, lineage, artifacts, and framework coverage."""
     events = read_jsonl(lake / "silver" / "normalized_events.jsonl", missing_ok=True)
@@ -184,7 +205,9 @@ def build_ai_governance_status(*, lake: Path) -> dict[str, Any]:
     agent_events = [row for row in ai_events if str(row.get("event_type") or "") in AGENT_EVENT_TYPES]
     repo_artifacts = [row for row in ai_events if str(row.get("event_type") or "") in REPO_ARTIFACT_EVENT_TYPES]
 
-    inventory = _inventory_items(ai_events)
+    inventory_by_id = {row["asset_id"]: row for row in _aibom_inventory_items(lake=lake)}
+    inventory_by_id.update({row["asset_id"]: row for row in _inventory_items(ai_events)})
+    inventory = sorted(inventory_by_id.values(), key=lambda row: row["asset_id"])
     models = [row for row in inventory if row["asset_type"] in {"ai_model", "model"}]
     agents = [row for row in inventory if row["asset_type"] == "ai_agent"]
     with_model_card = sum(1 for row in inventory if row["model_card"])
@@ -275,13 +298,7 @@ def build_ai_governance_status(*, lake: Path) -> dict[str, Any]:
             "model_cards": model_cards > 0,
             "agent_governance": bool(agent_events or agents),
         },
-        "aibom": {
-            "shipped": False,
-            "note": (
-                "CycloneDX/SPDX AIBOM ingest is roadmap. Inventory, lineage, and model-card "
-                "evidence cover ISO 42001 / EU AI Act audit parity without formal AIBOM files."
-            ),
-        },
+        "aibom": aibom_status(lake=lake),
     }
 
 
@@ -289,7 +306,9 @@ def list_ai_inventory(*, lake: Path, limit: int = 100, offset: int = 0) -> list[
     """Return paginated AI model/agent inventory rows from normalized events."""
     events = read_jsonl(lake / "silver" / "normalized_events.jsonl", missing_ok=True)
     ai_events = [row for row in events if _is_ai_event(row)]
-    items = _inventory_items(ai_events)
+    by_id = {row["asset_id"]: row for row in _aibom_inventory_items(lake=lake)}
+    by_id.update({row["asset_id"]: row for row in _inventory_items(ai_events)})
+    items = sorted(by_id.values(), key=lambda row: row["asset_id"])
     start = max(offset, 0)
     end = start + max(limit, 1)
     return items[start:end]

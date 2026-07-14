@@ -108,7 +108,7 @@ def test_build_ai_governance_status_fixture(tmp_path: Path) -> None:
     assert data["events"]["agent_runtime"] >= 1
     assert data["events"]["repo_artifacts"] >= 1
     assert data["frameworks_total"] == 3
-    assert data["aibom"]["shipped"] is False
+    assert data["aibom"]["shipped"] is True
     assert data["evidence_loops"]["inventory_events"] is True
     assert data["evidence_loops"]["lineage_events"] is True
 
@@ -169,7 +169,7 @@ def test_build_ai_governance_empty_lake_gaps(tmp_path: Path) -> None:
     gap_ids = {gap["id"] for gap in data["gaps"]}
     assert gap_ids == {"model_inventory", "model_lineage", "model_cards", "agent_governance"}
     assert data["evidence_loops"]["inventory_events"] is False
-    assert data["aibom"]["shipped"] is False
+    assert data["aibom"]["shipped"] is True
 
 
 def test_build_ai_governance_governed_when_loops_complete(tmp_path: Path) -> None:
