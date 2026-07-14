@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Plug, RefreshCw, Search, ShieldCheck } from "lucide-react";
+import { Database, Plug, Search, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +18,6 @@ import { ConnectorMark } from "@/components/connectors/ConnectorMark";
 import { ConnectorIngestionStrip } from "@/components/connectors/ConnectorIngestionStrip";
 import { ConnectorIntegrationCoverage } from "@/components/connectors/ConnectorIntegrationCoverage";
 import { ConnectorRegistryGapStrip } from "@/components/connectors/ConnectorRegistryGapStrip";
-import { ConnectorAccountLinkingStrip } from "@/components/connectors/ConnectorAccountLinkingStrip";
 import { ConnectorEcosystemStrip } from "@/components/connectors/ConnectorEcosystemStrip";
 import { OnboardingGuideBanner } from "@/components/onboarding/OnboardingGuideBanner";
 import { CollapsibleCard } from "@/components/ui/collapsible-card";
@@ -29,22 +28,6 @@ import type { ConnectorView } from "@/lib/api/types";
 
 const isRunnableConnector = (connector: ConnectorView) =>
   Boolean(connector.is_implemented);
-
-const toneForStatus = (status: string) =>
-  status === "primary_lake"
-    ? "ready"
-    : status === "supported_connector"
-      ? "info"
-      : "attention";
-
-const labelForStatus = (status: string) =>
-  status === "primary_lake"
-    ? "Primary lake"
-    : status === "supported_connector"
-      ? "Supported"
-      : status === "local_demo"
-        ? "Local demo"
-        : status.replace(/_/g, " ");
 
 const toneForState = (state: string) =>
   state === "enabled" ? "ready" : "default";
@@ -108,30 +91,30 @@ function ConnectorSetupRail() {
     },
     {
       step: "02",
-      label: "Discover",
-      detail: "Show only granted scope.",
+      label: "Read",
+      detail: "Collect only the granted scope.",
       Icon: Search,
     },
     {
       step: "03",
-      label: "Test",
-      detail: "Validate access before enablement.",
+      label: "Evaluate",
+      detail: "Run controls against normalized evidence.",
       Icon: ShieldCheck,
     },
     {
       step: "04",
-      label: "Sync",
-      detail: "Refresh evidence and posture.",
-      Icon: RefreshCw,
+      label: "Snapshot",
+      detail: "Write a daily result to your security data lake.",
+      Icon: Database,
     },
   ] as const;
 
   return (
     <Card className="overflow-hidden">
       <CardHeader className="p-3 pb-2">
-        <CardTitle className="text-sm">Setup steps</CardTitle>
+        <CardTitle className="text-sm">Evidence loop</CardTitle>
         <CardDescription className="text-xs">
-          Probe-gated workflow for every connector.
+          One read-only path for people, agents, and scheduled jobs.
         </CardDescription>
       </CardHeader>
       <div className="grid gap-2 p-3 pt-0 sm:grid-cols-2 lg:grid-cols-4">
@@ -195,39 +178,17 @@ function ConnectorRow({
         <span className="flex flex-wrap items-center gap-2">
           <span className="truncate font-black text-ink">{connector.name}</span>
           <Badge tone={toneForState(connector.state)}>{connector.state}</Badge>
-          <Badge tone={runnable ? "ready" : "attention"}>
-            {runnable ? "Runnable" : "Contract only"}
-          </Badge>
           {health && <Badge tone={health.tone}>{health.label}</Badge>}
-          <Badge tone={toneForStatus(connector.production_status)}>
-            {labelForStatus(connector.production_status)}
-          </Badge>
         </span>
         <span className="mt-1 block truncate text-xs text-muted">
-          {connector.vendor ?? connector.category} ·{" "}
-          {connector.collection_mode.replace(/_/g, " ")} ·{" "}
-          {connector.access_boundary.replace(/_/g, " ")} · freshness{" "}
-          {connector.freshness_slo_minutes}m SLO
+          {connector.setup_hint ??
+            `Read-only ${connector.category} evidence · daily snapshot ready`}
         </span>
-        {connector.setup_hint && (
-          <span className="mt-0.5 line-clamp-1 block text-[11px] text-muted">
-            {connector.setup_hint}
-          </span>
-        )}
       </span>
       <span className="shrink-0 text-right">
-        {probe ? (
-          <>
-            <Badge tone={toneForProbe(probe.result)}>
-              last probe {probe.result}
-            </Badge>
-            <span className="mt-1 block text-[11px] text-muted">
-              {probe.occurred_at?.slice(0, 19)}
-            </span>
-          </>
-        ) : (
-          <Badge tone="default">connection not tested</Badge>
-        )}
+        <Badge tone={probe ? toneForProbe(probe.result) : "default"}>
+          {probe ? `Probe ${probe.result}` : "Connect"}
+        </Badge>
       </span>
     </button>
   );
@@ -243,7 +204,7 @@ export default function ConnectorsPage() {
   >("all");
   const [runnerFilter, setRunnerFilter] = useState<
     "all" | "runnable" | "contract"
-  >("all");
+  >("runnable");
   const [selected, setSelected] = useState<ConnectorView | null>(null);
   const [onboarding, setOnboarding] = useState(false);
 
@@ -325,9 +286,9 @@ export default function ConnectorsPage() {
         />
       )}
       <PageHeader
-        eyebrow="Connectors"
-        title="Connector registry"
-        description="Connect read-only sources, discover allowed scope, test access, then sync evidence."
+        eyebrow="Sources"
+        title="Connect evidence"
+        description="Connect a read-only source. TrustOps evaluates it and writes a daily snapshot to your security data lake."
         actions={
           <>
             <span className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-black text-slate-600">
@@ -339,18 +300,11 @@ export default function ConnectorsPage() {
                 {totals.unhealthy} need attention
               </span>
             )}
-            <span className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-black text-slate-600">
-              <ShieldCheck className="mr-1 inline h-3 w-3 text-emerald-600" />{" "}
-              least privilege
-            </span>
           </>
         }
       />
 
-      <div className="grid gap-2 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-        <ConnectorAccountLinkingStrip />
-        <ConnectorSetupRail />
-      </div>
+      <ConnectorSetupRail />
 
       <CollapsibleCard
         storageKey="connectors-overview"
@@ -371,7 +325,7 @@ export default function ConnectorsPage() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by name, category, evidence type, permission…"
+            placeholder="Search sources…"
             className="w-full rounded-lg border border-line bg-white py-2.5 pl-10 pr-3 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
           />
         </div>
@@ -400,10 +354,10 @@ export default function ConnectorsPage() {
       <QueryState queries={connectors} label="connectors">
         <Card className="overflow-hidden">
           <CardHeader>
-            <CardTitle>{filtered.length} connectors</CardTitle>
+            <CardTitle>{filtered.length} ready sources</CardTitle>
             <CardDescription>
-              Live sources support test, enable, and sync. Catalog entries
-              validate access before adapters ship.
+              Select a source to connect, probe access, and schedule its daily
+              evidence snapshot.
             </CardDescription>
           </CardHeader>
           <div className="grid gap-2 p-4 pt-0">

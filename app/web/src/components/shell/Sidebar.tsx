@@ -40,7 +40,7 @@ interface RailItem {
   label: string;
   Icon: typeof LayoutDashboard;
   badge?: string;
-  group: "Trust" | "Workflows" | "Sources" | "Review";
+  group: "Operate" | "Sources" | "Automate" | "Governance" | "Setup";
 }
 
 const ITEMS: RailItem[] = [
@@ -49,60 +49,60 @@ const ITEMS: RailItem[] = [
     label: "Dashboard",
     Icon: LayoutDashboard,
     badge: "live",
-    group: "Trust",
+    group: "Operate",
   },
   {
     href: "/onboarding",
     label: "Onboarding",
     Icon: Rocket,
     badge: "start",
-    group: "Trust",
+    group: "Setup",
   },
   {
     href: "/poc",
     label: "Launch",
     Icon: Sparkles,
     badge: "POC",
-    group: "Trust",
+    group: "Setup",
   },
   {
     href: "/demo",
     label: "Demo",
     Icon: Globe2,
-    group: "Trust",
+    group: "Setup",
   },
   {
     href: "/deploy",
     label: "Deploy",
     Icon: BookOpen,
-    group: "Trust",
+    group: "Setup",
   },
   {
     href: "/trust-center",
     label: "Trust center",
     Icon: Sparkles,
-    group: "Trust",
+    group: "Governance",
   },
   {
     href: "/controls",
     label: "Controls",
     Icon: ShieldCheck,
-    group: "Trust",
+    group: "Operate",
   },
-  { href: "/evidence", label: "Evidence", Icon: FileSearch, group: "Trust" },
+  { href: "/evidence", label: "Evidence", Icon: FileSearch, group: "Operate" },
   {
     href: "/violations",
     label: "Findings",
     Icon: AlertOctagon,
-    group: "Trust",
+    group: "Operate",
   },
   {
     href: "/remediation",
     label: "Remediation",
     Icon: ListChecks,
-    group: "Workflows",
+    group: "Operate",
   },
-  { href: "/automation", label: "Workflows", Icon: Zap, group: "Workflows" },
+  { href: "/automation", label: "Workflows", Icon: Zap, group: "Automate" },
   { href: "/connectors", label: "Connectors", Icon: Plug, group: "Sources" },
   {
     href: "/frameworks",
@@ -120,67 +120,77 @@ const ITEMS: RailItem[] = [
     href: "/risks",
     label: "Risk register",
     Icon: ShieldAlert,
-    group: "Review",
+    group: "Governance",
   },
   {
     href: "/access-reviews",
     label: "Access reviews",
     Icon: UserCheck,
-    group: "Review",
+    group: "Governance",
   },
   {
     href: "/policies",
     label: "Policies",
     Icon: BookOpen,
-    group: "Review",
+    group: "Governance",
   },
   {
     href: "/vendor-risk",
     label: "Vendor risk",
     Icon: Building2,
-    group: "Review",
+    group: "Governance",
   },
   {
     href: "/auth",
     label: "Access",
     Icon: KeyRound,
-    group: "Review",
+    group: "Governance",
   },
-  { href: "/graph", label: "Graph", Icon: Network, group: "Review" },
-  { href: "/insights", label: "Insights", Icon: LineChart, group: "Review" },
+  { href: "/graph", label: "Graph", Icon: Network, group: "Operate" },
+  { href: "/insights", label: "Insights", Icon: LineChart, group: "Operate" },
   {
     href: "/audit-room",
     label: "Audit room",
     Icon: ClipboardCheck,
-    group: "Review",
+    group: "Governance",
   },
   {
     href: "/ai-governance",
     label: "AI governance",
     Icon: BrainCircuit,
     badge: "live",
-    group: "Review",
+    group: "Governance",
   },
-  { href: "/audit-log", label: "Audit log", Icon: Activity, group: "Review" },
+  {
+    href: "/audit-log",
+    label: "Audit log",
+    Icon: Activity,
+    group: "Governance",
+  },
   {
     href: "/agents",
     label: "Agent harness",
     Icon: Bot,
     badge: "JSON",
-    group: "Review",
+    group: "Automate",
   },
 ];
 
-const GROUPS: RailItem["group"][] = ["Trust", "Workflows", "Sources", "Review"];
+const GROUPS: RailItem["group"][] = [
+  "Operate",
+  "Sources",
+  "Automate",
+  "Governance",
+  "Setup",
+];
 
 function isGroupClosed(
   group: RailItem["group"],
   closedGroups: Record<string, boolean>,
+  activeGroup: RailItem["group"],
 ) {
-  if (group === "Review") {
-    return closedGroups[group] !== false;
-  }
-  return Boolean(closedGroups[group]);
+  if (closedGroups[group] !== undefined) return closedGroups[group];
+  return group !== activeGroup;
 }
 
 export function Sidebar() {
@@ -194,6 +204,10 @@ export function Sidebar() {
     Record<string, boolean>
   >("trustops:sidebar:closed-groups", {});
   const effectiveCollapsed = collapsed || compactViewport;
+  const activeGroup =
+    ITEMS.find(
+      (item) => pathname === item.href || pathname.startsWith(item.href + "/"),
+    )?.group ?? "Operate";
 
   useEffect(() => {
     const query = window.matchMedia("(max-width: 767px)");
@@ -206,7 +220,7 @@ export function Sidebar() {
   const toggleGroup = (group: RailItem["group"]) => {
     setClosedGroups({
       ...closedGroups,
-      [group]: !isGroupClosed(group, closedGroups),
+      [group]: !isGroupClosed(group, closedGroups, activeGroup),
     });
   };
 
@@ -253,7 +267,8 @@ export function Sidebar() {
       <div className="overflow-y-auto p-2.5">
         {GROUPS.map((group) => {
           const isClosed =
-            isGroupClosed(group, closedGroups) && !effectiveCollapsed;
+            isGroupClosed(group, closedGroups, activeGroup) &&
+            !effectiveCollapsed;
           const groupItems = ITEMS.filter((i) => i.group === group);
           return (
             <div key={group} className="mb-3">
