@@ -1486,9 +1486,19 @@ export interface SlaHeatmapRow {
   resolved_late: number;
 }
 
+export interface SlaHeatmapOwnerRow {
+  owner: string;
+  open_on_track: number;
+  open_overdue: number;
+  open_no_sla: number;
+  resolved_on_time: number;
+  resolved_late: number;
+}
+
 export interface SlaHeatmap {
   columns: SlaHeatmapColumn[];
   rows: SlaHeatmapRow[];
+  owner_rows: SlaHeatmapOwnerRow[];
 }
 
 export interface FrameworkTrendPoint {

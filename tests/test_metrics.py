@@ -232,12 +232,20 @@ def test_sla_heatmap_buckets(tmp_path: Path) -> None:
     with session_scope(app.state.sessionmaker) as session:
         tenant = create_tenant(session, slug="acme", name="Acme")
 
-        remediation.create_task(session, tenant_id=tenant.id, title="late", priority="high", due_at=base)
+        remediation.create_task(
+            session,
+            tenant_id=tenant.id,
+            title="late",
+            priority="high",
+            owner="platform",
+            due_at=base,
+        )
         remediation.create_task(
             session,
             tenant_id=tenant.id,
             title="ok",
             priority="critical",
+            owner="security",
             due_at=base + timedelta(days=7),
         )
         resolved_on_time = remediation.create_task(session, tenant_id=tenant.id, title="done")
@@ -265,6 +273,32 @@ def test_sla_heatmap_buckets(tmp_path: Path) -> None:
     assert high["open_overdue"] == 1
     assert critical["open_on_track"] == 1
     assert medium["resolved_on_time"] == 1
+    assert heat["owner_rows"] == [
+        {
+            "owner": "platform",
+            "open_on_track": 0,
+            "open_overdue": 1,
+            "open_no_sla": 0,
+            "resolved_on_time": 0,
+            "resolved_late": 0,
+        },
+        {
+            "owner": "security",
+            "open_on_track": 1,
+            "open_overdue": 0,
+            "open_no_sla": 0,
+            "resolved_on_time": 0,
+            "resolved_late": 0,
+        },
+        {
+            "owner": "Unassigned",
+            "open_on_track": 0,
+            "open_overdue": 0,
+            "open_no_sla": 0,
+            "resolved_on_time": 1,
+            "resolved_late": 0,
+        },
+    ]
 
 
 # ---------------------------------------------------------------------------

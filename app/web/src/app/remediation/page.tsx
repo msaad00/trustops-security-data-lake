@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -63,7 +64,11 @@ function fmtDate(value: string | null): string {
 }
 
 function TasksSection() {
-  const tasks = useRemediationTasks();
+  const searchParams = useSearchParams();
+  const selectedOwner = searchParams.get("owner") ?? "";
+  const tasks = useRemediationTasks(
+    selectedOwner ? `?owner=${encodeURIComponent(selectedOwner)}` : "",
+  );
   const create = useCreateTaskMutation();
   const update = useUpdateTaskMutation();
   const [title, setTitle] = useState("");
@@ -100,6 +105,7 @@ function TasksSection() {
         <CardTitle>Remediation tasks</CardTitle>
         <CardDescription>
           Owned work with SLA due dates. Overdue is derived live.
+          {selectedOwner ? ` Filtered to ${selectedOwner}.` : ""}
         </CardDescription>
       </CardHeader>
       <div className="flex flex-wrap items-center gap-2 px-5 pb-4">
@@ -418,7 +424,15 @@ export default function RemediationPage() {
         title="Remediation"
         description="Assign and track remediation work, request evidence from owners, and manage time-boxed control exceptions."
       />
-      <TasksSection />
+      <Suspense
+        fallback={
+          <Card className="p-5 text-sm text-muted">
+            Loading remediation tasks…
+          </Card>
+        }
+      >
+        <TasksSection />
+      </Suspense>
       <EvidenceRequestsSection />
       <ExceptionsSection />
     </div>

@@ -243,7 +243,7 @@ def sla_heatmap(
     tenant_id: str,
     now: datetime | None = None,
 ) -> dict[str, Any]:
-    """Remediation SLA status grid by priority — open/on-track, overdue, and resolution timing."""
+    """Remediation SLA grids by owner and priority with live resolution timing."""
     moment = _now(now)
     stmt = select(RemediationTask).where(RemediationTask.tenant_id == tenant_id)
     tasks = list(session.scalars(stmt))
@@ -251,18 +251,25 @@ def sla_heatmap(
     cells: dict[str, dict[str, int]] = {
         priority: {column: 0 for column in _SLA_COLUMNS} for priority in _SLA_PRIORITIES
     }
+    owner_cells: dict[str, dict[str, int]] = {}
 
     for task in tasks:
         priority = task.priority if task.priority in _SLA_PRIORITIES else "medium"
-        bucket = cells[priority]
+        owner = task.owner.strip() or "Unassigned"
+        buckets = (
+            cells[priority],
+            owner_cells.setdefault(owner, {column: 0 for column in _SLA_COLUMNS}),
+        )
 
         if task.is_open:
             if task.due_at is None:
-                bucket["open_no_sla"] += 1
+                column = "open_no_sla"
             elif task.is_overdue(now=moment):
-                bucket["open_overdue"] += 1
+                column = "open_overdue"
             else:
-                bucket["open_on_track"] += 1
+                column = "open_on_track"
+            for bucket in buckets:
+                bucket[column] += 1
             continue
 
         if task.status != "resolved" or task.resolved_at is None or task.due_at is None:
@@ -270,13 +277,19 @@ def sla_heatmap(
 
         resolved_at = _as_aware(task.resolved_at)
         due_at = _as_aware(task.due_at)
-        if resolved_at <= due_at:
-            bucket["resolved_on_time"] += 1
-        else:
-            bucket["resolved_late"] += 1
+        column = "resolved_on_time" if resolved_at <= due_at else "resolved_late"
+        for bucket in buckets:
+            bucket[column] += 1
 
     rows = [{"priority": priority, **cells[priority]} for priority in _SLA_PRIORITIES]
-    return {"columns": list(_SLA_COLUMNS), "rows": rows}
+    owner_rows = [
+        {"owner": owner, **counts}
+        for owner, counts in sorted(
+            owner_cells.items(),
+            key=lambda item: (-item[1]["open_overdue"], item[0].lower()),
+        )
+    ]
+    return {"columns": list(_SLA_COLUMNS), "rows": rows, "owner_rows": owner_rows}
 
 
 # ---------------------------------------------------------------------------
