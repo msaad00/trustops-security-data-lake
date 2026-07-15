@@ -20,6 +20,31 @@ async function ensureConnectorDisabled(
 }
 
 test.describe("connectors workflow", () => {
+  test("AWS starts as a compact authorization workspace", async ({
+    page,
+    request,
+  }) => {
+    await request.post("/api/v1/connectors/aws-posture/configure", {
+      data: { state: "disabled", actor: "e2e" },
+    });
+    await page.goto("/console/connectors/?connect=aws-posture");
+
+    const dialog = page.getByRole("dialog");
+    await expect(
+      dialog.getByRole("heading", { name: "AWS Posture" }),
+    ).toBeVisible({ timeout: 15_000 });
+    const activeAuthorization = dialog.getByRole("button", {
+      name: /Connect cloud account|Test connection/,
+    });
+    await expect(activeAuthorization).toHaveCount(1);
+    await expect(activeAuthorization).toBeVisible();
+    await expect(dialog.getByText("Scheduled sync")).toBeHidden();
+
+    const box = await activeAuthorization.boundingBox();
+    expect(box).not.toBeNull();
+    expect((box?.y ?? 0) + (box?.height ?? 0)).toBeLessThanOrEqual(720);
+  });
+
   test("probe-gated enable flow for github-security", async ({
     page,
     request,
