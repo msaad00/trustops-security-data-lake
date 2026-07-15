@@ -36,7 +36,7 @@ export function supportsCloudLink(connectorId: string) {
 
 function linkDescription(connectorId: string): string {
   if (connectorId === "aws-posture") {
-    return "Launch the read-only CloudFormation stack, then enter your AWS account ID to stage the assume-role connector.";
+    return "Deploy a read-only role that trusts this TrustOps runtime, then verify assume-role access. Account ID identifies the target; it does not grant access.";
   }
   if (connectorId === "azure-posture") {
     return `Grant admin consent for the ${BRAND.name} Azure app, then enter the subscription ID to stage the connector.`;
@@ -185,7 +185,7 @@ export function CloudLinkPanel({
           ) : (
             <Link2 className="h-4 w-4" />
           )}{" "}
-          Start linking
+          Connect cloud account
         </Button>
       ) : (
         <div className="mt-2 grid gap-2 text-sm">
@@ -217,7 +217,7 @@ export function CloudLinkPanel({
               }
             >
               <ExternalLink className="h-4 w-4" />
-              Launch AWS CloudFormation
+              Deploy read-only role
             </Button>
           )}
           {session.consent_url && (
@@ -373,7 +373,7 @@ export function CloudLinkPanel({
             ) : (
               <Link2 className="h-4 w-4" />
             )}{" "}
-            Stage credentials
+            Save role connection
           </Button>
         </div>
       )}
