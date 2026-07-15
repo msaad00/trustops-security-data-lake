@@ -16,6 +16,7 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     assert "Stage credentials" not in panel
     assert "AWS role ARN" in panel
     assert "AWS account ID" not in panel
+    assert "TRUSTOPS_AWS_TEMPLATE_URL" in panel
 
 
 def test_enabled_cloud_connector_hides_onboarding_and_duplicate_credentials() -> None:

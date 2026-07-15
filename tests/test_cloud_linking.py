@@ -11,6 +11,7 @@ import pytest
 from security_lakehouse.cloud_linking import (
     aws_quick_create_url,
     aws_template_bytes,
+    aws_template_url,
     azure_callback_redirect,
     azure_consent_url,
     complete_cloud_link,
@@ -31,6 +32,19 @@ def test_aws_template_bytes_is_packaged() -> None:
     body = aws_template_bytes()
     assert b"TrustOpsPostureReadOnlyRole" in body
     assert b"TrustedPrincipalArn" in body
+
+
+def test_aws_template_url_uses_external_https_override(monkeypatch: pytest.MonkeyPatch) -> None:
+    external = "https://templates.example.com/trustops/aws-readonly.yaml"
+    monkeypatch.setenv("TRUSTOPS_AWS_TEMPLATE_URL", external)
+
+    assert aws_template_url("http://127.0.0.1:8787") == external
+
+
+def test_aws_template_url_rejects_non_https_override(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("TRUSTOPS_AWS_TEMPLATE_URL", "http://templates.example.com/aws.yaml")
+
+    assert aws_template_url("http://127.0.0.1:8787") is None
 
 
 def test_gcp_template_bytes_is_packaged() -> None:
