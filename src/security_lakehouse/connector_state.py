@@ -23,6 +23,8 @@ from security_lakehouse.connectors import (
     SENSITIVE_FIELD_NAMES,
     load_connector_catalog,
 )
+from security_lakehouse.connectors_aws import CONNECTOR_ID as AWS_CONNECTOR_ID
+from security_lakehouse.connectors_aws import probe_aws_access
 from security_lakehouse.connectors_clickhouse import CONNECTOR_ID as CLICKHOUSE_CONNECTOR_ID
 from security_lakehouse.connectors_clickhouse import discover_clickhouse_scope, probe_clickhouse_access
 from security_lakehouse.connectors_runtime import CONNECTOR_ID as RUNTIME_GATEWAY_CONNECTOR_ID
@@ -966,6 +968,37 @@ def run_probe(
             error="access contract validated; no collection adapter is implemented for this connector yet",
             access_fingerprint=staged_access_fingerprint,
             metadata={"probe_mode": "contract_only"},
+        )
+    if connector_id == AWS_CONNECTOR_ID:
+        if has_staged_payload:
+            effective_credentials = credentials or {}
+            effective_options = options or {}
+        else:
+            config = latest_config(lake_dir, connector_id) or {}
+            effective_credentials = dict(config.get("credentials") or {})
+            effective_options = dict(config.get("options") or {})
+        try:
+            probe = probe_aws_access(credentials=effective_credentials, options=effective_options)
+        except Exception as exc:  # noqa: BLE001 - cloud SDK failures are persisted safely
+            return append_run_event(
+                lake_dir,
+                connector_id=connector_id,
+                kind="probe",
+                result="error",
+                actor=actor,
+                error=_safe_run_error(exc),
+                access_fingerprint=staged_access_fingerprint,
+            )
+        return append_run_event(
+            lake_dir,
+            connector_id=connector_id,
+            kind="probe",
+            result="ok",
+            actor=actor,
+            duration_ms=12,
+            evidence_count=int(probe.get("principal_count") or 0),
+            access_fingerprint=staged_access_fingerprint,
+            metadata={**probe, "probe_mode": "live"},
         )
     if connector_id == CLICKHOUSE_CONNECTOR_ID:
         if has_staged_payload:

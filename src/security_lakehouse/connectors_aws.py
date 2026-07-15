@@ -31,6 +31,8 @@ from security_lakehouse.identity import classify_identity_type
 from security_lakehouse.io import read_json
 from security_lakehouse.models import utc_iso
 
+CONNECTOR_ID = "aws-posture"
+
 # Identity/config controls that exist in controls/catalog.json. Verified before
 # wiring (SOC2-CC6.1 logical access, ISO27001-A.5.15 access control,
 # HIPAA-164.308(a)(4) access management).
@@ -207,6 +209,34 @@ class AWSFixtureClient:
         if isinstance(payload, list):
             return [item for item in payload if isinstance(item, dict)]
         return []
+
+
+def probe_aws_access(*, credentials: dict[str, Any], options: dict[str, Any]) -> dict[str, Any]:
+    """Prove the staged cross-account role and one required read capability.
+
+    This is deliberately a live, fail-closed probe. Construction exercises
+    ``sts:AssumeRole`` and ``users`` exercises ``iam:ListUsers``. The remaining
+    catalog reads are exercised by sync; the probe reports only what it proved.
+    """
+    account_id = str(credentials.get("account_id") or "").strip()
+    role_arn = str(credentials.get("role_arn") or "").strip()
+    external_id = str(credentials.get("external_id") or "").strip()
+    region = str(options.get("region") or credentials.get("region") or "").strip() or None
+    if not account_id or not role_arn:
+        raise ValueError("AWS live probe requires account_id and role_arn")
+    client = AWSClient(
+        region_name=region,
+        role_arn=role_arn,
+        external_id=external_id or None,
+    )
+    users = client.users()
+    return {
+        "ok": True,
+        "account_id": account_id,
+        "role_arn": role_arn,
+        "capabilities": ["sts:AssumeRole", "iam:ListUsers"],
+        "principal_count": len(users),
+    }
 
 
 def collect_aws_evidence(
