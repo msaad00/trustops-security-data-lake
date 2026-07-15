@@ -16,7 +16,7 @@ import secrets
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-from urllib.parse import quote, urlencode
+from urllib.parse import quote, urlencode, urlsplit
 
 from security_lakehouse.connector_state import append_config_event
 from security_lakehouse.io import read_json, write_json
@@ -129,6 +129,12 @@ def _public_base(public_url: str | None) -> str | None:
 
 def aws_template_url(public_url: str | None) -> str | None:
     """Return a public HTTPS URL for the AWS template, when ``public_url`` is set."""
+    override = str(os.environ.get("TRUSTOPS_AWS_TEMPLATE_URL") or "").strip()
+    if override:
+        parsed = urlsplit(override)
+        if parsed.scheme != "https" or not parsed.netloc or parsed.username or parsed.password:
+            return None
+        return override
     base = _public_base(public_url)
     if not base:
         return None

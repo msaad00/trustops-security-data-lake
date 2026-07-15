@@ -272,13 +272,14 @@ export function CloudLinkPanel({
                 </div>
               </label>
             )}
-          {session.template_url &&
-            !session.quick_create_url &&
+          {!session.quick_create_url &&
             connector.connector_id === "aws-posture" && (
               <p className="text-xs text-muted">
-                Set <code>TRUSTOPS_PUBLIC_URL</code> and{" "}
-                <code>TRUSTOPS_AWS_LINK_PRINCIPAL</code> for a one-click stack
-                URL. Manual template:{" "}
+                For local self-hosting, set an HTTPS{" "}
+                <code>TRUSTOPS_AWS_TEMPLATE_URL</code> and{" "}
+                <code>TRUSTOPS_AWS_LINK_PRINCIPAL</code> to enable one-click
+                deployment. Hosted deployments can use{" "}
+                <code>TRUSTOPS_PUBLIC_URL</code>. Manual template:{" "}
                 <code>{session.manual_template_path}</code>
               </p>
             )}
