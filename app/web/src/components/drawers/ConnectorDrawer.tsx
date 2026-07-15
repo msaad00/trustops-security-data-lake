@@ -464,8 +464,16 @@ export function ConnectorDrawer({
     !discoveryRun &&
     !isConfigured(options);
   const showDiscoveryAction = !usesManagedCloudLink && needsDiscovery;
+  const showConnectedCloudSummary = usesManagedCloudLink && isEnabled;
   const showManagedCloudConfiguration =
-    !usesManagedCloudLink || hasStagedServerCredentials || isEnabled;
+    !usesManagedCloudLink ||
+    (hasStagedServerCredentials && !showConnectedCloudSummary);
+  const compactCloudDetails = [...scopeFields, ...schedulerFields].map(
+    (field) => ({
+      label: field.label,
+      value: options[field.name]?.trim() || field.placeholder || "default",
+    }),
+  );
   const setupSteps: SetupStep[] = [
     {
       label: "Authorize",
@@ -655,7 +663,9 @@ export function ConnectorDrawer({
       width="lg"
       footer={
         !auditor &&
-        (!usesManagedCloudLink || showManagedCloudConfiguration) && (
+        (!usesManagedCloudLink ||
+          showManagedCloudConfiguration ||
+          showConnectedCloudSummary) && (
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap gap-2">
               {showDiscoveryAction ? (
@@ -767,7 +777,7 @@ export function ConnectorDrawer({
               />
             )}
           <section
-            className={`rounded-lg border border-line bg-surface p-3 ${usesManagedCloudLink && hasStagedServerCredentials ? "lg:col-span-2" : ""}`}
+            className={`rounded-lg border border-line bg-surface p-3 ${usesManagedCloudLink && (hasStagedServerCredentials || showConnectedCloudSummary) ? "lg:col-span-2" : ""}`}
           >
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
@@ -804,7 +814,7 @@ export function ConnectorDrawer({
           </section>
         </div>
 
-        {showManagedCloudConfiguration && (
+        {showManagedCloudConfiguration && !showConnectedCloudSummary && (
           <details className="rounded-xl border border-line p-3">
             <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
               <ListChecks className="h-3.5 w-3.5" /> Connector contract
@@ -837,11 +847,44 @@ export function ConnectorDrawer({
           </details>
         )}
 
-        {!auditor &&
+        {showConnectedCloudSummary ? (
+          <details className="rounded-lg border border-line p-3">
+            <summary className="ui-label cursor-pointer list-none">
+              Connection details
+            </summary>
+            <div className="mt-3 grid gap-2 sm:grid-cols-3">
+              {compactCloudDetails.map((detail) => (
+                <div
+                  key={detail.label}
+                  className="rounded-lg border border-line bg-panel p-2"
+                >
+                  <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+                    {detail.label}
+                  </div>
+                  <div className="mt-1 truncate text-sm font-black text-ink">
+                    {detail.value}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {connector.credential_fingerprint ? (
+              <div className="mt-3 text-xs text-muted">
+                Credential fingerprint:{" "}
+                <code className="text-ink">
+                  {connector.credential_fingerprint}
+                </code>
+                {connector.configured_at && (
+                  <> · configured {formatWhen(connector.configured_at)}</>
+                )}
+              </div>
+            ) : null}
+          </details>
+        ) : (
+          !auditor &&
           (!usesManagedCloudLink || showManagedCloudConfiguration) && (
             <details
               className="rounded-lg border border-line p-3"
-              open={!usesManagedCloudLink}
+              open={!usesManagedCloudLink && !showConnectedCloudSummary}
             >
               <summary className="ui-label cursor-pointer list-none">
                 Scope & automation
@@ -1251,7 +1294,8 @@ export function ConnectorDrawer({
                 )}
               </div>
             </details>
-          )}
+          )
+        )}
 
         {(runs.data ?? []).length > 0 && (
           <LatestSyncProof connector={connector} runnable={isRunnable} />
@@ -1264,10 +1308,6 @@ export function ConnectorDrawer({
               {runs.data?.length ?? 0} events
             </summary>
             <section className="mt-3">
-              <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
-                <ShieldCheck className="h-3 w-3" /> Run history ·{" "}
-                {runs.data?.length ?? 0} events
-              </div>
               <div className="grid gap-2">
                 {(runs.data ?? []).slice(0, 8).map((r) => (
                   <div

@@ -16,6 +16,11 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     assert "CLI script" in panel
     assert "AWS CLI deploy command" in panel
     assert "Copy deploy command" in panel
+    assert "sanitizeAwsRoleName" in panel
+    assert "awsQuickCreateUrl" in panel
+    assert "Role name" in panel
+    assert "Grant set" in panel
+    assert "IAM posture read-only" in panel
     assert "mktemp /tmp/trustops-posture-readonly-role" in panel
     assert "ROLLBACK_FAILED" in panel
     assert "TemplateURL" not in panel
@@ -58,3 +63,14 @@ def test_managed_cloud_drawer_uses_progressive_disclosure() -> None:
     assert "Scope & automation" in drawer
     assert 'className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]"' in drawer
     assert "(runs.data ?? []).length > 0 && (" in drawer
+
+
+def test_connected_cloud_drawer_is_compact_and_non_redundant() -> None:
+    drawer = DRAWER.read_text(encoding="utf-8")
+
+    assert "const showConnectedCloudSummary =" in drawer
+    assert "usesManagedCloudLink && isEnabled;" in drawer
+    assert "Connection details" in drawer
+    assert "showConnectedCloudSummary ? (" in drawer
+    assert "open={!usesManagedCloudLink && !showConnectedCloudSummary}" in drawer
+    assert drawer.count('<ShieldCheck className="h-3 w-3" /> Run history') == 1
