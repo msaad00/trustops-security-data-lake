@@ -10,9 +10,7 @@ REGISTRY = ROOT / "frameworks" / "registry.json"
 
 
 def test_every_registered_framework_has_a_governed_identity() -> None:
-    registered = {
-        row["framework_id"] for row in json.loads(REGISTRY.read_text())["frameworks"]
-    }
+    registered = {row["framework_id"] for row in json.loads(REGISTRY.read_text())["frameworks"]}
     identities = json.loads(IDENTITIES.read_text())["frameworks"]
 
     assert set(identities) == registered
@@ -23,9 +21,7 @@ def test_every_registered_framework_has_a_governed_identity() -> None:
 def test_bundled_official_artwork_has_verifiable_permission_and_integrity() -> None:
     identities = json.loads(IDENTITIES.read_text())["frameworks"]
     official = {
-        framework_id: row
-        for framework_id, row in identities.items()
-        if row["display_mode"] == "official_artwork"
+        framework_id: row for framework_id, row in identities.items() if row["display_mode"] == "official_artwork"
     }
 
     assert set(official) == {"nist-ai-rmf", "nist-csf-2.0"}
