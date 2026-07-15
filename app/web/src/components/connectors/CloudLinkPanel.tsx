@@ -21,6 +21,9 @@ import {
 } from "@/lib/cloud-link-validation";
 
 const CLOUD_LINK_IDS = new Set(["aws-posture", "azure-posture", "gcp-posture"]);
+const AWS_TEMPLATE_PATH = "deploy/aws/trustops-posture-readonly-role.yaml";
+const AWS_STACK_NAME = "TrustOpsPostureReadOnly";
+const AWS_ROLE_NAME = "TrustOpsPostureReadOnlyRole";
 
 interface Props {
   connector: ConnectorView;
@@ -43,6 +46,48 @@ function linkDescription(connectorId: string): string {
   return "Apply the read-only Terraform reader identity in your GCP project, then enter the project ID to stage the connector.";
 }
 
+function shellQuote(value: string): string {
+  return `'${value.replaceAll("'", "'\"'\"'")}'`;
+}
+
+function awsDeployCommand(session: CloudLinkSession): string | null {
+  if (!session.external_id || !session.trusted_principal) return null;
+  const roleName = session.role_name || AWS_ROLE_NAME;
+  const templateSetup = session.template_url
+    ? `template_file="$(mktemp /tmp/trustops-posture-readonly-role.XXXXXX.yaml)"
+trap 'rm -f "$template_file"' EXIT
+curl -fsSL ${shellQuote(session.template_url)} -o "$template_file"
+`
+    : "";
+  const templateArg = session.template_url
+    ? '"$template_file"'
+    : shellQuote(session.manual_template_path || AWS_TEMPLATE_PATH);
+
+  return `stack_status="$(aws cloudformation describe-stacks \\
+  --stack-name ${shellQuote(AWS_STACK_NAME)} \\
+  --query "Stacks[0].StackStatus" \\
+  --output text 2>/dev/null || true)"
+
+if [ "$stack_status" = "ROLLBACK_FAILED" ] || [ "$stack_status" = "ROLLBACK_COMPLETE" ]; then
+  aws cloudformation delete-stack --stack-name ${shellQuote(AWS_STACK_NAME)}
+  aws cloudformation wait stack-delete-complete --stack-name ${shellQuote(AWS_STACK_NAME)}
+fi
+
+${templateSetup}aws cloudformation deploy \\
+  --stack-name ${shellQuote(AWS_STACK_NAME)} \\
+  --template-file ${templateArg} \\
+  --capabilities CAPABILITY_NAMED_IAM \\
+  --parameter-overrides \\
+    TrustedPrincipalArn=${shellQuote(session.trusted_principal)} \\
+    ExternalId=${shellQuote(session.external_id)} \\
+    RoleName=${shellQuote(roleName)}
+
+aws cloudformation describe-stacks \\
+  --stack-name ${shellQuote(AWS_STACK_NAME)} \\
+  --query "Stacks[0].Outputs[?OutputKey=='RoleArn'].OutputValue" \\
+  --output text`;
+}
+
 export function CloudLinkPanel({
   connector,
   linkSessionId,
@@ -57,6 +102,9 @@ export function CloudLinkPanel({
   const [projectId, setProjectId] = useState("");
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [touched, setTouched] = useState(false);
+  const [awsDeployMode, setAwsDeployMode] = useState<"console" | "cli">(
+    "console",
+  );
 
   useEffect(() => {
     if (!linkSessionId) return;
@@ -84,10 +132,22 @@ export function CloudLinkPanel({
     Boolean(session?.session_id) &&
     !complete.isPending &&
     validationError === null;
+  const deployCommand = useMemo(() => {
+    if (!session) return null;
+    if (connector.connector_id === "aws-posture") {
+      return awsDeployCommand(session);
+    }
+    return session.deploy_command ?? null;
+  }, [connector.connector_id, session]);
+  const effectiveAwsDeployMode =
+    awsDeployMode === "console" && !session?.quick_create_url && deployCommand
+      ? "cli"
+      : awsDeployMode;
 
   const begin = async () => {
     setFieldError(null);
     setTouched(false);
+    setAwsDeployMode("console");
     try {
       const row = await start.mutateAsync({
         id: connector.connector_id,
@@ -142,9 +202,9 @@ export function CloudLinkPanel({
   };
 
   const copyDeployCommand = async () => {
-    if (!session?.deploy_command) return;
+    if (!deployCommand) return;
     try {
-      await navigator.clipboard.writeText(session.deploy_command);
+      await navigator.clipboard.writeText(deployCommand);
       onToast("Deploy command copied");
     } catch {
       onToast("Could not copy deploy command");
@@ -200,23 +260,85 @@ export function CloudLinkPanel({
               </code>
             </label>
           )}
-          {session.quick_create_url && (
-            <Button
-              type="button"
-              variant="default"
-              size="sm"
-              onClick={() =>
-                window.open(
-                  session.quick_create_url!,
-                  "_blank",
-                  "noopener,noreferrer",
-                )
-              }
-            >
-              <ExternalLink className="h-4 w-4" />
-              Deploy read-only role
-            </Button>
-          )}
+          {connector.connector_id === "aws-posture" &&
+            (session.quick_create_url || deployCommand) && (
+              <div className="grid gap-2">
+                <div
+                  aria-label="AWS deployment method"
+                  className="grid grid-cols-2 rounded-lg border border-line bg-white p-1"
+                  role="tablist"
+                >
+                  {session.quick_create_url && (
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={effectiveAwsDeployMode === "console"}
+                      className={`rounded-md px-2 py-1.5 text-xs font-black uppercase tracking-wide ${
+                        effectiveAwsDeployMode === "console"
+                          ? "bg-brand text-white"
+                          : "text-muted hover:bg-slate-50"
+                      }`}
+                      onClick={() => setAwsDeployMode("console")}
+                    >
+                      AWS Console
+                    </button>
+                  )}
+                  {deployCommand && (
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={effectiveAwsDeployMode === "cli"}
+                      className={`rounded-md px-2 py-1.5 text-xs font-black uppercase tracking-wide ${
+                        effectiveAwsDeployMode === "cli"
+                          ? "bg-brand text-white"
+                          : "text-muted hover:bg-slate-50"
+                      }`}
+                      onClick={() => setAwsDeployMode("cli")}
+                    >
+                      CLI script
+                    </button>
+                  )}
+                </div>
+                {effectiveAwsDeployMode === "console" &&
+                  session.quick_create_url && (
+                    <Button
+                      type="button"
+                      variant="default"
+                      size="sm"
+                      onClick={() =>
+                        window.open(
+                          session.quick_create_url!,
+                          "_blank",
+                          "noopener,noreferrer",
+                        )
+                      }
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      Open AWS guided deploy
+                    </Button>
+                )}
+                {effectiveAwsDeployMode === "cli" && deployCommand && (
+                  <div className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
+                    <div>AWS CLI deploy command</div>
+                    <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+                      <code className="min-w-0 max-h-44 overflow-auto whitespace-pre-wrap break-all rounded-lg border border-line bg-white px-2 py-1.5 text-xs font-medium normal-case tracking-normal text-ink">
+                        {deployCommand}
+                      </code>
+                      <Button
+                        type="button"
+                        variant="default"
+                        size="sm"
+                        className="shrink-0 self-start"
+                        onClick={copyDeployCommand}
+                      >
+                        <Copy className="h-4 w-4" />
+                        Copy deploy command
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           {session.consent_url && (
             <Button
               type="button"
@@ -251,26 +373,25 @@ export function CloudLinkPanel({
               Download Terraform template
             </Button>
           )}
-          {connector.connector_id === "gcp-posture" &&
-            session.deploy_command && (
-              <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
-                Terraform deploy command
-                <div className="flex gap-2">
-                  <code className="min-w-0 flex-1 break-all rounded-lg border border-line bg-white px-2 py-1.5 text-xs text-ink">
-                    {session.deploy_command}
+          {deployCommand && connector.connector_id === "gcp-posture" && (
+              <div className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
+                <div>Terraform deploy command</div>
+                <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+                  <code className="min-w-0 whitespace-pre-wrap break-all rounded-lg border border-line bg-white px-2 py-1.5 text-xs font-medium normal-case tracking-normal text-ink">
+                    {deployCommand}
                   </code>
                   <Button
                     type="button"
                     variant="default"
                     size="sm"
-                    className="shrink-0"
+                    className="shrink-0 self-start"
                     onClick={copyDeployCommand}
                   >
                     <Copy className="h-4 w-4" />
-                    Copy
+                    Copy deploy command
                   </Button>
                 </div>
-              </label>
+              </div>
             )}
           {!session.quick_create_url &&
             connector.connector_id === "aws-posture" && (

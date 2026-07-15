@@ -11,7 +11,14 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     panel = PANEL.read_text(encoding="utf-8")
 
     assert "Account ID identifies the target; it does not grant access." in panel
-    assert "Deploy read-only role" in panel
+    assert "Open AWS guided deploy" in panel
+    assert "AWS Console" in panel
+    assert "CLI script" in panel
+    assert "AWS CLI deploy command" in panel
+    assert "Copy deploy command" in panel
+    assert "mktemp /tmp/trustops-posture-readonly-role" in panel
+    assert "ROLLBACK_FAILED" in panel
+    assert "TemplateURL" not in panel
     assert "Save role connection" in panel
     assert "Stage credentials" not in panel
     assert "AWS role ARN" in panel
