@@ -132,6 +132,11 @@ def test_pipeline_writes_bronze_silver_gold_and_mart(tmp_path: Path) -> None:
     assert verify_lake_integrity(tmp_path / "lake")["ok"] is True
     if result.duckdb_mart_path is not None:
         assert Path(result.duckdb_mart_path).exists()
+        import duckdb
+
+        with duckdb.connect(result.duckdb_mart_path, read_only=True) as conn:
+            assert conn.execute("select count(*) from daily_control_results").fetchone()[0] > 0
+            assert conn.execute("select count(*) from daily_posture_summary").fetchone()[0] > 0
     else:
         assert manifest["marts"]["duckdb"] is None
 
@@ -139,10 +144,20 @@ def test_pipeline_writes_bronze_silver_gold_and_mart(tmp_path: Path) -> None:
         failing = conn.execute("select count(*) from control_posture where status = 'fail'").fetchone()[0]
         failing_tests = conn.execute("select count(*) from control_tests where result = 'fail'").fetchone()[0]
         top_asset = conn.execute("select asset_id from asset_risk order by risk_score desc limit 1").fetchone()[0]
+        daily_results = conn.execute(
+            "select control_id, asset_id, result, evidence_hash from daily_control_results"
+        ).fetchall()
+        daily_summary = conn.execute(
+            "select framework, control_count, failing_controls, evidence_coverage from daily_posture_summary"
+        ).fetchall()
 
     assert failing >= 1
     assert failing_tests >= 1
     assert top_asset == "container:rag-api@sha256:91ab"
+    assert daily_results
+    assert all(row[3] for row in daily_results)
+    assert daily_summary
+    assert sum(row[1] for row in daily_summary) == result.control_count
 
 
 def test_pipeline_synthesizes_internal_evidence_ref_when_source_has_no_uri(tmp_path: Path) -> None:

@@ -146,3 +146,39 @@ select
 from SECURITY_GOLD.CONTROL_TESTS
 group by framework
 order by failing_tests desc, avg_confidence_score asc;
+
+-- Simple daily demo/analytics contract. These views preserve traceability to
+-- the underlying evidence hash and versioned control-test result.
+create or replace view SECURITY_GOLD.DAILY_CONTROL_RESULTS as
+select
+  to_date(t.evaluated_at) as snapshot_date,
+  t.tenant_id,
+  t.program_id,
+  t.framework,
+  t.control_id,
+  e.asset_id,
+  t.result,
+  t.confidence_score,
+  t.freshness_status,
+  e.evidence_ref,
+  e.raw_sha256 as evidence_hash,
+  t.evaluated_at
+from SECURITY_GOLD.CONTROL_TESTS t
+join SECURITY_SILVER.NORMALIZED_EVENTS e
+  on e.tenant_id = t.tenant_id,
+lateral flatten(input => e.control_ids) control_id
+where control_id.value::string = t.control_id;
+
+create or replace view SECURITY_GOLD.DAILY_POSTURE_SUMMARY as
+select
+  to_date(max(latest_event_time)) as snapshot_date,
+  tenant_id,
+  framework,
+  count(*) as control_count,
+  count_if(status = 'fail') as failing_controls,
+  count_if(status = 'stale') as stale_controls,
+  round(avg(evidence_coverage), 4) as evidence_coverage,
+  round(avg(risk_score), 2) as average_risk_score,
+  max(latest_event_time) as evaluated_through
+from SECURITY_GOLD.CONTROL_POSTURE
+group by tenant_id, framework;
