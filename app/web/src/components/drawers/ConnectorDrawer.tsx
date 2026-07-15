@@ -462,6 +462,7 @@ export function ConnectorDrawer({
     connector.last_probe?.result === "ok" ||
     connector.last_probe?.result === "skipped" ||
     accessValidated;
+  const accessReady = isEnabled ? latestProbeOk : probeGateSatisfied;
   const latestSyncOk =
     connector.last_successful_sync?.result === "ok" ||
     connector.last_sync?.result === "ok";
@@ -485,8 +486,8 @@ export function ConnectorDrawer({
     },
     {
       label: "Verify",
-      detail: validateStepDetail(connector, latestProbeOk),
-      tone: latestProbeOk ? "ready" : "default",
+      detail: validateStepDetail(connector, accessReady),
+      tone: accessReady ? "ready" : "default",
     },
     {
       label: "Scope",
@@ -515,15 +516,15 @@ export function ConnectorDrawer({
             : "default",
     },
   ];
-  const onboardingStep = !latestProbeOk ? 2 : !isEnabled ? 3 : 4;
-  const onboardingTitle = !latestProbeOk
+  const onboardingStep = !accessReady ? 2 : !isEnabled ? 3 : 4;
+  const onboardingTitle = !accessReady
     ? "Test read-only access"
     : !isEnabled
       ? "Enable this source"
       : latestSyncOk
         ? "Source connected"
         : "Sync evidence into your assessment store";
-  const onboardingDetail = !latestProbeOk
+  const onboardingDetail = !accessReady
     ? "Run Test connection — enable stays locked until access is verified."
     : !isEnabled
       ? "When the test passes, enable the connector to allow scheduled sync."
@@ -680,7 +681,7 @@ export function ConnectorDrawer({
                   )}{" "}
                   {isSnowflake ? "Discover objects" : "Discover scope"}
                 </Button>
-              ) : !latestProbeOk ? (
+              ) : !accessReady ? (
                 <Button
                   variant="primary"
                   onClick={runProbe}

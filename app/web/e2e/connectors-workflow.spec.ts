@@ -40,16 +40,24 @@ test.describe("connectors workflow", () => {
       .fill("TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN");
     await page.getByLabel(/Repository \(owner\/name\)/i).fill("acme/platform");
 
-    const enableBtn = page.getByRole("button", { name: "Enable connector" });
-    await expect(enableBtn).toBeDisabled();
+    const dialog = page.getByRole("dialog");
+    await expect(
+      dialog.getByRole("button", { name: "Enable connector" }),
+    ).toHaveCount(0);
 
-    await page.getByRole("button", { name: "Test connection" }).click();
+    await dialog.getByRole("button", { name: "Test connection" }).click();
+    const enableBtn = dialog.getByRole("button", {
+      name: "Enable connector",
+    });
     await expect(enableBtn).toBeEnabled({ timeout: 15_000 });
 
     await enableBtn.click();
     await expect(page.getByText(/GitHub Security enabled/i)).toBeVisible({
       timeout: 15_000,
     });
+    await expect(
+      dialog.getByRole("button", { name: "Sync now" }),
+    ).toBeVisible();
 
     const listResponse = await request.get("/api/v1/connectors");
     expect(listResponse.ok()).toBeTruthy();
