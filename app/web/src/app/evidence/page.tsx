@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
   createColumnHelper,
@@ -9,8 +10,16 @@ import {
   useReactTable,
   type SortingState,
 } from "@tanstack/react-table";
-import { AlertTriangle, ArrowUpDown, ShieldCheck } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowUpDown,
+  Database,
+  FileText,
+  RefreshCw,
+  ShieldCheck,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
@@ -43,6 +52,30 @@ const SURFACE = "evidence";
 type EvidenceRow = NormalizedEvent & { freshness?: EvidenceFreshness };
 
 const helper = createColumnHelper<EvidenceRow>();
+const handoffCards = [
+  {
+    title: "Security data lake layers",
+    detail: "Bronze raw -> Silver facts -> Gold posture.",
+    note: "This page shows Silver facts.",
+    Icon: Database,
+  },
+  {
+    title: "Schedule ingestion and eval",
+    detail: "Connector sync and control eval run on configured schedules.",
+    note: "Manage cadence from Connections.",
+    href: "/connectors",
+    action: "Manage schedules",
+    Icon: RefreshCw,
+  },
+  {
+    title: "Reports and proof packs",
+    detail: "Audit room exports PDF/proof packs from gold posture.",
+    note: "Use these for auditor review.",
+    href: "/audit-room",
+    action: "Open audit room",
+    Icon: FileText,
+  },
+];
 
 const toneForStatus = (status: string) =>
   status === "passed"
@@ -217,7 +250,7 @@ export default function EvidencePage() {
       <PageHeader
         eyebrow="Evidence room"
         title="Normalized evidence facts"
-        description="Click any row to open the evidence drawer and verify the SHA-256 hash against the immutable bronze record server-side."
+        description="These rows are evidence facts, not reports. Click a row to verify its SHA-256 hash against the immutable bronze record server-side."
         actions={
           <span className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-black text-slate-600">
             {staleCount > 0 ? (
@@ -231,6 +264,30 @@ export default function EvidencePage() {
           </span>
         }
       />
+      <div className="grid gap-2 lg:grid-cols-3">
+        {handoffCards.map(({ title, detail, note, href, action, Icon }) => (
+          <div
+            key={title}
+            className="grid min-w-0 gap-2 rounded-xl border border-line bg-white p-3 shadow-sm sm:grid-cols-[auto_minmax(0,1fr)]"
+          >
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-panel text-brand">
+              <Icon className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <div className="text-sm font-black text-ink">{title}</div>
+              <p className="mt-1 text-sm leading-5 text-muted">{detail}</p>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold text-muted">{note}</span>
+                {href && action ? (
+                  <Button asChild size="sm" variant="default">
+                    <Link href={href}>{action}</Link>
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
       <TagFilterBar
         tags={tags}
         activeTagId={activeTagId}
