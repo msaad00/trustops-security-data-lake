@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-07-14",
+  "owner": "TrustOps maintainers",
+  "frameworks": {
+    "soc2": {
+      "official_name": "SOC 2® Trust Services Criteria",
+      "official_source_url": "https://www.aicpa-cima.com/resources/landing/system-and-organization-controls-soc-suite-of-services",
+      "display_mode": "neutral_icon",
+      "asset_path": null,
+      "restriction": "AICPA SOC logos require entity-specific registration or licensing and are not bundled for generic software use."
+    },
+    "nist-ai-rmf": {
+      "official_name": "NIST AI Risk Management Framework 1.0",
+      "official_source_url": "https://www.nist.gov/itl/ai-risk-management-framework",
+      "display_mode": "official_artwork",
+      "asset_path": "app/web/public/frameworks/nist-ai-rmf.png",
+      "asset_source_url": "https://www.nist.gov/sites/default/files/images/2023/01/25/RMF-redesign-rounded-other_graphics-04.png",
+      "usage_terms_url": "https://www.nist.gov/copyrights-disclaimers",
+      "attribution": "N. Hanacek/NIST",
+      "endorsement_disclaimer": "NIST does not endorse TrustOps or its control evaluations.",
+      "sha256": "154d19a1cf28ad6dc16e752aeeaadb754d2e523d6b9ff3bd96aacb52aff8523b"
+    },
+    "iso-27001-2022": {
+      "official_name": "ISO/IEC 27001:2022",
+      "official_source_url": "https://www.iso.org/standard/27001",
+      "display_mode": "neutral_icon",
+      "asset_path": null,
+      "restriction": "ISO prohibits third-party use or copying of its logo without written permission."
+    },
+    "fedramp-moderate": {
+      "official_name": "FedRAMP® Moderate",
+      "official_source_url": "https://www.fedramp.gov/",
+      "display_mode": "neutral_icon",
+      "asset_path": null,
+      "restriction": "The FedRAMP name and logo are permission-gated GSA marks and are not bundled."
+    },
+    "hipaa-security-rule": {
+      "official_name": "HIPAA Security Rule",
+      "official_source_url": "https://www.hhs.gov/hipaa/for-professionals/security/index.html",
+      "display_mode": "neutral_icon",
+      "asset_path": null,
+      "restriction": "No official HIPAA compliance logo exists; HHS logos and seals are restricted to official use."
+    },
+    "pci-dss-v4": {
+      "official_name": "PCI DSS v4.0",
+      "official_source_url": "https://www.pcisecuritystandards.org/standards/pci-dss/",
+      "display_mode": "neutral_icon",
+      "asset_path": null,
+      "restriction": "PCI SSC does not issue a generic compliance logo and restricts its registered marks."
+    },
+    "gdpr-2016-679": {
+      "official_name": "EU General Data Protection Regulation (GDPR)",
+      "official_source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+      "display_mode": "neutral_icon",
+      "asset_path": null,
+      "restriction": "GDPR has no official framework logo; EU institutional marks are not used as compliance badges."
+    },
+    "eu-ai-act-2024-1689": {
+      "official_name": "EU Artificial Intelligence Act",
+      "official_source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+      "display_mode": "neutral_icon",
+      "asset_path": null,
+      "restriction": "The EU AI Act has no official framework logo; EU institutional marks are not used as compliance badges."
+    },
+    "iso-42001-2023": {
+      "official_name": "ISO/IEC 42001:2023",
+      "official_source_url": "https://www.iso.org/standard/42001",
+      "display_mode": "neutral_icon",
+      "asset_path": null,
+      "restriction": "ISO prohibits third-party use or copying of its logo without written permission."
+    },
+    "cis_aws": {
+      "official_name": "CIS Amazon Web Services Foundations Benchmark",
+      "official_source_url": "https://www.cisecurity.org/benchmark/amazon_web_services",
+      "display_mode": "neutral_icon",
+      "asset_path": null,
+      "restriction": "CIS Benchmarks® artwork requires authorization for this product use and is not bundled."
+    },
+    "nist-csf-2.0": {
+      "official_name": "NIST Cybersecurity Framework (CSF) 2.0",
+      "official_source_url": "https://www.nist.gov/cyberframework",
+      "display_mode": "official_artwork",
+      "asset_path": "app/web/public/frameworks/nist-csf-2.0.png",
+      "asset_source_url": "https://www.nist.gov/sites/default/files/images/2024/04/15/CSF-wheel-revamp-v5-transparent_Op%203.png",
+      "usage_terms_url": "https://www.nist.gov/copyrights-disclaimers",
+      "attribution": "NIST/Natasha Hanacek",
+      "endorsement_disclaimer": "NIST does not endorse TrustOps or its control evaluations.",
+      "sha256": "8a4b685460179d802c842e305ca4c4213cbd7370395c1449e3216accbd706f38"
+    },
+    "cmmc-2-level2": {
+      "official_name": "CMMC 2.0 Level 2",
+      "official_source_url": "https://dodcio.defense.gov/CMMC/Documentation/",
+      "display_mode": "neutral_icon",
+      "asset_path": null,
+      "restriction": "No CMMC certification mark is bundled; a control mapping must not imply assessment or certification."
+    },
+    "iso-27017-2015": {
+      "official_name": "ISO/IEC 27017:2015",
+      "official_source_url": "https://www.iso.org/standard/43757.html",
+      "display_mode": "neutral_icon",
+      "asset_path": null,
+      "restriction": "ISO prohibits third-party use or copying of its logo without written permission."
+    },
+    "iso-27701-2019": {
+      "official_name": "ISO/IEC 27701:2019",
+      "official_source_url": "https://www.iso.org/standard/71670.html",
+      "display_mode": "neutral_icon",
+      "asset_path": null,
+      "restriction": "ISO prohibits third-party use or copying of its logo without written permission."
+    },
+    "soc1": {
+      "official_name": "SOC 1®",
+      "official_source_url": "https://www.aicpa-cima.com/resources/landing/system-and-organization-controls-soc-suite-of-services",
+      "display_mode": "neutral_icon",
+      "asset_path": null,
+      "restriction": "AICPA SOC logos require entity-specific registration or licensing and are not bundled for generic software use."
+    }
+  }
+}

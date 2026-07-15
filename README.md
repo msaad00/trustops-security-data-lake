@@ -210,4 +210,7 @@ deploy/                   Helm, Docker, Snowflake, ClickHouse, EKS
 docs/                     architecture, walkthrough, product shape
 ```
 
-Framework labels in the UI are **neutral text marks** — not official certification logos. Connector tiles use permitted vendor marks per [THIRD_PARTY_ASSETS.md](docs/THIRD_PARTY_ASSETS.md).
+Frameworks use exact names and provenance-governed visuals. Approved NIST
+framework artwork is credited; restricted certification and institutional
+marks fall back to project-owned icons. See
+[THIRD_PARTY_ASSETS.md](docs/THIRD_PARTY_ASSETS.md).

@@ -31,6 +31,29 @@ test.describe("console smoke", () => {
     await expect(page.getByText("Audit score", { exact: true })).toBeVisible();
   });
 
+  test("frameworks render governed identity assets", async ({ page }) => {
+    await page.goto("/console/frameworks/");
+
+    const nistArtwork = page
+      .getByRole("img", {
+        name: /NIST AI Risk Management Framework 1\.0 official framework artwork/,
+      })
+      .first();
+    await expect(nistArtwork).toBeVisible();
+    await expect(nistArtwork.locator("img")).toHaveAttribute(
+      "src",
+      "/console/frameworks/nist-ai-rmf.png",
+    );
+
+    await expect(
+      page
+        .getByRole("img", {
+          name: /ISO\/IEC 27001:2022 framework scope label; not an official logo/,
+        })
+        .first(),
+    ).toBeVisible();
+  });
+
   test("dashboard progressively discloses operational detail", async ({
     page,
   }) => {

@@ -40,13 +40,19 @@ program dashboards on the **Trust Command Center** (`/dashboard`) and
 | Access / auth     | API keys, users & roles, invites, IdP marks                   |
 | Deploy            | OSS / self-hosted / hosted models + go-live flow              |
 
-## Marks (not official logos)
+## Framework identity
 
-| Family     | Component        | Policy                                             |
-| ---------- | ---------------- | -------------------------------------------------- |
-| Frameworks | `FrameworkBadge` | Neutral text marks — SOC, ISO, PCI, …              |
-| Connectors | `ConnectorMark`  | Brand SVG logos (Simple Icons) with text fallback  |
-| Identity   | `AuthMark`       | IdP-colored abbreviations — Okta, Entra, SAML, KEY |
+Framework identity combines exact official names with project-owned Lucide
+icons. Two NIST framework illustrations are approved and self-hosted with
+attribution; other official marks remain restricted or unavailable. See
+[THIRD_PARTY_ASSETS.md](THIRD_PARTY_ASSETS.md) and
+`frameworks/identity-assets.json` for the provenance record.
+
+| Family     | Component        | Policy                                              |
+| ---------- | ---------------- | --------------------------------------------------- |
+| Frameworks | `FrameworkBadge` | Approved NIST artwork or icon + exact official name |
+| Connectors | `ConnectorMark`  | Brand SVG logos (Simple Icons) with text fallback   |
+| Identity   | `AuthMark`       | IdP-colored abbreviations — Okta, Entra, SAML, KEY  |
 
 See [THIRD_PARTY_ASSETS.md](THIRD_PARTY_ASSETS.md).
 
