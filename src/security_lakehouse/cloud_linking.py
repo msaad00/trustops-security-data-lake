@@ -28,6 +28,9 @@ AWS_ROLE_NAME_DEFAULT = "TrustOpsPostureReadOnlyRole"
 AWS_TEMPLATE_REL = Path("deploy/aws/trustops-posture-readonly-role.yaml")
 GCP_TEMPLATE_REL = Path("deploy/gcp/trustops-posture-reader.tf")
 _GCP_PROJECT_ID_RE = re.compile(r"^[a-z][a-z0-9-]{4,28}[a-z0-9]$")
+_AWS_ROLE_ARN_RE = re.compile(
+    r"^arn:(?P<partition>aws(?:-us-gov|-cn)?):iam::(?P<account_id>[0-9]{12}):role/(?P<role_name>[A-Za-z0-9+=,.@_/-]{1,512})$"
+)
 SESSIONS_FILE = Path("gold") / "connectors" / "cloud_link_sessions.json"
 _LINK_SESSION_ID_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 
@@ -93,6 +96,15 @@ def _gcp_wif_member() -> str:
 def valid_gcp_project_id(project_id: str) -> bool:
     token = project_id.strip()
     return bool(token and _GCP_PROJECT_ID_RE.fullmatch(token))
+
+
+def parse_aws_role_arn(role_arn: str) -> tuple[str, str]:
+    """Return account ID and normalized ARN for a customer-owned IAM role."""
+    normalized = role_arn.strip()
+    match = _AWS_ROLE_ARN_RE.fullmatch(normalized)
+    if match is None:
+        raise ValueError("role_arn must be a valid AWS IAM role ARN")
+    return match.group("account_id"), normalized
 
 
 def gcp_template_url(public_url: str | None) -> str | None:
@@ -314,7 +326,7 @@ def complete_cloud_link(
     *,
     session_id: str,
     actor: str,
-    account_id: str | None = None,
+    role_arn: str | None = None,
     subscription_id: str | None = None,
     project_id: str | None = None,
 ) -> dict[str, Any]:
@@ -330,14 +342,11 @@ def complete_cloud_link(
     credentials: dict[str, Any]
     options: dict[str, Any] = {}
     if connector_id == "aws-posture":
-        if not account_id or not str(account_id).strip().isdigit() or len(str(account_id).strip()) != 12:
-            raise ValueError("account_id must be a 12-digit AWS account id")
-        acct = str(account_id).strip()
-        role_name = str(session.get("role_name") or AWS_ROLE_NAME_DEFAULT)
+        acct, normalized_role_arn = parse_aws_role_arn(role_arn or "")
         credentials = {
             "account_id": acct,
             "external_id": str(session.get("external_id") or ""),
-            "role_arn": f"arn:aws:iam::{acct}:role/{role_name}",
+            "role_arn": normalized_role_arn,
         }
     elif connector_id == "azure-posture":
         if not subscription_id or not str(subscription_id).strip():
