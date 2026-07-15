@@ -213,13 +213,9 @@ function SnowflakeSetupHint({
 
 function LatestSyncProof({
   connector,
-  syncing,
-  onSync,
   runnable,
 }: {
   connector: ConnectorView;
-  syncing: boolean;
-  onSync: () => void;
   runnable: boolean;
 }) {
   const sync = connector.last_sync;
@@ -288,18 +284,6 @@ function LatestSyncProof({
             </Link>
           ) : null}
         </div>
-        <Button
-          variant={ok ? "default" : "primary"}
-          onClick={onSync}
-          disabled={!enabled || syncing || !runnable}
-        >
-          {syncing ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <RefreshCw className="h-4 w-4" />
-          )}
-          Sync now
-        </Button>
       </div>
       <div className="mt-3 grid gap-2 sm:grid-cols-3">
         <div className="rounded-lg border border-line bg-panel p-2">
@@ -478,6 +462,7 @@ export function ConnectorDrawer({
     connector.last_probe?.result === "ok" ||
     connector.last_probe?.result === "skipped" ||
     accessValidated;
+  const accessReady = isEnabled ? latestProbeOk : probeGateSatisfied;
   const latestSyncOk =
     connector.last_successful_sync?.result === "ok" ||
     connector.last_sync?.result === "ok";
@@ -487,9 +472,10 @@ export function ConnectorDrawer({
     !isEnabled &&
     !discoveryRun &&
     !isConfigured(options);
+  const showDiscoveryAction = !usesManagedCloudLink && needsDiscovery;
   const setupSteps: SetupStep[] = [
     {
-      label: "Access",
+      label: "Authorize",
       detail:
         missingCredentials.length === 0
           ? hasStagedServerCredentials
@@ -499,6 +485,11 @@ export function ConnectorDrawer({
       tone: missingCredentials.length === 0 ? "ready" : "attention",
     },
     {
+      label: "Verify",
+      detail: validateStepDetail(connector, accessReady),
+      tone: accessReady ? "ready" : "default",
+    },
+    {
       label: "Scope",
       detail: needsDiscovery
         ? "Discover available objects"
@@ -506,11 +497,6 @@ export function ConnectorDrawer({
           ? "Read scope selected"
           : `${missingScope.length} field(s) needed`,
       tone: needsDiscovery || !scopeReady ? "attention" : "ready",
-    },
-    {
-      label: "Validate",
-      detail: validateStepDetail(connector, latestProbeOk),
-      tone: latestProbeOk ? "ready" : "default",
     },
     {
       label: "Sync",
@@ -530,15 +516,15 @@ export function ConnectorDrawer({
             : "default",
     },
   ];
-  const onboardingStep = !latestProbeOk ? 2 : !isEnabled ? 3 : 4;
-  const onboardingTitle = !latestProbeOk
+  const onboardingStep = !accessReady ? 2 : !isEnabled ? 3 : 4;
+  const onboardingTitle = !accessReady
     ? "Test read-only access"
     : !isEnabled
       ? "Enable this source"
       : latestSyncOk
         ? "Source connected"
         : "Sync evidence into your assessment store";
-  const onboardingDetail = !latestProbeOk
+  const onboardingDetail = !accessReady
     ? "Run Test connection — enable stays locked until access is verified."
     : !isEnabled
       ? "When the test passes, enable the connector to allow scheduled sync."
@@ -682,53 +668,33 @@ export function ConnectorDrawer({
                 : "Access secret hashed to a fingerprint server-side; raw value never persisted."}
             </span>
             <div className="flex flex-wrap gap-2">
-              <Button
-                variant="default"
-                onClick={runDiscovery}
-                disabled={discover.isPending || !canDiscover}
-              >
-                {discover.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Search className="h-4 w-4" />
-                )}{" "}
-                {isSnowflake ? "Discover objects" : "Discover scope"}
-              </Button>
-              <Button
-                variant="default"
-                onClick={runProbe}
-                disabled={probe.isPending || !canTestAccess}
-              >
-                {probe.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <CheckCircle2 className="h-4 w-4" />
-                )}{" "}
-                Test connection
-              </Button>
-              {isEnabled ? (
+              {showDiscoveryAction ? (
                 <Button
                   variant="primary"
-                  onClick={runSync}
-                  disabled={sync.isPending || !isRunnable}
+                  onClick={runDiscovery}
+                  disabled={discover.isPending || !canDiscover}
                 >
-                  {sync.isPending ? (
+                  {discover.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <RefreshCw className="h-4 w-4" />
+                    <Search className="h-4 w-4" />
                   )}{" "}
-                  Sync now
+                  {isSnowflake ? "Discover objects" : "Discover scope"}
                 </Button>
-              ) : null}
-              {isEnabled ? (
+              ) : !accessReady ? (
                 <Button
-                  variant="default"
-                  onClick={disable}
-                  disabled={configure.isPending}
+                  variant="primary"
+                  onClick={runProbe}
+                  disabled={probe.isPending || !canTestAccess}
                 >
-                  <PauseCircle className="h-4 w-4" /> Disable
+                  {probe.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <CheckCircle2 className="h-4 w-4" />
+                  )}{" "}
+                  Test connection
                 </Button>
-              ) : (
+              ) : !isEnabled ? (
                 <Button
                   variant="primary"
                   onClick={enable}
@@ -745,7 +711,29 @@ export function ConnectorDrawer({
                   )}{" "}
                   Enable connector
                 </Button>
+              ) : (
+                <Button
+                  variant="primary"
+                  onClick={runSync}
+                  disabled={sync.isPending || !isRunnable}
+                >
+                  {sync.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4" />
+                  )}{" "}
+                  Sync now
+                </Button>
               )}
+              {isEnabled ? (
+                <Button
+                  variant="default"
+                  onClick={disable}
+                  disabled={configure.isPending}
+                >
+                  <PauseCircle className="h-4 w-4" /> Disable
+                </Button>
+              ) : null}
             </div>
           </div>
         )
@@ -814,6 +802,18 @@ export function ConnectorDrawer({
           </section>
         )}
 
+        {!auditor && connector && usesManagedCloudLink && !isEnabled && (
+          <CloudLinkPanel
+            connector={connector}
+            linkSessionId={linkSessionId}
+            onLinked={(linked) => {
+              setAccessValidated(false);
+              setCreds((current) => ({ ...current, ...linked }));
+            }}
+            onToast={onToast}
+          />
+        )}
+
         <details className="rounded-xl border border-line p-3">
           <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
             <ListChecks className="h-3.5 w-3.5" /> Connector contract
@@ -844,18 +844,6 @@ export function ConnectorDrawer({
             </div>
           </div>
         </details>
-
-        {!auditor && connector && usesManagedCloudLink && !isEnabled && (
-          <CloudLinkPanel
-            connector={connector}
-            linkSessionId={linkSessionId}
-            onLinked={(linked) => {
-              setAccessValidated(false);
-              setCreds((current) => ({ ...current, ...linked }));
-            }}
-            onToast={onToast}
-          />
-        )}
 
         {!auditor && (
           <section className="rounded-lg border border-line p-3">
@@ -1258,12 +1246,7 @@ export function ConnectorDrawer({
           </section>
         )}
 
-        <LatestSyncProof
-          connector={connector}
-          syncing={sync.isPending}
-          onSync={runSync}
-          runnable={isRunnable}
-        />
+        <LatestSyncProof connector={connector} runnable={isRunnable} />
 
         <section>
           <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">

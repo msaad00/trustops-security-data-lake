@@ -24,3 +24,15 @@ def test_enabled_cloud_connector_hides_onboarding_and_duplicate_credentials() ->
     assert "const usesManagedCloudLink = supportsCloudLink(connector.connector_id);" in drawer
     assert "usesManagedCloudLink && !isEnabled" in drawer
     assert "!usesManagedCloudLink && (" in drawer
+
+
+def test_aws_drawer_has_one_linear_setup_flow_and_no_duplicate_sync_action() -> None:
+    drawer = DRAWER.read_text(encoding="utf-8")
+
+    labels = [drawer.index(f'label: "{label}"') for label in ("Authorize", "Verify", "Scope", "Sync")]
+    assert labels == sorted(labels)
+    assert 'label: "Access"' not in drawer
+    assert 'label: "Validate"' not in drawer
+    assert drawer.count("Sync now") == 1
+    assert "const showDiscoveryAction = !usesManagedCloudLink && needsDiscovery;" in drawer
+    assert "{showDiscoveryAction ? (" in drawer

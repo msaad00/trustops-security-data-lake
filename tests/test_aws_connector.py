@@ -17,7 +17,7 @@ from security_lakehouse.connector_state import (
     latest_run,
     run_probe,
 )
-from security_lakehouse.connectors_aws import AWSClient, AWSFixtureClient, collect_aws_evidence
+from security_lakehouse.connectors_aws import AWSClient, AWSFixtureClient, collect_aws_evidence, probe_aws_access
 from security_lakehouse.io import read_jsonl
 from security_lakehouse.validation import validate_raw_events
 
@@ -173,18 +173,85 @@ def test_aws_connector_sync_without_fixture_or_creds_errors(tmp_path: Path, monk
         run_connector_sync(tmp_path, connector_id="aws-posture")
 
 
-def test_aws_adapter_is_registered_and_probe_reports_ok(tmp_path: Path) -> None:
+def test_aws_adapter_runs_live_probe_before_enable(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     assert has_adapter("aws-posture") is True
     # Before enablement the probe is skipped (no synthetic collection signal).
     skipped = run_probe(tmp_path, connector_id="aws-posture")
     assert skipped["result"] == "skipped"
     assert "not enabled" in skipped["error"]
 
-    append_config_event(tmp_path, connector_id="aws-posture", state="enabled", actor="a")
-    ok = run_probe(tmp_path, connector_id="aws-posture")
-    # Adapter-available -> probe is "ok", not "skipped", and reports no count.
+    def fake_probe(*, credentials: dict, options: dict) -> dict:
+        assert credentials["role_arn"].endswith(":role/TrustOpsPostureReadOnlyRole")
+        assert credentials["external_id"] == "tenant-binding"
+        assert options["region"] == "us-east-1"
+        return {"ok": True, "account_id": ACCOUNT, "capabilities": ["iam:ListUsers"]}
+
+    monkeypatch.setattr("security_lakehouse.connector_state.probe_aws_access", fake_probe)
+    ok = run_probe(
+        tmp_path,
+        connector_id="aws-posture",
+        credentials={
+            "account_id": ACCOUNT,
+            "role_arn": f"arn:aws:iam::{ACCOUNT}:role/TrustOpsPostureReadOnlyRole",
+            "external_id": "tenant-binding",
+        },
+        options={"region": "us-east-1"},
+    )
     assert ok["result"] == "ok"
-    assert ok["evidence_count"] is None
+    assert ok["metadata"]["probe_mode"] == "live"
+    assert ok["metadata"]["capabilities"] == ["iam:ListUsers"]
+
+
+def test_aws_adapter_records_safe_error_when_live_probe_fails(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def denied_probe(*, credentials: dict, options: dict) -> dict:
+        raise RuntimeError("credential detail that must not be persisted")
+
+    monkeypatch.setattr("security_lakehouse.connector_state.probe_aws_access", denied_probe)
+    rec = run_probe(
+        tmp_path,
+        connector_id="aws-posture",
+        credentials={"account_id": ACCOUNT, "role_arn": f"arn:aws:iam::{ACCOUNT}:role/TrustOpsPostureReadOnlyRole"},
+        options={},
+    )
+    assert rec["result"] == "error"
+    assert rec["error"] == "RuntimeError"
+    assert "credential detail" not in json.dumps(rec)
+
+
+def test_probe_aws_access_uses_assumed_role_and_read_permission(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: dict[str, object] = {}
+
+    class FakeClient:
+        def __init__(self, **kwargs: object) -> None:
+            calls["init"] = kwargs
+
+        def users(self) -> list[dict]:
+            calls["users"] = True
+            return [{"UserName": "one"}, {"UserName": "two"}]
+
+    monkeypatch.setattr("security_lakehouse.connectors_aws.AWSClient", FakeClient)
+    result = probe_aws_access(
+        credentials={
+            "account_id": ACCOUNT,
+            "role_arn": f"arn:aws:iam::{ACCOUNT}:role/TrustOpsPostureReadOnlyRole",
+            "external_id": "tenant-binding",
+        },
+        options={"region": "us-east-1"},
+    )
+
+    assert calls["init"] == {
+        "region_name": "us-east-1",
+        "role_arn": f"arn:aws:iam::{ACCOUNT}:role/TrustOpsPostureReadOnlyRole",
+        "external_id": "tenant-binding",
+    }
+    assert calls["users"] is True
+    assert result == {
+        "ok": True,
+        "account_id": ACCOUNT,
+        "role_arn": f"arn:aws:iam::{ACCOUNT}:role/TrustOpsPostureReadOnlyRole",
+        "capabilities": ["sts:AssumeRole", "iam:ListUsers"],
+        "principal_count": 2,
+    }
 
 
 class _FakeBoto3:
