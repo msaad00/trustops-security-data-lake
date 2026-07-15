@@ -34,7 +34,10 @@ import type {
 } from "@/lib/api/types";
 import { ConnectorMark } from "@/components/connectors/ConnectorMark";
 import { OnboardingGuideBanner } from "@/components/onboarding/OnboardingGuideBanner";
-import { CloudLinkPanel } from "@/components/connectors/CloudLinkPanel";
+import {
+  CloudLinkPanel,
+  supportsCloudLink,
+} from "@/components/connectors/CloudLinkPanel";
 import {
   credentialFieldsFor,
   schedulerFieldsFor,
@@ -410,6 +413,7 @@ export function ConnectorDrawer({
   const scopeFields = scopeFieldsFor(connector.connector_id);
   const schedulerFields = schedulerFieldsFor(isRunnableConnector(connector));
   const isSnowflake = connector.connector_id === "snowflake-evidence-lake";
+  const usesManagedCloudLink = supportsCloudLink(connector.connector_id);
   const usesDiscoveredReadScope =
     connector.connector_id === "clickhouse-telemetry-lake" || isSnowflake;
   const isEnabled = connector.state === "enabled";
@@ -673,8 +677,9 @@ export function ConnectorDrawer({
         !auditor && (
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-xs text-muted">
-              Access secret hashed to a fingerprint server-side; raw value never
-              persisted.
+              {usesManagedCloudLink
+                ? "TrustOps stores identity references and scope, not cloud access keys."
+                : "Access secret hashed to a fingerprint server-side; raw value never persisted."}
             </span>
             <div className="flex flex-wrap gap-2">
               <Button
@@ -840,7 +845,7 @@ export function ConnectorDrawer({
           </div>
         </details>
 
-        {!auditor && connector && (
+        {!auditor && connector && usesManagedCloudLink && !isEnabled && (
           <CloudLinkPanel
             connector={connector}
             linkSessionId={linkSessionId}
@@ -855,7 +860,9 @@ export function ConnectorDrawer({
         {!auditor && (
           <section className="rounded-lg border border-line p-3">
             <div className="ui-label">
-              Credentials · {connector.credential_type.replace(/_/g, " ")}
+              {usesManagedCloudLink
+                ? "Read scope & schedule"
+                : `Credentials · ${connector.credential_type.replace(/_/g, " ")}`}
             </div>
             {connector.connector_id === "snowflake-evidence-lake" && (
               <div className="mt-2">
@@ -866,54 +873,19 @@ export function ConnectorDrawer({
               </div>
             )}
             <div className="mt-2 grid gap-2">
-              {requiredFirst(credentialFields)
-                .filter((field) => field.required)
-                .map((field) => {
-                  const error = credentialFieldError(
-                    field.name,
-                    field.label,
-                    field.required,
-                  );
-                  return (
-                    <label key={field.name} className="grid gap-1">
-                      <span className="ui-label">{field.label}</span>
-                      <input
-                        type={field.secret ? "password" : "text"}
-                        value={creds[field.name] ?? ""}
-                        onChange={(e) => {
-                          setAccessValidated(false);
-                          setCreds((c) => ({
-                            ...c,
-                            [field.name]: e.target.value,
-                          }));
-                        }}
-                        onBlur={() => markTouched(field.name)}
-                        aria-invalid={Boolean(error)}
-                        className={`ui-input ${error ? "ui-input-error" : ""}`}
-                        placeholder={field.placeholder}
-                      />
-                      {error ? (
-                        <span className="text-xs text-rose-700">{error}</span>
-                      ) : field.hint ? (
-                        <span className="text-xs text-muted">{field.hint}</span>
-                      ) : null}
-                    </label>
-                  );
-                })}
-              {credentialFields.some((field) => !field.required) && (
-                <details className="rounded-lg border border-line bg-slate-50 p-3">
-                  <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-muted">
-                    Advanced identity settings
-                  </summary>
-                  <div className="mt-3 grid gap-2">
-                    {requiredFirst(credentialFields)
-                      .filter((field) => !field.required)
-                      .map((field) => (
-                        <label
-                          key={field.name}
-                          className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
-                        >
-                          {field.label}
+              {!usesManagedCloudLink && (
+                <>
+                  {requiredFirst(credentialFields)
+                    .filter((field) => field.required)
+                    .map((field) => {
+                      const error = credentialFieldError(
+                        field.name,
+                        field.label,
+                        field.required,
+                      );
+                      return (
+                        <label key={field.name} className="grid gap-1">
+                          <span className="ui-label">{field.label}</span>
                           <input
                             type={field.secret ? "password" : "text"}
                             value={creds[field.name] ?? ""}
@@ -924,18 +896,61 @@ export function ConnectorDrawer({
                                 [field.name]: e.target.value,
                               }));
                             }}
-                            className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                            onBlur={() => markTouched(field.name)}
+                            aria-invalid={Boolean(error)}
+                            className={`ui-input ${error ? "ui-input-error" : ""}`}
                             placeholder={field.placeholder}
                           />
+                          {error ? (
+                            <span className="text-xs text-rose-700">
+                              {error}
+                            </span>
+                          ) : field.hint ? (
+                            <span className="text-xs text-muted">
+                              {field.hint}
+                            </span>
+                          ) : null}
                         </label>
-                      ))}
-                  </div>
-                </details>
-              )}
-              {credentialFields.length === 0 && (
-                <div className="rounded-lg border border-line bg-slate-50 p-3 text-xs font-semibold text-muted">
-                  This connector uses ambient platform credentials.
-                </div>
+                      );
+                    })}
+                  {credentialFields.some((field) => !field.required) && (
+                    <details className="rounded-lg border border-line bg-slate-50 p-3">
+                      <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-muted">
+                        Advanced identity settings
+                      </summary>
+                      <div className="mt-3 grid gap-2">
+                        {requiredFirst(credentialFields)
+                          .filter((field) => !field.required)
+                          .map((field) => (
+                            <label
+                              key={field.name}
+                              className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
+                            >
+                              {field.label}
+                              <input
+                                type={field.secret ? "password" : "text"}
+                                value={creds[field.name] ?? ""}
+                                onChange={(e) => {
+                                  setAccessValidated(false);
+                                  setCreds((c) => ({
+                                    ...c,
+                                    [field.name]: e.target.value,
+                                  }));
+                                }}
+                                className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                                placeholder={field.placeholder}
+                              />
+                            </label>
+                          ))}
+                      </div>
+                    </details>
+                  )}
+                  {credentialFields.length === 0 && (
+                    <div className="rounded-lg border border-line bg-slate-50 p-3 text-xs font-semibold text-muted">
+                      This connector uses ambient platform credentials.
+                    </div>
+                  )}
+                </>
               )}
               {isSnowflake && !showSnowflakeScopeFields && (
                 <div className="mt-2 rounded-lg border border-line bg-slate-50 p-3">
