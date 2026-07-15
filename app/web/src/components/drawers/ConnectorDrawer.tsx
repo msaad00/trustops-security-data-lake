@@ -1245,10 +1245,7 @@ export function ConnectorDrawer({
           </section>
         )}
 
-        <LatestSyncProof
-          connector={connector}
-          runnable={isRunnable}
-        />
+        <LatestSyncProof connector={connector} runnable={isRunnable} />
 
         <section>
           <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
