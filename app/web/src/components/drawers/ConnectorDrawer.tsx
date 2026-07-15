@@ -61,6 +61,9 @@ interface SetupStep {
   tone: "ready" | "attention" | "default";
 }
 
+const CONNECTED_TABS = ["Overview", "Details", "History"] as const;
+type ConnectedTab = (typeof CONNECTED_TABS)[number];
+
 const isRunnableConnector = (connector: ConnectorView) =>
   Boolean(connector.is_implemented);
 
@@ -326,6 +329,7 @@ export function ConnectorDrawer({
   const [accessValidated, setAccessValidated] = useState(false);
   const [discoveryRun, setDiscoveryRun] = useState<ConnectorRun | null>(null);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
+  const [connectedTab, setConnectedTab] = useState<ConnectedTab>("Overview");
 
   const markTouched = (name: string) => {
     setTouchedFields((prev) => new Set(prev).add(name));
@@ -345,6 +349,7 @@ export function ConnectorDrawer({
     setDiscoveryRun(null);
     setCreds({});
     setTouchedFields(new Set());
+    setConnectedTab("Overview");
   }, [connector?.connector_id]);
 
   useEffect(() => {
@@ -474,6 +479,7 @@ export function ConnectorDrawer({
       value: options[field.name]?.trim() || field.placeholder || "default",
     }),
   );
+  const runHistoryRows = runs.data ?? [];
   const setupSteps: SetupStep[] = [
     {
       label: "Authorize",
@@ -848,37 +854,139 @@ export function ConnectorDrawer({
         )}
 
         {showConnectedCloudSummary ? (
-          <details className="rounded-lg border border-line p-3">
-            <summary className="ui-label cursor-pointer list-none">
-              Connection details
-            </summary>
-            <div className="mt-3 grid gap-2 sm:grid-cols-3">
-              {compactCloudDetails.map((detail) => (
-                <div
-                  key={detail.label}
-                  className="rounded-lg border border-line bg-panel p-2"
+          <section className="rounded-lg border border-line p-3">
+            <div
+              aria-label="Connected connector view"
+              className="grid grid-cols-3 rounded-lg border border-line bg-panel p-1"
+              role="tablist"
+            >
+              {CONNECTED_TABS.map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  role="tab"
+                  aria-selected={connectedTab === tab}
+                  className={`rounded-md px-2 py-1.5 text-xs font-black ${
+                    connectedTab === tab
+                      ? "bg-brand text-white"
+                      : "text-muted hover:bg-white"
+                  }`}
+                  onClick={() => setConnectedTab(tab)}
                 >
-                  <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-                    {detail.label}
-                  </div>
-                  <div className="mt-1 truncate text-sm font-black text-ink">
-                    {detail.value}
-                  </div>
-                </div>
+                  {tab}
+                </button>
               ))}
             </div>
-            {connector.credential_fingerprint ? (
-              <div className="mt-3 text-xs text-muted">
-                Credential fingerprint:{" "}
-                <code className="text-ink">
-                  {connector.credential_fingerprint}
-                </code>
-                {connector.configured_at && (
-                  <> · configured {formatWhen(connector.configured_at)}</>
-                )}
+
+            {connectedTab === "Overview" && (
+              <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]">
+                <LatestSyncProof connector={connector} runnable={isRunnable} />
+                <section className="rounded-xl border border-line bg-white p-3">
+                  <div className="text-xs font-black uppercase tracking-wide text-muted">
+                    Connection details
+                  </div>
+                  <div className="mt-3 grid gap-2">
+                    {compactCloudDetails.map((detail) => (
+                      <div
+                        key={detail.label}
+                        className="rounded-lg border border-line bg-panel p-2"
+                      >
+                        <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+                          {detail.label}
+                        </div>
+                        <div className="mt-1 truncate text-sm font-black text-ink">
+                          {detail.value}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {connector.credential_fingerprint ? (
+                    <div className="mt-3 text-xs text-muted">
+                      Credential fingerprint:{" "}
+                      <code className="text-ink">
+                        {connector.credential_fingerprint}
+                      </code>
+                      {connector.configured_at && (
+                        <> · configured {formatWhen(connector.configured_at)}</>
+                      )}
+                    </div>
+                  ) : null}
+                </section>
               </div>
-            ) : null}
-          </details>
+            )}
+
+            {connectedTab === "Details" && (
+              <div className="mt-3 grid gap-3 lg:grid-cols-2">
+                <details className="rounded-xl border border-line bg-white p-3">
+                  <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-muted">
+                    Granted read scope
+                  </summary>
+                  <ul className="mt-3 grid gap-2 text-xs">
+                    {connector.minimum_permissions.map((perm) => (
+                      <li key={perm} className="flex items-start gap-2">
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                        <code className="text-ink">{perm}</code>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+                <details className="rounded-xl border border-line bg-white p-3">
+                  <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-muted">
+                    Evidence output
+                  </summary>
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {connector.evidence_types.map((t) => (
+                      <Badge key={t}>{t}</Badge>
+                    ))}
+                  </div>
+                </details>
+              </div>
+            )}
+
+            {connectedTab === "History" && (
+              <section className="mt-3 rounded-xl border border-line bg-white p-3">
+                <div className="text-xs font-black uppercase tracking-wide text-muted">
+                  History · {runHistoryRows.length} events
+                </div>
+                <div className="mt-3 max-h-80 overflow-auto pr-1">
+                  <div className="grid gap-2">
+                    {runHistoryRows.slice(0, 8).map((r) => (
+                      <div
+                        key={r.occurred_at + r.kind}
+                        className="rounded-lg border border-line p-3 text-xs"
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <span>
+                            <Badge tone={toneForResult(r.result)}>
+                              {r.result}
+                            </Badge>{" "}
+                            <Badge>{r.kind}</Badge>
+                          </span>
+                          <span className="text-muted">{r.occurred_at}</span>
+                        </div>
+                        <div className="mt-1 text-muted">
+                          actor <b className="text-ink">{r.actor}</b>
+                          {r.duration_ms !== null && <> · {r.duration_ms} ms</>}
+                          {r.evidence_count !== null && (
+                            <>
+                              {" "}
+                              ·{" "}
+                              {r.kind === "sync"
+                                ? `${r.evidence_count} evidence row(s)`
+                                : `${r.evidence_count} object(s)`}
+                            </>
+                          )}
+                        </div>
+                        {r.error && (
+                          <div className="mt-1 text-rose-700">{r.error}</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )}
+          </section>
         ) : (
           !auditor &&
           (!usesManagedCloudLink || showManagedCloudConfiguration) && (
@@ -1297,19 +1405,19 @@ export function ConnectorDrawer({
           )
         )}
 
-        {(runs.data ?? []).length > 0 && (
+        {!showConnectedCloudSummary && runHistoryRows.length > 0 && (
           <LatestSyncProof connector={connector} runnable={isRunnable} />
         )}
 
-        {(runs.data ?? []).length > 0 && (
+        {!showConnectedCloudSummary && runHistoryRows.length > 0 && (
           <details className="rounded-lg border border-line p-3">
             <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
               <ShieldCheck className="h-3 w-3" /> Run history ·{" "}
-              {runs.data?.length ?? 0} events
+              {runHistoryRows.length} events
             </summary>
             <section className="mt-3">
               <div className="grid gap-2">
-                {(runs.data ?? []).slice(0, 8).map((r) => (
+                {runHistoryRows.slice(0, 8).map((r) => (
                   <div
                     key={r.occurred_at + r.kind}
                     className="rounded-lg border border-line p-3 text-xs"
@@ -1339,7 +1447,7 @@ export function ConnectorDrawer({
                     )}
                   </div>
                 ))}
-                {(runs.data ?? []).length === 0 && (
+                {runHistoryRows.length === 0 && (
                   <div className="rounded-lg border border-dashed border-line p-3 text-xs text-muted">
                     No probes or syncs recorded yet. Click{" "}
                     <b>Test connection</b> to run one.

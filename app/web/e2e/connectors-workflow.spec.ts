@@ -93,18 +93,12 @@ test.describe("connectors workflow", () => {
     expect(enabled?.state).toBe("enabled");
   });
 
-  test("control eval runs from dashboard source sync panel", async ({
-    page,
-  }) => {
+  test("control eval runs from dashboard sources view", async ({ page }) => {
     await page.goto("/console/dashboard/");
     await expect(page.getByRole("main")).toBeVisible({ timeout: 20_000 });
-
-    const ingestionToggle = page.getByRole("button", {
-      name: /Source sync & control eval/i,
-    });
-    if ((await ingestionToggle.getAttribute("aria-expanded")) !== "true") {
-      await ingestionToggle.click();
-    }
+    await expect(
+      page.getByRole("tab", { name: "Sources", exact: true }),
+    ).toHaveAttribute("aria-selected", "true");
 
     await page.getByRole("button", { name: "Run control eval" }).click();
     await expect(

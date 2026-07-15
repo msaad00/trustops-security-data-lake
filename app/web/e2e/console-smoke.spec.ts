@@ -10,15 +10,22 @@ test.describe("console smoke", () => {
         name: /^Executive trust overview$/,
       }),
     ).toBeVisible();
-    await expect(page.getByText("Trust Command Center")).toBeVisible();
+    await expect(page.getByText("TrustOps overview")).toBeVisible();
+    await expect(page.getByText("Evidence loop")).toBeVisible();
     await expect(
-      page.getByText("Failing tests", { exact: true }),
+      page.getByText("Connected sources", { exact: true }),
+    ).toBeVisible();
+    await expect(page.getByText("Raw evidence", { exact: true })).toBeVisible();
+    await expect(page.getByText("Control eval", { exact: true })).toBeVisible();
+    await expect(page.getByText("Proof export", { exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("tab", { name: "Sources", exact: true }),
+    ).toHaveAttribute("aria-selected", "true");
+    await expect(
+      page.getByRole("tab", { name: "Controls", exact: true }),
     ).toBeVisible();
     await expect(
-      page.getByText("Critical findings", { exact: true }),
-    ).toBeVisible();
-    await expect(
-      page.getByText("Stale evidence", { exact: true }),
+      page.getByRole("tab", { name: "Proof", exact: true }),
     ).toBeVisible();
   });
 

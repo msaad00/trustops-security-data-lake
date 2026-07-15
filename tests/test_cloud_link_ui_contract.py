@@ -62,7 +62,7 @@ def test_managed_cloud_drawer_uses_progressive_disclosure() -> None:
     assert '<summary className="ui-label cursor-pointer list-none">' in drawer
     assert "Scope & automation" in drawer
     assert 'className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]"' in drawer
-    assert "(runs.data ?? []).length > 0 && (" in drawer
+    assert "runHistoryRows.length > 0 && (" in drawer
 
 
 def test_connected_cloud_drawer_is_compact_and_non_redundant() -> None:
@@ -70,7 +70,11 @@ def test_connected_cloud_drawer_is_compact_and_non_redundant() -> None:
 
     assert "const showConnectedCloudSummary =" in drawer
     assert "usesManagedCloudLink && isEnabled;" in drawer
+    assert 'aria-label="Connected connector view"' in drawer
+    assert '"Overview", "Details", "History"' in drawer
+    assert "connectedTab ===" in drawer
     assert "Connection details" in drawer
     assert "showConnectedCloudSummary ? (" in drawer
+    assert "max-h-80 overflow-auto" in drawer
     assert "open={!usesManagedCloudLink && !showConnectedCloudSummary}" in drawer
     assert drawer.count('<ShieldCheck className="h-3 w-3" /> Run history') == 1
