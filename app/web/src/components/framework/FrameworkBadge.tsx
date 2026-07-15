@@ -21,6 +21,9 @@ export function FrameworkBadge({
 }: FrameworkBadgeProps) {
   const visual = frameworkVisual(frameworkId, fallbackLabel);
   const markSize = variant === "compact" ? Math.max(28, size - 4) : size;
+  const identityNote = visual.artwork
+    ? `${visual.label} official framework artwork; ${visual.attribution}; no endorsement`
+    : `${visual.label} framework scope label; not an official logo or certification seal`;
 
   if (variant === "mark-only") {
     return (
@@ -41,8 +44,8 @@ export function FrameworkBadge({
         className,
       )}
       role="img"
-      aria-label={`${visual.label} framework label; not an official logo or certification seal`}
-      title={`${visual.label} framework label; not an official logo or certification seal`}
+      aria-label={identityNote}
+      title={identityNote}
     >
       <FrameworkMark
         frameworkId={frameworkId}

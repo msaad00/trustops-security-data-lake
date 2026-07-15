@@ -98,7 +98,7 @@ source references, and to avoid invented controls or certification claims.
 
 Framework support currently covers eight source-linked, readiness-gated
 frameworks: SOC 2, NIST AI RMF, ISO/IEC 27001, HIPAA Security Rule, PCI DSS,
-GDPR, EU AI Act, and ISO/IEC 42001. Framework visuals use neutral text labels.
-Official third-party logos, regulator marks, or certification seals are not
-shipped unless their official usage terms and attribution are documented under
-[Third-Party Asset Policy](THIRD_PARTY_ASSETS.md).
+GDPR, EU AI Act, and ISO/IEC 42001. Framework visuals use exact official names,
+approved NIST framework artwork, and project-owned icons where marks are
+restricted or nonexistent. Certification seals are not bundled without terms
+and attribution documented under [Third-Party Asset Policy](THIRD_PARTY_ASSETS.md).

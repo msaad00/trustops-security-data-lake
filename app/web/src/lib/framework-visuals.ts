@@ -12,6 +12,9 @@ export type FrameworkVisual = {
   gradient: string;
   /** Lucide icon name key for FrameworkMark */
   icon: FrameworkIconKey;
+  /** Approved framework artwork served from the self-hosted console. */
+  artwork?: string;
+  attribution?: string;
 };
 
 export type FrameworkIconKey =
@@ -29,7 +32,7 @@ export type FrameworkIconKey =
 
 export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
   soc2: {
-    label: "SOC 2",
+    label: "SOC 2® Trust Services Criteria",
     mark: "SOC",
     accent: "#2563eb",
     bg: "#eff6ff",
@@ -38,16 +41,18 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     icon: "shield",
   },
   "nist-ai-rmf": {
-    label: "NIST AI RMF",
+    label: "NIST AI Risk Management Framework 1.0",
     mark: "AI",
     accent: "#7c3aed",
     bg: "#f5f3ff",
     ring: "#ddd6fe",
     gradient: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
     icon: "brain",
+    artwork: "/console/frameworks/nist-ai-rmf.png",
+    attribution: "N. Hanacek/NIST",
   },
   "iso-27001-2022": {
-    label: "ISO 27001",
+    label: "ISO/IEC 27001:2022",
     mark: "ISO",
     accent: "#0891b2",
     bg: "#ecfeff",
@@ -56,7 +61,7 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     icon: "lock",
   },
   "iso-42001-2023": {
-    label: "ISO 42001",
+    label: "ISO/IEC 42001:2023",
     mark: "AIMS",
     accent: "#0f766e",
     bg: "#f0fdfa",
@@ -118,6 +123,53 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     gradient: "linear-gradient(135deg, #e11d48 0%, #9f1239 100%)",
     icon: "bot",
   },
+  "nist-csf-2.0": {
+    label: "NIST Cybersecurity Framework (CSF) 2.0",
+    mark: "CSF",
+    accent: "#0f766e",
+    bg: "#f0fdfa",
+    ring: "#99f6e4",
+    gradient: "linear-gradient(135deg, #14b8a6 0%, #0f766e 100%)",
+    icon: "shield",
+    artwork: "/console/frameworks/nist-csf-2.0.png",
+    attribution: "NIST/Natasha Hanacek",
+  },
+  "cmmc-2-level2": {
+    label: "CMMC 2.0 Level 2",
+    mark: "CMMC",
+    accent: "#1d4ed8",
+    bg: "#eff6ff",
+    ring: "#bfdbfe",
+    gradient: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+    icon: "shield",
+  },
+  "iso-27017-2015": {
+    label: "ISO/IEC 27017:2015",
+    mark: "27017",
+    accent: "#0369a1",
+    bg: "#f0f9ff",
+    ring: "#bae6fd",
+    gradient: "linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%)",
+    icon: "cloud",
+  },
+  "iso-27701-2019": {
+    label: "ISO/IEC 27701:2019",
+    mark: "27701",
+    accent: "#6d28d9",
+    bg: "#f5f3ff",
+    ring: "#ddd6fe",
+    gradient: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
+    icon: "lock",
+  },
+  soc1: {
+    label: "SOC 1®",
+    mark: "SOC 1",
+    accent: "#1d4ed8",
+    bg: "#eff6ff",
+    ring: "#bfdbfe",
+    gradient: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+    icon: "shield",
+  },
 };
 
 const NAME_TO_ID: Record<string, string> = {
@@ -137,6 +189,13 @@ const NAME_TO_ID: Record<string, string> = {
   "PCI DSS": "pci-dss-v4",
   GDPR: "gdpr-2016-679",
   "EU AI Act": "eu-ai-act-2024-1689",
+  "NIST CSF 2.0": "nist-csf-2.0",
+  "NIST Cybersecurity Framework (CSF) 2.0": "nist-csf-2.0",
+  "CMMC 2.0 Level 2": "cmmc-2-level2",
+  "ISO/IEC 27017:2015": "iso-27017-2015",
+  "ISO/IEC 27701:2019": "iso-27701-2019",
+  "SOC 1": "soc1",
+  "SOC 1®": "soc1",
 };
 
 export function resolveFrameworkId(
