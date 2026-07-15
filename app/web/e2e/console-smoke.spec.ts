@@ -43,6 +43,36 @@ test.describe("console smoke", () => {
     await expect(page.getByText("Framework readiness")).toBeVisible();
   });
 
+  test("default navigation follows the core trust loop", async ({ page }) => {
+    await page.goto("/console/dashboard/");
+    const sidebar = page.getByRole("complementary");
+
+    for (const label of [
+      "Overview",
+      "Connections",
+      "Evidence",
+      "Controls",
+      "Frameworks",
+      "Findings",
+      "Audit room",
+    ]) {
+      await expect(sidebar.getByRole("link", { name: label })).toBeVisible();
+    }
+
+    for (const label of [
+      "Onboarding",
+      "Launch",
+      "Demo",
+      "Deploy",
+      "Workflows",
+      "Agent harness",
+      "Vendor risk",
+      "Pricing",
+    ]) {
+      await expect(sidebar.getByRole("link", { name: label })).toHaveCount(0);
+    }
+  });
+
   test("shell exposes skip link and main landmark", async ({ page }) => {
     await page.goto("/console/dashboard/");
     await expect(page.getByRole("main")).toBeVisible({ timeout: 20_000 });
