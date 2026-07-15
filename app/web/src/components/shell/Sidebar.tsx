@@ -151,8 +151,7 @@ export function Sidebar() {
       <div className="overflow-y-auto p-2.5">
         {GROUPS.map((group) => {
           const isClosed =
-            isGroupClosed(group, closedGroups) &&
-            !effectiveCollapsed;
+            isGroupClosed(group, closedGroups) && !effectiveCollapsed;
           const groupItems = ITEMS.filter((i) => i.group === group);
           return (
             <div key={group} className="mb-3">
