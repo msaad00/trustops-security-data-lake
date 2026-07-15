@@ -108,15 +108,6 @@ const toneForResult = (r: string | undefined) =>
         ? "attention"
         : "default";
 
-const labelForStatus = (status: string) =>
-  status === "primary_lake"
-    ? "Primary lake"
-    : status === "supported_connector"
-      ? "Supported"
-      : status === "local_demo"
-        ? "Local demo"
-        : status.replace(/_/g, " ");
-
 const metadataObject = (value: unknown): Record<string, unknown> =>
   value && typeof value === "object" && !Array.isArray(value)
     ? (value as Record<string, unknown>)
@@ -473,6 +464,8 @@ export function ConnectorDrawer({
     !discoveryRun &&
     !isConfigured(options);
   const showDiscoveryAction = !usesManagedCloudLink && needsDiscovery;
+  const showManagedCloudConfiguration =
+    !usesManagedCloudLink || hasStagedServerCredentials || isEnabled;
   const setupSteps: SetupStep[] = [
     {
       label: "Authorize",
@@ -516,7 +509,8 @@ export function ConnectorDrawer({
             : "default",
     },
   ];
-  const onboardingStep = !accessReady ? 2 : !isEnabled ? 3 : 4;
+  const onboardingStep =
+    missingCredentials.length > 0 ? 1 : !accessReady ? 2 : !isEnabled ? 3 : 4;
   const onboardingTitle = !accessReady
     ? "Test read-only access"
     : !isEnabled
@@ -660,13 +654,9 @@ export function ConnectorDrawer({
       description={`${connector.category} · ${connector.collection_mode.replace("_", " ")}`}
       width="lg"
       footer={
-        !auditor && (
+        !auditor &&
+        (!usesManagedCloudLink || showManagedCloudConfiguration) && (
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-xs text-muted">
-              {usesManagedCloudLink
-                ? "TrustOps stores identity references and scope, not cloud access keys."
-                : "Access secret hashed to a fingerprint server-side; raw value never persisted."}
-            </span>
             <div className="flex flex-wrap gap-2">
               {showDiscoveryAction ? (
                 <Button
@@ -748,48 +738,6 @@ export function ConnectorDrawer({
             dismissHref="/connectors"
           />
         ) : null}
-        <section className="rounded-lg border border-line bg-surface p-3">
-          <div className="flex flex-wrap items-start gap-3">
-            <ConnectorMark
-              connectorId={connector.connector_id}
-              name={connector.name}
-              category={connector.category}
-              size="md"
-              showVendor
-            />
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap gap-1.5">
-                <Badge tone={isEnabled ? "ready" : "default"}>
-                  {connector.state}
-                </Badge>
-                <Badge tone={isRunnable ? "ready" : "attention"}>
-                  {isRunnable ? "Live source" : "Access contract"}
-                </Badge>
-                <Badge>{labelForStatus(connector.production_status)}</Badge>
-              </div>
-              {connector.setup_hint ? (
-                <p className="mt-1.5 text-xs leading-4 text-muted">
-                  {connector.setup_hint}
-                </p>
-              ) : null}
-            </div>
-          </div>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {setupSteps.map((step, index) => (
-              <span
-                key={step.label}
-                className="inline-flex items-center gap-1 rounded-md border border-line bg-surface-muted px-2 py-1 text-xs"
-              >
-                <span className="text-muted">{index + 1}.</span>
-                <span className="font-medium text-ink">{step.label}</span>
-                <Badge tone={step.tone} className="!px-1.5 !py-0 text-[10px]">
-                  {step.tone === "ready" ? "ok" : "—"}
-                </Badge>
-              </span>
-            ))}
-          </div>
-        </section>
-
         {!isRunnable && (
           <section className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs leading-4 text-amber-950">
             <div className="flex items-start gap-2">
@@ -802,119 +750,125 @@ export function ConnectorDrawer({
           </section>
         )}
 
-        {!auditor && connector && usesManagedCloudLink && !isEnabled && (
-          <CloudLinkPanel
-            connector={connector}
-            linkSessionId={linkSessionId}
-            onLinked={(linked) => {
-              setAccessValidated(false);
-              setCreds((current) => ({ ...current, ...linked }));
-            }}
-            onToast={onToast}
-          />
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]">
+          {!auditor &&
+            connector &&
+            usesManagedCloudLink &&
+            !isEnabled &&
+            !hasStagedServerCredentials && (
+              <CloudLinkPanel
+                connector={connector}
+                linkSessionId={linkSessionId}
+                onLinked={(linked) => {
+                  setAccessValidated(false);
+                  setCreds((current) => ({ ...current, ...linked }));
+                }}
+                onToast={onToast}
+              />
+            )}
+          <section
+            className={`rounded-lg border border-line bg-surface p-3 ${usesManagedCloudLink && hasStagedServerCredentials ? "lg:col-span-2" : ""}`}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <ConnectorMark
+                  connectorId={connector.connector_id}
+                  name={connector.name}
+                  category={connector.category}
+                  size="sm"
+                />
+                <span className="text-xs font-semibold text-ink">
+                  Step {Math.min(onboardingStep, 4)} of 4 ·{" "}
+                  {setupSteps[Math.min(onboardingStep, 4) - 1]?.label}
+                </span>
+              </div>
+              <Badge tone={isEnabled ? "ready" : "default"}>
+                {connector.state}
+              </Badge>
+            </div>
+            <div
+              className="mt-2 grid grid-cols-4 gap-1"
+              aria-label="Connector progress"
+            >
+              {setupSteps.map((step, index) => (
+                <span
+                  key={step.label}
+                  title={`${step.label}: ${step.detail}`}
+                  className={`h-1.5 rounded-full ${index < onboardingStep ? "bg-brand" : "bg-line"}`}
+                />
+              ))}
+            </div>
+            <p className="mt-2 text-xs leading-4 text-muted">
+              {setupSteps[Math.min(onboardingStep, 4) - 1]?.detail}
+            </p>
+          </section>
+        </div>
+
+        {showManagedCloudConfiguration && (
+          <details className="rounded-xl border border-line p-3">
+            <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
+              <ListChecks className="h-3.5 w-3.5" /> Connector contract
+            </summary>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <div>
+                <div className="text-xs font-black uppercase tracking-wide text-muted">
+                  Permissions
+                </div>
+                <ul className="mt-2 space-y-1 text-xs">
+                  {connector.minimum_permissions.map((perm) => (
+                    <li key={perm} className="flex items-start gap-2">
+                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                      <code className="text-ink">{perm}</code>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <div className="text-xs font-black uppercase tracking-wide text-muted">
+                  Evidence
+                </div>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {connector.evidence_types.map((t) => (
+                    <Badge key={t}>{t}</Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </details>
         )}
 
-        <details className="rounded-xl border border-line p-3">
-          <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
-            <ListChecks className="h-3.5 w-3.5" /> Connector contract
-          </summary>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <div>
-              <div className="text-xs font-black uppercase tracking-wide text-muted">
-                Permissions
-              </div>
-              <ul className="mt-2 space-y-1 text-xs">
-                {connector.minimum_permissions.map((perm) => (
-                  <li key={perm} className="flex items-start gap-2">
-                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
-                    <code className="text-ink">{perm}</code>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <div className="text-xs font-black uppercase tracking-wide text-muted">
-                Evidence
-              </div>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {connector.evidence_types.map((t) => (
-                  <Badge key={t}>{t}</Badge>
-                ))}
-              </div>
-            </div>
-          </div>
-        </details>
-
-        {!auditor && (
-          <section className="rounded-lg border border-line p-3">
-            <div className="ui-label">
-              {usesManagedCloudLink
-                ? "Read scope & schedule"
-                : `Credentials · ${connector.credential_type.replace(/_/g, " ")}`}
-            </div>
-            {connector.connector_id === "snowflake-evidence-lake" && (
-              <div className="mt-2">
-                <SnowflakeSetupHint
-                  canDiscover={canDiscover}
-                  discovered={showSnowflakeScopeFields}
-                />
-              </div>
-            )}
-            <div className="mt-2 grid gap-2">
-              {!usesManagedCloudLink && (
-                <>
-                  {requiredFirst(credentialFields)
-                    .filter((field) => field.required)
-                    .map((field) => {
-                      const error = credentialFieldError(
-                        field.name,
-                        field.label,
-                        field.required,
-                      );
-                      return (
-                        <label key={field.name} className="grid gap-1">
-                          <span className="ui-label">{field.label}</span>
-                          <input
-                            type={field.secret ? "password" : "text"}
-                            value={creds[field.name] ?? ""}
-                            onChange={(e) => {
-                              setAccessValidated(false);
-                              setCreds((c) => ({
-                                ...c,
-                                [field.name]: e.target.value,
-                              }));
-                            }}
-                            onBlur={() => markTouched(field.name)}
-                            aria-invalid={Boolean(error)}
-                            className={`ui-input ${error ? "ui-input-error" : ""}`}
-                            placeholder={field.placeholder}
-                          />
-                          {error ? (
-                            <span className="text-xs text-rose-700">
-                              {error}
-                            </span>
-                          ) : field.hint ? (
-                            <span className="text-xs text-muted">
-                              {field.hint}
-                            </span>
-                          ) : null}
-                        </label>
-                      );
-                    })}
-                  {credentialFields.some((field) => !field.required) && (
-                    <details className="rounded-lg border border-line bg-slate-50 p-3">
-                      <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-muted">
-                        Advanced identity settings
-                      </summary>
-                      <div className="mt-3 grid gap-2">
-                        {requiredFirst(credentialFields)
-                          .filter((field) => !field.required)
-                          .map((field) => (
-                            <label
-                              key={field.name}
-                              className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
-                            >
-                              {field.label}
+        {!auditor &&
+          (!usesManagedCloudLink || showManagedCloudConfiguration) && (
+            <details
+              className="rounded-lg border border-line p-3"
+              open={!usesManagedCloudLink}
+            >
+              <summary className="ui-label cursor-pointer list-none">
+                Scope & automation
+              </summary>
+              <div className="mt-3">
+                {connector.connector_id === "snowflake-evidence-lake" && (
+                  <div className="mt-2">
+                    <SnowflakeSetupHint
+                      canDiscover={canDiscover}
+                      discovered={showSnowflakeScopeFields}
+                    />
+                  </div>
+                )}
+                <div className="mt-2 grid gap-2">
+                  {!usesManagedCloudLink && (
+                    <>
+                      {requiredFirst(credentialFields)
+                        .filter((field) => field.required)
+                        .map((field) => {
+                          const error = credentialFieldError(
+                            field.name,
+                            field.label,
+                            field.required,
+                          );
+                          return (
+                            <label key={field.name} className="grid gap-1">
+                              <span className="ui-label">{field.label}</span>
                               <input
                                 type={field.secret ? "password" : "text"}
                                 value={creds[field.name] ?? ""}
@@ -925,133 +879,104 @@ export function ConnectorDrawer({
                                     [field.name]: e.target.value,
                                   }));
                                 }}
-                                className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                                onBlur={() => markTouched(field.name)}
+                                aria-invalid={Boolean(error)}
+                                className={`ui-input ${error ? "ui-input-error" : ""}`}
                                 placeholder={field.placeholder}
                               />
+                              {error ? (
+                                <span className="text-xs text-rose-700">
+                                  {error}
+                                </span>
+                              ) : field.hint ? (
+                                <span className="text-xs text-muted">
+                                  {field.hint}
+                                </span>
+                              ) : null}
                             </label>
-                          ))}
-                      </div>
-                    </details>
+                          );
+                        })}
+                      {credentialFields.some((field) => !field.required) && (
+                        <details className="rounded-lg border border-line bg-slate-50 p-3">
+                          <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-muted">
+                            Advanced identity settings
+                          </summary>
+                          <div className="mt-3 grid gap-2">
+                            {requiredFirst(credentialFields)
+                              .filter((field) => !field.required)
+                              .map((field) => (
+                                <label
+                                  key={field.name}
+                                  className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
+                                >
+                                  {field.label}
+                                  <input
+                                    type={field.secret ? "password" : "text"}
+                                    value={creds[field.name] ?? ""}
+                                    onChange={(e) => {
+                                      setAccessValidated(false);
+                                      setCreds((c) => ({
+                                        ...c,
+                                        [field.name]: e.target.value,
+                                      }));
+                                    }}
+                                    className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                                    placeholder={field.placeholder}
+                                  />
+                                </label>
+                              ))}
+                          </div>
+                        </details>
+                      )}
+                      {credentialFields.length === 0 && (
+                        <div className="rounded-lg border border-line bg-slate-50 p-3 text-xs font-semibold text-muted">
+                          This connector uses ambient platform credentials.
+                        </div>
+                      )}
+                    </>
                   )}
-                  {credentialFields.length === 0 && (
-                    <div className="rounded-lg border border-line bg-slate-50 p-3 text-xs font-semibold text-muted">
-                      This connector uses ambient platform credentials.
-                    </div>
-                  )}
-                </>
-              )}
-              {isSnowflake && !showSnowflakeScopeFields && (
-                <div className="mt-2 rounded-lg border border-line bg-slate-50 p-3">
-                  <div className="text-xs font-black uppercase tracking-wide text-muted">
-                    Read scope
-                  </div>
-                  <div className="mt-1 text-xs font-semibold text-muted">
-                    Click <b>Discover objects</b> after entering the service
-                    identity. {BRAND.name} will show only Snowflake objects
-                    visible to that role, then prefill the recommended read
-                    scope.
-                  </div>
-                </div>
-              )}
-              {scopeFields.length > 0 && showSnowflakeScopeFields && (
-                <div className="mt-2 border-t border-line pt-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
+                  {isSnowflake && !showSnowflakeScopeFields && (
+                    <div className="mt-2 rounded-lg border border-line bg-slate-50 p-3">
                       <div className="text-xs font-black uppercase tracking-wide text-muted">
                         Read scope
                       </div>
-                      {isSnowflake && (
-                        <div className="mt-1 text-xs font-semibold text-muted">
-                          Choose the warehouse, database, and schema this role
-                          can read. View names are auto-filled from discovery.
-                        </div>
-                      )}
-                    </div>
-                    {isSnowflake && (
-                      <Badge
-                        tone={missingScope.length === 0 ? "ready" : "attention"}
-                      >
-                        {missingScope.length === 0
-                          ? "scope ready"
-                          : `${missingScope.length} missing`}
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                    {coreScopeFields.map((field) => {
-                      const candidates = stringCandidates(
-                        discoveryMetadata,
-                        candidateKeyForField(field.name),
-                      );
-                      const currentValue = options[field.name] ?? "";
-                      const selectValues = currentValue
-                        ? Array.from(new Set([currentValue, ...candidates]))
-                        : candidates;
-                      const onScopeChange = (value: string) => {
-                        setAccessValidated(false);
-                        setOptions((current) => {
-                          const next = { ...current, [field.name]: value };
-                          if (isSnowflake && field.name === "database") {
-                            delete next.schema;
-                            delete next.audit_events;
-                            delete next.control_posture;
-                            delete next.asset_risk;
-                            delete next.evidence_bundles;
-                          }
-                          if (isSnowflake && field.name === "schema") {
-                            delete next.audit_events;
-                            delete next.control_posture;
-                            delete next.asset_risk;
-                            delete next.evidence_bundles;
-                          }
-                          return next;
-                        });
-                      };
-                      return (
-                        <label
-                          key={field.name}
-                          className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
-                        >
-                          {field.label}
-                          {isSnowflake && selectValues.length > 0 ? (
-                            <select
-                              value={currentValue}
-                              onChange={(e) => onScopeChange(e.target.value)}
-                              className="rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
-                            >
-                              <option value="">
-                                Select {field.label.toLowerCase()}
-                              </option>
-                              {selectValues.map((value) => (
-                                <option key={value} value={value}>
-                                  {value}
-                                </option>
-                              ))}
-                            </select>
-                          ) : (
-                            <input
-                              value={currentValue}
-                              onChange={(e) => onScopeChange(e.target.value)}
-                              placeholder={field.placeholder}
-                              className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
-                            />
-                          )}
-                        </label>
-                      );
-                    })}
-                  </div>
-                  {advancedScopeFields.length > 0 && (
-                    <details className="mt-3 rounded-lg border border-line bg-slate-50 p-3">
-                      <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-muted">
-                        Advanced view mapping
-                      </summary>
-                      <div className="mt-2 text-xs leading-5 text-muted">
-                        Defaults work for the {BRAND.name} Snowflake schema.
-                        Change these only when your evidence lake uses custom
-                        view names.
+                      <div className="mt-1 text-xs font-semibold text-muted">
+                        Click <b>Discover objects</b> after entering the service
+                        identity. {BRAND.name} will show only Snowflake objects
+                        visible to that role, then prefill the recommended read
+                        scope.
                       </div>
-                      <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                        {advancedScopeFields.map((field) => {
+                    </div>
+                  )}
+                  {scopeFields.length > 0 && showSnowflakeScopeFields && (
+                    <div className="mt-2 border-t border-line pt-3">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          <div className="text-xs font-black uppercase tracking-wide text-muted">
+                            Read scope
+                          </div>
+                          {isSnowflake && (
+                            <div className="mt-1 text-xs font-semibold text-muted">
+                              Choose the warehouse, database, and schema this
+                              role can read. View names are auto-filled from
+                              discovery.
+                            </div>
+                          )}
+                        </div>
+                        {isSnowflake && (
+                          <Badge
+                            tone={
+                              missingScope.length === 0 ? "ready" : "attention"
+                            }
+                          >
+                            {missingScope.length === 0
+                              ? "scope ready"
+                              : `${missingScope.length} missing`}
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                        {coreScopeFields.map((field) => {
                           const candidates = stringCandidates(
                             discoveryMetadata,
                             candidateKeyForField(field.name),
@@ -1062,10 +987,23 @@ export function ConnectorDrawer({
                             : candidates;
                           const onScopeChange = (value: string) => {
                             setAccessValidated(false);
-                            setOptions((current) => ({
-                              ...current,
-                              [field.name]: value,
-                            }));
+                            setOptions((current) => {
+                              const next = { ...current, [field.name]: value };
+                              if (isSnowflake && field.name === "database") {
+                                delete next.schema;
+                                delete next.audit_events;
+                                delete next.control_posture;
+                                delete next.asset_risk;
+                                delete next.evidence_bundles;
+                              }
+                              if (isSnowflake && field.name === "schema") {
+                                delete next.audit_events;
+                                delete next.control_posture;
+                                delete next.asset_risk;
+                                delete next.evidence_bundles;
+                              }
+                              return next;
+                            });
                           };
                           return (
                             <label
@@ -1073,7 +1011,7 @@ export function ConnectorDrawer({
                               className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
                             >
                               {field.label}
-                              {selectValues.length > 0 ? (
+                              {isSnowflake && selectValues.length > 0 ? (
                                 <select
                                   value={currentValue}
                                   onChange={(e) =>
@@ -1104,192 +1042,273 @@ export function ConnectorDrawer({
                           );
                         })}
                       </div>
-                    </details>
+                      {advancedScopeFields.length > 0 && (
+                        <details className="mt-3 rounded-lg border border-line bg-slate-50 p-3">
+                          <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-muted">
+                            Advanced view mapping
+                          </summary>
+                          <div className="mt-2 text-xs leading-5 text-muted">
+                            Defaults work for the {BRAND.name} Snowflake schema.
+                            Change these only when your evidence lake uses
+                            custom view names.
+                          </div>
+                          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                            {advancedScopeFields.map((field) => {
+                              const candidates = stringCandidates(
+                                discoveryMetadata,
+                                candidateKeyForField(field.name),
+                              );
+                              const currentValue = options[field.name] ?? "";
+                              const selectValues = currentValue
+                                ? Array.from(
+                                    new Set([currentValue, ...candidates]),
+                                  )
+                                : candidates;
+                              const onScopeChange = (value: string) => {
+                                setAccessValidated(false);
+                                setOptions((current) => ({
+                                  ...current,
+                                  [field.name]: value,
+                                }));
+                              };
+                              return (
+                                <label
+                                  key={field.name}
+                                  className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
+                                >
+                                  {field.label}
+                                  {selectValues.length > 0 ? (
+                                    <select
+                                      value={currentValue}
+                                      onChange={(e) =>
+                                        onScopeChange(e.target.value)
+                                      }
+                                      className="rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                                    >
+                                      <option value="">
+                                        Select {field.label.toLowerCase()}
+                                      </option>
+                                      {selectValues.map((value) => (
+                                        <option key={value} value={value}>
+                                          {value}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  ) : (
+                                    <input
+                                      value={currentValue}
+                                      onChange={(e) =>
+                                        onScopeChange(e.target.value)
+                                      }
+                                      placeholder={field.placeholder}
+                                      className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                                    />
+                                  )}
+                                </label>
+                              );
+                            })}
+                          </div>
+                        </details>
+                      )}
+                    </div>
                   )}
-                </div>
-              )}
-              {schedulerFields.length > 0 && (
-                <div className="mt-2 border-t border-line pt-3">
-                  <div className="text-xs font-black uppercase tracking-wide text-muted">
-                    Scheduled sync
-                  </div>
-                  <div className="mt-1 text-xs font-semibold text-muted">
-                    Optional interval for the in-process scheduler. Leave empty
-                    to sync manually from the console or API.
-                  </div>
-                  <div className="mt-2 grid gap-2">
-                    {schedulerFields.map((field) => (
-                      <label
-                        key={field.name}
-                        className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
-                      >
-                        {field.label}
-                        <input
-                          value={options[field.name] ?? ""}
-                          onChange={(e) =>
-                            setOptions((current) => ({
-                              ...current,
-                              [field.name]: e.target.value,
-                            }))
-                          }
-                          placeholder={field.placeholder}
-                          className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
-                        />
-                        {field.hint && (
-                          <span className="font-normal normal-case tracking-normal text-muted">
-                            {field.hint}
-                          </span>
-                        )}
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {usesDiscoveredReadScope && !isSnowflake && (
-                <div className="mt-2 rounded-lg border border-line bg-slate-50 p-3">
-                  <div className="text-xs font-black uppercase tracking-wide text-muted">
-                    Read scope
-                  </div>
-                  <div className="mt-1 text-xs font-semibold text-muted">
-                    Discover only the databases and tables visible to the scoped
-                    read identity before this connector is enabled.
-                  </div>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    <Badge tone="info">discovered tables</Badge>
-                    <Badge tone="info">least privilege</Badge>
-                    <Badge tone="info">no typed scope</Badge>
-                  </div>
-                  {!isEnabled && (
-                    <div className="mt-2 text-xs text-muted">
-                      Enter the host and credential reference, test access, then
-                      enable. Raw secrets are not persisted.
+                  {schedulerFields.length > 0 && (
+                    <div className="mt-2 border-t border-line pt-3">
+                      <div className="text-xs font-black uppercase tracking-wide text-muted">
+                        Scheduled sync
+                      </div>
+                      <div className="mt-1 text-xs font-semibold text-muted">
+                        Optional interval for the in-process scheduler. Leave
+                        empty to sync manually from the console or API.
+                      </div>
+                      <div className="mt-2 grid gap-2">
+                        {schedulerFields.map((field) => (
+                          <label
+                            key={field.name}
+                            className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
+                          >
+                            {field.label}
+                            <input
+                              value={options[field.name] ?? ""}
+                              onChange={(e) =>
+                                setOptions((current) => ({
+                                  ...current,
+                                  [field.name]: e.target.value,
+                                }))
+                              }
+                              placeholder={field.placeholder}
+                              className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                            />
+                            {field.hint && (
+                              <span className="font-normal normal-case tracking-normal text-muted">
+                                {field.hint}
+                              </span>
+                            )}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {usesDiscoveredReadScope && !isSnowflake && (
+                    <div className="mt-2 rounded-lg border border-line bg-slate-50 p-3">
+                      <div className="text-xs font-black uppercase tracking-wide text-muted">
+                        Read scope
+                      </div>
+                      <div className="mt-1 text-xs font-semibold text-muted">
+                        Discover only the databases and tables visible to the
+                        scoped read identity before this connector is enabled.
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        <Badge tone="info">discovered tables</Badge>
+                        <Badge tone="info">least privilege</Badge>
+                        <Badge tone="info">no typed scope</Badge>
+                      </div>
+                      {!isEnabled && (
+                        <div className="mt-2 text-xs text-muted">
+                          Enter the host and credential reference, test access,
+                          then enable. Raw secrets are not persisted.
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
-              )}
-            </div>
-            {!canEnable && !isEnabled && (
-              <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-900">
-                Required before enabling: {actionableMissingRequired.join(", ")}
-                .
-              </div>
-            )}
-            {canEnable && !isEnabled && !probeGateSatisfied && (
-              <div className="mt-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-900">
-                Test connection before enabling. Snowflake runs a live probe;
-                other runnable connectors validate configuration only until
-                sync.
-              </div>
-            )}
-            {discoveryRun?.metadata && (
-              <div className="mt-2 rounded-lg border border-line bg-slate-50 p-3 text-xs">
-                <div className="font-black uppercase tracking-wide text-muted">
-                  Discovered scope
-                </div>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {Array.isArray(discoveryRun.metadata.selectors) &&
-                    discoveryRun.metadata.selectors
-                      .filter((item): item is Record<string, unknown> =>
-                        Boolean(item && typeof item === "object"),
-                      )
-                      .slice(0, 8)
-                      .map((item, index) => (
-                        <Badge
-                          key={`${String(item.kind)}-${String(item.name)}-${index}`}
-                          tone={item.selected ? "ready" : "info"}
-                        >
-                          {String(item.kind)}: {String(item.name)}
-                        </Badge>
-                      ))}
-                </div>
-                <div className="mt-2 text-muted">
-                  {liveDiscoveryError
-                    ? `Live metadata was unavailable (${liveDiscoveryError}); defaults remain editable.`
-                    : "Select the discovered scope, then test connection before enabling."}
-                </div>
-              </div>
-            )}
-            {canEnable && !isEnabled && probeGateSatisfied && (
-              <div className="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-900">
-                Access checked. Enable writes the redacted configuration event.
-              </div>
-            )}
-            {latestError?.error && (
-              <div className="mt-2 flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-900">
-                <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                <div>
-                  <b>Latest run needs attention:</b> {latestError.error}
-                </div>
-              </div>
-            )}
-            {connector.credential_fingerprint ? (
-              <div className="mt-2 text-xs text-muted">
-                Credential fingerprint:{" "}
-                <code className="text-ink">
-                  {connector.credential_fingerprint}
-                </code>
-                {connector.configured_at && (
-                  <> · configured {connector.configured_at}</>
+                {!canEnable && !isEnabled && (
+                  <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-900">
+                    Required before enabling:{" "}
+                    {actionableMissingRequired.join(", ")}.
+                  </div>
                 )}
-                {!isEnabled && (
-                  <span className="block mt-1 text-amber-800">
-                    Staged but not enabled — run Test connection, then Enable.
-                  </span>
+                {canEnable && !isEnabled && !probeGateSatisfied && (
+                  <div className="mt-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-900">
+                    Test connection before enabling. Snowflake runs a live
+                    probe; other runnable connectors validate configuration only
+                    until sync.
+                  </div>
+                )}
+                {discoveryRun?.metadata && (
+                  <div className="mt-2 rounded-lg border border-line bg-slate-50 p-3 text-xs">
+                    <div className="font-black uppercase tracking-wide text-muted">
+                      Discovered scope
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {Array.isArray(discoveryRun.metadata.selectors) &&
+                        discoveryRun.metadata.selectors
+                          .filter((item): item is Record<string, unknown> =>
+                            Boolean(item && typeof item === "object"),
+                          )
+                          .slice(0, 8)
+                          .map((item, index) => (
+                            <Badge
+                              key={`${String(item.kind)}-${String(item.name)}-${index}`}
+                              tone={item.selected ? "ready" : "info"}
+                            >
+                              {String(item.kind)}: {String(item.name)}
+                            </Badge>
+                          ))}
+                    </div>
+                    <div className="mt-2 text-muted">
+                      {liveDiscoveryError
+                        ? `Live metadata was unavailable (${liveDiscoveryError}); defaults remain editable.`
+                        : "Select the discovered scope, then test connection before enabling."}
+                    </div>
+                  </div>
+                )}
+                {canEnable && !isEnabled && probeGateSatisfied && (
+                  <div className="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-900">
+                    Access checked. Enable writes the redacted configuration
+                    event.
+                  </div>
+                )}
+                {latestError?.error && (
+                  <div className="mt-2 flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-900">
+                    <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                    <div>
+                      <b>Latest run needs attention:</b> {latestError.error}
+                    </div>
+                  </div>
+                )}
+                {connector.credential_fingerprint ? (
+                  <div className="mt-2 text-xs text-muted">
+                    Credential fingerprint:{" "}
+                    <code className="text-ink">
+                      {connector.credential_fingerprint}
+                    </code>
+                    {connector.configured_at && (
+                      <> · configured {connector.configured_at}</>
+                    )}
+                    {!isEnabled && (
+                      <span className="block mt-1 text-amber-800">
+                        Staged but not enabled — run Test connection, then
+                        Enable.
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <div className="mt-2 text-xs text-muted">
+                    No credential staged yet — complete the fields above or use
+                    cloud linking.
+                  </div>
                 )}
               </div>
-            ) : (
-              <div className="mt-2 text-xs text-muted">
-                No credential staged yet — complete the fields above or use
-                cloud linking.
-              </div>
-            )}
-          </section>
+            </details>
+          )}
+
+        {(runs.data ?? []).length > 0 && (
+          <LatestSyncProof connector={connector} runnable={isRunnable} />
         )}
 
-        <LatestSyncProof connector={connector} runnable={isRunnable} />
-
-        <section>
-          <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
-            <ShieldCheck className="h-3 w-3" /> Run history ·{" "}
-            {runs.data?.length ?? 0} events
-          </div>
-          <div className="grid gap-2">
-            {(runs.data ?? []).slice(0, 8).map((r) => (
-              <div
-                key={r.occurred_at + r.kind}
-                className="rounded-lg border border-line p-3 text-xs"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span>
-                    <Badge tone={toneForResult(r.result)}>{r.result}</Badge>{" "}
-                    <Badge>{r.kind}</Badge>
-                  </span>
-                  <span className="text-muted">{r.occurred_at}</span>
-                </div>
-                <div className="mt-1 text-muted">
-                  actor <b className="text-ink">{r.actor}</b>
-                  {r.duration_ms !== null && <> · {r.duration_ms} ms</>}
-                  {r.evidence_count !== null && (
-                    <>
-                      {" "}
-                      ·{" "}
-                      {r.kind === "sync"
-                        ? `${r.evidence_count} evidence row(s)`
-                        : `${r.evidence_count} object(s)`}
-                    </>
-                  )}
-                </div>
-                {r.error && <div className="mt-1 text-rose-700">{r.error}</div>}
+        {(runs.data ?? []).length > 0 && (
+          <details className="rounded-lg border border-line p-3">
+            <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
+              <ShieldCheck className="h-3 w-3" /> Run history ·{" "}
+              {runs.data?.length ?? 0} events
+            </summary>
+            <section className="mt-3">
+              <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
+                <ShieldCheck className="h-3 w-3" /> Run history ·{" "}
+                {runs.data?.length ?? 0} events
               </div>
-            ))}
-            {(runs.data ?? []).length === 0 && (
-              <div className="rounded-lg border border-dashed border-line p-3 text-xs text-muted">
-                No probes or syncs recorded yet. Click <b>Test connection</b> to
-                run one.
+              <div className="grid gap-2">
+                {(runs.data ?? []).slice(0, 8).map((r) => (
+                  <div
+                    key={r.occurred_at + r.kind}
+                    className="rounded-lg border border-line p-3 text-xs"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span>
+                        <Badge tone={toneForResult(r.result)}>{r.result}</Badge>{" "}
+                        <Badge>{r.kind}</Badge>
+                      </span>
+                      <span className="text-muted">{r.occurred_at}</span>
+                    </div>
+                    <div className="mt-1 text-muted">
+                      actor <b className="text-ink">{r.actor}</b>
+                      {r.duration_ms !== null && <> · {r.duration_ms} ms</>}
+                      {r.evidence_count !== null && (
+                        <>
+                          {" "}
+                          ·{" "}
+                          {r.kind === "sync"
+                            ? `${r.evidence_count} evidence row(s)`
+                            : `${r.evidence_count} object(s)`}
+                        </>
+                      )}
+                    </div>
+                    {r.error && (
+                      <div className="mt-1 text-rose-700">{r.error}</div>
+                    )}
+                  </div>
+                ))}
+                {(runs.data ?? []).length === 0 && (
+                  <div className="rounded-lg border border-dashed border-line p-3 text-xs text-muted">
+                    No probes or syncs recorded yet. Click{" "}
+                    <b>Test connection</b> to run one.
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </section>
+            </section>
+          </details>
+        )}
       </div>
     </Drawer>
   );

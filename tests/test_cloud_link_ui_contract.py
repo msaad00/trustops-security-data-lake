@@ -23,7 +23,8 @@ def test_enabled_cloud_connector_hides_onboarding_and_duplicate_credentials() ->
     drawer = DRAWER.read_text(encoding="utf-8")
 
     assert "const usesManagedCloudLink = supportsCloudLink(connector.connector_id);" in drawer
-    assert "usesManagedCloudLink && !isEnabled" in drawer
+    assert "!hasStagedServerCredentials && (" in drawer
+    assert "<CloudLinkPanel" in drawer
     assert "!usesManagedCloudLink && (" in drawer
 
 
@@ -37,3 +38,16 @@ def test_aws_drawer_has_one_linear_setup_flow_and_no_duplicate_sync_action() -> 
     assert drawer.count("Sync now") == 1
     assert "const showDiscoveryAction = !usesManagedCloudLink && needsDiscovery;" in drawer
     assert "{showDiscoveryAction ? (" in drawer
+
+
+def test_managed_cloud_drawer_uses_progressive_disclosure() -> None:
+    drawer = DRAWER.read_text(encoding="utf-8")
+
+    assert "const showManagedCloudConfiguration =" in drawer
+    assert "!hasStagedServerCredentials && (" in drawer
+    assert "<CloudLinkPanel" in drawer
+    assert "(!usesManagedCloudLink || showManagedCloudConfiguration)" in drawer
+    assert '<summary className="ui-label cursor-pointer list-none">' in drawer
+    assert "Scope & automation" in drawer
+    assert 'className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]"' in drawer
+    assert "(runs.data ?? []).length > 0 && (" in drawer
