@@ -40,6 +40,30 @@ test.describe("console smoke", () => {
     await expect(page.getByText("Audit score", { exact: true })).toBeVisible();
   });
 
+  test("evidence page separates facts from report exports", async ({
+    page,
+  }) => {
+    await page.goto("/console/evidence/");
+    await expect(page.getByRole("main")).toBeVisible({ timeout: 20_000 });
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: "Normalized evidence facts",
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("These rows are evidence facts, not reports."),
+    ).toBeVisible();
+    await expect(page.getByText("Security data lake layers")).toBeVisible();
+    await expect(page.getByText("Bronze raw -> Silver facts")).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Manage schedules" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Open audit room" }),
+    ).toBeVisible();
+  });
+
   test("frameworks render governed identity assets", async ({ page }) => {
     await page.goto("/console/frameworks/");
 
