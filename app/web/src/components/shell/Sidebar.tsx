@@ -4,30 +4,15 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Activity,
   AlertOctagon,
-  Bot,
   BookOpen,
-  BrainCircuit,
-  Building2,
   ChevronLeft,
   ChevronRight,
   ClipboardCheck,
   FileSearch,
-  Globe2,
-  Layers,
   LayoutDashboard,
-  LineChart,
-  KeyRound,
-  ListChecks,
-  Network,
   Plug,
-  ShieldAlert,
   ShieldCheck,
-  Sparkles,
-  Rocket,
-  UserCheck,
-  Zap,
 } from "lucide-react";
 import { SidebarFooter } from "./SidebarFooter";
 import { KodaLogo } from "@/components/brand/TrustOpsLogo";
@@ -39,158 +24,62 @@ interface RailItem {
   href: string;
   label: string;
   Icon: typeof LayoutDashboard;
-  badge?: string;
-  group: "Operate" | "Sources" | "Automate" | "Governance" | "Setup";
+  group: "Overview" | "Collect" | "Evaluate" | "Prove";
 }
 
 const ITEMS: RailItem[] = [
   {
     href: "/dashboard",
-    label: "Dashboard",
+    label: "Overview",
     Icon: LayoutDashboard,
-    badge: "live",
-    group: "Operate",
+    group: "Overview",
   },
   {
-    href: "/onboarding",
-    label: "Onboarding",
-    Icon: Rocket,
-    badge: "start",
-    group: "Setup",
+    href: "/connectors",
+    label: "Connections",
+    Icon: Plug,
+    group: "Collect",
   },
-  {
-    href: "/poc",
-    label: "Launch",
-    Icon: Sparkles,
-    badge: "POC",
-    group: "Setup",
-  },
-  {
-    href: "/demo",
-    label: "Demo",
-    Icon: Globe2,
-    group: "Setup",
-  },
-  {
-    href: "/deploy",
-    label: "Deploy",
-    Icon: BookOpen,
-    group: "Setup",
-  },
-  {
-    href: "/trust-center",
-    label: "Trust center",
-    Icon: Sparkles,
-    group: "Governance",
-  },
+  { href: "/evidence", label: "Evidence", Icon: FileSearch, group: "Collect" },
   {
     href: "/controls",
     label: "Controls",
     Icon: ShieldCheck,
-    group: "Operate",
+    group: "Evaluate",
   },
-  { href: "/evidence", label: "Evidence", Icon: FileSearch, group: "Operate" },
-  {
-    href: "/violations",
-    label: "Findings",
-    Icon: AlertOctagon,
-    group: "Operate",
-  },
-  {
-    href: "/remediation",
-    label: "Remediation",
-    Icon: ListChecks,
-    group: "Operate",
-  },
-  { href: "/automation", label: "Workflows", Icon: Zap, group: "Automate" },
-  { href: "/connectors", label: "Connectors", Icon: Plug, group: "Sources" },
   {
     href: "/frameworks",
     label: "Frameworks",
     Icon: BookOpen,
-    group: "Sources",
+    group: "Evaluate",
   },
   {
-    href: "/crosswalk",
-    label: "Crosswalk",
-    Icon: Layers,
-    group: "Sources",
+    href: "/violations",
+    label: "Findings",
+    Icon: AlertOctagon,
+    group: "Evaluate",
   },
-  {
-    href: "/risks",
-    label: "Risk register",
-    Icon: ShieldAlert,
-    group: "Governance",
-  },
-  {
-    href: "/access-reviews",
-    label: "Access reviews",
-    Icon: UserCheck,
-    group: "Governance",
-  },
-  {
-    href: "/policies",
-    label: "Policies",
-    Icon: BookOpen,
-    group: "Governance",
-  },
-  {
-    href: "/vendor-risk",
-    label: "Vendor risk",
-    Icon: Building2,
-    group: "Governance",
-  },
-  {
-    href: "/auth",
-    label: "Access",
-    Icon: KeyRound,
-    group: "Governance",
-  },
-  { href: "/graph", label: "Graph", Icon: Network, group: "Operate" },
-  { href: "/insights", label: "Insights", Icon: LineChart, group: "Operate" },
   {
     href: "/audit-room",
     label: "Audit room",
     Icon: ClipboardCheck,
-    group: "Governance",
-  },
-  {
-    href: "/ai-governance",
-    label: "AI governance",
-    Icon: BrainCircuit,
-    badge: "live",
-    group: "Governance",
-  },
-  {
-    href: "/audit-log",
-    label: "Audit log",
-    Icon: Activity,
-    group: "Governance",
-  },
-  {
-    href: "/agents",
-    label: "Agent harness",
-    Icon: Bot,
-    badge: "JSON",
-    group: "Automate",
+    group: "Prove",
   },
 ];
 
 const GROUPS: RailItem["group"][] = [
-  "Operate",
-  "Sources",
-  "Automate",
-  "Governance",
-  "Setup",
+  "Overview",
+  "Collect",
+  "Evaluate",
+  "Prove",
 ];
 
 function isGroupClosed(
   group: RailItem["group"],
   closedGroups: Record<string, boolean>,
-  activeGroup: RailItem["group"],
 ) {
   if (closedGroups[group] !== undefined) return closedGroups[group];
-  return group !== activeGroup;
+  return false;
 }
 
 export function Sidebar() {
@@ -204,11 +93,6 @@ export function Sidebar() {
     Record<string, boolean>
   >("trustops:sidebar:closed-groups", {});
   const effectiveCollapsed = collapsed || compactViewport;
-  const activeGroup =
-    ITEMS.find(
-      (item) => pathname === item.href || pathname.startsWith(item.href + "/"),
-    )?.group ?? "Operate";
-
   useEffect(() => {
     const query = window.matchMedia("(max-width: 767px)");
     const update = () => setCompactViewport(query.matches);
@@ -220,7 +104,7 @@ export function Sidebar() {
   const toggleGroup = (group: RailItem["group"]) => {
     setClosedGroups({
       ...closedGroups,
-      [group]: !isGroupClosed(group, closedGroups, activeGroup),
+      [group]: !isGroupClosed(group, closedGroups),
     });
   };
 
@@ -267,7 +151,7 @@ export function Sidebar() {
       <div className="overflow-y-auto p-2.5">
         {GROUPS.map((group) => {
           const isClosed =
-            isGroupClosed(group, closedGroups, activeGroup) &&
+            isGroupClosed(group, closedGroups) &&
             !effectiveCollapsed;
           const groupItems = ITEMS.filter((i) => i.group === group);
           return (
@@ -276,6 +160,7 @@ export function Sidebar() {
                 <button
                   type="button"
                   onClick={() => toggleGroup(group)}
+                  aria-expanded={!isClosed}
                   className="flex w-full items-center justify-between px-2.5 py-1.5 text-[10px] font-black uppercase tracking-[0.08em] text-[#708198] hover:text-[#bcc8d8]"
                 >
                   <span>{group}</span>
@@ -292,7 +177,7 @@ export function Sidebar() {
               )}
               {!isClosed && (
                 <div className="grid gap-1">
-                  {groupItems.map(({ href, label, Icon, badge }) => {
+                  {groupItems.map(({ href, label, Icon }) => {
                     const active =
                       pathname === href || pathname.startsWith(href + "/");
                     return (
@@ -329,11 +214,6 @@ export function Sidebar() {
                           </span>
                           {!effectiveCollapsed && label}
                         </span>
-                        {!effectiveCollapsed && badge && (
-                          <b className="rounded-full bg-[#26364b] px-1.5 py-0.5 text-[10px] text-[#cfe0f5]">
-                            {badge}
-                          </b>
-                        )}
                       </Link>
                     );
                   })}
