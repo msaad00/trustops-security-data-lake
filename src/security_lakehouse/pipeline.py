@@ -853,7 +853,53 @@ def _write_sqlite_mart(
             [_evidence_freshness_sql_row(row) for row in evidence_freshness_rows],
         )
         conn.executemany("INSERT INTO metrics VALUES (?, ?)", [(key, str(value)) for key, value in metrics.items()])
+        _create_daily_compliance_views(conn)
         conn.commit()
+
+
+def _create_daily_compliance_views(conn: sqlite3.Connection) -> None:
+    """Expose two stable demo/warehouse projections over provenance-bearing rows."""
+    conn.execute(
+        """
+        CREATE VIEW daily_control_results AS
+        SELECT
+            substr(t.evaluated_at, 1, 10) AS snapshot_date,
+            e.tenant_id,
+            t.program_id,
+            t.framework,
+            t.control_id,
+            e.asset_id,
+            t.result,
+            t.confidence_score,
+            t.freshness_status,
+            e.evidence_ref,
+            e.raw_sha256 AS evidence_hash,
+            t.evaluated_at
+        FROM control_tests t
+        JOIN normalized_events e
+          ON EXISTS (
+             SELECT 1 FROM json_each(e.control_ids_json)
+             WHERE json_each.value = t.control_id
+         )
+        """
+    )
+    conn.execute(
+        """
+        CREATE VIEW daily_posture_summary AS
+        SELECT
+            substr(max(latest_event_time), 1, 10) AS snapshot_date,
+            tenant_id,
+            framework,
+            count(*) AS control_count,
+            sum(CASE WHEN status = 'fail' THEN 1 ELSE 0 END) AS failing_controls,
+            sum(CASE WHEN status = 'stale' THEN 1 ELSE 0 END) AS stale_controls,
+            round(avg(evidence_coverage), 4) AS evidence_coverage,
+            round(avg(risk_score), 2) AS average_risk_score,
+            max(latest_event_time) AS evaluated_through
+        FROM control_posture
+        GROUP BY tenant_id, framework
+        """
+    )
 
 
 def _control_test_sql_row(row: dict[str, Any]) -> dict[str, Any]:
@@ -1142,4 +1188,35 @@ def _write_duckdb_mart_if_available(
             ],
         )
         conn.executemany("INSERT INTO metrics VALUES (?, ?)", [(key, str(value)) for key, value in metrics.items()])
+        conn.execute(
+            """
+            CREATE VIEW daily_control_results AS
+            SELECT
+                CAST(t.evaluated_at AS DATE) AS snapshot_date,
+                e.tenant_id, t.program_id, t.framework, t.control_id,
+                e.asset_id, t.result, t.confidence_score, t.freshness_status,
+                e.evidence_ref, e.raw_sha256 AS evidence_hash, t.evaluated_at
+            FROM control_tests t
+            JOIN normalized_events e ON EXISTS (
+                 SELECT 1 FROM json_each(e.control_ids_json) j
+                 WHERE CAST(j.value AS VARCHAR) = '"' || t.control_id || '"'
+             )
+            """
+        )
+        conn.execute(
+            """
+            CREATE VIEW daily_posture_summary AS
+            SELECT
+                CAST(max(latest_event_time) AS DATE) AS snapshot_date,
+                tenant_id, framework,
+                count(*) AS control_count,
+                sum(CASE WHEN status = 'fail' THEN 1 ELSE 0 END) AS failing_controls,
+                sum(CASE WHEN status = 'stale' THEN 1 ELSE 0 END) AS stale_controls,
+                round(avg(evidence_coverage), 4) AS evidence_coverage,
+                round(avg(risk_score), 2) AS average_risk_score,
+                max(latest_event_time) AS evaluated_through
+            FROM control_posture
+            GROUP BY tenant_id, framework
+            """
+        )
     return True
