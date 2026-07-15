@@ -419,7 +419,7 @@ export const api = {
     id: string,
     payload: {
       session_id: string;
-      account_id?: string;
+      role_arn?: string;
       subscription_id?: string;
       project_id?: string;
     },

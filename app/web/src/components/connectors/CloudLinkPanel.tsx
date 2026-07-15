@@ -12,11 +12,10 @@ import type { CloudLinkSession } from "@/lib/api/types";
 import type { ConnectorView } from "@/lib/api/types";
 import { BRAND } from "@/lib/brand";
 import {
-  awsAccountIdError,
+  awsRoleArnError,
   azureSubscriptionIdError,
   cloudLinkFieldError,
   gcpProjectIdError,
-  sanitizeAwsAccountId,
   sanitizeAzureSubscriptionId,
   sanitizeGcpProjectId,
 } from "@/lib/cloud-link-validation";
@@ -53,7 +52,7 @@ export function CloudLinkPanel({
   const start = useCloudLinkStartMutation();
   const complete = useCloudLinkCompleteMutation();
   const [session, setSession] = useState<CloudLinkSession | null>(null);
-  const [accountId, setAccountId] = useState("");
+  const [roleArn, setRoleArn] = useState("");
   const [subscriptionId, setSubscriptionId] = useState("");
   const [projectId, setProjectId] = useState("");
   const [fieldError, setFieldError] = useState<string | null>(null);
@@ -74,11 +73,11 @@ export function CloudLinkPanel({
   const validationError = useMemo(
     () =>
       cloudLinkFieldError(connector.connector_id, {
-        accountId,
+        roleArn,
         subscriptionId,
         projectId,
       }),
-    [accountId, connector.connector_id, projectId, subscriptionId],
+    [connector.connector_id, projectId, roleArn, subscriptionId],
   );
 
   const canComplete =
@@ -106,7 +105,7 @@ export function CloudLinkPanel({
     if (!session?.session_id) return;
     setTouched(true);
     const error = cloudLinkFieldError(connector.connector_id, {
-      accountId,
+      roleArn,
       subscriptionId,
       projectId,
     });
@@ -120,10 +119,8 @@ export function CloudLinkPanel({
       const result = await complete.mutateAsync({
         id: connector.connector_id,
         sessionId: session.session_id,
-        accountId:
-          connector.connector_id === "aws-posture"
-            ? sanitizeAwsAccountId(accountId)
-            : undefined,
+        roleArn:
+          connector.connector_id === "aws-posture" ? roleArn.trim() : undefined,
         subscriptionId:
           connector.connector_id === "azure-posture"
             ? sanitizeAzureSubscriptionId(subscriptionId)
@@ -295,21 +292,20 @@ export function CloudLinkPanel({
             )}
           {connector.connector_id === "aws-posture" && (
             <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
-              AWS account ID
+              AWS role ARN
               <input
-                value={accountId}
+                value={roleArn}
                 onChange={(e) => {
-                  setAccountId(sanitizeAwsAccountId(e.target.value));
+                  setRoleArn(e.target.value);
                   setFieldError(null);
                 }}
                 onBlur={() => {
                   setTouched(true);
-                  setFieldError(awsAccountIdError(accountId));
+                  setFieldError(awsRoleArnError(roleArn));
                 }}
-                inputMode="numeric"
                 autoComplete="off"
                 aria-invalid={Boolean(showFieldError)}
-                placeholder="123456789012"
+                placeholder="arn:aws:iam::123456789012:role/TrustOpsPostureReadOnlyRole"
                 className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </label>

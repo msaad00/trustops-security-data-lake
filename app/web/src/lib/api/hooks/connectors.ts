@@ -67,19 +67,19 @@ export function useCloudLinkCompleteMutation() {
     mutationFn: ({
       id,
       sessionId,
-      accountId,
+      roleArn,
       subscriptionId,
       projectId,
     }: {
       id: string;
       sessionId: string;
-      accountId?: string;
+      roleArn?: string;
       subscriptionId?: string;
       projectId?: string;
     }) =>
       api.completeCloudLink(id, {
         session_id: sessionId,
-        account_id: accountId,
+        role_arn: roleArn,
         subscription_id: subscriptionId,
         project_id: projectId,
       }),

@@ -1162,7 +1162,7 @@ def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tup
                 link_complete,
                 session_id=session_id,
                 actor=str(payload.get("actor") or "console"),
-                account_id=str(payload.get("account_id") or "").strip() or None,
+                role_arn=str(payload.get("role_arn") or "").strip() or None,
                 subscription_id=str(payload.get("subscription_id") or "").strip() or None,
                 project_id=str(payload.get("project_id") or "").strip() or None,
             )

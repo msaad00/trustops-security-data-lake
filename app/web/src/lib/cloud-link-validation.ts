@@ -1,6 +1,8 @@
 const GCP_PROJECT_RE = /^[a-z][a-z0-9-]{4,28}[a-z0-9]$/;
 const AZURE_SUBSCRIPTION_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const AWS_ROLE_ARN_RE =
+  /^arn:aws(?:-us-gov|-cn)?:iam::[0-9]{12}:role\/[A-Za-z0-9+=,.@_\/-]{1,512}$/;
 
 export function sanitizeAwsAccountId(raw: string): string {
   return raw.replace(/\D/g, "").slice(0, 12);
@@ -27,6 +29,13 @@ export function awsAccountIdError(raw: string): string | null {
   return null;
 }
 
+export function awsRoleArnError(raw: string): string | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return "Paste the role ARN from the CloudFormation output.";
+  if (!AWS_ROLE_ARN_RE.test(trimmed)) return "Use a valid AWS IAM role ARN.";
+  return null;
+}
+
 export function azureSubscriptionIdError(raw: string): string | null {
   const trimmed = sanitizeAzureSubscriptionId(raw);
   if (!trimmed) return "Enter your Azure subscription ID.";
@@ -47,9 +56,9 @@ export function gcpProjectIdError(raw: string): string | null {
 
 export function cloudLinkFieldError(
   connectorId: string,
-  values: { accountId: string; subscriptionId: string; projectId: string },
+  values: { roleArn: string; subscriptionId: string; projectId: string },
 ): string | null {
-  if (connectorId === "aws-posture") return awsAccountIdError(values.accountId);
+  if (connectorId === "aws-posture") return awsRoleArnError(values.roleArn);
   if (connectorId === "azure-posture") {
     return azureSubscriptionIdError(values.subscriptionId);
   }

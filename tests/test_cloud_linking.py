@@ -104,7 +104,7 @@ def test_start_and_complete_aws_cloud_link_stages_connector(tmp_path: Path, monk
         "aws-posture",
         session_id=session["session_id"],
         actor="test",
-        account_id="123456789012",
+        role_arn="arn:aws:iam::123456789012:role/TrustOpsPostureReadOnlyRole",
     )
     configure = result["configure"]
     assert configure["connector_id"] == "aws-posture"
@@ -112,6 +112,28 @@ def test_start_and_complete_aws_cloud_link_stages_connector(tmp_path: Path, monk
     assert configure["credentials"]["account_id"] == "123456789012"
     assert configure["credentials"]["role_arn"] == "arn:aws:iam::123456789012:role/TrustOpsPostureReadOnlyRole"
     assert configure["credentials"]["external_id"] == session["external_id"]
+
+
+@pytest.mark.parametrize(
+    "role_arn",
+    [
+        "",
+        "123456789012",
+        "arn:aws:iam::123456789012:user/not-a-role",
+        "arn:aws:iam::not-an-account:role/TrustOpsPostureReadOnlyRole",
+    ],
+)
+def test_complete_aws_cloud_link_rejects_invalid_role_arn(tmp_path: Path, role_arn: str) -> None:
+    session = start_cloud_link(tmp_path, "aws-posture", tenant_id="tenant-a")
+
+    with pytest.raises(ValueError, match="role_arn"):
+        complete_cloud_link(
+            tmp_path,
+            "aws-posture",
+            session_id=session["session_id"],
+            actor="test",
+            role_arn=role_arn,
+        )
 
 
 def test_azure_consent_callback_and_complete(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -210,7 +232,10 @@ def test_v1_cloud_link_start_and_complete_api(tmp_path: Path, monkeypatch: pytes
             server,
             "POST",
             "/api/v1/connectors/aws-posture/link/complete",
-            {"session_id": session_id, "account_id": "123456789012"},
+            {
+                "session_id": session_id,
+                "role_arn": "arn:aws:iam::123456789012:role/TrustOpsPostureReadOnlyRole",
+            },
         )
         assert complete_status == HTTPStatus.CREATED
         assert complete_body["data"]["configure"]["credentials"]["account_id"] == "123456789012"
