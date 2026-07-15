@@ -273,6 +273,15 @@ export function CloudLinkPanel({
           Cloud account linking
         </div>
         <Badge tone="info">Guided setup</Badge>
+        <Badge tone="ready">Read-only access</Badge>
+        <Badge>No long-lived keys</Badge>
+        <Badge
+          tone={connector.connector_id === "aws-posture" ? "ready" : "default"}
+        >
+          {connector.connector_id === "aws-posture"
+            ? "Console or CLI"
+            : "Provider template path"}
+        </Badge>
       </div>
       <p className="mt-1.5 text-xs leading-5 text-muted">
         {linkDescription(connector.connector_id)}

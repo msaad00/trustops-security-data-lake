@@ -50,6 +50,24 @@ Vendor marks below use [Simple Icons](https://simpleicons.org/) (CC0) and public
   <img src="docs/images/trustops-vendor-ecosystem.svg" alt="AWS, Azure, Google Cloud, Snowflake, GitHub, and Okta read-only connectors" width="96%">
 </p>
 
+### AWS authorization model
+
+AWS connects through a customer-owned read-only role, not pasted access keys.
+"Continuous" means TrustOps repeats this short-lived read on the configured
+schedule; it does not keep a standing AWS login session.
+
+<p align="center">
+  <img src="docs/images/trustops-aws-sts-lifecycle.svg" alt="AWS STS AssumeRole lifecycle for TrustOps scheduled read-only posture sync" width="96%">
+</p>
+
+| Step             | What happens                                                                                                      |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Authorize**    | Customer deploys `TrustOpsPostureReadOnlyRole` with TrustOps principal + External ID in the trust policy.         |
+| **Authenticate** | At Test connection or scheduled sync, TrustOps calls STS AssumeRole with the Role ARN and External ID.            |
+| **Read**         | AWS returns short-lived session credentials; TrustOps uses them for read-only IAM posture APIs only.              |
+| **Expire**       | The temporary credentials expire. Next sync repeats STS AssumeRole instead of storing AWS keys.                   |
+| **Stored**       | TrustOps stores account ID, role ARN, external ID, safe fingerprint, and run metadata; no long-lived access keys. |
+
 Deep-link examples (after `serve`):
 
 | Source    | Console deep link                                      |

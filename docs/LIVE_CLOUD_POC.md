@@ -49,10 +49,20 @@ aws cloudformation deploy \
     ExternalId=<customer-generated-external-id>
 ```
 
+### AWS STS lifecycle
+
+| Phase        | Boundary                                                                                                            |
+| ------------ | ------------------------------------------------------------------------------------------------------------------- |
+| Authorize    | The CloudFormation template creates the customer-owned role and trust policy with TrustOps principal + External ID. |
+| Authenticate | At probe, manual sync, or scheduled sync, TrustOps calls STS AssumeRole with the Role ARN and External ID.          |
+| Read         | AWS returns short-lived session credentials. TrustOps uses them only for read-only IAM posture APIs.                |
+| Expire       | The temporary credentials expire after the AWS session window. The next run repeats STS AssumeRole.                 |
+| Persist      | TrustOps stores connector metadata, fingerprints, and run results, not long-lived AWS access keys.                  |
+
 The role grants only IAM read actions needed to classify users, console access,
 MFA enrollment, access-key hygiene, password policy, and account summary. Use
 SSO, an assumed role, or workload identity to run the connector; do not generate
-long lived access keys.
+long-lived access keys.
 
 ```bash
 aws sso login --profile trustops-poc

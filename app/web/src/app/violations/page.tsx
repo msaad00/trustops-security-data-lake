@@ -20,6 +20,7 @@ import {
 import { PageHeader } from "@/components/PageHeader";
 import { SavedViewsBar } from "@/components/SavedViewsBar";
 import { QueryState } from "@/components/QueryState";
+import { TrustPipelineStrip } from "@/components/TrustPipelineStrip";
 import { notify } from "@/lib/toast";
 import { Toolbar, matchesQuery } from "@/components/Toolbar";
 import { TagFilterBar } from "@/components/TagFilterBar";
@@ -153,10 +154,11 @@ export default function ViolationsPage() {
   return (
     <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
       <PageHeader
-        eyebrow="Violations"
-        title="Violation queue"
-        description="Open control failures with severity, asset, source, and evidence reference. Click a row to triage and persist the action server-side."
+        eyebrow="Findings"
+        title="Findings queue"
+        description="Failed deterministic controls with severity, asset, source, and evidence reference. Click a row to triage and persist the action server-side."
       />
+      <TrustPipelineStrip activeStage="findings" />
 
       <TagFilterBar
         tags={tags}

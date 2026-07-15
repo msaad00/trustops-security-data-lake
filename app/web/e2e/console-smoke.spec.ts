@@ -64,6 +64,24 @@ test.describe("console smoke", () => {
     ).toBeVisible();
   });
 
+  test("core trust pages share pipeline orientation", async ({ page }) => {
+    for (const [path, active] of [
+      ["/console/frameworks/", "Framework map"],
+      ["/console/controls/", "Control eval"],
+      ["/console/violations/", "Findings"],
+      ["/console/audit-room/", "Proof export"],
+    ] as const) {
+      await page.goto(path);
+      const pipeline = page.getByLabel("Trust pipeline");
+      await expect(pipeline).toBeVisible({ timeout: 20_000 });
+      await expect(pipeline.getByText("Evidence facts")).toBeVisible();
+      await expect(pipeline.getByText(active, { exact: true })).toBeVisible();
+      await expect(pipeline.locator('[aria-current="page"]')).toContainText(
+        active,
+      );
+    }
+  });
+
   test("frameworks render governed identity assets", async ({ page }) => {
     await page.goto("/console/frameworks/");
 

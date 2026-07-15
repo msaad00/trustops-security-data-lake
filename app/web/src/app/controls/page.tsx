@@ -13,6 +13,7 @@ import {
 import { PageHeader } from "@/components/PageHeader";
 import { SavedViewsBar } from "@/components/SavedViewsBar";
 import { TagFilterBar } from "@/components/TagFilterBar";
+import { TrustPipelineStrip } from "@/components/TrustPipelineStrip";
 import { QueryState } from "@/components/QueryState";
 import { notify } from "@/lib/toast";
 import { Toolbar, matchesQuery } from "@/components/Toolbar";
@@ -129,8 +130,9 @@ export default function ControlsPage() {
       <PageHeader
         eyebrow="Continuous control monitoring"
         title="Control workbench"
-        description="Filter by result, framework, and owner. KPI summary mirrors managed GRC control monitoring — drill into any control for evidence and remediation."
+        description="Deterministic gold control results from normalized evidence. Filter by result, framework, and owner, then drill into any control for evidence and remediation."
       />
+      <TrustPipelineStrip activeStage="controls" />
       <QueryState queries={[tests]} label="control tests">
         <ControlMonitoringSummary rows={tests.data ?? []} />
         {(tests.data ?? []).some((t) => t.result !== "pass") ? (
