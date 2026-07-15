@@ -68,7 +68,7 @@ function Metric({
 function labelForScaleMode(mode?: string) {
   if (mode === "warehouse_required") return "Warehouse required";
   if (mode === "warehouse") return "Warehouse eval";
-  if (mode === "local_incremental") return "Incremental";
+  if (mode === "local_incremental") return "Changed evidence only";
   if (mode === "local_full") return "Full local";
   return mode?.replace(/_/g, " ") ?? "unknown";
 }
@@ -82,6 +82,14 @@ function toneForScaleMode(mode?: string): "ready" | "attention" | "critical" {
 function formatPassRate(rate: number | null | undefined) {
   if (rate == null) return "—";
   return `${Math.round(rate * 100)}%`;
+}
+
+function scaleRecommendationCopy(scale: IngestionStatus["scale"]) {
+  if (!scale) return "";
+  if (scale.mode === "local_incremental") {
+    return "Processes only changed raw evidence since the last manifest, so large lakes do not reprocess every row.";
+  }
+  return scale.recommendation;
 }
 
 export function IngestionStatusPanel({
@@ -237,7 +245,7 @@ export function IngestionStatusPanel({
                 <div className="flex flex-wrap items-center gap-2">
                   <Layers className="h-4 w-4 text-brand" />
                   <span className="text-sm font-black text-ink">
-                    Scale tier
+                    Processing mode
                   </span>
                   <Badge tone={toneForScaleMode(scale.mode)}>
                     {labelForScaleMode(scale.mode)}
@@ -249,7 +257,7 @@ export function IngestionStatusPanel({
                   {scale.eval_schedule ? ` · eval ${scale.eval_schedule}` : ""}
                 </p>
                 <p className="mt-1 text-xs leading-5 text-muted">
-                  {scale.recommendation}
+                  {scaleRecommendationCopy(scale)}
                 </p>
                 {scale.latest_eval?.occurred_at && (
                   <p className="mt-2 text-xs text-muted">

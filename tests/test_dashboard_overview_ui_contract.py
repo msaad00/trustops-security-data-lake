@@ -10,12 +10,14 @@ def test_dashboard_overview_is_source_aligned_and_tabbed() -> None:
     dashboard = DASHBOARD.read_text(encoding="utf-8")
 
     assert "const DASHBOARD_TABS" in dashboard
-    assert '"Sources", "Controls", "Proof"' in dashboard
+    assert '"Posture", "Sources", "Proof"' in dashboard
+    assert 'useState<DashboardTab>("Posture")' in dashboard
     assert 'aria-label="Dashboard view"' in dashboard
-    assert "Evidence loop" in dashboard
-    assert "Connected sources" in dashboard
-    assert "Raw evidence" in dashboard
-    assert "Control eval" in dashboard
+    assert "Current assessment" in dashboard
+    assert "Framework posture" in dashboard
+    assert "Control pass rate" in dashboard
+    assert "Open findings" in dashboard
     assert "Proof export" in dashboard
     assert "Security data lake" in dashboard
     assert "activeDashboardTab ===" in dashboard
+    assert "Evidence loop" not in dashboard

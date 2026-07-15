@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  ClipboardCheck,
-  Database,
-  FileCheck2,
-  RefreshCw,
-  ShieldCheck,
-} from "lucide-react";
+import { ClipboardCheck, FileCheck2, ShieldCheck } from "lucide-react";
 import {
   useControlTests,
   useFrameworks,
@@ -35,7 +29,7 @@ import { CollapsibleCard } from "@/components/ui/collapsible-card";
 import { QueryState } from "@/components/QueryState";
 import { shortDate } from "@/lib/utils";
 
-const DASHBOARD_TABS = ["Sources", "Controls", "Proof"] as const;
+const DASHBOARD_TABS = ["Posture", "Sources", "Proof"] as const;
 type DashboardTab = (typeof DASHBOARD_TABS)[number];
 
 function stateHeadline(state?: string) {
@@ -61,7 +55,7 @@ function formatPassRate(rate: number | null | undefined) {
 
 export default function DashboardPage() {
   const [activeDashboardTab, setActiveDashboardTab] =
-    useState<DashboardTab>("Sources");
+    useState<DashboardTab>("Posture");
   const posture = usePosture();
   const tests = useControlTests();
   const ingestion = useIngestionStatus();
@@ -88,50 +82,12 @@ export default function DashboardPage() {
       "Connector health or control eval needs attention")
     : "Source sync health and control eval runs";
   const dashboardTabCopy: Record<DashboardTab, string> = {
+    Posture: `${frameworks.length}/${registeredCount} frameworks · ${p?.failed_control_test_count ?? 0} failing tests`,
     Sources: `${enabledConnectors}/${connectorCount} connectors enabled · ${sourceCount} sources`,
-    Controls: `${p?.failed_control_test_count ?? 0} failing tests · ${p?.open_violation_count ?? 0} findings`,
     Proof: proofReady
       ? "Security data lake proof export is ready"
       : "Run sync and eval to prepare proof export",
   };
-  const loopStages = [
-    {
-      label: "Connected sources",
-      value: `${enabledConnectors}/${connectorCount}`,
-      detail:
-        sourceCount > 0
-          ? `${sourceCount} source${sourceCount === 1 ? "" : "s"} sending evidence`
-          : "connect read-only sources",
-      Icon: Database,
-      done: enabledConnectors > 0,
-    },
-    {
-      label: "Raw evidence",
-      value: evidenceCount,
-      detail:
-        evidenceCount > 0
-          ? "bronze collection landed"
-          : "run first source sync",
-      Icon: RefreshCw,
-      done: evidenceCount > 0,
-    },
-    {
-      label: "Control eval",
-      value: formatPassRate(passRate),
-      detail: controlEvalReady
-        ? `${ingestion.data?.eval_accuracy?.failing ?? 0} failing tests`
-        : "materialize gold controls",
-      Icon: ShieldCheck,
-      done: controlEvalReady,
-    },
-    {
-      label: "Proof export",
-      value: proofReady ? "ready" : "pending",
-      detail: "Security data lake gold + report",
-      Icon: FileCheck2,
-      done: proofReady,
-    },
-  ] as const;
 
   return (
     <div className="mx-auto grid w-full max-w-[1600px] gap-2 px-3 py-2 sm:px-4 lg:px-5">
@@ -165,21 +121,21 @@ export default function DashboardPage() {
 
       <QueryState queries={[posture, ingestion]} label="overview">
         <Card className="overflow-hidden border-line shadow-card">
-          <div className="grid xl:grid-cols-[minmax(230px,280px)_minmax(0,1fr)]">
-            <div className="flex items-center gap-4 border-b border-line bg-slate-50 p-3 xl:block xl:border-b-0 xl:border-r">
+          <div className="grid lg:grid-cols-[minmax(220px,260px)_minmax(0,1fr)] xl:grid-cols-[minmax(220px,260px)_minmax(0,0.9fr)_minmax(320px,0.8fr)]">
+            <div className="flex items-center gap-4 border-b border-line bg-slate-50 p-3 lg:block lg:border-b-0 lg:border-r">
               <PostureRing
                 score={p?.score ?? 0}
                 state={p?.state ?? "attention_required"}
                 size="default"
               />
-              <div className="min-w-0 xl:mt-2">
+              <div className="min-w-0 lg:mt-2">
                 <div className="ui-label">Trust score</div>
                 <p className="mt-1 text-xs leading-4 text-muted">
                   Calculated from the current gold assessment.
                 </p>
               </div>
             </div>
-            <div className="grid min-w-0 gap-3 p-3">
+            <div className="grid min-w-0 gap-3 border-b border-line p-3 xl:border-b-0 xl:border-r">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0">
                   <div className="ui-label">Current assessment</div>
@@ -204,37 +160,52 @@ export default function DashboardPage() {
                   {stateHeadline(p?.state)}
                 </Badge>
               </div>
-              <div>
-                <div className="ui-label">Evidence loop</div>
-                <div className="mt-2 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
-                  {loopStages.map(({ label, value, detail, Icon, done }) => (
-                    <div
-                      key={label}
-                      className={`min-w-0 rounded-lg border px-3 py-2 ${
-                        done
-                          ? "border-emerald-200 bg-emerald-50"
-                          : "border-line bg-panel"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="truncate text-[10px] font-black uppercase tracking-wide text-muted">
-                          {label}
-                        </span>
-                        <Icon
-                          className={`h-3.5 w-3.5 shrink-0 ${
-                            done ? "text-emerald-700" : "text-muted"
-                          }`}
-                        />
-                      </div>
-                      <div className="mt-1 truncate text-lg font-black leading-tight text-ink">
-                        {value}
-                      </div>
-                      <div className="mt-1 line-clamp-2 text-xs leading-4 text-muted">
-                        {detail}
-                      </div>
-                    </div>
-                  ))}
+              <div className="grid gap-2 sm:grid-cols-3">
+                <div>
+                  <div className="ui-label">Control pass rate</div>
+                  <div className="mt-1 text-xl font-black text-ink">
+                    {formatPassRate(passRate)}
+                  </div>
+                  <p className="text-xs text-muted">
+                    {controlEvalReady
+                      ? `${ingestion.data?.eval_accuracy?.failing ?? 0} failing tests`
+                      : "run control eval"}
+                  </p>
                 </div>
+                <div>
+                  <div className="ui-label">Open findings</div>
+                  <div className="mt-1 text-xl font-black text-ink">
+                    {p?.open_violation_count ?? 0}
+                  </div>
+                  <p className="text-xs text-muted">
+                    {p?.critical_violation_count ?? 0} critical
+                  </p>
+                </div>
+                <div>
+                  <div className="ui-label">Proof export</div>
+                  <div className="mt-1 text-xl font-black text-ink">
+                    {proofReady ? "ready" : "pending"}
+                  </div>
+                  <p className="text-xs text-muted">
+                    {evidenceCount} raw evidence rows
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="min-w-0 p-3">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <div className="ui-label">Framework posture</div>
+                  <p className="mt-1 text-xs text-muted">
+                    Worst programs first, scroll to compare.
+                  </p>
+                </div>
+                <Badge tone="info">
+                  {frameworks.length}/{registeredCount}
+                </Badge>
+              </div>
+              <div className="mt-3">
+                <ComplianceOverview frameworks={frameworks} />
               </div>
             </div>
           </div>
@@ -290,18 +261,25 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {activeDashboardTab === "Controls" && (
-          <div className="grid gap-2 xl:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
-            <FixNext violations={data?.violations ?? []} />
-            <CollapsibleCard
-              storageKey="dashboard-control-tests"
-              defaultOpen={(p?.failed_control_test_count ?? 0) > 0}
-              title="Control test results"
-              description="Deterministic control checks from normalized evidence"
-              contentClassName="p-0"
-            >
-              <ControlTestTable rows={tests.data ?? []} />
-            </CollapsibleCard>
+        {activeDashboardTab === "Posture" && (
+          <div className="grid gap-2 xl:grid-cols-[minmax(0,1.05fr)_minmax(24rem,0.95fr)]">
+            <ReadinessGrid
+              frameworks={frameworks}
+              catalog={registeredFrameworks.data ?? []}
+            />
+            <div className="grid min-w-0 gap-2 content-start">
+              <FixNext violations={data?.violations ?? []} />
+              <FrameworkBars frameworks={frameworks} />
+              <CollapsibleCard
+                storageKey="dashboard-control-tests"
+                defaultOpen={false}
+                title="Control test results"
+                description="Deterministic checks from normalized evidence"
+                contentClassName="p-0"
+              >
+                <ControlTestTable rows={tests.data ?? []} />
+              </CollapsibleCard>
+            </div>
           </div>
         )}
 
@@ -366,17 +344,12 @@ export default function DashboardPage() {
           storageKey="dashboard-operational-detail"
           defaultOpen={false}
           title="Operational detail"
-          description={`${frameworks.length}/${registeredCount} frameworks · source health · trends · assessment provenance`}
+          description="Source health, trends, ingestion internals, and assessment provenance"
           contentClassName="grid gap-2 p-3"
         >
-          <ReadinessGrid
-            frameworks={frameworks}
-            catalog={registeredFrameworks.data ?? []}
-          />
           <EvidenceTrend />
           <DashboardStripsRow />
           <DataPipelineStrip />
-          <FrameworkBars frameworks={frameworks} embedded />
           <TrustLifecycle posture={p} assessmentHash={data?.assessment_hash} />
         </CollapsibleCard>
       </QueryState>

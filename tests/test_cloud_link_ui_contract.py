@@ -47,7 +47,7 @@ def test_aws_drawer_has_one_linear_setup_flow_and_no_duplicate_sync_action() -> 
     assert labels == sorted(labels)
     assert 'label: "Access"' not in drawer
     assert 'label: "Validate"' not in drawer
-    assert drawer.count("Sync now") == 1
+    assert drawer.count("Sync evidence") == 1
     assert "const showDiscoveryAction = !usesManagedCloudLink && needsDiscovery;" in drawer
     assert "{showDiscoveryAction ? (" in drawer
 
@@ -71,10 +71,16 @@ def test_connected_cloud_drawer_is_compact_and_non_redundant() -> None:
     assert "const showConnectedCloudSummary =" in drawer
     assert "usesManagedCloudLink && isEnabled;" in drawer
     assert 'aria-label="Connected connector view"' in drawer
-    assert '"Overview", "Details", "History"' in drawer
+    assert '"Overview", "Details", "Runs"' in drawer
+    assert '"Overview", "Details", "History"' not in drawer
     assert "connectedTab ===" in drawer
     assert "Connection details" in drawer
+    assert "Connector run log" in drawer
+    assert "Sync lands raw connector evidence." in drawer
+    assert "Eval produces gold" in drawer
+    assert "controls, pass/fail metrics, and proof exports." in drawer
     assert "showConnectedCloudSummary ? (" in drawer
     assert "max-h-80 overflow-auto" in drawer
     assert "open={!usesManagedCloudLink && !showConnectedCloudSummary}" in drawer
-    assert drawer.count('<ShieldCheck className="h-3 w-3" /> Run history') == 1
+    assert "Run history" not in drawer
+    assert "see history" not in drawer
