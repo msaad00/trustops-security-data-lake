@@ -212,7 +212,7 @@ def test_get_ai_governance_local_lake(tmp_path):
     status = call_tool(server, "get_ai_governance")
     assert status["frameworks_total"] == 3
     assert "governance_score" in status
-    assert status["aibom"]["shipped"] is False
+    assert status["aibom"]["shipped"] is True
 
 
 def test_list_eval_runs_returns_list(tmp_path):

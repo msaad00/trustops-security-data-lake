@@ -267,6 +267,18 @@ def _parser() -> argparse.ArgumentParser:
     )
     serve.set_defaults(func=_serve)
 
+    aibom = sub.add_parser("aibom", help="local CycloneDX/SPDX AI bill of materials commands")
+    aibom_sub = aibom.add_subparsers(dest="aibom_command", required=True)
+    aibom_import = aibom_sub.add_parser("import", help="import a JSON AIBOM into the local lake")
+    aibom_import.add_argument("--input", required=True, help="CycloneDX or SPDX 3 JSON input")
+    aibom_import.add_argument("--lake", required=True, help="security data lake output directory")
+    aibom_import.set_defaults(func=_aibom_import)
+    aibom_export = aibom_sub.add_parser("export", help="export the lake's canonical AIBOM inventory")
+    aibom_export.add_argument("--lake", required=True, help="security data lake output directory")
+    aibom_export.add_argument("--out", required=True, help="output JSON path")
+    aibom_export.add_argument("--format", required=True, choices=["cyclonedx-1.7", "spdx-3.0.1"])
+    aibom_export.set_defaults(func=_aibom_export)
+
     assessment = sub.add_parser("assessment", help="continuous compliance assessment commands")
     assessment_sub = assessment.add_subparsers(dest="assessment_command", required=True)
     status = assessment_sub.add_parser("status", help="print current posture")
@@ -1371,6 +1383,22 @@ def _assessment_violations(args: argparse.Namespace) -> int:
         if args.framework is None or framework_controls.get(violation["control_id"]) == args.framework
     ]
     print(json.dumps({"count": len(rows), "violations": rows}, indent=2, sort_keys=True))
+    return 0
+
+
+def _aibom_import(args: argparse.Namespace) -> int:
+    from security_lakehouse.aibom import import_aibom
+
+    result = import_aibom(input_path=Path(args.input), lake=Path(args.lake))
+    print(json.dumps(result, indent=2, sort_keys=True))
+    return 0
+
+
+def _aibom_export(args: argparse.Namespace) -> int:
+    from security_lakehouse.aibom import export_aibom
+
+    result = export_aibom(lake=Path(args.lake), output_path=Path(args.out), output_format=args.format)
+    print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 
 
