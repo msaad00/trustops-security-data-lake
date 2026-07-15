@@ -61,6 +61,9 @@ interface SetupStep {
   tone: "ready" | "attention" | "default";
 }
 
+const CONNECTED_TABS = ["Overview", "Details", "Runs"] as const;
+type ConnectedTab = (typeof CONNECTED_TABS)[number];
+
 const isRunnableConnector = (connector: ConnectorView) =>
   Boolean(connector.is_implemented);
 
@@ -84,7 +87,7 @@ function probeToastMessage(run: ConnectorRun, isEnabled: boolean): string {
   if (run.result === "skipped") {
     return `Contract validated: ${run.error ?? "probe skipped"}`;
   }
-  return `Probe error: ${run.error ?? "see history"}`;
+  return `Probe error: ${run.error ?? "see connector runs"}`;
 }
 
 function validateStepDetail(
@@ -233,9 +236,9 @@ function LatestSyncProof({
   const detail = !runnable
     ? "This connector is an access contract only. Probes validate configuration; a collection adapter is required before evidence sync."
     : ok
-      ? `${evidenceCount} evidence row(s) landed and posture surfaces will refresh.`
+      ? `${evidenceCount} raw evidence row(s) landed. Eval schedule or dashboard control eval refreshes posture.`
       : failed
-        ? (sync?.error ?? "Review run history for the connector error.")
+        ? (sync?.error ?? "Review the connector run log for the error.")
         : enabled
           ? "Run sync to land evidence, refresh posture, and update trust views."
           : "Test access, enable the connector, then run the first sync.";
@@ -326,6 +329,7 @@ export function ConnectorDrawer({
   const [accessValidated, setAccessValidated] = useState(false);
   const [discoveryRun, setDiscoveryRun] = useState<ConnectorRun | null>(null);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
+  const [connectedTab, setConnectedTab] = useState<ConnectedTab>("Overview");
 
   const markTouched = (name: string) => {
     setTouchedFields((prev) => new Set(prev).add(name));
@@ -345,6 +349,7 @@ export function ConnectorDrawer({
     setDiscoveryRun(null);
     setCreds({});
     setTouchedFields(new Set());
+    setConnectedTab("Overview");
   }, [connector?.connector_id]);
 
   useEffect(() => {
@@ -464,8 +469,17 @@ export function ConnectorDrawer({
     !discoveryRun &&
     !isConfigured(options);
   const showDiscoveryAction = !usesManagedCloudLink && needsDiscovery;
+  const showConnectedCloudSummary = usesManagedCloudLink && isEnabled;
   const showManagedCloudConfiguration =
-    !usesManagedCloudLink || hasStagedServerCredentials || isEnabled;
+    !usesManagedCloudLink ||
+    (hasStagedServerCredentials && !showConnectedCloudSummary);
+  const compactCloudDetails = [...scopeFields, ...schedulerFields].map(
+    (field) => ({
+      label: field.label,
+      value: options[field.name]?.trim() || field.placeholder || "default",
+    }),
+  );
+  const runHistoryRows = runs.data ?? [];
   const setupSteps: SetupStep[] = [
     {
       label: "Authorize",
@@ -517,7 +531,7 @@ export function ConnectorDrawer({
       ? "Enable this source"
       : latestSyncOk
         ? "Source connected"
-        : "Sync evidence into your assessment store";
+        : "Land evidence into your assessment store";
   const onboardingDetail = !accessReady
     ? "Run Test connection — enable stays locked until access is verified."
     : !isEnabled
@@ -596,10 +610,10 @@ export function ConnectorDrawer({
       });
       onToast(
         result.result === "ok"
-          ? onboarding
-            ? "Sync complete — review posture on the dashboard."
-            : `Sync complete: ${result.evidence_count ?? 0} evidence item(s) landed.`
-          : "Sync finished with errors; see history.",
+          ? result.materialized
+            ? `Sync complete: ${result.evidence_count ?? 0} evidence item(s) landed and controls evaluated.`
+            : `Evidence synced: ${result.evidence_count ?? 0} item(s) landed. Eval runs on schedule or from the dashboard.`
+          : "Sync finished with errors; see connector runs.",
       );
     } catch (err) {
       onToast(`Sync failed: ${(err as Error).message}`);
@@ -638,7 +652,7 @@ export function ConnectorDrawer({
       onToast(
         run.result === "ok"
           ? "Scope discovery complete."
-          : `Discovery error: ${run.error ?? "see history"}`,
+          : `Discovery error: ${run.error ?? "see connector runs"}`,
       );
     } catch (err) {
       setDiscoveryRun(null);
@@ -655,7 +669,9 @@ export function ConnectorDrawer({
       width="lg"
       footer={
         !auditor &&
-        (!usesManagedCloudLink || showManagedCloudConfiguration) && (
+        (!usesManagedCloudLink ||
+          showManagedCloudConfiguration ||
+          showConnectedCloudSummary) && (
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap gap-2">
               {showDiscoveryAction ? (
@@ -712,7 +728,7 @@ export function ConnectorDrawer({
                   ) : (
                     <RefreshCw className="h-4 w-4" />
                   )}{" "}
-                  Sync now
+                  Sync evidence
                 </Button>
               )}
               {isEnabled ? (
@@ -767,7 +783,7 @@ export function ConnectorDrawer({
               />
             )}
           <section
-            className={`rounded-lg border border-line bg-surface p-3 ${usesManagedCloudLink && hasStagedServerCredentials ? "lg:col-span-2" : ""}`}
+            className={`rounded-lg border border-line bg-surface p-3 ${usesManagedCloudLink && (hasStagedServerCredentials || showConnectedCloudSummary) ? "lg:col-span-2" : ""}`}
           >
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
@@ -804,7 +820,7 @@ export function ConnectorDrawer({
           </section>
         </div>
 
-        {showManagedCloudConfiguration && (
+        {showManagedCloudConfiguration && !showConnectedCloudSummary && (
           <details className="rounded-xl border border-line p-3">
             <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
               <ListChecks className="h-3.5 w-3.5" /> Connector contract
@@ -837,11 +853,150 @@ export function ConnectorDrawer({
           </details>
         )}
 
-        {!auditor &&
+        {showConnectedCloudSummary ? (
+          <section className="rounded-lg border border-line p-3">
+            <div
+              aria-label="Connected connector view"
+              className="grid grid-cols-3 rounded-lg border border-line bg-panel p-1"
+              role="tablist"
+            >
+              {CONNECTED_TABS.map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  role="tab"
+                  aria-selected={connectedTab === tab}
+                  className={`rounded-md px-2 py-1.5 text-xs font-black ${
+                    connectedTab === tab
+                      ? "bg-brand text-white"
+                      : "text-muted hover:bg-white"
+                  }`}
+                  onClick={() => setConnectedTab(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            {connectedTab === "Overview" && (
+              <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]">
+                <LatestSyncProof connector={connector} runnable={isRunnable} />
+                <section className="rounded-xl border border-line bg-white p-3">
+                  <div className="text-xs font-black uppercase tracking-wide text-muted">
+                    Connection details
+                  </div>
+                  <div className="mt-3 grid gap-2">
+                    {compactCloudDetails.map((detail) => (
+                      <div
+                        key={detail.label}
+                        className="rounded-lg border border-line bg-panel p-2"
+                      >
+                        <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+                          {detail.label}
+                        </div>
+                        <div className="mt-1 truncate text-sm font-black text-ink">
+                          {detail.value}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {connector.credential_fingerprint ? (
+                    <div className="mt-3 text-xs text-muted">
+                      Credential fingerprint:{" "}
+                      <code className="text-ink">
+                        {connector.credential_fingerprint}
+                      </code>
+                      {connector.configured_at && (
+                        <> · configured {formatWhen(connector.configured_at)}</>
+                      )}
+                    </div>
+                  ) : null}
+                </section>
+              </div>
+            )}
+
+            {connectedTab === "Details" && (
+              <div className="mt-3 grid gap-3 lg:grid-cols-2">
+                <details className="rounded-xl border border-line bg-white p-3">
+                  <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-muted">
+                    Granted read scope
+                  </summary>
+                  <ul className="mt-3 grid gap-2 text-xs">
+                    {connector.minimum_permissions.map((perm) => (
+                      <li key={perm} className="flex items-start gap-2">
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                        <code className="text-ink">{perm}</code>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+                <details className="rounded-xl border border-line bg-white p-3">
+                  <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-muted">
+                    Evidence output
+                  </summary>
+                  <p className="mt-3 text-xs leading-5 text-muted">
+                    Sync lands raw connector evidence. Eval produces gold
+                    controls, pass/fail metrics, and proof exports.
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {connector.evidence_types.map((t) => (
+                      <Badge key={t}>{t}</Badge>
+                    ))}
+                  </div>
+                </details>
+              </div>
+            )}
+
+            {connectedTab === "Runs" && (
+              <section className="mt-3 rounded-xl border border-line bg-white p-3">
+                <div className="text-xs font-black uppercase tracking-wide text-muted">
+                  Connector run log · {runHistoryRows.length} events
+                </div>
+                <div className="mt-3 max-h-80 overflow-auto pr-1">
+                  <div className="grid gap-2">
+                    {runHistoryRows.slice(0, 8).map((r) => (
+                      <div
+                        key={r.occurred_at + r.kind}
+                        className="rounded-lg border border-line p-3 text-xs"
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <span>
+                            <Badge tone={toneForResult(r.result)}>
+                              {r.result}
+                            </Badge>{" "}
+                            <Badge>{r.kind}</Badge>
+                          </span>
+                          <span className="text-muted">{r.occurred_at}</span>
+                        </div>
+                        <div className="mt-1 text-muted">
+                          actor <b className="text-ink">{r.actor}</b>
+                          {r.duration_ms !== null && <> · {r.duration_ms} ms</>}
+                          {r.evidence_count !== null && (
+                            <>
+                              {" "}
+                              ·{" "}
+                              {r.kind === "sync"
+                                ? `${r.evidence_count} evidence row(s)`
+                                : `${r.evidence_count} object(s)`}
+                            </>
+                          )}
+                        </div>
+                        {r.error && (
+                          <div className="mt-1 text-rose-700">{r.error}</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )}
+          </section>
+        ) : (
+          !auditor &&
           (!usesManagedCloudLink || showManagedCloudConfiguration) && (
             <details
               className="rounded-lg border border-line p-3"
-              open={!usesManagedCloudLink}
+              open={!usesManagedCloudLink && !showConnectedCloudSummary}
             >
               <summary className="ui-label cursor-pointer list-none">
                 Scope & automation
@@ -1251,25 +1406,22 @@ export function ConnectorDrawer({
                 )}
               </div>
             </details>
-          )}
+          )
+        )}
 
-        {(runs.data ?? []).length > 0 && (
+        {!showConnectedCloudSummary && runHistoryRows.length > 0 && (
           <LatestSyncProof connector={connector} runnable={isRunnable} />
         )}
 
-        {(runs.data ?? []).length > 0 && (
+        {!showConnectedCloudSummary && runHistoryRows.length > 0 && (
           <details className="rounded-lg border border-line p-3">
             <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
-              <ShieldCheck className="h-3 w-3" /> Run history ·{" "}
-              {runs.data?.length ?? 0} events
+              <ShieldCheck className="h-3 w-3" /> Run log ·{" "}
+              {runHistoryRows.length} events
             </summary>
             <section className="mt-3">
-              <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
-                <ShieldCheck className="h-3 w-3" /> Run history ·{" "}
-                {runs.data?.length ?? 0} events
-              </div>
               <div className="grid gap-2">
-                {(runs.data ?? []).slice(0, 8).map((r) => (
+                {runHistoryRows.slice(0, 8).map((r) => (
                   <div
                     key={r.occurred_at + r.kind}
                     className="rounded-lg border border-line p-3 text-xs"
@@ -1299,7 +1451,7 @@ export function ConnectorDrawer({
                     )}
                   </div>
                 ))}
-                {(runs.data ?? []).length === 0 && (
+                {runHistoryRows.length === 0 && (
                   <div className="rounded-lg border border-dashed border-line p-3 text-xs text-muted">
                     No probes or syncs recorded yet. Click{" "}
                     <b>Test connection</b> to run one.

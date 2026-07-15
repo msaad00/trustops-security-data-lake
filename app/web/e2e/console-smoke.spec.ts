@@ -10,16 +10,25 @@ test.describe("console smoke", () => {
         name: /^Executive trust overview$/,
       }),
     ).toBeVisible();
-    await expect(page.getByText("Trust Command Center")).toBeVisible();
+    await expect(page.getByText("TrustOps overview")).toBeVisible();
+    await expect(page.getByText("Framework posture")).toBeVisible();
     await expect(
-      page.getByText("Failing tests", { exact: true }),
+      page.getByText("Control pass rate", { exact: true }),
     ).toBeVisible();
     await expect(
-      page.getByText("Critical findings", { exact: true }),
+      page.getByText("Open findings", { exact: true }),
+    ).toBeVisible();
+    await expect(page.getByText("Proof export", { exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("tab", { name: "Posture", exact: true }),
+    ).toHaveAttribute("aria-selected", "true");
+    await expect(
+      page.getByRole("tab", { name: "Sources", exact: true }),
     ).toBeVisible();
     await expect(
-      page.getByText("Stale evidence", { exact: true }),
+      page.getByRole("tab", { name: "Proof", exact: true }),
     ).toBeVisible();
+    await expect(page.getByText("Scale tier")).toHaveCount(0);
   });
 
   test("audit room shows readiness score", async ({ page }) => {

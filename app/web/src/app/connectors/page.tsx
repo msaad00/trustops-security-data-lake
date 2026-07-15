@@ -37,6 +37,47 @@ type Health = {
   tone: "ready" | "attention" | "critical" | "default";
 };
 
+type ViewFilter = "all" | "connected" | "setup" | "attention";
+type RunnerFilter = "all" | "runnable" | "contract";
+type CategoryFilter = "all" | "cloud" | "identity" | "data" | "dev" | "ops";
+
+const VIEW_TABS: Array<{ id: ViewFilter; label: string }> = [
+  { id: "all", label: "All" },
+  { id: "connected", label: "Connected" },
+  { id: "setup", label: "Needs setup" },
+  { id: "attention", label: "Needs attention" },
+];
+
+const RUNNER_TABS: Array<{ id: RunnerFilter; label: string }> = [
+  { id: "runnable", label: "Runnable" },
+  { id: "all", label: "All runners" },
+  { id: "contract", label: "Contract only" },
+];
+
+const CATEGORY_TABS: Array<{ id: CategoryFilter; label: string }> = [
+  { id: "all", label: "All categories" },
+  { id: "cloud", label: "Cloud" },
+  { id: "identity", label: "Identity" },
+  { id: "data", label: "Data lakes" },
+  { id: "dev", label: "Dev tools" },
+  { id: "ops", label: "Ops" },
+];
+
+function connectorCategory(connector: ConnectorView): CategoryFilter {
+  if (connector.category === "cloud") return "cloud";
+  if (connector.category === "identity") return "identity";
+  if (connector.category === "developer_platform") return "dev";
+  if (
+    connector.category === "analytics_lake" ||
+    connector.category === "warehouse" ||
+    connector.category === "evidence_store" ||
+    connector.category === "starter_mode"
+  ) {
+    return "data";
+  }
+  return "ops";
+}
+
 function syncHealth(connector: ConnectorView): Health | null {
   if (connector.state !== "enabled") return null;
 
@@ -72,6 +113,15 @@ function syncHealth(connector: ConnectorView): Health | null {
   return { label: "silent", tone: "critical" };
 }
 
+function needsAttention(connector: ConnectorView) {
+  const health = syncHealth(connector);
+  return (
+    (health !== null && health.tone !== "ready") ||
+    connector.last_probe?.result === "error" ||
+    connector.last_sync?.result === "error"
+  );
+}
+
 const toneForProbe = (result?: string) =>
   result === "ok"
     ? "ready"
@@ -103,8 +153,8 @@ function ConnectorSetupRail() {
     },
     {
       step: "04",
-      label: "Snapshot",
-      detail: "Write a daily result to your security data lake.",
+      label: "Prove",
+      detail: "Export raw collection evidence and evaluated gold reports.",
       Icon: Database,
     },
   ] as const;
@@ -199,12 +249,9 @@ export default function ConnectorsPage() {
   const [connectId, setConnectId] = useState<string | null>(null);
   const [linkSessionId, setLinkSessionId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
-  const [stateFilter, setStateFilter] = useState<
-    "all" | "enabled" | "disabled"
-  >("all");
-  const [runnerFilter, setRunnerFilter] = useState<
-    "all" | "runnable" | "contract"
-  >("runnable");
+  const [viewFilter, setViewFilter] = useState<ViewFilter>("all");
+  const [runnerFilter, setRunnerFilter] = useState<RunnerFilter>("runnable");
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("all");
   const [selected, setSelected] = useState<ConnectorView | null>(null);
   const [onboarding, setOnboarding] = useState(false);
 
@@ -235,14 +282,18 @@ export default function ConnectorsPage() {
   const filtered = useMemo(
     () =>
       data.filter((c) => {
-        if (stateFilter !== "all" && c.state !== stateFilter) return false;
+        if (viewFilter === "connected" && c.state !== "enabled") return false;
+        if (viewFilter === "setup" && c.state === "enabled") return false;
+        if (viewFilter === "attention" && !needsAttention(c)) return false;
         if (runnerFilter === "runnable" && !isRunnableConnector(c))
           return false;
         if (runnerFilter === "contract" && isRunnableConnector(c)) return false;
+        if (categoryFilter !== "all" && connectorCategory(c) !== categoryFilter)
+          return false;
         if (!query) return true;
         return JSON.stringify(c).toLowerCase().includes(query.toLowerCase());
       }),
-    [data, query, stateFilter, runnerFilter],
+    [categoryFilter, data, query, runnerFilter, viewFilter],
   );
 
   const totals = {
@@ -319,48 +370,100 @@ export default function ConnectorsPage() {
         <ConnectorEcosystemStrip compact />
       </CollapsibleCard>
 
-      <div className="flex min-w-0 flex-wrap items-center gap-2 overflow-hidden rounded-lg border border-line bg-white p-2 shadow-card">
-        <div className="relative min-w-[min(100%,260px)] flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search sources…"
-            className="w-full rounded-lg border border-line bg-white py-2.5 pl-10 pr-3 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
-          />
+      <div className="grid min-w-0 gap-2 overflow-hidden rounded-lg border border-line bg-white p-2 shadow-card">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <div className="relative min-w-[min(100%,260px)] flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search sources..."
+              className="w-full rounded-lg border border-line bg-white py-2.5 pl-10 pr-3 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+            />
+          </div>
+          <div
+            aria-label="Connection view"
+            className="flex max-w-full gap-1 overflow-x-auto rounded-lg border border-line bg-panel p-1"
+            role="tablist"
+          >
+            {VIEW_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={viewFilter === tab.id}
+                className={`shrink-0 rounded-md px-3 py-2 text-xs font-black ${
+                  viewFilter === tab.id
+                    ? "bg-brand text-white"
+                    : "text-muted hover:bg-white"
+                }`}
+                onClick={() => setViewFilter(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
-        <select
-          value={stateFilter}
-          onChange={(e) => setStateFilter(e.target.value as typeof stateFilter)}
-          className="min-w-[140px] rounded-lg border border-line bg-white px-3 py-2.5 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand"
-        >
-          <option value="all">All states</option>
-          <option value="enabled">Enabled</option>
-          <option value="disabled">Disabled</option>
-        </select>
-        <select
-          value={runnerFilter}
-          onChange={(e) =>
-            setRunnerFilter(e.target.value as typeof runnerFilter)
-          }
-          className="min-w-[160px] rounded-lg border border-line bg-white px-3 py-2.5 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand"
-        >
-          <option value="all">All runners</option>
-          <option value="runnable">Runnable ({totals.runnable})</option>
-          <option value="contract">Contract only</option>
-        </select>
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <div
+            aria-label="Runner filter"
+            className="flex max-w-full gap-1 overflow-x-auto rounded-lg border border-line bg-panel p-1"
+            role="tablist"
+          >
+            {RUNNER_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={runnerFilter === tab.id}
+                className={`shrink-0 rounded-md px-3 py-2 text-xs font-black ${
+                  runnerFilter === tab.id
+                    ? "bg-brand text-white"
+                    : "text-muted hover:bg-white"
+                }`}
+                onClick={() => setRunnerFilter(tab.id)}
+              >
+                {tab.id === "runnable"
+                  ? `${tab.label} (${totals.runnable})`
+                  : tab.label}
+              </button>
+            ))}
+          </div>
+          <div
+            aria-label="Category filter"
+            className="flex max-w-full flex-1 gap-1 overflow-x-auto rounded-lg border border-line bg-panel p-1"
+            role="tablist"
+          >
+            {CATEGORY_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={categoryFilter === tab.id}
+                className={`shrink-0 rounded-md px-3 py-2 text-xs font-black ${
+                  categoryFilter === tab.id
+                    ? "bg-brand text-white"
+                    : "text-muted hover:bg-white"
+                }`}
+                onClick={() => setCategoryFilter(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       <QueryState queries={connectors} label="connectors">
         <Card className="overflow-hidden">
           <CardHeader>
-            <CardTitle>{filtered.length} ready sources</CardTitle>
+            <CardTitle>{filtered.length} sources</CardTitle>
             <CardDescription>
               Select a source to connect, probe access, and schedule its daily
               evidence snapshot.
             </CardDescription>
           </CardHeader>
-          <div className="grid gap-2 p-4 pt-0">
+          <div className="grid gap-2 p-4 pt-0 lg:grid-cols-2">
             {filtered.length === 0 && (
               <div className="rounded-lg border border-dashed border-line p-4 text-sm text-muted">
                 {totals.enabled === 0 ? (

@@ -120,7 +120,7 @@ export function Sidebar() {
           <KodaLogo
             href="/dashboard"
             inverted
-            markSize="sm"
+            markSize="md"
             subtitle={BRAND.consoleSubtitle}
             wordmarkClassName="max-w-[140px]"
             gradientId="trustops-sidebar-gradient"

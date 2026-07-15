@@ -68,7 +68,7 @@ function Metric({
 function labelForScaleMode(mode?: string) {
   if (mode === "warehouse_required") return "Warehouse required";
   if (mode === "warehouse") return "Warehouse eval";
-  if (mode === "local_incremental") return "Incremental";
+  if (mode === "local_incremental") return "Changed evidence only";
   if (mode === "local_full") return "Full local";
   return mode?.replace(/_/g, " ") ?? "unknown";
 }
@@ -82,6 +82,14 @@ function toneForScaleMode(mode?: string): "ready" | "attention" | "critical" {
 function formatPassRate(rate: number | null | undefined) {
   if (rate == null) return "—";
   return `${Math.round(rate * 100)}%`;
+}
+
+function scaleRecommendationCopy(scale: IngestionStatus["scale"]) {
+  if (!scale) return "";
+  if (scale.mode === "local_incremental") {
+    return "Processes only changed raw evidence since the last manifest, so large lakes do not reprocess every row.";
+  }
+  return scale.recommendation;
 }
 
 export function IngestionStatusPanel({
@@ -100,12 +108,15 @@ export function IngestionStatusPanel({
   const accuracy = status?.eval_accuracy;
   const coverage = status?.catalog_coverage;
   const action = status?.recommended_actions?.[0];
-  const recentRuns = status?.latest_runs?.slice(0, 4) ?? [];
+  const recentEvidenceSyncs =
+    status?.latest_runs
+      ?.filter((run) => run.kind === "sync" || (run.evidence_count ?? 0) > 0)
+      .slice(0, 4) ?? [];
   const visibleConnectors =
     status?.connectors
       ?.filter(
         (connector) =>
-          connector.state === "enabled" ||
+          connector.last_sync_at ||
           connector.latest_sync.result === "error" ||
           connector.freshness_state === "stale",
       )
@@ -158,7 +169,7 @@ export function IngestionStatusPanel({
             Source health
           </CardTitle>
           <CardDescription>
-            Connected sources, freshness, and reviewer proof.
+            Evidence-producing sources, freshness, and reviewer proof.
           </CardDescription>
         </div>
         <Badge tone={toneForState(status?.state)}>
@@ -237,7 +248,7 @@ export function IngestionStatusPanel({
                 <div className="flex flex-wrap items-center gap-2">
                   <Layers className="h-4 w-4 text-brand" />
                   <span className="text-sm font-black text-ink">
-                    Scale tier
+                    Processing mode
                   </span>
                   <Badge tone={toneForScaleMode(scale.mode)}>
                     {labelForScaleMode(scale.mode)}
@@ -249,7 +260,7 @@ export function IngestionStatusPanel({
                   {scale.eval_schedule ? ` · eval ${scale.eval_schedule}` : ""}
                 </p>
                 <p className="mt-1 text-xs leading-5 text-muted">
-                  {scale.recommendation}
+                  {scaleRecommendationCopy(scale)}
                 </p>
                 {scale.latest_eval?.occurred_at && (
                   <p className="mt-2 text-xs text-muted">
@@ -314,19 +325,22 @@ export function IngestionStatusPanel({
           </div>
         )}
 
-        {recentRuns.length > 0 && (
+        {recentEvidenceSyncs.length > 0 && (
           <div className="rounded-lg border border-line">
             <div className="border-b border-line px-3 py-2 text-xs font-black uppercase tracking-wide text-muted">
-              Recent connector runs
+              Recent evidence syncs
             </div>
             <div className="divide-y divide-line">
-              {recentRuns.map((run, index) => (
+              {recentEvidenceSyncs.map((run, index) => (
                 <div
                   key={`${run.connector_id}-${run.occurred_at}-${index}`}
                   className="grid gap-2 px-3 py-2 sm:grid-cols-[minmax(0,1fr)_120px_90px]"
                 >
                   <div className="min-w-0 truncate text-sm font-bold text-ink">
-                    {run.connector_id} · {run.kind}
+                    {run.connector_id} ·{" "}
+                    {run.evidence_count == null
+                      ? "sync attempt"
+                      : `${run.evidence_count} evidence rows`}
                   </div>
                   <div className="text-xs text-muted">
                     {shortDate(run.occurred_at)}
@@ -353,7 +367,7 @@ export function IngestionStatusPanel({
             <div className="flex items-center justify-between border-b border-line px-3 py-2">
               <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
                 <Database className="h-3.5 w-3.5" />
-                Active sources
+                Evidence sources
               </div>
               <span className="text-xs font-semibold text-muted">
                 {status?.integrity?.ok === true ? "integrity ok" : "verify"}

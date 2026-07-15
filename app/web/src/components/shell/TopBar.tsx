@@ -37,7 +37,7 @@ export function TopBar({ onRefresh, onSnapshot, onOpenPalette }: Props) {
       <KodaLogo
         href="/dashboard"
         inverted
-        markSize="md"
+        markSize="lg"
         showWordmark
         wordmarkClassName="hidden xl:block"
         className="flex-none"

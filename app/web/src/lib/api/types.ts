@@ -582,6 +582,7 @@ export interface CloudLinkSession {
   template_url?: string | null;
   consent_url?: string | null;
   manual_template_path?: string | null;
+  trusted_principal?: string | null;
   azure_tenant_id?: string | null;
   role_name?: string | null;
   deploy_command?: string | null;
