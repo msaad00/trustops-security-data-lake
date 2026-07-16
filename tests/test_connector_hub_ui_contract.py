@@ -17,6 +17,12 @@ def test_connector_hub_uses_compact_interactive_filters_and_grid() -> None:
     assert "Needs attention" in page
     assert "Needs setup" in page
     assert "All categories" in page
+    assert 'label: "Available"' in page
+    assert 'label: "All sources"' in page
+    assert 'label: "Planned"' in page
+    assert 'label: "Runnable"' not in page
+    assert 'label: "All runners"' not in page
+    assert 'label: "Contract only"' not in page
     assert "Evidence loop" not in page
     assert 'label: "Prove"' not in page
     assert "raw collection evidence and evaluated gold reports" not in page

@@ -18,9 +18,12 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     assert "CloudFormation CLI" in panel
     assert "Terraform CLI" in panel
     assert "Deployment method" in panel
-    assert "AWS CLI deploy command" in panel
+    assert "CloudShell deploy script" in panel
+    assert "Copy CloudShell script" in panel
+    assert 'useState<AwsDeployMode>("cloudformation")' in panel
+    assert 'setAwsDeployMode("cloudformation")' in panel
+    assert "AWS CLI deploy command" not in panel
     assert "Terraform deploy command" in panel
-    assert "Copy deploy command" in panel
     assert "sanitizeAwsRoleName" in panel
     assert "awsQuickCreateUrl" in panel
     assert "awsTerraformCommand" in panel

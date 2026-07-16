@@ -44,9 +44,9 @@ const VIEW_TABS: Array<{ id: ViewFilter; label: string }> = [
 ];
 
 const RUNNER_TABS: Array<{ id: RunnerFilter; label: string }> = [
-  { id: "runnable", label: "Runnable" },
-  { id: "all", label: "All runners" },
-  { id: "contract", label: "Contract only" },
+  { id: "runnable", label: "Available" },
+  { id: "all", label: "All sources" },
+  { id: "contract", label: "Planned" },
 ];
 
 const CATEGORY_TABS: Array<{ id: CategoryFilter; label: string }> = [
