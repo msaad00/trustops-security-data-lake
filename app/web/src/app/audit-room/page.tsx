@@ -31,6 +31,7 @@ import { PoamWorkbench } from "@/components/audit-room/PoamWorkbench";
 import { AiGovernanceStrip } from "@/components/audit-room/AiGovernanceStrip";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
+import { TrustPipelineStrip } from "@/components/TrustPipelineStrip";
 import { KpiTile } from "@/components/ui/KpiTile";
 import { CollapsibleCard } from "@/components/ui/collapsible-card";
 import { useAuditReadiness, usePlatformStream } from "@/lib/api/hooks";
@@ -57,8 +58,9 @@ export default function AuditRoomPage() {
       <PageHeader
         eyebrow="Audit center"
         title="Audit readiness room"
-        description="Continuous controls, evidence, access reviews, auditor shares, and point-in-time snapshots — same data via API for headless automation."
+        description="Proof exports from gold posture: continuous controls, evidence, access reviews, auditor shares, and point-in-time snapshots."
       />
+      <TrustPipelineStrip activeStage="proof" />
 
       <QueryState queries={audit} label="audit readiness">
         {audit.data && (

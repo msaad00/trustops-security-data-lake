@@ -106,6 +106,9 @@ The live AWS, Azure, and GCP posture connectors can be proven without static key
   `TrustOpsPostureReadOnlyRole` with only the IAM read calls used by the
   connector. The trust policy is parameterized so customers can allow their own
   TrustOps runtime role, SSO role, or brokered automation principal to assume it.
+  During a probe or scheduled sync, TrustOps calls STS AssumeRole with the Role
+  ARN and External ID, receives short-lived session credentials, reads only the
+  allowed IAM posture APIs, and lets the temporary credentials expire.
 - Azure: `deploy/azure/trustops-posture-reader.bicep` assigns built-in `Reader`
   at subscription scope to a service principal, managed identity, or group.
   If a tenant blocks role-assignment reads, grant a customer-owned read role
@@ -118,7 +121,8 @@ The live AWS, Azure, and GCP posture connectors can be proven without static key
   TrustOps uses Application Default Credentials at runtime.
 
 Both templates are bootstrap helpers for read-only evidence collection. They do
-not create users, credentials, long-lived keys, or remediation permissions.
+not create users, credentials, long-lived access keys, or remediation
+permissions.
 
 ## Snowflake POC bootstrap
 

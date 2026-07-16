@@ -152,6 +152,27 @@ def test_aws_posture_role_bootstrap_matches_connector_contract() -> None:
     assert "CREATE USER" not in body.upper()
 
 
+def test_aws_assume_role_lifecycle_is_documented_for_operators() -> None:
+    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    runbook = (REPO_ROOT / "docs" / "LIVE_CLOUD_POC.md").read_text(encoding="utf-8")
+    deploy_readme = (REPO_ROOT / "deploy" / "README.md").read_text(encoding="utf-8")
+    visual = (REPO_ROOT / "docs" / "images" / "trustops-aws-sts-lifecycle.svg").read_text(encoding="utf-8")
+    combined = "\n".join([readme, runbook, deploy_readme, visual])
+
+    for expected in (
+        "STS AssumeRole",
+        "short-lived session credentials",
+        "temporary credentials expire",
+        "no long-lived access keys",
+        "scheduled sync",
+        "read-only IAM posture APIs",
+        "External ID",
+    ):
+        assert expected in combined
+
+    assert "trustops-aws-sts-lifecycle.svg" in readme
+
+
 def test_azure_posture_reader_bootstrap_matches_connector_contract() -> None:
     body = (REPO_ROOT / "deploy" / "azure" / "trustops-posture-reader.bicep").read_text(encoding="utf-8")
 

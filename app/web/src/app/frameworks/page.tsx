@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Drawer } from "@/components/ui/drawer";
 import { PageHeader } from "@/components/PageHeader";
+import { TrustPipelineStrip } from "@/components/TrustPipelineStrip";
 import { FrameworkBadge } from "@/components/framework/FrameworkBadge";
 import { FrameworkDrilldownPanel } from "@/components/framework/FrameworkDrilldownPanel";
 import { frameworkDetailHref } from "@/lib/framework-links";
@@ -336,7 +337,7 @@ function FrameworksPageContent() {
       <PageHeader
         eyebrow="Frameworks"
         title="Framework provenance"
-        description="Every framework declares its official source, version, sha256 of the pulled text, effective date, and mapping coverage. Click any row to inspect provenance and link out to the regulator."
+        description="Framework contracts define what deterministic eval can prove. Each framework declares its official source, version, sha256, effective date, and mapping coverage."
         actions={
           <span className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-black text-slate-600">
             <FileCheck2 className="mr-1 inline h-3 w-3 text-emerald-600" />{" "}
@@ -344,6 +345,7 @@ function FrameworksPageContent() {
           </span>
         }
       />
+      <TrustPipelineStrip activeStage="frameworks" />
 
       <Card className="overflow-hidden">
         <CardHeader>
