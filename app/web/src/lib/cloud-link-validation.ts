@@ -36,6 +36,35 @@ export function awsRoleArnError(raw: string): string | null {
   return null;
 }
 
+export function awsRoleIdentifierError(raw: string): string | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return "Enter your AWS account ID.";
+  if (AWS_ROLE_ARN_RE.test(trimmed)) return null;
+  if (trimmed.startsWith("arn:")) {
+    return "Use a valid AWS IAM role ARN or a 12-digit AWS account ID.";
+  }
+
+  if (!/^[0-9\s-]+$/.test(trimmed)) {
+    return "Use a valid AWS IAM role ARN or a 12-digit AWS account ID.";
+  }
+  const accountId = sanitizeAwsAccountId(trimmed);
+  if (accountId.length !== 12) {
+    return "AWS account ID must be exactly 12 digits.";
+  }
+  return null;
+}
+
+export function awsRoleArnFromIdentifier(
+  raw: string,
+  roleName: string,
+): string {
+  const trimmed = raw.trim();
+  if (AWS_ROLE_ARN_RE.test(trimmed)) return trimmed;
+
+  const accountId = sanitizeAwsAccountId(trimmed);
+  return `arn:aws:iam::${accountId}:role/${roleName}`;
+}
+
 export function azureSubscriptionIdError(raw: string): string | null {
   const trimmed = sanitizeAzureSubscriptionId(raw);
   if (!trimmed) return "Enter your Azure subscription ID.";
@@ -58,7 +87,9 @@ export function cloudLinkFieldError(
   connectorId: string,
   values: { roleArn: string; subscriptionId: string; projectId: string },
 ): string | null {
-  if (connectorId === "aws-posture") return awsRoleArnError(values.roleArn);
+  if (connectorId === "aws-posture") {
+    return awsRoleIdentifierError(values.roleArn);
+  }
   if (connectorId === "azure-posture") {
     return azureSubscriptionIdError(values.subscriptionId);
   }

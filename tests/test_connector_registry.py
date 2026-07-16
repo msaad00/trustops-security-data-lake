@@ -156,8 +156,9 @@ def test_aws_assume_role_lifecycle_is_documented_for_operators() -> None:
     readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     runbook = (REPO_ROOT / "docs" / "LIVE_CLOUD_POC.md").read_text(encoding="utf-8")
     deploy_readme = (REPO_ROOT / "deploy" / "README.md").read_text(encoding="utf-8")
+    connectors = (REPO_ROOT / "docs" / "CONNECTORS.md").read_text(encoding="utf-8")
     visual = (REPO_ROOT / "docs" / "images" / "trustops-aws-sts-lifecycle.svg").read_text(encoding="utf-8")
-    combined = "\n".join([readme, runbook, deploy_readme, visual])
+    combined = "\n".join([readme, runbook, deploy_readme, connectors, visual])
 
     for expected in (
         "STS AssumeRole",
@@ -167,6 +168,10 @@ def test_aws_assume_role_lifecycle_is_documented_for_operators() -> None:
         "scheduled sync",
         "read-only IAM posture APIs",
         "External ID",
+        "CloudFormation StackSets",
+        "Terraform workspaces",
+        "one External ID per deployed role",
+        "Bulk account import",
     ):
         assert expected in combined
 

@@ -25,6 +25,7 @@ from security_lakehouse.connector_state import (
     configure_payload_error,
     enablement_probe_error,
     list_runs,
+    resolve_configure_payload,
     run_discovery,
     run_probe,
 )
@@ -287,8 +288,12 @@ def handle_post(path: str, body: Body, lake_dir: str | Path, *, role: str = "") 
     configure = _suffix_match(path, "/api/connectors/", "/configure")
     if configure is not None:
         state = str(body.get("state") or "enabled").lower()
-        credentials = body.get("credentials") or {}
-        options = body.get("options") or {}
+        credentials, options = resolve_configure_payload(
+            lake,
+            connector_id=configure,
+            credentials=body.get("credentials") if "credentials" in body else None,
+            options=body.get("options") if "options" in body else None,
+        )
         error = configure_payload_error(
             connector_id=configure,
             state=state,

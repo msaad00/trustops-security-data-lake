@@ -12,6 +12,7 @@ from security_lakehouse.cloud_linking import (
     aws_quick_create_url,
     aws_template_bytes,
     aws_template_url,
+    aws_terraform_bytes,
     azure_callback_redirect,
     azure_consent_url,
     complete_cloud_link,
@@ -32,6 +33,13 @@ def test_aws_template_bytes_is_packaged() -> None:
     body = aws_template_bytes()
     assert b"TrustOpsPostureReadOnlyRole" in body
     assert b"TrustedPrincipalArn" in body
+
+
+def test_aws_terraform_bytes_is_packaged() -> None:
+    body = aws_terraform_bytes()
+    assert b'variable "trusted_principal_arn"' in body
+    assert b"aws_iam_role" in body
+    assert b"role_arn" in body
 
 
 def test_aws_template_url_uses_external_https_override(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -112,6 +120,30 @@ def test_start_and_complete_aws_cloud_link_stages_connector(tmp_path: Path, monk
     session = start_cloud_link(tmp_path, "aws-posture", tenant_id="tenant-a")
     assert session["external_id"]
     assert session["quick_create_url"]
+    assert session["terraform_url"] == "https://demo.example.com/api/v1/connectors/aws-posture/link/terraform.tf"
+    assert session["manual_terraform_path"] == "deploy/aws/trustops-posture-readonly-role.tf"
+    assert session["account_scope"] == "aws_account"
+    assert session["deployment_methods"] == [
+        {
+            "id": "console",
+            "label": "AWS Console",
+            "detail": "Guided CloudFormation",
+        },
+        {
+            "id": "cloudformation",
+            "label": "CloudFormation CLI",
+            "detail": "AWS CLI stack deploy",
+        },
+        {
+            "id": "terraform",
+            "label": "Terraform CLI",
+            "detail": "IaC workspace rollout",
+        },
+    ]
+    assert session["scale_strategy"]["mode"] == "stacksets_or_terraform"
+    assert "CloudFormation StackSets" in session["scale_strategy"]["summary"]
+    assert "Terraform workspaces" in session["scale_strategy"]["summary"]
+    assert "Bulk account import" in session["scale_strategy"]["follow_up"]
 
     result = complete_cloud_link(
         tmp_path,
@@ -282,6 +314,24 @@ def test_aws_template_endpoint_serves_yaml(tmp_path: Path) -> None:
         conn.close()
         assert resp.status == HTTPStatus.OK
         assert b"TrustOpsPostureReadOnlyRole" in raw
+    finally:
+        server.shutdown()
+
+
+def test_aws_terraform_endpoint_serves_tf(tmp_path: Path) -> None:
+    server = _spin(tmp_path)
+    try:
+        import http.client
+
+        host, port = server.server_address
+        conn = http.client.HTTPConnection(host, port, timeout=30)
+        conn.request("GET", "/api/v1/connectors/aws-posture/link/terraform.tf")
+        resp = conn.getresponse()
+        raw = resp.read()
+        conn.close()
+        assert resp.status == HTTPStatus.OK
+        assert b'variable "external_id"' in raw
+        assert b"TrustOpsPostureReadOnly" in raw
     finally:
         server.shutdown()
 

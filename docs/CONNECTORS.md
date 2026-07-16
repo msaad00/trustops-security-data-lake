@@ -127,6 +127,20 @@ and agents:
 4. enable only after the probe succeeds,
 5. sync manually or by schedule.
 
+### AWS multi-account scale
+
+AWS posture uses the same third-party role pattern for one account or hundreds:
+
+| Item          | Scaling rule                                                                                                                            |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Rollout       | Use **CloudFormation StackSets** or **Terraform workspaces** to deploy the same read-only role across target AWS accounts.              |
+| Authorization | The deployed role trusts the TrustOps runtime principal and constrains access with External ID.                                         |
+| External ID   | Use **one External ID per deployed role**; TrustOps includes that exact value in STS AssumeRole.                                        |
+| Confirmation  | Default role names can be confirmed by AWS account ID; custom role names use the Role ARN output.                                       |
+| Scale surface | **Bulk account import** is the follow-up console/API surface for registering many deployed roles after rollout.                         |
+| Sync          | The scheduled sync assumes each registered role, receives short-lived session credentials, and reads only the granted IAM posture APIs. |
+| Evaluation    | Raw evidence keeps the AWS account ID attached; deterministic controls evaluate across the combined evidence set.                       |
+
 <p align="center">
   <img src="images/trustops-readonly-connections.svg" alt="Read-only connector model: AWS IAM role, GitHub App, Okta token, Snowflake SELECT into TrustOps ingestion" width="100%">
 </p>

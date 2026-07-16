@@ -68,6 +68,14 @@ schedule; it does not keep a standing AWS login session.
 | **Expire**       | The temporary credentials expire. Next sync repeats STS AssumeRole instead of storing AWS keys.                   |
 | **Stored**       | TrustOps stores account ID, role ARN, external ID, safe fingerprint, and run metadata; no long-lived access keys. |
 
+For many AWS accounts, use **CloudFormation StackSets** or **Terraform
+workspaces** to roll out the same read-only role name across target accounts.
+Each deployed role gets **one External ID per deployed role** and TrustOps
+verifies it with STS before syncing. With the default role name, operators
+confirm a target by account ID; custom names use the Role ARN output. **Bulk
+account import** is the next scale surface after organization rollout is in
+place.
+
 Deep-link examples (after `serve`):
 
 | Source    | Console deep link                                      |

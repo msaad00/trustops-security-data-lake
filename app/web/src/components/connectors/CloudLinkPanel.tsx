@@ -12,7 +12,8 @@ import type { CloudLinkSession } from "@/lib/api/types";
 import type { ConnectorView } from "@/lib/api/types";
 import { BRAND } from "@/lib/brand";
 import {
-  awsRoleArnError,
+  awsRoleArnFromIdentifier,
+  awsRoleIdentifierError,
   azureSubscriptionIdError,
   cloudLinkFieldError,
   gcpProjectIdError,
@@ -25,6 +26,12 @@ const AWS_TEMPLATE_PATH = "deploy/aws/trustops-posture-readonly-role.yaml";
 const AWS_STACK_NAME = "TrustOpsPostureReadOnly";
 const AWS_ROLE_NAME = "TrustOpsPostureReadOnlyRole";
 const AWS_ROLE_NAME_ALLOWED = /[^A-Za-z0-9+=,.@_-]/g;
+type AwsDeployMode = "console" | "cloudformation" | "terraform";
+type AwsDeployOption = {
+  value: AwsDeployMode;
+  label: string;
+  detail: string;
+};
 
 interface Props {
   connector: ConnectorView;
@@ -39,7 +46,7 @@ export function supportsCloudLink(connectorId: string) {
 
 function linkDescription(connectorId: string): string {
   if (connectorId === "aws-posture") {
-    return "Deploy a read-only role that trusts this TrustOps runtime, then verify assume-role access. Account ID identifies the target; it does not grant access.";
+    return "Deploy in AWS, then confirm the account. TrustOps verifies STS assume-role after deployment.";
   }
   if (connectorId === "azure-posture") {
     return `Grant admin consent for the ${BRAND.name} Azure app, then enter the subscription ID to stage the connector.`;
@@ -122,6 +129,34 @@ aws cloudformation describe-stacks \\
   --output text`;
 }
 
+function awsTerraformCommand(
+  session: CloudLinkSession,
+  roleName: string,
+): string | null {
+  if (!session.external_id || !session.trusted_principal) return null;
+  const selectedRoleName = awsDeploymentRoleName(roleName || session.role_name);
+  const templateSetup = session.terraform_url
+    ? `terraform_dir="$(mktemp -d /tmp/trustops-posture-role.XXXXXX)"
+trap 'rm -rf "$terraform_dir"' EXIT
+curl -fsSL ${shellQuote(session.terraform_url)} -o "$terraform_dir/main.tf"
+`
+    : "";
+  const manualTerraformDir = session.manual_terraform_path
+    ? session.manual_terraform_path.replace(/\/[^/]+$/, "")
+    : "deploy/aws";
+  const terraformChdir = session.terraform_url
+    ? '"$terraform_dir"'
+    : shellQuote(manualTerraformDir);
+
+  return `${templateSetup}terraform -chdir=${terraformChdir} init
+terraform -chdir=${terraformChdir} apply -auto-approve \\
+  -var trusted_principal_arn=${shellQuote(session.trusted_principal)} \\
+  -var external_id=${shellQuote(session.external_id)} \\
+  -var role_name=${shellQuote(selectedRoleName)}
+
+terraform -chdir=${terraformChdir} output -raw role_arn`;
+}
+
 export function CloudLinkPanel({
   connector,
   linkSessionId,
@@ -132,14 +167,17 @@ export function CloudLinkPanel({
   const complete = useCloudLinkCompleteMutation();
   const [session, setSession] = useState<CloudLinkSession | null>(null);
   const [roleArn, setRoleArn] = useState("");
+  const [customRoleArn, setCustomRoleArn] = useState("");
   const [subscriptionId, setSubscriptionId] = useState("");
   const [projectId, setProjectId] = useState("");
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [touched, setTouched] = useState(false);
   const [awsRoleName, setAwsRoleName] = useState(AWS_ROLE_NAME);
-  const [awsDeployMode, setAwsDeployMode] = useState<"console" | "cli">(
-    "console",
-  );
+  const [awsDeployMode, setAwsDeployMode] = useState<AwsDeployMode>("console");
+  const awsRoleIdentifier =
+    connector.connector_id === "aws-posture"
+      ? customRoleArn.trim() || roleArn
+      : roleArn;
 
   useEffect(() => {
     if (!linkSessionId) return;
@@ -163,40 +201,105 @@ export function CloudLinkPanel({
   const validationError = useMemo(
     () =>
       cloudLinkFieldError(connector.connector_id, {
-        roleArn,
+        roleArn: awsRoleIdentifier,
         subscriptionId,
         projectId,
       }),
-    [connector.connector_id, projectId, roleArn, subscriptionId],
+    [awsRoleIdentifier, connector.connector_id, projectId, subscriptionId],
   );
 
   const canComplete =
     Boolean(session?.session_id) &&
     !complete.isPending &&
     validationError === null;
-  const deployCommand = useMemo(() => {
+  const awsCloudFormationCommand = useMemo(() => {
     if (!session) return null;
     if (connector.connector_id === "aws-posture") {
       return awsDeployCommand(session, awsRoleName);
     }
-    return session.deploy_command ?? null;
+    return null;
   }, [awsRoleName, connector.connector_id, session]);
+  const awsTerraformDeployCommand = useMemo(() => {
+    if (!session || connector.connector_id !== "aws-posture") return null;
+    return awsTerraformCommand(session, awsRoleName);
+  }, [awsRoleName, connector.connector_id, session]);
+  const deployCommand = useMemo(() => {
+    if (!session || connector.connector_id === "aws-posture") return null;
+    return session.deploy_command ?? null;
+  }, [connector.connector_id, session]);
   const quickCreateUrl = useMemo(() => {
     if (!session || connector.connector_id !== "aws-posture") {
       return session?.quick_create_url ?? null;
     }
     return awsQuickCreateUrl(session, awsRoleName);
   }, [awsRoleName, connector.connector_id, session]);
-  const effectiveAwsDeployMode =
-    awsDeployMode === "console" && !quickCreateUrl && deployCommand
-      ? "cli"
-      : awsDeployMode;
+  const awsDeployMethod = (
+    value: AwsDeployMode,
+    fallbackLabel: string,
+    fallbackDetail: string,
+  ) => {
+    const method = session?.deployment_methods?.find(
+      (candidate) => candidate.id === value,
+    );
+    return {
+      label: method?.label ?? fallbackLabel,
+      detail: method?.detail ?? fallbackDetail,
+    };
+  };
+  const awsDeployOptions: AwsDeployOption[] =
+    connector.connector_id === "aws-posture"
+      ? [
+          quickCreateUrl
+            ? {
+                value: "console" as const,
+                ...awsDeployMethod(
+                  "console",
+                  "AWS Console",
+                  "Guided CloudFormation",
+                ),
+              }
+            : null,
+          awsCloudFormationCommand
+            ? {
+                value: "cloudformation" as const,
+                ...awsDeployMethod(
+                  "cloudformation",
+                  "CloudFormation CLI",
+                  "AWS CLI deploy",
+                ),
+              }
+            : null,
+          awsTerraformDeployCommand
+            ? {
+                value: "terraform" as const,
+                ...awsDeployMethod(
+                  "terraform",
+                  "Terraform CLI",
+                  "IaC workflow",
+                ),
+              }
+            : null,
+        ].filter((item): item is NonNullable<typeof item> => item !== null)
+      : [];
+  const effectiveAwsDeployMode = awsDeployOptions.some(
+    (option) => option.value === awsDeployMode,
+  )
+    ? awsDeployMode
+    : (awsDeployOptions[0]?.value ?? awsDeployMode);
+  const activeAwsDeployCommand =
+    effectiveAwsDeployMode === "terraform"
+      ? awsTerraformDeployCommand
+      : effectiveAwsDeployMode === "cloudformation"
+        ? awsCloudFormationCommand
+        : null;
 
   const begin = async () => {
     setFieldError(null);
     setTouched(false);
     setAwsRoleName(AWS_ROLE_NAME);
     setAwsDeployMode("console");
+    setRoleArn("");
+    setCustomRoleArn("");
     try {
       const row = await start.mutateAsync({
         id: connector.connector_id,
@@ -214,7 +317,7 @@ export function CloudLinkPanel({
     if (!session?.session_id) return;
     setTouched(true);
     const error = cloudLinkFieldError(connector.connector_id, {
-      roleArn,
+      roleArn: awsRoleIdentifier,
       subscriptionId,
       projectId,
     });
@@ -229,7 +332,9 @@ export function CloudLinkPanel({
         id: connector.connector_id,
         sessionId: session.session_id,
         roleArn:
-          connector.connector_id === "aws-posture" ? roleArn.trim() : undefined,
+          connector.connector_id === "aws-posture"
+            ? awsRoleArnFromIdentifier(awsRoleIdentifier, awsRoleName)
+            : undefined,
         subscriptionId:
           connector.connector_id === "azure-posture"
             ? sanitizeAzureSubscriptionId(subscriptionId)
@@ -250,10 +355,10 @@ export function CloudLinkPanel({
     }
   };
 
-  const copyDeployCommand = async () => {
-    if (!deployCommand) return;
+  const copyDeployCommand = async (command: string | null | undefined) => {
+    if (!command) return;
     try {
-      await navigator.clipboard.writeText(deployCommand);
+      await navigator.clipboard.writeText(command);
       onToast("Deploy command copied");
     } catch {
       onToast("Could not copy deploy command");
@@ -265,23 +370,20 @@ export function CloudLinkPanel({
 
   if (!supportsCloudLink(connector.connector_id)) return null;
 
+  const isAwsPosture = connector.connector_id === "aws-posture";
+  const headerLabel = isAwsPosture
+    ? "Read-only AWS role"
+    : "Cloud account linking";
+
   return (
-    <section className="rounded-lg border border-brand/30 bg-brand/5 p-3">
-      <div className="flex flex-wrap items-center gap-2">
+    <section className="rounded-lg border border-brand/30 bg-brand/5 p-2.5">
+      <div className="flex flex-wrap items-center gap-1.5">
         <Link2 className="h-4 w-4 text-brand" />
         <div className="text-xs font-black uppercase tracking-wide text-ink">
-          Cloud account linking
+          {headerLabel}
         </div>
-        <Badge tone="info">Guided setup</Badge>
         <Badge tone="ready">Read-only access</Badge>
         <Badge>No long-lived keys</Badge>
-        <Badge
-          tone={connector.connector_id === "aws-posture" ? "ready" : "default"}
-        >
-          {connector.connector_id === "aws-posture"
-            ? "Console or CLI"
-            : "Provider template path"}
-        </Badge>
       </div>
       <p className="mt-1.5 text-xs leading-5 text-muted">
         {linkDescription(connector.connector_id)}
@@ -310,100 +412,64 @@ export function CloudLinkPanel({
               enter your account identifier below.
             </p>
           )}
-          {session.external_id && (
-            <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
-              External ID
-              <code className="break-all rounded-lg border border-line bg-white px-2 py-1.5 text-xs text-ink">
-                {session.external_id}
-              </code>
-            </label>
-          )}
           {connector.connector_id === "aws-posture" &&
-            (quickCreateUrl || deployCommand) && (
+            awsDeployOptions.length > 0 && (
               <div className="grid gap-2">
-                <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+                <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
                   <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
-                    Role name
-                    <input
-                      value={awsRoleName}
+                    Deployment method
+                    <select
+                      value={effectiveAwsDeployMode}
                       onChange={(event) =>
-                        setAwsRoleName(sanitizeAwsRoleName(event.target.value))
+                        setAwsDeployMode(event.target.value as AwsDeployMode)
                       }
-                      placeholder={AWS_ROLE_NAME}
                       className="rounded-lg border border-line bg-white px-3 py-2 text-sm normal-case tracking-normal text-ink focus:outline-none focus:ring-1 focus:ring-brand"
-                    />
+                    >
+                      {awsDeployOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label} - {option.detail}
+                        </option>
+                      ))}
+                    </select>
                   </label>
-                  <div className="self-end rounded-lg border border-line bg-white px-3 py-2 text-xs font-black uppercase tracking-wide text-muted">
-                    <span className="block text-[10px]">Grant set</span>
-                    <span className="text-ink">IAM posture read-only</span>
-                  </div>
-                </div>
-                <div
-                  aria-label="AWS deployment method"
-                  className="grid grid-cols-2 rounded-lg border border-line bg-white p-1"
-                  role="tablist"
-                >
-                  {quickCreateUrl && (
-                    <button
+                  {effectiveAwsDeployMode === "console" && quickCreateUrl && (
+                    <Button
                       type="button"
-                      role="tab"
-                      aria-selected={effectiveAwsDeployMode === "console"}
-                      className={`rounded-md px-2 py-1.5 text-xs font-black uppercase tracking-wide ${
-                        effectiveAwsDeployMode === "console"
-                          ? "bg-brand text-white"
-                          : "text-muted hover:bg-slate-50"
-                      }`}
-                      onClick={() => setAwsDeployMode("console")}
+                      variant="default"
+                      size="sm"
+                      className="sm:mb-0"
+                      onClick={() =>
+                        window.open(
+                          quickCreateUrl,
+                          "_blank",
+                          "noopener,noreferrer",
+                        )
+                      }
                     >
-                      AWS Console
-                    </button>
-                  )}
-                  {deployCommand && (
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected={effectiveAwsDeployMode === "cli"}
-                      className={`rounded-md px-2 py-1.5 text-xs font-black uppercase tracking-wide ${
-                        effectiveAwsDeployMode === "cli"
-                          ? "bg-brand text-white"
-                          : "text-muted hover:bg-slate-50"
-                      }`}
-                      onClick={() => setAwsDeployMode("cli")}
-                    >
-                      CLI script
-                    </button>
+                      <ExternalLink className="h-4 w-4" />
+                      Open AWS guided deploy
+                    </Button>
                   )}
                 </div>
-                {effectiveAwsDeployMode === "console" && quickCreateUrl && (
-                  <Button
-                    type="button"
-                    variant="default"
-                    size="sm"
-                    onClick={() =>
-                      window.open(
-                        quickCreateUrl,
-                        "_blank",
-                        "noopener,noreferrer",
-                      )
-                    }
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                    Open AWS guided deploy
-                  </Button>
-                )}
-                {effectiveAwsDeployMode === "cli" && deployCommand && (
+                {activeAwsDeployCommand && (
                   <div className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
-                    <div>AWS CLI deploy command</div>
+                    <div>
+                      {effectiveAwsDeployMode === "terraform"
+                        ? "Terraform deploy command"
+                        : "AWS CLI deploy command"}
+                    </div>
                     <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
-                      <code className="min-w-0 max-h-44 overflow-auto whitespace-pre-wrap break-all rounded-lg border border-line bg-white px-2 py-1.5 text-xs font-medium normal-case tracking-normal text-ink">
-                        {deployCommand}
+                      <code className="min-w-0 max-h-36 overflow-auto whitespace-pre-wrap break-all rounded-lg border border-line bg-white px-2 py-1.5 text-[11px] font-medium normal-case tracking-normal text-ink">
+                        {activeAwsDeployCommand}
                       </code>
                       <Button
                         type="button"
                         variant="default"
                         size="sm"
                         className="shrink-0 self-start"
-                        onClick={copyDeployCommand}
+                        onClick={() =>
+                          copyDeployCommand(activeAwsDeployCommand)
+                        }
                       >
                         <Copy className="h-4 w-4" />
                         Copy deploy command
@@ -459,7 +525,7 @@ export function CloudLinkPanel({
                   variant="default"
                   size="sm"
                   className="shrink-0 self-start"
-                  onClick={copyDeployCommand}
+                  onClick={() => copyDeployCommand(deployCommand)}
                 >
                   <Copy className="h-4 w-4" />
                   Copy deploy command
@@ -488,7 +554,7 @@ export function CloudLinkPanel({
             )}
           {connector.connector_id === "aws-posture" && (
             <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
-              AWS role ARN
+              AWS account ID
               <input
                 value={roleArn}
                 onChange={(e) => {
@@ -497,14 +563,97 @@ export function CloudLinkPanel({
                 }}
                 onBlur={() => {
                   setTouched(true);
-                  setFieldError(awsRoleArnError(roleArn));
+                  setFieldError(awsRoleIdentifierError(awsRoleIdentifier));
                 }}
                 autoComplete="off"
                 aria-invalid={Boolean(showFieldError)}
-                placeholder="arn:aws:iam::123456789012:role/TrustOpsPostureReadOnlyRole"
+                placeholder="030225640638"
                 className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
               />
+              <span className="font-medium normal-case tracking-normal text-muted">
+                Use the account ID when you keep the default role name. For a
+                custom name, paste the Role ARN in Advanced options.
+              </span>
             </label>
+          )}
+          {connector.connector_id === "aws-posture" && (
+            <details className="text-xs text-muted">
+              <summary className="cursor-pointer list-none font-black uppercase tracking-wide text-ink">
+                Advanced options
+              </summary>
+              <div className="mt-2 grid gap-2 border-t border-line pt-2">
+                <div className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
+                  Scale with StackSets or Terraform
+                  <span className="font-medium normal-case tracking-normal text-muted">
+                    {session.scale_strategy?.summary ||
+                      "Use CloudFormation StackSets or Terraform workspaces across AWS accounts."}{" "}
+                    {session.scale_strategy?.follow_up ||
+                      "Bulk account import is the follow-up surface after rollout."}
+                  </span>
+                </div>
+                <div className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
+                  Read-only IAM posture
+                  <span
+                    aria-label="IAM posture read-only"
+                    className="font-semibold normal-case tracking-normal text-ink"
+                    title="IAM posture read-only"
+                  >
+                    iam:ListUsers, iam:ListMFADevices, iam:ListAccessKeys,
+                    iam:GetLoginProfile, iam:GetAccountPasswordPolicy,
+                    iam:GetAccountSummary
+                  </span>
+                </div>
+                {(session.external_id || session.trusted_principal) && (
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {session.external_id && (
+                      <label className="grid gap-1 font-black uppercase tracking-wide text-muted">
+                        External ID
+                        <code className="break-all rounded-lg border border-line bg-surface px-2 py-1.5 font-medium normal-case tracking-normal text-ink">
+                          {session.external_id}
+                        </code>
+                      </label>
+                    )}
+                    {session.trusted_principal && (
+                      <label className="grid gap-1 font-black uppercase tracking-wide text-muted">
+                        Trusted principal
+                        <code className="break-all rounded-lg border border-line bg-surface px-2 py-1.5 font-medium normal-case tracking-normal text-ink">
+                          {session.trusted_principal}
+                        </code>
+                      </label>
+                    )}
+                  </div>
+                )}
+                <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
+                  Role name
+                  <input
+                    value={awsRoleName}
+                    onChange={(event) =>
+                      setAwsRoleName(sanitizeAwsRoleName(event.target.value))
+                    }
+                    placeholder={AWS_ROLE_NAME}
+                    className="rounded-lg border border-line bg-white px-3 py-2 text-sm normal-case tracking-normal text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                  />
+                </label>
+                <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
+                  Use a custom Role ARN
+                  <input
+                    value={customRoleArn}
+                    onChange={(event) => {
+                      setCustomRoleArn(event.target.value);
+                      setFieldError(null);
+                    }}
+                    onBlur={() => {
+                      setTouched(true);
+                      setFieldError(awsRoleIdentifierError(awsRoleIdentifier));
+                    }}
+                    autoComplete="off"
+                    aria-invalid={Boolean(showFieldError)}
+                    placeholder="arn:aws:iam::123456789012:role/CustomTrustOpsRole"
+                    className="rounded-lg border border-line bg-white px-3 py-2 text-sm normal-case tracking-normal text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                  />
+                </label>
+              </div>
+            </details>
           )}
           {connector.connector_id === "azure-posture" && (
             <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
@@ -565,7 +714,9 @@ export function CloudLinkPanel({
             ) : (
               <Link2 className="h-4 w-4" />
             )}{" "}
-            Save role connection
+            {connector.connector_id === "aws-posture"
+              ? "Save AWS account"
+              : "Save cloud connection"}
           </Button>
         </div>
       )}
