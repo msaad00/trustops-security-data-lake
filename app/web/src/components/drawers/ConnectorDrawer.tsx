@@ -61,7 +61,7 @@ interface SetupStep {
   tone: "ready" | "attention" | "default";
 }
 
-const CONNECTED_TABS = ["Overview", "Details", "Runs"] as const;
+const CONNECTED_TABS = ["Overview", "Config", "Runs"] as const;
 type ConnectedTab = (typeof CONNECTED_TABS)[number];
 
 const isRunnableConnector = (connector: ConnectorView) =>
@@ -87,7 +87,34 @@ function probeToastMessage(run: ConnectorRun, isEnabled: boolean): string {
   if (run.result === "skipped") {
     return `Contract validated: ${run.error ?? "probe skipped"}`;
   }
-  return `Probe error: ${run.error ?? "see connector runs"}`;
+  return `Probe error: ${runErrorDetail(run)}`;
+}
+
+function runErrorDetail(run: ConnectorRun, connector?: ConnectorView): string {
+  const error = run.error?.trim();
+  if (!error) return "see connector runs";
+  const isAws =
+    connector?.connector_id === "aws-posture" || error.includes("AssumeRole");
+  if (!isAws) return error;
+  if (error === "ClientError") {
+    return "AWS STS probe failed. Check that the TrustOps runtime can reach AWS, has AWS credentials, and the deployed role trusts this runtime principal with the current External ID.";
+  }
+  if (error.includes("AccessDenied") || error.includes("not authorized")) {
+    return `${error} Check the role trust policy, TrustedPrincipalArn, External ID, and role ARN/account ID.`;
+  }
+  if (
+    error.includes("EndpointConnectionError") ||
+    error.includes("Could not connect")
+  ) {
+    return `${error} Check that the TrustOps runtime has network access to AWS STS.`;
+  }
+  if (
+    error.includes("NoCredentialsError") ||
+    error.includes("PartialCredentialsError")
+  ) {
+    return `${error} Configure AWS credentials for the TrustOps runtime principal before probing.`;
+  }
+  return error;
 }
 
 function validateStepDetail(
@@ -330,6 +357,10 @@ export function ConnectorDrawer({
   const [discoveryRun, setDiscoveryRun] = useState<ConnectorRun | null>(null);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
   const [connectedTab, setConnectedTab] = useState<ConnectedTab>("Overview");
+  const [editCloudSetup, setEditCloudSetup] = useState(false);
+  const [savedOptionsBaseline, setSavedOptionsBaseline] = useState<
+    Record<string, string>
+  >({});
 
   const markTouched = (name: string) => {
     setTouchedFields((prev) => new Set(prev).add(name));
@@ -350,17 +381,18 @@ export function ConnectorDrawer({
     setCreds({});
     setTouchedFields(new Set());
     setConnectedTab("Overview");
+    setEditCloudSetup(false);
   }, [connector?.connector_id]);
 
   useEffect(() => {
     const configured = connector?.configured_options ?? {};
-    setOptions(
-      Object.fromEntries(
-        Object.entries(configured)
-          .filter(([key]) => key !== "raw")
-          .map(([key, value]) => [key, String(value ?? "")]),
-      ),
+    const baseline = Object.fromEntries(
+      Object.entries(configured)
+        .filter(([key]) => key !== "raw")
+        .map(([key, value]) => [key, String(value ?? "")]),
     );
+    setOptions(baseline);
+    setSavedOptionsBaseline(baseline);
   }, [connector?.configured_options, connector?.connector_id]);
 
   useEffect(() => {
@@ -421,12 +453,22 @@ export function ConnectorDrawer({
     (value) => value.trim() !== "",
   );
   const configuredOptions = connector.configured_options ?? {};
+  const savedOptions =
+    Object.keys(savedOptionsBaseline).length > 0
+      ? savedOptionsBaseline
+      : Object.fromEntries(
+          Object.entries(configuredOptions)
+            .filter(([key]) => key !== "raw")
+            .map(([key, value]) => [key, String(value ?? "")]),
+        );
   const hasUnsavedOptionChanges = Object.entries(stagedOptions).some(
     ([key, value]) => {
-      const configured = String(configuredOptions[key] ?? "").trim();
+      const configured = String(savedOptions[key] ?? "").trim();
       return value.trim() !== configured;
     },
   );
+  const hasPendingConfigChanges =
+    hasUnsavedCredentialChanges || hasUnsavedOptionChanges;
   const serverProbeValid =
     connector.last_probe?.result === "ok" &&
     hasStagedServerCredentials &&
@@ -458,7 +500,8 @@ export function ConnectorDrawer({
     connector.last_probe?.result === "ok" ||
     connector.last_probe?.result === "skipped" ||
     accessValidated;
-  const accessReady = isEnabled ? latestProbeOk : probeGateSatisfied;
+  const accessReady =
+    isEnabled && !hasPendingConfigChanges ? latestProbeOk : probeGateSatisfied;
   const latestSyncOk =
     connector.last_successful_sync?.result === "ok" ||
     connector.last_sync?.result === "ok";
@@ -473,6 +516,10 @@ export function ConnectorDrawer({
   const showManagedCloudConfiguration =
     !usesManagedCloudLink ||
     (hasStagedServerCredentials && !showConnectedCloudSummary);
+  const showCloudLinkPanel =
+    usesManagedCloudLink &&
+    ((!isEnabled && (!hasStagedServerCredentials || editCloudSetup)) ||
+      (isEnabled && editCloudSetup));
   const compactCloudDetails = [...scopeFields, ...schedulerFields].map(
     (field) => ({
       label: field.label,
@@ -556,6 +603,10 @@ export function ConnectorDrawer({
       onToast("Test connection before enabling this connector.");
       return;
     }
+    if (isEnabled && hasPendingConfigChanges && !probeGateSatisfied) {
+      onToast("Test connection before saving these changes.");
+      return;
+    }
     const payload: ConfigurePayload = {
       state: "enabled",
       actor: "console",
@@ -564,7 +615,19 @@ export function ConnectorDrawer({
     };
     try {
       await configure.mutateAsync({ id: connector.connector_id, payload });
-      onToast(`${connector.name} enabled — credentials redacted server-side.`);
+      setCreds({});
+      setSavedOptionsBaseline(stagedOptions);
+      setAccessValidated(false);
+      setEditCloudSetup(false);
+      if (isEnabled) {
+        onToast(
+          `${connector.name} changes saved — credentials redacted server-side.`,
+        );
+      } else {
+        onToast(
+          `${connector.name} enabled — credentials redacted server-side.`,
+        );
+      }
     } catch (err) {
       onToast(`Configure failed: ${(err as Error).message}`);
     }
@@ -585,7 +648,7 @@ export function ConnectorDrawer({
   const runProbe = async () => {
     try {
       const payload: ProbePayload = { actor: "console" };
-      if (!isEnabled) {
+      if (!isEnabled || hasPendingConfigChanges) {
         payload.credentials = stagedCredentials;
         payload.options = stagedOptions;
       }
@@ -700,14 +763,15 @@ export function ConnectorDrawer({
                   )}{" "}
                   Test connection
                 </Button>
-              ) : !isEnabled ? (
+              ) : !isEnabled || hasPendingConfigChanges ? (
                 <Button
                   variant="primary"
                   onClick={enable}
                   disabled={
                     configure.isPending ||
                     !canEnable ||
-                    (!isEnabled && !probeGateSatisfied)
+                    ((!isEnabled || hasPendingConfigChanges) &&
+                      !probeGateSatisfied)
                   }
                 >
                   {configure.isPending ? (
@@ -715,7 +779,7 @@ export function ConnectorDrawer({
                   ) : (
                     <PlayCircle className="h-4 w-4" />
                   )}{" "}
-                  Enable connector
+                  {isEnabled ? "Save changes" : "Enable connector"}
                 </Button>
               ) : (
                 <Button
@@ -767,21 +831,18 @@ export function ConnectorDrawer({
         )}
 
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]">
-          {!auditor &&
-            connector &&
-            usesManagedCloudLink &&
-            !isEnabled &&
-            !hasStagedServerCredentials && (
-              <CloudLinkPanel
-                connector={connector}
-                linkSessionId={linkSessionId}
-                onLinked={(linked) => {
-                  setAccessValidated(false);
-                  setCreds((current) => ({ ...current, ...linked }));
-                }}
-                onToast={onToast}
-              />
-            )}
+          {!auditor && connector && showCloudLinkPanel && (
+            <CloudLinkPanel
+              connector={connector}
+              linkSessionId={linkSessionId}
+              onLinked={(linked) => {
+                setAccessValidated(false);
+                setCreds((current) => ({ ...current, ...linked }));
+                setEditCloudSetup(false);
+              }}
+              onToast={onToast}
+            />
+          )}
           <section
             className={`rounded-lg border border-line bg-surface p-3 ${usesManagedCloudLink && (hasStagedServerCredentials || showConnectedCloudSummary) ? "lg:col-span-2" : ""}`}
           >
@@ -915,33 +976,117 @@ export function ConnectorDrawer({
               </div>
             )}
 
-            {connectedTab === "Details" && (
-              <div className="mt-3 grid gap-3 lg:grid-cols-2">
-                <details className="rounded-xl border border-line bg-white p-3">
-                  <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-muted">
-                    Granted read scope
-                  </summary>
-                  <ul className="mt-3 grid gap-2 text-xs">
-                    {connector.minimum_permissions.map((perm) => (
-                      <li key={perm} className="flex items-start gap-2">
-                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
-                        <code className="text-ink">{perm}</code>
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-                <details className="rounded-xl border border-line bg-white p-3">
-                  <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-muted">
-                    Evidence output
-                  </summary>
+            {connectedTab === "Config" && (
+              <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.78fr)]">
+                <section className="rounded-xl border border-line bg-white p-3">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <div className="text-xs font-black uppercase tracking-wide text-muted">
+                        Authorization
+                      </div>
+                      <p className="mt-1 text-xs leading-5 text-muted">
+                        TrustOps stores the account role target and External ID.
+                        Every probe, sync, and scheduled run creates a fresh AWS
+                        STS assume-role session.
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="default"
+                      size="sm"
+                      onClick={() => setEditCloudSetup((value) => !value)}
+                    >
+                      {editCloudSetup ? "Hide setup" : "Edit setup"}
+                    </Button>
+                  </div>
+                  {hasPendingConfigChanges && (
+                    <div className="mt-3 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-950">
+                      New setup staged. Test connection, then save changes.
+                    </div>
+                  )}
+                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                    <div className="rounded-lg border border-line bg-panel p-2">
+                      <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+                        Current connection
+                      </div>
+                      <div className="mt-1 text-sm font-black text-ink">
+                        One active AWS account role
+                      </div>
+                    </div>
+                    <div className="rounded-lg border border-line bg-panel p-2">
+                      <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+                        Scale path
+                      </div>
+                      <div className="mt-1 text-sm font-black text-ink">
+                        StackSets or Terraform
+                      </div>
+                    </div>
+                  </div>
                   <p className="mt-3 text-xs leading-5 text-muted">
-                    Sync lands raw connector evidence. Eval produces gold
-                    controls, pass/fail metrics, and proof exports.
+                    For many accounts, deploy the same read-only role across the
+                    AWS organization, then import each account ID or Role ARN.
+                    Bulk account import is the next backend surface; this drawer
+                    currently controls the active connector target.
                   </p>
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {connector.evidence_types.map((t) => (
-                      <Badge key={t}>{t}</Badge>
+                </section>
+
+                <section className="rounded-xl border border-line bg-white p-3">
+                  <div className="text-xs font-black uppercase tracking-wide text-muted">
+                    Schedule and scope
+                  </div>
+                  <div className="mt-3 grid gap-2">
+                    {[...scopeFields, ...schedulerFields].map((field) => (
+                      <label
+                        key={field.name}
+                        className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted"
+                      >
+                        {field.label}
+                        <input
+                          value={options[field.name] ?? ""}
+                          onChange={(event) => {
+                            setAccessValidated(false);
+                            setOptions((current) => ({
+                              ...current,
+                              [field.name]: event.target.value,
+                            }));
+                          }}
+                          placeholder={field.placeholder}
+                          className="rounded-lg border border-line bg-white px-3 py-2 text-sm normal-case tracking-normal text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                        />
+                        {field.hint && (
+                          <span className="font-normal normal-case tracking-normal text-muted">
+                            {field.hint}
+                          </span>
+                        )}
+                      </label>
                     ))}
+                  </div>
+                </section>
+
+                <details className="rounded-xl border border-line bg-white p-3 lg:col-span-2">
+                  <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-muted">
+                    Granted read scope and evidence output
+                  </summary>
+                  <div className="mt-3 grid gap-3 lg:grid-cols-2">
+                    <ul className="grid gap-2 text-xs">
+                      {connector.minimum_permissions.map((perm) => (
+                        <li key={perm} className="flex items-start gap-2">
+                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                          <code className="text-ink">{perm}</code>
+                        </li>
+                      ))}
+                    </ul>
+                    <div>
+                      <p className="text-xs leading-5 text-muted">
+                        Sync lands raw connector evidence. Eval produces gold
+                        controls, pass/fail metrics, and proof exports.
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {connector.evidence_types.map((t) => (
+                          <Badge key={t}>{t}</Badge>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </details>
               </div>
@@ -1378,24 +1523,37 @@ export function ConnectorDrawer({
                   <div className="mt-2 flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-900">
                     <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     <div>
-                      <b>Latest run needs attention:</b> {latestError.error}
+                      <b>Latest run needs attention:</b>{" "}
+                      {runErrorDetail(latestError, connector)}
                     </div>
                   </div>
                 )}
                 {connector.credential_fingerprint ? (
-                  <div className="mt-2 text-xs text-muted">
-                    Credential fingerprint:{" "}
-                    <code className="text-ink">
-                      {connector.credential_fingerprint}
-                    </code>
-                    {connector.configured_at && (
-                      <> · configured {connector.configured_at}</>
-                    )}
-                    {!isEnabled && (
-                      <span className="block mt-1 text-amber-800">
-                        Staged but not enabled — run Test connection, then
-                        Enable.
-                      </span>
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
+                    <div>
+                      Credential fingerprint:{" "}
+                      <code className="text-ink">
+                        {connector.credential_fingerprint}
+                      </code>
+                      {connector.configured_at && (
+                        <> · configured {connector.configured_at}</>
+                      )}
+                      {!isEnabled && (
+                        <span className="block mt-1 text-amber-800">
+                          Staged but not enabled — run Test connection, then
+                          Enable.
+                        </span>
+                      )}
+                    </div>
+                    {usesManagedCloudLink && !isEnabled && (
+                      <Button
+                        type="button"
+                        variant="default"
+                        size="sm"
+                        onClick={() => setEditCloudSetup((value) => !value)}
+                      >
+                        {editCloudSetup ? "Hide setup" : "Edit setup"}
+                      </Button>
                     )}
                   </div>
                 ) : (
@@ -1447,7 +1605,9 @@ export function ConnectorDrawer({
                       )}
                     </div>
                     {r.error && (
-                      <div className="mt-1 text-rose-700">{r.error}</div>
+                      <div className="mt-1 text-rose-700">
+                        {runErrorDetail(r, connector)}
+                      </div>
                     )}
                   </div>
                 ))}

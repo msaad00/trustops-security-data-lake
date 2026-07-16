@@ -919,16 +919,32 @@ def has_adapter(connector_id: str) -> bool:
     return connector_id in _implemented_adapters()
 
 
-def _safe_run_error(exc: Exception) -> str:
+def _safe_run_error(exc: Exception, *, include_provider_message: bool = False) -> str:
     """Bounded, safe error text for a run record surfaced at the HTTP boundary.
 
     A probe run record is returned to the caller over the API, and a raw
-    exception string can carry connection detail or internal paths. Record only
-    the exception class name — a code identifier, not runtime data — so the
-    operator still sees the failure category without the engine leaking
-    internals. (The configure step reports missing fields separately and safely.)
+    exception string can carry connection detail or internal paths. By default
+    record only the exception class name. Cloud SDK errors can include a short,
+    structured provider message so operators can fix trust, network, or
+    credential issues without seeing a traceback.
     """
-    return type(exc).__name__
+    name = type(exc).__name__
+    if not include_provider_message:
+        return name
+    response = getattr(exc, "response", None)
+    if isinstance(response, dict):
+        error = response.get("Error")
+        if isinstance(error, dict):
+            code = str(error.get("Code") or "").strip()
+            message = str(error.get("Message") or "").strip()
+            detail = ": ".join(part for part in (code, message) if part)
+            if detail:
+                return f"{name}: {detail[:240]}"
+    if name in {"EndpointConnectionError", "NoCredentialsError", "PartialCredentialsError", "NoRegionError"}:
+        message = " ".join(str(exc).split())
+        if message:
+            return f"{name}: {message[:240]}"
+    return name
 
 
 def run_probe(
@@ -1030,7 +1046,7 @@ def run_probe(
                 kind="probe",
                 result="error",
                 actor=actor,
-                error=_safe_run_error(exc),
+                error=_safe_run_error(exc, include_provider_message=True),
                 access_fingerprint=staged_access_fingerprint,
             )
         return append_run_event(
