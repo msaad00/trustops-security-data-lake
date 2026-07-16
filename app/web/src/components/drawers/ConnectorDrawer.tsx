@@ -235,9 +235,11 @@ function SnowflakeSetupHint({
 function LatestSyncProof({
   connector,
   runnable,
+  compact = false,
 }: {
   connector: ConnectorView;
   runnable: boolean;
+  compact?: boolean;
 }) {
   const sync = connector.last_sync;
   const enabled = connector.state === "enabled";
@@ -271,7 +273,9 @@ function LatestSyncProof({
           : "Test access, enable the connector, then run the first sync.";
 
   return (
-    <section className="rounded-xl border border-line bg-white p-3">
+    <section
+      className={`rounded-xl border border-line bg-white ${compact ? "p-2.5" : "p-3"}`}
+    >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -280,8 +284,18 @@ function LatestSyncProof({
             </span>
             <Badge tone={tone}>{sync?.result ?? connector.state}</Badge>
           </div>
-          <div className="mt-2 text-base font-black text-ink">{title}</div>
-          <p className="mt-1 max-w-2xl text-xs leading-5 text-muted">
+          <div
+            className={
+              compact
+                ? "mt-1 text-sm font-black text-ink"
+                : "mt-2 text-base font-black text-ink"
+            }
+          >
+            {title}
+          </div>
+          <p
+            className={`mt-1 max-w-2xl text-xs text-muted ${compact ? "leading-4" : "leading-5"}`}
+          >
             {detail}
           </p>
           {failed && runnable ? (
@@ -306,34 +320,59 @@ function LatestSyncProof({
           ) : null}
         </div>
       </div>
-      <div className="mt-3 grid gap-2 sm:grid-cols-3">
-        <div className="rounded-lg border border-line bg-panel p-2">
-          <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-            Evidence
+      {compact ? (
+        <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
+          {[
+            ["Evidence", sync?.evidence_count ?? "—"],
+            ["Last run", formatWhen(sync?.occurred_at)],
+            [
+              "Duration",
+              sync?.duration_ms !== null && sync?.duration_ms !== undefined
+                ? `${sync.duration_ms} ms`
+                : "—",
+            ],
+          ].map(([label, value]) => (
+            <div
+              key={label}
+              className="rounded-full border border-line bg-panel px-2.5 py-1"
+            >
+              <span className="font-black uppercase tracking-wide text-muted">
+                {label}
+              </span>{" "}
+              <span className="font-black text-ink">{value}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="mt-3 grid gap-2 sm:grid-cols-3">
+          <div className="rounded-lg border border-line bg-panel p-2">
+            <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+              Evidence
+            </div>
+            <div className="mt-1 text-sm font-black text-ink">
+              {sync?.evidence_count ?? "—"}
+            </div>
           </div>
-          <div className="mt-1 text-sm font-black text-ink">
-            {sync?.evidence_count ?? "—"}
+          <div className="rounded-lg border border-line bg-panel p-2">
+            <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+              Last run
+            </div>
+            <div className="mt-1 text-sm font-black text-ink">
+              {formatWhen(sync?.occurred_at)}
+            </div>
+          </div>
+          <div className="rounded-lg border border-line bg-panel p-2">
+            <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+              Duration
+            </div>
+            <div className="mt-1 text-sm font-black text-ink">
+              {sync?.duration_ms !== null && sync?.duration_ms !== undefined
+                ? `${sync.duration_ms} ms`
+                : "—"}
+            </div>
           </div>
         </div>
-        <div className="rounded-lg border border-line bg-panel p-2">
-          <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-            Last run
-          </div>
-          <div className="mt-1 text-sm font-black text-ink">
-            {formatWhen(sync?.occurred_at)}
-          </div>
-        </div>
-        <div className="rounded-lg border border-line bg-panel p-2">
-          <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-            Duration
-          </div>
-          <div className="mt-1 text-sm font-black text-ink">
-            {sync?.duration_ms !== null && sync?.duration_ms !== undefined
-              ? `${sync.duration_ms} ms`
-              : "—"}
-          </div>
-        </div>
-      </div>
+      )}
     </section>
   );
 }
@@ -520,6 +559,8 @@ export function ConnectorDrawer({
     usesManagedCloudLink &&
     ((!isEnabled && (!hasStagedServerCredentials || editCloudSetup)) ||
       (isEnabled && editCloudSetup));
+  const showInlineCloudSetup =
+    showConnectedCloudSummary && connectedTab === "Config" && editCloudSetup;
   const compactCloudDetails = [...scopeFields, ...schedulerFields].map(
     (field) => ({
       label: field.label,
@@ -831,18 +872,21 @@ export function ConnectorDrawer({
         )}
 
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]">
-          {!auditor && connector && showCloudLinkPanel && (
-            <CloudLinkPanel
-              connector={connector}
-              linkSessionId={linkSessionId}
-              onLinked={(linked) => {
-                setAccessValidated(false);
-                setCreds((current) => ({ ...current, ...linked }));
-                setEditCloudSetup(false);
-              }}
-              onToast={onToast}
-            />
-          )}
+          {!auditor &&
+            connector &&
+            showCloudLinkPanel &&
+            !showInlineCloudSetup && (
+              <CloudLinkPanel
+                connector={connector}
+                linkSessionId={linkSessionId}
+                onLinked={(linked) => {
+                  setAccessValidated(false);
+                  setCreds((current) => ({ ...current, ...linked }));
+                  setEditCloudSetup(false);
+                }}
+                onToast={onToast}
+              />
+            )}
           <section
             className={`rounded-lg border border-line bg-surface p-3 ${usesManagedCloudLink && (hasStagedServerCredentials || showConnectedCloudSummary) ? "lg:col-span-2" : ""}`}
           >
@@ -940,29 +984,33 @@ export function ConnectorDrawer({
             </div>
 
             {connectedTab === "Overview" && (
-              <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]">
-                <LatestSyncProof connector={connector} runnable={isRunnable} />
-                <section className="rounded-xl border border-line bg-white p-3">
+              <div className="mt-3 grid items-start gap-2 2xl:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]">
+                <LatestSyncProof
+                  connector={connector}
+                  runnable={isRunnable}
+                  compact
+                />
+                <section className="rounded-xl border border-line bg-white p-2.5">
                   <div className="text-xs font-black uppercase tracking-wide text-muted">
                     Connection details
                   </div>
-                  <div className="mt-3 grid gap-2">
+                  <div className="mt-2 flex flex-wrap gap-1.5">
                     {compactCloudDetails.map((detail) => (
                       <div
                         key={detail.label}
-                        className="rounded-lg border border-line bg-panel p-2"
+                        className="rounded-full border border-line bg-panel px-2.5 py-1 text-xs"
                       >
-                        <div className="text-[10px] font-black uppercase tracking-wide text-muted">
+                        <span className="font-black uppercase tracking-wide text-muted">
                           {detail.label}
-                        </div>
-                        <div className="mt-1 truncate text-sm font-black text-ink">
+                        </span>{" "}
+                        <span className="font-black text-ink">
                           {detail.value}
-                        </div>
+                        </span>
                       </div>
                     ))}
                   </div>
                   {connector.credential_fingerprint ? (
-                    <div className="mt-3 text-xs text-muted">
+                    <div className="mt-2 text-xs leading-4 text-muted">
                       Credential fingerprint:{" "}
                       <code className="text-ink">
                         {connector.credential_fingerprint}
@@ -977,18 +1025,18 @@ export function ConnectorDrawer({
             )}
 
             {connectedTab === "Config" && (
-              <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.78fr)]">
-                <section className="rounded-xl border border-line bg-white p-3">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
+              <div className="mt-3 grid gap-2">
+                <section className="rounded-xl border border-line bg-white p-2.5">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="min-w-0">
                       <div className="text-xs font-black uppercase tracking-wide text-muted">
                         Authorization
                       </div>
-                      <p className="mt-1 text-xs leading-5 text-muted">
-                        TrustOps stores the account role target and External ID.
-                        Every probe, sync, and scheduled run creates a fresh AWS
-                        STS assume-role session.
-                      </p>
+                      <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                        <Badge tone="ready">Read-only role</Badge>
+                        <Badge>STS per run</Badge>
+                        <Badge>Organization rollout</Badge>
+                      </div>
                     </div>
                     <Button
                       type="button"
@@ -999,42 +1047,43 @@ export function ConnectorDrawer({
                       {editCloudSetup ? "Hide setup" : "Edit setup"}
                     </Button>
                   </div>
+                  <p className="mt-2 text-xs leading-5 text-muted">
+                    TrustOps stores the account role target and External ID.
+                    Every probe, sync, and scheduled run creates a fresh AWS STS
+                    assume-role session.
+                  </p>
                   {hasPendingConfigChanges && (
-                    <div className="mt-3 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-950">
+                    <div className="mt-2 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-xs font-semibold text-blue-950">
                       New setup staged. Test connection, then save changes.
                     </div>
                   )}
-                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                    <div className="rounded-lg border border-line bg-panel p-2">
-                      <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-                        Current connection
-                      </div>
-                      <div className="mt-1 text-sm font-black text-ink">
-                        One active AWS account role
-                      </div>
-                    </div>
-                    <div className="rounded-lg border border-line bg-panel p-2">
-                      <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-                        Scale path
-                      </div>
-                      <div className="mt-1 text-sm font-black text-ink">
-                        StackSets or Terraform
-                      </div>
-                    </div>
+                  <div className="mt-2 text-xs leading-5 text-muted">
+                    <b className="text-ink">Current:</b> one active AWS account
+                    role. <b className="text-ink">Scale:</b> deploy the same
+                    read-only role with StackSets or Terraform, then import each
+                    account ID or Role ARN.
                   </div>
-                  <p className="mt-3 text-xs leading-5 text-muted">
-                    For many accounts, deploy the same read-only role across the
-                    AWS organization, then import each account ID or Role ARN.
-                    Bulk account import is the next backend surface; this drawer
-                    currently controls the active connector target.
-                  </p>
+                  {showInlineCloudSetup && !auditor && (
+                    <div className="mt-2">
+                      <CloudLinkPanel
+                        connector={connector}
+                        linkSessionId={linkSessionId}
+                        onLinked={(linked) => {
+                          setAccessValidated(false);
+                          setCreds((current) => ({ ...current, ...linked }));
+                          setEditCloudSetup(false);
+                        }}
+                        onToast={onToast}
+                      />
+                    </div>
+                  )}
                 </section>
 
-                <section className="rounded-xl border border-line bg-white p-3">
+                <section className="rounded-xl border border-line bg-white p-2.5">
                   <div className="text-xs font-black uppercase tracking-wide text-muted">
                     Schedule and scope
                   </div>
-                  <div className="mt-3 grid gap-2">
+                  <div className="mt-2 grid gap-1.5">
                     {[...scopeFields, ...schedulerFields].map((field) => (
                       <label
                         key={field.name}
@@ -1051,13 +1100,8 @@ export function ConnectorDrawer({
                             }));
                           }}
                           placeholder={field.placeholder}
-                          className="rounded-lg border border-line bg-white px-3 py-2 text-sm normal-case tracking-normal text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                          className="rounded-lg border border-line bg-white px-2.5 py-1.5 text-sm normal-case tracking-normal text-ink focus:outline-none focus:ring-1 focus:ring-brand"
                         />
-                        {field.hint && (
-                          <span className="font-normal normal-case tracking-normal text-muted">
-                            {field.hint}
-                          </span>
-                        )}
                       </label>
                     ))}
                   </div>

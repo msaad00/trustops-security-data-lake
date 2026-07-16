@@ -102,6 +102,9 @@ def test_enabled_cloud_connector_can_edit_and_reverify_setup() -> None:
     assert "Test connection, then save changes." in drawer
     assert "Edit setup" in drawer
     assert "Add another account" not in drawer
+    assert 'connectedTab === "Config" && editCloudSetup' in drawer
+    assert "const showInlineCloudSetup =" in drawer
+    assert "!showInlineCloudSetup && (" in drawer
 
 
 def test_aws_drawer_has_one_linear_setup_flow_and_no_duplicate_sync_action() -> None:
@@ -120,12 +123,13 @@ def test_managed_cloud_drawer_uses_progressive_disclosure() -> None:
     drawer = DRAWER.read_text(encoding="utf-8")
 
     assert "const showManagedCloudConfiguration =" in drawer
-    assert "showCloudLinkPanel && (" in drawer
+    assert "showCloudLinkPanel &&" in drawer
+    assert "!showInlineCloudSetup && (" in drawer
     assert "<CloudLinkPanel" in drawer
     assert "(!usesManagedCloudLink || showManagedCloudConfiguration)" in drawer
     assert '<summary className="ui-label cursor-pointer list-none">' in drawer
     assert "Scope & automation" in drawer
-    assert 'className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]"' in drawer
+    assert 'className="mt-3 grid items-start gap-2 2xl:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]"' in drawer
     assert "runHistoryRows.length > 0 && (" in drawer
 
 
@@ -149,9 +153,17 @@ def test_connected_cloud_drawer_is_compact_and_non_redundant() -> None:
     assert '"Overview", "Config", "Runs"' in drawer
     assert '"Overview", "Details", "History"' not in drawer
     assert "connectedTab ===" in drawer
+    assert "compact?: boolean" in drawer
+    assert "<LatestSyncProof" in drawer
+    assert "runnable={isRunnable}" in drawer
+    assert "compact\n                />" in drawer
+    assert "rounded-full border border-line bg-panel px-2.5 py-1" in drawer
     assert "Connection details" in drawer
     assert "Schedule and scope" in drawer
     assert "Authorization" in drawer
+    assert "Read-only role" in drawer
+    assert "STS per run" in drawer
+    assert "Organization rollout" in drawer
     assert "Every probe, sync, and scheduled run creates a fresh AWS" in drawer
     assert "Connector run log" in drawer
     assert "Sync lands raw connector evidence." in drawer
