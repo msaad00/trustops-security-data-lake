@@ -77,10 +77,31 @@ def test_enabled_cloud_connector_hides_onboarding_and_duplicate_credentials() ->
     assert "const usesManagedCloudLink = supportsCloudLink(connector.connector_id);" in drawer
     assert "const showCloudLinkPanel =" in drawer
     assert "(!hasStagedServerCredentials || editCloudSetup)" in drawer
+    assert "(isEnabled && editCloudSetup)" in drawer
     assert "<CloudLinkPanel" in drawer
     assert "!usesManagedCloudLink && (" in drawer
     assert "Edit setup" in drawer
     assert "Hide setup" in drawer
+
+
+def test_enabled_cloud_connector_can_edit_and_reverify_setup() -> None:
+    drawer = DRAWER.read_text(encoding="utf-8")
+
+    assert "const hasPendingConfigChanges =" in drawer
+    assert "isEnabled && !hasPendingConfigChanges" in drawer
+    assert "? latestProbeOk" in drawer
+    assert "hasPendingConfigChanges" in drawer
+    assert ": probeGateSatisfied" in drawer
+    assert "payload.credentials = stagedCredentials;" in drawer
+    assert "hasPendingConfigChanges && !probeGateSatisfied" in drawer
+    assert "Test connection before saving these changes." in drawer
+    assert "setCreds({});" in drawer
+    assert "setSavedOptionsBaseline(stagedOptions);" in drawer
+    assert "Save changes" in drawer
+    assert "New setup staged" in drawer
+    assert "Test connection, then save changes." in drawer
+    assert "Edit setup" in drawer
+    assert "Add another account" not in drawer
 
 
 def test_aws_drawer_has_one_linear_setup_flow_and_no_duplicate_sync_action() -> None:
@@ -125,10 +146,13 @@ def test_connected_cloud_drawer_is_compact_and_non_redundant() -> None:
     assert "const showConnectedCloudSummary =" in drawer
     assert "usesManagedCloudLink && isEnabled;" in drawer
     assert 'aria-label="Connected connector view"' in drawer
-    assert '"Overview", "Details", "Runs"' in drawer
+    assert '"Overview", "Config", "Runs"' in drawer
     assert '"Overview", "Details", "History"' not in drawer
     assert "connectedTab ===" in drawer
     assert "Connection details" in drawer
+    assert "Schedule and scope" in drawer
+    assert "Authorization" in drawer
+    assert "Every probe, sync, and scheduled run creates a fresh AWS" in drawer
     assert "Connector run log" in drawer
     assert "Sync lands raw connector evidence." in drawer
     assert "Eval produces gold" in drawer
