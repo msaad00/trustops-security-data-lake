@@ -17,5 +17,15 @@ def test_connector_hub_uses_compact_interactive_filters_and_grid() -> None:
     assert "Needs attention" in page
     assert "Needs setup" in page
     assert "All categories" in page
-    assert 'label: "Prove"' in page
-    assert "raw collection evidence and evaluated gold reports" in page
+    assert "Evidence loop" not in page
+    assert 'label: "Prove"' not in page
+    assert "raw collection evidence and evaluated gold reports" not in page
+    assert "{totals.enabled}/" not in page
+    assert "{totals.total} enabled" not in page
+    assert "Registry overview" not in page
+    assert "ConnectorIngestionStrip" not in page
+    assert "ConnectorIntegrationCoverage" not in page
+    assert "ConnectorRegistryGapStrip" not in page
+    assert "ConnectorEcosystemStrip" not in page
+    assert "Integration breadth" not in page
+    assert "Live ingestion" not in page

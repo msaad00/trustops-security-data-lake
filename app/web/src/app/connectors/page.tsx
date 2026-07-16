@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Database, Plug, Search, ShieldCheck } from "lucide-react";
+import { Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,12 +15,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { ConnectorDrawer } from "@/components/drawers/ConnectorDrawer";
 import { ConnectorMark } from "@/components/connectors/ConnectorMark";
-import { ConnectorIngestionStrip } from "@/components/connectors/ConnectorIngestionStrip";
-import { ConnectorIntegrationCoverage } from "@/components/connectors/ConnectorIntegrationCoverage";
-import { ConnectorRegistryGapStrip } from "@/components/connectors/ConnectorRegistryGapStrip";
-import { ConnectorEcosystemStrip } from "@/components/connectors/ConnectorEcosystemStrip";
 import { OnboardingGuideBanner } from "@/components/onboarding/OnboardingGuideBanner";
-import { CollapsibleCard } from "@/components/ui/collapsible-card";
 import { connectorNotify } from "@/lib/connector-notify";
 import { CONNECT_FLOW } from "@/lib/console-copy";
 import { useConnectors } from "@/lib/api/hooks";
@@ -131,71 +126,6 @@ const toneForProbe = (result?: string) =>
         ? "attention"
         : "default";
 
-function ConnectorSetupRail() {
-  const steps = [
-    {
-      step: "01",
-      label: "Connect",
-      detail: "Service role, OAuth, or key pair.",
-      Icon: Plug,
-    },
-    {
-      step: "02",
-      label: "Read",
-      detail: "Collect only the granted scope.",
-      Icon: Search,
-    },
-    {
-      step: "03",
-      label: "Evaluate",
-      detail: "Run controls against normalized evidence.",
-      Icon: ShieldCheck,
-    },
-    {
-      step: "04",
-      label: "Prove",
-      detail: "Export raw collection evidence and evaluated gold reports.",
-      Icon: Database,
-    },
-  ] as const;
-
-  return (
-    <Card className="overflow-hidden">
-      <CardHeader className="p-3 pb-2">
-        <CardTitle className="text-sm">Evidence loop</CardTitle>
-        <CardDescription className="text-xs">
-          One read-only path for people, agents, and scheduled jobs.
-        </CardDescription>
-      </CardHeader>
-      <div className="grid gap-2 p-3 pt-0 sm:grid-cols-2 lg:grid-cols-4">
-        {steps.map(({ step, label, detail, Icon }) => (
-          <div
-            key={step}
-            className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-start gap-2 overflow-hidden rounded-lg border border-line bg-white p-2.5"
-          >
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-panel text-brand ring-1 ring-line">
-              <Icon className="h-3.5 w-3.5" />
-            </span>
-            <span className="min-w-0 overflow-hidden">
-              <span className="flex items-center gap-1.5">
-                <span className="shrink-0 text-[10px] font-black text-muted">
-                  {step}
-                </span>
-                <span className="truncate text-xs font-black text-ink">
-                  {label}
-                </span>
-              </span>
-              <span className="mt-0.5 line-clamp-2 text-[11px] leading-4 text-muted">
-                {detail}
-              </span>
-            </span>
-          </div>
-        ))}
-      </div>
-    </Card>
-  );
-}
-
 function ConnectorRow({
   connector,
   onSelect,
@@ -297,7 +227,6 @@ export default function ConnectorsPage() {
   );
 
   const totals = {
-    total: data.length,
     runnable: data.filter((c) => isRunnableConnector(c)).length,
     enabled: data.filter((c) => c.state === "enabled").length,
     unhealthy: data.filter((c) => {
@@ -341,34 +270,13 @@ export default function ConnectorsPage() {
         title="Connect evidence"
         description="Connect a read-only source. TrustOps evaluates it and writes a daily snapshot to your security data lake."
         actions={
-          <>
-            <span className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-black text-slate-600">
-              <Plug className="mr-1 inline h-3 w-3" /> {totals.enabled}/
-              {totals.total} enabled · {totals.runnable} runnable
+          totals.unhealthy > 0 ? (
+            <span className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-black text-rose-700">
+              {totals.unhealthy} need attention
             </span>
-            {totals.unhealthy > 0 && (
-              <span className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-black text-rose-700">
-                {totals.unhealthy} need attention
-              </span>
-            )}
-          </>
+          ) : null
         }
       />
-
-      <ConnectorSetupRail />
-
-      <CollapsibleCard
-        storageKey="connectors-overview"
-        title="Registry overview"
-        description="Ingestion health, coverage gaps, and ecosystem map."
-        defaultOpen={false}
-        contentClassName="grid gap-2 p-3 pt-0"
-      >
-        <ConnectorIngestionStrip />
-        <ConnectorIntegrationCoverage />
-        <ConnectorRegistryGapStrip onSelect={setSelected} />
-        <ConnectorEcosystemStrip compact />
-      </CollapsibleCard>
 
       <div className="grid min-w-0 gap-2 overflow-hidden rounded-lg border border-line bg-white p-2 shadow-card">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
