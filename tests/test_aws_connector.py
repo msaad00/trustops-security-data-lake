@@ -206,6 +206,38 @@ def test_aws_adapter_records_safe_error_when_live_probe_fails(tmp_path: Path, mo
     def denied_probe(*, credentials: dict, options: dict) -> dict:
         raise RuntimeError("credential detail that must not be persisted")
 
+    monkeypatch.setattr(
+        "security_lakehouse.connector_state.probe_aws_access",
+        denied_probe,
+    )
+    rec = run_probe(
+        tmp_path,
+        connector_id="aws-posture",
+        credentials={
+            "account_id": ACCOUNT,
+            "role_arn": f"arn:aws:iam::{ACCOUNT}:role/TrustOpsPostureReadOnlyRole",
+        },
+        options={},
+    )
+    assert rec["result"] == "error"
+    assert rec["error"] == "RuntimeError"
+    assert "credential detail" not in json.dumps(rec)
+
+
+def test_aws_adapter_records_bounded_provider_error_when_sts_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    class ClientError(Exception):
+        response = {
+            "Error": {
+                "Code": "AccessDenied",
+                "Message": "Not authorized to perform sts:AssumeRole",
+            }
+        }
+
+    def denied_probe(*, credentials: dict, options: dict) -> dict:
+        raise ClientError("raw sdk text that should not be used")
+
     monkeypatch.setattr("security_lakehouse.connector_state.probe_aws_access", denied_probe)
     rec = run_probe(
         tmp_path,
@@ -213,9 +245,10 @@ def test_aws_adapter_records_safe_error_when_live_probe_fails(tmp_path: Path, mo
         credentials={"account_id": ACCOUNT, "role_arn": f"arn:aws:iam::{ACCOUNT}:role/TrustOpsPostureReadOnlyRole"},
         options={},
     )
+
     assert rec["result"] == "error"
-    assert rec["error"] == "RuntimeError"
-    assert "credential detail" not in json.dumps(rec)
+    assert rec["error"] == "ClientError: AccessDenied: Not authorized to perform sts:AssumeRole"
+    assert "raw sdk text" not in json.dumps(rec)
 
 
 def test_probe_aws_access_uses_assumed_role_and_read_permission(monkeypatch: pytest.MonkeyPatch) -> None:

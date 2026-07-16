@@ -20,6 +20,8 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     assert "Deployment method" in panel
     assert "CloudShell deploy script" in panel
     assert "Copy CloudShell script" in panel
+    assert "Preview script" in panel
+    assert "Run in the target AWS account; the final line prints" in panel
     assert 'useState<AwsDeployMode>("cloudformation")' in panel
     assert 'setAwsDeployMode("cloudformation")' in panel
     assert "AWS CLI deploy command" not in panel
@@ -73,9 +75,12 @@ def test_enabled_cloud_connector_hides_onboarding_and_duplicate_credentials() ->
     drawer = DRAWER.read_text(encoding="utf-8")
 
     assert "const usesManagedCloudLink = supportsCloudLink(connector.connector_id);" in drawer
-    assert "!hasStagedServerCredentials && (" in drawer
+    assert "const showCloudLinkPanel =" in drawer
+    assert "(!hasStagedServerCredentials || editCloudSetup)" in drawer
     assert "<CloudLinkPanel" in drawer
     assert "!usesManagedCloudLink && (" in drawer
+    assert "Edit setup" in drawer
+    assert "Hide setup" in drawer
 
 
 def test_aws_drawer_has_one_linear_setup_flow_and_no_duplicate_sync_action() -> None:
@@ -94,13 +99,24 @@ def test_managed_cloud_drawer_uses_progressive_disclosure() -> None:
     drawer = DRAWER.read_text(encoding="utf-8")
 
     assert "const showManagedCloudConfiguration =" in drawer
-    assert "!hasStagedServerCredentials && (" in drawer
+    assert "showCloudLinkPanel && (" in drawer
     assert "<CloudLinkPanel" in drawer
     assert "(!usesManagedCloudLink || showManagedCloudConfiguration)" in drawer
     assert '<summary className="ui-label cursor-pointer list-none">' in drawer
     assert "Scope & automation" in drawer
     assert 'className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]"' in drawer
     assert "runHistoryRows.length > 0 && (" in drawer
+
+
+def test_aws_probe_errors_are_actionable_in_drawer() -> None:
+    drawer = DRAWER.read_text(encoding="utf-8")
+
+    assert "function runErrorDetail" in drawer
+    assert "AWS STS probe failed." in drawer
+    assert "role trust policy" in drawer
+    assert "network access to AWS STS" in drawer
+    assert "Configure AWS credentials for the TrustOps runtime" in drawer
+    assert "Probe error: ${runErrorDetail(run)}" in drawer
 
 
 def test_connected_cloud_drawer_is_compact_and_non_redundant() -> None:

@@ -453,27 +453,24 @@ export function CloudLinkPanel({
                   )}
                 </div>
                 {activeAwsDeployCommand && (
-                  <div className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
-                    <div>
-                      {effectiveAwsDeployMode === "terraform"
-                        ? "Terraform deploy command"
-                        : "CloudShell deploy script"}
-                    </div>
-                    {effectiveAwsDeployMode === "cloudformation" && (
-                      <p className="font-medium normal-case tracking-normal text-muted">
-                        Run this in AWS CloudShell or any AWS CLI session signed
-                        into the target account.
-                      </p>
-                    )}
-                    <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
-                      <code className="min-w-0 max-h-36 overflow-auto whitespace-pre-wrap break-all rounded-lg border border-line bg-white px-2 py-1.5 text-[11px] font-medium normal-case tracking-normal text-ink">
-                        {activeAwsDeployCommand}
-                      </code>
+                  <div className="rounded-lg border border-line bg-white p-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="text-xs font-black uppercase tracking-wide text-muted">
+                          {effectiveAwsDeployMode === "terraform"
+                            ? "Terraform deploy command"
+                            : "CloudShell deploy script"}
+                        </div>
+                        <p className="mt-0.5 text-xs text-muted">
+                          Run in the target AWS account; the final line prints
+                          the role ARN.
+                        </p>
+                      </div>
                       <Button
                         type="button"
                         variant="default"
                         size="sm"
-                        className="shrink-0 self-start"
+                        className="shrink-0"
                         onClick={() =>
                           copyDeployCommand(activeAwsDeployCommand)
                         }
@@ -484,6 +481,14 @@ export function CloudLinkPanel({
                           : "Copy deploy command"}
                       </Button>
                     </div>
+                    <details className="mt-2 text-xs text-muted">
+                      <summary className="cursor-pointer list-none font-bold text-brand">
+                        Preview script
+                      </summary>
+                      <code className="mt-2 block max-h-32 overflow-auto whitespace-pre-wrap break-all rounded-lg border border-line bg-surface px-2 py-1.5 text-[11px] font-medium text-ink">
+                        {activeAwsDeployCommand}
+                      </code>
+                    </details>
                   </div>
                 )}
               </div>

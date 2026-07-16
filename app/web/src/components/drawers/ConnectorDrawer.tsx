@@ -87,7 +87,34 @@ function probeToastMessage(run: ConnectorRun, isEnabled: boolean): string {
   if (run.result === "skipped") {
     return `Contract validated: ${run.error ?? "probe skipped"}`;
   }
-  return `Probe error: ${run.error ?? "see connector runs"}`;
+  return `Probe error: ${runErrorDetail(run)}`;
+}
+
+function runErrorDetail(run: ConnectorRun, connector?: ConnectorView): string {
+  const error = run.error?.trim();
+  if (!error) return "see connector runs";
+  const isAws =
+    connector?.connector_id === "aws-posture" || error.includes("AssumeRole");
+  if (!isAws) return error;
+  if (error === "ClientError") {
+    return "AWS STS probe failed. Check that the TrustOps runtime can reach AWS, has AWS credentials, and the deployed role trusts this runtime principal with the current External ID.";
+  }
+  if (error.includes("AccessDenied") || error.includes("not authorized")) {
+    return `${error} Check the role trust policy, TrustedPrincipalArn, External ID, and role ARN/account ID.`;
+  }
+  if (
+    error.includes("EndpointConnectionError") ||
+    error.includes("Could not connect")
+  ) {
+    return `${error} Check that the TrustOps runtime has network access to AWS STS.`;
+  }
+  if (
+    error.includes("NoCredentialsError") ||
+    error.includes("PartialCredentialsError")
+  ) {
+    return `${error} Configure AWS credentials for the TrustOps runtime principal before probing.`;
+  }
+  return error;
 }
 
 function validateStepDetail(
@@ -330,6 +357,7 @@ export function ConnectorDrawer({
   const [discoveryRun, setDiscoveryRun] = useState<ConnectorRun | null>(null);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
   const [connectedTab, setConnectedTab] = useState<ConnectedTab>("Overview");
+  const [editCloudSetup, setEditCloudSetup] = useState(false);
 
   const markTouched = (name: string) => {
     setTouchedFields((prev) => new Set(prev).add(name));
@@ -350,6 +378,7 @@ export function ConnectorDrawer({
     setCreds({});
     setTouchedFields(new Set());
     setConnectedTab("Overview");
+    setEditCloudSetup(false);
   }, [connector?.connector_id]);
 
   useEffect(() => {
@@ -473,6 +502,10 @@ export function ConnectorDrawer({
   const showManagedCloudConfiguration =
     !usesManagedCloudLink ||
     (hasStagedServerCredentials && !showConnectedCloudSummary);
+  const showCloudLinkPanel =
+    usesManagedCloudLink &&
+    !isEnabled &&
+    (!hasStagedServerCredentials || editCloudSetup);
   const compactCloudDetails = [...scopeFields, ...schedulerFields].map(
     (field) => ({
       label: field.label,
@@ -767,21 +800,18 @@ export function ConnectorDrawer({
         )}
 
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]">
-          {!auditor &&
-            connector &&
-            usesManagedCloudLink &&
-            !isEnabled &&
-            !hasStagedServerCredentials && (
-              <CloudLinkPanel
-                connector={connector}
-                linkSessionId={linkSessionId}
-                onLinked={(linked) => {
-                  setAccessValidated(false);
-                  setCreds((current) => ({ ...current, ...linked }));
-                }}
-                onToast={onToast}
-              />
-            )}
+          {!auditor && connector && showCloudLinkPanel && (
+            <CloudLinkPanel
+              connector={connector}
+              linkSessionId={linkSessionId}
+              onLinked={(linked) => {
+                setAccessValidated(false);
+                setCreds((current) => ({ ...current, ...linked }));
+                setEditCloudSetup(false);
+              }}
+              onToast={onToast}
+            />
+          )}
           <section
             className={`rounded-lg border border-line bg-surface p-3 ${usesManagedCloudLink && (hasStagedServerCredentials || showConnectedCloudSummary) ? "lg:col-span-2" : ""}`}
           >
@@ -1378,24 +1408,37 @@ export function ConnectorDrawer({
                   <div className="mt-2 flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-900">
                     <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     <div>
-                      <b>Latest run needs attention:</b> {latestError.error}
+                      <b>Latest run needs attention:</b>{" "}
+                      {runErrorDetail(latestError, connector)}
                     </div>
                   </div>
                 )}
                 {connector.credential_fingerprint ? (
-                  <div className="mt-2 text-xs text-muted">
-                    Credential fingerprint:{" "}
-                    <code className="text-ink">
-                      {connector.credential_fingerprint}
-                    </code>
-                    {connector.configured_at && (
-                      <> · configured {connector.configured_at}</>
-                    )}
-                    {!isEnabled && (
-                      <span className="block mt-1 text-amber-800">
-                        Staged but not enabled — run Test connection, then
-                        Enable.
-                      </span>
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
+                    <div>
+                      Credential fingerprint:{" "}
+                      <code className="text-ink">
+                        {connector.credential_fingerprint}
+                      </code>
+                      {connector.configured_at && (
+                        <> · configured {connector.configured_at}</>
+                      )}
+                      {!isEnabled && (
+                        <span className="block mt-1 text-amber-800">
+                          Staged but not enabled — run Test connection, then
+                          Enable.
+                        </span>
+                      )}
+                    </div>
+                    {usesManagedCloudLink && !isEnabled && (
+                      <Button
+                        type="button"
+                        variant="default"
+                        size="sm"
+                        onClick={() => setEditCloudSetup((value) => !value)}
+                      >
+                        {editCloudSetup ? "Hide setup" : "Edit setup"}
+                      </Button>
                     )}
                   </div>
                 ) : (
@@ -1447,7 +1490,9 @@ export function ConnectorDrawer({
                       )}
                     </div>
                     {r.error && (
-                      <div className="mt-1 text-rose-700">{r.error}</div>
+                      <div className="mt-1 text-rose-700">
+                        {runErrorDetail(r, connector)}
+                      </div>
                     )}
                   </div>
                 ))}
