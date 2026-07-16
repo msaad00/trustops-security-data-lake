@@ -109,6 +109,12 @@ The live AWS, Azure, and GCP posture connectors can be proven without static key
   During a probe or scheduled sync, TrustOps calls STS AssumeRole with the Role
   ARN and External ID, receives short-lived session credentials, reads only the
   allowed IAM posture APIs, and lets the temporary credentials expire.
+  For multiple AWS accounts, use CloudFormation StackSets or Terraform
+  workspaces to roll out the same read-only role name across target accounts.
+  Use one External ID per deployed role. With the default role name, TrustOps can
+  confirm a target from the account ID; custom names use the Role ARN output.
+  Bulk account import is the follow-up path for registering many deployed roles
+  in one pass.
 - Azure: `deploy/azure/trustops-posture-reader.bicep` assigns built-in `Reader`
   at subscription scope to a service principal, managed identity, or group.
   If a tenant blocks role-assignment reads, grant a customer-owned read role

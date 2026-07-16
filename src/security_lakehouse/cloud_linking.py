@@ -1,10 +1,9 @@
 """One-click AWS/Azure/GCP account linking for managed-GRC-style connector onboarding.
 
 AWS linking issues a tenant-scoped external ID and a CloudFormation quick-create
-URL against the read-only posture role template in ``deploy/aws/``. Azure linking
-builds an admin-consent URL when ``TRUSTOPS_AZURE_LINK_CLIENT_ID`` is set.
-GCP linking serves the Terraform reader template in ``deploy/gcp/`` plus a
-copy-paste apply command with optional Workload Identity binding.
+URL against the read-only posture role template in ``deploy/aws/``. AWS and GCP
+also serve Terraform templates for teams that prefer IaC. Azure linking builds
+an admin-consent URL when ``TRUSTOPS_AZURE_LINK_CLIENT_ID`` is set.
 """
 
 from __future__ import annotations
@@ -26,6 +25,7 @@ from security_lakehouse.public_url import normalize_public_url
 CLOUD_LINK_CONNECTORS = frozenset({"aws-posture", "azure-posture", "gcp-posture"})
 AWS_ROLE_NAME_DEFAULT = "TrustOpsPostureReadOnlyRole"
 AWS_TEMPLATE_REL = Path("deploy/aws/trustops-posture-readonly-role.yaml")
+AWS_TERRAFORM_REL = Path("deploy/aws/trustops-posture-readonly-role.tf")
 GCP_TEMPLATE_REL = Path("deploy/gcp/trustops-posture-reader.tf")
 _GCP_PROJECT_ID_RE = re.compile(r"^[a-z][a-z0-9-]{4,28}[a-z0-9]$")
 _AWS_ROLE_ARN_RE = re.compile(
@@ -61,8 +61,12 @@ def _save_sessions(lake_dir: str | Path, payload: dict[str, Any]) -> None:
     write_json(path, payload)
 
 
+def _repo_path(relative: Path) -> Path:
+    return Path(__file__).resolve().parents[2] / relative
+
+
 def _repo_template_path() -> Path:
-    return Path(__file__).resolve().parents[2] / AWS_TEMPLATE_REL
+    return _repo_path(AWS_TEMPLATE_REL)
 
 
 def aws_template_bytes() -> bytes:
@@ -70,6 +74,14 @@ def aws_template_bytes() -> bytes:
     path = _repo_template_path()
     if not path.is_file():
         raise FileNotFoundError(f"AWS link template is missing: {path}")
+    return path.read_bytes()
+
+
+def aws_terraform_bytes() -> bytes:
+    """Return the packaged AWS Terraform template."""
+    path = _repo_path(AWS_TERRAFORM_REL)
+    if not path.is_file():
+        raise FileNotFoundError(f"AWS Terraform template is missing: {path}")
     return path.read_bytes()
 
 
@@ -114,6 +126,13 @@ def gcp_template_url(public_url: str | None) -> str | None:
     return f"{base}/api/v1/connectors/gcp-posture/link/template.tf"
 
 
+def aws_terraform_url(public_url: str | None) -> str | None:
+    base = _public_base(public_url)
+    if not base:
+        return None
+    return f"{base}/api/v1/connectors/aws-posture/link/terraform.tf"
+
+
 def gcp_deploy_command(*, project_id: str = "YOUR_PROJECT_ID", wif_member: str | None = None) -> str:
     """Return a copy-paste Terraform apply command for the GCP reader identity."""
     member = (wif_member or _gcp_wif_member()).strip()
@@ -121,6 +140,40 @@ def gcp_deploy_command(*, project_id: str = "YOUR_PROJECT_ID", wif_member: str |
     if member:
         apply += f' -var="workload_identity_member={member}"'
     return f"terraform -chdir=deploy/gcp init && {apply}"
+
+
+def aws_deployment_methods() -> list[dict[str, str]]:
+    """Return the AWS deploy paths the console can present compactly."""
+    return [
+        {
+            "id": "console",
+            "label": "AWS Console",
+            "detail": "Guided CloudFormation",
+        },
+        {
+            "id": "cloudformation",
+            "label": "CloudFormation CLI",
+            "detail": "AWS CLI stack deploy",
+        },
+        {
+            "id": "terraform",
+            "label": "Terraform CLI",
+            "detail": "IaC workspace rollout",
+        },
+    ]
+
+
+def aws_scale_strategy() -> dict[str, str]:
+    """Describe the supported AWS scale path without making the form taller."""
+    return {
+        "mode": "stacksets_or_terraform",
+        "summary": (
+            "Use CloudFormation StackSets or Terraform workspaces to roll out "
+            "the same read-only role across AWS accounts."
+        ),
+        "confirmation": ("Default role name uses account ID confirmation; custom role names use the Role ARN output."),
+        "follow_up": ("Bulk account import is the next scale surface after organization rollout is in place."),
+    }
 
 
 def _public_base(public_url: str | None) -> str | None:
@@ -277,7 +330,12 @@ def start_cloud_link(
             role_name=role_name,
         )
         session["template_url"] = aws_template_url(public_url)
+        session["terraform_url"] = aws_terraform_url(public_url)
         session["manual_template_path"] = str(AWS_TEMPLATE_REL)
+        session["manual_terraform_path"] = str(AWS_TERRAFORM_REL)
+        session["account_scope"] = "aws_account"
+        session["deployment_methods"] = aws_deployment_methods()
+        session["scale_strategy"] = aws_scale_strategy()
     if connector_id == "azure-posture":
         session["consent_url"] = azure_consent_url(session_id=session_id, public_url=public_url)
     if connector_id == "gcp-posture":

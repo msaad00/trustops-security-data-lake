@@ -59,6 +59,13 @@ aws cloudformation deploy \
 | Expire       | The temporary credentials expire after the AWS session window. The next run repeats STS AssumeRole.                 |
 | Persist      | TrustOps stores connector metadata, fingerprints, and run results, not long-lived AWS access keys.                  |
 
+For multi-account pilots, roll out the same role with **CloudFormation
+StackSets** or **Terraform workspaces**. Each deployed role gets **one External
+ID per deployed role**. TrustOps verifies the target with STS, then scheduled
+sync assumes registered roles one at a time and tags landed evidence with the
+source account before control evaluation. **Bulk account import** is the
+follow-up surface for registering many rolled-out roles in one pass.
+
 The role grants only IAM read actions needed to classify users, console access,
 MFA enrollment, access-key hygiene, password policy, and account summary. Use
 SSO, an assumed role, or workload identity to run the connector; do not generate

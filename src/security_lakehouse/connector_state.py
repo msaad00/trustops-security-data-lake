@@ -228,6 +228,50 @@ def configure_payload_error(
     return None
 
 
+def _latest_config_with_access_payload(lake_dir: str | Path, connector_id: str) -> dict[str, Any] | None:
+    events = [e for e in _read_jsonl(_gold(lake_dir) / CONFIG_FILE) if e.get("connector_id") == connector_id]
+    events.sort(key=lambda e: str(e.get("occurred_at") or ""), reverse=True)
+    for event in events:
+        credentials = event.get("credentials")
+        options = event.get("options")
+        if isinstance(credentials, dict) and credentials:
+            return event
+        if isinstance(options, dict) and options:
+            return event
+    return None
+
+
+def resolve_configure_payload(
+    lake_dir: str | Path,
+    *,
+    connector_id: str,
+    credentials: dict[str, Any] | None,
+    options: dict[str, Any] | None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Fill omitted configure fields from the last saved scoped-access payload.
+
+    Browser toggles and schedule edits should not force a user to retype an AWS
+    role ARN or non-secret scope after access has already been verified. Secret
+    token payloads still have to pass the fingerprint check, so redacted secrets
+    cannot silently authorize a connector.
+    """
+    incoming_credentials = dict(credentials or {})
+    incoming_options = {k: v for k, v in dict(options or {}).items() if k != "raw"}
+    previous = _latest_config_with_access_payload(lake_dir, connector_id)
+    if previous is None:
+        return incoming_credentials, incoming_options
+
+    previous_credentials = dict(previous.get("credentials") or {})
+    previous_options = {k: v for k, v in dict(previous.get("options") or {}).items() if k != "raw"}
+    if not incoming_credentials:
+        incoming_credentials = previous_credentials
+    if previous_options:
+        merged_options = dict(previous_options)
+        merged_options.update(incoming_options)
+        incoming_options = merged_options
+    return incoming_credentials, incoming_options
+
+
 def enablement_probe_error(
     lake_dir: str | Path,
     *,

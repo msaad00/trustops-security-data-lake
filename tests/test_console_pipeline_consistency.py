@@ -38,5 +38,5 @@ def test_cloud_link_panel_reinforces_read_only_no_key_paths() -> None:
 
     assert "Read-only access" in panel
     assert "No long-lived keys" in panel
-    assert "Console or CLI" in panel
-    assert "Provider template path" in panel
+    assert "TrustOps verifies STS assume-role after deployment." in panel
+    assert "Deployment method" in panel

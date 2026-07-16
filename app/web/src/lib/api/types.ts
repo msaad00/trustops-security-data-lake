@@ -577,16 +577,30 @@ export interface CloudLinkSession {
   session_id: string;
   connector_id: string;
   status: string;
+  account_scope?: string | null;
   external_id?: string | null;
   quick_create_url?: string | null;
   template_url?: string | null;
+  terraform_url?: string | null;
   consent_url?: string | null;
   manual_template_path?: string | null;
+  manual_terraform_path?: string | null;
   trusted_principal?: string | null;
   azure_tenant_id?: string | null;
   role_name?: string | null;
   deploy_command?: string | null;
   workload_identity_member?: string | null;
+  deployment_methods?: Array<{
+    id: string;
+    label: string;
+    detail: string;
+  }> | null;
+  scale_strategy?: {
+    mode?: string | null;
+    summary?: string | null;
+    confirmation?: string | null;
+    follow_up?: string | null;
+  } | null;
 }
 
 export interface CloudLinkCompleteResult {

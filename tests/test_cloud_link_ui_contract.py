@@ -5,30 +5,65 @@ from pathlib import Path
 ROOT = Path(__file__).parents[1]
 PANEL = ROOT / "app/web/src/components/connectors/CloudLinkPanel.tsx"
 DRAWER = ROOT / "app/web/src/components/drawers/ConnectorDrawer.tsx"
+VALIDATION = ROOT / "app/web/src/lib/cloud-link-validation.ts"
 
 
 def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     panel = PANEL.read_text(encoding="utf-8")
 
-    assert "Account ID identifies the target; it does not grant access." in panel
+    assert "TrustOps verifies STS assume-role after deployment." in panel
+    assert "Deploy in AWS, then confirm the account." in panel
     assert "Open AWS guided deploy" in panel
     assert "AWS Console" in panel
-    assert "CLI script" in panel
+    assert "CloudFormation CLI" in panel
+    assert "Terraform CLI" in panel
+    assert "Deployment method" in panel
     assert "AWS CLI deploy command" in panel
+    assert "Terraform deploy command" in panel
     assert "Copy deploy command" in panel
     assert "sanitizeAwsRoleName" in panel
     assert "awsQuickCreateUrl" in panel
-    assert "Role name" in panel
-    assert "Grant set" in panel
+    assert "awsTerraformCommand" in panel
+    assert "Advanced options" in panel
+    assert "Advanced role settings" not in panel
+    assert "Read-only IAM posture" in panel
     assert "IAM posture read-only" in panel
     assert "mktemp /tmp/trustops-posture-readonly-role" in panel
     assert "ROLLBACK_FAILED" in panel
     assert "TemplateURL" not in panel
-    assert "Save role connection" in panel
+    assert "Save AWS account" in panel
     assert "Stage credentials" not in panel
-    assert "AWS role ARN" in panel
-    assert "AWS account ID" not in panel
+    assert "AWS account ID" in panel
+    assert "Use the account ID when you keep the default role name." in panel
+    assert "Use a custom Role ARN" in panel
+    assert "Account coverage" not in panel
+    assert "Scale rollout" not in panel
+    assert "Scale with StackSets or Terraform" in panel
+    assert "CloudFormation StackSets" in panel
+    assert "Terraform workspaces" in panel
+    assert "Bulk account import" in panel
+    assert "Multiple AWS accounts?" not in panel
+    assert "Create one connection per account." not in panel
+    assert "View trust details" not in panel
+    assert "AWS role ARN" not in panel
     assert "TRUSTOPS_AWS_TEMPLATE_URL" in panel
+    assert 'aria-label="AWS deployment method"' not in panel
+
+
+def test_aws_linking_accepts_account_id_or_role_arn() -> None:
+    validation = VALIDATION.read_text(encoding="utf-8")
+    panel = PANEL.read_text(encoding="utf-8")
+
+    assert "awsRoleIdentifierError" in validation
+    assert "awsRoleArnFromIdentifier" in validation
+    assert 'trimmed.startsWith("arn:")' in validation
+    assert "/^[0-9\\s-]+$/" in validation
+    assert "AWS account ID must be exactly 12 digits." in validation
+    assert "return `arn:aws:iam::${accountId}:role/${roleName}`;" in validation
+    assert "awsRoleArnFromIdentifier(awsRoleIdentifier, awsRoleName)" in panel
+    assert "awsRoleIdentifierError(awsRoleIdentifier)" in panel
+    assert 'placeholder="030225640638"' in panel
+    assert 'placeholder="arn:aws:iam::123456789012:role/CustomTrustOpsRole"' in panel
 
 
 def test_enabled_cloud_connector_hides_onboarding_and_duplicate_credentials() -> None:

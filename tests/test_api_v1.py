@@ -426,6 +426,68 @@ def test_v1_connector_configure_requires_matching_ok_probe(tmp_path: Path) -> No
         server.shutdown()
 
 
+def test_v1_aws_connector_enable_reuses_verified_role_after_disable(tmp_path: Path, monkeypatch) -> None:
+    def fake_probe_aws_access(*, credentials: dict[str, object], options: dict[str, object]) -> dict[str, object]:
+        assert credentials["account_id"] == "123456789012"
+        assert credentials["role_arn"] == "arn:aws:iam::123456789012:role/TrustOpsPostureReadOnlyRole"
+        assert credentials["external_id"] == "external-demo"
+        assert options["region"] == "us-east-1"
+        return {"ok": True, "capabilities": ["sts:AssumeRole", "iam:ListUsers"], "principal_count": 4}
+
+    monkeypatch.setattr("security_lakehouse.connector_state.probe_aws_access", fake_probe_aws_access)
+    credentials = {
+        "account_id": "123456789012",
+        "role_arn": "arn:aws:iam::123456789012:role/TrustOpsPostureReadOnlyRole",
+        "external_id": "external-demo",
+    }
+    options = {"region": "us-east-1", "sync_schedule": "every 15m", "eval_schedule": "every 6h"}
+    server = _spin(tmp_path)
+    try:
+        status, body = _request(
+            server,
+            "POST",
+            "/api/v1/connectors/aws-posture/probe",
+            body={"credentials": credentials, "options": options},
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["data"]["result"] == "ok"
+        verified_fingerprint = body["data"]["access_fingerprint"]
+
+        status, body = _request(
+            server,
+            "POST",
+            "/api/v1/connectors/aws-posture/configure",
+            body={"state": "enabled", "credentials": credentials, "options": options},
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["data"]["state"] == "enabled"
+
+        status, body = _request(
+            server,
+            "POST",
+            "/api/v1/connectors/aws-posture/configure",
+            body={"state": "disabled", "actor": "console"},
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["data"]["state"] == "disabled"
+        assert body["data"]["credentials"]["account_id"] == "123456789012"
+        assert body["data"]["credential_fingerprint"] == verified_fingerprint
+
+        status, body = _request(
+            server,
+            "POST",
+            "/api/v1/connectors/aws-posture/configure",
+            body={"state": "enabled", "actor": "console"},
+        )
+        assert status == HTTPStatus.CREATED
+        assert body["data"]["state"] == "enabled"
+        assert body["data"]["credentials"]["account_id"] == "123456789012"
+        assert body["data"]["options"]["region"] == "us-east-1"
+        assert body["data"]["credential_fingerprint"] == verified_fingerprint
+    finally:
+        server.shutdown()
+
+
 def test_v1_posture_separates_violation_and_test_counts(tmp_path: Path) -> None:
     server = _spin(tmp_path)
     try:

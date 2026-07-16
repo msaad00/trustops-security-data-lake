@@ -2312,6 +2312,23 @@
         "tags": ["connectors"]
       }
     },
+    "/api/v1/connectors/aws-posture/link/terraform.tf": {
+      "get": {
+        "operationId": "aws_link_terraform_template_api_v1_connectors_aws_posture_link_terraform_tf_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Aws Link Terraform Template",
+        "tags": ["connectors"]
+      }
+    },
     "/api/v1/connectors/azure-posture/link/callback": {
       "get": {
         "operationId": "azure_link_callback_api_v1_connectors_azure_posture_link_callback_get",
