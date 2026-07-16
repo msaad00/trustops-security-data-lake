@@ -49,7 +49,7 @@ export const CONNECTOR_CREDENTIAL_FIELDS: Record<string, ConnectorFieldDef[]> =
         label: "Credential reference",
         placeholder: "SNOWFLAKE_PRIVATE_KEY_FILE",
         required: true,
-        hint: "Key-pair file path or OAuth token env var for the service user.",
+        hint: "Runtime secret reference for key-pair or OAuth; do not paste a key or password.",
       },
       {
         name: "role",
@@ -87,7 +87,7 @@ export const CONNECTOR_CREDENTIAL_FIELDS: Record<string, ConnectorFieldDef[]> =
         label: "Azure subscription ID",
         placeholder: "00000000-0000-0000-0000-000000000000",
         required: true,
-        hint: "Reader role or federated workload identity on this subscription.",
+        hint: "Confirm the subscription after granting Reader to the TrustOps app or workload identity.",
       },
     ],
     "gcp-posture": [

@@ -71,6 +71,51 @@ def test_aws_linking_accepts_account_id_or_role_arn() -> None:
     assert 'placeholder="arn:aws:iam::123456789012:role/CustomTrustOpsRole"' in panel
 
 
+def test_azure_linking_is_provider_identity_first() -> None:
+    panel = PANEL.read_text(encoding="utf-8")
+    forms = (ROOT / "app/web/src/lib/connector-forms.ts").read_text(encoding="utf-8")
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    live_poc = (ROOT / "docs/LIVE_CLOUD_POC.md").read_text(encoding="utf-8")
+
+    assert "Read-only Azure identity" in panel
+    assert "Azure Cloud Shell setup" in panel
+    assert "Copy Cloud Shell setup" in panel
+    assert "Preview setup" in panel
+    assert "TRUSTOPS_AZURE_APP_ID" in panel
+    assert "TRUSTOPS_AZURE_PRINCIPAL_OBJECT_ID" in panel
+    assert "Set TRUSTOPS_AZURE_APP_ID or TRUSTOPS_AZURE_PRINCIPAL_OBJECT_ID" in panel
+    assert "--role Reader" in panel
+    assert "management-group" in panel
+    assert "No Azure password or" in panel
+    assert "client secret is stored" in panel
+    assert "local az login" not in panel
+    assert "Use my laptop login" not in panel
+
+    assert "Confirm the subscription after granting Reader" in forms
+    assert "Customer-owned Entra application" not in forms
+    assert "**Azure**" in readme
+    assert "managed identity, or federated workload identity" in readme
+    assert "No connector requires pasted long-lived cloud keys." in readme
+    assert "Local `az login` is acceptable for developer proof only." in live_poc
+    assert "Do not present it as" in live_poc
+
+
+def test_snowflake_linking_uses_secret_references_not_passwords() -> None:
+    drawer = DRAWER.read_text(encoding="utf-8")
+    forms = (ROOT / "app/web/src/lib/connector-forms.ts").read_text(encoding="utf-8")
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+    assert "Read-only Snowflake role" in drawer
+    assert "runtime secret manager" in drawer
+    assert "identity ready" in drawer
+    assert "scope discovered" in drawer
+    assert "Connect with a read-only Snowflake service identity." not in drawer
+    assert "do not paste a key or password" in forms
+    assert "Snowflake is the existing security-data-lake path." in readme
+    assert "key-pair or OAuth token reference" in readme
+    assert "not passwords or private-key contents" in readme
+
+
 def test_enabled_cloud_connector_hides_onboarding_and_duplicate_credentials() -> None:
     drawer = DRAWER.read_text(encoding="utf-8")
 

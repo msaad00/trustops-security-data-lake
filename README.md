@@ -50,6 +50,31 @@ Vendor marks below use [Simple Icons](https://simpleicons.org/) (CC0) and public
   <img src="docs/images/trustops-vendor-ecosystem.svg" alt="AWS, Azure, Google Cloud, Snowflake, GitHub, and Okta read-only connectors" width="96%">
 </p>
 
+### Connector authorization models
+
+Koda follows the same connector pattern users expect from managed GRC SaaS
+onboarding, but keeps evidence and verdicts in the customer-owned lake.
+
+| Source        | Customer action                                                                      | TrustOps stores                                       | Runtime auth                                                                     | Scale path                                      |
+| ------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------- |
+| **AWS**       | Deploy read-only IAM role with External ID                                           | Account ID, Role ARN, External ID, fingerprint        | STS `AssumeRole` per probe/sync                                                  | StackSets or Terraform across accounts          |
+| **Azure**     | Grant Reader to TrustOps Entra app, managed identity, or federated workload identity | Subscription ID, tenant/app metadata, fingerprint     | Azure token from workload identity / managed identity / app credential reference | Management group scope or subscription import   |
+| **Snowflake** | Grant `TRUSTOPS_READER` on curated evidence views                                    | Account, user, role, view names, credential reference | Browser SSO for human proof; key-pair/OAuth reference for scheduled sync         | Shared read role across databases/schemas/views |
+
+No connector requires pasted long-lived cloud keys. Secrets live in the runtime
+secret manager or provider identity plane; Koda stores non-secret identifiers,
+redacted fingerprints, run logs, and immutable evidence hashes.
+
+### Product stack
+
+| Layer           | Path                                              | Role                                                             |
+| --------------- | ------------------------------------------------- | ---------------------------------------------------------------- |
+| **Console**     | `app/web/`                                        | Connectors, evidence, controls, audit room, posture dashboard    |
+| **API**         | `src/security_lakehouse/server_app.py`, `/api/v1` | Browser, CLI, MCP, and agent contract                            |
+| **Connectors**  | `src/security_lakehouse/connectors_*.py`          | Read-only source collection and scope discovery                  |
+| **Lake engine** | `src/security_lakehouse/pipeline.py`              | Raw evidence -> normalized facts -> deterministic control output |
+| **Proof**       | `build/lakehouse/gold/`, `mart/`, snapshots       | Daily posture, exports, hashes, reviewer evidence                |
+
 ### AWS authorization model
 
 AWS connects through a customer-owned read-only role, not pasted access keys.
@@ -75,6 +100,34 @@ verifies it with STS before syncing. With the default role name, operators
 confirm a target by account ID; custom names use the Role ARN output. **Bulk
 account import** is the next scale surface after organization rollout is in
 place.
+
+### Azure authorization model
+
+Azure should be connected through a customer-owned Entra application, managed
+identity, or federated workload identity with **Reader** on the subscription or
+management group. The local Azure CLI path exists only for developer proof; the
+product path is provider-native identity plus scoped RBAC.
+
+| Step             | What happens                                                                                                                           |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Authorize**    | Customer grants Reader to the TrustOps app/identity at subscription or management-group scope.                                         |
+| **Authenticate** | Each probe/sync requests a fresh Azure token through managed identity, workload federation, or a secret-manager-backed app credential. |
+| **Read**         | TrustOps reads role assignments, role definitions, subscriptions, policy assignments, and resource inventory.                          |
+| **Expire**       | Tokens expire naturally; the next scheduled run re-authenticates.                                                                      |
+| **Stored**       | TrustOps stores subscription/tenant metadata, safe fingerprint, and run history; no Azure password or raw client secret.               |
+
+### Snowflake authorization model
+
+Snowflake is the existing security-data-lake path. TrustOps reads curated views
+with a read-only role and can also export evaluated gold outputs back to a
+customer warehouse.
+
+| Step             | What happens                                                                                                           |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **Authorize**    | Customer grants `TRUSTOPS_READER` `USAGE`/`SELECT` on approved warehouses, schemas, and evidence views.                |
+| **Authenticate** | Human demo can use browser SSO; scheduled sync uses key-pair or OAuth token reference from the runtime secret manager. |
+| **Read**         | TrustOps probes view counts, discovers visible scope, then reads only selected evidence views.                         |
+| **Stored**       | TrustOps stores account/user/role/view names and credential references, not passwords or private-key contents.         |
 
 Deep-link examples (after `serve`):
 

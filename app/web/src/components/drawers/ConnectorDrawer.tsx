@@ -194,39 +194,24 @@ function SnowflakeSetupHint({
   discovered: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-blue-200 bg-blue-50 p-3">
-      <div className="flex items-start gap-2">
+    <div className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2">
+      <div className="flex flex-wrap items-center gap-2">
         <KeyRound className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="text-sm font-black text-blue-950">
-            Connect with a read-only Snowflake service identity.
+            Read-only Snowflake role
           </div>
-          <div className="mt-1 text-xs leading-5 text-blue-950">
-            Add account, service user, and the server-side key reference. Then
-            discover what the role can see and choose from the returned
-            warehouses, schemas, and views.
+          <div className="mt-0.5 text-xs leading-5 text-blue-950">
+            Use SSO for a human proof or a service user with key-pair/OAuth
+            stored in the runtime secret manager.
           </div>
         </div>
-      </div>
-      <div className="mt-3 grid gap-2 sm:grid-cols-3">
-        <div className="rounded-lg bg-white/70 p-2">
-          <Badge tone={canDiscover ? "ready" : "attention"}>
-            {canDiscover ? "ready" : "needed"}
-          </Badge>
-          <div className="mt-1 text-xs font-black text-ink">Identity</div>
-        </div>
-        <div className="rounded-lg bg-white/70 p-2">
-          <Badge tone={discovered ? "ready" : "default"}>
-            {discovered ? "done" : "next"}
-          </Badge>
-          <div className="mt-1 text-xs font-black text-ink">Discovery</div>
-        </div>
-        <div className="rounded-lg bg-white/70 p-2">
-          <Badge tone={discovered ? "attention" : "default"}>
-            {discovered ? "choose" : "locked"}
-          </Badge>
-          <div className="mt-1 text-xs font-black text-ink">Read scope</div>
-        </div>
+        <Badge tone={canDiscover ? "ready" : "attention"}>
+          {canDiscover ? "identity ready" : "identity needed"}
+        </Badge>
+        <Badge tone={discovered ? "ready" : "default"}>
+          {discovered ? "scope discovered" : "discover next"}
+        </Badge>
       </div>
     </div>
   );

@@ -93,20 +93,56 @@ build/lakehouse/raw/connector_events.jsonl
 
 ## Azure Subscription
 
-The current Azure runner uses `DefaultAzureCredential`, so it can use `az login`,
-managed identity, or service-principal environment variables without TrustOps
-persisting the credential. The connector reads:
+The Azure runner uses `DefaultAzureCredential`, so the production path is a
+provider-owned identity, not a pasted password:
+
+- hosted app + admin consent where configured
+- managed identity when TrustOps runs in Azure
+- federated workload identity for Kubernetes/CI
+- service-principal credentials only by secret-manager reference
+
+Local `az login` is acceptable for developer proof only. Do not present it as
+the customer onboarding path. The connector reads:
 
 - role assignments
 - policy assignments
 - subscription resources
 
-For a POC, built-in `Reader` at subscription scope is usually enough for
-resources and policy assignments. Add an explicit role-assignment read grant if
-the tenant blocks that read.
+For a POC, built-in `Reader` at subscription scope is usually enough for resource
+and policy inventory. For many subscriptions, grant at management-group scope or
+roll the same assignment across subscriptions, then import the subscription IDs.
 
-To provision a service principal or managed identity with the expected built-in
-read roles:
+To grant a TrustOps managed identity or Entra app read access:
+
+```bash
+subscription_id="$(az account show --query id -o tsv)"
+tenant_id="$(az account show --query tenantId -o tsv)"
+
+# Hosted app: set TRUSTOPS_AZURE_APP_ID.
+# Self-hosted Azure runtime: set TRUSTOPS_AZURE_PRINCIPAL_OBJECT_ID.
+trustops_app_id="${TRUSTOPS_AZURE_APP_ID:-}"
+principal_object_id="${TRUSTOPS_AZURE_PRINCIPAL_OBJECT_ID:-}"
+
+if [ -n "$trustops_app_id" ] && [ -z "$principal_object_id" ]; then
+  principal_object_id="$(az ad sp show --id "$trustops_app_id" --query id -o tsv)"
+fi
+
+if [ -z "$principal_object_id" ]; then
+  echo "Set TRUSTOPS_AZURE_APP_ID or TRUSTOPS_AZURE_PRINCIPAL_OBJECT_ID before running."
+  exit 1
+fi
+
+az role assignment create \
+  --assignee-object-id "$principal_object_id" \
+  --assignee-principal-type ServicePrincipal \
+  --role Reader \
+  --scope "/subscriptions/$subscription_id"
+
+printf "Tenant ID: %s\nSubscription ID: %s\n" "$tenant_id" "$subscription_id"
+```
+
+The packaged Bicep module can also assign Reader to a known app, managed
+identity, or group object ID:
 
 ```bash
 az deployment sub create \
@@ -116,20 +152,18 @@ az deployment sub create \
                principalType=ServicePrincipal
 ```
 
-The module assigns `Reader` for resource and policy inventory. If the tenant
-blocks role-assignment reads for that identity, grant a customer-owned read role
-that includes `Microsoft.Authorization/roleAssignments/read`. TrustOps then
-uses `DefaultAzureCredential` from Cloud Shell, managed identity, or service
-principal environment variables.
+If the tenant blocks role-assignment reads for that identity, grant a
+customer-owned read role that includes
+`Microsoft.Authorization/roleAssignments/read`.
 
 ```bash
-az login
 security-lakehouse connectors configure \
   --lake build/lakehouse \
   --connector-id azure-posture \
+  --credentials-json '{"subscription_id":"<subscription-id>"}' \
   --state enabled
 
-AZURE_SUBSCRIPTION_ID=<subscription-id> security-lakehouse connectors sync \
+security-lakehouse connectors sync \
   --lake build/lakehouse \
   --connector-id azure-posture
 ```
