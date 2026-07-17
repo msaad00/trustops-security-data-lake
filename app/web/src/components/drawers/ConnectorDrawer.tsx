@@ -1606,61 +1606,63 @@ export function ConnectorDrawer({
         {!showConnectedCloudSummary &&
           runHistoryRows.length > 0 &&
           !showingFirstTimeCloudSetup && (
-          <LatestSyncProof connector={connector} runnable={isRunnable} />
-        )}
+            <LatestSyncProof connector={connector} runnable={isRunnable} />
+          )}
 
         {!showConnectedCloudSummary &&
           runHistoryRows.length > 0 &&
           !showingFirstTimeCloudSetup && (
-          <details className="rounded-lg border border-line p-3">
-            <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
-              <ShieldCheck className="h-3 w-3" /> Run log ·{" "}
-              {runHistoryRows.length} events
-            </summary>
-            <section className="mt-3">
-              <div className="grid gap-2">
-                {runHistoryRows.slice(0, 8).map((r) => (
-                  <div
-                    key={r.occurred_at + r.kind}
-                    className="rounded-lg border border-line p-3 text-xs"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span>
-                        <Badge tone={toneForResult(r.result)}>{r.result}</Badge>{" "}
-                        <Badge>{r.kind}</Badge>
-                      </span>
-                      <span className="text-muted">{r.occurred_at}</span>
-                    </div>
-                    <div className="mt-1 text-muted">
-                      actor <b className="text-ink">{r.actor}</b>
-                      {r.duration_ms !== null && <> · {r.duration_ms} ms</>}
-                      {r.evidence_count !== null && (
-                        <>
-                          {" "}
-                          ·{" "}
-                          {r.kind === "sync"
-                            ? `${r.evidence_count} evidence row(s)`
-                            : `${r.evidence_count} object(s)`}
-                        </>
+            <details className="rounded-lg border border-line p-3">
+              <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
+                <ShieldCheck className="h-3 w-3" /> Run log ·{" "}
+                {runHistoryRows.length} events
+              </summary>
+              <section className="mt-3">
+                <div className="grid gap-2">
+                  {runHistoryRows.slice(0, 8).map((r) => (
+                    <div
+                      key={r.occurred_at + r.kind}
+                      className="rounded-lg border border-line p-3 text-xs"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <span>
+                          <Badge tone={toneForResult(r.result)}>
+                            {r.result}
+                          </Badge>{" "}
+                          <Badge>{r.kind}</Badge>
+                        </span>
+                        <span className="text-muted">{r.occurred_at}</span>
+                      </div>
+                      <div className="mt-1 text-muted">
+                        actor <b className="text-ink">{r.actor}</b>
+                        {r.duration_ms !== null && <> · {r.duration_ms} ms</>}
+                        {r.evidence_count !== null && (
+                          <>
+                            {" "}
+                            ·{" "}
+                            {r.kind === "sync"
+                              ? `${r.evidence_count} evidence row(s)`
+                              : `${r.evidence_count} object(s)`}
+                          </>
+                        )}
+                      </div>
+                      {r.error && (
+                        <div className="mt-1 text-rose-700">
+                          {runErrorDetail(r, connector)}
+                        </div>
                       )}
                     </div>
-                    {r.error && (
-                      <div className="mt-1 text-rose-700">
-                        {runErrorDetail(r, connector)}
-                      </div>
-                    )}
-                  </div>
-                ))}
-                {runHistoryRows.length === 0 && (
-                  <div className="rounded-lg border border-dashed border-line p-3 text-xs text-muted">
-                    No probes or syncs recorded yet. Click{" "}
-                    <b>Test connection</b> to run one.
-                  </div>
-                )}
-              </div>
-            </section>
-          </details>
-        )}
+                  ))}
+                  {runHistoryRows.length === 0 && (
+                    <div className="rounded-lg border border-dashed border-line p-3 text-xs text-muted">
+                      No probes or syncs recorded yet. Click{" "}
+                      <b>Test connection</b> to run one.
+                    </div>
+                  )}
+                </div>
+              </section>
+            </details>
+          )}
       </div>
     </Drawer>
   );
