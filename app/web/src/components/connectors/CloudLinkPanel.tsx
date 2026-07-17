@@ -453,10 +453,11 @@ export function CloudLinkPanel({
           )}
           {connector.connector_id === "aws-posture" && (
             <p className="rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs leading-5 text-muted">
-              <b className="text-ink">MVP target:</b> one active AWS account.
+              <b className="text-ink">Single account:</b> deploy one read-only
+              role and confirm the account.
               <span className="mx-1 text-line">|</span>
-              <b className="text-ink">Team scale:</b> deploy the same role with
-              StackSets or Terraform, then import the account targets in bulk.
+              <b className="text-ink">Organization rollout:</b> deploy the same
+              role with StackSets or Terraform, then import targets in bulk.
             </p>
           )}
           {connector.connector_id === "aws-posture" &&

@@ -39,10 +39,10 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     assert "Save AWS account" in panel
     assert "Stage credentials" not in panel
     assert "AWS account ID" in panel
-    assert "MVP target:" in panel
-    assert "one active AWS account" in panel
-    assert "Team scale:" in panel
-    assert "import the account targets in bulk" in panel
+    assert "Single account:" in panel
+    assert "deploy one read-only" in panel
+    assert "Organization rollout:" in panel
+    assert "import targets in bulk" in panel
     assert "Use the account ID when you keep the default role name." in panel
     assert "Use a custom Role ARN" in panel
     assert "Account coverage" not in panel
