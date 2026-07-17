@@ -39,6 +39,10 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     assert "Save AWS account" in panel
     assert "Stage credentials" not in panel
     assert "AWS account ID" in panel
+    assert "MVP target:" in panel
+    assert "one active AWS account" in panel
+    assert "Team scale:" in panel
+    assert "import the account targets in bulk" in panel
     assert "Use the account ID when you keep the default role name." in panel
     assert "Use a custom Role ARN" in panel
     assert "Account coverage" not in panel
@@ -51,6 +55,7 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     assert "Create one connection per account." not in panel
     assert "View trust details" not in panel
     assert "AWS role ARN" not in panel
+    assert "Deploy links unavailable" in panel
     assert "TRUSTOPS_AWS_TEMPLATE_URL" in panel
     assert 'aria-label="AWS deployment method"' not in panel
 
@@ -121,7 +126,8 @@ def test_enabled_cloud_connector_hides_onboarding_and_duplicate_credentials() ->
 
     assert "const usesManagedCloudLink = supportsCloudLink(connector.connector_id);" in drawer
     assert "const showCloudLinkPanel =" in drawer
-    assert "(!hasStagedServerCredentials || editCloudSetup)" in drawer
+    assert "showingFirstTimeCloudSetup ||" in drawer
+    assert "!hasStagedServerCredentials ||" in drawer
     assert "(isEnabled && editCloudSetup)" in drawer
     assert "<CloudLinkPanel" in drawer
     assert "!usesManagedCloudLink && (" in drawer
@@ -152,6 +158,16 @@ def test_enabled_cloud_connector_can_edit_and_reverify_setup() -> None:
     assert "!showInlineCloudSetup && (" in drawer
 
 
+def test_onboarding_cloud_connector_reopens_setup_even_with_staged_target() -> None:
+    drawer = DRAWER.read_text(encoding="utf-8")
+
+    assert "const showingFirstTimeCloudSetup =" in drawer
+    assert "usesManagedCloudLink && onboarding && !isEnabled" in drawer
+    assert "showingFirstTimeCloudSetup ||" in drawer
+    assert "!showingFirstTimeCloudSetup" in drawer
+    assert "runHistoryRows.length > 0 &&" in drawer
+
+
 def test_aws_drawer_has_one_linear_setup_flow_and_no_duplicate_sync_action() -> None:
     drawer = DRAWER.read_text(encoding="utf-8")
 
@@ -175,7 +191,8 @@ def test_managed_cloud_drawer_uses_progressive_disclosure() -> None:
     assert '<summary className="ui-label cursor-pointer list-none">' in drawer
     assert "Scope & automation" in drawer
     assert 'className="mt-3 grid items-start gap-2 2xl:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]"' in drawer
-    assert "runHistoryRows.length > 0 && (" in drawer
+    assert "runHistoryRows.length > 0 &&" in drawer
+    assert "!showingFirstTimeCloudSetup && (" in drawer
 
 
 def test_aws_probe_errors_are_actionable_in_drawer() -> None:

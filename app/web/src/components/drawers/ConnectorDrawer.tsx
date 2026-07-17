@@ -537,12 +537,19 @@ export function ConnectorDrawer({
     !isConfigured(options);
   const showDiscoveryAction = !usesManagedCloudLink && needsDiscovery;
   const showConnectedCloudSummary = usesManagedCloudLink && isEnabled;
+  const showingFirstTimeCloudSetup =
+    usesManagedCloudLink && onboarding && !isEnabled;
   const showManagedCloudConfiguration =
     !usesManagedCloudLink ||
-    (hasStagedServerCredentials && !showConnectedCloudSummary);
+    (hasStagedServerCredentials &&
+      !showConnectedCloudSummary &&
+      !showingFirstTimeCloudSetup);
   const showCloudLinkPanel =
     usesManagedCloudLink &&
-    ((!isEnabled && (!hasStagedServerCredentials || editCloudSetup)) ||
+    ((!isEnabled &&
+      (showingFirstTimeCloudSetup ||
+        !hasStagedServerCredentials ||
+        editCloudSetup)) ||
       (isEnabled && editCloudSetup));
   const showInlineCloudSetup =
     showConnectedCloudSummary && connectedTab === "Config" && editCloudSetup;
@@ -1596,11 +1603,15 @@ export function ConnectorDrawer({
           )
         )}
 
-        {!showConnectedCloudSummary && runHistoryRows.length > 0 && (
+        {!showConnectedCloudSummary &&
+          runHistoryRows.length > 0 &&
+          !showingFirstTimeCloudSetup && (
           <LatestSyncProof connector={connector} runnable={isRunnable} />
         )}
 
-        {!showConnectedCloudSummary && runHistoryRows.length > 0 && (
+        {!showConnectedCloudSummary &&
+          runHistoryRows.length > 0 &&
+          !showingFirstTimeCloudSetup && (
           <details className="rounded-lg border border-line p-3">
             <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
               <ShieldCheck className="h-3 w-3" /> Run log ·{" "}

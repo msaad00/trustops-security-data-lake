@@ -451,6 +451,14 @@ export function CloudLinkPanel({
               enter your account identifier below.
             </p>
           )}
+          {connector.connector_id === "aws-posture" && (
+            <p className="rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs leading-5 text-muted">
+              <b className="text-ink">MVP target:</b> one active AWS account.
+              <span className="mx-1 text-line">|</span>
+              <b className="text-ink">Team scale:</b> deploy the same role with
+              StackSets or Terraform, then import the account targets in bulk.
+            </p>
+          )}
           {connector.connector_id === "aws-posture" &&
             awsDeployOptions.length > 0 && (
               <div className="grid gap-2">
@@ -635,14 +643,17 @@ export function CloudLinkPanel({
           )}
           {!session.quick_create_url &&
             connector.connector_id === "aws-posture" && (
-              <p className="text-xs text-muted">
-                For local self-hosting, set an HTTPS{" "}
-                <code>TRUSTOPS_AWS_TEMPLATE_URL</code> and{" "}
-                <code>TRUSTOPS_AWS_LINK_PRINCIPAL</code> to enable one-click
-                deployment. Hosted deployments can use{" "}
-                <code>TRUSTOPS_PUBLIC_URL</code>. Manual template:{" "}
-                <code>{session.manual_template_path}</code>
-              </p>
+              <details className="text-xs text-muted">
+                <summary className="cursor-pointer list-none font-bold text-brand">
+                  Deploy links unavailable
+                </summary>
+                <p className="mt-1 leading-5">
+                  Set HTTPS <code>TRUSTOPS_AWS_TEMPLATE_URL</code> and{" "}
+                  <code>TRUSTOPS_AWS_LINK_PRINCIPAL</code>; hosted deployments
+                  can use <code>TRUSTOPS_PUBLIC_URL</code>. Manual template:{" "}
+                  <code>{session.manual_template_path}</code>
+                </p>
+              </details>
             )}
           {connector.connector_id === "gcp-posture" &&
             !session.workload_identity_member && (
