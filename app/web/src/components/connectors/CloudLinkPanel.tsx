@@ -20,6 +20,7 @@ import {
   sanitizeAzureSubscriptionId,
   sanitizeGcpProjectId,
 } from "@/lib/cloud-link-validation";
+import { getIntegrationPreset } from "@/lib/integration-presets";
 
 const CLOUD_LINK_IDS = new Set(["aws-posture", "azure-posture", "gcp-posture"]);
 const AWS_TEMPLATE_PATH = "deploy/aws/trustops-posture-readonly-role.yaml";
@@ -202,6 +203,7 @@ export function CloudLinkPanel({
   const [awsDeployMode, setAwsDeployMode] =
     useState<AwsDeployMode>("cloudformation");
   const awsRoleIdentifier = roleArn;
+  const integrationPreset = getIntegrationPreset(connector.connector_id);
 
   useEffect(() => {
     if (!linkSessionId) return;
@@ -417,7 +419,7 @@ export function CloudLinkPanel({
     ? "AWS account"
     : isAzurePosture
       ? "Read-only Azure identity"
-      : "Cloud account linking";
+      : (integrationPreset?.title ?? "Cloud account linking");
 
   return (
     <section className="rounded-lg border border-brand/30 bg-brand/5 p-2.5">
@@ -431,7 +433,7 @@ export function CloudLinkPanel({
         {isAzurePosture && <Badge>Reader role</Badge>}
       </div>
       <p className="mt-1.5 text-xs leading-5 text-muted">
-        {linkDescription(connector.connector_id)}
+        {integrationPreset?.summary ?? linkDescription(connector.connector_id)}
       </p>
       {!session ? (
         <Button
