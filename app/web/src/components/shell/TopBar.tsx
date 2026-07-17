@@ -33,7 +33,7 @@ export function TopBar({ onRefresh, onSnapshot, onOpenPalette }: Props) {
   }, [onOpenPalette]);
 
   return (
-    <header className="flex h-[52px] min-w-0 items-center justify-between gap-1.5 overflow-hidden border-b border-railLine bg-rail px-2 text-slate-100 md:px-3">
+    <header className="sticky top-0 z-40 flex h-[52px] min-w-0 items-center justify-between gap-1.5 overflow-hidden border-b border-railLine bg-rail px-2 text-slate-100 md:px-3">
       <KodaLogo
         href="/dashboard"
         inverted

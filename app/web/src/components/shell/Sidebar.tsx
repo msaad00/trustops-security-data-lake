@@ -111,7 +111,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "grid grid-rows-[auto_1fr_auto] border-r border-railLine bg-rail text-slate-300 transition-[width]",
+        "sticky top-[52px] grid h-[calc(100dvh-52px)] grid-rows-[auto_1fr_auto] self-start border-r border-railLine bg-rail text-slate-300 transition-[width]",
         effectiveCollapsed ? "w-[64px]" : "w-[248px]",
       )}
     >
