@@ -39,6 +39,10 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     assert "Save AWS account" in panel
     assert "Stage credentials" not in panel
     assert "AWS account ID" in panel
+    assert "Single account:" in panel
+    assert "deploy one read-only" in panel
+    assert "Organization rollout:" in panel
+    assert "import targets in bulk" in panel
     assert "Use the account ID when you keep the default role name." in panel
     assert "Use a custom Role ARN" in panel
     assert "Account coverage" not in panel
@@ -51,6 +55,7 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     assert "Create one connection per account." not in panel
     assert "View trust details" not in panel
     assert "AWS role ARN" not in panel
+    assert "Deploy links unavailable" in panel
     assert "TRUSTOPS_AWS_TEMPLATE_URL" in panel
     assert 'aria-label="AWS deployment method"' not in panel
 
@@ -71,12 +76,58 @@ def test_aws_linking_accepts_account_id_or_role_arn() -> None:
     assert 'placeholder="arn:aws:iam::123456789012:role/CustomTrustOpsRole"' in panel
 
 
+def test_azure_linking_is_provider_identity_first() -> None:
+    panel = PANEL.read_text(encoding="utf-8")
+    forms = (ROOT / "app/web/src/lib/connector-forms.ts").read_text(encoding="utf-8")
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    live_poc = (ROOT / "docs/LIVE_CLOUD_POC.md").read_text(encoding="utf-8")
+
+    assert "Read-only Azure identity" in panel
+    assert "Azure Cloud Shell setup" in panel
+    assert "Copy Cloud Shell setup" in panel
+    assert "Preview setup" in panel
+    assert "TRUSTOPS_AZURE_APP_ID" in panel
+    assert "TRUSTOPS_AZURE_PRINCIPAL_OBJECT_ID" in panel
+    assert "Set TRUSTOPS_AZURE_APP_ID or TRUSTOPS_AZURE_PRINCIPAL_OBJECT_ID" in panel
+    assert "--role Reader" in panel
+    assert "management-group" in panel
+    assert "No Azure password or" in panel
+    assert "client secret is stored" in panel
+    assert "local az login" not in panel
+    assert "Use my laptop login" not in panel
+
+    assert "Confirm the subscription after granting Reader" in forms
+    assert "Customer-owned Entra application" not in forms
+    assert "**Azure**" in readme
+    assert "managed identity, or federated workload identity" in readme
+    assert "No connector requires pasted long-lived cloud keys." in readme
+    assert "Local `az login` is acceptable for developer proof only." in live_poc
+    assert "Do not present it as" in live_poc
+
+
+def test_snowflake_linking_uses_secret_references_not_passwords() -> None:
+    drawer = DRAWER.read_text(encoding="utf-8")
+    forms = (ROOT / "app/web/src/lib/connector-forms.ts").read_text(encoding="utf-8")
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+    assert "Read-only Snowflake role" in drawer
+    assert "runtime secret manager" in drawer
+    assert "identity ready" in drawer
+    assert "scope discovered" in drawer
+    assert "Connect with a read-only Snowflake service identity." not in drawer
+    assert "do not paste a key or password" in forms
+    assert "Snowflake is the existing security-data-lake path." in readme
+    assert "key-pair or OAuth token reference" in readme
+    assert "not passwords or private-key contents" in readme
+
+
 def test_enabled_cloud_connector_hides_onboarding_and_duplicate_credentials() -> None:
     drawer = DRAWER.read_text(encoding="utf-8")
 
     assert "const usesManagedCloudLink = supportsCloudLink(connector.connector_id);" in drawer
     assert "const showCloudLinkPanel =" in drawer
-    assert "(!hasStagedServerCredentials || editCloudSetup)" in drawer
+    assert "showingFirstTimeCloudSetup ||" in drawer
+    assert "!hasStagedServerCredentials ||" in drawer
     assert "(isEnabled && editCloudSetup)" in drawer
     assert "<CloudLinkPanel" in drawer
     assert "!usesManagedCloudLink && (" in drawer
@@ -107,6 +158,16 @@ def test_enabled_cloud_connector_can_edit_and_reverify_setup() -> None:
     assert "!showInlineCloudSetup && (" in drawer
 
 
+def test_onboarding_cloud_connector_reopens_setup_even_with_staged_target() -> None:
+    drawer = DRAWER.read_text(encoding="utf-8")
+
+    assert "const showingFirstTimeCloudSetup =" in drawer
+    assert "usesManagedCloudLink && onboarding && !isEnabled" in drawer
+    assert "showingFirstTimeCloudSetup ||" in drawer
+    assert "!showingFirstTimeCloudSetup" in drawer
+    assert "runHistoryRows.length > 0 &&" in drawer
+
+
 def test_aws_drawer_has_one_linear_setup_flow_and_no_duplicate_sync_action() -> None:
     drawer = DRAWER.read_text(encoding="utf-8")
 
@@ -130,7 +191,8 @@ def test_managed_cloud_drawer_uses_progressive_disclosure() -> None:
     assert '<summary className="ui-label cursor-pointer list-none">' in drawer
     assert "Scope & automation" in drawer
     assert 'className="mt-3 grid items-start gap-2 2xl:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]"' in drawer
-    assert "runHistoryRows.length > 0 && (" in drawer
+    assert "runHistoryRows.length > 0 &&" in drawer
+    assert "!showingFirstTimeCloudSetup && (" in drawer
 
 
 def test_aws_probe_errors_are_actionable_in_drawer() -> None:

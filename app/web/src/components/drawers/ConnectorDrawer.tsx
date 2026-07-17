@@ -194,39 +194,24 @@ function SnowflakeSetupHint({
   discovered: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-blue-200 bg-blue-50 p-3">
-      <div className="flex items-start gap-2">
+    <div className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2">
+      <div className="flex flex-wrap items-center gap-2">
         <KeyRound className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="text-sm font-black text-blue-950">
-            Connect with a read-only Snowflake service identity.
+            Read-only Snowflake role
           </div>
-          <div className="mt-1 text-xs leading-5 text-blue-950">
-            Add account, service user, and the server-side key reference. Then
-            discover what the role can see and choose from the returned
-            warehouses, schemas, and views.
+          <div className="mt-0.5 text-xs leading-5 text-blue-950">
+            Use SSO for a human proof or a service user with key-pair/OAuth
+            stored in the runtime secret manager.
           </div>
         </div>
-      </div>
-      <div className="mt-3 grid gap-2 sm:grid-cols-3">
-        <div className="rounded-lg bg-white/70 p-2">
-          <Badge tone={canDiscover ? "ready" : "attention"}>
-            {canDiscover ? "ready" : "needed"}
-          </Badge>
-          <div className="mt-1 text-xs font-black text-ink">Identity</div>
-        </div>
-        <div className="rounded-lg bg-white/70 p-2">
-          <Badge tone={discovered ? "ready" : "default"}>
-            {discovered ? "done" : "next"}
-          </Badge>
-          <div className="mt-1 text-xs font-black text-ink">Discovery</div>
-        </div>
-        <div className="rounded-lg bg-white/70 p-2">
-          <Badge tone={discovered ? "attention" : "default"}>
-            {discovered ? "choose" : "locked"}
-          </Badge>
-          <div className="mt-1 text-xs font-black text-ink">Read scope</div>
-        </div>
+        <Badge tone={canDiscover ? "ready" : "attention"}>
+          {canDiscover ? "identity ready" : "identity needed"}
+        </Badge>
+        <Badge tone={discovered ? "ready" : "default"}>
+          {discovered ? "scope discovered" : "discover next"}
+        </Badge>
       </div>
     </div>
   );
@@ -552,12 +537,19 @@ export function ConnectorDrawer({
     !isConfigured(options);
   const showDiscoveryAction = !usesManagedCloudLink && needsDiscovery;
   const showConnectedCloudSummary = usesManagedCloudLink && isEnabled;
+  const showingFirstTimeCloudSetup =
+    usesManagedCloudLink && onboarding && !isEnabled;
   const showManagedCloudConfiguration =
     !usesManagedCloudLink ||
-    (hasStagedServerCredentials && !showConnectedCloudSummary);
+    (hasStagedServerCredentials &&
+      !showConnectedCloudSummary &&
+      !showingFirstTimeCloudSetup);
   const showCloudLinkPanel =
     usesManagedCloudLink &&
-    ((!isEnabled && (!hasStagedServerCredentials || editCloudSetup)) ||
+    ((!isEnabled &&
+      (showingFirstTimeCloudSetup ||
+        !hasStagedServerCredentials ||
+        editCloudSetup)) ||
       (isEnabled && editCloudSetup));
   const showInlineCloudSetup =
     showConnectedCloudSummary && connectedTab === "Config" && editCloudSetup;
@@ -1611,60 +1603,66 @@ export function ConnectorDrawer({
           )
         )}
 
-        {!showConnectedCloudSummary && runHistoryRows.length > 0 && (
-          <LatestSyncProof connector={connector} runnable={isRunnable} />
-        )}
+        {!showConnectedCloudSummary &&
+          runHistoryRows.length > 0 &&
+          !showingFirstTimeCloudSetup && (
+            <LatestSyncProof connector={connector} runnable={isRunnable} />
+          )}
 
-        {!showConnectedCloudSummary && runHistoryRows.length > 0 && (
-          <details className="rounded-lg border border-line p-3">
-            <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
-              <ShieldCheck className="h-3 w-3" /> Run log ·{" "}
-              {runHistoryRows.length} events
-            </summary>
-            <section className="mt-3">
-              <div className="grid gap-2">
-                {runHistoryRows.slice(0, 8).map((r) => (
-                  <div
-                    key={r.occurred_at + r.kind}
-                    className="rounded-lg border border-line p-3 text-xs"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span>
-                        <Badge tone={toneForResult(r.result)}>{r.result}</Badge>{" "}
-                        <Badge>{r.kind}</Badge>
-                      </span>
-                      <span className="text-muted">{r.occurred_at}</span>
-                    </div>
-                    <div className="mt-1 text-muted">
-                      actor <b className="text-ink">{r.actor}</b>
-                      {r.duration_ms !== null && <> · {r.duration_ms} ms</>}
-                      {r.evidence_count !== null && (
-                        <>
-                          {" "}
-                          ·{" "}
-                          {r.kind === "sync"
-                            ? `${r.evidence_count} evidence row(s)`
-                            : `${r.evidence_count} object(s)`}
-                        </>
+        {!showConnectedCloudSummary &&
+          runHistoryRows.length > 0 &&
+          !showingFirstTimeCloudSetup && (
+            <details className="rounded-lg border border-line p-3">
+              <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
+                <ShieldCheck className="h-3 w-3" /> Run log ·{" "}
+                {runHistoryRows.length} events
+              </summary>
+              <section className="mt-3">
+                <div className="grid gap-2">
+                  {runHistoryRows.slice(0, 8).map((r) => (
+                    <div
+                      key={r.occurred_at + r.kind}
+                      className="rounded-lg border border-line p-3 text-xs"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <span>
+                          <Badge tone={toneForResult(r.result)}>
+                            {r.result}
+                          </Badge>{" "}
+                          <Badge>{r.kind}</Badge>
+                        </span>
+                        <span className="text-muted">{r.occurred_at}</span>
+                      </div>
+                      <div className="mt-1 text-muted">
+                        actor <b className="text-ink">{r.actor}</b>
+                        {r.duration_ms !== null && <> · {r.duration_ms} ms</>}
+                        {r.evidence_count !== null && (
+                          <>
+                            {" "}
+                            ·{" "}
+                            {r.kind === "sync"
+                              ? `${r.evidence_count} evidence row(s)`
+                              : `${r.evidence_count} object(s)`}
+                          </>
+                        )}
+                      </div>
+                      {r.error && (
+                        <div className="mt-1 text-rose-700">
+                          {runErrorDetail(r, connector)}
+                        </div>
                       )}
                     </div>
-                    {r.error && (
-                      <div className="mt-1 text-rose-700">
-                        {runErrorDetail(r, connector)}
-                      </div>
-                    )}
-                  </div>
-                ))}
-                {runHistoryRows.length === 0 && (
-                  <div className="rounded-lg border border-dashed border-line p-3 text-xs text-muted">
-                    No probes or syncs recorded yet. Click{" "}
-                    <b>Test connection</b> to run one.
-                  </div>
-                )}
-              </div>
-            </section>
-          </details>
-        )}
+                  ))}
+                  {runHistoryRows.length === 0 && (
+                    <div className="rounded-lg border border-dashed border-line p-3 text-xs text-muted">
+                      No probes or syncs recorded yet. Click{" "}
+                      <b>Test connection</b> to run one.
+                    </div>
+                  )}
+                </div>
+              </section>
+            </details>
+          )}
       </div>
     </Drawer>
   );

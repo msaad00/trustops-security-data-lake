@@ -49,7 +49,7 @@ function linkDescription(connectorId: string): string {
     return "Deploy in AWS, then confirm the account. TrustOps verifies STS assume-role after deployment.";
   }
   if (connectorId === "azure-posture") {
-    return `Grant admin consent for the ${BRAND.name} Azure app, then enter the subscription ID to stage the connector.`;
+    return "Grant Reader to the TrustOps Entra app or workload identity, then confirm the subscription. Scheduled sync uses fresh Azure tokens; no passwords are stored.";
   }
   return "Apply the read-only Terraform reader identity in your GCP project, then enter the project ID to stage the connector.";
 }
@@ -157,6 +157,33 @@ terraform -chdir=${terraformChdir} apply -auto-approve \\
 terraform -chdir=${terraformChdir} output -raw role_arn`;
 }
 
+function azureCloudShellCommand(): string {
+  return `subscription_id="$(az account show --query id -o tsv)"
+tenant_id="$(az account show --query tenantId -o tsv)"
+
+# Hosted TrustOps: set TRUSTOPS_AZURE_APP_ID to the app id shown by TrustOps.
+# Self-hosted in Azure: set TRUSTOPS_AZURE_PRINCIPAL_OBJECT_ID to the managed identity object id.
+trustops_app_id="\${TRUSTOPS_AZURE_APP_ID:-}"
+principal_object_id="\${TRUSTOPS_AZURE_PRINCIPAL_OBJECT_ID:-}"
+
+if [ -n "$trustops_app_id" ] && [ -z "$principal_object_id" ]; then
+  principal_object_id="$(az ad sp show --id "$trustops_app_id" --query id -o tsv)"
+fi
+
+if [ -z "$principal_object_id" ]; then
+  echo "Set TRUSTOPS_AZURE_APP_ID or TRUSTOPS_AZURE_PRINCIPAL_OBJECT_ID before running."
+  exit 1
+fi
+
+az role assignment create \\
+  --assignee-object-id "$principal_object_id" \\
+  --assignee-principal-type ServicePrincipal \\
+  --role Reader \\
+  --scope "/subscriptions/$subscription_id"
+
+printf "Tenant ID: %s\\nSubscription ID: %s\\n" "$tenant_id" "$subscription_id"`;
+}
+
 export function CloudLinkPanel({
   connector,
   linkSessionId,
@@ -228,6 +255,13 @@ export function CloudLinkPanel({
     if (!session || connector.connector_id === "aws-posture") return null;
     return session.deploy_command ?? null;
   }, [connector.connector_id, session]);
+  const azureDeployCommand = useMemo(
+    () =>
+      connector.connector_id === "azure-posture"
+        ? azureCloudShellCommand()
+        : null,
+    [connector.connector_id],
+  );
   const quickCreateUrl = useMemo(() => {
     if (!session || connector.connector_id !== "aws-posture") {
       return session?.quick_create_url ?? null;
@@ -372,9 +406,12 @@ export function CloudLinkPanel({
   if (!supportsCloudLink(connector.connector_id)) return null;
 
   const isAwsPosture = connector.connector_id === "aws-posture";
+  const isAzurePosture = connector.connector_id === "azure-posture";
   const headerLabel = isAwsPosture
     ? "Read-only AWS role"
-    : "Cloud account linking";
+    : isAzurePosture
+      ? "Read-only Azure identity"
+      : "Cloud account linking";
 
   return (
     <section className="rounded-lg border border-brand/30 bg-brand/5 p-2.5">
@@ -385,6 +422,7 @@ export function CloudLinkPanel({
         </div>
         <Badge tone="ready">Read-only access</Badge>
         <Badge>No long-lived keys</Badge>
+        {isAzurePosture && <Badge>Reader role</Badge>}
       </div>
       <p className="mt-1.5 text-xs leading-5 text-muted">
         {linkDescription(connector.connector_id)}
@@ -411,6 +449,15 @@ export function CloudLinkPanel({
             <p className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs text-amber-950">
               Returned from identity provider — confirm consent completed, then
               enter your account identifier below.
+            </p>
+          )}
+          {connector.connector_id === "aws-posture" && (
+            <p className="rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs leading-5 text-muted">
+              <b className="text-ink">Single account:</b> deploy one read-only
+              role and confirm the account.
+              <span className="mx-1 text-line">|</span>
+              <b className="text-ink">Organization rollout:</b> deploy the same
+              role with StackSets or Terraform, then import targets in bulk.
             </p>
           )}
           {connector.connector_id === "aws-posture" &&
@@ -510,6 +557,54 @@ export function CloudLinkPanel({
               Grant Azure admin consent
             </Button>
           )}
+          {connector.connector_id === "azure-posture" && azureDeployCommand && (
+            <div className="rounded-lg border border-line bg-white p-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="text-xs font-black uppercase tracking-wide text-muted">
+                    Azure Cloud Shell setup
+                  </div>
+                  <p className="mt-0.5 text-xs text-muted">
+                    Grants Reader to the TrustOps app or managed identity. The
+                    final line prints the IDs to confirm below.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="default"
+                  size="sm"
+                  className="shrink-0"
+                  onClick={() => copyDeployCommand(azureDeployCommand)}
+                >
+                  <Copy className="h-4 w-4" />
+                  Copy Cloud Shell setup
+                </Button>
+              </div>
+              <details className="mt-2 text-xs text-muted">
+                <summary className="cursor-pointer list-none font-bold text-brand">
+                  Preview setup
+                </summary>
+                <code className="mt-2 block max-h-28 overflow-auto whitespace-pre-wrap break-all rounded-lg border border-line bg-surface px-2 py-1.5 text-[11px] font-medium text-ink">
+                  {azureDeployCommand}
+                </code>
+              </details>
+              <details className="mt-2 text-xs text-muted">
+                <summary className="cursor-pointer list-none font-bold text-ink">
+                  Scale and permissions
+                </summary>
+                <div className="mt-2 grid gap-1">
+                  <p>
+                    Use subscription scope for one account, or management-group
+                    scope to cover many subscriptions.
+                  </p>
+                  <p>
+                    Required reads: role assignments, role definitions,
+                    subscriptions, policy assignments, and resources.
+                  </p>
+                </div>
+              </details>
+            </div>
+          )}
           {connector.connector_id === "gcp-posture" && session.template_url && (
             <Button
               type="button"
@@ -549,14 +644,17 @@ export function CloudLinkPanel({
           )}
           {!session.quick_create_url &&
             connector.connector_id === "aws-posture" && (
-              <p className="text-xs text-muted">
-                For local self-hosting, set an HTTPS{" "}
-                <code>TRUSTOPS_AWS_TEMPLATE_URL</code> and{" "}
-                <code>TRUSTOPS_AWS_LINK_PRINCIPAL</code> to enable one-click
-                deployment. Hosted deployments can use{" "}
-                <code>TRUSTOPS_PUBLIC_URL</code>. Manual template:{" "}
-                <code>{session.manual_template_path}</code>
-              </p>
+              <details className="text-xs text-muted">
+                <summary className="cursor-pointer list-none font-bold text-brand">
+                  Deploy links unavailable
+                </summary>
+                <p className="mt-1 leading-5">
+                  Set HTTPS <code>TRUSTOPS_AWS_TEMPLATE_URL</code> and{" "}
+                  <code>TRUSTOPS_AWS_LINK_PRINCIPAL</code>; hosted deployments
+                  can use <code>TRUSTOPS_PUBLIC_URL</code>. Manual template:{" "}
+                  <code>{session.manual_template_path}</code>
+                </p>
+              </details>
             )}
           {connector.connector_id === "gcp-posture" &&
             !session.workload_identity_member && (
@@ -689,6 +787,10 @@ export function CloudLinkPanel({
                 placeholder="00000000-0000-0000-0000-000000000000"
                 className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
               />
+              <span className="font-medium normal-case tracking-normal text-muted">
+                Paste the subscription ID printed by setup. No Azure password or
+                client secret is stored in {BRAND.name}.
+              </span>
             </label>
           )}
           {connector.connector_id === "gcp-posture" && (
