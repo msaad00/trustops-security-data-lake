@@ -52,7 +52,8 @@ const PRESETS: Record<string, IntegrationPreset> = {
       "Grant Reader to the TrustOps Entra app or workload identity, then confirm the subscription. Scheduled sync uses fresh Azure tokens; no passwords are stored.",
     providerSetup:
       "Azure Cloud Shell grants Reader at subscription or management-group scope.",
-    trustOpsInput: "Subscription ID printed by setup or returned after admin consent.",
+    trustOpsInput:
+      "Subscription ID printed by setup or returned after admin consent.",
     advancedTitle: "Management-group rollout",
     advancedDetails: [
       "Use management-group scope when the same TrustOps identity should read many subscriptions.",
@@ -116,7 +117,8 @@ const PRESETS: Record<string, IntegrationPreset> = {
       "Use provider-native OAuth client credentials or workload identity to read users, groups, assignments, and access reviews.",
     providerSetup:
       "Register an Entra application or managed identity with read-only Graph permissions.",
-    trustOpsInput: "Tenant, client identity, and secret or federated credential reference.",
+    trustOpsInput:
+      "Tenant, client identity, and secret or federated credential reference.",
     advancedTitle: "SSO provider preset",
     advancedDetails: [
       "Use the same preset pattern for Okta, Entra, and Google Workspace identity sources.",
@@ -132,7 +134,8 @@ const PRESETS: Record<string, IntegrationPreset> = {
       "Use a mounted OAuth token reference to read Workspace users, groups, and MFA posture.",
     providerSetup:
       "Authorize read-only Admin SDK Directory scopes for a service identity.",
-    trustOpsInput: "Workspace customer ID and the runtime OAuth token reference.",
+    trustOpsInput:
+      "Workspace customer ID and the runtime OAuth token reference.",
     advancedTitle: "Directory scopes",
     advancedDetails: [
       "Use directory.users.readonly, directory.groups.readonly, and directory.user.security.readonly.",

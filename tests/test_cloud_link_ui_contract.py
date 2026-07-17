@@ -187,12 +187,8 @@ def test_cloud_link_setup_uses_one_compact_step_pattern() -> None:
 
 
 def test_integration_wizard_has_provider_presets_for_cloud_data_and_sso() -> None:
-    presets = (
-        ROOT / "app/web/src/lib/integration-presets.ts"
-    ).read_text(encoding="utf-8")
-    panel = (
-        ROOT / "app/web/src/components/connectors/IntegrationPresetPanel.tsx"
-    ).read_text(encoding="utf-8")
+    presets = (ROOT / "app/web/src/lib/integration-presets.ts").read_text(encoding="utf-8")
+    panel = (ROOT / "app/web/src/components/connectors/IntegrationPresetPanel.tsx").read_text(encoding="utf-8")
     drawer = DRAWER.read_text(encoding="utf-8")
     cloud = PANEL.read_text(encoding="utf-8")
 
