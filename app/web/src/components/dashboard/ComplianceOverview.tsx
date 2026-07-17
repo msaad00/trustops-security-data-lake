@@ -13,7 +13,7 @@ function ringColor(score: number) {
   return "#d92d20";
 }
 
-function ComplianceRing({
+function ComplianceTile({
   label,
   frameworkId,
   score,
@@ -31,9 +31,9 @@ function ComplianceRing({
   return (
     <Link
       href={frameworkDetailHref(frameworkId)}
-      className="flex min-w-[108px] shrink-0 snap-start flex-col items-center gap-2 rounded-xl border border-line bg-surface p-3 shadow-sm transition-colors hover:border-brand hover:shadow-card"
+      className="grid h-[84px] min-w-0 snap-start grid-cols-[36px_minmax(0,1fr)] items-center gap-2 rounded-lg border border-line bg-surface p-2 shadow-sm transition-colors hover:border-brand hover:shadow-card"
     >
-      <div className="relative h-[72px] w-[72px]">
+      <div className="relative h-9 w-9">
         <svg className="h-full w-full -rotate-90" viewBox="0 0 72 72">
           <circle
             cx="36"
@@ -59,15 +59,15 @@ function ComplianceRing({
           <FrameworkMark
             frameworkId={frameworkId}
             fallbackLabel={label}
-            size={32}
+            size={20}
           />
         </div>
       </div>
-      <div className="text-center">
-        <div className="text-lg font-black tabular-nums" style={{ color }}>
+      <div className="min-w-0">
+        <div className="text-sm font-black tabular-nums" style={{ color }}>
           {Math.round(score)}%
         </div>
-        <div className="max-w-[96px] truncate text-[10px] font-bold text-muted">
+        <div className="mt-0.5 truncate text-[10px] font-bold leading-tight text-muted">
           {label}
         </div>
       </div>
@@ -82,24 +82,24 @@ export function ComplianceOverview({
   frameworks: FrameworkPosture[];
   className?: string;
 }) {
-  const top = [...frameworks]
-    .sort(
-      (a, b) =>
-        a.score - b.score || b.failing_control_count - a.failing_control_count,
-    )
-    .slice(0, 6);
+  const ordered = [...frameworks].sort(
+    (a, b) =>
+      a.score - b.score || b.failing_control_count - a.failing_control_count,
+  );
 
-  if (top.length === 0) return null;
+  if (ordered.length === 0) return null;
 
   return (
     <div
       className={cn(
-        "flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:thin]",
+        "grid max-h-[178px] grid-flow-col grid-rows-2 auto-cols-[96px] snap-x snap-mandatory gap-2 overflow-x-auto pb-2 pr-1 [-ms-overflow-style:none] [scrollbar-width:thin]",
         className,
       )}
+      role="region"
+      aria-label="Framework posture comparison"
     >
-      {top.map((f) => (
-        <ComplianceRing
+      {ordered.map((f) => (
+        <ComplianceTile
           key={f.framework}
           label={f.framework}
           frameworkId={resolveFrameworkId(f.framework)}

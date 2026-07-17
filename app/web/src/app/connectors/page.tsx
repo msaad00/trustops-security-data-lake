@@ -33,7 +33,6 @@ type Health = {
 };
 
 type ViewFilter = "all" | "connected" | "setup" | "attention";
-type RunnerFilter = "all" | "runnable" | "contract";
 type CategoryFilter = "all" | "cloud" | "identity" | "data" | "dev" | "ops";
 
 const VIEW_TABS: Array<{ id: ViewFilter; label: string }> = [
@@ -43,13 +42,7 @@ const VIEW_TABS: Array<{ id: ViewFilter; label: string }> = [
   { id: "attention", label: "Needs attention" },
 ];
 
-const RUNNER_TABS: Array<{ id: RunnerFilter; label: string }> = [
-  { id: "runnable", label: "Available" },
-  { id: "all", label: "All sources" },
-  { id: "contract", label: "Planned" },
-];
-
-const CATEGORY_TABS: Array<{ id: CategoryFilter; label: string }> = [
+const CATEGORY_OPTIONS: Array<{ id: CategoryFilter; label: string }> = [
   { id: "all", label: "All categories" },
   { id: "cloud", label: "Cloud" },
   { id: "identity", label: "Identity" },
@@ -179,7 +172,6 @@ export default function ConnectorsPage() {
   const [linkSessionId, setLinkSessionId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [viewFilter, setViewFilter] = useState<ViewFilter>("all");
-  const [runnerFilter, setRunnerFilter] = useState<RunnerFilter>("runnable");
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("all");
   const [selected, setSelected] = useState<ConnectorView | null>(null);
   const [onboarding, setOnboarding] = useState(false);
@@ -211,18 +203,16 @@ export default function ConnectorsPage() {
   const filtered = useMemo(
     () =>
       data.filter((c) => {
+        if (!isRunnableConnector(c)) return false;
         if (viewFilter === "connected" && c.state !== "enabled") return false;
         if (viewFilter === "setup" && c.state === "enabled") return false;
         if (viewFilter === "attention" && !needsAttention(c)) return false;
-        if (runnerFilter === "runnable" && !isRunnableConnector(c))
-          return false;
-        if (runnerFilter === "contract" && isRunnableConnector(c)) return false;
         if (categoryFilter !== "all" && connectorCategory(c) !== categoryFilter)
           return false;
         if (!query) return true;
         return JSON.stringify(c).toLowerCase().includes(query.toLowerCase());
       }),
-    [categoryFilter, data, query, runnerFilter, viewFilter],
+    [categoryFilter, data, query, viewFilter],
   );
 
   const totals = {
@@ -310,54 +300,27 @@ export default function ConnectorsPage() {
               </button>
             ))}
           </div>
-        </div>
-        <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <div
-            aria-label="Runner filter"
-            className="flex max-w-full gap-1 overflow-x-auto rounded-lg border border-line bg-panel p-1"
-            role="tablist"
-          >
-            {RUNNER_TABS.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                role="tab"
-                aria-selected={runnerFilter === tab.id}
-                className={`shrink-0 rounded-md px-3 py-2 text-xs font-black ${
-                  runnerFilter === tab.id
-                    ? "bg-brand text-white"
-                    : "text-muted hover:bg-white"
-                }`}
-                onClick={() => setRunnerFilter(tab.id)}
-              >
-                {tab.id === "runnable"
-                  ? `${tab.label} (${totals.runnable})`
-                  : tab.label}
-              </button>
-            ))}
-          </div>
-          <div
+          <label className="sr-only" htmlFor="connector-category-filter">
+            Category
+          </label>
+          <select
+            id="connector-category-filter"
             aria-label="Category filter"
-            className="flex max-w-full flex-1 gap-1 overflow-x-auto rounded-lg border border-line bg-panel p-1"
-            role="tablist"
+            value={categoryFilter}
+            onChange={(event) =>
+              setCategoryFilter(event.target.value as CategoryFilter)
+            }
+            className="min-w-[150px] rounded-lg border border-line bg-panel px-3 py-2.5 text-xs font-black text-ink focus:outline-none focus:ring-1 focus:ring-brand"
           >
-            {CATEGORY_TABS.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                role="tab"
-                aria-selected={categoryFilter === tab.id}
-                className={`shrink-0 rounded-md px-3 py-2 text-xs font-black ${
-                  categoryFilter === tab.id
-                    ? "bg-brand text-white"
-                    : "text-muted hover:bg-white"
-                }`}
-                onClick={() => setCategoryFilter(tab.id)}
-              >
-                {tab.label}
-              </button>
+            {CATEGORY_OPTIONS.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.label}
+              </option>
             ))}
-          </div>
+          </select>
+          <span className="rounded-full border border-line bg-surface px-3 py-2 text-xs font-black text-muted">
+            {totals.runnable} available
+          </span>
         </div>
       </div>
 
