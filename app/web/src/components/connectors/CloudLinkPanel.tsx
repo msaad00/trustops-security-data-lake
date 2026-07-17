@@ -46,7 +46,7 @@ export function supportsCloudLink(connectorId: string) {
 
 function linkDescription(connectorId: string): string {
   if (connectorId === "aws-posture") {
-    return "Deploy in AWS, then confirm the account. TrustOps verifies STS assume-role after deployment.";
+    return "Deploy the customer-owned AWS role, then save the account target. TrustOps verifies STS assume-role after deployment.";
   }
   if (connectorId === "azure-posture") {
     return "Grant Reader to the TrustOps Entra app or workload identity, then confirm the subscription. Scheduled sync uses fresh Azure tokens; no passwords are stored.";
@@ -194,7 +194,6 @@ export function CloudLinkPanel({
   const complete = useCloudLinkCompleteMutation();
   const [session, setSession] = useState<CloudLinkSession | null>(null);
   const [roleArn, setRoleArn] = useState("");
-  const [customRoleArn, setCustomRoleArn] = useState("");
   const [subscriptionId, setSubscriptionId] = useState("");
   const [projectId, setProjectId] = useState("");
   const [fieldError, setFieldError] = useState<string | null>(null);
@@ -202,10 +201,7 @@ export function CloudLinkPanel({
   const [awsRoleName, setAwsRoleName] = useState(AWS_ROLE_NAME);
   const [awsDeployMode, setAwsDeployMode] =
     useState<AwsDeployMode>("cloudformation");
-  const awsRoleIdentifier =
-    connector.connector_id === "aws-posture"
-      ? customRoleArn.trim() || roleArn
-      : roleArn;
+  const awsRoleIdentifier = roleArn;
 
   useEffect(() => {
     if (!linkSessionId) return;
@@ -334,7 +330,6 @@ export function CloudLinkPanel({
     setAwsRoleName(AWS_ROLE_NAME);
     setAwsDeployMode("cloudformation");
     setRoleArn("");
-    setCustomRoleArn("");
     try {
       const row = await start.mutateAsync({
         id: connector.connector_id,
@@ -346,6 +341,17 @@ export function CloudLinkPanel({
     } catch (err) {
       onToast(`Cloud link failed: ${(err as Error).message}`);
     }
+  };
+
+  const resetSetup = () => {
+    setSession(null);
+    setRoleArn("");
+    setSubscriptionId("");
+    setProjectId("");
+    setFieldError(null);
+    setTouched(false);
+    setAwsRoleName(AWS_ROLE_NAME);
+    setAwsDeployMode("cloudformation");
   };
 
   const finish = async () => {
@@ -408,7 +414,7 @@ export function CloudLinkPanel({
   const isAwsPosture = connector.connector_id === "aws-posture";
   const isAzurePosture = connector.connector_id === "azure-posture";
   const headerLabel = isAwsPosture
-    ? "AWS account setup"
+    ? "AWS account"
     : isAzurePosture
       ? "Read-only Azure identity"
       : "Cloud account linking";
@@ -420,9 +426,7 @@ export function CloudLinkPanel({
         <div className="text-xs font-black uppercase tracking-wide text-ink">
           {headerLabel}
         </div>
-        <Badge tone="ready">
-          {isAwsPosture ? "STS assume-role" : "Read-only access"}
-        </Badge>
+        <Badge tone="ready">{isAwsPosture ? "STS" : "Read-only access"}</Badge>
         <Badge>No long-lived keys</Badge>
         {isAzurePosture && <Badge>Reader role</Badge>}
       </div>
@@ -497,14 +501,8 @@ export function CloudLinkPanel({
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="min-w-0">
                         <div className="text-xs font-black uppercase tracking-wide text-muted">
-                          {effectiveAwsDeployMode === "terraform"
-                            ? "Terraform deploy command"
-                            : "CloudShell deploy script"}
+                          Deploy role
                         </div>
-                        <p className="mt-0.5 text-xs text-muted">
-                          Run in the target AWS account; the final line prints
-                          the role ARN.
-                        </p>
                       </div>
                       <Button
                         type="button"
@@ -523,7 +521,7 @@ export function CloudLinkPanel({
                     </div>
                     <details className="mt-2 text-xs text-muted">
                       <summary className="cursor-pointer list-none font-bold text-brand">
-                        Preview script
+                        View script
                       </summary>
                       <code className="mt-2 block max-h-32 overflow-auto whitespace-pre-wrap break-all rounded-lg border border-line bg-surface px-2 py-1.5 text-[11px] font-medium text-ink">
                         {activeAwsDeployCommand}
@@ -659,7 +657,7 @@ export function CloudLinkPanel({
             )}
           {connector.connector_id === "aws-posture" && (
             <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
-              Confirm account ID
+              Account ID or Role ARN
               <input
                 value={roleArn}
                 onChange={(e) => {
@@ -672,31 +670,25 @@ export function CloudLinkPanel({
                 }}
                 autoComplete="off"
                 aria-invalid={Boolean(showFieldError)}
-                placeholder="030225640638"
+                placeholder="AWS account ID or role ARN"
                 className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
               />
               <span className="font-medium normal-case tracking-normal text-muted">
-                Use the account ID when the script keeps the default role name.
-                For a custom role, paste the Role ARN in advanced options.
+                Default role: account ID. Custom role: full ARN.
               </span>
             </label>
           )}
           {connector.connector_id === "aws-posture" && (
             <details className="text-xs text-muted">
               <summary className="cursor-pointer list-none font-black uppercase tracking-wide text-ink">
-                Scale or custom role
+                Advanced
               </summary>
               <div className="mt-2 grid gap-2 border-t border-line pt-2">
                 <div className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
-                  Scale with StackSets or Terraform
+                  Organization rollout
                   <span className="font-medium normal-case tracking-normal text-muted">
-                    One account: confirm the account ID. Many accounts: deploy
-                    with StackSets or Terraform, then bulk import account IDs or
-                    Role ARNs.{" "}
-                    {session.scale_strategy?.summary ||
-                      "Use CloudFormation StackSets or Terraform workspaces across AWS accounts."}{" "}
-                    {session.scale_strategy?.follow_up ||
-                      "Bulk account import is the follow-up surface after rollout."}
+                    Deploy the same role with CloudFormation StackSets or
+                    Terraform workspaces, then import account targets.
                   </span>
                 </div>
                 <div className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
@@ -711,25 +703,13 @@ export function CloudLinkPanel({
                     iam:GetAccountSummary
                   </span>
                 </div>
-                {(session.external_id || session.trusted_principal) && (
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    {session.external_id && (
-                      <label className="grid gap-1 font-black uppercase tracking-wide text-muted">
-                        External ID
-                        <code className="break-all rounded-lg border border-line bg-surface px-2 py-1.5 font-medium normal-case tracking-normal text-ink">
-                          {session.external_id}
-                        </code>
-                      </label>
-                    )}
-                    {session.trusted_principal && (
-                      <label className="grid gap-1 font-black uppercase tracking-wide text-muted">
-                        Trusted principal
-                        <code className="break-all rounded-lg border border-line bg-surface px-2 py-1.5 font-medium normal-case tracking-normal text-ink">
-                          {session.trusted_principal}
-                        </code>
-                      </label>
-                    )}
-                  </div>
+                {session.external_id && (
+                  <label className="grid gap-1 font-black uppercase tracking-wide text-muted">
+                    External ID
+                    <code className="break-all rounded-lg border border-line bg-surface px-2 py-1.5 font-medium normal-case tracking-normal text-ink">
+                      {session.external_id}
+                    </code>
+                  </label>
                 )}
                 <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
                   Role name
@@ -739,24 +719,6 @@ export function CloudLinkPanel({
                       setAwsRoleName(sanitizeAwsRoleName(event.target.value))
                     }
                     placeholder={AWS_ROLE_NAME}
-                    className="rounded-lg border border-line bg-white px-3 py-2 text-sm normal-case tracking-normal text-ink focus:outline-none focus:ring-1 focus:ring-brand"
-                  />
-                </label>
-                <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
-                  Use a custom Role ARN
-                  <input
-                    value={customRoleArn}
-                    onChange={(event) => {
-                      setCustomRoleArn(event.target.value);
-                      setFieldError(null);
-                    }}
-                    onBlur={() => {
-                      setTouched(true);
-                      setFieldError(awsRoleIdentifierError(awsRoleIdentifier));
-                    }}
-                    autoComplete="off"
-                    aria-invalid={Boolean(showFieldError)}
-                    placeholder="arn:aws:iam::123456789012:role/CustomTrustOpsRole"
                     className="rounded-lg border border-line bg-white px-3 py-2 text-sm normal-case tracking-normal text-ink focus:outline-none focus:ring-1 focus:ring-brand"
                   />
                 </label>
@@ -814,22 +776,33 @@ export function CloudLinkPanel({
               {showFieldError}
             </p>
           )}
-          <Button
-            type="button"
-            variant="primary"
-            size="sm"
-            onClick={finish}
-            disabled={!canComplete}
-          >
-            {complete.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Link2 className="h-4 w-4" />
-            )}{" "}
-            {connector.connector_id === "aws-posture"
-              ? "Save AWS account"
-              : "Save cloud connection"}
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="default"
+              size="sm"
+              onClick={resetSetup}
+              disabled={complete.isPending}
+            >
+              Back
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              onClick={finish}
+              disabled={!canComplete}
+            >
+              {complete.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Link2 className="h-4 w-4" />
+              )}{" "}
+              {connector.connector_id === "aws-posture"
+                ? "Next: verify access"
+                : "Save cloud connection"}
+            </Button>
+          </div>
         </div>
       )}
     </section>

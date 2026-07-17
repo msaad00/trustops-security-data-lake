@@ -12,17 +12,17 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     panel = PANEL.read_text(encoding="utf-8")
 
     assert "TrustOps verifies STS assume-role after deployment." in panel
-    assert "Deploy in AWS, then confirm the account." in panel
+    assert "Deploy the customer-owned AWS role, then save the account target." in panel
     assert "Open AWS guided deploy" in panel
     assert "AWS Console" in panel
     assert "CloudFormation CLI" in panel
     assert "Terraform CLI" in panel
     assert "Deployment method" in panel
-    assert "CloudShell deploy script" in panel
+    assert "Deploy role" in panel
     assert "Copy CloudShell script" in panel
-    assert "Preview script" in panel
-    assert "Run in the target AWS account; the final line prints" in panel
-    assert "AWS account setup" in panel
+    assert "View script" in panel
+    assert "Run in the target AWS account; the final line prints" not in panel
+    assert "AWS account" in panel
     assert "Read-only AWS role" not in panel
     assert 'useState<AwsDeployMode>("cloudformation")' in panel
     assert 'setAwsDeployMode("cloudformation")' in panel
@@ -38,21 +38,28 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     assert "mktemp /tmp/trustops-posture-readonly-role" in panel
     assert "ROLLBACK_FAILED" in panel
     assert "TemplateURL" not in panel
-    assert "Save AWS account" in panel
+    assert "Next: verify access" in panel
+    assert "Save AWS account" not in panel
+    assert "Back" in panel
+    assert "resetSetup" in panel
     assert "Stage credentials" not in panel
-    assert "Confirm account ID" in panel
-    assert "Scale or custom role" in panel
-    assert "One account: confirm the account ID." in panel
-    assert "Many accounts: deploy" in panel
-    assert "with StackSets or Terraform" in panel
-    assert "Use the account ID when the script keeps the default role name." in panel
-    assert "Use a custom Role ARN" in panel
+    assert "Account ID or Role ARN" in panel
+    assert "Confirm account ID" not in panel
+    assert "Scale or custom role" not in panel
+    assert "One account: confirm the account ID." not in panel
+    assert "Many accounts: deploy" not in panel
+    assert "CloudFormation StackSets or" in panel
+    assert "Use the account ID when the script keeps the default role name." not in panel
+    assert "Default role: account ID. Custom role: full ARN." in panel
+    assert "Use a custom Role ARN" not in panel
     assert "Account coverage" not in panel
     assert "Scale rollout" not in panel
-    assert "Scale with StackSets or Terraform" in panel
+    assert "Advanced" in panel
+    assert "Organization rollout" in panel
+    assert "Scale with StackSets or Terraform" not in panel
     assert "CloudFormation StackSets" in panel
     assert "Terraform workspaces" in panel
-    assert "Bulk account import" in panel
+    assert "Bulk account import" not in panel
     assert "Multiple AWS accounts?" not in panel
     assert "Create one connection per account." not in panel
     assert "View trust details" not in panel
@@ -74,8 +81,9 @@ def test_aws_linking_accepts_account_id_or_role_arn() -> None:
     assert "return `arn:aws:iam::${accountId}:role/${roleName}`;" in validation
     assert "awsRoleArnFromIdentifier(awsRoleIdentifier, awsRoleName)" in panel
     assert "awsRoleIdentifierError(awsRoleIdentifier)" in panel
-    assert 'placeholder="030225640638"' in panel
-    assert 'placeholder="arn:aws:iam::123456789012:role/CustomTrustOpsRole"' in panel
+    assert 'placeholder="AWS account ID or role ARN"' in panel
+    assert 'placeholder="030225640638"' not in panel
+    assert 'placeholder="arn:aws:iam::123456789012:role/CustomTrustOpsRole"' not in panel
 
 
 def test_azure_linking_is_provider_identity_first() -> None:
