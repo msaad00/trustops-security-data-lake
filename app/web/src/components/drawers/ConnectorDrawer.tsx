@@ -38,12 +38,14 @@ import {
   CloudLinkPanel,
   supportsCloudLink,
 } from "@/components/connectors/CloudLinkPanel";
+import { IntegrationPresetPanel } from "@/components/connectors/IntegrationPresetPanel";
 import {
   credentialFieldsFor,
   schedulerFieldsFor,
   scopeFieldsFor,
   type ConnectorFieldDef,
 } from "@/lib/connector-forms";
+import { getIntegrationPreset } from "@/lib/integration-presets";
 
 interface Props {
   connector: ConnectorView | null;
@@ -553,6 +555,11 @@ export function ConnectorDrawer({
       (isEnabled && editCloudSetup));
   const showInlineCloudSetup =
     showConnectedCloudSummary && connectedTab === "Config" && editCloudSetup;
+  const integrationPreset = getIntegrationPreset(connector.connector_id);
+  const showIntegrationPreset =
+    Boolean(integrationPreset) &&
+    !usesManagedCloudLink &&
+    !showConnectedCloudSummary;
   const showSetupProgressCard = !(
     showingFirstTimeCloudSetup &&
     showCloudLinkPanel &&
@@ -1192,14 +1199,22 @@ export function ConnectorDrawer({
                 Scope & automation
               </summary>
               <div className="mt-3">
-                {connector.connector_id === "snowflake-evidence-lake" && (
+                {showIntegrationPreset && (
                   <div className="mt-2">
-                    <SnowflakeSetupHint
-                      canDiscover={canDiscover}
-                      discovered={showSnowflakeScopeFields}
+                    <IntegrationPresetPanel
+                      connectorId={connector.connector_id}
                     />
                   </div>
                 )}
+                {connector.connector_id === "snowflake-evidence-lake" &&
+                  !showIntegrationPreset && (
+                    <div className="mt-2">
+                      <SnowflakeSetupHint
+                        canDiscover={canDiscover}
+                        discovered={showSnowflakeScopeFields}
+                      />
+                    </div>
+                  )}
                 <div className="mt-2 grid gap-2">
                   {!usesManagedCloudLink && (
                     <>

@@ -186,6 +186,45 @@ def test_cloud_link_setup_uses_one_compact_step_pattern() -> None:
     assert "Next: verify access" in panel
 
 
+def test_integration_wizard_has_provider_presets_for_cloud_data_and_sso() -> None:
+    presets = (
+        ROOT / "app/web/src/lib/integration-presets.ts"
+    ).read_text(encoding="utf-8")
+    panel = (
+        ROOT / "app/web/src/components/connectors/IntegrationPresetPanel.tsx"
+    ).read_text(encoding="utf-8")
+    drawer = DRAWER.read_text(encoding="utf-8")
+    cloud = PANEL.read_text(encoding="utf-8")
+
+    for connector_id in (
+        "aws-posture",
+        "gcp-posture",
+        "azure-posture",
+        "snowflake-evidence-lake",
+        "okta-identity",
+        "identity-provider",
+        "google-workspace-identity",
+    ):
+        assert connector_id in presets
+
+    assert "Integration wizard" in panel
+    assert "Provider setup" in panel
+    assert "TrustOps needs" in panel
+    assert "Advanced provider details" in panel
+    assert "No long-lived keys" in presets
+    assert "STS assume-role" in presets
+    assert "Workload identity federation" in presets
+    assert "Reader role" in presets
+    assert "Key-pair or OAuth reference" in presets
+    assert "Okta API token reference" in presets
+    assert "Entra app or workload identity" in presets
+    assert "Google Workspace OAuth reference" in presets
+    assert "getIntegrationPreset" in cloud
+    assert "getIntegrationPreset" in drawer
+    assert "<IntegrationPresetPanel" in drawer
+    assert "showIntegrationPreset" in drawer
+
+
 def test_onboarding_cloud_connector_reopens_setup_even_with_staged_target() -> None:
     drawer = DRAWER.read_text(encoding="utf-8")
 
