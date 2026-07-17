@@ -553,12 +553,8 @@ export function CloudLinkPanel({
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="min-w-0">
                   <div className="text-xs font-black uppercase tracking-wide text-muted">
-                    Azure Cloud Shell setup
+                    Deploy Azure access
                   </div>
-                  <p className="mt-0.5 text-xs text-muted">
-                    Grants Reader to the TrustOps app or managed identity. The
-                    final line prints the IDs to confirm below.
-                  </p>
                 </div>
                 <Button
                   type="button"
@@ -573,7 +569,7 @@ export function CloudLinkPanel({
               </div>
               <details className="mt-2 text-xs text-muted">
                 <summary className="cursor-pointer list-none font-bold text-brand">
-                  Preview setup
+                  View command
                 </summary>
                 <code className="mt-2 block max-h-28 overflow-auto whitespace-pre-wrap break-all rounded-lg border border-line bg-surface px-2 py-1.5 text-[11px] font-medium text-ink">
                   {azureDeployCommand}
@@ -596,41 +592,60 @@ export function CloudLinkPanel({
               </details>
             </div>
           )}
-          {connector.connector_id === "gcp-posture" && session.template_url && (
-            <Button
-              type="button"
-              variant="default"
-              size="sm"
-              onClick={() =>
-                window.open(
-                  session.template_url!,
-                  "_blank",
-                  "noopener,noreferrer",
-                )
-              }
-            >
-              <ExternalLink className="h-4 w-4" />
-              Download Terraform template
-            </Button>
-          )}
+          {connector.connector_id === "gcp-posture" &&
+            session.template_url &&
+            !deployCommand && (
+              <div className="rounded-lg border border-line bg-white p-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="text-xs font-black uppercase tracking-wide text-muted">
+                      Deploy GCP access
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="default"
+                    size="sm"
+                    className="shrink-0"
+                    onClick={() =>
+                      window.open(
+                        session.template_url!,
+                        "_blank",
+                        "noopener,noreferrer",
+                      )
+                    }
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Open Terraform template
+                  </Button>
+                </div>
+              </div>
+            )}
           {deployCommand && connector.connector_id === "gcp-posture" && (
-            <div className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
-              <div>Terraform deploy command</div>
-              <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
-                <code className="min-w-0 whitespace-pre-wrap break-all rounded-lg border border-line bg-white px-2 py-1.5 text-xs font-medium normal-case tracking-normal text-ink">
-                  {deployCommand}
-                </code>
+            <div className="rounded-lg border border-line bg-white p-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="text-xs font-black uppercase tracking-wide text-muted">
+                  Deploy GCP access
+                </div>
                 <Button
                   type="button"
                   variant="default"
                   size="sm"
-                  className="shrink-0 self-start"
+                  className="shrink-0"
                   onClick={() => copyDeployCommand(deployCommand)}
                 >
                   <Copy className="h-4 w-4" />
-                  Copy deploy command
+                  Copy Terraform command
                 </Button>
               </div>
+              <details className="mt-2 text-xs text-muted">
+                <summary className="cursor-pointer list-none font-bold text-brand">
+                  View command
+                </summary>
+                <code className="mt-2 block max-h-28 overflow-auto whitespace-pre-wrap break-all rounded-lg border border-line bg-surface px-2 py-1.5 text-[11px] font-medium text-ink">
+                  {deployCommand}
+                </code>
+              </details>
             </div>
           )}
           {!session.quick_create_url &&
@@ -798,9 +813,7 @@ export function CloudLinkPanel({
               ) : (
                 <Link2 className="h-4 w-4" />
               )}{" "}
-              {connector.connector_id === "aws-posture"
-                ? "Next: verify access"
-                : "Save cloud connection"}
+              Next: verify access
             </Button>
           </div>
         </div>

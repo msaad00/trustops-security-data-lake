@@ -27,7 +27,7 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     assert 'useState<AwsDeployMode>("cloudformation")' in panel
     assert 'setAwsDeployMode("cloudformation")' in panel
     assert "AWS CLI deploy command" not in panel
-    assert "Terraform deploy command" in panel
+    assert "Copy Terraform command" in panel
     assert "sanitizeAwsRoleName" in panel
     assert "awsQuickCreateUrl" in panel
     assert "awsTerraformCommand" in panel
@@ -93,9 +93,9 @@ def test_azure_linking_is_provider_identity_first() -> None:
     live_poc = (ROOT / "docs/LIVE_CLOUD_POC.md").read_text(encoding="utf-8")
 
     assert "Read-only Azure identity" in panel
-    assert "Azure Cloud Shell setup" in panel
+    assert "Deploy Azure access" in panel
     assert "Copy Cloud Shell setup" in panel
-    assert "Preview setup" in panel
+    assert "View command" in panel
     assert "TRUSTOPS_AZURE_APP_ID" in panel
     assert "TRUSTOPS_AZURE_PRINCIPAL_OBJECT_ID" in panel
     assert "Set TRUSTOPS_AZURE_APP_ID or TRUSTOPS_AZURE_PRINCIPAL_OBJECT_ID" in panel
@@ -103,6 +103,11 @@ def test_azure_linking_is_provider_identity_first() -> None:
     assert "management-group" in panel
     assert "No Azure password or" in panel
     assert "client secret is stored" in panel
+    assert "Next: verify access" in panel
+    assert "Save cloud connection" not in panel
+    assert "Azure Cloud Shell setup" not in panel
+    assert "Grants Reader to the TrustOps app or managed identity." not in panel
+    assert "The final line prints the IDs to confirm below." not in panel
     assert "local az login" not in panel
     assert "Use my laptop login" not in panel
 
@@ -121,9 +126,11 @@ def test_snowflake_linking_uses_secret_references_not_passwords() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
 
     assert "Read-only Snowflake role" in drawer
-    assert "runtime secret manager" in drawer
+    assert "Secret reference only" in drawer
     assert "identity ready" in drawer
     assert "scope discovered" in drawer
+    assert "Key-pair or OAuth reference; no pasted private key." in drawer
+    assert "Use SSO for a human proof or a service user with key-pair/OAuth" not in drawer
     assert "Connect with a read-only Snowflake service identity." not in drawer
     assert "do not paste a key or password" in forms
     assert "Snowflake is the existing security-data-lake path." in readme
@@ -163,9 +170,20 @@ def test_enabled_cloud_connector_can_edit_and_reverify_setup() -> None:
     assert "Test connection, then save changes." in drawer
     assert "Edit setup" in drawer
     assert "Add another account" not in drawer
-    assert 'connectedTab === "Config" && editCloudSetup' in drawer
-    assert "const showInlineCloudSetup =" in drawer
-    assert "!showInlineCloudSetup && (" in drawer
+
+
+def test_cloud_link_setup_uses_one_compact_step_pattern() -> None:
+    panel = PANEL.read_text(encoding="utf-8")
+
+    assert "Deploy role" in panel
+    assert "Deploy Azure access" in panel
+    assert "Deploy GCP access" in panel
+    assert panel.count("View command") >= 2
+    assert "Terraform deploy command" not in panel
+    assert "Download Terraform template" not in panel
+    assert "Copy Terraform command" in panel
+    assert "Save cloud connection" not in panel
+    assert "Next: verify access" in panel
 
 
 def test_onboarding_cloud_connector_reopens_setup_even_with_staged_target() -> None:

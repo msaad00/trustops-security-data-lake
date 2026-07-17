@@ -202,10 +202,10 @@ function SnowflakeSetupHint({
             Read-only Snowflake role
           </div>
           <div className="mt-0.5 text-xs leading-5 text-blue-950">
-            Use SSO for a human proof or a service user with key-pair/OAuth
-            stored in the runtime secret manager.
+            Key-pair or OAuth reference; no pasted private key.
           </div>
         </div>
+        <Badge>Secret reference only</Badge>
         <Badge tone={canDiscover ? "ready" : "attention"}>
           {canDiscover ? "identity ready" : "identity needed"}
         </Badge>

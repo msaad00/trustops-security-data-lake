@@ -140,7 +140,7 @@ function ConnectorRow({
     <button
       type="button"
       onClick={onSelect}
-      className={`grid w-full min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 overflow-hidden rounded-xl border bg-white p-4 text-left transition-colors hover:border-brand hover:shadow-card ${
+      className={`grid w-full min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 overflow-hidden rounded-lg border bg-white p-3 text-left transition-colors hover:border-brand hover:shadow-card ${
         runnable
           ? "border-line"
           : "border-dashed border-amber-200/80 bg-amber-50/30"
@@ -161,8 +161,7 @@ function ConnectorRow({
           {health && <Badge tone={health.tone}>{health.label}</Badge>}
         </span>
         <span className="mt-1 block truncate text-xs text-muted">
-          {connector.setup_hint ??
-            `Read-only ${connector.category} evidence · daily snapshot ready`}
+          {connector.setup_hint ?? `Read-only ${connector.category} evidence`}
         </span>
       </span>
       <span className="shrink-0 text-right">
@@ -268,7 +267,7 @@ export default function ConnectorsPage() {
       <PageHeader
         eyebrow="Sources"
         title="Connect evidence"
-        description="Connect a read-only source. TrustOps evaluates it and writes a daily snapshot to your security data lake."
+        description="Connect a source, test access, then sync evidence."
         actions={
           totals.unhealthy > 0 ? (
             <span className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-black text-rose-700">
@@ -367,11 +366,10 @@ export default function ConnectorsPage() {
           <CardHeader>
             <CardTitle>{filtered.length} sources</CardTitle>
             <CardDescription>
-              Select a source to connect, probe access, and schedule its daily
-              evidence snapshot.
+              Pick a source to configure or review.
             </CardDescription>
           </CardHeader>
-          <div className="grid gap-2 p-4 pt-0 lg:grid-cols-2">
+          <div className="grid gap-2 p-3 pt-0 md:grid-cols-2 xl:grid-cols-3">
             {filtered.length === 0 && (
               <div className="rounded-lg border border-dashed border-line p-4 text-sm text-muted">
                 {totals.enabled === 0 ? (
