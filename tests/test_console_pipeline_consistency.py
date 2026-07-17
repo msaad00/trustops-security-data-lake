@@ -30,7 +30,8 @@ def test_core_pages_share_the_trust_pipeline_strip() -> None:
     assert 'activeStage="controls"' in controls
     assert 'activeStage="frameworks"' in frameworks
     assert 'activeStage="findings"' in violations
-    assert 'activeStage="proof"' in audit_room
+    assert 'aria-label="Audit room view"' in audit_room
+    assert '<TrustPipelineStrip activeStage="proof" />' not in audit_room
 
 
 def test_cloud_link_panel_reinforces_read_only_no_key_paths() -> None:

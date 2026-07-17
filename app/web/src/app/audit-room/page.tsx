@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -19,22 +20,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { EvidenceFreshnessSlaPanel } from "@/components/evidence/EvidenceFreshnessSlaPanel";
-import { AuditRoomTrendsPanel } from "@/components/audit-room/AuditRoomTrendsPanel";
 import { AuditSnapshotTimeline } from "@/components/audit-room/AuditSnapshotTimeline";
 import { IngestionLoopStrip } from "@/components/audit-room/IngestionLoopStrip";
-import { RemediationSlaStrip } from "@/components/audit-room/RemediationSlaStrip";
-import { VendorRiskStrip } from "@/components/audit-room/VendorRiskStrip";
-import { PolicyAttestationStrip } from "@/components/audit-room/PolicyAttestationStrip";
-import { PersonnelComplianceStrip } from "@/components/audit-room/PersonnelComplianceStrip";
-import { GovComplianceStrip } from "@/components/audit-room/GovComplianceStrip";
-import { PoamWorkbench } from "@/components/audit-room/PoamWorkbench";
-import { AiGovernanceStrip } from "@/components/audit-room/AiGovernanceStrip";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
-import { TrustPipelineStrip } from "@/components/TrustPipelineStrip";
 import { KpiTile } from "@/components/ui/KpiTile";
-import { CollapsibleCard } from "@/components/ui/collapsible-card";
 import { useAuditReadiness, usePlatformStream } from "@/lib/api/hooks";
+
+const AUDIT_ROOM_TABS = ["Freshness", "Runs", "Snapshots", "Gaps"] as const;
+type AuditRoomTab = (typeof AUDIT_ROOM_TABS)[number];
 
 function consoleHref(href: string) {
   return href.startsWith("/console") ? href.replace(/^\/console/, "") : href;
@@ -52,254 +46,246 @@ const STATE_COPY: Record<
 export default function AuditRoomPage() {
   const audit = useAuditReadiness();
   const { connected } = usePlatformStream();
+  const [activeAuditTab, setActiveAuditTab] =
+    useState<AuditRoomTab>("Freshness");
 
   return (
     <div className="mx-auto grid w-full max-w-[1600px] gap-2 px-3 py-2 sm:px-4 lg:px-5">
       <PageHeader
         eyebrow="Audit center"
         title="Audit readiness room"
-        description="Proof exports from gold posture: continuous controls, evidence, access reviews, auditor shares, and point-in-time snapshots."
+        description="Review posture, freshness, snapshots, and proof gaps without leaving the trust workflow."
       />
-      <TrustPipelineStrip activeStage="proof" />
 
       <QueryState queries={audit} label="audit readiness">
         {audit.data && (
           <>
-            <div className="flex flex-wrap items-center gap-3">
-              <Badge tone={STATE_COPY[audit.data.state]?.tone ?? "attention"}>
-                {STATE_COPY[audit.data.state]?.label ?? audit.data.state}
-              </Badge>
-              {connected ? <Badge tone="ready">Live</Badge> : null}
-              <span className="text-sm text-muted">
-                Evaluated {new Date(audit.data.evaluated_at).toLocaleString()}
-              </span>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-              <KpiTile
-                label="Audit score"
-                value={`${audit.data.audit_score}%`}
-                detail="Weighted posture, tests, frameworks, workflow coverage"
-              />
-              <KpiTile
-                label="Control tests"
-                value={`${audit.data.control_tests.passing}/${audit.data.control_tests.total}`}
-                detail={`${audit.data.control_tests.failing} failing`}
-              />
-              <KpiTile
-                label="Frameworks ready"
-                value={`${audit.data.posture.frameworks_ready}/${audit.data.posture.frameworks_total}`}
-                detail={`${audit.data.posture.score}% posture`}
-              />
-              <KpiTile
-                label="Evidence fresh"
-                value={
-                  audit.data.evidence_freshness
-                    ? `${audit.data.evidence_freshness.fresh_rate_pct}%`
-                    : "—"
-                }
-                detail={
-                  audit.data.evidence_freshness
-                    ? `${audit.data.evidence_freshness.stale_count} SLA breach(es)`
-                    : "Freshness rollups from lake pipeline"
-                }
-              />
-              <KpiTile
-                label="Workflow coverage"
-                value={`${audit.data.workflow_coverage.score}%`}
-                detail="Audit-center checklist"
-              />
-            </div>
-
-            <EvidenceFreshnessSlaPanel />
-
-            <IngestionLoopStrip />
-
-            <AuditRoomTrendsPanel />
-
-            <RemediationSlaStrip />
-
-            <CollapsibleCard
-              storageKey="audit-room-extended-programs"
-              defaultOpen={false}
-              title="Extended audit programs"
-              description="Vendor risk, personnel, AI governance, POA&M, and policy attestation."
-              contentClassName="grid gap-2 p-0"
-            >
-              <VendorRiskStrip />
-              <PersonnelComplianceStrip />
-              <AiGovernanceStrip />
-              <GovComplianceStrip />
-              <PoamWorkbench />
-              <PolicyAttestationStrip />
-            </CollapsibleCard>
-
-            <AuditSnapshotTimeline />
-
-            {audit.data.gaps.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Blocking gaps</CardTitle>
-                  <CardDescription>
-                    Top items an auditor or GRC lead would ask for before
-                    sign-off.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="grid gap-2">
-                  {audit.data.gaps.map((gap) => (
-                    <Link
-                      key={gap.id}
-                      href={consoleHref(gap.href)}
-                      className="flex items-center justify-between rounded-lg border border-line bg-surface px-3 py-2 text-sm hover:bg-surfaceMuted"
-                    >
-                      <span className="flex items-center gap-2 font-bold text-ink">
-                        <CircleAlert className="h-4 w-4 text-brand-orange" />
-                        {gap.label}
-                      </span>
-                      <ArrowRight className="h-4 w-4 text-muted" />
-                    </Link>
-                  ))}
-                </CardContent>
-              </Card>
-            )}
-
-            <div className="grid gap-4 lg:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">
-                    Evidence &amp; access
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="grid gap-2 text-sm text-muted">
-                  <div className="flex justify-between">
-                    <span>Open evidence requests</span>
-                    <b className="text-ink">
-                      {audit.data.evidence_requests.open}
-                    </b>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Active access reviews</span>
-                    <b className="text-ink">
-                      {audit.data.access_reviews.active}
-                    </b>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Auditor trust shares</span>
-                    <b className="text-ink">
-                      {audit.data.trust_shares.auditor}
-                    </b>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Connectors / evidence rows</span>
-                    <b className="text-ink">
-                      {audit.data.connectors.enabled} /{" "}
-                      {audit.data.connectors.evidence_count}
-                    </b>
-                  </div>
-                  {audit.data.vendor_risk && (
-                    <>
-                      <div className="flex justify-between">
-                        <span>Vendor assessments</span>
-                        <b className="text-ink">
-                          {audit.data.vendor_risk.completed}/
-                          {audit.data.vendor_risk.total} complete
-                        </b>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Overdue vendor reviews</span>
-                        <b className="text-ink">
-                          {audit.data.vendor_risk.overdue}
-                        </b>
-                      </div>
-                    </>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Point-in-time</CardTitle>
-                </CardHeader>
-                <CardContent className="grid gap-2 text-sm text-muted">
-                  <div className="flex justify-between">
-                    <span>Snapshots</span>
-                    <b className="text-ink">{audit.data.snapshots.count}</b>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Latest</span>
-                    <code className="max-w-[200px] truncate text-ink">
-                      {audit.data.snapshots.latest_hash ?? "—"}
-                    </code>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Open violations</span>
-                    <b className="text-ink">
-                      {audit.data.posture.open_violations}
-                    </b>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
             <Card>
-              <CardHeader>
-                <CardTitle className="text-base">
-                  Audit workflow checklist
-                </CardTitle>
-                <CardDescription>
-                  Capabilities shipped today vs roadmap gaps — also available
-                  via API.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-2">
-                {audit.data.workflow_coverage.checklist.map((row) => (
-                  <div
-                    key={row.id}
-                    className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3 rounded-lg border border-line bg-surface px-3 py-2"
+              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 pb-2">
+                <div>
+                  <CardTitle className="text-base">Readiness summary</CardTitle>
+                  <CardDescription>
+                    Proof view from the latest deterministic evaluation.
+                  </CardDescription>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge
+                    tone={STATE_COPY[audit.data.state]?.tone ?? "attention"}
                   >
-                    {row.shipped ? (
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 text-brand-green" />
-                    ) : (
-                      <CircleAlert className="mt-0.5 h-4 w-4 text-muted" />
-                    )}
-                    <div>
-                      <div className="text-sm font-bold text-ink">
-                        {row.label}
-                      </div>
-                      <div className="text-xs text-muted">{row.note}</div>
-                    </div>
-                    <Badge tone={row.shipped ? "ready" : "default"}>
-                      {row.shipped ? "shipped" : "gap"}
-                    </Badge>
-                  </div>
-                ))}
+                    {STATE_COPY[audit.data.state]?.label ?? audit.data.state}
+                  </Badge>
+                  {connected ? <Badge tone="ready">Live</Badge> : null}
+                  <span className="text-xs font-bold text-muted">
+                    {new Date(audit.data.evaluated_at).toLocaleString()}
+                  </span>
+                </div>
+              </CardHeader>
+              <CardContent className="grid gap-3">
+                <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
+                  <KpiTile
+                    label="Audit score"
+                    value={`${audit.data.audit_score}%`}
+                    detail="weighted posture"
+                  />
+                  <KpiTile
+                    label="Control tests"
+                    value={`${audit.data.control_tests.passing}/${audit.data.control_tests.total}`}
+                    detail={`${audit.data.control_tests.failing} failing`}
+                  />
+                  <KpiTile
+                    label="Frameworks"
+                    value={`${audit.data.posture.frameworks_ready}/${audit.data.posture.frameworks_total}`}
+                    detail={`${audit.data.posture.score}% posture`}
+                  />
+                  <KpiTile
+                    label="Evidence fresh"
+                    value={
+                      audit.data.evidence_freshness
+                        ? `${audit.data.evidence_freshness.fresh_rate_pct}%`
+                        : "—"
+                    }
+                    detail={
+                      audit.data.evidence_freshness
+                        ? `${audit.data.evidence_freshness.stale_count} breach(es)`
+                        : "freshness rollup"
+                    }
+                  />
+                  <KpiTile
+                    label="Workflow"
+                    value={`${audit.data.workflow_coverage.score}%`}
+                    detail="audit checklist"
+                  />
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <Button asChild size="sm" variant="primary">
+                    <Link href="/trust-center">
+                      <ShieldCheck className="h-4 w-4" />
+                      Trust center
+                    </Link>
+                  </Button>
+                  <Button asChild size="sm" variant="default">
+                    <Link href="/access-reviews">
+                      <ClipboardCheck className="h-4 w-4" />
+                      Access reviews
+                    </Link>
+                  </Button>
+                  <Button asChild size="sm" variant="default">
+                    <a
+                      href="https://github.com/msaad00/trustops-security-data-lake/blob/main/docs/AUDIT_READINESS.md"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Readiness doc
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
 
-            <div className="flex flex-wrap gap-2">
-              <Button asChild variant="primary">
-                <Link href="/trust-center">
-                  <ShieldCheck className="h-4 w-4" />
-                  Trust center
-                </Link>
-              </Button>
-              <Button asChild variant="default">
-                <Link href="/access-reviews">
-                  <ClipboardCheck className="h-4 w-4" />
-                  Access reviews
-                </Link>
-              </Button>
-              <Button asChild variant="default">
-                <a
-                  href="https://github.com/msaad00/trustops-security-data-lake/blob/main/docs/AUDIT_READINESS.md"
-                  target="_blank"
-                  rel="noreferrer"
+            <Card>
+              <CardContent className="grid gap-3 p-3">
+                <div
+                  aria-label="Audit room view"
+                  className="grid grid-cols-2 gap-1 rounded-lg border border-line bg-panel p-1 md:grid-cols-4"
+                  role="tablist"
                 >
-                  Audit readiness doc
-                  <ExternalLink className="h-4 w-4" />
-                </a>
-              </Button>
-            </div>
+                  {AUDIT_ROOM_TABS.map((tab) => (
+                    <button
+                      key={tab}
+                      aria-selected={activeAuditTab === tab}
+                      className={`rounded-md px-3 py-2 text-sm font-black transition ${
+                        activeAuditTab === tab
+                          ? "bg-brand text-white shadow-sm"
+                          : "text-muted hover:bg-white hover:text-ink"
+                      }`}
+                      onClick={() => setActiveAuditTab(tab)}
+                      role="tab"
+                      type="button"
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+
+                {activeAuditTab === "Freshness" && (
+                  <EvidenceFreshnessSlaPanel></EvidenceFreshnessSlaPanel>
+                )}
+
+                {activeAuditTab === "Runs" && (
+                  <IngestionLoopStrip></IngestionLoopStrip>
+                )}
+
+                {activeAuditTab === "Snapshots" && (
+                  <AuditSnapshotTimeline></AuditSnapshotTimeline>
+                )}
+
+                {activeAuditTab === "Gaps" && (
+                  <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.45fr)]">
+                    <Card className="overflow-hidden">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-base">
+                          Blocking gaps
+                        </CardTitle>
+                        <CardDescription>
+                          Auditor-facing items to close before sign-off.
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="grid max-h-[320px] gap-2 overflow-y-auto">
+                        {audit.data.gaps.length > 0 ? (
+                          audit.data.gaps.map((gap) => (
+                            <Link
+                              key={gap.id}
+                              href={consoleHref(gap.href)}
+                              className="flex items-center justify-between rounded-lg border border-line bg-surface px-3 py-2 text-sm hover:bg-surfaceMuted"
+                            >
+                              <span className="flex items-center gap-2 font-bold text-ink">
+                                <CircleAlert className="h-4 w-4 text-brand-orange" />
+                                {gap.label}
+                              </span>
+                              <ArrowRight className="h-4 w-4 text-muted" />
+                            </Link>
+                          ))
+                        ) : (
+                          <div className="rounded-lg border border-line bg-surfaceMuted px-3 py-2 text-sm text-muted">
+                            No blocking gaps from the latest assessment.
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    <div className="grid gap-3">
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-base">
+                            Evidence &amp; access
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="grid gap-2 text-sm text-muted">
+                          <div className="flex justify-between">
+                            <span>Evidence requests</span>
+                            <b className="text-ink">
+                              {audit.data.evidence_requests.open}
+                            </b>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Access reviews</span>
+                            <b className="text-ink">
+                              {audit.data.access_reviews.active}
+                            </b>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Auditor shares</span>
+                            <b className="text-ink">
+                              {audit.data.trust_shares.auditor}
+                            </b>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Connectors / rows</span>
+                            <b className="text-ink">
+                              {audit.data.connectors.enabled} /{" "}
+                              {audit.data.connectors.evidence_count}
+                            </b>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-base">Checklist</CardTitle>
+                        </CardHeader>
+                        <CardContent className="grid max-h-[220px] gap-2 overflow-y-auto">
+                          {audit.data.workflow_coverage.checklist.map((row) => (
+                            <div
+                              key={row.id}
+                              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-2 rounded-lg border border-line bg-surface px-3 py-2"
+                            >
+                              {row.shipped ? (
+                                <CheckCircle2 className="mt-0.5 h-4 w-4 text-brand-green" />
+                              ) : (
+                                <CircleAlert className="mt-0.5 h-4 w-4 text-muted" />
+                              )}
+                              <div className="min-w-0">
+                                <div className="truncate text-sm font-bold text-ink">
+                                  {row.label}
+                                </div>
+                                <div className="truncate text-xs text-muted">
+                                  {row.note}
+                                </div>
+                              </div>
+                              <Badge tone={row.shipped ? "ready" : "default"}>
+                                {row.shipped ? "shipped" : "gap"}
+                              </Badge>
+                            </div>
+                          ))}
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </>
         )}
       </QueryState>

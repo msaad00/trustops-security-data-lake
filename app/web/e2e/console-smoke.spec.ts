@@ -38,6 +38,18 @@ test.describe("console smoke", () => {
       page.getByRole("heading", { level: 1, name: "Audit readiness room" }),
     ).toBeVisible();
     await expect(page.getByText("Audit score", { exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("tab", { name: "Freshness", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("tab", { name: "Runs", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("tab", { name: "Snapshots", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("tab", { name: "Gaps", exact: true }),
+    ).toBeVisible();
   });
 
   test("evidence page separates facts from report exports", async ({
@@ -69,7 +81,6 @@ test.describe("console smoke", () => {
       ["/console/frameworks/", "Framework map"],
       ["/console/controls/", "Control eval"],
       ["/console/violations/", "Findings"],
-      ["/console/audit-room/", "Proof export"],
     ] as const) {
       await page.goto(path);
       const pipeline = page.getByLabel("Trust pipeline");
