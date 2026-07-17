@@ -553,6 +553,11 @@ export function ConnectorDrawer({
       (isEnabled && editCloudSetup));
   const showInlineCloudSetup =
     showConnectedCloudSummary && connectedTab === "Config" && editCloudSetup;
+  const showSetupProgressCard = !(
+    showingFirstTimeCloudSetup &&
+    showCloudLinkPanel &&
+    !showInlineCloudSetup
+  );
   const compactCloudDetails = [...scopeFields, ...schedulerFields].map(
     (field) => ({
       label: field.label,
@@ -843,7 +848,7 @@ export function ConnectorDrawer({
       }
     >
       <div className="grid gap-2 text-sm">
-        {onboarding ? (
+        {onboarding && !showingFirstTimeCloudSetup ? (
           <OnboardingGuideBanner
             step={onboardingStep}
             title={onboardingTitle}
@@ -863,7 +868,9 @@ export function ConnectorDrawer({
           </section>
         )}
 
-        <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]">
+        <div
+          className={`grid gap-3 ${showSetupProgressCard ? "lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]" : "lg:grid-cols-1"}`}
+        >
           {!auditor &&
             connector &&
             showCloudLinkPanel &&
@@ -879,42 +886,44 @@ export function ConnectorDrawer({
                 onToast={onToast}
               />
             )}
-          <section
-            className={`rounded-lg border border-line bg-surface p-3 ${usesManagedCloudLink && (hasStagedServerCredentials || showConnectedCloudSummary) ? "lg:col-span-2" : ""}`}
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <ConnectorMark
-                  connectorId={connector.connector_id}
-                  name={connector.name}
-                  category={connector.category}
-                  size="sm"
-                />
-                <span className="text-xs font-semibold text-ink">
-                  Step {Math.min(onboardingStep, 4)} of 4 ·{" "}
-                  {setupSteps[Math.min(onboardingStep, 4) - 1]?.label}
-                </span>
-              </div>
-              <Badge tone={isEnabled ? "ready" : "default"}>
-                {connector.state}
-              </Badge>
-            </div>
-            <div
-              className="mt-2 grid grid-cols-4 gap-1"
-              aria-label="Connector progress"
+          {showSetupProgressCard && (
+            <section
+              className={`rounded-lg border border-line bg-surface p-3 ${usesManagedCloudLink && (hasStagedServerCredentials || showConnectedCloudSummary) ? "lg:col-span-2" : ""}`}
             >
-              {setupSteps.map((step, index) => (
-                <span
-                  key={step.label}
-                  title={`${step.label}: ${step.detail}`}
-                  className={`h-1.5 rounded-full ${index < onboardingStep ? "bg-brand" : "bg-line"}`}
-                />
-              ))}
-            </div>
-            <p className="mt-2 text-xs leading-4 text-muted">
-              {setupSteps[Math.min(onboardingStep, 4) - 1]?.detail}
-            </p>
-          </section>
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <ConnectorMark
+                    connectorId={connector.connector_id}
+                    name={connector.name}
+                    category={connector.category}
+                    size="sm"
+                  />
+                  <span className="text-xs font-semibold text-ink">
+                    Step {Math.min(onboardingStep, 4)} of 4 ·{" "}
+                    {setupSteps[Math.min(onboardingStep, 4) - 1]?.label}
+                  </span>
+                </div>
+                <Badge tone={isEnabled ? "ready" : "default"}>
+                  {connector.state}
+                </Badge>
+              </div>
+              <div
+                className="mt-2 grid grid-cols-4 gap-1"
+                aria-label="Connector progress"
+              >
+                {setupSteps.map((step, index) => (
+                  <span
+                    key={step.label}
+                    title={`${step.label}: ${step.detail}`}
+                    className={`h-1.5 rounded-full ${index < onboardingStep ? "bg-brand" : "bg-line"}`}
+                  />
+                ))}
+              </div>
+              <p className="mt-2 text-xs leading-4 text-muted">
+                {setupSteps[Math.min(onboardingStep, 4) - 1]?.detail}
+              </p>
+            </section>
+          )}
         </div>
 
         {showManagedCloudConfiguration && !showConnectedCloudSummary && (

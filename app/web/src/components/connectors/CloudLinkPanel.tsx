@@ -408,7 +408,7 @@ export function CloudLinkPanel({
   const isAwsPosture = connector.connector_id === "aws-posture";
   const isAzurePosture = connector.connector_id === "azure-posture";
   const headerLabel = isAwsPosture
-    ? "Read-only AWS role"
+    ? "AWS account setup"
     : isAzurePosture
       ? "Read-only Azure identity"
       : "Cloud account linking";
@@ -420,7 +420,9 @@ export function CloudLinkPanel({
         <div className="text-xs font-black uppercase tracking-wide text-ink">
           {headerLabel}
         </div>
-        <Badge tone="ready">Read-only access</Badge>
+        <Badge tone="ready">
+          {isAwsPosture ? "STS assume-role" : "Read-only access"}
+        </Badge>
         <Badge>No long-lived keys</Badge>
         {isAzurePosture && <Badge>Reader role</Badge>}
       </div>
@@ -449,15 +451,6 @@ export function CloudLinkPanel({
             <p className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs text-amber-950">
               Returned from identity provider — confirm consent completed, then
               enter your account identifier below.
-            </p>
-          )}
-          {connector.connector_id === "aws-posture" && (
-            <p className="rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs leading-5 text-muted">
-              <b className="text-ink">Single account:</b> deploy one read-only
-              role and confirm the account.
-              <span className="mx-1 text-line">|</span>
-              <b className="text-ink">Organization rollout:</b> deploy the same
-              role with StackSets or Terraform, then import targets in bulk.
             </p>
           )}
           {connector.connector_id === "aws-posture" &&
@@ -666,7 +659,7 @@ export function CloudLinkPanel({
             )}
           {connector.connector_id === "aws-posture" && (
             <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
-              AWS account ID
+              Confirm account ID
               <input
                 value={roleArn}
                 onChange={(e) => {
@@ -683,20 +676,23 @@ export function CloudLinkPanel({
                 className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
               />
               <span className="font-medium normal-case tracking-normal text-muted">
-                Use the account ID when you keep the default role name. For a
-                custom name, paste the Role ARN in Advanced options.
+                Use the account ID when the script keeps the default role name.
+                For a custom role, paste the Role ARN in advanced options.
               </span>
             </label>
           )}
           {connector.connector_id === "aws-posture" && (
             <details className="text-xs text-muted">
               <summary className="cursor-pointer list-none font-black uppercase tracking-wide text-ink">
-                Advanced options
+                Scale or custom role
               </summary>
               <div className="mt-2 grid gap-2 border-t border-line pt-2">
                 <div className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
                   Scale with StackSets or Terraform
                   <span className="font-medium normal-case tracking-normal text-muted">
+                    One account: confirm the account ID. Many accounts: deploy
+                    with StackSets or Terraform, then bulk import account IDs or
+                    Role ARNs.{" "}
                     {session.scale_strategy?.summary ||
                       "Use CloudFormation StackSets or Terraform workspaces across AWS accounts."}{" "}
                     {session.scale_strategy?.follow_up ||
