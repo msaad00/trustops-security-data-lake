@@ -13,7 +13,7 @@ def test_connector_hub_uses_compact_interactive_filters_and_grid() -> None:
     assert 'aria-label="Runner filter"' in page
     assert 'aria-label="Category filter"' in page
     assert "overflow-x-auto" in page
-    assert 'className="grid gap-2 p-4 pt-0 lg:grid-cols-2"' in page
+    assert 'className="grid gap-2 p-3 pt-0 md:grid-cols-2 xl:grid-cols-3"' in page
     assert "Needs attention" in page
     assert "Needs setup" in page
     assert "All categories" in page
@@ -35,3 +35,6 @@ def test_connector_hub_uses_compact_interactive_filters_and_grid() -> None:
     assert "ConnectorEcosystemStrip" not in page
     assert "Integration breadth" not in page
     assert "Live ingestion" not in page
+    assert "daily snapshot ready" not in page
+    assert "Select a source to connect, probe access, and schedule its daily" not in page
+    assert "Connect a source, test access, then sync evidence." in page
