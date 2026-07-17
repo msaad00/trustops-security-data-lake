@@ -22,6 +22,8 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     assert "Copy CloudShell script" in panel
     assert "Preview script" in panel
     assert "Run in the target AWS account; the final line prints" in panel
+    assert "AWS account setup" in panel
+    assert "Read-only AWS role" not in panel
     assert 'useState<AwsDeployMode>("cloudformation")' in panel
     assert 'setAwsDeployMode("cloudformation")' in panel
     assert "AWS CLI deploy command" not in panel
@@ -29,7 +31,7 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     assert "sanitizeAwsRoleName" in panel
     assert "awsQuickCreateUrl" in panel
     assert "awsTerraformCommand" in panel
-    assert "Advanced options" in panel
+    assert "Advanced options" not in panel
     assert "Advanced role settings" not in panel
     assert "Read-only IAM posture" in panel
     assert "IAM posture read-only" in panel
@@ -38,12 +40,12 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     assert "TemplateURL" not in panel
     assert "Save AWS account" in panel
     assert "Stage credentials" not in panel
-    assert "AWS account ID" in panel
-    assert "Single account:" in panel
-    assert "deploy one read-only" in panel
-    assert "Organization rollout:" in panel
-    assert "import targets in bulk" in panel
-    assert "Use the account ID when you keep the default role name." in panel
+    assert "Confirm account ID" in panel
+    assert "Scale or custom role" in panel
+    assert "One account: confirm the account ID." in panel
+    assert "Many accounts: deploy" in panel
+    assert "with StackSets or Terraform" in panel
+    assert "Use the account ID when the script keeps the default role name." in panel
     assert "Use a custom Role ARN" in panel
     assert "Account coverage" not in panel
     assert "Scale rollout" not in panel
@@ -166,6 +168,9 @@ def test_onboarding_cloud_connector_reopens_setup_even_with_staged_target() -> N
     assert "showingFirstTimeCloudSetup ||" in drawer
     assert "!showingFirstTimeCloudSetup" in drawer
     assert "runHistoryRows.length > 0 &&" in drawer
+    assert "const showSetupProgressCard =" in drawer
+    assert "showSetupProgressCard && (" in drawer
+    assert "onboarding && !showingFirstTimeCloudSetup" in drawer
 
 
 def test_aws_drawer_has_one_linear_setup_flow_and_no_duplicate_sync_action() -> None:
