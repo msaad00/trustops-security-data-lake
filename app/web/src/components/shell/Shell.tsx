@@ -55,7 +55,7 @@ export function Shell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex h-dvh min-h-0 w-full min-w-0 max-w-none flex-col overflow-hidden bg-rail">
+    <div className="flex min-h-dvh w-full min-w-0 max-w-none flex-col bg-rail">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:font-bold focus:text-ink focus:shadow-hero"
@@ -69,13 +69,13 @@ export function Shell({ children }: { children: ReactNode }) {
         onOpenPalette={() => setPaletteOpen(true)}
       />
       <AuditorBanner />
-      <div className="grid min-h-0 min-w-0 flex-1 grid-cols-[auto_minmax(0,1fr)] overflow-hidden">
+      <div className="grid min-w-0 flex-1 grid-cols-[auto_minmax(0,1fr)] bg-panel">
         <Sidebar />
-        <div className="grid min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden">
+        <div className="grid min-w-0 grid-rows-[auto_1fr] overflow-x-hidden">
           <Breadcrumbs />
           <main
             id="main-content"
-            className="min-h-0 min-w-0 max-w-full overflow-auto bg-panel"
+            className="min-w-0 max-w-full overflow-x-hidden bg-panel"
           >
             <ApiHealthBanner />
             <AnimatePresence mode="wait">
