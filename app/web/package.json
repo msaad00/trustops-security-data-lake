@@ -24,7 +24,7 @@
     "@tanstack/react-query": "^5.101.2",
     "@tanstack/react-table": "^8.20.6",
     "@xyflow/react": "^12.11.2",
-    "caniuse-lite": "^1.0.30001802",
+    "caniuse-lite": "^1.0.30001806",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.42.2",
