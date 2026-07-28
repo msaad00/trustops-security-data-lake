@@ -1,7 +1,7 @@
-# Example: block merges when Koda posture regresses.
+# Example: block merges when TrustOps posture regresses.
 # Copy into .github/workflows/ and set repository secrets:
 #   TRUSTOPS_URL, TRUSTOPS_API_TOKEN
-name: Koda posture gate
+name: TrustOps posture gate
 
 on:
   pull_request:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Evaluate Koda posture
+      - name: Evaluate TrustOps posture
         uses: ./.github/actions/posture-gate
         with:
           trustops-url: ${{ secrets.TRUSTOPS_URL }}

@@ -1,6 +1,6 @@
 # CI posture gate playbook
 
-Block merges and deployments when Koda posture regresses. Platform engineers should
+Block merges and deployments when TrustOps posture regresses. Platform engineers should
 wire this **before** the human console — same `/api/v1` routes agents and MCP use.
 
 Related: [AGENT_SKILLS.md](../api/AGENT_SKILLS.md) (`ci.gate`) ·
@@ -26,13 +26,13 @@ into `.github/workflows/` and set repository secrets:
 
 | Secret               | Value                                          |
 | -------------------- | ---------------------------------------------- |
-| `TRUSTOPS_URL`       | `https://koda.example.com` (no trailing slash) |
+| `TRUSTOPS_URL`       | `https://trustops.example.com` (no trailing slash) |
 | `TRUSTOPS_API_TOKEN` | Read-scoped API key (`tops_…`)                 |
 
 Example step:
 
 ```yaml
-- name: Koda posture gate
+- name: TrustOps posture gate
   uses: ./.github/actions/posture-gate
   with:
     trustops-url: ${{ secrets.TRUSTOPS_URL }}

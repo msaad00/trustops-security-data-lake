@@ -1,295 +1,158 @@
-# Koda (TrustOps Security Data Lake)
+# TrustOps
 
 <p align="center">
-  <img src="docs/images/trustops-logo.svg" alt="Koda — open-source trust operations platform" width="360">
+  <img src="docs/images/trustops-logo.svg" alt="TrustOps — open-source trust operations" width="360">
 </p>
 
 <p align="center">
-  <strong>Continuous compliance in your VPC</strong> — evidence lake, deterministic controls, audit-ready workflows.<br/>
-  <em>Koda</em> is the product (console · <code>/api/v1</code> · MCP); <code>security-lakehouse</code> is the engine CLI.
+  <strong>Continuous compliance in your cloud.</strong><br/>
+  Read-only evidence collection, deterministic control tests, and audit-ready proof — in one self-hosted platform.
 </p>
 
 <p align="center">
-  <a href="docs/PRODUCT_WALKTHROUGH.md"><strong>Walkthrough</strong></a> ·
-  <a href="docs/PRODUCT_SHAPE.md"><strong>Parity map</strong></a> ·
-  <a href="docs/SHAREABLE_DEMO.md"><strong>Live demo</strong></a> ·
+  <a href="docs/PRODUCT_WALKTHROUGH.md"><strong>Product tour</strong></a> ·
   <a href="docs/CONNECTORS.md"><strong>Connectors</strong></a> ·
   <a href="docs/ARCHITECTURE.md"><strong>Architecture</strong></a> ·
-  <a href="deploy/README.md"><strong>Deploy</strong></a> ·
-  <a href="CHANGELOG.md"><strong>Changelog</strong></a>
+  <a href="docs/api/AGENT_API.md"><strong>API & agents</strong></a> ·
+  <a href="deploy/README.md"><strong>Deploy</strong></a>
 </p>
 
 <p align="center">
-  <img src="docs/images/trustops-readme-banner.svg" alt="TrustOps — read-only connectors, evidence lake, control tests, audit room, console and API" width="100%">
+  <img src="docs/images/trustops-readme-banner.svg" alt="TrustOps turns read-only source data into evaluated controls and audit-ready proof" width="100%">
 </p>
 
-## Why teams pick Koda over managed GRC
+## What TrustOps does
 
-Managed GRC SaaS excels at onboarding polish and integration breadth. **Koda** targets the same **audit loop** for **AI, cloud, and modern infra** with a different contract: **your evidence lake**, **headless-first APIs**, and **deterministic control tests** — not connector pass/fail widgets alone.
+TrustOps gives security and compliance teams one operating loop:
 
-|                       | Managed GRC SaaS   | Koda (OSS + self-host)                                  |
-| --------------------- | ------------------ | ------------------------------------------------------- |
-| **Evidence custody**  | Vendor-hosted      | Customer bronze/silver/gold lake                        |
-| **Verdict engine**    | Platform widgets   | Lake-backed control tests + hashes                      |
-| **Audit room**        | Mature UX          | Live score, gaps, vendor/policy strips, SSE             |
-| **Integrations**      | 100+ long tail     | AWS · Azure · GCP · Snowflake · GitHub · Okta + catalog |
-| **Agents / CI / MCP** | Add-on             | First-class `/api/v1` + MCP catalog                     |
-| **Framework packs**   | Curated in-product | SOC 2 · NIST AI RMF · FedRAMP · CIS AWS · ISO — as code |
-| **AI governance**     | Emerging add-ons   | NIST AI RMF + agent harness built in                    |
-| **Billing / SCIM**    | Full SaaS          | Managed cloud (future — not in OSS console)             |
+1. **Collect** evidence through least-privilege AWS, Azure, GCP, GitHub, GitLab, Okta, Snowflake, and ClickHouse connectors.
+2. **Evaluate** controls with deterministic, versioned rules.
+3. **Operate** findings, remediation, policies, vendors, access reviews, and workflows.
+4. **Prove** posture through immutable snapshots, reports, trust shares, API responses, MCP tools, and CI gates.
 
-**Honest score:** ~**75–80%** core GRC capability · ~**65–70%** managed-SaaS polish. Strongest where data residency, agents, and CI gates matter.
+Evidence stays in your environment. Models may summarize and prioritize; they do not silently change evidence or decide pass/fail.
 
-## Read-only connector ecosystem
+| Surface | Purpose |
+| --- | --- |
+| **Console** | Posture, controls, evidence, findings, workflows, and audit room |
+| **API** | Versioned `/api/v1` contract used by every client |
+| **CLI** | Local pipelines, validation, snapshots, and server operations |
+| **MCP & agents** | Read posture and propose governed actions with approval boundaries |
+| **CI** | Block releases when posture or control-test thresholds regress |
 
-Link real cloud and identity accounts — discover scope, probe access, enable, sync.
-The console **Test** step is the same **Probe** contract as the API and CLI.
-Vendor marks below use [Simple Icons](https://simpleicons.org/) (CC0) and public brand paths documented in [THIRD_PARTY_ASSETS.md](docs/THIRD_PARTY_ASSETS.md).
+## Product preview
 
 <p align="center">
-  <img src="docs/images/trustops-vendor-ecosystem.svg" alt="AWS, Azure, Google Cloud, Snowflake, GitHub, and Okta read-only connectors" width="96%">
+  <img src="docs/images/trustops-product-mosaic.svg" alt="TrustOps console overview" width="100%">
 </p>
 
-### Connector authorization models
+| Trust Home | Audit room |
+| :---: | :---: |
+| <img src="docs/images/trustops-demo-dashboard.png" alt="TrustOps Trust Home" width="440"> | <img src="docs/images/trustops-demo-audit-room.png" alt="TrustOps audit room" width="440"> |
 
-Koda follows the same connector pattern users expect from managed GRC SaaS
-onboarding, but keeps evidence and verdicts in the customer-owned lake.
+| Evidence | Connectors |
+| :---: | :---: |
+| <img src="docs/images/trustops-demo-evidence.png" alt="TrustOps evidence room" width="440"> | <img src="docs/images/trustops-demo-connectors.png" alt="TrustOps connector registry" width="440"> |
 
-| Source        | Customer action                                                                      | TrustOps stores                                       | Runtime auth                                                                     | Scale path                                      |
-| ------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------- |
-| **AWS**       | Deploy read-only IAM role with External ID                                           | Account ID, Role ARN, External ID, fingerprint        | STS `AssumeRole` per probe/sync                                                  | StackSets or Terraform across accounts          |
-| **Azure**     | Grant Reader to TrustOps Entra app, managed identity, or federated workload identity | Subscription ID, tenant/app metadata, fingerprint     | Azure token from workload identity / managed identity / app credential reference | Management group scope or subscription import   |
-| **Snowflake** | Grant `TRUSTOPS_READER` on curated evidence views                                    | Account, user, role, view names, credential reference | Browser SSO for human proof; key-pair/OAuth reference for scheduled sync         | Shared read role across databases/schemas/views |
+More views: [frameworks](docs/images/trustops-demo-frameworks.png) · [insights](docs/images/trustops-demo-insights.png) · [workflows](docs/images/trustops-demo-workflows.png) · [trust center](docs/images/trustops-demo-trust-center.png)
 
-No connector requires pasted long-lived cloud keys. Secrets live in the runtime
-secret manager or provider identity plane; Koda stores non-secret identifiers,
-redacted fingerprints, run logs, and immutable evidence hashes.
+## Quick start
 
-### Product stack
-
-| Layer           | Path                                              | Role                                                             |
-| --------------- | ------------------------------------------------- | ---------------------------------------------------------------- |
-| **Console**     | `app/web/`                                        | Connectors, evidence, controls, audit room, posture dashboard    |
-| **API**         | `src/security_lakehouse/server_app.py`, `/api/v1` | Browser, CLI, MCP, and agent contract                            |
-| **Connectors**  | `src/security_lakehouse/connectors_*.py`          | Read-only source collection and scope discovery                  |
-| **Lake engine** | `src/security_lakehouse/pipeline.py`              | Raw evidence -> normalized facts -> deterministic control output |
-| **Proof**       | `build/lakehouse/gold/`, `mart/`, snapshots       | Daily posture, exports, hashes, reviewer evidence                |
-
-### AWS authorization model
-
-AWS connects through a customer-owned read-only role, not pasted access keys.
-"Continuous" means TrustOps repeats this short-lived read on the configured
-schedule; it does not keep a standing AWS login session.
-
-<p align="center">
-  <img src="docs/images/trustops-aws-sts-lifecycle.svg" alt="AWS STS AssumeRole lifecycle for TrustOps scheduled read-only posture sync" width="96%">
-</p>
-
-| Step             | What happens                                                                                                      |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------- |
-| **Authorize**    | Customer deploys `TrustOpsPostureReadOnlyRole` with TrustOps principal + External ID in the trust policy.         |
-| **Authenticate** | At Test connection or scheduled sync, TrustOps calls STS AssumeRole with the Role ARN and External ID.            |
-| **Read**         | AWS returns short-lived session credentials; TrustOps uses them for read-only IAM posture APIs only.              |
-| **Expire**       | The temporary credentials expire. Next sync repeats STS AssumeRole instead of storing AWS keys.                   |
-| **Stored**       | TrustOps stores account ID, role ARN, external ID, safe fingerprint, and run metadata; no long-lived access keys. |
-
-For many AWS accounts, use **CloudFormation StackSets** or **Terraform
-workspaces** to roll out the same read-only role name across target accounts.
-Each deployed role gets **one External ID per deployed role** and TrustOps
-verifies it with STS before syncing. With the default role name, operators
-confirm a target by account ID; custom names use the Role ARN output. **Bulk
-account import** is the next scale surface after organization rollout is in
-place.
-
-### Azure authorization model
-
-Azure should be connected through a customer-owned Entra application, managed
-identity, or federated workload identity with **Reader** on the subscription or
-management group. The local Azure CLI path exists only for developer proof; the
-product path is provider-native identity plus scoped RBAC.
-
-| Step             | What happens                                                                                                                           |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| **Authorize**    | Customer grants Reader to the TrustOps app/identity at subscription or management-group scope.                                         |
-| **Authenticate** | Each probe/sync requests a fresh Azure token through managed identity, workload federation, or a secret-manager-backed app credential. |
-| **Read**         | TrustOps reads role assignments, role definitions, subscriptions, policy assignments, and resource inventory.                          |
-| **Expire**       | Tokens expire naturally; the next scheduled run re-authenticates.                                                                      |
-| **Stored**       | TrustOps stores subscription/tenant metadata, safe fingerprint, and run history; no Azure password or raw client secret.               |
-
-### Snowflake authorization model
-
-Snowflake is the existing security-data-lake path. TrustOps reads curated views
-with a read-only role and can also export evaluated gold outputs back to a
-customer warehouse.
-
-| Step             | What happens                                                                                                           |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| **Authorize**    | Customer grants `TRUSTOPS_READER` `USAGE`/`SELECT` on approved warehouses, schemas, and evidence views.                |
-| **Authenticate** | Human demo can use browser SSO; scheduled sync uses key-pair or OAuth token reference from the runtime secret manager. |
-| **Read**         | TrustOps probes view counts, discovers visible scope, then reads only selected evidence views.                         |
-| **Stored**       | TrustOps stores account/user/role/view names and credential references, not passwords or private-key contents.         |
-
-Deep-link examples (after `serve`):
-
-| Source    | Console deep link                                      |
-| --------- | ------------------------------------------------------ |
-| AWS       | `/console/connectors/?connect=aws-posture`             |
-| Azure     | `/console/connectors/?connect=azure-posture`           |
-| GCP       | `/console/connectors/?connect=gcp-posture`             |
-| Snowflake | `/console/connectors/?connect=snowflake-evidence-lake` |
-| GitHub    | `/console/connectors/?connect=github-security`         |
-| GitLab    | `/console/connectors/?connect=gitlab-security`         |
-| Okta      | `/console/connectors/?connect=okta-identity`           |
-
-## Console preview
-
-Screenshots below are captured from the **golden** fixture (37 controls, intentional gaps) via `make demo-screenshots-full`. They render on GitHub without a running server.
-
-<p align="center">
-  <img src="docs/images/trustops-product-mosaic.svg" alt="Trust Home, audit room, evidence, connectors, frameworks, workflows" width="100%">
-</p>
-
-### Trust Home & audit workflow
-
-|                      Trust Home — live posture, audit strip, insights                      |                      Audit room — score, gaps, vendor & policy strips                       |
-| :----------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
-| <img src="docs/images/trustops-demo-dashboard.png" alt="Trust Home dashboard" width="440"> | <img src="docs/images/trustops-demo-audit-room.png" alt="Audit readiness room" width="440"> |
-
-### Evidence, connectors & frameworks
-
-|                  Evidence room — freshness SLA, saved views, tags                  |                       Connectors — AWS/Azure/GCP/Snowflake linking                        |
-| :--------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------: |
-| <img src="docs/images/trustops-demo-evidence.png" alt="Evidence room" width="440"> | <img src="docs/images/trustops-demo-connectors.png" alt="Connector registry" width="440"> |
-
-|                      Framework drill-down — control → rule → evidence                       |                           Insights — MTTR, SLA, posture trends                            |
-| :-----------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------: |
-| <img src="docs/images/trustops-demo-frameworks.png" alt="Framework provenance" width="440"> | <img src="docs/images/trustops-demo-insights.png" alt="Remediation insights" width="440"> |
-
-### Programs, automation & trust
-
-|                               Policies & attestation                                |                                Vendor risk questionnaires                                |
-| :---------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------: |
-| <img src="docs/images/trustops-demo-policies.png" alt="Policy library" width="440"> | <img src="docs/images/trustops-demo-vendor-risk.png" alt="Vendor diligence" width="440"> |
-
-|                                     Workflow canvas                                     |                                  Trust center shares                                  |
-| :-------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------: |
-| <img src="docs/images/trustops-demo-workflows.png" alt="Automation canvas" width="440"> | <img src="docs/images/trustops-demo-trust-center.png" alt="Trust center" width="440"> |
-
-More: [onboarding](docs/images/trustops-demo-onboarding.png) · [graph](docs/images/trustops-demo-graph.png) · [access](docs/images/trustops-demo-auth.png) · [control drawer](docs/images/trustops-demo-control-drawer.png)
-
-## What ships today
-
-| Capability          | Highlights                                                                       |
-| ------------------- | -------------------------------------------------------------------------------- |
-| **Audit room**      | Readiness API, live SSE, gap checklist, snapshot timeline, executive PDF         |
-| **Evidence**        | Freshness SLA, escalate-to-tasks, SHA-256 verify, saved views, cross-entity tags |
-| **Frameworks**      | 11 families · **741** controls · drill-down chain · staged readiness gates       |
-| **Vendor & policy** | Questionnaire MVP, diligence rollups, employee policy attestation                |
-| **Remediation**     | Tasks, evidence requests, workflow canvas with approval gates                    |
-| **Identity**        | OIDC/SAML, API keys, user admin, IdP role map, SCIM scaffold                     |
-| **Headless**        | MCP tools, agent harness, GitHub Action posture gate, OpenAPI `/api/v1`          |
-
-Full route map: [PRODUCT_WALKTHROUGH.md](docs/PRODUCT_WALKTHROUGH.md) · Gap tracker: [PRODUCT_SHAPE.md](docs/PRODUCT_SHAPE.md)
-
-## How it works
-
-**Headless-first:** agents, CI, MCP, and CLI use the same `/api/v1` contract as the
-console. **Default connect path:** read-only API connectors (GitHub, AWS, Okta, …) —
-no customer security data lake required. Optional lake readers apply when you already
-store evidence in Snowflake or ClickHouse.
-
-Source sync lands facts in your assessment store; deterministic control tests own
-the verdict. Models may summarize, but never decide pass/fail.
-
-<p align="center">
-  <img src="docs/images/trustops-assessment-architecture.svg" alt="Sources, lake, assessment, API, console, workflows, trust shares" width="96%">
-</p>
-
-## Quick start (local demo)
+Requires Python 3.11+.
 
 ```bash
-python -m venv .venv && source .venv/bin/activate
+python -m venv .venv
+source .venv/bin/activate
 pip install -e ".[dev,server]"
 
 security-lakehouse fixtures load --company golden --out build/lakehouse
 security-lakehouse db upgrade --lake build/lakehouse
-security-lakehouse serve --lake build/lakehouse --server --allow-insecure-no-auth --port 8787
+security-lakehouse serve \
+  --lake build/lakehouse \
+  --server \
+  --allow-insecure-no-auth \
+  --port 8787
 ```
 
-Open **http://127.0.0.1:8787/console/dashboard/** on the machine where you ran `serve`.
+Open [http://127.0.0.1:8787/console/dashboard/](http://127.0.0.1:8787/console/dashboard/).
 
-### Connect live cloud accounts
+`--allow-insecure-no-auth` is for local development only. Production deployments require configured authentication; see [server authentication](docs/SERVER_AUTH.md).
 
-**Agentless read-only** — same workflow as typical GRC SaaS, without a pre-built SDL:
+## Connect a live source
 
-1. **Headless:** [HEADLESS_CONNECTOR_SETUP.md](docs/playbooks/HEADLESS_CONNECTOR_SETUP.md) — curl/CLI/MCP probe → enable → sync → eval.
-2. **Console:** open **Connectors**, pick a source (deep links above), **Discover → Test → Enable → Sync**.
+The default path is agentless and read-only; no pre-existing data lake is required.
 
-Snowflake/ClickHouse connectors are optional when you already govern evidence in those stores.
+- **Console:** open **Connectors**, choose a source, then run **Discover → Test → Enable → Sync**.
+- **Headless:** follow the [connector setup playbook](docs/playbooks/HEADLESS_CONNECTOR_SETUP.md) for API, CLI, and MCP flows.
+- **Existing lake:** connect Snowflake or ClickHouse when evidence already lives there.
 
-See [CONNECTORS.md](docs/CONNECTORS.md) and [SHAREABLE_DEMO.md](docs/SHAREABLE_DEMO.md) for hosted evaluator flows.
+Cloud connectors use short-lived provider credentials or workload identity. No connector requires pasted long-lived cloud keys. TrustOps stores non-secret identifiers, redacted fingerprints, sync history, and evidence hashes.
 
-### API smoke
+Connector security contracts:
 
-```bash
-curl -s http://127.0.0.1:8787/api/v1/posture/current | jq .
-curl -s http://127.0.0.1:8787/api/v1/platform/audit-readiness | jq .
-security-lakehouse assessment snapshot --lake build/lakehouse --reason demo
+- **AWS** uses STS AssumeRole, one External ID per deployed role, short-lived session credentials, and read-only IAM posture APIs. Temporary credentials expire after each session; TrustOps stores no long-lived access keys. Scale rollout with CloudFormation StackSets or Terraform workspaces; Bulk account import is the next operator surface.
+- **Azure** uses a customer-owned Entra application, managed identity, or federated workload identity with Reader scope. Tokens are short-lived, and no Azure password or raw client secret is stored.
+- **Snowflake** supports browser SSO for human proof or a read-only service identity with a key-pair or OAuth token reference held by the runtime secret manager. TrustOps stores account, role, and view identifiers — not passwords or private-key contents. Snowflake is the existing security-data-lake path.
+
+<p align="center">
+  <img src="docs/images/trustops-aws-sts-lifecycle.svg" alt="TrustOps AWS STS AssumeRole lifecycle" width="96%">
+</p>
+
+## Architecture
+
+```text
+read-only source → raw observation → normalized fact → deterministic evaluation
+                 → finding/current posture → immutable snapshot → governed action
 ```
 
-### Regenerate README screenshots
+<p align="center">
+  <img src="docs/images/trustops-assessment-architecture.svg" alt="TrustOps collection, evaluation, and proof architecture" width="96%">
+</p>
 
-```bash
-make demo-screenshots-full   # golden fixture + Playwright → docs/images/trustops-demo-*.png
-```
+The console, CLI, MCP server, agents, and CI gate share the same API and assessment engine. This keeps browser output and headless automation consistent.
 
-Production auth requires signed session cookies — see [SERVER_AUTH.md](docs/SERVER_AUTH.md).
+## What ships
 
-## At a glance
+| Area | Included |
+| --- | --- |
+| **Compliance** | SOC 2, NIST AI RMF, FedRAMP, ISO, CIS AWS, HIPAA, PCI DSS, GDPR, and EU AI Act packs |
+| **Evidence** | Freshness SLAs, provenance, SHA-256 verification, tags, and saved views |
+| **GRC workflows** | Remediation, policies, attestations, vendor risk, access reviews, and approvals |
+| **Identity** | OIDC, SAML, API keys, RBAC, tenant boundaries, and SCIM scaffolding |
+| **Deployment** | Local, Docker, Helm, EKS reference IaC, Snowflake, and ClickHouse |
+| **Exports** | Snapshots, executive PDF, trust shares, OpenAPI, MCP, and GitHub posture gate |
 
-|                |                                                                          |
-| -------------- | ------------------------------------------------------------------------ |
-| **Release**    | `0.2.x` — OSS demos, self-hosted pilots, hosted scaffold                 |
-| **Catalog**    | 11 framework families · **741** controls · 18 asset types                |
-| **Console**    | **28 routes** — dashboard, audit room, controls, evidence, connectors, … |
-| **Deployment** | Local · Helm self-hosted · managed cloud (future)                        |
-| **Surfaces**   | Console · `/api/v1` · SDK · MCP · agents ([API](docs/api/AGENT_API.md))  |
-
-## Documentation
-
-| Topic                 | Doc                                                                                                                           |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| Headless architecture | [HEADLESS_GRC.md](docs/HEADLESS_GRC.md) · [Agent skills](docs/api/AGENT_SKILLS.md) · [Issue map](docs/ISSUE_CONSOLIDATION.md) |
-| Continuous ingestion  | [CONTINUOUS_INGESTION.md](docs/CONTINUOUS_INGESTION.md)                                                                       |
-| Parity vs managed GRC | [PRODUCT_SHAPE.md](docs/PRODUCT_SHAPE.md)                                                                                     |
-| Product tour          | [PRODUCT_WALKTHROUGH.md](docs/PRODUCT_WALKTHROUGH.md)                                                                         |
-| Audit readiness       | [AUDIT_READINESS.md](docs/AUDIT_READINESS.md)                                                                                 |
-| Connectors            | [CONNECTORS.md](docs/CONNECTORS.md)                                                                                           |
-| Framework packs       | [FRAMEWORK_PACKS.md](docs/FRAMEWORK_PACKS.md)                                                                                 |
-| GRC automation        | [GRC_AUTOMATION.md](docs/GRC_AUTOMATION.md)                                                                                   |
-| Auth & tenancy        | [SERVER_AUTH.md](docs/SERVER_AUTH.md)                                                                                         |
-| Shareable POC         | [SHAREABLE_DEMO.md](docs/SHAREABLE_DEMO.md)                                                                                   |
-| MCP cookbook          | [cookbook/MCP_EVIDENCE_AND_APPROVALS.md](docs/cookbook/MCP_EVIDENCE_AND_APPROVALS.md)                                         |
-| Roadmap               | [ROADMAP.md](ROADMAP.md)                                                                                                      |
+See the [product shape](docs/PRODUCT_SHAPE.md) for shipped, partial, and planned capability status.
 
 ## Verify
 
 ```bash
-make smoke
-make demo-local          # golden fixture + serve on :8787
+make smoke       # backend, contracts, docs, brand, pipeline, API
+make web-ci      # install, typecheck, production build
+make security    # dependency audits and pre-commit checks
 ```
 
-## Repo layout
+Regenerate documentation screenshots with `make demo-screenshots-full`.
+
+## Repository map
 
 ```text
-src/security_lakehouse/   pipeline, assessment, API, auth, MCP
-app/web/                  Next.js console (28 routes)
-controls/ frameworks/     catalogs and mappings
-deploy/                   Helm, Docker, Snowflake, ClickHouse, EKS
-docs/                     architecture, walkthrough, product shape
+src/security_lakehouse/   assessment engine, API, auth, connectors, MCP
+app/web/                  Next.js console
+controls/ frameworks/     control catalogs, packs, and mappings
+deploy/                   Docker, Helm, cloud, warehouse, and IaC examples
+docs/                     product, architecture, operations, and API guides
 ```
 
-Frameworks use exact names and provenance-governed visuals. Approved NIST
-framework artwork is credited; restricted certification and institutional
-marks fall back to project-owned icons. See
-[THIRD_PARTY_ASSETS.md](docs/THIRD_PARTY_ASSETS.md).
+## Documentation
+
+- [Product walkthrough](docs/PRODUCT_WALKTHROUGH.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Connector catalog](docs/CONNECTORS.md)
+- [Continuous ingestion](docs/CONTINUOUS_INGESTION.md)
+- [Audit readiness](docs/AUDIT_READINESS.md)
+- [Agent API](docs/api/AGENT_API.md)
+- [Deployment](docs/DEPLOYMENT.md)
+- [Roadmap](ROADMAP.md)
+
+Apache-2.0 licensed. Third-party visual assets and usage terms are documented in [THIRD_PARTY_ASSETS.md](docs/THIRD_PARTY_ASSETS.md).

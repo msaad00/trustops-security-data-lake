@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Koda posture gate — evaluate /api/v1/posture/current and control-tests against thresholds.
+# TrustOps posture gate — evaluate /api/v1/posture/current and control-tests against thresholds.
 set -euo pipefail
 
 TRUSTOPS_URL="${TRUSTOPS_URL:-}"
@@ -14,12 +14,12 @@ FRAMEWORK="${FRAMEWORK:-}"
 FAIL_ON_STALE_EVIDENCE="${FAIL_ON_STALE_EVIDENCE:-false}"
 
 if [[ -z "${TRUSTOPS_URL}" ]]; then
-  echo "::error title=Koda posture gate::TRUSTOPS_URL is required"
+  echo "::error title=TrustOps posture gate::TRUSTOPS_URL is required"
   exit 1
 fi
 
 if ! command -v jq >/dev/null 2>&1; then
-  echo "::error title=Koda posture gate::jq is required on the runner"
+  echo "::error title=TrustOps posture gate::jq is required on the runner"
   exit 1
 fi
 
@@ -36,13 +36,13 @@ fi
 
 response=""
 if ! response="$(curl "${curl_args[@]}" "${posture_endpoint}")"; then
-  echo "::error title=Koda posture gate::Failed to reach ${posture_endpoint}"
+  echo "::error title=TrustOps posture gate::Failed to reach ${posture_endpoint}"
   exit 1
 fi
 
 if ! echo "${response}" | jq -e '.data.posture' >/dev/null 2>&1; then
   detail="$(echo "${response}" | jq -r '.errors[0].detail // "unexpected response"')"
-  echo "::error title=Koda posture gate::${detail}"
+  echo "::error title=TrustOps posture gate::${detail}"
   exit 1
 fi
 
@@ -55,7 +55,7 @@ failed_tests="$(echo "${posture}" | jq -r '.failed_control_test_count // 0')"
 stale_count="$(echo "${response}" | jq -r '.data.posture.stale_evidence_count // .data.evidence_freshness.stale_count // 0')"
 
 if [[ -z "${score}" ]]; then
-  echo "::error title=Koda posture gate::Posture score missing from response"
+  echo "::error title=TrustOps posture gate::Posture score missing from response"
   exit 1
 fi
 
@@ -80,6 +80,7 @@ gate_failing_count="${failed_tests}"
 if [[ -n "${ALLOWED_FAILING_CONTROLS}" ]]; then
   IFS=',' read -ra allowed <<<"${ALLOWED_FAILING_CONTROLS}"
   unexpected_failures=()
+  gate_failing_count=0
   for control_id in "${failing_controls[@]}"; do
     allowed_match=false
     for item in "${allowed[@]}"; do
@@ -91,10 +92,10 @@ if [[ -n "${ALLOWED_FAILING_CONTROLS}" ]]; then
     done
     if [[ "${allowed_match}" == "false" ]]; then
       unexpected_failures+=("${control_id}")
+      gate_failing_count=$((gate_failing_count + 1))
     fi
   done
-  gate_failing_count="${#unexpected_failures[@]}"
-  failing_controls=("${unexpected_failures[@]}")
+  failing_controls=("${unexpected_failures[@]-}")
 fi
 
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
@@ -107,7 +108,7 @@ if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
   } >>"${GITHUB_OUTPUT}"
 fi
 
-echo "Koda posture gate"
+echo "TrustOps posture gate"
 echo "  correlation: ${CORRELATION_ID:-<none>}"
 echo "  score: ${score}"
 echo "  state: ${state}"
@@ -116,9 +117,10 @@ echo "  critical violations: ${critical_count}"
 echo "  failing control tests: ${gate_failing_count}"
 echo "  stale evidence rows: ${stale_count}"
 
-if ((${#failing_controls[@]} > 0)); then
+if [[ -n "${failing_controls[*]-}" ]]; then
   echo "  failing controls:"
-  for control_id in "${failing_controls[@]}"; do
+  for control_id in "${failing_controls[@]-}"; do
+    [[ -z "${control_id}" ]] && continue
     echo "    - ${control_id}"
   done
 fi
@@ -149,9 +151,9 @@ if [[ "${MAX_FAILING_CONTROL_TESTS}" != "-1" ]]; then
   if awk -v count="${gate_failing_count}" -v max="${MAX_FAILING_CONTROL_TESTS}" 'BEGIN { exit (count + 0 <= max + 0) ? 0 : 1 }'; then
     :
   else
-    if ((${#failing_controls[@]} > 0)); then
+    if [[ -n "${failing_controls[*]-}" ]]; then
       failures+=(
-        "failing control tests ${gate_failing_count} exceed maximum ${MAX_FAILING_CONTROL_TESTS} (${failing_controls[*]})"
+        "failing control tests ${gate_failing_count} exceed maximum ${MAX_FAILING_CONTROL_TESTS} (${failing_controls[*]-})"
       )
     else
       failures+=(
@@ -167,7 +169,7 @@ fi
 
 if ((${#failures[@]} > 0)); then
   for reason in "${failures[@]}"; do
-    echo "::error title=Koda posture gate::${reason}"
+    echo "::error title=TrustOps posture gate::${reason}"
   done
   exit 1
 fi

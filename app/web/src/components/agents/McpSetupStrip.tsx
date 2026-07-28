@@ -1,8 +1,8 @@
 "use client";
 
 import { ClipboardCopy, Terminal } from "lucide-react";
-import { KodaLogo } from "@/components/brand/TrustOpsLogo";
-import { KodaMark } from "@/components/brand/KodaMark";
+import { TrustOpsLogo } from "@/components/brand/TrustOpsLogo";
+import { TrustOpsMark } from "@/components/brand/TrustOpsMark";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BRAND } from "@/lib/brand";
@@ -45,7 +45,7 @@ export function McpSetupStrip() {
   return (
     <section className="grid gap-4 rounded-2xl border border-line bg-white p-4 shadow-sm sm:p-5">
       <div className="flex min-w-0 flex-wrap items-start justify-between gap-4">
-        <KodaLogo markSize="lg" subtitle="MCP Server" />
+        <TrustOpsLogo markSize="lg" subtitle="MCP Server" />
         <Badge tone="info">stdio · {MCP_TOOLS.length}+ tools</Badge>
       </div>
       <p className="max-w-3xl text-sm leading-6 text-muted">
@@ -104,7 +104,10 @@ export function McpSetupStrip() {
             key={tool}
             className="inline-flex items-center gap-1.5 rounded-full border border-line bg-panel px-2.5 py-1 text-[11px] font-bold text-ink"
           >
-            <KodaMark size="xs" gradientId={`koda-mcp-tool-${tool}`} />
+            <TrustOpsMark
+              size="xs"
+              gradientId={`trustops-mcp-tool-${tool}`}
+            />
             {tool}
           </span>
         ))}

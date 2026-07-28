@@ -1,7 +1,7 @@
 "use client";
 
 import { BookText, ExternalLink, MessageCircleQuestion } from "lucide-react";
-import { KodaMark } from "@/components/brand/KodaMark";
+import { TrustOpsMark } from "@/components/brand/TrustOpsMark";
 import { BRAND } from "@/lib/brand";
 
 const VERSION = BRAND.version;
@@ -39,7 +39,7 @@ export function SidebarFooter({ collapsed }: Props) {
           </a>
           <div className="mt-1 flex items-center justify-between px-2 text-[10px] text-[#5b6a7e]">
             <span className="inline-flex items-center gap-1.5">
-              <KodaMark size="xs" gradientId="koda-footer-gradient" />
+              <TrustOpsMark size="xs" gradientId="trustops-footer-gradient" />
               {BRAND.name}
             </span>
             <span>v{VERSION}</span>

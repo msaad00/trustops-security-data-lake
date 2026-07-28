@@ -52,7 +52,7 @@ See [issues/WAVE3_TRACKER.md](issues/WAVE3_TRACKER.md).
 | #470–#473     | merged  | OSS cleanup, connectors UX, density, E2E workflow       |
 | #481–#482     | merged  | Agent contracts + headless connectors (Wave 2 I–J)      |
 | **#484–#487** | merged  | Wave 2 K–N (CI gate, harness, onboarding, console copy) |
-| **#488**      | merged  | Koda river-otter brand mark                             |
+| **#488**      | merged  | TrustOps brand mark                                     |
 
 Close batch script: [ISSUE_CLOSEOUT.md](ISSUE_CLOSEOUT.md) · `./tools/close_shipped_issues.sh`
 

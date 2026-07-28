@@ -1,4 +1,4 @@
-"""Tests for the Koda GitHub Action posture gate script."""
+"""Tests for the TrustOps GitHub Action posture gate script."""
 
 from __future__ import annotations
 
@@ -68,7 +68,7 @@ def _run_gate(
 
 def test_posture_gate_action_metadata_is_valid() -> None:
     action = yaml.safe_load((_action_dir() / "action.yml").read_text(encoding="utf-8"))
-    assert action["name"] == "Koda Posture Gate"
+    assert action["name"] == "TrustOps Posture Gate"
     assert "trustops-url" in action["inputs"]
     assert "max-failing-control-tests" in action["inputs"]
     assert action["runs"]["using"] == "composite"

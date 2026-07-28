@@ -14,7 +14,7 @@ Last updated: **2026-07-13** (Wave 2 merged #482–#488; maintainer closeout pen
 | **L — Agent harness UI**    | `cursor/agent-harness-d259`        | #478  | ✅ #485 — **close #478** |
 | **M — Human connect UX**    | `cursor/human-connect-ux-d259`     | #479  | ✅ #486 — **close #479** |
 | **N — Console copy**        | `cursor/console-human-polish-d259` | #480  | ✅ #487 — **close #480** |
-| **Brand — Koda otter**      | `cursor/koda-otter-logo-d259`      | —     | ✅ #488                  |
+| **Brand — TrustOps mark**   | `cursor/trustops-mark-d259`        | —     | ✅ #488                  |
 
 **Positioning:** headless/agents/CI first; human console second. Default connect path is **agentless read-only API** — no customer SDL required ([CONNECTORS.md](CONNECTORS.md), [HEADLESS_CONNECTOR_SETUP.md](playbooks/HEADLESS_CONNECTOR_SETUP.md)).
 

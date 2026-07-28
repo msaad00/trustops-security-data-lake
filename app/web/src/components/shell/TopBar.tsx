@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { Camera, RefreshCw, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { KodaLogo } from "@/components/brand/TrustOpsLogo";
+import { TrustOpsLogo } from "@/components/brand/TrustOpsLogo";
 import { NotificationBell } from "./NotificationBell";
 import { UserMenu } from "./UserMenu";
 import { useHealth } from "@/lib/api/hooks";
@@ -34,14 +34,14 @@ export function TopBar({ onRefresh, onSnapshot, onOpenPalette }: Props) {
 
   return (
     <header className="sticky top-0 z-40 flex h-[52px] min-w-0 items-center justify-between gap-1.5 overflow-hidden border-b border-railLine bg-rail px-2 text-slate-100 md:px-3">
-      <KodaLogo
+      <TrustOpsLogo
         href="/dashboard"
         inverted
         markSize="lg"
         showWordmark
         wordmarkClassName="hidden xl:block"
         className="flex-none"
-        gradientId="koda-topbar-gradient"
+        gradientId="trustops-topbar-gradient"
       />
       <button
         type="button"

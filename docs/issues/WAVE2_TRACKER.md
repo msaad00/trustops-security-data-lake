@@ -18,7 +18,7 @@ Default connect: agentless read-only API — no customer SDL required
 | **L — Agent harness**       | `cursor/agent-harness-d259`        | #478  | ✅ #485 merged |
 | **M — Human connect**       | `cursor/human-connect-ux-d259`     | #479  | ✅ #486 merged |
 | **N — Console copy**        | `cursor/console-human-polish-d259` | #480  | ✅ #487 merged |
-| **Brand**                   | `cursor/koda-otter-logo-d259`      | —     | ✅ #488 merged |
+| **Brand**                   | `cursor/trustops-mark-d259`        | —     | ✅ #488 merged |
 
 ## Acceptance — all complete
 

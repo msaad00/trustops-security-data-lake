@@ -139,7 +139,7 @@ def pricing_payload() -> dict[str, Any]:
             "currency": "USD",
             "billing_period": "annual",
             "note": (
-                "Koda is open source — run locally or self-host in your cloud. "
+                "TrustOps is open source — run locally or self-host in your cloud. "
                 "Managed cloud pricing is not published in the OSS console."
             ),
             "tiers": [],
@@ -148,7 +148,7 @@ def pricing_payload() -> dict[str, Any]:
         "currency": "USD",
         "billing_period": "annual",
         "note": (
-            "Published list prices for managed hosted Koda workspaces. "
+            "Published list prices for managed hosted TrustOps workspaces. "
             "Contact sales for enterprise quotes and multi-year discounts."
         ),
         "tiers": list_pricing_tiers(),
