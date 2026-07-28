@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
-  <title id="title">Koda open-source trust operations</title>
-  <desc id="desc">Koda — friend and ally in trust operations. River-otter mark with connector ecosystem.</desc>
+  <title id="title">TrustOps open-source trust operations</title>
+  <desc id="desc">TrustOps turns customer-owned evidence into deterministic controls and audit-ready proof.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#060d18"/>
@@ -21,25 +21,14 @@
   <circle cx="1040" cy="120" r="180" fill="none" stroke="#315dff" stroke-opacity=".2" stroke-width="2"/>
   <circle cx="140" cy="520" r="120" fill="none" stroke="#30c7d2" stroke-opacity=".16" stroke-width="2"/>
 
-  <!-- Otter mark lockup -->
+  <!-- TrustOps mark lockup -->
   <g transform="translate(72,88)">
     <rect width="72" height="72" rx="18" fill="url(#mark)"/>
-    <g transform="translate(4,4) scale(2)">
-      <ellipse cx="16" cy="17.2" rx="9.4" ry="8.2" fill="#e2c9a0"/>
-      <path d="M6.5 14.5c1.2-4.8 5.2-7.8 9.5-7.8s8.3 3 9.5 7.8c-2.1 1.2-4.6 1.8-7.2 1.6-2.6.2-5.1-.4-7.3-1.6z" fill="#4a3420"/>
-      <ellipse cx="8.6" cy="12.4" rx="1.7" ry="2.1" fill="#4a3420"/>
-      <ellipse cx="23.4" cy="12.4" rx="1.7" ry="2.1" fill="#4a3420"/>
-      <ellipse cx="12.2" cy="16.2" rx="1.65" ry="1.9" fill="#101623"/>
-      <ellipse cx="19.8" cy="16.2" rx="1.65" ry="1.9" fill="#101623"/>
-      <ellipse cx="16" cy="19.8" rx="4.2" ry="3" fill="#f5ead8"/>
-      <path d="M14.1 19.1h3.8c.9 0 1.5.55 1.35 1.15-.2.85-1.35 1.35-2.75 1.35s-2.55-.5-2.75-1.35c-.15-.6.45-1.15 1.35-1.15z" fill="#101623"/>
-      <ellipse cx="16" cy="23.2" rx="5" ry="3.6" fill="#faf3e8"/>
-      <path d="M12.8 21.4h2.1v2.4l2.9-2.4h2.3l-3.1 2.8 3.2 3.8h-2.3l-2.7-3.2v3.2h-2.1z" fill="#3b6ef5"/>
-      <circle cx="24.6" cy="24.8" r="5.4" fill="#fff"/>
-      <path d="M22.1 24.8l1.5 1.5 3.2-3.2" stroke="#047857" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    </g>
-    <text x="92" y="44" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="52" font-weight="950" fill="url(#accent)">Koda</text>
-    <text x="93" y="68" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="750" fill="#64748b" letter-spacing="0.8">Friend · ally · trust partner — audit proof</text>
+    <path d="M18 18h36v10H41v30H31V28H18z" fill="#fff"/>
+    <circle cx="55" cy="55" r="15" fill="#fff"/>
+    <path d="M47 55l5 5 11-11" stroke="#047857" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="92" y="44" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="52" font-weight="950" fill="url(#accent)">TrustOps</text>
+    <text x="93" y="68" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="750" fill="#94a3b8" letter-spacing="0.8">Customer-owned evidence Â· deterministic controls Â· audit proof</text>
   </g>
 
   <!-- Metric chips -->
@@ -49,7 +38,7 @@
     <rect x="122" width="110" height="32" rx="10" fill="#111827" stroke="#334155"/>
     <text x="140" y="21" fill="#e2e8f0" font-size="12" font-weight="850">28 routes</text>
     <rect x="244" width="150" height="32" rx="10" fill="#102a43" stroke="#38bdf8"/>
-    <text x="260" y="21" fill="#7dd3fc" font-size="12" font-weight="900">/api/v1 · MCP · CI</text>
+    <text x="260" y="21" fill="#7dd3fc" font-size="12" font-weight="900">/api/v1 Â· MCP Â· CI</text>
   </g>
 
   <text x="72" y="270" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="34" font-weight="650" fill="#e2e8f0">Continuous compliance in your VPC.</text>
@@ -77,6 +66,6 @@
     </g>
   </g>
 
-  <text x="72" y="460" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="22" font-weight="700" fill="#94a3b8" letter-spacing="2.2">API · CLI · MCP · CI · CONSOLE</text>
-  <text x="72" y="510" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="650" fill="#64748b">Models summarize — deterministic tests own the verdict.</text>
+  <text x="72" y="460" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="22" font-weight="700" fill="#94a3b8" letter-spacing="2.2">API Â· CLI Â· MCP Â· CI Â· CONSOLE</text>
+  <text x="72" y="510" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="650" fill="#64748b">Models summarize Â· deterministic tests own the verdict.</text>
 </svg>

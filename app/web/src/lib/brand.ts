@@ -1,10 +1,10 @@
-/** Koda product identity — single source for UI copy and metadata. */
+/** TrustOps product identity — single source for UI copy and metadata. */
 
 export const BRAND = {
   /** Customer-facing product name. */
-  name: "Koda",
+  name: "TrustOps",
   /** Human console surface. */
-  consoleName: "Koda Console",
+  consoleName: "TrustOps Console",
   /** Category line used in README and marketing-adjacent docs. */
   category: "Open-source trust operations",
   /** One-line mission for meta tags and share cards. */
@@ -16,7 +16,7 @@ export const BRAND = {
   description:
     "Open-source, headless-first trust operations for customer-owned evidence lakes — SOC 2, NIST AI RMF, FedRAMP, ISO, and beyond.",
   /** Public trust-center header subtitle. */
-  trustShareTitle: "Koda Trust Center",
+  trustShareTitle: "TrustOps Trust Center",
   /** Repo / PyPI technical name (not customer-facing). */
   packageName: "trustops-security-data-lake",
   /** CLI command (operator surface, not product rename). */
@@ -30,20 +30,8 @@ export const BRAND = {
   repoUrl: "https://github.com/msaad00/trustops-security-data-lake",
   mcpServerName: "trustops",
   mcpCommand: "trustops-mcp",
-  /** Legacy product name kept for migration / repo continuity. */
-  legacyName: "TrustOps",
   /** Dashboard home eyebrow (feature area, not product name). */
   homeEyebrow: "Home",
   /** Short label under the wordmark in chrome. */
   consoleSubtitle: "Console",
-  /** Name meaning — friend / ally (Sioux); loyal trust partner. */
-  nameMeaning: "friend · ally · trust partner",
-  otterColors: {
-    furDark: "#4a3420",
-    furMid: "#7a5c3a",
-    furLight: "#e2c9a0",
-    muzzle: "#f5ead8",
-    belly: "#faf3e8",
-    ink: "#101623",
-  },
 } as const;

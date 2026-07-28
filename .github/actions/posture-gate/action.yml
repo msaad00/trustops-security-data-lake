@@ -1,6 +1,6 @@
-name: Koda Posture Gate
+name: TrustOps Posture Gate
 description: >-
-  Query Koda /api/v1/posture/current and /api/v1/control-tests, then fail the job
+  Query TrustOps /api/v1/posture/current and /api/v1/control-tests, then fail the job
   when score, violation, or control-regression thresholds are not met. Use in
   pull_request or deployment workflows to block merges when posture regresses.
 branding:
@@ -8,10 +8,10 @@ branding:
   color: blue
 inputs:
   trustops-url:
-    description: Base URL of the Koda deployment (for example https://koda.example.com)
+    description: Base URL of the TrustOps deployment (for example https://trustops.example.com)
     required: true
   api-token:
-    description: Koda API bearer token with read scope (omit for local --allow-insecure-no-auth)
+    description: TrustOps API bearer token with read scope (omit for local --allow-insecure-no-auth)
     required: false
     default: ""
   correlation-id:
@@ -48,7 +48,7 @@ inputs:
     default: "false"
 outputs:
   posture_score:
-    description: Posture score returned by Koda
+    description: Posture score returned by TrustOps
     value: ${{ steps.gate.outputs.posture_score }}
   posture_state:
     description: Posture state label (healthy, at_risk, etc.)

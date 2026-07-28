@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { KeyRound, Loader2, LogIn, ShieldCheck, Terminal } from "lucide-react";
 import { AuthMark } from "@/components/auth/AuthMark";
-import { KodaLogo } from "@/components/brand/TrustOpsLogo";
+import { TrustOpsLogo } from "@/components/brand/TrustOpsLogo";
 import { BRAND } from "@/lib/brand";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -108,13 +108,13 @@ export default function LoginPage() {
     <section className="grid min-h-screen place-items-center p-6">
       <div className="grid w-full max-w-[980px] gap-5 lg:grid-cols-[1fr_420px]">
         <div className="rounded-2xl border border-[#1e334a] bg-[#07111e] p-8 text-white shadow-hero">
-          <KodaLogo
+          <TrustOpsLogo
             href="/dashboard"
             inverted
             markSize="lg"
             subtitle={BRAND.consoleSubtitle}
             className="mb-6"
-            gradientId="koda-login-gradient"
+            gradientId="trustops-login-gradient"
           />
           <Badge tone="info" className="mb-5 bg-cyan-100 text-cyan-800">
             Server mode

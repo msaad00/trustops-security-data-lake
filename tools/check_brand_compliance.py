@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail CI when tracked copy uses forbidden competitor or employer names.
+"""Fail CI when tracked copy uses forbidden or retired product names.
 
 Policy: docs/BRAND.md — use "managed GRC SaaS" instead of vendor product names.
 """
@@ -21,6 +21,10 @@ FORBIDDEN = re.compile(
     r")\b",
     re.IGNORECASE,
 )
+
+# TrustOps is the only customer-facing product name. Keep the retired alias
+# from drifting back into UI, documentation, actions, or metadata.
+RETIRED_BRAND = re.compile(r"\bko" r"da\b", re.IGNORECASE)
 
 SCAN_ROOTS = (
     ROOT / "README.md",
@@ -78,6 +82,9 @@ def main() -> int:
         for match in FORBIDDEN.finditer(text):
             line = text.count("\n", 0, match.start()) + 1
             violations.append(f"{path.relative_to(ROOT)}:{line}: {match.group(0)!r}")
+        for match in RETIRED_BRAND.finditer(text):
+            line = text.count("\n", 0, match.start()) + 1
+            violations.append(f"{path.relative_to(ROOT)}:{line}: retired brand {match.group(0)!r}")
 
     if violations:
         print("Brand compliance check failed — forbidden names in tracked copy:")
