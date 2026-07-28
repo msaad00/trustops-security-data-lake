@@ -104,10 +104,7 @@ export function McpSetupStrip() {
             key={tool}
             className="inline-flex items-center gap-1.5 rounded-full border border-line bg-panel px-2.5 py-1 text-[11px] font-bold text-ink"
           >
-            <TrustOpsMark
-              size="xs"
-              gradientId={`trustops-mcp-tool-${tool}`}
-            />
+            <TrustOpsMark size="xs" gradientId={`trustops-mcp-tool-${tool}`} />
             {tool}
           </span>
         ))}

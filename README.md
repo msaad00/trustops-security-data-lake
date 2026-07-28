@@ -32,13 +32,13 @@ TrustOps gives security and compliance teams one operating loop:
 
 Evidence stays in your environment. Models may summarize and prioritize; they do not silently change evidence or decide pass/fail.
 
-| Surface | Purpose |
-| --- | --- |
-| **Console** | Posture, controls, evidence, findings, workflows, and audit room |
-| **API** | Versioned `/api/v1` contract used by every client |
-| **CLI** | Local pipelines, validation, snapshots, and server operations |
+| Surface          | Purpose                                                            |
+| ---------------- | ------------------------------------------------------------------ |
+| **Console**      | Posture, controls, evidence, findings, workflows, and audit room   |
+| **API**          | Versioned `/api/v1` contract used by every client                  |
+| **CLI**          | Local pipelines, validation, snapshots, and server operations      |
 | **MCP & agents** | Read posture and propose governed actions with approval boundaries |
-| **CI** | Block releases when posture or control-test thresholds regress |
+| **CI**           | Block releases when posture or control-test thresholds regress     |
 
 ## Product preview
 
@@ -46,12 +46,12 @@ Evidence stays in your environment. Models may summarize and prioritize; they do
   <img src="docs/images/trustops-product-mosaic.svg" alt="TrustOps console overview" width="100%">
 </p>
 
-| Trust Home | Audit room |
-| :---: | :---: |
+|                                        Trust Home                                         |                                         Audit room                                         |
+| :---------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------: |
 | <img src="docs/images/trustops-demo-dashboard.png" alt="TrustOps Trust Home" width="440"> | <img src="docs/images/trustops-demo-audit-room.png" alt="TrustOps audit room" width="440"> |
 
-| Evidence | Connectors |
-| :---: | :---: |
+|                                          Evidence                                           |                                             Connectors                                             |
+| :-----------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------: |
 | <img src="docs/images/trustops-demo-evidence.png" alt="TrustOps evidence room" width="440"> | <img src="docs/images/trustops-demo-connectors.png" alt="TrustOps connector registry" width="440"> |
 
 More views: [frameworks](docs/images/trustops-demo-frameworks.png) · [insights](docs/images/trustops-demo-insights.png) · [workflows](docs/images/trustops-demo-workflows.png) · [trust center](docs/images/trustops-demo-trust-center.png)
@@ -113,14 +113,14 @@ The console, CLI, MCP server, agents, and CI gate share the same API and assessm
 
 ## What ships
 
-| Area | Included |
-| --- | --- |
-| **Compliance** | SOC 2, NIST AI RMF, FedRAMP, ISO, CIS AWS, HIPAA, PCI DSS, GDPR, and EU AI Act packs |
-| **Evidence** | Freshness SLAs, provenance, SHA-256 verification, tags, and saved views |
-| **GRC workflows** | Remediation, policies, attestations, vendor risk, access reviews, and approvals |
-| **Identity** | OIDC, SAML, API keys, RBAC, tenant boundaries, and SCIM scaffolding |
-| **Deployment** | Local, Docker, Helm, EKS reference IaC, Snowflake, and ClickHouse |
-| **Exports** | Snapshots, executive PDF, trust shares, OpenAPI, MCP, and GitHub posture gate |
+| Area              | Included                                                                             |
+| ----------------- | ------------------------------------------------------------------------------------ |
+| **Compliance**    | SOC 2, NIST AI RMF, FedRAMP, ISO, CIS AWS, HIPAA, PCI DSS, GDPR, and EU AI Act packs |
+| **Evidence**      | Freshness SLAs, provenance, SHA-256 verification, tags, and saved views              |
+| **GRC workflows** | Remediation, policies, attestations, vendor risk, access reviews, and approvals      |
+| **Identity**      | OIDC, SAML, API keys, RBAC, tenant boundaries, and SCIM scaffolding                  |
+| **Deployment**    | Local, Docker, Helm, EKS reference IaC, Snowflake, and ClickHouse                    |
+| **Exports**       | Snapshots, executive PDF, trust shares, OpenAPI, MCP, and GitHub posture gate        |
 
 See the [product shape](docs/PRODUCT_SHAPE.md) for shipped, partial, and planned capability status.
 

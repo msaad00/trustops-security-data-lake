@@ -24,10 +24,10 @@ Every request sends **`X-Correlation-ID`** so CI runs appear in the audit trail.
 Copy [examples/github-actions/trustops-posture-gate.yml](../../examples/github-actions/trustops-posture-gate.yml)
 into `.github/workflows/` and set repository secrets:
 
-| Secret               | Value                                          |
-| -------------------- | ---------------------------------------------- |
+| Secret               | Value                                              |
+| -------------------- | -------------------------------------------------- |
 | `TRUSTOPS_URL`       | `https://trustops.example.com` (no trailing slash) |
-| `TRUSTOPS_API_TOKEN` | Read-scoped API key (`tops_…`)                 |
+| `TRUSTOPS_API_TOKEN` | Read-scoped API key (`tops_…`)                     |
 
 Example step:
 

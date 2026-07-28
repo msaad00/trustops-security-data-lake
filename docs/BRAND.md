@@ -2,14 +2,14 @@
 
 **TrustOps** is the only customer-facing product name. “Security data lake” describes the architecture; it is not a second brand.
 
-| Use | Form |
-| --- | --- |
-| Product | **TrustOps** |
-| Console | **TrustOps Console** |
-| Reviewer shares | **TrustOps Trust Center** |
+| Use                  | Form                          |
+| -------------------- | ----------------------------- |
+| Product              | **TrustOps**                  |
+| Console              | **TrustOps Console**          |
+| Reviewer shares      | **TrustOps Trust Center**     |
 | Repository / package | `trustops-security-data-lake` |
-| Operator CLI | `security-lakehouse` |
-| MCP command | `trustops-mcp` |
+| Operator CLI         | `security-lakehouse`          |
+| MCP command          | `trustops-mcp`                |
 
 Do not introduce alternate product names. Do not use “Workbench,” “Assessment Console,” or “Security Lakehouse” as a customer-facing brand.
 
@@ -23,13 +23,13 @@ Do not introduce alternate product names. Do not use “Workbench,” “Assessm
 
 The primary mark is a blue-to-cyan rounded square with a white **T** and a green proof check. It must remain legible at 16 px.
 
-| Token | Value |
-| --- | --- |
-| Gradient | `#4f7cff` → `#30c7d2` |
-| Ink | `#101623` |
-| Dark rail | `#07111e` |
-| Proof check | `#047857` |
-| Wordmark | Inter, 800–900 |
+| Token       | Value                 |
+| ----------- | --------------------- |
+| Gradient    | `#4f7cff` → `#30c7d2` |
+| Ink         | `#101623`             |
+| Dark rail   | `#07111e`             |
+| Proof check | `#047857`             |
+| Wordmark    | Inter, 800–900        |
 
 Primary assets:
 
