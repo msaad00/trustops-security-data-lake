@@ -4,9 +4,7 @@ import { useMemo, useState } from "react";
 import {
   createColumnHelper,
   flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
+  useTable,
   type SortingState,
 } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
@@ -32,9 +30,13 @@ import {
   useTags,
 } from "@/lib/api/hooks";
 import { useToolbar } from "@/lib/state/filters";
+import {
+  sortableTableFeatures,
+  type SortableColumnDefs,
+} from "@/lib/table-features";
 import type { Severity, Violation } from "@/lib/api/types";
 
-const helper = createColumnHelper<Violation>();
+const helper = createColumnHelper<typeof sortableTableFeatures, Violation>();
 
 const toneForSeverity = (s: string) =>
   s === "critical" ? "critical" : s === "high" ? "attention" : "info";
@@ -85,7 +87,7 @@ export default function ViolationsPage() {
     [violations.data, filters, controlFramework, activeTagId, taggedIds],
   );
 
-  const columns = [
+  const columns: SortableColumnDefs<Violation> = [
     helper.accessor("violation_id", {
       header: "Violation",
       cell: (info) => (
@@ -140,13 +142,12 @@ export default function ViolationsPage() {
     }),
   ];
 
-  const table = useReactTable({
+  const table = useTable({
+    features: sortableTableFeatures,
     data: filtered,
     columns,
     state: { sorting },
     onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
   });
 
   const tags = tagsQuery.data ?? [];

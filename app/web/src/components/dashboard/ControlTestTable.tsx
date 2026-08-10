@@ -3,12 +3,14 @@
 import {
   createColumnHelper,
   flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
+  useTable,
   type SortingState,
 } from "@tanstack/react-table";
 import { useState } from "react";
+import {
+  sortableTableFeatures,
+  type SortableColumnDefs,
+} from "@/lib/table-features";
 import { ArrowUpDown } from "lucide-react";
 import type { ControlTest } from "@/lib/api/types";
 import { FrameworkMark } from "@/components/framework/FrameworkMark";
@@ -21,7 +23,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const helper = createColumnHelper<ControlTest>();
+const helper = createColumnHelper<typeof sortableTableFeatures, ControlTest>();
 
 const toneFor = (result: string) =>
   result === "pass" ? "ready" : result === "fail" ? "critical" : "attention";
@@ -31,7 +33,7 @@ export function ControlTestTable({ rows }: { rows: ControlTest[] }) {
     { id: "result", desc: false },
   ]);
 
-  const columns = [
+  const columns: SortableColumnDefs<ControlTest> = [
     helper.accessor("control_id", {
       header: "Program",
       cell: (info) => (
@@ -91,13 +93,12 @@ export function ControlTestTable({ rows }: { rows: ControlTest[] }) {
     }),
   ];
 
-  const table = useReactTable({
+  const table = useTable({
+    features: sortableTableFeatures,
     data: rows,
     columns,
     state: { sorting },
     onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
   });
 
   return (

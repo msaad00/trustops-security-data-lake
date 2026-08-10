@@ -5,9 +5,7 @@ import { useMemo, useState } from "react";
 import {
   createColumnHelper,
   flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
+  useTable,
   type SortingState,
 } from "@tanstack/react-table";
 import {
@@ -40,6 +38,10 @@ import {
   useTags,
 } from "@/lib/api/hooks";
 import { useToolbar } from "@/lib/state/filters";
+import {
+  sortableTableFeatures,
+  type SortableColumnDefs,
+} from "@/lib/table-features";
 import type {
   EvidenceFreshness,
   EvidenceFreshnessStatus,
@@ -51,7 +53,7 @@ const SURFACE = "evidence";
 
 type EvidenceRow = NormalizedEvent & { freshness?: EvidenceFreshness };
 
-const helper = createColumnHelper<EvidenceRow>();
+const helper = createColumnHelper<typeof sortableTableFeatures, EvidenceRow>();
 const handoffCards = [
   {
     title: "Security data lake layers",
@@ -163,7 +165,7 @@ export default function EvidencePage() {
     });
   }, [rows, filters, controlFramework, activeTagId, taggedIds]);
 
-  const columns = [
+  const columns: SortableColumnDefs<EvidenceRow> = [
     helper.accessor("event_time", {
       header: "Time",
       cell: (info) => (
@@ -236,13 +238,12 @@ export default function EvidencePage() {
     }),
   ];
 
-  const table = useReactTable({
+  const table = useTable({
+    features: sortableTableFeatures,
     data: filtered,
     columns,
     state: { sorting },
     onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
   });
 
   return (
