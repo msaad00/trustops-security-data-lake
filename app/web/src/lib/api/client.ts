@@ -495,48 +495,61 @@ export const api = {
   frameworkDetail: (id: string) =>
     get<FrameworkDetail>(`/frameworks/${encodeURIComponent(id)}/detail`),
   listWorkflows: () =>
-    get<{ count: number; workflows: Workflow[] }>("/workflows"),
+    getAllV1<Workflow>("/v1/workflows").then(({ items, count }) => ({
+      count,
+      workflows: items,
+    })),
   getWorkflow: (id: string) =>
-    get<Workflow>(`/workflows/${encodeURIComponent(id)}`),
-  workflowRuns: (id: string) =>
-    get<{ workflow_id: string; runs: WorkflowRun[] }>(
-      `/workflows/${encodeURIComponent(id)}/runs`,
+    get<{ data: Workflow }>(`/v1/workflows/${encodeURIComponent(id)}`).then(
+      (b) => b.data,
     ),
+  workflowRuns: (id: string) =>
+    get<{ data: WorkflowRun[]; meta: { workflow_id: string } }>(
+      `/v1/workflows/${encodeURIComponent(id)}/runs`,
+    ).then((b) => ({ workflow_id: b.meta.workflow_id, runs: b.data })),
   workflowRun: (runId: string) =>
-    get<{ run: WorkflowRun }>(`/workflows/runs/${encodeURIComponent(runId)}`),
-  actionCatalog: () => get<{ actions: ActionSpec[] }>("/workflows/actions"),
+    get<{ data: WorkflowRun }>(
+      `/v1/workflows/runs/${encodeURIComponent(runId)}`,
+    ).then((b) => ({ run: b.data })),
+  actionCatalog: () =>
+    getAllV1<ActionSpec>("/v1/workflows/actions").then((r) => ({
+      actions: r.items,
+    })),
   saveWorkflow: (payload: {
     workflow_id?: string;
     name: string;
     description?: string;
     nodes: WorkflowNode[];
     edges: WorkflowEdge[];
-  }) => post<{ workflow: Workflow }>("/workflows", payload),
+  }) =>
+    post<{ data: Workflow }>("/v1/workflows", payload).then((b) => ({
+      workflow: b.data,
+    })),
   runWorkflow: (id: string, payload: { dry_run?: boolean } = {}) =>
-    post<{ run: WorkflowRun }>(
-      `/workflows/${encodeURIComponent(id)}/run`,
+    post<{ data: WorkflowRun }>(
+      `/v1/workflows/${encodeURIComponent(id)}/run`,
       payload,
-    ),
+    ).then((b) => ({ run: b.data })),
   retryWorkflowRun: (runId: string) =>
-    post<{ run: WorkflowRun }>(
-      `/workflows/runs/${encodeURIComponent(runId)}/retry`,
+    post<{ data: WorkflowRun }>(
+      `/v1/workflows/runs/${encodeURIComponent(runId)}/retry`,
       {},
-    ),
+    ).then((b) => ({ run: b.data })),
   approveWorkflowRun: (runId: string, note = "") =>
-    post<{ run: WorkflowRun }>(
-      `/workflows/runs/${encodeURIComponent(runId)}/approve`,
+    post<{ data: WorkflowRun }>(
+      `/v1/workflows/runs/${encodeURIComponent(runId)}/approve`,
       { note },
-    ),
+    ).then((b) => ({ run: b.data })),
   rejectWorkflowRun: (runId: string, note = "") =>
-    post<{ run: WorkflowRun }>(
-      `/workflows/runs/${encodeURIComponent(runId)}/reject`,
+    post<{ data: WorkflowRun }>(
+      `/v1/workflows/runs/${encodeURIComponent(runId)}/reject`,
       { note },
-    ),
+    ).then((b) => ({ run: b.data })),
   testAction: (node_type: string, params: Record<string, unknown>) =>
-    post<{ output: Record<string, unknown> }>("/workflows/actions/run", {
+    post<{ data: Record<string, unknown> }>("/v1/workflows/actions/run", {
       node_type,
       params,
-    }),
+    }).then((b) => ({ output: b.data })),
   listTrustShares: () =>
     getAllV1<TrustShare>("/v1/trust-shares").then(({ items, count }) => ({
       count,

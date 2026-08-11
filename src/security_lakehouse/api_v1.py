@@ -51,6 +51,21 @@ from security_lakehouse.mappings import (
 )
 from security_lakehouse.tracking import verify_tracking_chain
 from security_lakehouse.trust_share import create_share, list_shares, revoke_share
+from security_lakehouse.workflows import (
+    action_catalog,
+    approve_workflow_run,
+    get_workflow,
+    get_workflow_run,
+    list_workflows,
+    reject_workflow_run,
+    retry_workflow_run,
+    run_action,
+    run_workflow,
+    save_workflow,
+)
+from security_lakehouse.workflows import (
+    list_runs as list_workflow_runs,
+)
 
 API_VERSION = "v1"
 
@@ -148,6 +163,8 @@ COLLECTION_LOADERS: dict[str, tuple[str, Callable[[Path], list[JsonObject]]]] = 
         lambda lake: list_ai_inventory(lake=lake, limit=10_000, offset=0),
     ),
     "/api/v1/mappings": ("mappings", lambda _lake: list(load_control_article_mappings().values())),
+    "/api/v1/workflows": ("workflows", list_workflows),
+    "/api/v1/workflows/actions": ("workflows.actions", lambda _lake: action_catalog()),
 }
 
 # Resources that also accept writes via handle_post.
@@ -156,6 +173,7 @@ _WRITABLE = {
     "/api/v1/ingestion/eval": ["POST"],
     "/api/v1/scheduler/tick": ["POST"],
     "/api/v1/trust-shares": ["POST"],
+    "/api/v1/workflows": ["POST"],
 }
 
 
@@ -164,6 +182,33 @@ def _suffix_match(path: str, prefix: str, suffix: str) -> str | None:
         return None
     rest = path[len(prefix) : -len(suffix)]
     return rest or None
+
+
+def _workflow_id_match(path: str) -> str | None:
+    """Match /api/v1/workflows/<id>, excluding the sibling routes.
+
+    ``actions`` and ``runs`` are route segments, not workflow ids, and a
+    nested path is a different route -- so both are rejected here rather
+    than being looked up as a workflow that will never exist.
+    """
+    prefix = "/api/v1/workflows/"
+    if not path.startswith(prefix):
+        return None
+    rest = path[len(prefix) :]
+    if rest in {"", "actions", "runs"} or "/" in rest:
+        return None
+    return rest
+
+
+def _workflow_run_id_match(path: str) -> str | None:
+    """Match /api/v1/workflows/runs/<run_id>."""
+    prefix = "/api/v1/workflows/runs/"
+    if not path.startswith(prefix):
+        return None
+    rest = path[len(prefix) :].strip("/")
+    if not rest or "/" in rest:
+        return None
+    return rest
 
 
 def _connector_action(path: str, action: str) -> str | None:
@@ -184,6 +229,23 @@ def required_post_scope(path: str) -> str:
         return "snapshot"
     if _suffix_match(path, "/api/v1/trust-shares/", "/revoke") is not None:
         return "snapshot"
+    # Workflows split two ways and the split is deliberate: executing a saved
+    # workflow is `workflow_run`, while defining one or ruling on a run that
+    # paused for approval is `workflow_manage`. Flattening these would let a
+    # runner approve its own run.
+    if path == "/api/v1/workflows":
+        return "workflow_manage"
+    if path == "/api/v1/workflows/actions/run":
+        return "workflow_run"
+    workflow_run_path = _suffix_match(path, "/api/v1/workflows/", "/run")
+    if workflow_run_path is not None and workflow_run_path != "actions":
+        return "workflow_run"
+    if _suffix_match(path, "/api/v1/workflows/runs/", "/retry") is not None:
+        return "workflow_run"
+    if _suffix_match(path, "/api/v1/workflows/runs/", "/approve") is not None:
+        return "workflow_manage"
+    if _suffix_match(path, "/api/v1/workflows/runs/", "/reject") is not None:
+        return "workflow_manage"
     if path == "/api/v1/ingestion/eval":
         return "connector_manage"
     if path == "/api/v1/scheduler/tick":
@@ -215,6 +277,69 @@ def required_post_scope(path: str) -> str:
 # Paths, methods, and scopes are kept in lockstep with the ``@app.<verb>``
 # decorators and their ``Depends(_require_*)`` defaults in ``server_app``.
 EXTENDED_RESOURCES: list[JsonObject] = [
+    {
+        "resource": "workflows",
+        "path": "/api/v1/workflows/{workflow_id}",
+        "kind": "singleton",
+        "methods": ["GET"],
+        "scopes": ["read"],
+        "path_params": ["workflow_id"],
+    },
+    {
+        "resource": "workflows.runs",
+        "path": "/api/v1/workflows/{workflow_id}/runs",
+        "kind": "collection",
+        "methods": ["GET"],
+        "scopes": ["read"],
+        "path_params": ["workflow_id"],
+    },
+    {
+        "resource": "workflows.run",
+        "path": "/api/v1/workflows/{workflow_id}/run",
+        "kind": "singleton",
+        "methods": ["POST"],
+        "scopes": ["workflow_run"],
+        "path_params": ["workflow_id"],
+    },
+    {
+        "resource": "workflows.actions",
+        "path": "/api/v1/workflows/actions/run",
+        "kind": "singleton",
+        "methods": ["POST"],
+        "scopes": ["workflow_run"],
+    },
+    {
+        "resource": "workflows.run",
+        "path": "/api/v1/workflows/runs/{run_id}",
+        "kind": "singleton",
+        "methods": ["GET"],
+        "scopes": ["read"],
+        "path_params": ["run_id"],
+    },
+    {
+        "resource": "workflows.run",
+        "path": "/api/v1/workflows/runs/{run_id}/retry",
+        "kind": "singleton",
+        "methods": ["POST"],
+        "scopes": ["workflow_run"],
+        "path_params": ["run_id"],
+    },
+    {
+        "resource": "workflows.run",
+        "path": "/api/v1/workflows/runs/{run_id}/approve",
+        "kind": "singleton",
+        "methods": ["POST"],
+        "scopes": ["workflow_manage"],
+        "path_params": ["run_id"],
+    },
+    {
+        "resource": "workflows.run",
+        "path": "/api/v1/workflows/runs/{run_id}/reject",
+        "kind": "singleton",
+        "methods": ["POST"],
+        "scopes": ["workflow_manage"],
+        "path_params": ["run_id"],
+    },
     {
         "resource": "trust-shares",
         "path": "/api/v1/trust-shares",
@@ -1027,6 +1152,28 @@ def handle_get(path: str, params: Params, lake_dir: str | Path) -> tuple[HTTPSta
                 "not_found", f"unknown control {control_id}", resource="control.history"
             )
         return HTTPStatus.OK, envelope("control.history", {"control_id": control_id, "versions": versions})
+    workflow_run_id = _workflow_run_id_match(path)
+    if workflow_run_id is not None:
+        run = get_workflow_run(lake, workflow_run_id)
+        if run is None:
+            return HTTPStatus.NOT_FOUND, error_envelope(
+                "not_found", f"unknown run {workflow_run_id}", resource="workflows.run"
+            )
+        return HTTPStatus.OK, envelope("workflows.run", run)
+    workflow_runs_for = _suffix_match(path, "/api/v1/workflows/", "/runs")
+    if workflow_runs_for is not None and workflow_runs_for != "actions":
+        runs = list_workflow_runs(lake, workflow_runs_for)
+        return HTTPStatus.OK, envelope(
+            "workflows.runs", runs, meta={"workflow_id": workflow_runs_for, "count": len(runs)}
+        )
+    workflow_id = _workflow_id_match(path)
+    if workflow_id is not None:
+        workflow = get_workflow(lake, workflow_id)
+        if workflow is None:
+            return HTTPStatus.NOT_FOUND, error_envelope(
+                "not_found", f"unknown workflow {workflow_id}", resource="workflows"
+            )
+        return HTTPStatus.OK, envelope("workflows", workflow)
     if path == "/api/v1/trust-shares":
         include_revoked = (params.get("include_revoked") or ["false"])[0].lower() in {"1", "true", "yes"}
         shares = list_shares(lake, include_revoked=include_revoked)
@@ -1074,6 +1221,71 @@ def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tup
         reason = str(payload.get("reason") or "api_request")
         snapshot_path = write_assessment_snapshot(lake, reason=reason)
         return HTTPStatus.CREATED, envelope("snapshots", {"snapshot_path": str(snapshot_path), "reason": reason})
+    if path == "/api/v1/workflows":
+        try:
+            record = save_workflow(
+                lake,
+                workflow_id=payload.get("workflow_id"),
+                name=str(payload.get("name") or ""),
+                description=str(payload.get("description") or ""),
+                nodes=payload.get("nodes") or [],
+                edges=payload.get("edges") or [],
+                actor=str(payload.get("actor") or "console"),
+            )
+        except (ValueError, TypeError):
+            return HTTPStatus.BAD_REQUEST, error_envelope("bad_request", "invalid request", resource="workflows")
+        return HTTPStatus.CREATED, envelope("workflows", record)
+    if path == "/api/v1/workflows/actions/run":
+        try:
+            output = run_action(lake, node_type=str(payload.get("node_type") or ""), params=payload.get("params") or {})
+        except (ValueError, TypeError):
+            return HTTPStatus.BAD_REQUEST, error_envelope(
+                "bad_request", "invalid request", resource="workflows.actions"
+            )
+        return HTTPStatus.CREATED, envelope("workflows.actions", output)
+    workflow_to_run = _suffix_match(path, "/api/v1/workflows/", "/run")
+    if workflow_to_run is not None and workflow_to_run != "actions":
+        try:
+            run = run_workflow(
+                lake,
+                workflow_id=workflow_to_run,
+                actor=str(payload.get("actor") or "console"),
+                dry_run=bool(payload.get("dry_run")),
+            )
+        except (ValueError, TypeError):
+            return HTTPStatus.BAD_REQUEST, error_envelope("bad_request", "invalid request", resource="workflows.run")
+        return HTTPStatus.CREATED, envelope("workflows.run", run)
+    workflow_retry = _suffix_match(path, "/api/v1/workflows/runs/", "/retry")
+    if workflow_retry is not None:
+        try:
+            run = retry_workflow_run(lake, run_id=workflow_retry, actor=str(payload.get("actor") or "console"))
+        except (ValueError, TypeError):
+            return HTTPStatus.BAD_REQUEST, error_envelope("bad_request", "invalid request", resource="workflows.run")
+        return HTTPStatus.CREATED, envelope("workflows.run", run)
+    workflow_approve = _suffix_match(path, "/api/v1/workflows/runs/", "/approve")
+    if workflow_approve is not None:
+        try:
+            run = approve_workflow_run(
+                lake,
+                run_id=workflow_approve,
+                actor=str(payload.get("actor") or "console"),
+                note=str(payload.get("note") or ""),
+            )
+        except (ValueError, TypeError):
+            return HTTPStatus.BAD_REQUEST, error_envelope("bad_request", "invalid request", resource="workflows.run")
+        return HTTPStatus.CREATED, envelope("workflows.run", run)
+    workflow_reject = _suffix_match(path, "/api/v1/workflows/runs/", "/reject")
+    if workflow_reject is not None:
+        try:
+            run = reject_workflow_run(
+                lake,
+                run_id=workflow_reject,
+                actor=str(payload.get("actor") or "console"),
+                note=str(payload.get("note") or ""),
+            )
+        except (ValueError, TypeError):
+            return HTTPStatus.BAD_REQUEST, error_envelope("bad_request", "invalid request", resource="workflows.run")
+        return HTTPStatus.CREATED, envelope("workflows.run", run)
     if path == "/api/v1/trust-shares":
         try:
             share = create_share(
