@@ -140,6 +140,47 @@ async function post<T>(path: string, body: unknown): Promise<T> {
   return (await res.json()) as T;
 }
 
+// MAX_PAGE_LIMIT in security_lakehouse/db/base.py. Asking for more is not
+// clamped — the server rejects it as a bad request.
+const V1_MAX_PAGE = 500;
+
+type V1Page<T> = {
+  data: T[];
+  meta: { count: number; returned: number; limit: number };
+};
+
+/**
+ * Read every row of a paginated `/v1` collection.
+ *
+ * A single GET returns at most one page, and the server's default page is 100
+ * rows — so calling a `/v1` list endpoint without paging silently returns a
+ * prefix of the collection and reports success. On an estate with 1,448
+ * violations, one unpaged read yields 100 of them.
+ */
+async function getAllV1<T>(
+  path: string,
+): Promise<{ items: T[]; count: number }> {
+  const items: T[] = [];
+  let offset = 0;
+  let count = 0;
+
+  for (;;) {
+    const sep = path.includes("?") ? "&" : "?";
+    const page = await get<V1Page<T>>(
+      `${path}${sep}limit=${V1_MAX_PAGE}&offset=${offset}`,
+    );
+    count = page.meta.count;
+    items.push(...page.data);
+
+    // A short page is the last one. The empty-page guard keeps a server that
+    // reports a count it will not serve from spinning here forever.
+    if (page.data.length < V1_MAX_PAGE || items.length >= count) break;
+    offset += page.data.length;
+  }
+
+  return { items, count };
+}
+
 async function mutate<T>(
   path: string,
   method: "PATCH" | "DELETE",
@@ -320,7 +361,10 @@ export const api = {
   controlTests: () =>
     get<{ count: number; control_tests: ControlTest[] }>("/control-tests"),
   violations: () =>
-    get<{ count: number; violations: Violation[] }>("/violations"),
+    getAllV1<Violation>("/v1/violations").then(({ items, count }) => ({
+      count,
+      violations: items,
+    })),
   evidence: () =>
     get<{ count: number; evidence: NormalizedEvent[] }>("/evidence"),
   evidenceFreshness: (query = "") =>
@@ -329,9 +373,14 @@ export const api = {
     ),
   assets: () => get<{ assets: AssetRisk[] }>("/assets"),
   createSnapshot: (reason: string) =>
-    post<SnapshotResponse>("/snapshots", { reason }),
+    post<{ data: SnapshotResponse }>("/v1/snapshots", { reason }).then(
+      (b) => b.data,
+    ),
   listSnapshots: () =>
-    get<{ count: number; snapshots: SnapshotSummary[] }>("/snapshots"),
+    getAllV1<SnapshotSummary>("/v1/snapshots").then(({ items, count }) => ({
+      count,
+      snapshots: items,
+    })),
   getSnapshotDetail: (snapshotId: string) =>
     get<{ data: SnapshotDetail }>(
       `/v1/snapshots/${encodeURIComponent(snapshotId)}`,
