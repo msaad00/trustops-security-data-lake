@@ -197,6 +197,26 @@ def test_get_posture_has_score(tmp_path):
     assert isinstance(posture["posture"]["score"], (int, float))
 
 
+def test_get_framework_equivalence_resolves(tmp_path):
+    """This tool dispatched to a pre-v1 path that the v1 engine never served.
+
+    ``_get`` routes through ``api_v1.handle_get`` and raises on any non-200, so
+    the tool raised ValueError on every call from the day it was added. Nothing
+    covered it, because the equivalence builder was tested directly instead.
+    """
+    server = _seeded_server(tmp_path)
+    equivalence = call_tool(server, "get_framework_equivalence")
+    assert equivalence["group_count"] >= 1
+    assert equivalence["groups"]
+
+
+def test_mcp_tools_do_not_call_pre_v1_paths():
+    """The MCP engine only serves /api/v1; a pre-v1 string here is a dead tool."""
+    source = Path(mcp_server.__file__).read_text(encoding="utf-8")
+    stale = [line.strip() for line in source.splitlines() if '_get("/api/' in line and '_get("/api/v1/' not in line]
+    assert stale == []
+
+
 def test_get_ingestion_status_includes_scale(tmp_path):
     server = _seeded_server(tmp_path)
     status = call_tool(server, "get_ingestion_status")
