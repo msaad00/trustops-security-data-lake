@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sqlite3
 import sys
 from pathlib import Path
@@ -1098,9 +1099,45 @@ def _serve(args: argparse.Namespace) -> int:
     else:
         from security_lakehouse.server import serve
 
-        print(f"serving TrustOps console: http://{args.host}:{args.port}/")
+        _refuse_exposed_local_mode(args.host)
+        print(f"serving TrustOps console (local mode, no authentication): http://{args.host}:{args.port}/")
         serve(args.lake, host=args.host, port=args.port)
     return 0
+
+
+# Loopback and link-local. Anything else can be reached by something that is not
+# the operator's own machine.
+_LOCAL_ONLY_HOSTS = {"127.0.0.1", "::1", "localhost", "169.254.169.254"}
+
+
+def _refuse_exposed_local_mode(host: str) -> None:
+    """Stop local mode from binding an address other people can reach.
+
+    Local mode is :mod:`security_lakehouse.server`, which has no authentication
+    at all -- it never reads ``TRUSTOPS_OIDC_*``, ``TRUSTOPS_SESSION_SECRET``, or
+    any other auth setting, because those belong to ``server_app``. Bound to
+    0.0.0.0 it hands every control, violation, and piece of evidence to anyone
+    who can route to the port, while an operator who configured OIDC has every
+    reason to believe it is enforced.
+
+    Refusing here rather than warning is deliberate: a warning scrolls past in a
+    container log, and the failure it precedes is silent.
+    """
+    if host in _LOCAL_ONLY_HOSTS or host.startswith("127."):
+        return
+    if os.environ.get("TRUSTOPS_ALLOW_INSECURE_NO_AUTH", "").strip().lower() in {"1", "true", "yes"}:
+        print(
+            f"WARNING: serving UNAUTHENTICATED local mode on {host} — "
+            "every control, violation, and evidence record is readable by anyone who can reach this port.",
+            file=sys.stderr,
+        )
+        return
+    raise SystemExit(
+        f"refusing to serve local mode on {host}: local mode has no authentication.\n"
+        "  Use --server (requires the 'server' extra) for authenticated serving, which is what\n"
+        "  TRUSTOPS_OIDC_*, TRUSTOPS_SAML_*, and TRUSTOPS_SESSION_SECRET configure.\n"
+        "  To serve without authentication anyway, set TRUSTOPS_ALLOW_INSECURE_NO_AUTH=true."
+    )
 
 
 def _db_upgrade(args: argparse.Namespace) -> int:
