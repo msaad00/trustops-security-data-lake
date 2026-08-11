@@ -87,7 +87,7 @@
     <!-- Badges -->
     <g transform="translate(1040,36)">
       <rect width="96" height="28" rx="8" class="chip"/>
-      <text x="48" y="19" text-anchor="middle" fill="#e2e8f0" font-size="10" font-weight="900">741 controls</text>
+      <text x="48" y="19" text-anchor="middle" fill="#e2e8f0" font-size="10" font-weight="900">942 controls</text>
       <rect y="36" width="96" height="28" rx="8" fill="#102a43" stroke="#38bdf8" stroke-width="1"/>
       <text x="48" y="55" text-anchor="middle" fill="#7dd3fc" font-size="10" font-weight="900">/api/v1 · MCP</text>
     </g>

@@ -42,17 +42,13 @@ Evidence stays in your environment. Models may summarize and prioritize; they do
 
 ## Product preview
 
-<p align="center">
-  <img src="docs/images/trustops-product-mosaic.svg" alt="TrustOps console overview" width="100%">
-</p>
+|                                         Trust Home                                         |                                         Audit room                                          |
+| :----------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
+| <img src="docs/images/trustops-demo-dashboard.png" alt="TrustOps Trust Home" width="100%"> | <img src="docs/images/trustops-demo-audit-room.png" alt="TrustOps audit room" width="100%"> |
 
-|                                        Trust Home                                         |                                         Audit room                                         |
-| :---------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------: |
-| <img src="docs/images/trustops-demo-dashboard.png" alt="TrustOps Trust Home" width="440"> | <img src="docs/images/trustops-demo-audit-room.png" alt="TrustOps audit room" width="440"> |
-
-|                                          Evidence                                           |                                             Connectors                                             |
-| :-----------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------: |
-| <img src="docs/images/trustops-demo-evidence.png" alt="TrustOps evidence room" width="440"> | <img src="docs/images/trustops-demo-connectors.png" alt="TrustOps connector registry" width="440"> |
+|                                           Evidence                                           |                                             Connectors                                              |
+| :------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: |
+| <img src="docs/images/trustops-demo-evidence.png" alt="TrustOps evidence room" width="100%"> | <img src="docs/images/trustops-demo-connectors.png" alt="TrustOps connector registry" width="100%"> |
 
 More views: [frameworks](docs/images/trustops-demo-frameworks.png) · [insights](docs/images/trustops-demo-insights.png) · [workflows](docs/images/trustops-demo-workflows.png) · [trust center](docs/images/trustops-demo-trust-center.png)
 
