@@ -332,7 +332,9 @@ export default function EvidencePage() {
               artifact agents can query directly.
             </CardDescription>
           </CardHeader>
-          <div className="max-w-full overflow-x-auto">
+          {/* tabIndex makes the horizontal scroll reachable by keyboard;
+              without it the columns past the fold are mouse-only. */}
+          <div className="max-w-full overflow-x-auto" tabIndex={0}>
             <table className="w-full min-w-[760px] text-sm">
               <thead>
                 {table.getHeaderGroups().map((hg) => (

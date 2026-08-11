@@ -174,6 +174,7 @@ export default function CrosswalkPage() {
               />
             </label>
             <select
+              aria-label="Filter crosswalk by framework"
               value={framework}
               onChange={(event) => setFramework(event.target.value)}
               className="h-10 rounded-lg border border-line bg-white px-3 text-sm font-bold text-ink outline-none"

@@ -128,6 +128,7 @@ function TasksSection() {
           onChange={(e) => setOwner(e.target.value)}
         />
         <select
+          aria-label="Task priority"
           className={inputClass}
           value={priority}
           onChange={(e) => setPriority(e.target.value)}
@@ -139,6 +140,7 @@ function TasksSection() {
           ))}
         </select>
         <input
+          aria-label="Task due date"
           className={inputClass}
           type="date"
           value={dueAt}
@@ -363,6 +365,7 @@ function ExceptionsSection() {
           onChange={(e) => setReason(e.target.value)}
         />
         <input
+          aria-label="Exception expiry date"
           className={inputClass}
           type="date"
           value={expiresAt}

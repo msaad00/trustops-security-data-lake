@@ -60,6 +60,7 @@ export function Toolbar({
         />
       </div>
       <select
+        aria-label="Filter by framework"
         value={filters.framework}
         onChange={(e) => onChange({ ...filters, framework: e.target.value })}
         className="min-w-0 rounded-lg border border-line bg-white px-3 py-2 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand"
@@ -72,6 +73,7 @@ export function Toolbar({
         ))}
       </select>
       <select
+        aria-label="Filter by severity"
         value={filters.severity}
         onChange={(e) =>
           onChange({
@@ -89,6 +91,7 @@ export function Toolbar({
       </select>
       {showFreshness ? (
         <select
+          aria-label="Filter by evidence freshness"
           value={filters.freshness ?? "all"}
           onChange={(e) =>
             onChange({
