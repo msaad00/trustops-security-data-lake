@@ -40,7 +40,10 @@ COPY policy_templates/ ./policy_templates/
 COPY --from=web-build /src/security_lakehouse/web/dist/ ./src/security_lakehouse/web/dist/
 RUN python -m venv /opt/trustops-venv \
   && /opt/trustops-venv/bin/pip install --upgrade pip \
-  && /opt/trustops-venv/bin/pip install ".[analytics]"
+  # The image binds 0.0.0.0, so it must be able to run the authenticated
+  # server. Without the `server` extra the CMD below silently falls back to
+  # local mode, which has no authentication at all.
+  && /opt/trustops-venv/bin/pip install ".[server,analytics]"
 
 # --- 3. Slim runtime ------------------------------------------------------
 FROM python:${PYTHON_VERSION}-slim AS runtime
@@ -81,4 +84,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
   CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8787/api/healthz', timeout=2)"
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["security-lakehouse", "serve", "--lake", "/lake", "--host", "0.0.0.0", "--port", "8787"]
+CMD ["security-lakehouse", "serve", "--server", "--lake", "/lake", "--host", "0.0.0.0", "--port", "8787"]
