@@ -15,7 +15,8 @@
   <rect width="1200" height="420" rx="0" fill="#eef3f8"/>
   <rect x="36" y="28" width="1128" height="364" rx="24" fill="#ffffff" stroke="#d7e0ec"/>
   <text x="72" y="76" class="title" font-size="28">AWS auth boundary: scheduled read-only STS sessions</text>
-  <text x="72" y="106" class="body" font-size="16">TrustOps never asks for long-lived access keys. Each probe or scheduled sync assumes the customer role, reads posture evidence, and lets the temporary credentials expire.</text>
+  <text x="72" y="104" class="body" font-size="16">TrustOps never asks for long-lived access keys. Each probe or scheduled sync assumes the</text>
+  <text x="72" y="126" class="body" font-size="16">customer role, reads posture evidence, and lets the temporary credentials expire.</text>
 
   <g transform="translate(72,146)">
     <rect width="192" height="142" rx="16" fill="#fff7ed" stroke="#fed7aa"/>
@@ -65,6 +66,7 @@
     <path d="M954 217 H992"/>
   </g>
 
-  <rect x="72" y="322" width="1040" height="42" rx="21" fill="#f8fafc" stroke="#d7e0ec"/>
-  <text x="94" y="348" class="body" font-size="14">Continuous posture = repeated scheduled syncs. Every run re-authenticates with STS AssumeRole, uses short-lived session credentials, and reads only allowed IAM posture evidence.</text>
+  <rect x="72" y="316" width="1040" height="60" rx="20" fill="#f8fafc" stroke="#d7e0ec"/>
+  <text x="94" y="340" class="body" font-size="14">Continuous posture = repeated scheduled syncs. Every run re-authenticates with STS AssumeRole,</text>
+  <text x="94" y="360" class="body" font-size="14">uses short-lived session credentials, and reads only allowed IAM posture evidence.</text>
 </svg>

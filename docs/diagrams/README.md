@@ -25,7 +25,6 @@ Visual references for architecture, ingestion, auth, and deployment.
 | [trustops-assessment-architecture.svg](../images/trustops-assessment-architecture.svg) | Continuous assessment hero   |
 | [trustops-readonly-connections.svg](../images/trustops-readonly-connections.svg)       | Enterprise read-only connect |
 | [trustops-identity-boundary.svg](../images/trustops-identity-boundary.svg)             | SSO + API key boundary       |
-| [trustops-product-mosaic.svg](../images/trustops-product-mosaic.svg)                   | Product surfaces             |
 | [trustops-readme-banner.svg](../images/trustops-readme-banner.svg)                     | README banner                |
 
 ## Console diagrams
