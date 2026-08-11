@@ -39,11 +39,16 @@ from security_lakehouse.connector_state import (
     run_probe,
 )
 from security_lakehouse.framework_detail import build_framework_detail
-from security_lakehouse.graph import analyze_coverage
+from security_lakehouse.graph import analyze_coverage, build_framework_crosswalk, build_repository_graph
 from security_lakehouse.ingestion_status import build_ingestion_status
 from security_lakehouse.io import read_jsonl, resolve_path
 from security_lakehouse.lake_eval import list_eval_runs, run_lake_eval
 from security_lakehouse.lake_scale import connector_materialize_on_sync
+from security_lakehouse.mappings import (
+    build_framework_equivalence,
+    build_reviewed_crosswalk,
+    load_control_article_mappings,
+)
 from security_lakehouse.tracking import verify_tracking_chain
 
 API_VERSION = "v1"
@@ -104,6 +109,12 @@ SINGLETON_LOADERS: dict[str, tuple[str, Callable[[Path], Any]]] = {
     "/api/v1/posture/current": ("posture.current", build_current_posture),
     "/api/v1/graph/coverage": ("graph.coverage", analyze_coverage),
     "/api/v1/platform/ai-governance": ("platform.ai-governance", lambda lake: build_ai_governance_status(lake=lake)),
+    "/api/v1/repo-graph": ("repo-graph", build_repository_graph),
+    # Crosswalk and equivalence are computed from the control catalog and the
+    # curated mapping files, not from the lake, so they ignore the lake path.
+    "/api/v1/crosswalk": ("crosswalk", lambda _lake: build_framework_crosswalk()),
+    "/api/v1/crosswalk/reviewed": ("crosswalk.reviewed", lambda _lake: build_reviewed_crosswalk()),
+    "/api/v1/mappings/equivalence": ("mappings.equivalence", lambda _lake: build_framework_equivalence()),
 }
 
 # Route -> (resource name, loader) for endpoints returning a row collection.
@@ -135,6 +146,7 @@ COLLECTION_LOADERS: dict[str, tuple[str, Callable[[Path], list[JsonObject]]]] = 
         "platform.ai-governance.inventory",
         lambda lake: list_ai_inventory(lake=lake, limit=10_000, offset=0),
     ),
+    "/api/v1/mappings": ("mappings", lambda _lake: list(load_control_article_mappings().values())),
 }
 
 # Resources that also accept writes via handle_post.

@@ -546,15 +546,27 @@ export const api = {
       {},
     ),
   graph: () => get<ComplianceGraph>("/graph"),
-  repoGraph: () => get<ComplianceGraph>("/repo-graph"),
+  repoGraph: () =>
+    get<{ data: ComplianceGraph }>("/v1/repo-graph").then((b) => b.data),
   readiness: () =>
     get<{ count: number; frameworks: FrameworkReadiness[] }>("/readiness"),
-  crosswalk: () => get<Crosswalk>("/crosswalk"),
-  reviewedCrosswalk: () => get<ReviewedCrosswalk>("/crosswalk/reviewed"),
+  crosswalk: () =>
+    get<{ data: Crosswalk }>("/v1/crosswalk").then((b) => b.data),
+  reviewedCrosswalk: () =>
+    get<{ data: ReviewedCrosswalk }>("/v1/crosswalk/reviewed").then(
+      (b) => b.data,
+    ),
   frameworkEquivalence: () =>
-    get<FrameworkEquivalence>("/mappings/equivalence"),
+    get<{ data: FrameworkEquivalence }>("/v1/mappings/equivalence").then(
+      (b) => b.data,
+    ),
   mappings: () =>
-    get<{ count: number; mappings: ControlArticleMapping[] }>("/mappings"),
+    getAllV1<ControlArticleMapping>("/v1/mappings").then(
+      ({ items, count }) => ({
+        count,
+        mappings: items,
+      }),
+    ),
   auditLog: (
     opts: {
       category?: string;

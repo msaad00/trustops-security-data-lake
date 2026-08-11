@@ -192,6 +192,18 @@
       "scopes": ["read"]
     },
     {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/crosswalk",
+      "resource": "crosswalk"
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/crosswalk/reviewed",
+      "resource": "crosswalk.reviewed"
+    },
+    {
       "kind": "collection",
       "methods": ["GET"],
       "path": "/api/v1/evidence",
@@ -308,6 +320,19 @@
       "query": ["limit"],
       "resource": "insights.timeseries",
       "scopes": ["read"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/mappings",
+      "query": ["limit", "offset", "sort", "<field>=<value>"],
+      "resource": "mappings"
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/mappings/equivalence",
+      "resource": "mappings.equivalence"
     },
     {
       "kind": "singleton",
@@ -460,6 +485,12 @@
       "path_params": ["task_id"],
       "resource": "remediation.tasks",
       "scopes": ["read", "write"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/repo-graph",
+      "resource": "repo-graph"
     },
     {
       "kind": "collection",
