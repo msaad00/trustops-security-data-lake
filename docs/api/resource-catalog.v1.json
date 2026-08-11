@@ -661,6 +661,83 @@
       "path": "/api/v1/violations",
       "query": ["limit", "offset", "sort", "<field>=<value>"],
       "resource": "violations"
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET", "POST"],
+      "path": "/api/v1/workflows",
+      "query": ["limit", "offset", "sort", "<field>=<value>"],
+      "resource": "workflows"
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/workflows/actions",
+      "query": ["limit", "offset", "sort", "<field>=<value>"],
+      "resource": "workflows.actions"
+    },
+    {
+      "kind": "singleton",
+      "methods": ["POST"],
+      "path": "/api/v1/workflows/actions/run",
+      "resource": "workflows.actions",
+      "scopes": ["workflow_run"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/workflows/runs/{run_id}",
+      "path_params": ["run_id"],
+      "resource": "workflows.run",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["POST"],
+      "path": "/api/v1/workflows/runs/{run_id}/approve",
+      "path_params": ["run_id"],
+      "resource": "workflows.run",
+      "scopes": ["workflow_manage"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["POST"],
+      "path": "/api/v1/workflows/runs/{run_id}/reject",
+      "path_params": ["run_id"],
+      "resource": "workflows.run",
+      "scopes": ["workflow_manage"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["POST"],
+      "path": "/api/v1/workflows/runs/{run_id}/retry",
+      "path_params": ["run_id"],
+      "resource": "workflows.run",
+      "scopes": ["workflow_run"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/workflows/{workflow_id}",
+      "path_params": ["workflow_id"],
+      "resource": "workflows",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["POST"],
+      "path": "/api/v1/workflows/{workflow_id}/run",
+      "path_params": ["workflow_id"],
+      "resource": "workflows.run",
+      "scopes": ["workflow_run"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/workflows/{workflow_id}/runs",
+      "path_params": ["workflow_id"],
+      "resource": "workflows.runs",
+      "scopes": ["read"]
     }
   ]
 }

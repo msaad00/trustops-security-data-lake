@@ -632,6 +632,89 @@ def test_v1_trust_shares_round_trip_create_list_and_revoke(tmp_path: Path) -> No
         server.shutdown()
 
 
+def test_v1_workflow_scopes_match_the_pre_v1_routes_including_the_split() -> None:
+    """Running a workflow and managing one are different privileges.
+
+    `workflow_run` executes a saved workflow; `workflow_manage` defines one and
+    rules on a run paused for approval. Collapsing them would let whoever can
+    trigger a run also approve it, which is the whole point of a gate.approval
+    node. Asserted against api_legacy so the two cannot drift apart.
+    """
+    from security_lakehouse import api_legacy
+
+    for v1_path, legacy_path in [
+        ("/api/v1/workflows", "/api/workflows"),
+        ("/api/v1/workflows/actions/run", "/api/workflows/actions/run"),
+        ("/api/v1/workflows/wf-1/run", "/api/workflows/wf-1/run"),
+        ("/api/v1/workflows/runs/r-1/retry", "/api/workflows/runs/r-1/retry"),
+        ("/api/v1/workflows/runs/r-1/approve", "/api/workflows/runs/r-1/approve"),
+        ("/api/v1/workflows/runs/r-1/reject", "/api/workflows/runs/r-1/reject"),
+    ]:
+        assert api_v1.required_post_scope(v1_path) == api_legacy.required_post_scope(legacy_path), v1_path
+
+    assert api_v1.required_post_scope("/api/v1/workflows/wf-1/run") == "workflow_run"
+    assert api_v1.required_post_scope("/api/v1/workflows/runs/r-1/retry") == "workflow_run"
+    assert api_v1.required_post_scope("/api/v1/workflows/runs/r-1/approve") == "workflow_manage"
+    assert api_v1.required_post_scope("/api/v1/workflows/runs/r-1/reject") == "workflow_manage"
+    assert api_v1.required_post_scope("/api/v1/workflows") == "workflow_manage"
+
+
+def test_v1_workflow_id_match_does_not_swallow_sibling_routes() -> None:
+    """`actions` and `runs` are route segments, not workflow ids."""
+    assert api_v1._workflow_id_match("/api/v1/workflows/wf-1") == "wf-1"
+    assert api_v1._workflow_id_match("/api/v1/workflows/actions") is None
+    assert api_v1._workflow_id_match("/api/v1/workflows/runs") is None
+    assert api_v1._workflow_id_match("/api/v1/workflows/runs/r-1") is None
+    assert api_v1._workflow_id_match("/api/v1/workflows/") is None
+
+
+def test_v1_workflows_round_trip_save_run_and_fetch(tmp_path: Path) -> None:
+    """Exercise the handlers directly: the transport's scope gate is tested above."""
+    lake = tmp_path / "lake"
+    lake.mkdir()
+    payload = {
+        "name": "probe wf",
+        "nodes": [
+            {"id": "n1", "node_type": "trigger.cron", "params": {"cron": "0 0 * * *"}},
+            {"id": "n2", "node_type": "action.snapshot", "params": {}},
+        ],
+        "edges": [{"source": "n1", "target": "n2"}],
+    }
+    status, created = api_v1.handle_post("/api/v1/workflows", payload, lake)
+    assert status == HTTPStatus.CREATED
+    assert created["meta"]["resource"] == "workflows"
+    workflow_id = created["data"]["workflow_id"]
+
+    status, fetched = api_v1.handle_get(f"/api/v1/workflows/{workflow_id}", {}, lake)
+    assert status == HTTPStatus.OK
+    assert fetched["data"]["workflow_id"] == workflow_id
+
+    status, listed = api_v1.handle_get("/api/v1/workflows", {}, lake)
+    assert status == HTTPStatus.OK
+    assert [row["workflow_id"] for row in listed["data"]] == [workflow_id]
+
+    status, ran = api_v1.handle_post(f"/api/v1/workflows/{workflow_id}/run", {"actor": "probe"}, lake)
+    assert status == HTTPStatus.CREATED
+    run_id = ran["data"]["run_id"]
+
+    status, run = api_v1.handle_get(f"/api/v1/workflows/runs/{run_id}", {}, lake)
+    assert status == HTTPStatus.OK
+    assert run["data"]["run_id"] == run_id
+
+    status, runs = api_v1.handle_get(f"/api/v1/workflows/{workflow_id}/runs", {}, lake)
+    assert status == HTTPStatus.OK
+    assert runs["meta"]["workflow_id"] == workflow_id
+    assert [row["run_id"] for row in runs["data"]] == [run_id]
+
+    status, missing = api_v1.handle_get("/api/v1/workflows/no-such-workflow", {}, lake)
+    assert status == HTTPStatus.NOT_FOUND
+    assert missing["errors"][0]["code"] == "not_found"
+
+    status, missing_run = api_v1.handle_get("/api/v1/workflows/runs/no-such-run", {}, lake)
+    assert status == HTTPStatus.NOT_FOUND
+    assert missing_run["errors"][0]["code"] == "not_found"
+
+
 def test_v1_errors_use_contract_envelope(tmp_path: Path) -> None:
     server = _spin(tmp_path)
     try:
