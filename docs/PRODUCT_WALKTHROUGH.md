@@ -18,12 +18,12 @@ repo audit, and API surfaces that a buyer or contributor can run today.
 
 ## First Run
 
-| Step                                            | Command                                                                                         | Artifact                                                       | Next step                                       |
-| ----------------------------------------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ----------------------------------------------- |
-| Install locally                                 | `python -m venv .venv && source .venv/bin/activate && pip install -e ".[dev,server]"`           | editable `security-lakehouse` CLI                              | load a fixture                                  |
-| Build the lake                                  | `security-lakehouse fixtures load --company fintech --out build/lakehouse`                      | `build/lakehouse/bronze`, `silver`, `gold`, and `mart` outputs | inspect posture                                 |
-| Check posture                                   | `security-lakehouse assessment status --lake build/lakehouse`                                   | current scores, confidence inputs, and violations              | freeze or serve evidence                        |
-| Freeze evidence                                 | `security-lakehouse assessment snapshot --lake build/lakehouse --reason vendor_due_diligence`   | `build/lakehouse/gold/snapshots/assessment-*.json`             | share the immutable snapshot path               |
+| Step                                                        | Command                                                                                         | Artifact                                                       | Next step                                       |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ----------------------------------------------- |
+| Install locally                                             | `python -m venv .venv && source .venv/bin/activate && pip install -e ".[dev,server]"`           | editable `security-lakehouse` CLI                              | load a fixture                                  |
+| Build the lake                                              | `security-lakehouse fixtures load --company fintech --out build/lakehouse`                      | `build/lakehouse/bronze`, `silver`, `gold`, and `mart` outputs | inspect posture                                 |
+| Check posture                                               | `security-lakehouse assessment status --lake build/lakehouse`                                   | current scores, confidence inputs, and violations              | freeze or serve evidence                        |
+| Freeze evidence                                             | `security-lakehouse assessment snapshot --lake build/lakehouse --reason vendor_due_diligence`   | `build/lakehouse/gold/snapshots/assessment-*.json`             | share the immutable snapshot path               |
 | Open the workbench (run `make web-install web-build` first) | `security-lakehouse serve --lake build/lakehouse --server --allow-insecure-no-auth --port 8787` | server-mode console and API                                    | open `http://127.0.0.1:8787/console/dashboard/` |
 
 The demo fixture is synthetic and intentionally includes failing controls so the
