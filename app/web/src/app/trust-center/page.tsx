@@ -152,6 +152,7 @@ export default function TrustCenterPage() {
           <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
             Expires in
             <select
+              aria-label="Share expiry window"
               value={expiresInHours}
               onChange={(e) => setExpiresInHours(Number(e.target.value))}
               className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-extrabold text-ink focus:outline-none focus:ring-1 focus:ring-brand"

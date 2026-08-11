@@ -750,6 +750,7 @@ export default function GraphPage() {
                   Framework
                 </div>
                 <select
+                  aria-label="Filter graph by framework"
                   value={filterFramework}
                   onChange={(e) => setFilterFramework(e.target.value)}
                   disabled={graphMode === "repository"}
@@ -771,6 +772,7 @@ export default function GraphPage() {
                       Control
                     </div>
                     <select
+                      aria-label="Filter graph by control"
                       value={filterControl}
                       onChange={(e) => setFilterControl(e.target.value)}
                       className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
@@ -789,6 +791,7 @@ export default function GraphPage() {
                       Workflow signal
                     </div>
                     <select
+                      aria-label="Filter graph by workflow"
                       value={filterWorkflow}
                       onChange={(e) => setFilterWorkflow(e.target.value)}
                       className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
@@ -821,6 +824,7 @@ export default function GraphPage() {
                   Owner
                 </div>
                 <select
+                  aria-label="Filter graph by owner"
                   value={filterOwner}
                   onChange={(e) => setFilterOwner(e.target.value)}
                   className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
@@ -839,6 +843,7 @@ export default function GraphPage() {
                   Environment
                 </div>
                 <select
+                  aria-label="Filter graph by environment"
                   value={filterEnvironment}
                   onChange={(e) => setFilterEnvironment(e.target.value)}
                   className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"

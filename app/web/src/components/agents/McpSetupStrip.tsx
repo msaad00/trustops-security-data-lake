@@ -93,7 +93,10 @@ export function McpSetupStrip() {
               Copy
             </Button>
           </div>
-          <pre className="max-h-36 overflow-auto rounded-lg bg-[#07111e] p-3 text-xs text-slate-100">
+          <pre
+            className="max-h-36 overflow-auto rounded-lg bg-[#07111e] p-3 text-xs text-slate-100"
+            tabIndex={0}
+          >
             {CURSOR_CONFIG}
           </pre>
         </div>

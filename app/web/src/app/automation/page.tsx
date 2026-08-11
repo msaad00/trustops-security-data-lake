@@ -605,6 +605,7 @@ export default function AutomationPage() {
               <Plus className="h-4 w-4" /> New starter
             </Button>
             <select
+              aria-label="Select workflow"
               value={activeId === NEW_WORKFLOW_ID ? "" : activeId}
               onChange={(e) => {
                 const next = e.target.value;

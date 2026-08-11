@@ -703,6 +703,7 @@ function AgentsPageContent() {
               <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
                 Budget
                 <select
+                  aria-label="Budget profile"
                   value={budgetProfile}
                   onChange={(event) =>
                     setBudgetProfile(event.target.value as BudgetProfile)

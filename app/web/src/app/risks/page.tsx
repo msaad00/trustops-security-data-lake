@@ -106,6 +106,7 @@ function CreateRiskForm() {
       <label className="flex items-center gap-1 text-[11px] font-black uppercase text-muted">
         sev
         <select
+          aria-label="Risk severity"
           className={inputClass}
           value={severity}
           onChange={(e) => setSeverity(e.target.value as RiskLevel)}
@@ -120,6 +121,7 @@ function CreateRiskForm() {
       <label className="flex items-center gap-1 text-[11px] font-black uppercase text-muted">
         likely
         <select
+          aria-label="Risk likelihood"
           className={inputClass}
           value={likelihood}
           onChange={(e) => setLikelihood(e.target.value as RiskLevel)}
@@ -134,6 +136,7 @@ function CreateRiskForm() {
       <label className="flex items-center gap-1 text-[11px] font-black uppercase text-muted">
         impact
         <select
+          aria-label="Risk impact"
           className={inputClass}
           value={impact}
           onChange={(e) => setImpact(e.target.value as RiskLevel)}
