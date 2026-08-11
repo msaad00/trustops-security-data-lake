@@ -241,6 +241,38 @@ def test_v1_all_read_routes_use_envelope(tmp_path: Path) -> None:
         server.shutdown()
 
 
+def test_v1_crosswalk_and_mappings_match_their_pre_v1_payloads(tmp_path: Path) -> None:
+    """The v1 routes must serve the same bytes as the routes they replace.
+
+    These five moved to /v1 so api_legacy can eventually be retired. If a
+    payload drifts, the console silently renders different data depending on
+    which route it happens to call, so parity is the property worth pinning.
+    """
+    server = _spin(tmp_path)
+    try:
+        for legacy, v1 in [
+            ("/api/crosswalk", "/api/v1/crosswalk"),
+            ("/api/crosswalk/reviewed", "/api/v1/crosswalk/reviewed"),
+            ("/api/mappings/equivalence", "/api/v1/mappings/equivalence"),
+            ("/api/repo-graph", "/api/v1/repo-graph"),
+        ]:
+            legacy_status, legacy_body = _request(server, "GET", legacy)
+            v1_status, v1_body = _request(server, "GET", v1)
+            assert legacy_status == HTTPStatus.OK
+            assert v1_status == HTTPStatus.OK
+            assert set(v1_body) == {"data", "meta", "errors"}
+            assert v1_body["data"] == legacy_body, f"{v1} drifted from {legacy}"
+
+        # /mappings is a collection, so v1 paginates where the pre-v1 route
+        # returned everything. The rows must still agree page for page.
+        _, legacy_body = _request(server, "GET", "/api/mappings")
+        _, v1_body = _request(server, "GET", "/api/v1/mappings?limit=500&offset=0")
+        assert v1_body["meta"]["count"] == legacy_body["count"]
+        assert v1_body["data"] == legacy_body["mappings"][: len(v1_body["data"])]
+    finally:
+        server.shutdown()
+
+
 def test_v1_resource_catalog_advertises_connector_actions(tmp_path: Path) -> None:
     server = _spin(tmp_path)
     try:
