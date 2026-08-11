@@ -1093,9 +1093,7 @@ def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tup
     if revoke is not None:
         revoked = revoke_share(lake, revoke)
         if revoked is None:
-            return HTTPStatus.NOT_FOUND, error_envelope(
-                "not_found", f"unknown share {revoke}", resource="trust-shares"
-            )
+            return HTTPStatus.NOT_FOUND, error_envelope("not_found", f"unknown share {revoke}", resource="trust-shares")
         return HTTPStatus.CREATED, envelope("trust-shares", revoked)
     configure = _connector_action(path, "configure")
     if configure is not None:
