@@ -160,6 +160,14 @@ type V1Page<T> = {
 async function getAllV1<T>(
   path: string,
 ): Promise<{ items: T[]; count: number }> {
+  // A caller-supplied limit is a deliberate bound — "the ten most recent eval
+  // runs" — not an oversight. Honour it and read exactly one page, so this
+  // helper is safe to apply to every paginated collection.
+  if (/[?&]limit=/.test(path)) {
+    const page = await get<V1Page<T>>(path);
+    return { items: page.data, count: page.meta?.count ?? page.data.length };
+  }
+
   const items: T[] = [];
   let offset = 0;
   let count = 0;
@@ -169,7 +177,7 @@ async function getAllV1<T>(
     const page = await get<V1Page<T>>(
       `${path}${sep}limit=${V1_MAX_PAGE}&offset=${offset}`,
     );
-    count = page.meta.count;
+    count = page.meta?.count ?? page.data.length;
     items.push(...page.data);
 
     // A short page is the last one. The empty-page guard keeps a server that
@@ -277,12 +285,12 @@ export const api = {
       (body) => body.data,
     ),
   aiInventory: (query = "") =>
-    get<{ data: AiInventoryItem[] }>(
+    getAllV1<AiInventoryItem>(
       `/v1/platform/ai-governance/inventory${query}`,
-    ).then((body) => body.data),
+    ).then((r) => r.items),
   remediationTasks: (query = "") =>
-    get<{ data: RemediationTask[] }>(`/v1/remediation/tasks${query}`).then(
-      (b) => b.data,
+    getAllV1<RemediationTask>(`/v1/remediation/tasks${query}`).then(
+      (r) => r.items,
     ),
   createRemediationTask: (
     payload: Partial<RemediationTask> & { title: string },
@@ -297,9 +305,9 @@ export const api = {
       payload,
     ).then((b) => b.data),
   evidenceRequests: () =>
-    get<{ data: EvidenceRequestItem[] }>(
-      "/v1/remediation/evidence-requests",
-    ).then((b) => b.data),
+    getAllV1<EvidenceRequestItem>("/v1/remediation/evidence-requests").then(
+      (r) => r.items,
+    ),
   createEvidenceRequest: (payload: {
     control_id: string;
     requested_from?: string;
@@ -316,8 +324,8 @@ export const api = {
       { status },
     ).then((b) => b.data),
   controlExceptions: () =>
-    get<{ data: ControlExceptionItem[] }>("/v1/remediation/exceptions").then(
-      (b) => b.data,
+    getAllV1<ControlExceptionItem>("/v1/remediation/exceptions").then(
+      (r) => r.items,
     ),
   createControlException: (payload: {
     control_id: string;
@@ -334,7 +342,7 @@ export const api = {
       "DELETE",
     ).then((b) => b.data),
   risks: (query = "") =>
-    get<{ data: Risk[] }>(`/v1/risks${query}`).then((b) => b.data),
+    getAllV1<Risk>(`/v1/risks${query}`).then((r) => r.items),
   createRisk: (payload: Partial<Risk> & { title: string }) =>
     post<{ data: Risk }>("/v1/risks", payload).then((b) => b.data),
   updateRisk: (id: string, payload: Record<string, unknown>) =>
@@ -368,8 +376,8 @@ export const api = {
   evidence: () =>
     get<{ count: number; evidence: NormalizedEvent[] }>("/evidence"),
   evidenceFreshness: (query = "") =>
-    get<{ data: EvidenceFreshness[] }>(`/v1/evidence/freshness${query}`).then(
-      (b) => b.data,
+    getAllV1<EvidenceFreshness>(`/v1/evidence/freshness${query}`).then(
+      (r) => r.items,
     ),
   assets: () => get<{ assets: AssetRisk[] }>("/assets"),
   createSnapshot: (reason: string) =>
@@ -399,11 +407,9 @@ export const api = {
   verifyEvidence: (eventId: string) =>
     post<VerifyResult>(`/evidence/${encodeURIComponent(eventId)}/verify`, {}),
   listConnectors: () =>
-    get<{ data: ConnectorView[]; meta: { count: number } }>(
-      "/v1/connectors",
-    ).then((body) => ({
-      count: body.meta.count,
-      connectors: body.data,
+    getAllV1<ConnectorView>("/v1/connectors").then((r) => ({
+      count: r.count,
+      connectors: r.items,
     })),
   configureConnector: (id: string, payload: ConfigurePayload) =>
     post<{ data: Record<string, unknown> }>(
@@ -570,11 +576,11 @@ export const api = {
       qs.set("include_requests", String(opts.include_requests));
     if (opts.limit !== undefined) qs.set("limit", String(opts.limit));
     const tail = qs.toString();
-    return get<{ data: AuditLogEntry[]; meta?: { count?: number } }>(
+    return getAllV1<AuditLogEntry>(
       `/v1/audit-log${tail ? `?${tail}` : ""}`,
-    ).then((body) => ({
-      count: body.meta?.count ?? body.data.length,
-      entries: body.data,
+    ).then((r) => ({
+      count: r.count,
+      entries: r.items,
     }));
   },
 
@@ -602,9 +608,9 @@ export const api = {
       (b) => b.data,
     ),
   tagsForEntity: (entityType: string, entityId: string) =>
-    get<{ data: Tag[] }>(
+    getAllV1<Tag>(
       `/v1/tags/for?entity_type=${encodeURIComponent(entityType)}&entity_id=${encodeURIComponent(entityId)}`,
-    ).then((b) => b.data),
+    ).then((r) => r.items),
   tagEntities: (tagId: string, entityType?: string) => {
     const params = new URLSearchParams({ tag_id: tagId });
     if (entityType) params.set("entity_type", entityType);
@@ -614,9 +620,7 @@ export const api = {
   },
   listSavedViews: (surface?: string) => {
     const qs = surface ? `?surface=${encodeURIComponent(surface)}` : "";
-    return get<{ data: SavedView[] }>(`/v1/saved-views${qs}`).then(
-      (b) => b.data,
-    );
+    return getAllV1<SavedView>(`/v1/saved-views${qs}`).then((r) => r.items);
   },
   createSavedView: (payload: {
     surface: string;
@@ -661,8 +665,8 @@ export const api = {
       { note },
     ).then((b) => b.data),
   accessReviews: (query = "") =>
-    get<{ data: AccessReviewCampaign[] }>(`/v1/access-reviews${query}`).then(
-      (b) => b.data,
+    getAllV1<AccessReviewCampaign>(`/v1/access-reviews${query}`).then(
+      (r) => r.items,
     ),
   createAccessReview: (
     payload: { name: string } & Partial<AccessReviewCampaign>,
@@ -711,7 +715,7 @@ export const api = {
       `/v1/policy-templates/${encodeURIComponent(templateId)}`,
     ).then((b) => b.data),
   policies: (query = "") =>
-    get<{ data: PolicyDocument[] }>(`/v1/policies${query}`).then((b) => b.data),
+    getAllV1<PolicyDocument>(`/v1/policies${query}`).then((r) => r.items),
   adoptPolicy: (payload: {
     template_id: string;
     variables?: Record<string, string>;
@@ -771,8 +775,8 @@ export const api = {
       `/v1/vendor-questionnaires/${encodeURIComponent(templateId)}`,
     ).then((b) => b.data),
   vendorAssessments: (query = "") =>
-    get<{ data: VendorAssessment[] }>(`/v1/vendor-assessments${query}`).then(
-      (b) => b.data,
+    getAllV1<VendorAssessment>(`/v1/vendor-assessments${query}`).then(
+      (r) => r.items,
     ),
   createVendorAssessment: (payload: {
     vendor_name: string;
@@ -820,8 +824,8 @@ export const api = {
     if (params?.framework_id) qs.set("framework_id", params.framework_id);
     if (params?.status) qs.set("status", params.status);
     const suffix = qs.toString() ? `?${qs}` : "";
-    return get<{ data: PoamItem[] }>(`/v1/gov-compliance/poam${suffix}`).then(
-      (b) => b.data,
+    return getAllV1<PoamItem>(`/v1/gov-compliance/poam${suffix}`).then(
+      (r) => r.items,
     );
   },
   syncPoam: () =>
