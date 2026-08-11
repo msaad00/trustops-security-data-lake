@@ -604,6 +604,22 @@
     {
       "kind": "collection",
       "methods": ["GET", "POST"],
+      "path": "/api/v1/trust-shares",
+      "query": ["include_revoked", "limit", "offset", "sort"],
+      "resource": "trust-shares",
+      "scopes": ["read", "snapshot"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["POST"],
+      "path": "/api/v1/trust-shares/{share_id}/revoke",
+      "path_params": ["share_id"],
+      "resource": "trust-shares",
+      "scopes": ["snapshot"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET", "POST"],
       "path": "/api/v1/vendor-assessments",
       "resource": "vendor-assessments",
       "scopes": ["read", "control_manage"]

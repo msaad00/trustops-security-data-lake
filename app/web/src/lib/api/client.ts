@@ -538,19 +538,25 @@ export const api = {
       params,
     }),
   listTrustShares: () =>
-    get<{ count: number; shares: TrustShare[] }>("/trust-shares"),
+    getAllV1<TrustShare>("/v1/trust-shares").then(({ items, count }) => ({
+      count,
+      shares: items,
+    })),
   createTrustShare: (payload: {
     role: "auditor";
     scope?: "posture_full" | "posture_framework";
     framework_id?: string | null;
     sensitivity_ceiling?: string;
     expires_in_hours: number;
-  }) => post<{ share: TrustShare }>("/trust-shares", payload),
+  }) =>
+    post<{ data: TrustShare }>("/v1/trust-shares", payload).then((b) => ({
+      share: b.data,
+    })),
   revokeTrustShare: (share_id: string) =>
-    post<{ share: TrustShare }>(
-      `/trust-shares/${encodeURIComponent(share_id)}/revoke`,
+    post<{ data: TrustShare }>(
+      `/v1/trust-shares/${encodeURIComponent(share_id)}/revoke`,
       {},
-    ),
+    ).then((b) => ({ share: b.data })),
   graph: () => get<ComplianceGraph>("/graph"),
   repoGraph: () =>
     get<{ data: ComplianceGraph }>("/v1/repo-graph").then((b) => b.data),

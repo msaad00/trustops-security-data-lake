@@ -50,6 +50,7 @@ from security_lakehouse.mappings import (
     load_control_article_mappings,
 )
 from security_lakehouse.tracking import verify_tracking_chain
+from security_lakehouse.trust_share import create_share, list_shares, revoke_share
 
 API_VERSION = "v1"
 
@@ -154,6 +155,7 @@ _WRITABLE = {
     "/api/v1/snapshots": ["POST"],
     "/api/v1/ingestion/eval": ["POST"],
     "/api/v1/scheduler/tick": ["POST"],
+    "/api/v1/trust-shares": ["POST"],
 }
 
 
@@ -175,6 +177,12 @@ def _connector_link_action(path: str, suffix: str) -> str | None:
 def required_post_scope(path: str) -> str:
     """Return the RBAC scope required to mutate a v1 route."""
     if path == "/api/v1/snapshots":
+        return "snapshot"
+    # Trust shares hand a reviewer a signed view of posture, so they carry the
+    # same scope as writing a snapshot -- matching the pre-v1 route exactly.
+    if path == "/api/v1/trust-shares":
+        return "snapshot"
+    if _suffix_match(path, "/api/v1/trust-shares/", "/revoke") is not None:
         return "snapshot"
     if path == "/api/v1/ingestion/eval":
         return "connector_manage"
@@ -207,6 +215,22 @@ def required_post_scope(path: str) -> str:
 # Paths, methods, and scopes are kept in lockstep with the ``@app.<verb>``
 # decorators and their ``Depends(_require_*)`` defaults in ``server_app``.
 EXTENDED_RESOURCES: list[JsonObject] = [
+    {
+        "resource": "trust-shares",
+        "path": "/api/v1/trust-shares",
+        "kind": "collection",
+        "methods": ["GET", "POST"],
+        "scopes": ["read", "snapshot"],
+        "query": ["include_revoked", "limit", "offset", "sort"],
+    },
+    {
+        "resource": "trust-shares",
+        "path": "/api/v1/trust-shares/{share_id}/revoke",
+        "kind": "singleton",
+        "methods": ["POST"],
+        "scopes": ["snapshot"],
+        "path_params": ["share_id"],
+    },
     {
         "resource": "agent-runs",
         "path": "/api/v1/agent-runs",
@@ -1003,6 +1027,15 @@ def handle_get(path: str, params: Params, lake_dir: str | Path) -> tuple[HTTPSta
                 "not_found", f"unknown control {control_id}", resource="control.history"
             )
         return HTTPStatus.OK, envelope("control.history", {"control_id": control_id, "versions": versions})
+    if path == "/api/v1/trust-shares":
+        include_revoked = (params.get("include_revoked") or ["false"])[0].lower() in {"1", "true", "yes"}
+        shares = list_shares(lake, include_revoked=include_revoked)
+        try:
+            return HTTPStatus.OK, collection_response("trust-shares", shares, params)
+        except ValueError:
+            return HTTPStatus.BAD_REQUEST, error_envelope(
+                "bad_request", "invalid request parameters", resource="trust-shares"
+            )
     if path == "/api/v1/posture/as-of":
         as_of_values = params.get("as_of") or []
         as_of = as_of_values[0] if as_of_values else ""
@@ -1041,6 +1074,29 @@ def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tup
         reason = str(payload.get("reason") or "api_request")
         snapshot_path = write_assessment_snapshot(lake, reason=reason)
         return HTTPStatus.CREATED, envelope("snapshots", {"snapshot_path": str(snapshot_path), "reason": reason})
+    if path == "/api/v1/trust-shares":
+        try:
+            share = create_share(
+                lake,
+                role=str(payload.get("role") or "auditor"),
+                scope=str(payload.get("scope") or "posture_full"),
+                expires_in_hours=int(payload.get("expires_in_hours") or 24),
+                created_by=str(payload.get("created_by") or "console"),
+                framework_id=payload.get("framework_id"),
+                sensitivity_ceiling=str(payload.get("sensitivity_ceiling") or "public"),
+                idempotency_key=payload.get("idempotency_key"),
+            )
+        except (ValueError, TypeError):
+            return HTTPStatus.BAD_REQUEST, error_envelope("bad_request", "invalid request", resource="trust-shares")
+        return HTTPStatus.CREATED, envelope("trust-shares", share)
+    revoke = _suffix_match(path, "/api/v1/trust-shares/", "/revoke")
+    if revoke is not None:
+        revoked = revoke_share(lake, revoke)
+        if revoked is None:
+            return HTTPStatus.NOT_FOUND, error_envelope(
+                "not_found", f"unknown share {revoke}", resource="trust-shares"
+            )
+        return HTTPStatus.CREATED, envelope("trust-shares", revoked)
     configure = _connector_action(path, "configure")
     if configure is not None:
         state = str(payload.get("state") or "enabled").lower()

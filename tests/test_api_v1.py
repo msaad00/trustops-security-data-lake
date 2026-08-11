@@ -595,6 +595,43 @@ def test_v1_snapshot_post_requires_snapshot_scope() -> None:
     assert api_v1.required_post_scope("/api/v1/snapshots") == "snapshot"
 
 
+def test_v1_trust_shares_carry_the_same_scopes_as_the_pre_v1_routes() -> None:
+    """A ported route that drops a scope is a privilege escalation, not a port."""
+    from security_lakehouse import api_legacy
+
+    assert api_v1.required_post_scope("/api/v1/trust-shares") == api_legacy.required_post_scope("/api/trust-shares")
+    assert api_v1.required_post_scope("/api/v1/trust-shares/abc/revoke") == api_legacy.required_post_scope(
+        "/api/trust-shares/abc/revoke"
+    )
+    assert api_v1.required_post_scope("/api/v1/trust-shares") == "snapshot"
+
+
+def test_v1_trust_shares_round_trip_create_list_and_revoke(tmp_path: Path) -> None:
+    server = _spin(tmp_path)
+    try:
+        status, created = _request(server, "POST", "/api/v1/trust-shares", {"role": "auditor"})
+        assert status == HTTPStatus.CREATED
+        assert set(created) == {"data", "meta", "errors"}
+        assert created["meta"]["resource"] == "trust-shares"
+        share_id = created["data"]["share_id"]
+
+        # The v1 collection and the pre-v1 route must see the same shares.
+        _, listed = _request(server, "GET", "/api/v1/trust-shares")
+        _, legacy_listed = _request(server, "GET", "/api/trust-shares")
+        assert listed["meta"]["count"] == legacy_listed["count"]
+        assert [row["share_id"] for row in listed["data"]] == [row["share_id"] for row in legacy_listed["shares"]]
+
+        status, revoked = _request(server, "POST", f"/api/v1/trust-shares/{share_id}/revoke", {})
+        assert status == HTTPStatus.CREATED
+        assert revoked["data"]["revoked_at"] is not None
+
+        status, missing = _request(server, "POST", "/api/v1/trust-shares/no-such-share/revoke", {})
+        assert status == HTTPStatus.NOT_FOUND
+        assert missing["errors"][0]["code"] == "not_found"
+    finally:
+        server.shutdown()
+
+
 def test_v1_errors_use_contract_envelope(tmp_path: Path) -> None:
     server = _spin(tmp_path)
     try:

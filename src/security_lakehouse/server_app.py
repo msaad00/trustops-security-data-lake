@@ -3088,6 +3088,8 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         except Exception:  # noqa: BLE001 - empty/invalid body is treated as no body
             body = {}
         v1_path = f"/api/v1/{rest}"
+        if request.headers.get("Idempotency-Key") and "idempotency_key" not in body:
+            body = {**body, "idempotency_key": request.headers["Idempotency-Key"]}
         required_scope = api_v1.required_post_scope(v1_path)
         if not identity.has_scope(required_scope):
             raise HTTPException(
