@@ -61,62 +61,80 @@ collapsing them would overstate both coverage and failure.
 
 ## Where it stands
 
-Twelve safeguards, promoted from the twelve curated equivalence groups:
-
 ```
 $ security-lakehouse frameworks safeguards --format table
-12 safeguards cover 45 of 942 requirements (4.8%)
+12 safeguards map 216 of 942 requirements (22.9%) — 45 reviewed (4.8%), 171 proposed
 ```
 
-| Framework           | Requirements | Covered |
-| ------------------- | -----------: | ------: |
-| fedramp-moderate    |          287 |       4 |
-| cmmc-2-level2       |          110 |   **0** |
-| nist-csf-2.0        |          106 |       6 |
-| iso-27001-2022      |           93 |      10 |
-| nist-ai-rmf         |           72 |       1 |
-| cis_aws             |           62 |       2 |
-| soc2                |           61 |      10 |
-| iso-27017-2015      |           47 |   **0** |
-| iso-42001-2023      |           39 |       1 |
-| gdpr-2016-679       |           20 |       3 |
-| hipaa-security-rule |           18 |       4 |
-| eu-ai-act-2024-1689 |           15 |       1 |
-| pci-dss-v4          |           12 |       3 |
+A mapping is **reviewed** once a human has confirmed the requirements are the
+same obligation. **Proposed** mappings were matched by title theme and are
+reported separately, because a compliance product must never count unconfirmed
+work as attested coverage. `safeguards_by_requirement(reviewed_only=True)` is
+what attestation should read.
 
-Two frameworks are at zero, so adopting them today inherits nothing from work
-already done for SOC 2 or ISO 27001.
+| Framework           | Requirements | Mapped |   Pct |
+| ------------------- | -----------: | -----: | ----: |
+| fedramp-moderate    |          287 |      4 |  1.4% |
+| cmmc-2-level2       |          110 |     59 | 53.6% |
+| nist-csf-2.0        |          106 |      6 |  5.7% |
+| iso-27001-2022      |           93 |     11 | 11.8% |
+| nist-ai-rmf         |           72 |      6 |  8.3% |
+| cis_aws             |           62 |     32 | 51.6% |
+| soc2                |           61 |     27 | 44.3% |
+| iso-27017-2015      |           47 |     16 | 34.0% |
+| iso-42001-2023      |           39 |     24 | 61.5% |
+| gdpr-2016-679       |           20 |      4 | 20.0% |
+| hipaa-security-rule |           18 |      9 | 50.0% |
+| eu-ai-act-2024-1689 |           15 |     12 | 80.0% |
+| pci-dss-v4          |           12 |      6 | 50.0% |
 
-## The ceiling is not 100%
+## The real ceiling is the catalog, not the curation
 
-Of the 897 unmapped requirements, **78 have no equivalent in any other
-framework** — their risk domain appears in exactly one framework. Mostly NIST AI
-RMF (36), SOC 2 (24), GDPR (10), EU AI Act (4), PCI (3), ISO 27001 (1).
+**549 of 942 titles (58%) carry no content** — they are an identifier plus
+boilerplate:
 
-Those become **single-requirement safeguards**: still worth modelling, because the
-safeguard is what gets operated, but they consolidate nothing.
+```
+FedRAMP Moderate IR-3 — assessed from cloud posture and audit evidence
+NIST CSF 2.0 PR.IR-03 — assessed from cybersecurity program and operational evidence
+ISO 27001:2022 A.5.9  — assessed from ISMS and security operations evidence
+```
 
-So the realistic target is roughly **864 of 942 requirements mapped (~92%)**,
-across an expected few hundred safeguards. Forcing the last 78 into shared
-safeguards would assert equivalences that do not exist.
+Whole frameworks are affected: FedRAMP 287/287, NIST CSF 106/106, ISO 27001
+90/93, NIST AI RMF 66/72.
+
+For those the repo records _which_ control exists, not _what it requires_. An
+equivalence asserted over them would come from outside knowledge, not from
+anything a reviewer can check against this repository — which is the failure a
+CCF exists to prevent.
+
+**So curation from repo data alone tops out at 393 of 942 — 41.7%.** Reaching
+50% is not a curation problem; it needs one of the two steps below.
 
 ## Getting there
 
-1. **Model** — `controls/safeguards.json`, validated, with coverage derived from
-   data. _Done._
-2. **Curate** — grow the safeguard set toward the ~92% ceiling. Judgment per
-   safeguard; `validate_safeguards()` catches structural errors, not semantic
-   ones. A wrong equivalence is invisible until an auditor rejects the evidence.
-3. **Invert the engine** — evaluate safeguards, derive requirement status through
-   `requirement_status()`, and let framework readiness fall out of that rather
-   than being computed alongside it.
-4. **Retire the overlay** — once safeguards subsume it,
-   `mappings/framework_equivalence.json` and the `/crosswalk` surface it feeds
-   become a view over the CCF instead of a parallel source of truth.
+Full coverage needs the catalog enriched before the curation can be checked.
 
-Steps 1 and 2 change no behaviour: coverage is reported, nothing is evaluated
-through it yet. Step 3 is where posture starts flowing through safeguards, and it
-needs the curation from step 2 to be worth switching on.
+1. **Model** — safeguards are the operated object, validated, coverage derived
+   from data. _Done._
+2. **Curate what is checkable** — the 393 requirements whose titles carry
+   content. 216 are mapped; the rest are the near-term queue. Promoting a
+   `proposed` mapping to `reviewed` is a human confirming the two requirements
+   are the same obligation. _In progress._
+3. **Enrich the 549 placeholder titles**, or import an authoritative crosswalk.
+   NIST publishes 800-53 ↔ CSF mappings, CMMC L2 is NIST 800-171 with a
+   published 800-53 mapping, and ISO ↔ NIST crosswalks exist. Importing those
+   is how FedRAMP, CSF and ISO 27001 become curatable — and an imported
+   crosswalk is checkable against its source, which invented equivalences never
+   are.
+4. **Invert the engine** — evaluate safeguards, derive requirement status via
+   `requirement_status()`, let framework readiness fall out of that.
+5. **Retire the overlay** — `mappings/framework_equivalence.json` and the
+   `/crosswalk` surface become views over the CCF rather than a second source
+   of truth.
+
+Steps 1–3 change no behaviour: coverage is reported, nothing is evaluated
+through it. Step 4 is where posture starts flowing through safeguards, and it
+should not switch on until the mappings it depends on are `reviewed`.
 
 ## Schema
 

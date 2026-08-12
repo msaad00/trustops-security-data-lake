@@ -1623,8 +1623,9 @@ def _frameworks_safeguards(args: argparse.Namespace) -> int:
         return 0
 
     print(
-        f"{coverage['safeguards']} safeguards cover {coverage['covered']} of "
-        f"{coverage['controls']} requirements ({coverage['coverage_pct']}%)"
+        f"{coverage['safeguards']} safeguards map {coverage['covered']} of "
+        f"{coverage['controls']} requirements ({coverage['coverage_pct']}%) — "
+        f"{coverage['reviewed']} reviewed ({coverage['reviewed_pct']}%), {coverage['proposed']} proposed"
     )
     print()
     print(f"{'framework':26s} {'requirements':>12s} {'covered':>8s} {'pct':>7s}")

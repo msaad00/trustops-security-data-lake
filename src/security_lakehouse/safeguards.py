@@ -33,6 +33,7 @@ DEFAULT_SAFEGUARDS = ROOT / "controls" / "safeguards.json"
 
 SCHEMA = "trustops.safeguards.v1"
 VALID_ROLES = {"primary", "equivalent"}
+VALID_REVIEW_STATES = {"reviewed", "proposed"}
 
 JsonObject = dict[str, Any]
 
@@ -87,16 +88,27 @@ def validate_safeguards(payload: JsonObject, *, catalog: dict[str, Any] | None =
             role = member.get("role", "equivalent")
             if role not in VALID_ROLES:
                 problems.append(f"{sid}: invalid role {role!r} on {control_id!r}")
+            review = member.get("review_status", "reviewed")
+            if review not in VALID_REVIEW_STATES:
+                problems.append(f"{sid}: invalid review_status {review!r} on {control_id!r}")
 
     return problems
 
 
-def safeguards_by_requirement(payload: JsonObject | None = None) -> dict[str, list[str]]:
-    """Map each framework control_id to the safeguard ids that satisfy it."""
+def safeguards_by_requirement(
+    payload: JsonObject | None = None, *, reviewed_only: bool = False
+) -> dict[str, list[str]]:
+    """Map each framework control_id to the safeguard ids that satisfy it.
+
+    ``reviewed_only`` drops mappings a human has not confirmed. Attestation
+    should use it; discovery and curation queues should not.
+    """
     data = payload or load_safeguards()
     out: dict[str, list[str]] = {}
     for entry in data["safeguards"]:
         for member in entry.get("satisfies", []):
+            if reviewed_only and member.get("review_status", "reviewed") != "reviewed":
+                continue
             out.setdefault(str(member.get("control_id")), []).append(str(entry["safeguard_id"]))
     return out
 
@@ -134,11 +146,17 @@ def coverage_by_framework(payload: JsonObject | None = None, *, catalog: dict[st
 
     total = len(controls)
     covered = sum(1 for cid in controls if cid in mapped)
+    reviewed_map = safeguards_by_requirement(payload, reviewed_only=True)
+    reviewed = sum(1 for cid in controls if cid in reviewed_map)
     data = payload or load_safeguards()
     return {
         "safeguards": len(data["safeguards"]),
         "controls": total,
         "covered": covered,
+        # Split so unconfirmed curation is never reported as attested coverage.
+        "reviewed": reviewed,
+        "proposed": covered - reviewed,
+        "reviewed_pct": round(100.0 * reviewed / total, 1) if total else 0.0,
         "uncovered": total - covered,
         "coverage_pct": round(100.0 * covered / total, 1) if total else 0.0,
         "frameworks": {
