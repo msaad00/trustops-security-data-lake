@@ -71,7 +71,8 @@ mcp = [
     "mcp>=1.2.0",
 ]
 # Typed Python client (`TrustOpsClient`) over the `/api/v1` surface so agents
-# and scripts share the same contract as humans (`pip install trustops[sdk]`).
+# and scripts share the same contract as humans
+# (`pip install trustops-security-data-lake[sdk]`).
 sdk = [
     "httpx>=0.27",
 ]
@@ -92,7 +93,7 @@ tag_format = "v$version"
 [project.scripts]
 security-lakehouse = "security_lakehouse.cli:main"
 # Agent-native front door: stdio MCP server over the existing read surface.
-# Requires the optional `mcp` extra (`pip install 'trustops[mcp]'`).
+# Requires the optional `mcp` extra (`pip install 'trustops-security-data-lake[mcp]'`).
 trustops-mcp = "security_lakehouse.mcp_server:main"
 
 [tool.setuptools.packages.find]

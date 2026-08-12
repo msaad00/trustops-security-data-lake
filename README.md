@@ -36,6 +36,24 @@ The catalog holds 942 requirements across 13 frameworks; run
 Evidence stays in your environment. Models may summarize and prioritize; they do
 not silently change evidence or decide pass/fail.
 
+## Quickstart
+
+```bash
+# PyPI (Python 3.11+) — console + API
+pip install 'trustops-security-data-lake[server]'
+security-lakehouse platform seed-dev --lake ./lake
+security-lakehouse serve --server --lake ./lake   # http://127.0.0.1:8787/console/
+
+# Container image
+docker run -p 8787:8787 ghcr.io/msaad00/trustops:latest
+
+# Kubernetes (Helm)
+helm install trustops deploy/helm/trustops
+```
+
+See [deploy/README.md](deploy/README.md) for production configuration, and the
+[Product tour](docs/PRODUCT_WALKTHROUGH.md) for what to do once it is running.
+
 <details>
 <summary><b>Surfaces</b> — console, API, CLI, MCP, CI</summary>
 
