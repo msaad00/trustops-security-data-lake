@@ -1811,8 +1811,11 @@ def _openapi(args: argparse.Namespace) -> int:
         raise SystemExit(
             "the openapi command requires the 'server' extra: pip install 'trustops-security-data-lake[server]'"
         ) from exc
+    from security_lakehouse import api_v1
+
     with tempfile.TemporaryDirectory() as tmp:
         spec = create_app(tmp, require_auth=False).openapi()
+    spec = api_v1.merge_openapi(spec)
     text = json.dumps(spec, indent=2, sort_keys=True)
     if args.out:
         Path(args.out).write_text(text + "\n", encoding="utf-8")

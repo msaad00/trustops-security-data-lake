@@ -338,21 +338,8 @@
       "kind": "singleton",
       "methods": ["GET"],
       "path": "/api/v1/platform/ai-governance",
-      "resource": "platform.ai-governance"
-    },
-    {
-      "kind": "singleton",
-      "methods": ["GET"],
-      "path": "/api/v1/platform/ai-governance",
       "resource": "platform.ai-governance",
       "scopes": ["read"]
-    },
-    {
-      "kind": "collection",
-      "methods": ["GET"],
-      "path": "/api/v1/platform/ai-governance/inventory",
-      "query": ["limit", "offset", "sort", "<field>=<value>"],
-      "resource": "platform.ai-governance.inventory"
     },
     {
       "kind": "collection",
