@@ -48,7 +48,7 @@ Do **not** add routes here. Existing legacy paths remain until the checklist bel
 
 - [ ] Delete unused handlers from `api_legacy.py`
 - [ ] Remove stdlib `server.py` legacy paths where duplicated
-- [ ] CI: fail if `app/web` imports `/api/` paths outside an allowlist
+- [x] CI: fail if `app/web` imports `/api/` paths outside an allowlist (`tests/test_console_uses_v1.py`)
 
 ## Testing
 

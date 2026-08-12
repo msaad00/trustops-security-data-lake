@@ -214,7 +214,7 @@ async function mutate<T>(
 }
 
 export const api = {
-  health: () => get<Health>("/healthz"),
+  health: () => get<Health>("/v1/healthz"),
   authMethods: () =>
     get<{ data: AuthMethods }>("/v1/auth/methods").then((body) => body.data),
   authWhoami: () =>
@@ -356,7 +356,8 @@ export const api = {
       `/v1/risks/${encodeURIComponent(id)}`,
       "DELETE",
     ).then((b) => b.data),
-  posture: () => get<Assessment>("/posture/current"),
+  posture: () =>
+    get<{ data: Assessment }>("/v1/posture/current").then((b) => b.data),
   ingestionStatus: () =>
     get<{ data: IngestionStatus }>("/v1/ingestion/status").then(
       (body) => body.data,
@@ -365,21 +366,31 @@ export const api = {
     get<{ data: PlatformJobsFeed }>(`/v1/platform/jobs${query}`).then(
       (body) => body.data,
     ),
-  controls: () => get<{ controls: ControlPosture[] }>("/controls"),
+  controls: () =>
+    getAllV1<ControlPosture>("/v1/controls").then((r) => ({
+      controls: r.items,
+    })),
   controlTests: () =>
-    get<{ count: number; control_tests: ControlTest[] }>("/control-tests"),
+    getAllV1<ControlTest>("/v1/control-tests").then(({ items, count }) => ({
+      count,
+      control_tests: items,
+    })),
   violations: () =>
     getAllV1<Violation>("/v1/violations").then(({ items, count }) => ({
       count,
       violations: items,
     })),
   evidence: () =>
-    get<{ count: number; evidence: NormalizedEvent[] }>("/evidence"),
+    getAllV1<NormalizedEvent>("/v1/evidence").then(({ items, count }) => ({
+      count,
+      evidence: items,
+    })),
   evidenceFreshness: (query = "") =>
     getAllV1<EvidenceFreshness>(`/v1/evidence/freshness${query}`).then(
       (r) => r.items,
     ),
-  assets: () => get<{ assets: AssetRisk[] }>("/assets"),
+  assets: () =>
+    getAllV1<AssetRisk>("/v1/assets").then((r) => ({ assets: r.items })),
   createSnapshot: (reason: string) =>
     post<{ data: SnapshotResponse }>("/v1/snapshots", { reason }).then(
       (b) => b.data,
@@ -395,17 +406,24 @@ export const api = {
     ).then((b) => b.data),
   getTracking: (violationId: string) =>
     get<{
-      violation_id: string;
-      current_state: string;
-      events: TrackingEvent[];
-    }>(`/violations/${encodeURIComponent(violationId)}/tracking`),
-  triage: (violationId: string, payload: TriagePayload) =>
-    post<{ event: TrackingEvent }>(
-      `/violations/${encodeURIComponent(violationId)}/triage`,
-      payload,
+      data: {
+        violation_id: string;
+        current_state: string;
+        events: TrackingEvent[];
+      };
+    }>(`/v1/violations/${encodeURIComponent(violationId)}/tracking`).then(
+      (b) => b.data,
     ),
+  triage: (violationId: string, payload: TriagePayload) =>
+    post<{ data: TrackingEvent }>(
+      `/v1/violations/${encodeURIComponent(violationId)}/triage`,
+      payload,
+    ).then((b) => ({ event: b.data })),
   verifyEvidence: (eventId: string) =>
-    post<VerifyResult>(`/evidence/${encodeURIComponent(eventId)}/verify`, {}),
+    post<{ data: VerifyResult }>(
+      `/v1/evidence/${encodeURIComponent(eventId)}/verify`,
+      {},
+    ).then((b) => b.data),
   listConnectors: () =>
     getAllV1<ConnectorView>("/v1/connectors").then((r) => ({
       count: r.count,
@@ -491,9 +509,14 @@ export const api = {
       runs: body.data,
     })),
   listFrameworks: () =>
-    get<{ count: number; frameworks: FrameworkView[] }>("/frameworks"),
+    getAllV1<FrameworkView>("/v1/frameworks").then(({ items, count }) => ({
+      count,
+      frameworks: items,
+    })),
   frameworkDetail: (id: string) =>
-    get<FrameworkDetail>(`/frameworks/${encodeURIComponent(id)}/detail`),
+    get<{ data: FrameworkDetail }>(
+      `/v1/frameworks/${encodeURIComponent(id)}/detail`,
+    ).then((b) => b.data),
   listWorkflows: () =>
     getAllV1<Workflow>("/v1/workflows").then(({ items, count }) => ({
       count,
@@ -570,11 +593,14 @@ export const api = {
       `/v1/trust-shares/${encodeURIComponent(share_id)}/revoke`,
       {},
     ).then((b) => ({ share: b.data })),
-  graph: () => get<ComplianceGraph>("/graph"),
+  graph: () => get<{ data: ComplianceGraph }>("/v1/graph").then((b) => b.data),
   repoGraph: () =>
     get<{ data: ComplianceGraph }>("/v1/repo-graph").then((b) => b.data),
   readiness: () =>
-    get<{ count: number; frameworks: FrameworkReadiness[] }>("/readiness"),
+    getAllV1<FrameworkReadiness>("/v1/readiness").then(({ items, count }) => ({
+      count,
+      frameworks: items,
+    })),
   crosswalk: () =>
     get<{ data: Crosswalk }>("/v1/crosswalk").then((b) => b.data),
   reviewedCrosswalk: () =>

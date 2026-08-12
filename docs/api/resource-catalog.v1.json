@@ -233,6 +233,21 @@
     },
     {
       "kind": "singleton",
+      "methods": ["POST"],
+      "path": "/api/v1/evidence/{event_id}/verify",
+      "path_params": ["event_id"],
+      "resource": "evidence.verify",
+      "scopes": ["write"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/frameworks",
+      "query": ["limit", "offset", "sort", "<field>=<value>"],
+      "resource": "frameworks"
+    },
+    {
+      "kind": "singleton",
       "methods": ["GET"],
       "path": "/api/v1/frameworks/{framework_id}/detail",
       "path_params": ["framework_id"],
@@ -266,6 +281,12 @@
       "path": "/api/v1/gov-compliance/sprs",
       "resource": "gov-compliance.sprs",
       "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/graph",
+      "resource": "graph"
     },
     {
       "kind": "singleton",
@@ -427,6 +448,13 @@
       "methods": ["GET"],
       "path": "/api/v1/posture/current",
       "resource": "posture.current"
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/readiness",
+      "query": ["limit", "offset", "sort", "<field>=<value>"],
+      "resource": "readiness"
     },
     {
       "kind": "collection",
@@ -648,6 +676,22 @@
       "path": "/api/v1/violations",
       "query": ["limit", "offset", "sort", "<field>=<value>"],
       "resource": "violations"
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/violations/{violation_id}/tracking",
+      "path_params": ["violation_id"],
+      "resource": "violations.tracking",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["POST"],
+      "path": "/api/v1/violations/{violation_id}/triage",
+      "path_params": ["violation_id"],
+      "resource": "violations.triage",
+      "scopes": ["write"]
     },
     {
       "kind": "collection",
