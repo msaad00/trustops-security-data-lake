@@ -65,3 +65,63 @@ def test_append_refuses_to_follow_a_symlink(tmp_path: Path) -> None:
     with pytest.raises(OSError):
         append_config_event(tmp_path, connector_id="github-security", state="disabled", actor="tester")
     assert target.read_text(encoding="utf-8") == ""
+
+
+def test_the_fingerprint_salt_is_per_install_and_owner_only(tmp_path: Path) -> None:
+    """The salt used to be a compile-time constant, identical on every install.
+
+    `credential_fingerprint` is readable at `read` scope, so one rainbow table
+    over likely credential values worked against every TrustOps deployment at
+    once. A per-install salt makes that table worth nothing anywhere else.
+    """
+    from security_lakehouse.connector_state import _access_fingerprint, _fingerprint_salt
+
+    one, two = tmp_path / "lake-a", tmp_path / "lake-b"
+
+    salt_a = _fingerprint_salt(one)
+    assert len(salt_a) >= 32
+    assert _fingerprint_salt(one) == salt_a, "salt must be stable, or every probe invalidates"
+
+    salt_b = _fingerprint_salt(two)
+    assert salt_a != salt_b, "two installs must not share a salt"
+
+    assert _mode(one / "gold" / ".access_salt") == 0o600
+
+    payload = ({"token": "abc"}, {"org": "x"})
+    assert _access_fingerprint(*payload, lake_dir=one) == _access_fingerprint(*payload, lake_dir=one)
+    assert _access_fingerprint(*payload, lake_dir=one) != _access_fingerprint(*payload, lake_dir=two)
+
+
+def test_secret_markers_also_differ_between_installs(tmp_path: Path) -> None:
+    """The ``***<hex>`` marker is a hash of the secret and carries the same exposure."""
+    one, two = tmp_path / "lake-a", tmp_path / "lake-b"
+    for lake in (one, two):
+        append_config_event(
+            lake,
+            connector_id="github-security",
+            state="disabled",
+            actor="tester",
+            credentials={"token": "the-same-secret"},
+        )
+
+    def marker(lake: Path) -> str:
+        line = (lake / "gold" / CONFIG_FILE).read_text(encoding="utf-8").strip().splitlines()[-1]
+        import json
+
+        return json.loads(line)["credentials"]["token"]
+
+    assert marker(one).startswith("***")
+    assert marker(one) != marker(two)
+
+
+def test_probe_before_enable_still_matches_within_one_install(tmp_path: Path) -> None:
+    """Rotating the salt must not break the probe-before-enable check it feeds."""
+    from security_lakehouse.connector_state import _access_fingerprint
+
+    credentials, options = {"token": "abc"}, {"org": "x"}
+    first = _access_fingerprint(credentials, options, lake_dir=tmp_path)
+    again = _access_fingerprint(credentials, options, lake_dir=tmp_path)
+    rotated = _access_fingerprint({"token": "rotated"}, options, lake_dir=tmp_path)
+
+    assert first == again
+    assert first != rotated

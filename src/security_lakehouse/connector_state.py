@@ -15,6 +15,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import secrets
 import time
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -53,7 +54,10 @@ PRODUCTION_STATUS_ORDER = {
     "supported_connector": 1,
     "local_demo": 2,
 }
+# Domain separator, not a salt. The salt is per-install (see _fingerprint_salt);
+# this only keeps derivations for different purposes from colliding.
 _ACCESS_FINGERPRINT_KEY = b"trustops-access-fingerprint-v1"
+_SALT_FILE = ".access_salt"
 _ACCESS_FINGERPRINT_OPTION_EXCLUDES = frozenset(
     {
         "raw",
@@ -72,8 +76,13 @@ def _gold(lake_dir: str | Path) -> Path:
     return Path(lake_dir) / "gold"
 
 
-def _redact_sensitive_value(value: Any) -> Any:
-    """Recursively redact secret-like keys before persisting connector state."""
+def _redact_sensitive_value(value: Any, *, salt: bytes) -> Any:
+    """Recursively redact secret-like keys before persisting connector state.
+
+    The ``***<hex>`` marker is a hash of the secret, so it carries the same
+    rainbow-table exposure as the access fingerprint and takes the same
+    per-install salt.
+    """
     if isinstance(value, dict):
         out: dict[str, Any] = {}
         for key, val in value.items():
@@ -82,26 +91,64 @@ def _redact_sensitive_value(value: Any) -> Any:
                 out[key] = val
             elif any(sensitive in key_l for sensitive in SENSITIVE_FIELD_NAMES):
                 if isinstance(val, str) and val:
-                    marker = hashlib.pbkdf2_hmac("sha256", val.encode("utf-8"), _ACCESS_FINGERPRINT_KEY, 600_000)
+                    marker = hashlib.pbkdf2_hmac("sha256", val.encode("utf-8"), salt, 600_000)
                     out[key] = "***" + marker.hex()[:8]
                 else:
                     out[key] = None
             else:
-                out[key] = _redact_sensitive_value(val)
+                out[key] = _redact_sensitive_value(val, salt=salt)
         return out
     if isinstance(value, list):
-        return [_redact_sensitive_value(item) for item in value]
+        return [_redact_sensitive_value(item, salt=salt) for item in value]
     return value
 
 
-def _redact_credentials(payload: dict[str, Any] | None) -> dict[str, Any]:
+def _redact_credentials(payload: dict[str, Any] | None, *, salt: bytes) -> dict[str, Any]:
     if not payload:
         return {}
-    redacted = _redact_sensitive_value(payload)
+    redacted = _redact_sensitive_value(payload, salt=salt)
     return redacted if isinstance(redacted, dict) else {}
 
 
-def _access_fingerprint(credentials: dict[str, Any] | None, options: dict[str, Any] | None) -> str:
+def _fingerprint_salt(lake_dir: str | Path) -> bytes:
+    """Return this install's fingerprint salt, creating it once.
+
+    The salt used to be a compile-time constant, identical on every install, so
+    one rainbow table over likely credential values worked against every
+    TrustOps deployment at once -- and `credential_fingerprint` is readable at
+    `read` scope, which makes those tables worth building.
+
+    Rotating this invalidates existing fingerprints. That fails closed: a probe
+    fingerprint that no longer matches means "rerun Test connection before
+    enabling", never "enable without checking".
+    """
+    gold = _gold(lake_dir)
+    path = gold / _SALT_FILE
+    try:
+        salt = path.read_bytes()
+        if len(salt) >= 16:
+            return salt
+    except FileNotFoundError:
+        pass
+    gold.mkdir(parents=True, exist_ok=True)
+    salt = secrets.token_bytes(32)
+    # Owner-only, and O_EXCL so two concurrent writers cannot each install a
+    # different salt and silently invalidate each other's fingerprints.
+    try:
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    except FileExistsError:
+        return path.read_bytes()
+    with os.fdopen(fd, "wb") as handle:
+        handle.write(salt)
+    return salt
+
+
+def _access_fingerprint(
+    credentials: dict[str, Any] | None,
+    options: dict[str, Any] | None,
+    *,
+    lake_dir: str | Path | None = None,
+) -> str:
     """Return a deterministic non-secret fingerprint for a scoped-access payload.
 
     The fingerprint is derived with PBKDF2 so secret-bearing staged payloads can
@@ -112,10 +159,11 @@ def _access_fingerprint(credentials: dict[str, Any] | None, options: dict[str, A
         "credentials": credentials or {},
         "options": {k: v for k, v in (options or {}).items() if k not in _ACCESS_FINGERPRINT_OPTION_EXCLUDES},
     }
+    salt = _ACCESS_FINGERPRINT_KEY + (_fingerprint_salt(lake_dir) if lake_dir is not None else b"")
     return hashlib.pbkdf2_hmac(
         "sha256",
         json.dumps(payload, sort_keys=True).encode("utf-8"),
-        _ACCESS_FINGERPRINT_KEY,
+        salt,
         100_000,
         dklen=16,
     ).hex()[:16]
@@ -168,6 +216,7 @@ def append_config_event(
     if connector_id not in catalog:
         raise ValueError(f"unknown connector_id {connector_id!r}")
     record = _build_disk_config_record(
+        lake_dir=lake_dir,
         connector_id=connector_id,
         state=state,
         actor=actor or "anonymous",
@@ -182,6 +231,7 @@ def append_config_event(
 
 def _build_disk_config_record(
     *,
+    lake_dir: str | Path,
     connector_id: str,
     state: str,
     actor: str,
@@ -189,13 +239,14 @@ def _build_disk_config_record(
     options: dict[str, Any] | None,
 ) -> dict[str, Any]:
     """Build a connector config event safe to persist on disk (CodeQL boundary)."""
+    salt = _fingerprint_salt(lake_dir)
     return {
         "connector_id": connector_id,
         "state": state,
         "actor": actor,
-        "credentials": _redact_credentials(credentials),
-        "options": _redact_sensitive_value({k: v for k, v in (options or {}).items() if k != "raw"}),
-        "credential_fingerprint": _access_fingerprint(credentials, options),
+        "credentials": _redact_credentials(credentials, salt=salt),
+        "options": _redact_sensitive_value({k: v for k, v in (options or {}).items() if k != "raw"}, salt=salt),
+        "credential_fingerprint": _access_fingerprint(credentials, options, lake_dir=lake_dir),
         "occurred_at": _utc_now_iso(),
     }
 
@@ -316,7 +367,7 @@ def enablement_probe_error(
     probe = latest_run(lake_dir, connector_id, kind="probe")
     if not probe or probe.get("result") != "ok":
         return "run Test connection before enabling; latest probe must be ok"
-    expected = _access_fingerprint(credentials, options)
+    expected = _access_fingerprint(credentials, options, lake_dir=lake_dir)
     if probe.get("access_fingerprint") != expected:
         return "rerun Test connection for these exact credentials and read scope before enabling"
     return None
@@ -469,6 +520,7 @@ def append_run_event(
     if result not in VALID_RUN_RESULTS:
         raise ValueError(f"result must be one of {sorted(VALID_RUN_RESULTS)}")
     record = _build_disk_run_record(
+        lake_dir=lake_dir,
         connector_id=connector_id,
         kind=kind,
         result=result,
@@ -487,6 +539,7 @@ def append_run_event(
 
 def _build_disk_run_record(
     *,
+    lake_dir: str | Path,
     connector_id: str,
     kind: str,
     result: str,
@@ -507,7 +560,7 @@ def _build_disk_run_record(
         "evidence_count": evidence_count,
         "error": _safe_persist_error(error),
         "access_fingerprint": access_fingerprint,
-        "metadata": _redact_sensitive_value(metadata or {}),
+        "metadata": _redact_sensitive_value(metadata or {}, salt=_fingerprint_salt(lake_dir)),
         "occurred_at": _utc_now_iso(),
     }
 
@@ -996,7 +1049,9 @@ def run_probe(
         return record
     base = catalog[connector_id]
     has_staged_payload = credentials is not None or options is not None
-    staged_access_fingerprint = _access_fingerprint(credentials, options) if has_staged_payload else None
+    staged_access_fingerprint = (
+        _access_fingerprint(credentials, options, lake_dir=lake_dir) if has_staged_payload else None
+    )
     if has_staged_payload:
         error = configure_payload_error(
             connector_id=connector_id,
