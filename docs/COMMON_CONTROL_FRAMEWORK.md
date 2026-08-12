@@ -63,49 +63,34 @@ collapsing them would overstate both coverage and failure.
 
 ```
 $ security-lakehouse frameworks safeguards --format table
-20 safeguards map 465 of 942 requirements (49.4%) — 45 reviewed (4.8%), 420 proposed
+21 safeguards map 499 of 942 requirements (53.0%) — 45 reviewed (4.8%), 454 proposed
 ```
 
 A mapping is **reviewed** once a human has confirmed the requirements are the
 same obligation. **Proposed** mappings were matched by title theme and are
 reported separately, because a compliance product must never count unconfirmed
 work as attested coverage. `safeguards_by_requirement(reviewed_only=True)` is
-what attestation should read.
+what attestation should read — so "SOC 2 is fully mapped" and "SOC 2 is fully
+reviewed" are different claims, and only the second is one to make to an
+auditor.
 
-Curation is ordered by what teams are actually audited and certified against,
-so the frameworks a customer arrives with are covered first.
+Curation is ordered by what teams are actually audited and certified against.
 
-| Framework           | Requirements | Mapped |   Pct |
-| ------------------- | -----------: | -----: | ----: |
-| eu-ai-act-2024-1689 |           15 |     13 | 86.7% |
-| pci-dss-v4          |           12 |     10 | 83.3% |
-| cmmc-2-level2       |          110 |     87 | 79.1% |
-| soc2                |           61 |     46 | 75.4% |
-| cis_aws             |           62 |     45 | 72.6% |
-| hipaa-security-rule |           18 |     12 | 66.7% |
-| iso-42001-2023      |           39 |     26 | 66.7% |
-| gdpr-2016-679       |           20 |     12 | 60.0% |
-| fedramp-moderate    |          287 |    167 | 58.2% |
-| iso-27017-2015      |           47 |     24 | 51.1% |
-| iso-27001-2022      |           93 |     11 | 11.8% |
-| nist-ai-rmf         |           72 |      6 |  8.3% |
-| nist-csf-2.0        |          106 |      6 |  5.7% |
-
-### `cis_aws` is a benchmark, not the CIS Controls
-
-Worth stating plainly, because the two are routinely conflated and the numbers
-above would otherwise be read wrong.
-
-- **CIS Controls v8** — 18 vendor-neutral, organization-level safeguards
-  ("Inventory and Control of Enterprise Assets"). A framework you are assessed
-  against. **Not in this catalog.**
-- **CIS Benchmarks** — per-platform hardening guides, one per technology. The
-  catalog carries exactly one: the **CIS Amazon Web Services Foundations
-  Benchmark v3.0.0** (`cis_aws`, 62 recommendations). No Azure, GCP, or
-  Kubernetes benchmark is present, though connectors exist for those clouds.
-
-So a `cis_aws` percentage describes one cloud's hardening posture. It is not
-CIS Controls coverage, and should never be quoted as such.
+| Framework           | Requirements | Mapped |    Pct |
+| ------------------- | -----------: | -----: | -----: |
+| eu-ai-act-2024-1689 |           15 |     15 | 100.0% |
+| hipaa-security-rule |           18 |     18 | 100.0% |
+| pci-dss-v4          |           12 |     12 | 100.0% |
+| soc2                |           61 |     61 | 100.0% |
+| cmmc-2-level2       |          110 |     92 |  83.6% |
+| cis_aws             |           62 |     49 |  79.0% |
+| iso-42001-2023      |           39 |     26 |  66.7% |
+| gdpr-2016-679       |           20 |     12 |  60.0% |
+| fedramp-moderate    |          287 |    167 |  58.2% |
+| iso-27017-2015      |           47 |     24 |  51.1% |
+| iso-27001-2022      |           93 |     11 |  11.8% |
+| nist-ai-rmf         |           72 |      6 |   8.3% |
+| nist-csf-2.0        |          106 |      6 |   5.7% |
 
 ### What a safeguard applies to
 
