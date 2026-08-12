@@ -427,6 +427,12 @@ def _parser() -> argparse.ArgumentParser:
     frameworks_coverage = frameworks_sub.add_parser("coverage", help="show the source-linked framework coverage ledger")
     frameworks_coverage.add_argument("--format", choices=["json", "markdown"], default="json", help="output format")
     frameworks_coverage.set_defaults(func=_frameworks_coverage)
+    controls_ccf = frameworks_sub.add_parser(
+        "safeguards",
+        help="show Common Control Framework coverage (safeguards -> framework requirements)",
+    )
+    controls_ccf.add_argument("--format", choices=["json", "table"], default="json", help="output format")
+    controls_ccf.set_defaults(func=_frameworks_safeguards)
     frameworks_sync_packs = frameworks_sub.add_parser(
         "sync-packs",
         help="merge full framework packs (SOC 2, NIST AI RMF, FedRAMP, CIS AWS, ISO) into the control catalog",
@@ -1597,6 +1603,33 @@ def _frameworks_sync_packs(args: argparse.Namespace) -> int:
 
     result = sync_framework_packs(packs=args.pack)
     print(json.dumps(result, indent=2, sort_keys=True))
+    return 0
+
+
+def _frameworks_safeguards(args: argparse.Namespace) -> int:
+    """Report Common Control Framework coverage, and refuse to report a broken one."""
+    from security_lakehouse.safeguards import coverage_by_framework, load_safeguards, validate_safeguards
+
+    payload = load_safeguards()
+    problems = validate_safeguards(payload)
+    if problems:
+        for problem in problems:
+            print(f"invalid safeguard: {problem}", file=sys.stderr)
+        return 1
+
+    coverage = coverage_by_framework(payload)
+    if args.format == "json":
+        print(json.dumps(coverage, indent=2))
+        return 0
+
+    print(
+        f"{coverage['safeguards']} safeguards cover {coverage['covered']} of "
+        f"{coverage['controls']} requirements ({coverage['coverage_pct']}%)"
+    )
+    print()
+    print(f"{'framework':26s} {'requirements':>12s} {'covered':>8s} {'pct':>7s}")
+    for name, row in coverage["frameworks"].items():
+        print(f"{name:26s} {row['controls']:12d} {row['covered']:8d} {row['coverage_pct']:6.1f}%")
     return 0
 
 
