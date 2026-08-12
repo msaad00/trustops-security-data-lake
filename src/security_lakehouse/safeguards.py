@@ -68,6 +68,9 @@ def validate_safeguards(payload: JsonObject, *, catalog: dict[str, Any] | None =
             problems.append(f"{sid}: duplicate safeguard_id")
         seen_ids.add(sid)
 
+        if not entry.get("asset_types"):
+            problems.append(f"{sid}: missing asset_types — a safeguard must say what it applies to")
+
         for field in ("title", "risk_domain", "objective", "evidence_requirement", "evaluation_rule", "owner"):
             if not entry.get(field):
                 problems.append(f"{sid}: missing {field}")
@@ -129,6 +132,20 @@ def requirement_status(control_id: str, safeguard_results: dict[str, str], paylo
     if statuses == {"pass"}:
         return "pass"
     return "unknown"
+
+
+def safeguards_for_asset_type(asset_type: str, payload: JsonObject | None = None) -> list[str]:
+    """Safeguards that apply to an asset type.
+
+    The catalog already records ``asset_types`` per requirement, and evaluation
+    targets resources rather than frameworks — so a safeguard has to carry the
+    union of what its requirements apply to, or the operated object cannot be
+    pointed at anything.
+    """
+    data = payload or load_safeguards()
+    return sorted(
+        str(entry["safeguard_id"]) for entry in data["safeguards"] if asset_type in (entry.get("asset_types") or [])
+    )
 
 
 def coverage_by_framework(payload: JsonObject | None = None, *, catalog: dict[str, Any] | None = None) -> JsonObject:

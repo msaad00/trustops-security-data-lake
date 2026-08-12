@@ -211,7 +211,446 @@
           "framework_id": "pci-dss-v4",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-1.12",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-1.13",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-1.14",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-1.16",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-1.18",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-1.20",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-1.22",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-1.4",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-2.1.4",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-2.3.3",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-5.2",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-5.3",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-5.5",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.22",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.13.12",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.13.7",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.14.1",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.14.7",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.5.1",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.5.5",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.5.6",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.8.8",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.9.1",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-12",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-14",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-17",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-17.3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-17.4",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-19",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-22",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-6",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-6.1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-6.10",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-6.2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-6.5",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-6.7",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-6.9",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AU-9.4",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CP-2.8",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CP-6.3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CP-7.2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-11",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-2.1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-2.12",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-2.2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-2.8",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-4",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-4.4",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-5",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-5.1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-5.2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-5.6",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-6",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-8",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-8.1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-8.2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-PE-5",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-PS-6",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-RA-5.5",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SA-9.2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SC-7.3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SC-7.7",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SC-7.8",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-9.4.1",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC6.3",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-P3.1",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-P4.1",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "account_config",
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "data_store",
+        "host",
+        "iam_role",
+        "identity_account",
+        "identity_group",
+        "identity_role_assignment",
+        "identity_user",
+        "okta_user",
+        "repo",
+        "s3_bucket",
+        "service",
+        "user"
       ]
     },
     {
@@ -267,7 +706,28 @@
           "framework_id": "iso-27017-2015",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-2.1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-2.2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "cloud_policy",
+        "cloud_resource",
+        "iam_role",
+        "identity_group",
+        "identity_user",
+        "okta_user",
+        "service"
       ]
     },
     {
@@ -425,7 +885,82 @@
           "framework_id": "pci-dss-v4",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-17.2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-18.1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-19.5",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CP-9.8",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-7",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SC-12",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SC-13",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SC-28",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SC-28.1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SC-8.1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "data_store",
+        "iam_role",
+        "identity_account",
+        "identity_group",
+        "identity_user",
+        "network",
+        "okta_user",
+        "repo",
+        "s3_bucket",
+        "service"
       ]
     },
     {
@@ -601,7 +1136,85 @@
           "framework_id": "soc2",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-17.1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CA-7",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CA-7.4",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CM-8.3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-PE-13.1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-PE-6.1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SI-4",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SI-4.5",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SI-5",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SI-7.7",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "ai_agent",
+        "ai_model",
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "data_store",
+        "host",
+        "iam_role",
+        "identity_account",
+        "identity_group",
+        "identity_user",
+        "okta_user",
+        "repo",
+        "s3_bucket",
+        "service"
       ]
     },
     {
@@ -813,7 +1426,66 @@
           "framework_id": "iso-27017-2015",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AU-12",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AU-3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AU-4",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AU-5",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AU-6.3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AU-7",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AU-8",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "ai_agent",
+        "ai_model",
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "host",
+        "iam_role",
+        "identity_account",
+        "identity_group",
+        "identity_user",
+        "okta_user",
+        "repo",
+        "s3_bucket",
+        "service"
       ]
     },
     {
@@ -923,7 +1595,87 @@
           "framework_id": "soc2",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.4.6",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CA-3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CM-10",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CM-3.2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CM-5",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CM-6",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CM-7",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CM-9",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-PL-10",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-PL-11",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SR-11.2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "data_store",
+        "host",
+        "iam_role",
+        "identity_group",
+        "identity_user",
+        "okta_user",
+        "repo",
+        "service"
       ]
     },
     {
@@ -1009,7 +1761,52 @@
           "framework_id": "soc2",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-RA-5",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-RA-5.2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SI-2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SI-2.2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SI-3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "host",
+        "iam_role",
+        "identity_account",
+        "identity_group",
+        "identity_user",
+        "okta_user",
+        "repo",
+        "s3_bucket",
+        "service"
       ]
     },
     {
@@ -1071,7 +1868,42 @@
           "framework_id": "soc2",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SA-4",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SR-5",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SR-6",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-7.3",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "ai_agent",
+        "ai_model",
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "data_store",
+        "identity_user",
+        "repo",
+        "service"
       ]
     },
     {
@@ -1151,7 +1983,41 @@
           "framework_id": "soc2",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-RA-2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-RA-3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-RA-3.1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SR-2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "ai_agent",
+        "ai_model",
+        "audit_log",
+        "container_image",
+        "data_store",
+        "repo",
+        "s3_bucket",
+        "service"
       ]
     },
     {
@@ -1219,7 +2085,47 @@
           "framework_id": "soc2",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CP-10",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CP-10.2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CP-6",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CP-7",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CP-9",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "data_store",
+        "host",
+        "repo",
+        "service"
       ]
     },
     {
@@ -1408,6 +2314,14 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "ai_agent",
+        "ai_model",
+        "audit_log",
+        "cloud_resource",
+        "data_store",
+        "service"
       ]
     },
     {
@@ -1487,7 +2401,70 @@
           "framework_id": "soc2",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IR-2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IR-3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IR-4",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IR-4.1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IR-5",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IR-6",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IR-7",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IR-8",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "ai_agent",
+        "ai_model",
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "data_store",
+        "host",
+        "iam_role",
+        "identity_account",
+        "identity_user",
+        "repo",
+        "s3_bucket",
+        "service"
       ]
     },
     {
@@ -1567,7 +2544,161 @@
           "framework_id": "soc2",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.3",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.7.6",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "EU-AI-ACT-Art.14",
+          "framework_id": "eu-ai-act-2024-1689",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AT-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AU-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CA-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CA-6",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CM-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CP-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IA-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-IR-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-MA-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-MP-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-PE-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-PL-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-PL-4",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-PS-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-RA-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SA-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SC-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SI-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SR-1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "ai_agent",
+        "ai_model",
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "data_store",
+        "host",
+        "iam_role",
+        "identity_group",
+        "identity_user",
+        "okta_user",
+        "repo",
+        "service"
       ]
     },
     {
@@ -1599,7 +2730,45 @@
           "framework_id": "hipaa-security-rule",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AT-2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AT-3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AT-4",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CP-3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SR-11.1",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "audit_log",
+        "container_image",
+        "data_store",
+        "repo",
+        "service",
+        "user"
       ]
     },
     {
@@ -1667,7 +2836,96 @@
           "framework_id": "soc2",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.13.5",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-MP-2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-MP-3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-MP-4",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-MP-5",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-MP-6",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-PE-14",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-PE-16",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-PE-2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-PE-3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-PE-6",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-PE-8",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-CLD.13.1.4",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "iam_role",
+        "identity_group",
+        "identity_user",
+        "okta_user",
+        "repo",
+        "service"
       ]
     },
     {
@@ -1687,8 +2945,39 @@
           "framework_id": "pci-dss-v4",
           "role": "primary",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SA-10",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SA-11",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SA-15",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SA-22",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SA-3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
-      ]
+      ],
+      "asset_types": ["cloud_policy", "cloud_resource", "repo", "service"]
     },
     {
       "safeguard_id": "SG-NETWORK-001",
@@ -1713,7 +3002,103 @@
           "framework_id": "pci-dss-v4",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.16",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.13.9",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-18",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-18.3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-PE-4",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SC-10",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SC-23",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SC-5",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SC-7",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SC-8",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-13.1.1",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-13.1.2",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-13.1.3",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-9.1.2",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "iam_role",
+        "identity_group",
+        "identity_user",
+        "network",
+        "okta_user",
+        "repo",
+        "service"
       ]
     },
     {
@@ -1794,7 +3179,8 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
-      ]
+      ],
+      "asset_types": ["audit_log", "data_store", "identity_user", "service"]
     },
     {
       "safeguard_id": "SG-DATAINVENTORY-001",
@@ -1825,7 +3211,42 @@
           "framework_id": "soc2",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CM-2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CM-8",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SA-5",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-8.2",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "ai_agent",
+        "ai_model",
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "data_store",
+        "repo",
+        "s3_bucket",
+        "service"
       ]
     },
     {
@@ -1869,7 +3290,43 @@
           "framework_id": "soc2",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AU-11",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CM-2.3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SI-12",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SR-12",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "data_store",
+        "host",
+        "identity_user",
+        "repo",
+        "s3_bucket",
+        "service"
       ]
     }
   ]

@@ -63,7 +63,7 @@ collapsing them would overstate both coverage and failure.
 
 ```
 $ security-lakehouse frameworks safeguards --format table
-20 safeguards map 261 of 942 requirements (27.7%) — 45 reviewed (4.8%), 216 proposed
+20 safeguards map 465 of 942 requirements (49.4%) — 45 reviewed (4.8%), 420 proposed
 ```
 
 A mapping is **reviewed** once a human has confirmed the requirements are the
@@ -77,19 +77,19 @@ so the frameworks a customer arrives with are covered first.
 
 | Framework           | Requirements | Mapped |   Pct |
 | ------------------- | -----------: | -----: | ----: |
+| eu-ai-act-2024-1689 |           15 |     13 | 86.7% |
 | pci-dss-v4          |           12 |     10 | 83.3% |
-| eu-ai-act-2024-1689 |           15 |     12 | 80.0% |
-| soc2                |           61 |     43 | 70.5% |
+| cmmc-2-level2       |          110 |     87 | 79.1% |
+| soc2                |           61 |     46 | 75.4% |
+| cis_aws             |           62 |     45 | 72.6% |
 | hipaa-security-rule |           18 |     12 | 66.7% |
-| cmmc-2-level2       |          110 |     71 | 64.5% |
-| iso-42001-2023      |           39 |     24 | 61.5% |
+| iso-42001-2023      |           39 |     26 | 66.7% |
 | gdpr-2016-679       |           20 |     12 | 60.0% |
-| cis_aws             |           62 |     32 | 51.6% |
-| iso-27017-2015      |           47 |     18 | 38.3% |
+| fedramp-moderate    |          287 |    167 | 58.2% |
+| iso-27017-2015      |           47 |     24 | 51.1% |
 | iso-27001-2022      |           93 |     11 | 11.8% |
 | nist-ai-rmf         |           72 |      6 |  8.3% |
 | nist-csf-2.0        |          106 |      6 |  5.7% |
-| fedramp-moderate    |          287 |      4 |  1.4% |
 
 ### `cis_aws` is a benchmark, not the CIS Controls
 
@@ -107,29 +107,39 @@ above would otherwise be read wrong.
 So a `cis_aws` percentage describes one cloud's hardening posture. It is not
 CIS Controls coverage, and should never be quoted as such.
 
+### What a safeguard applies to
+
+Evaluation targets resources, not frameworks. The catalog already records
+`asset_types` on all 942 requirements — `iam_role`, `data_store`, `ai_model`,
+`audit_log`, `cloud_resource` and 15 more — and a safeguard carries the union of
+what its members apply to. `safeguards_for_asset_type("iam_role")` returns the
+11 safeguards that bear on IAM roles.
+
+Without that a safeguard cannot be pointed at anything, which would make the
+operated object undeployable. The validator rejects a safeguard with no asset
+types, and a test asserts each one still matches its members rather than
+drifting as curation moves.
+
 ## The real ceiling is the catalog, not the curation
 
-**549 of 942 titles (58%) carry no content** — they are an identifier plus
-boilerplate:
+262 of 942 titles (28%) still carry no content — an
+identifier plus boilerplate. `frameworks enrich` has already filled the FedRAMP
+set from NIST SP 800-53 Rev. 5, recording the source URL and SHA-256 on every
+control so the import is checkable rather than asserted.
 
-```
-FedRAMP Moderate IR-3 — assessed from cloud posture and audit evidence
-NIST CSF 2.0 PR.IR-03 — assessed from cybersecurity program and operational evidence
-ISO 27001:2022 A.5.9  — assessed from ISMS and security operations evidence
-```
+What remains cannot be filled the same way:
 
-Whole frameworks are affected: FedRAMP 287/287, NIST CSF 106/106, ISO 27001
-90/93, NIST AI RMF 66/72.
+- **ISO (82)** — the registry's guardrail is explicit that ISO text is
+  licensed, so identifiers and short internal titles are the correct shape.
+  Mapping ISO _ids_ into safeguards is still fine; it reproduces nothing.
+- **NIST CSF (106)** — public domain, but its OSCAL catalog titles each
+  subcategory with its own identifier (`GV.OC-01` is titled "GV.OC-01"). The
+  importer rejects a title that merely repeats the id, because coverage that
+  looks enriched while saying nothing is worse than an honest placeholder.
+- **NIST AI RMF (66)** — no OSCAL catalog is published.
 
-For those the repo records _which_ control exists, not _what it requires_. An
-equivalence asserted over them would come from outside knowledge, not from
-anything a reviewer can check against this repository — which is the failure a
-CCF exists to prevent.
-
-**So curation from repo data tops out at about 411 of 942 — 43.6%** (the 393
-with real titles, plus 18 placeholder-titled controls a human already mapped by
-hand). Reaching
-50% is not a curation problem; it needs one of the two steps below.
+So 680 of 942 controls now carry curatable content, and the rest need
+either a published crosswalk or a human with the source document.
 
 ## Getting there
 
