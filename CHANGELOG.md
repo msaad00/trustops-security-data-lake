@@ -3,6 +3,29 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
+## 0.2.2 - 2026-08-12
+
+Release theme: **audit follow-through**. Applies the confirmed findings from a
+four-lane audit (code / CI / product surfaces / packaging).
+
+### Security
+
+- Routed the Google Workspace connector client through the shared `netguard`
+  guarded opener — the one credentialed client still on raw `urllib` after the
+  0.2.1 egress hardening, so its OAuth bearer can no longer follow a cross-origin
+  redirect.
+- Stripped local-only options (`fixture_dir`) from the connector configure
+  forward-merge so a value seeded off-API cannot re-attach on a later API call.
+- Constant-time trust-share token comparison.
+
+### Fixed
+
+- AWS access keys with an unparseable `CreateDate` no longer score a false pass
+  on the rotation control.
+- `__version__` is derived from installed distribution metadata (no more drift).
+- Helm chart version tracks the released image tag; release verification now
+  gates on it.
+
 ## 0.2.1 - 2026-08-12
 
 Release theme: **egress SSRF hardening**. Closes three confirmed server-side
