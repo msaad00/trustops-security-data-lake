@@ -54,12 +54,15 @@ More views: [frameworks](docs/images/trustops-demo-frameworks.png) · [insights]
 
 ## Quick start
 
-Requires Python 3.11+.
+Requires Python 3.11+ and Node 22+ (the console is built from source; it is not
+committed to the repository).
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev,server]"
+
+make web-install web-build   # builds the console into src/security_lakehouse/web/dist
 
 security-lakehouse fixtures load --company golden --out build/lakehouse
 security-lakehouse db upgrade --lake build/lakehouse
@@ -71,6 +74,10 @@ security-lakehouse serve \
 ```
 
 Open [http://127.0.0.1:8787/console/dashboard/](http://127.0.0.1:8787/console/dashboard/).
+
+Skipping the console build leaves that URL a 404: the server mounts `/console/`
+only when a built console is present, and falls back to a single status page.
+`make demo-local` runs the whole sequence in one step.
 
 `--allow-insecure-no-auth` is for local development only. Production deployments require configured authentication; see [server authentication](docs/SERVER_AUTH.md).
 

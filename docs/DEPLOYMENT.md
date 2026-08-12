@@ -38,11 +38,15 @@ Fastest path to evaluate the product:
 
 ```bash
 pip install -e ".[dev,server]"
+make web-install web-build   # requires Node 22+; the console is not committed to the repo
 security-lakehouse fixtures load --company fintech --out build/lakehouse
 security-lakehouse serve --lake build/lakehouse --server --allow-insecure-no-auth --port 8787
 ```
 
 Open `http://127.0.0.1:8787/console/dashboard/`. No account required.
+
+Without the console build that URL is a 404 — `/console/` is mounted only when a
+built console is present.
 
 ### Self-hosted
 
