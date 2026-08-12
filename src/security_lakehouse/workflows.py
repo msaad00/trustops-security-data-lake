@@ -388,7 +388,15 @@ def _http_post(
         attempts = attempt + 1
         request = urllib.request.Request(url, data=data, headers=out_headers, method="POST")  # noqa: S310 (scheme + allowlist + SSRF guarded above)
         try:
-            with urllib.request.urlopen(request, timeout=_WEBHOOK_TIMEOUT_SECONDS) as resp:  # noqa: S310
+            # open_guarded re-runs the allowlist + SSRF guard on every redirect
+            # hop and strips Authorization/Cookie across origins, so a 302 from
+            # an allowlisted host cannot pivot this request (or its secret
+            # headers, or the response body) at an internal address.
+            with netguard.open_guarded(
+                request,
+                timeout=_WEBHOOK_TIMEOUT_SECONDS,
+                validate=lambda target: _assert_egress_allowed(target, what=what),
+            ) as resp:
                 status_code = int(getattr(resp, "status", 0) or 0)
                 payload = resp.read(2048)
                 response_snippet = payload.decode("utf-8", errors="replace")[:500]

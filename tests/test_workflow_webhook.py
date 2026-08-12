@@ -38,7 +38,7 @@ class _FakeResponse:
 
 
 def _capturing_urlopen(captured: list[urllib.request.Request], status: int = 200, body: bytes = b"ok"):
-    def _urlopen(request, timeout=None):  # noqa: ANN001, ARG001
+    def _urlopen(request, timeout=None, validate=None):  # noqa: ANN001, ARG001
         captured.append(request)
         return _FakeResponse(status, body)
 
@@ -86,7 +86,7 @@ def test_egress_denied_when_allowlist_blank(monkeypatch: pytest.MonkeyPatch, tmp
 def test_allowlisted_host_succeeds(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     _allow(monkeypatch)
     captured: list[urllib.request.Request] = []
-    monkeypatch.setattr(urllib.request, "urlopen", _capturing_urlopen(captured, status=200, body=b'{"received":true}'))
+    monkeypatch.setattr(netguard, "open_guarded", _capturing_urlopen(captured, status=200, body=b'{"received":true}'))
     out = wf.run_action(
         tmp_path,
         node_type="action.webhook",
@@ -103,7 +103,7 @@ def test_allowlisted_host_succeeds(monkeypatch: pytest.MonkeyPatch, tmp_path: Pa
 def test_allowlist_host_port_match(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setenv(ALLOWLIST_ENV, "hooks.example.com:8443")
     captured: list[urllib.request.Request] = []
-    monkeypatch.setattr(urllib.request, "urlopen", _capturing_urlopen(captured))
+    monkeypatch.setattr(netguard, "open_guarded", _capturing_urlopen(captured))
     out = wf.run_action(
         tmp_path,
         node_type="action.webhook",
@@ -168,7 +168,7 @@ def test_secret_resolved_into_request_but_not_persisted(monkeypatch: pytest.Monk
     _allow(monkeypatch)
     monkeypatch.setenv("TRUSTOPS_SECRET_FOO", "super-secret-token")
     captured: list[urllib.request.Request] = []
-    monkeypatch.setattr(urllib.request, "urlopen", _capturing_urlopen(captured))
+    monkeypatch.setattr(netguard, "open_guarded", _capturing_urlopen(captured))
 
     out = wf.run_action(
         tmp_path,
@@ -190,7 +190,7 @@ def test_secret_resolved_into_request_but_not_persisted(monkeypatch: pytest.Monk
 def test_unset_secret_raises(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     _allow(monkeypatch)
     monkeypatch.delenv("TRUSTOPS_SECRET_MISSING", raising=False)
-    monkeypatch.setattr(urllib.request, "urlopen", _capturing_urlopen([]))
+    monkeypatch.setattr(netguard, "open_guarded", _capturing_urlopen([]))
     with pytest.raises(ValueError, match="secret 'MISSING' is not set"):
         wf.run_action(
             tmp_path,
@@ -203,7 +203,7 @@ def test_run_log_keeps_secret_token_not_value(monkeypatch: pytest.MonkeyPatch, t
     _allow(monkeypatch)
     monkeypatch.setenv("TRUSTOPS_SECRET_FOO", "super-secret-token")
     captured: list[urllib.request.Request] = []
-    monkeypatch.setattr(urllib.request, "urlopen", _capturing_urlopen(captured))
+    monkeypatch.setattr(netguard, "open_guarded", _capturing_urlopen(captured))
 
     nodes = [
         {
@@ -238,14 +238,14 @@ def test_retry_on_5xx_then_success(monkeypatch: pytest.MonkeyPatch, tmp_path: Pa
     seen_keys: list[str] = []
     calls = {"n": 0}
 
-    def _urlopen(request, timeout=None):  # noqa: ANN001, ARG001
+    def _urlopen(request, timeout=None, validate=None):  # noqa: ANN001, ARG001
         seen_keys.append(request.get_header("Idempotency-key"))
         calls["n"] += 1
         if calls["n"] < 3:
             raise urllib.error.HTTPError(request.full_url, 503, "busy", hdrs=None, fp=io.BytesIO(b"busy"))
         return _FakeResponse(200, b"ok")
 
-    monkeypatch.setattr(urllib.request, "urlopen", _urlopen)
+    monkeypatch.setattr(netguard, "open_guarded", _urlopen)
     out = wf.run_action(
         tmp_path,
         node_type="action.webhook",
@@ -262,10 +262,10 @@ def test_retry_on_5xx_then_success(monkeypatch: pytest.MonkeyPatch, tmp_path: Pa
 def test_retry_exhausted_returns_last_error(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     _allow(monkeypatch)
 
-    def _urlopen(request, timeout=None):  # noqa: ANN001, ARG001
+    def _urlopen(request, timeout=None, validate=None):  # noqa: ANN001, ARG001
         raise urllib.error.HTTPError(request.full_url, 500, "boom", hdrs=None, fp=io.BytesIO(b"boom"))
 
-    monkeypatch.setattr(urllib.request, "urlopen", _urlopen)
+    monkeypatch.setattr(netguard, "open_guarded", _urlopen)
     out = wf.run_action(
         tmp_path,
         node_type="action.webhook",
@@ -281,9 +281,9 @@ def test_idempotency_key_stable_across_replays(monkeypatch: pytest.MonkeyPatch, 
     _allow(monkeypatch)
     keys: list[str] = []
     monkeypatch.setattr(
-        urllib.request,
-        "urlopen",
-        lambda req, timeout=None: keys.append(req.get_header("Idempotency-key")) or _FakeResponse(200),
+        netguard,
+        "open_guarded",
+        lambda req, timeout=None, validate=None: keys.append(req.get_header("Idempotency-key")) or _FakeResponse(200),
     )
     params = {"url": "https://hooks.example.com/x", "body": {"a": 1}}
     wf.run_action(tmp_path, node_type="action.webhook", params=dict(params))
@@ -298,11 +298,11 @@ def test_4xx_not_retried(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Non
     _allow(monkeypatch)
     calls = {"n": 0}
 
-    def _urlopen(request, timeout=None):  # noqa: ANN001, ARG001
+    def _urlopen(request, timeout=None, validate=None):  # noqa: ANN001, ARG001
         calls["n"] += 1
         raise urllib.error.HTTPError(request.full_url, 404, "nope", hdrs=None, fp=io.BytesIO(b"nope"))
 
-    monkeypatch.setattr(urllib.request, "urlopen", _urlopen)
+    monkeypatch.setattr(netguard, "open_guarded", _urlopen)
     out = wf.run_action(
         tmp_path,
         node_type="action.webhook",
@@ -319,7 +319,7 @@ def test_4xx_not_retried(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Non
 
 def test_webhook_node_in_workflow_run_log(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     _allow(monkeypatch)
-    monkeypatch.setattr(urllib.request, "urlopen", lambda req, timeout=None: _FakeResponse(200, b"ok"))
+    monkeypatch.setattr(netguard, "open_guarded", lambda req, timeout=None, validate=None: _FakeResponse(200, b"ok"))
     nodes = [
         {"id": "trigger", "node_type": "trigger.evidence_changed", "params": {}},
         {

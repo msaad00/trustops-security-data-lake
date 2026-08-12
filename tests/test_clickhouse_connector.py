@@ -109,7 +109,7 @@ def test_clickhouse_live_query_parses_json_each_row() -> None:
     response.read.return_value = body.encode("utf-8")
     response.__enter__.return_value = response
 
-    with patch("urllib.request.urlopen", return_value=response):
+    with patch("security_lakehouse.netguard.open_public", return_value=response):
         rows = ClickHouseClient("https://ch.example:8443", user="reader", password="secret").normalized_events()
 
     assert len(rows) == 2

@@ -108,7 +108,7 @@ def test_siem_live_query_parses_json_list() -> None:
     response.read.return_value = body.encode("utf-8")
     response.__enter__.return_value = response
 
-    with patch("urllib.request.urlopen", return_value=response):
+    with patch("security_lakehouse.netguard.open_public", return_value=response):
         rows = SiemClient("https://siem.example", token="secret").alerts()
 
     assert len(rows) == 1

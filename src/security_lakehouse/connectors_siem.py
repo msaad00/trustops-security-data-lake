@@ -16,6 +16,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse import netguard
 from security_lakehouse.io import read_json
 from security_lakehouse.models import parse_event_time, utc_iso
 
@@ -113,7 +114,7 @@ class SiemClient:
             },
         )
         try:
-            with urllib.request.urlopen(request, timeout=self.timeout) as resp:  # noqa: S310
+            with netguard.open_public(request, timeout=self.timeout, label="siem export url") as resp:
                 payload = json.loads(resp.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:  # pragma: no cover - live only
             raise ValueError(exc.__class__.__name__) from exc

@@ -64,12 +64,12 @@ def test_okta_users_follows_link_to_completion(monkeypatch: pytest.MonkeyPatch) 
     ]
     calls = {"n": 0}
 
-    def fake_urlopen(_request, timeout=0):  # noqa: ANN001, ARG001
+    def fake_urlopen(_request, timeout=0, **_kwargs):  # noqa: ANN001, ARG001
         resp = pages[calls["n"]]
         calls["n"] += 1
         return resp
 
-    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    monkeypatch.setattr("security_lakehouse.netguard.open_public", fake_urlopen)
     client = OktaClient("https://org.okta.com", token="t")
     users = client.users()
     assert [u["id"] for u in users] == ["u1", "u2", "u3"]
@@ -86,12 +86,12 @@ def test_jira_issues_follows_start_at_to_total(monkeypatch: pytest.MonkeyPatch) 
     ]
     calls = {"n": 0}
 
-    def fake_urlopen(_request, timeout=0):  # noqa: ANN001, ARG001
+    def fake_urlopen(_request, timeout=0, **_kwargs):  # noqa: ANN001, ARG001
         resp = pages[calls["n"]]
         calls["n"] += 1
         return resp
 
-    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    monkeypatch.setattr("security_lakehouse.netguard.open_public", fake_urlopen)
     client = JiraClient("https://acme.atlassian.net", email="e@x.com", token="t")
     issues = client.issues()
     assert [i["key"] for i in issues] == ["A-1", "A-2", "A-3"]
