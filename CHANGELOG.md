@@ -3,6 +3,25 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
+## 0.2.1 - 2026-08-12
+
+Release theme: **egress SSRF hardening**. Closes three confirmed server-side
+request forgery findings that shared one root cause — the outbound guards
+validated only the first URL, then followed redirects (and server-supplied
+pagination `Link` headers) to unvalidated hosts.
+
+### Security
+
+- Added `netguard.open_guarded`/`open_public`: a shared HTTP opener that re-runs
+  the caller's SSRF/allowlist validator on every redirect hop and drops
+  `Authorization`/`Cookie` headers on any cross-origin hop.
+- Routed all host-based connector clients (Okta, SIEM, ClickHouse, runtime
+  gateway, Jira) through the guarded opener, closing the connector probe/discover
+  SSRF and the Okta `Link`-header token-pivot.
+- Reran the workflow webhook/Slack/Jira egress path through the guarded opener so
+  a 302 from an allowlisted host can no longer pivot the request (or its secret
+  headers, or the response body) at an internal address.
+
 ## 0.2.0 - 2026-06-29
 
 Release theme: **invite-only hosted POC readiness**. This release turns the repo
