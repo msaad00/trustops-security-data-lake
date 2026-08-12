@@ -121,6 +121,11 @@ jobs:
           cache-dependency-path: app/web/package-lock.json
       - name: npm audit (production deps, high+)
         working-directory: app/web
+        # NOTE: reporting-only until the transitive high-severity advisories in
+        # nanoid / postcss / sharp / next are cleared. Three of the four require
+        # `npm audit fix --force` (a breaking Next.js major upgrade) and are
+        # tracked as a dedicated follow-up; drop `|| true` once that lands so the
+        # gate blocks again.
         run: npm audit --omit=dev --audit-level=high || true
       - name: gitleaks (secret scan)
         uses: gitleaks/gitleaks-action@v3

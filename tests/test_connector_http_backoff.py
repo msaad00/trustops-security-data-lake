@@ -105,7 +105,7 @@ def test_jira_does_not_retry_on_404(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_google_workspace_retries_then_succeeds_on_503(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(time, "sleep", lambda _s: None)
     opener, calls = _flaky_opener(1, 503, json.dumps({"users": [{"id": "u1"}]}))
-    monkeypatch.setattr(urllib.request, "urlopen", opener)
+    monkeypatch.setattr(netguard, "open_public", opener)
     client = GoogleWorkspaceClient("C00acme", access_token="t")
     out = client._json_collection("https://admin.googleapis.com/users", key="users")  # noqa: SLF001
     assert out == [{"id": "u1"}]

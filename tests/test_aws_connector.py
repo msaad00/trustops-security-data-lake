@@ -17,7 +17,13 @@ from security_lakehouse.connector_state import (
     latest_run,
     run_probe,
 )
-from security_lakehouse.connectors_aws import AWSClient, AWSFixtureClient, collect_aws_evidence, probe_aws_access
+from security_lakehouse.connectors_aws import (
+    AWSClient,
+    AWSFixtureClient,
+    _access_key_event,
+    collect_aws_evidence,
+    probe_aws_access,
+)
 from security_lakehouse.io import read_jsonl
 from security_lakehouse.validation import validate_raw_events
 
@@ -465,3 +471,18 @@ def test_access_key_hygiene_passes_on_fresh_single_key(tmp_path: Path) -> None:
     key = next(r for r in rows if r["event_type"] == "aws.iam.access_key_hygiene")
     assert key["status"] == "pass"
     assert key["attributes"]["stale_key"] is False
+
+
+def test_active_access_key_with_unparseable_date_flags_rotation() -> None:
+    """An active key whose CreateDate can't be parsed must not score a false pass."""
+    event = _access_key_event(
+        ACCOUNT,
+        "svc-user",
+        {"UserName": "svc-user"},
+        [{"Status": "Active", "CreateDate": "not-a-real-date"}],
+        datetime(2026, 1, 1, tzinfo=UTC),
+        "tenant-x",
+    )
+    assert event["status"] == "open"
+    assert event["attributes"]["stale_key"] is True
+    assert event["attributes"]["needs_rotation"] is True

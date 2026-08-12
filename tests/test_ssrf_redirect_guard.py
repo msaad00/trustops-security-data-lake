@@ -17,6 +17,7 @@ import pytest
 
 import security_lakehouse.workflows as wf
 from security_lakehouse import netguard
+from security_lakehouse.connectors_google_workspace import GoogleWorkspaceClient
 from security_lakehouse.connectors_okta import OktaClient
 from security_lakehouse.connectors_siem import probe_siem_access
 
@@ -148,6 +149,13 @@ def test_siem_probe_blocks_private_host(monkeypatch: pytest.MonkeyPatch) -> None
         options={"index": "alerts"},
     )
     assert result["ok"] is False
+
+
+def test_google_workspace_client_routes_through_the_guard(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The fixed-host Google Workspace client is guarded too (no raw urlopen)."""
+    _private_dns(monkeypatch, {"admin.googleapis.com": "169.254.169.254"})
+    with pytest.raises(ValueError, match="SSRF blocked"):
+        GoogleWorkspaceClient("C00cust", access_token="t").users()
 
 
 def test_siem_discover_blocks_private_host(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -15,6 +15,13 @@ on:
 permissions:
   contents: read
 
+# Never let two tag pushes publish the same or overlapping releases at once.
+# cancel-in-progress is false: a publish already underway must finish, not be
+# killed halfway between PyPI and the GitHub release.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   # The tag is the version. If pyproject disagrees, the artifact would carry a
   # version nobody asked for, so stop before anything is built.
@@ -37,7 +44,15 @@ jobs:
             echo "::error::tag ${GITHUB_REF_NAME} does not match pyproject version ${project_version}"
             exit 1
           fi
-          echo "tag ${GITHUB_REF_NAME} matches pyproject ${project_version}"
+          # The Helm chart pins image.tag to appVersion; if it lags the release
+          # tag, `helm install` pulls a non-existent image. Gate it here so the
+          # chart can never ship a patch behind the published image again.
+          chart_app_version="$(grep -m1 '^appVersion:' deploy/helm/trustops/Chart.yaml | sed 's/.*"\(.*\)".*/\1/')"
+          if [ "${chart_app_version}" != "${project_version}" ]; then
+            echo "::error::Chart.yaml appVersion ${chart_app_version} does not match release version ${project_version}"
+            exit 1
+          fi
+          echo "tag ${GITHUB_REF_NAME} matches pyproject + chart ${project_version}"
 
   build:
     needs: verify-version
@@ -75,7 +90,9 @@ jobs:
 
   pypi:
     needs: build
-    if: github.event_name == 'push' || !inputs.dry_run
+    # Publish only from a version tag. A workflow_dispatch with dry_run:false on
+    # a branch would otherwise reach PyPI with no tag↔version gate having run.
+    if: github.ref_type == 'tag' && (github.event_name == 'push' || !inputs.dry_run)
     runs-on: ubuntu-latest
     environment: release
     permissions:
@@ -97,7 +114,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: docker/setup-buildx-action@v4
       - uses: docker/login-action@v3
-        if: github.event_name == 'push' || !inputs.dry_run
+        if: github.ref_type == 'tag' && (github.event_name == 'push' || !inputs.dry_run)
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -113,7 +130,7 @@ jobs:
       - uses: docker/build-push-action@v7
         with:
           context: .
-          push: ${{ github.event_name == 'push' || !inputs.dry_run }}
+          push: ${{ github.ref_type == 'tag' && (github.event_name == 'push' || !inputs.dry_run) }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha

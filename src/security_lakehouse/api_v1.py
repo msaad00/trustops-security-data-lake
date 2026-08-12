@@ -28,6 +28,9 @@ from security_lakehouse.assessment import (
 )
 from security_lakehouse.connector_runner import ConnectorSyncError, run_connector_sync
 from security_lakehouse.connector_state import (
+    LOCAL_ONLY_OPTIONS as _LOCAL_ONLY_OPTIONS,
+)
+from security_lakehouse.connector_state import (
     append_config_event,
     build_catalog_view,
     configure_payload_error,
@@ -1377,10 +1380,9 @@ def handle_get(path: str, params: Params, lake_dir: str | Path) -> tuple[HTTPSta
 # logs.json, ...) from wherever it points and ingests them into the evidence
 # lake, where they become readable at `read` scope. Verified: a file planted
 # outside the lake reached bronze/raw_events.jsonl through the configure+sync
-# API. The CLI and local seeding paths still accept it.
-_LOCAL_ONLY_OPTIONS = ("fixture_dir",)
-
-
+# API. The CLI and local seeding paths still accept it. The key set is
+# single-sourced from connector_state so the boundary reject and the
+# forward-merge strip cannot drift apart.
 def _reject_local_only_options(options: JsonObject | None, *, resource: str) -> JsonObject | None:
     for name in _LOCAL_ONLY_OPTIONS:
         if options and name in options:
