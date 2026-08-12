@@ -1,6 +1,6 @@
 {
   "schema": "trustops.safeguards.v1",
-  "note": "Common Control Framework. A safeguard is the operated object: it carries one evidence requirement and one evaluation rule, and satisfies many framework requirements. Framework readiness is derived from safeguard posture, not the other way round. Seeded from mappings/framework_equivalence.json; every control_id under `satisfies` must exist in controls/catalog.json.",
+  "note": "Common Control Framework. A safeguard is the operated object: it carries one evidence requirement and one evaluation rule, and satisfies many framework requirements. Framework readiness is derived from safeguard posture, not the other way round. Every control_id under `satisfies` must exist in controls/catalog.json. A mapping is `reviewed` once a human has confirmed the requirements are genuinely the same obligation; `proposed` mappings were matched by title theme and are reported separately so unconfirmed work is never counted as attested coverage.",
   "safeguards": [
     {
       "safeguard_id": "SG-IDENTITY-001",
@@ -17,32 +17,200 @@
         {
           "control_id": "SOC2-CC6.1",
           "framework_id": "soc2",
-          "role": "primary"
+          "role": "primary",
+          "review_status": "reviewed"
         },
         {
           "control_id": "ISO27001-A.5.15",
           "framework_id": "iso-27001-2022",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "NIST-CSF-PR.AA-01",
           "framework_id": "nist-csf-2.0",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "FEDRAMP-AC-2",
           "framework_id": "fedramp-moderate",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "CIS-AWS-1.10",
           "framework_id": "cis_aws",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "HIPAA-164.308(a)(4)",
           "framework_id": "hipaa-security-rule",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
+        },
+        {
+          "control_id": "CIS-AWS-1.11",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-1.5",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-1.6",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-1.8",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-1.9",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-2.1.2",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.1",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.10",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.14",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.15",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.2",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.5",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.6",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.5.11",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.5.2",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.5.3",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.5.4",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.5.8",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.7.5",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.8.2",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "HIPAA-164.310(a)",
+          "framework_id": "hipaa-security-rule",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "HIPAA-164.312(a)",
+          "framework_id": "hipaa-security-rule",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-18.1.1",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-9.1.1",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-9.2.3",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-9.4.3",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "PCI-DSS-8",
+          "framework_id": "pci-dss-v4",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ]
     },
@@ -61,17 +229,44 @@
         {
           "control_id": "SOC2-CC6.2",
           "framework_id": "soc2",
-          "role": "primary"
+          "role": "primary",
+          "review_status": "reviewed"
         },
         {
           "control_id": "ISO27001-A.8.2",
           "framework_id": "iso-27001-2022",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "NIST-CSF-PR.AA-05",
           "framework_id": "nist-csf-2.0",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
+        },
+        {
+          "control_id": "ISO27017-9.2.1",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-9.2.2",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-9.2.5",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-9.2.6",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ]
     },
@@ -90,27 +285,146 @@
         {
           "control_id": "SOC2-CC6.7",
           "framework_id": "soc2",
-          "role": "primary"
+          "role": "primary",
+          "review_status": "reviewed"
         },
         {
           "control_id": "ISO27001-A.8.24",
           "framework_id": "iso-27001-2022",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "PCI-DSS-7",
           "framework_id": "pci-dss-v4",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "HIPAA-164.312(e)",
           "framework_id": "hipaa-security-rule",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "GDPR-Art.32",
           "framework_id": "gdpr-2016-679",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
+        },
+        {
+          "control_id": "CIS-AWS-2.2.1",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-2.3.1",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-2.4.1",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-3.5",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.13",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.17",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.19",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.13.10",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.13.11",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.13.16",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.13.8",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.5.10",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.8.6",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "HIPAA-164.312(a)(2)(iv)",
+          "framework_id": "hipaa-security-rule",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-10.1.1",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-10.1.2",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-9.2.4",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-9.3.1",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "PCI-DSS-4",
+          "framework_id": "pci-dss-v4",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ]
     },
@@ -129,27 +443,164 @@
         {
           "control_id": "SOC2-CC7.2",
           "framework_id": "soc2",
-          "role": "primary"
+          "role": "primary",
+          "review_status": "reviewed"
         },
         {
           "control_id": "ISO27001-A.8.16",
           "framework_id": "iso-27001-2022",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "PCI-DSS-10",
           "framework_id": "pci-dss-v4",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "NIST-CSF-DE.AE-02",
           "framework_id": "nist-csf-2.0",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "FEDRAMP-AU-6",
           "framework_id": "fedramp-moderate",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
+        },
+        {
+          "control_id": "CIS-AWS-4.13",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.12",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.10.2",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.10.3",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.12.3",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.13.1",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.13.13",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.13.14",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.14.3",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.14.6",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.4.9",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "EU-AI-ACT-Art.72",
+          "framework_id": "eu-ai-act-2024-1689",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-CLD.12.4.5",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-6.2.6",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-AI-RMF-MEASURE-2.4",
+          "framework_id": "nist-ai-rmf",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-AI-RMF-MEASURE-2.7",
+          "framework_id": "nist-ai-rmf",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-A1.1",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC4.1",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC6.6",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC7.3",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-P6.7",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-P8.1",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ]
     },
@@ -168,22 +619,200 @@
         {
           "control_id": "SOC2-CC7.2",
           "framework_id": "soc2",
-          "role": "primary"
+          "role": "primary",
+          "review_status": "reviewed"
         },
         {
           "control_id": "ISO27001-A.8.15",
           "framework_id": "iso-27001-2022",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "PCI-DSS-10",
           "framework_id": "pci-dss-v4",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "FEDRAMP-AU-2",
           "framework_id": "fedramp-moderate",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
+        },
+        {
+          "control_id": "CIS-AWS-3.4",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-3.7",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-3.8",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-3.9",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-4.1",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-4.10",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-4.11",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-4.12",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-4.14",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-4.15",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-4.2",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-4.3",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-4.4",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-4.5",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-4.6",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-4.7",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-4.8",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-4.9",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.7",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.10.4",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.3.1",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.3.4",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.3.5",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.3.6",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.3.7",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.3.8",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.3.9",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "EU-AI-ACT-Art.12",
+          "framework_id": "eu-ai-act-2024-1689",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-12.4.1",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ]
     },
@@ -202,22 +831,98 @@
         {
           "control_id": "SOC2-CC8.1",
           "framework_id": "soc2",
-          "role": "primary"
+          "role": "primary",
+          "review_status": "reviewed"
         },
         {
           "control_id": "ISO27001-A.8.32",
           "framework_id": "iso-27001-2022",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "NIST-CSF-PR.DS-01",
           "framework_id": "nist-csf-2.0",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "FEDRAMP-CM-3",
           "framework_id": "fedramp-moderate",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
+        },
+        {
+          "control_id": "CMMC-3.4.1",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.4.2",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.4.3",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.4.4",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.4.5",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.5.7",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.5.9",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-12.1.2",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "PCI-DSS-2",
+          "framework_id": "pci-dss-v4",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC3.4",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC6.4",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-P6.3",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ]
     },
@@ -236,27 +941,74 @@
         {
           "control_id": "SOC2-CC7.1",
           "framework_id": "soc2",
-          "role": "primary"
+          "role": "primary",
+          "review_status": "reviewed"
         },
         {
           "control_id": "ISO27001-A.8.8",
           "framework_id": "iso-27001-2022",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "PCI-DSS-11",
           "framework_id": "pci-dss-v4",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "NIST-CSF-ID.RA-01",
           "framework_id": "nist-csf-2.0",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "CIS-AWS-5.1",
           "framework_id": "cis_aws",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
+        },
+        {
+          "control_id": "CMMC-3.11.2",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.11.3",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.12.2",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.14.2",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.14.4",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.7.4",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC6.8",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ]
     },
@@ -275,22 +1027,50 @@
         {
           "control_id": "SOC2-CC9.2",
           "framework_id": "soc2",
-          "role": "primary"
+          "role": "primary",
+          "review_status": "reviewed"
         },
         {
           "control_id": "ISO27001-A.5.19",
           "framework_id": "iso-27001-2022",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "GDPR-Art.28",
           "framework_id": "gdpr-2016-679",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "NIST-CSF-GV.SC-05",
           "framework_id": "nist-csf-2.0",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
+        },
+        {
+          "control_id": "ISO27017-15.1.1",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-10.3",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC9.1",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-P6.2",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ]
     },
@@ -309,22 +1089,68 @@
         {
           "control_id": "SOC2-CC3.2",
           "framework_id": "soc2",
-          "role": "primary"
+          "role": "primary",
+          "review_status": "reviewed"
         },
         {
           "control_id": "ISO27001-A.5.8",
           "framework_id": "iso-27001-2022",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "NIST-CSF-ID.RA-01",
           "framework_id": "nist-csf-2.0",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "HIPAA-164.308(a)(1)(ii)(A)",
           "framework_id": "hipaa-security-rule",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
+        },
+        {
+          "control_id": "EU-AI-ACT-Art.49",
+          "framework_id": "eu-ai-act-2024-1689",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "EU-AI-ACT-Art.9",
+          "framework_id": "eu-ai-act-2024-1689",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "GDPR-Art.35",
+          "framework_id": "gdpr-2016-679",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-5.2",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-5.3",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-6.1.3",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC3.3",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ]
     },
@@ -343,17 +1169,56 @@
         {
           "control_id": "SOC2-A1.2",
           "framework_id": "soc2",
-          "role": "primary"
+          "role": "primary",
+          "review_status": "reviewed"
         },
         {
           "control_id": "ISO27001-A.8.13",
           "framework_id": "iso-27001-2022",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "NIST-CSF-PR.DS-01",
           "framework_id": "nist-csf-2.0",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
+        },
+        {
+          "control_id": "CMMC-3.6.1",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.8.9",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "HIPAA-164.308(a)(7)",
+          "framework_id": "hipaa-security-rule",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27001-A.5.30",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-A1.3",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC7.5",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ]
     },
@@ -372,17 +1237,176 @@
         {
           "control_id": "NIST-AI-RMF-GOVERN-1.1",
           "framework_id": "nist-ai-rmf",
-          "role": "primary"
+          "role": "primary",
+          "review_status": "reviewed"
         },
         {
           "control_id": "ISO42001-8.1",
           "framework_id": "iso-42001-2023",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "EU-AI-ACT-Art.10",
           "framework_id": "eu-ai-act-2024-1689",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
+        },
+        {
+          "control_id": "EU-AI-ACT-Art.11",
+          "framework_id": "eu-ai-act-2024-1689",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "EU-AI-ACT-Art.13",
+          "framework_id": "eu-ai-act-2024-1689",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "EU-AI-ACT-Art.15",
+          "framework_id": "eu-ai-act-2024-1689",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "EU-AI-ACT-Art.17",
+          "framework_id": "eu-ai-act-2024-1689",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "EU-AI-ACT-Art.26",
+          "framework_id": "eu-ai-act-2024-1689",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "EU-AI-ACT-Art.5",
+          "framework_id": "eu-ai-act-2024-1689",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "EU-AI-ACT-Art.6",
+          "framework_id": "eu-ai-act-2024-1689",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-2.2",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-2.4",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-3.2",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-5.4",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-5.5",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-6.1.2",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-6.2.2",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-6.2.3",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-6.2.4",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-6.2.5",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-6.2.7",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-6.2.8",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-7.2",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-7.4",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-9.2",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-9.3",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-9.4",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-AI-RMF-GOVERN-1.6",
+          "framework_id": "nist-ai-rmf",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-AI-RMF-MAP-1.5",
+          "framework_id": "nist-ai-rmf",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ]
     },
@@ -401,17 +1425,68 @@
         {
           "control_id": "GDPR-Art.33",
           "framework_id": "gdpr-2016-679",
-          "role": "primary"
+          "role": "primary",
+          "review_status": "reviewed"
         },
         {
           "control_id": "SOC2-P3.2",
           "framework_id": "soc2",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
         },
         {
           "control_id": "HIPAA-164.308(a)(1)(ii)(B)",
           "framework_id": "hipaa-security-rule",
-          "role": "equivalent"
+          "role": "equivalent",
+          "review_status": "reviewed"
+        },
+        {
+          "control_id": "CIS-AWS-1.17",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.6.2",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.6.3",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "HIPAA-164.308(a)(6)",
+          "framework_id": "hipaa-security-rule",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO42001-8.4",
+          "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-AI-RMF-MANAGE-4.3",
+          "framework_id": "nist-ai-rmf",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC7.4",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-P6.4",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ]
     }

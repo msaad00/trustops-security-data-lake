@@ -94,9 +94,31 @@ def test_the_ccf_doc_quotes_the_numbers_the_data_actually_reports() -> None:
     doc = (Path(__file__).resolve().parents[1] / "docs" / "COMMON_CONTROL_FRAMEWORK.md").read_text(encoding="utf-8")
     cov = coverage_by_framework()
 
-    headline = f"{cov['safeguards']} safeguards cover {cov['covered']} of {cov['controls']} requirements"
+    headline = f"{cov['safeguards']} safeguards map {cov['covered']} of {cov['controls']} requirements"
     assert headline in doc, f"doc headline is stale; expected {headline!r}"
 
     for name, row in cov["frameworks"].items():
         expected = f"| {name:19s} | {row['controls']:12d} |"
         assert expected in doc, f"doc table row for {name} is stale; expected {expected!r}"
+
+
+def test_proposed_mappings_are_not_counted_as_reviewed_coverage() -> None:
+    """Unconfirmed curation must never be reported as attested coverage.
+
+    A compliance product that overstates its own coverage fails in the same
+    direction as a false attestation, so the two counts stay separate and
+    attestation reads the reviewed one.
+    """
+    cov = coverage_by_framework()
+    assert cov["reviewed"] + cov["proposed"] == cov["covered"]
+    assert cov["reviewed"] < cov["covered"], "expected some mappings still awaiting review"
+
+    reviewed_only = safeguards_by_requirement(reviewed_only=True)
+    everything = safeguards_by_requirement()
+    assert set(reviewed_only) < set(everything)
+
+
+def test_every_mapping_declares_a_known_review_state() -> None:
+    for entry in load_safeguards()["safeguards"]:
+        for member in entry["satisfies"]:
+            assert member.get("review_status", "reviewed") in {"reviewed", "proposed"}
