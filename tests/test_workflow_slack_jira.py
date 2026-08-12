@@ -42,7 +42,7 @@ class _FakeResponse:
 
 
 def _capturing_urlopen(captured: list[urllib.request.Request], status: int = 200, body: bytes = b"ok"):
-    def _urlopen(request, timeout=None):  # noqa: ANN001, ARG001
+    def _urlopen(request, timeout=None, validate=None):  # noqa: ANN001, ARG001
         captured.append(request)
         return _FakeResponse(status, body)
 
@@ -75,7 +75,7 @@ def _allow(monkeypatch: pytest.MonkeyPatch, value: str) -> None:
 def test_slack_posts_expected_payload(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     _allow(monkeypatch, "hooks.slack.com")
     captured: list[urllib.request.Request] = []
-    monkeypatch.setattr(urllib.request, "urlopen", _capturing_urlopen(captured, status=200, body=b"ok"))
+    monkeypatch.setattr(netguard, "open_guarded", _capturing_urlopen(captured, status=200, body=b"ok"))
 
     out = wf.run_action(
         tmp_path,
@@ -107,7 +107,7 @@ def test_slack_webhook_secret_not_persisted(monkeypatch: pytest.MonkeyPatch, tmp
     _allow(monkeypatch, "hooks.slack.com")
     monkeypatch.setenv("TRUSTOPS_SECRET_SLACK_WEBHOOK", "https://hooks.slack.com/services/T0/B0/SECRET")
     captured: list[urllib.request.Request] = []
-    monkeypatch.setattr(urllib.request, "urlopen", _capturing_urlopen(captured))
+    monkeypatch.setattr(netguard, "open_guarded", _capturing_urlopen(captured))
 
     nodes = [
         {
@@ -151,8 +151,8 @@ def test_jira_posts_to_issue_path_with_basic_auth(monkeypatch: pytest.MonkeyPatc
     monkeypatch.setenv("TRUSTOPS_SECRET_JIRA_TOKEN", "jira-api-token")
     captured: list[urllib.request.Request] = []
     monkeypatch.setattr(
-        urllib.request,
-        "urlopen",
+        netguard,
+        "open_guarded",
         _capturing_urlopen(captured, status=201, body=b'{"id":"10001","key":"SEC-42","self":"https://x"}'),
     )
 
@@ -192,8 +192,8 @@ def test_jira_bearer_auth_and_default_issue_type(monkeypatch: pytest.MonkeyPatch
     monkeypatch.setenv("TRUSTOPS_SECRET_JIRA_TOKEN", "bearer-token")
     captured: list[urllib.request.Request] = []
     monkeypatch.setattr(
-        urllib.request,
-        "urlopen",
+        netguard,
+        "open_guarded",
         _capturing_urlopen(captured, status=201, body=b'{"key":"OPS-7"}'),
     )
 
@@ -221,9 +221,9 @@ def test_jira_secret_not_persisted(monkeypatch: pytest.MonkeyPatch, tmp_path: Pa
     _allow(monkeypatch, "org.atlassian.net")
     monkeypatch.setenv("TRUSTOPS_SECRET_JIRA_TOKEN", "top-secret-jira")
     monkeypatch.setattr(
-        urllib.request,
-        "urlopen",
-        lambda req, timeout=None: _FakeResponse(201, b'{"key":"SEC-1"}'),
+        netguard,
+        "open_guarded",
+        lambda req, timeout=None, validate=None: _FakeResponse(201, b'{"key":"SEC-1"}'),
     )
 
     nodes = [

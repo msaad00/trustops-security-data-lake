@@ -17,6 +17,7 @@ import urllib.request
 
 import pytest
 
+from security_lakehouse import netguard
 from security_lakehouse.connectors_google_workspace import GoogleWorkspaceClient
 from security_lakehouse.connectors_jira import JiraClient
 from security_lakehouse.ingestion import backoff
@@ -50,7 +51,7 @@ def _http_error(code: int, *, retry_after: int | None = None) -> urllib.error.HT
 def _flaky_opener(fail_times: int, code: int, body: str):
     calls = {"n": 0}
 
-    def _open(_request, timeout=None):  # noqa: ANN001, ARG001
+    def _open(_request, timeout=None, **_kwargs):  # noqa: ANN001, ARG001
         n = calls["n"]
         calls["n"] += 1
         if n < fail_times:
@@ -81,7 +82,7 @@ def test_http_retry_after_reads_header() -> None:
 def test_jira_retries_then_succeeds_on_429(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(time, "sleep", lambda _s: None)
     opener, calls = _flaky_opener(2, 429, json.dumps({"values": [], "isLast": True}))
-    monkeypatch.setattr(urllib.request, "urlopen", opener)
+    monkeypatch.setattr(netguard, "open_public", opener)
     client = JiraClient("https://acme.atlassian.net", email="a@b.c", token="t")
     out = client._json("https://acme.atlassian.net/rest/api/3/search")  # noqa: SLF001
     assert isinstance(out, dict)
@@ -91,7 +92,7 @@ def test_jira_retries_then_succeeds_on_429(monkeypatch: pytest.MonkeyPatch) -> N
 def test_jira_does_not_retry_on_404(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(time, "sleep", lambda _s: None)
     opener, calls = _flaky_opener(1, 404, "{}")
-    monkeypatch.setattr(urllib.request, "urlopen", opener)
+    monkeypatch.setattr(netguard, "open_public", opener)
     client = JiraClient("https://acme.atlassian.net", email="a@b.c", token="t")
     with pytest.raises(urllib.error.HTTPError):
         client._json("https://acme.atlassian.net/rest/api/3/search")  # noqa: SLF001

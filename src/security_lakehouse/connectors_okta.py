@@ -30,6 +30,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse import netguard
 from security_lakehouse.ingestion import backoff
 from security_lakehouse.io import read_json
 from security_lakehouse.models import utc_iso
@@ -109,7 +110,11 @@ class OktaClient:
             )
 
             def _fetch_page(req: urllib.request.Request = request) -> tuple[Any, str]:
-                with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310
+                # open_public re-validates every page URL — including the
+                # server-supplied Link: rel="next" target and any 3xx redirect —
+                # so a malicious org cannot pivot this SSWS-authenticated request
+                # at an internal host after the boundary check passed.
+                with netguard.open_public(req, timeout=self.timeout, label="okta org url") as resp:
                     return json.loads(resp.read().decode("utf-8")), resp.headers.get("Link", "")
 
             # Okta rate-limits with HTTP 429 + a Retry-After header; back off and

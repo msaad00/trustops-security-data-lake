@@ -34,6 +34,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse import netguard
 from security_lakehouse.ingestion import backoff
 from security_lakehouse.io import read_json
 from security_lakehouse.models import utc_iso
@@ -141,7 +142,7 @@ class JiraClient:
         # Jira rate-limits with HTTP 429 + a Retry-After header; back off and
         # retry transient 429/5xx rather than failing the whole collection.
         def _fetch() -> Any:
-            with urllib.request.urlopen(request, timeout=self.timeout) as resp:  # noqa: S310
+            with netguard.open_public(request, timeout=self.timeout, label="jira base url") as resp:
                 return json.loads(resp.read().decode("utf-8"))
 
         payload = backoff.http_retry(_fetch)
