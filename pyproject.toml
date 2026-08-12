@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "trustops-security-data-lake"
-version = "0.2.1"
+version = "0.2.2"
 description = "Continuous compliance assessment for security data lakes."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -86,7 +86,7 @@ agents = [
 # validate every commit message format.
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.2.1"
+version = "0.2.2"
 version_files = ["pyproject.toml:version"]
 tag_format = "v$version"
 
