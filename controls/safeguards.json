@@ -631,6 +631,60 @@
           "framework_id": "soc2",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-1.1",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-1.15",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-1.19",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CIS-AWS-1.2",
+          "framework_id": "cis_aws",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.11",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.18",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.20",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.1.21",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.13.15",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -943,6 +997,18 @@
         {
           "control_id": "FEDRAMP-SC-8.1",
           "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "HIPAA-164.312(c)",
+          "framework_id": "hipaa-security-rule",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "PCI-DSS-3",
+          "framework_id": "pci-dss-v4",
           "role": "equivalent",
           "review_status": "proposed"
         }
@@ -1468,6 +1534,12 @@
           "framework_id": "fedramp-moderate",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "HIPAA-164.312(b)",
+          "framework_id": "hipaa-security-rule",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -1791,6 +1863,12 @@
           "framework_id": "fedramp-moderate",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "PCI-DSS-5",
+          "framework_id": "pci-dss-v4",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -1890,6 +1968,24 @@
         {
           "control_id": "ISO42001-7.3",
           "framework_id": "iso-42001-2023",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "HIPAA-164.308(b)",
+          "framework_id": "hipaa-security-rule",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "HIPAA-164.314(a)",
+          "framework_id": "hipaa-security-rule",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "HIPAA-164.314(b)",
+          "framework_id": "hipaa-security-rule",
           "role": "equivalent",
           "review_status": "proposed"
         }
@@ -2682,6 +2778,60 @@
           "framework_id": "fedramp-moderate",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "EU-AI-ACT-Art.51",
+          "framework_id": "eu-ai-act-2024-1689",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "EU-AI-ACT-Art.71",
+          "framework_id": "eu-ai-act-2024-1689",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "HIPAA-164.308(a)(8)",
+          "framework_id": "hipaa-security-rule",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC2.3",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC3.1",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC4.2",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC5.1",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC5.2",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC5.3",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -3178,6 +3328,30 @@
           "framework_id": "soc2",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-P6.1",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-P6.5",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-P6.6",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-P7.1",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": ["audit_log", "data_store", "identity_user", "service"]
@@ -3328,6 +3502,51 @@
         "s3_bucket",
         "service"
       ]
+    },
+    {
+      "safeguard_id": "SG-PROCESSINGINTEGRITY-001",
+      "title": "Processing integrity",
+      "risk_domain": "controls-operations",
+      "objective": "Inputs, processing, and outputs are complete, accurate, timely, and authorized \u2014 SOC 2's Processing Integrity criterion, which no confidentiality or availability safeguard covers.",
+      "evidence_requirement": "Current evidence demonstrates processing specifications define complete and accurate processing objectives with no open high-risk failure or stale proof.",
+      "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
+      "frequency": "continuous",
+      "owner": "platform-engineering",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "satisfies": [
+        {
+          "control_id": "SOC2-PI1.1",
+          "framework_id": "soc2",
+          "role": "primary",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-PI1.2",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-PI1.3",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-PI1.4",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-PI1.5",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": ["audit_log", "data_store", "service"]
     }
   ]
 }
