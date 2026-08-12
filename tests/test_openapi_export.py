@@ -17,10 +17,18 @@ CATALOG = ROOT / "docs" / "api" / "resource-catalog.v1.json"
 
 
 def _generate_openapi() -> dict:
+    """Generate the spec the way `make openapi-export` does.
+
+    The committed artifact is the FastAPI schema *plus* the catch-all-served
+    routes merged in, so the drift check has to build the same thing or it
+    compares against a spec missing the core read surface.
+    """
     import tempfile
 
+    from security_lakehouse import api_v1
+
     with tempfile.TemporaryDirectory() as tmp:
-        return create_app(tmp, require_auth=False).openapi()
+        return api_v1.merge_openapi(create_app(tmp, require_auth=False).openapi())
 
 
 def test_committed_openapi_file_exists() -> None:
@@ -42,6 +50,40 @@ def test_openapi_documents_fastapi_surface() -> None:
         "/api/v1/audit-log",
     ):
         assert path in paths, path
+
+
+def test_openapi_documents_every_catalogued_route() -> None:
+    """The core read surface must appear in the spec, not behind a catch-all.
+
+    `violations`, `controls`, `evidence`, `posture/current`, `snapshots`,
+    `workflows` and the rest are served through `@app.get("/api/v1/{rest:path}")`,
+    which FastAPI collapses into one `/api/v1/{rest}` entry. A client generated
+    from a spec in that state cannot fetch posture at all.
+    """
+    from security_lakehouse import api_v1
+
+    spec = json.loads(COMMITTED.read_text(encoding="utf-8"))
+    documented = set(spec["paths"])
+    catalogued = {row["path"] for row in api_v1.resource_catalog()}
+
+    missing = sorted(catalogued - documented)
+    assert missing == [], f"{len(missing)} catalogued routes are absent from the spec: {missing[:8]}"
+    assert "/api/v1/{rest}" not in documented, "the catch-all should not be advertised as a route"
+
+
+def test_openapi_declares_the_v1_envelope() -> None:
+    spec = json.loads(COMMITTED.read_text(encoding="utf-8"))
+    envelope = spec["components"]["schemas"]["V1Envelope"]
+    assert set(envelope["required"]) == {"data", "meta", "errors"}
+
+
+def test_resource_catalog_has_no_duplicate_paths() -> None:
+    """A path described twice -- once from a loader table, once hand-written -- is one resource."""
+    from security_lakehouse import api_v1
+
+    rows = api_v1.resource_catalog()
+    paths = [row["path"] for row in rows]
+    assert len(paths) == len(set(paths)), "duplicate paths in the resource catalog"
 
 
 def test_committed_resource_catalog_matches_generator() -> None:
