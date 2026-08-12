@@ -433,6 +433,17 @@ def _parser() -> argparse.ArgumentParser:
     )
     controls_ccf.add_argument("--format", choices=["json", "table"], default="json", help="output format")
     controls_ccf.set_defaults(func=_frameworks_safeguards)
+    frameworks_enrich = frameworks_sub.add_parser(
+        "enrich",
+        help="fill placeholder control titles from public-domain NIST catalogs (network opt-in)",
+    )
+    frameworks_enrich.add_argument(
+        "--allow-network",
+        action="store_true",
+        help="fetch the NIST OSCAL catalogs; without it the command only reports what would change",
+    )
+    frameworks_enrich.add_argument("--apply", action="store_true", help="write the enriched titles")
+    frameworks_enrich.set_defaults(func=_frameworks_enrich)
     frameworks_sync_packs = frameworks_sub.add_parser(
         "sync-packs",
         help="merge full framework packs (SOC 2, NIST AI RMF, FedRAMP, CIS AWS, ISO) into the control catalog",
@@ -1604,6 +1615,42 @@ def _frameworks_sync_packs(args: argparse.Namespace) -> int:
     result = sync_framework_packs(packs=args.pack)
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0
+
+
+def _frameworks_enrich(args: argparse.Namespace) -> int:
+    """Fill placeholder titles from public-domain NIST catalogs.
+
+    Network is opt-in, matching `frameworks sync`: an offline run reports how
+    many titles are placeholders without fetching anything.
+    """
+    from security_lakehouse.catalog import load_control_catalog
+    from security_lakehouse.framework_enrich import (
+        PUBLIC_DOMAIN_SOURCES,
+        enrich_catalog,
+        fetch,
+        is_placeholder,
+        oscal_titles,
+    )
+
+    catalog = load_control_catalog()
+    pending = {
+        fw: sum(1 for c in catalog.values() if c.get("framework_id") == fw and is_placeholder(c.get("title", "")))
+        for fw in PUBLIC_DOMAIN_SOURCES
+    }
+
+    if not args.allow_network:
+        print(json.dumps({"placeholders": pending, "note": "pass --allow-network to fetch NIST catalogs"}, indent=2))
+        return 0
+
+    titles_by_framework = {}
+    for framework, source in PUBLIC_DOMAIN_SOURCES.items():
+        raw, digest = fetch(source["url"])
+        titles_by_framework[framework] = (oscal_titles(raw), source["url"], digest)
+        print(f"fetched {source['source_name']}: sha256 {digest[:16]}…", file=sys.stderr)
+
+    report = enrich_catalog(titles_by_framework=titles_by_framework, apply=args.apply)
+    print(json.dumps(report, indent=2))
+    return 1 if report["unresolved"] else 0
 
 
 def _frameworks_safeguards(args: argparse.Namespace) -> int:

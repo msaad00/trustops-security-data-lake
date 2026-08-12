@@ -122,3 +122,55 @@ def test_every_mapping_declares_a_known_review_state() -> None:
     for entry in load_safeguards()["safeguards"]:
         for member in entry["satisfies"]:
             assert member.get("review_status", "reviewed") in {"reviewed", "proposed"}
+
+
+def test_enrichment_rejects_a_title_that_only_repeats_the_identifier() -> None:
+    """NIST's CSF OSCAL titles GV.OC-01 as "GV.OC-01".
+
+    Accepting that would fill 106 titles with no content — coverage that looks
+    enriched while saying nothing, which is worse than an honest placeholder
+    because it hides the gap instead of reporting it.
+    """
+    import json as _json
+    import tempfile
+    from pathlib import Path as _Path
+
+    from security_lakehouse.framework_enrich import enrich_catalog
+
+    with tempfile.TemporaryDirectory() as tmp:
+        path = _Path(tmp) / "catalog.json"
+        path.write_text(
+            _json.dumps(
+                {
+                    "controls": [
+                        {
+                            "control_id": "FEDRAMP-AC-2",
+                            "framework_id": "fedramp-moderate",
+                            "title": "FedRAMP Moderate AC-2 — assessed from cloud posture and audit evidence",
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
+        report = enrich_catalog(
+            path,
+            titles_by_framework={"fedramp-moderate": ({"AC-2": "AC-2"}, "https://example.test", "d" * 64)},
+            apply=True,
+        )
+        assert report["filled"] == 0
+        assert report["unresolved"] == ["FEDRAMP-AC-2"]
+
+
+def test_enrichment_records_verifiable_provenance() -> None:
+    """An imported title is only better than an invented one if it is checkable."""
+    import json as _json
+    from pathlib import Path as _Path
+
+    catalog = _json.loads((_Path(__file__).resolve().parents[1] / "controls" / "catalog.json").read_text())
+    enriched = [c for c in catalog["controls"] if c.get("title_source_sha256")]
+    assert enriched, "expected enriched controls"
+    for control in enriched:
+        assert control["title_source_url"].startswith("https://")
+        assert len(control["title_source_sha256"]) == 64
+        assert control["title_source_name"]
