@@ -1489,6 +1489,388 @@
           "review_status": "proposed"
         }
       ]
+    },
+    {
+      "safeguard_id": "SG-GOVERNANCE-002",
+      "title": "Governance and control environment",
+      "risk_domain": "governance",
+      "objective": "Board oversight, defined authority, accountability, and a maintained security policy are the control environment every audited framework opens with.",
+      "evidence_requirement": "CUI protection evidence supports NIST SP 800-171 Rev 2 requirement 3.12.4 (Develop, document, and periodically update system security plans that describe system boundaries, system environments of operation, how security requirements...) for CMMC Level 2 assessment.",
+      "evaluation_rule": "fail_when_missing_evidence",
+      "frequency": "continuous",
+      "owner": "grc",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "satisfies": [
+        {
+          "control_id": "CMMC-3.12.4",
+          "framework_id": "cmmc-2-level2",
+          "role": "primary",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.3.2",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "HIPAA-164.308(a)(2)",
+          "framework_id": "hipaa-security-rule",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "PCI-DSS-12",
+          "framework_id": "pci-dss-v4",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC1.1",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC1.2",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC1.3",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC1.4",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC1.5",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC2.1",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC2.2",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "safeguard_id": "SG-TRAINING-001",
+      "title": "Security awareness and training",
+      "risk_domain": "governance",
+      "objective": "Workforce awareness and role-based training is a distinct obligation from access control, and is assessed separately.",
+      "evidence_requirement": "CUI protection evidence supports NIST SP 800-171 Rev 2 requirement 3.2.3 (Provide security awareness training on recognizing and reporting potential indicators of insider threat) for CMMC Level 2 assessment.",
+      "evaluation_rule": "fail_when_missing_evidence",
+      "frequency": "continuous",
+      "owner": "grc",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "satisfies": [
+        {
+          "control_id": "CMMC-3.2.3",
+          "framework_id": "cmmc-2-level2",
+          "role": "primary",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "HIPAA-164.308(a)(3)",
+          "framework_id": "hipaa-security-rule",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "HIPAA-164.308(a)(5)",
+          "framework_id": "hipaa-security-rule",
+          "role": "equivalent",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "safeguard_id": "SG-PHYSICAL-001",
+      "title": "Physical and environmental security",
+      "risk_domain": "controls-operations",
+      "objective": "Physical access to systems and media is a separate boundary from logical access.",
+      "evidence_requirement": "CUI protection evidence supports NIST SP 800-171 Rev 2 requirement 3.10.1 (Limit physical access to organizational systems, equipment, and the respective operating environments to authorized individuals) for CMMC Level 2 assessment.",
+      "evaluation_rule": "fail_when_missing_evidence",
+      "frequency": "continuous",
+      "owner": "platform-engineering",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "satisfies": [
+        {
+          "control_id": "CMMC-3.10.1",
+          "framework_id": "cmmc-2-level2",
+          "role": "primary",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.10.5",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.8.1",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.8.3",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.8.4",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.8.5",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "CMMC-3.8.7",
+          "framework_id": "cmmc-2-level2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "PCI-DSS-9",
+          "framework_id": "pci-dss-v4",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-CC6.5",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "safeguard_id": "SG-SECUREDEV-001",
+      "title": "Secure development",
+      "risk_domain": "change-management",
+      "objective": "Secure development practices and separation of environments are assessed apart from change control.",
+      "evidence_requirement": "Evidence for PCI DSS v4 Req 6 exists within freshness SLA.",
+      "evaluation_rule": "fail_when_stale_evidence",
+      "frequency": "continuous",
+      "owner": "engineering",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "satisfies": [
+        {
+          "control_id": "PCI-DSS-6",
+          "framework_id": "pci-dss-v4",
+          "role": "primary",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "safeguard_id": "SG-NETWORK-001",
+      "title": "Network security controls",
+      "risk_domain": "controls-operations",
+      "objective": "Network segmentation and boundary protection is its own safeguard, distinct from identity.",
+      "evidence_requirement": "CUI protection evidence supports NIST SP 800-171 Rev 2 requirement 3.13.6 (Deny network communications traffic by default and allow network communications traffic by exception (i.e., deny all, permit by exception)) for CMMC Level 2 assessment.",
+      "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
+      "frequency": "continuous",
+      "owner": "security-platform",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "satisfies": [
+        {
+          "control_id": "CMMC-3.13.6",
+          "framework_id": "cmmc-2-level2",
+          "role": "primary",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "PCI-DSS-1",
+          "framework_id": "pci-dss-v4",
+          "role": "equivalent",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "safeguard_id": "SG-PRIVACYRIGHTS-001",
+      "title": "Privacy notices and data subject rights",
+      "risk_domain": "privacy",
+      "objective": "Transparency and data subject rights are privacy obligations with no security-control equivalent.",
+      "evidence_requirement": "Evidence for GDPR Art.12 exists within freshness SLA.",
+      "evaluation_rule": "fail_when_stale_evidence",
+      "frequency": "continuous",
+      "owner": "privacy-office",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "satisfies": [
+        {
+          "control_id": "GDPR-Art.12",
+          "framework_id": "gdpr-2016-679",
+          "role": "primary",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "GDPR-Art.13",
+          "framework_id": "gdpr-2016-679",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "GDPR-Art.14",
+          "framework_id": "gdpr-2016-679",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "GDPR-Art.15",
+          "framework_id": "gdpr-2016-679",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "GDPR-Art.17",
+          "framework_id": "gdpr-2016-679",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "GDPR-Art.34",
+          "framework_id": "gdpr-2016-679",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "GDPR-Art.7",
+          "framework_id": "gdpr-2016-679",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-P1.1",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-P2.1",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-P5.1",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-P5.2",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "safeguard_id": "SG-DATAINVENTORY-001",
+      "title": "Data inventory and records of processing",
+      "risk_domain": "data-protection",
+      "objective": "Knowing what data is held and where is the precondition for every other data obligation.",
+      "evidence_requirement": "Processing-activity records evidence exists within freshness SLA and covers every in-scope system.",
+      "evaluation_rule": "fail_when_stale_evidence",
+      "frequency": "annually",
+      "owner": "privacy-office",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "satisfies": [
+        {
+          "control_id": "GDPR-Art.30",
+          "framework_id": "gdpr-2016-679",
+          "role": "primary",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-8.1.1",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-C1.1",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "safeguard_id": "SG-DATARETENTION-001",
+      "title": "Data retention and secure disposal",
+      "risk_domain": "data-protection",
+      "objective": "Retention limits and secure disposal are assessed separately from encryption.",
+      "evidence_requirement": "CUI protection evidence supports NIST SP 800-171 Rev 2 requirement 3.7.3 (Ensure equipment removed for off-site maintenance is sanitized of any CUI) for CMMC Level 2 assessment.",
+      "evaluation_rule": "fail_when_missing_evidence",
+      "frequency": "continuous",
+      "owner": "platform-engineering",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "satisfies": [
+        {
+          "control_id": "CMMC-3.7.3",
+          "framework_id": "cmmc-2-level2",
+          "role": "primary",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27017-11.2.7",
+          "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-C1.2",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-P4.2",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "SOC2-P4.3",
+          "framework_id": "soc2",
+          "role": "equivalent",
+          "review_status": "proposed"
+        }
+      ]
     }
   ]
 }

@@ -63,7 +63,7 @@ collapsing them would overstate both coverage and failure.
 
 ```
 $ security-lakehouse frameworks safeguards --format table
-12 safeguards map 216 of 942 requirements (22.9%) — 45 reviewed (4.8%), 171 proposed
+20 safeguards map 261 of 942 requirements (27.7%) — 45 reviewed (4.8%), 216 proposed
 ```
 
 A mapping is **reviewed** once a human has confirmed the requirements are the
@@ -72,21 +72,40 @@ reported separately, because a compliance product must never count unconfirmed
 work as attested coverage. `safeguards_by_requirement(reviewed_only=True)` is
 what attestation should read.
 
+Curation is ordered by what teams are actually audited and certified against,
+so the frameworks a customer arrives with are covered first.
+
 | Framework           | Requirements | Mapped |   Pct |
 | ------------------- | -----------: | -----: | ----: |
-| fedramp-moderate    |          287 |      4 |  1.4% |
-| cmmc-2-level2       |          110 |     59 | 53.6% |
-| nist-csf-2.0        |          106 |      6 |  5.7% |
+| pci-dss-v4          |           12 |     10 | 83.3% |
+| eu-ai-act-2024-1689 |           15 |     12 | 80.0% |
+| soc2                |           61 |     43 | 70.5% |
+| hipaa-security-rule |           18 |     12 | 66.7% |
+| cmmc-2-level2       |          110 |     71 | 64.5% |
+| iso-42001-2023      |           39 |     24 | 61.5% |
+| gdpr-2016-679       |           20 |     12 | 60.0% |
+| cis_aws             |           62 |     32 | 51.6% |
+| iso-27017-2015      |           47 |     18 | 38.3% |
 | iso-27001-2022      |           93 |     11 | 11.8% |
 | nist-ai-rmf         |           72 |      6 |  8.3% |
-| cis_aws             |           62 |     32 | 51.6% |
-| soc2                |           61 |     27 | 44.3% |
-| iso-27017-2015      |           47 |     16 | 34.0% |
-| iso-42001-2023      |           39 |     24 | 61.5% |
-| gdpr-2016-679       |           20 |      4 | 20.0% |
-| hipaa-security-rule |           18 |      9 | 50.0% |
-| eu-ai-act-2024-1689 |           15 |     12 | 80.0% |
-| pci-dss-v4          |           12 |      6 | 50.0% |
+| nist-csf-2.0        |          106 |      6 |  5.7% |
+| fedramp-moderate    |          287 |      4 |  1.4% |
+
+### `cis_aws` is a benchmark, not the CIS Controls
+
+Worth stating plainly, because the two are routinely conflated and the numbers
+above would otherwise be read wrong.
+
+- **CIS Controls v8** — 18 vendor-neutral, organization-level safeguards
+  ("Inventory and Control of Enterprise Assets"). A framework you are assessed
+  against. **Not in this catalog.**
+- **CIS Benchmarks** — per-platform hardening guides, one per technology. The
+  catalog carries exactly one: the **CIS Amazon Web Services Foundations
+  Benchmark v3.0.0** (`cis_aws`, 62 recommendations). No Azure, GCP, or
+  Kubernetes benchmark is present, though connectors exist for those clouds.
+
+So a `cis_aws` percentage describes one cloud's hardening posture. It is not
+CIS Controls coverage, and should never be quoted as such.
 
 ## The real ceiling is the catalog, not the curation
 
@@ -107,7 +126,9 @@ equivalence asserted over them would come from outside knowledge, not from
 anything a reviewer can check against this repository — which is the failure a
 CCF exists to prevent.
 
-**So curation from repo data alone tops out at 393 of 942 — 41.7%.** Reaching
+**So curation from repo data tops out at about 411 of 942 — 43.6%** (the 393
+with real titles, plus 18 placeholder-titled controls a human already mapped by
+hand). Reaching
 50% is not a curation problem; it needs one of the two steps below.
 
 ## Getting there
