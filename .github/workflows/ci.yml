@@ -121,7 +121,7 @@ jobs:
           cache-dependency-path: app/web/package-lock.json
       - name: npm audit (production deps, high+)
         working-directory: app/web
-        run: npm audit --omit=dev --audit-level=high || true
+        run: npm audit --omit=dev --audit-level=high
       - name: gitleaks (secret scan)
         uses: gitleaks/gitleaks-action@v3
         env:
