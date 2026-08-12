@@ -189,23 +189,23 @@
       <text class="title" x="0" y="0">Ingest</text>
       <text class="subtitle" x="0" y="20">Read-only collection from live systems</text>
 
-      <line x1="220" y1="-18" x2="220" y2="48" stroke="#e2e8f0"/>
+      <line x1="250" y1="-18" x2="250" y2="48" stroke="#e2e8f0"/>
 
-      <text class="title" x="252" y="0">Materialize</text>
-      <text class="subtitle" x="252" y="20">Bronze → silver → gold in Snowflake,</text>
-      <text class="subtitle" x="252" y="36">ClickHouse, DuckDB, or local files</text>
+      <text class="title" x="270" y="0">Materialize</text>
+      <text class="subtitle" x="270" y="20">Bronze → silver → gold in Snowflake,</text>
+      <text class="subtitle" x="270" y="36">ClickHouse, DuckDB, or local files</text>
 
-      <line x1="560" y1="-18" x2="560" y2="48" stroke="#e2e8f0"/>
+      <line x1="520" y1="-18" x2="520" y2="48" stroke="#e2e8f0"/>
 
-      <text class="title" x="592" y="0">Assessment</text>
-      <text class="subtitle" x="592" y="20">Controls-as-code verdicts, scores,</text>
-      <text class="subtitle" x="592" y="36">evidence gaps, snapshots, audit trail</text>
+      <text class="title" x="540" y="0">Assessment</text>
+      <text class="subtitle" x="540" y="20">Controls-as-code verdicts, scores,</text>
+      <text class="subtitle" x="540" y="36">evidence gaps, snapshots, audit trail</text>
 
-      <line x1="856" y1="-18" x2="856" y2="48" stroke="#e2e8f0"/>
+      <line x1="790" y1="-18" x2="790" y2="48" stroke="#e2e8f0"/>
 
-      <text class="title" x="888" y="0">Common controls</text>
-      <text class="subtitle" x="888" y="20">12 equivalence groups map 45 of</text>
-      <text class="subtitle" x="888" y="36">942 controls across 15 frameworks</text>
+      <text class="title" x="810" y="0">Common controls</text>
+      <text class="subtitle" x="810" y="20">12 safeguards satisfy 45 of</text>
+      <text class="subtitle" x="810" y="36">942 requirements · 13 frameworks</text>
     </g>
   </g>
 </svg>

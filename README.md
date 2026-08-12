@@ -23,22 +23,40 @@
 
 ## What TrustOps does
 
-TrustOps gives security and compliance teams one operating loop:
+One operating loop: **collect** evidence read-only, **evaluate** controls with
+deterministic rules, **operate** the findings, **prove** posture with immutable
+snapshots.
 
-1. **Collect** evidence through least-privilege AWS, Azure, GCP, GitHub, GitLab, Okta, Snowflake, and ClickHouse connectors.
-2. **Evaluate** controls with deterministic, versioned rules.
-3. **Operate** findings, remediation, policies, vendors, access reviews, and workflows.
-4. **Prove** posture through immutable snapshots, reports, trust shares, API responses, MCP tools, and CI gates.
+Regulatory requirements are consolidated into a
+[Common Control Framework](docs/COMMON_CONTROL_FRAMEWORK.md): you operate one
+safeguard, and it satisfies every requirement mapped to it across frameworks.
+The catalog holds 942 requirements across 13 frameworks; run
+`security-lakehouse frameworks safeguards` for current coverage.
 
-Evidence stays in your environment. Models may summarize and prioritize; they do not silently change evidence or decide pass/fail.
+Evidence stays in your environment. Models may summarize and prioritize; they do
+not silently change evidence or decide pass/fail.
+
+<details>
+<summary><b>Surfaces</b> — console, API, CLI, MCP, CI</summary>
 
 | Surface          | Purpose                                                            |
 | ---------------- | ------------------------------------------------------------------ |
 | **Console**      | Posture, controls, evidence, findings, workflows, and audit room   |
-| **API**          | Versioned `/api/v1` contract used by every client                  |
+| **API**          | Versioned `/api/v1` contract                                       |
 | **CLI**          | Local pipelines, validation, snapshots, and server operations      |
 | **MCP & agents** | Read posture and propose governed actions with approval boundaries |
 | **CI**           | Block releases when posture or control-test thresholds regress     |
+
+</details>
+
+<details>
+<summary><b>Connectors</b> — least-privilege, read-only</summary>
+
+AWS · Azure · GCP · GitHub · GitLab · Okta · Snowflake · ClickHouse, plus the
+scanner, ticketing, and AI-platform entries in
+[`connectors/catalog.json`](connectors/catalog.json).
+
+</details>
 
 ## Product preview
 
