@@ -94,5 +94,4 @@ Full index: [diagrams/README.md](diagrams/README.md)
 ### Hero SVGs
 
 - [Assessment architecture](images/trustops-assessment-architecture.svg)
-- [Product mosaic](images/trustops-product-mosaic.svg)
 - [Snowflake evidence lake](images/trustops-snowflake-evidence-lake.svg)

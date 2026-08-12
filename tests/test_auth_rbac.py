@@ -150,6 +150,25 @@ def test_auditor_reads_redacted_owner_fields(env) -> None:
     assert body["data"][0]["asset_owner"] == "[redacted]"
 
 
+def test_auditor_audit_log_redacts_the_fields_policy_reserves(env) -> None:
+    """The audit log replays other surfaces' payloads, so it must redact like them.
+
+    ``actor`` is in ``AUDITOR_REDACTED_FIELDS`` alongside ``credentials``. This
+    route returned entries verbatim, so an auditor read here what every other
+    route withholds -- including connector ``credentials`` objects.
+    """
+    client, tokens = env
+    client.get("/api/v1/controls", headers=_bearer(tokens["admin"]))
+
+    auditor = client.get("/api/v1/audit-log?category=request", headers=_bearer(tokens["auditor"])).json()
+    admin = client.get("/api/v1/audit-log?category=request", headers=_bearer(tokens["admin"])).json()
+
+    assert auditor["data"], "expected audit entries to assert against"
+    assert {entry["actor"] for entry in auditor["data"]} == {"[redacted]"}
+    # The same route must still answer fully for an operator.
+    assert any(entry["actor"] != "[redacted]" for entry in admin["data"])
+
+
 def test_request_audit_records_decisions(tmp_path: Path, env) -> None:
     client, tokens = env  # the env fixture seeds the lake at tmp_path
     client.get("/api/v1/controls")  # denied (no token)

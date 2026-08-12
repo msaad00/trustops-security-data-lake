@@ -1940,7 +1940,12 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         return JSONResponse(
             api_v1.envelope(
                 "audit-log",
-                entries,
+                # The audit log replays other surfaces' payloads verbatim, so it
+                # inherits their sensitivity without inheriting their redaction.
+                # `credentials`, `actor`, `assignee`, and `note` are all in
+                # AUDITOR_REDACTED_FIELDS; without this an auditor reads here what
+                # every other route withholds.
+                _redact_payload(entries, identity),
                 meta={"count": len(entries), "limit": limit},
             )
         )

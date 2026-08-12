@@ -13,7 +13,7 @@
   <rect x="36" y="28" width="1128" height="464" rx="22" fill="#fff" stroke="#d7e0ec"/>
 
   <text x="72" y="78" class="t" font-size="28" font-weight="850">Read-only connections (enterprise GRC)</text>
-  <text x="72" y="108" class="m" font-size="15">APIs, cross-account IAM roles, and scoped tokens  no admin or write access.</text>
+  <text x="72" y="108" class="m" font-size="15">APIs, cross-account IAM roles, and scoped tokens — no admin or write access.</text>
 
   <!-- Sources -->
   <g>
@@ -47,7 +47,7 @@
       <rect y="52" width="296" height="36" rx="9" fill="#fff" stroke="#cbd5e1"/>
       <text x="14" y="75" class="p">Sync scheduler (read-only pull)</text>
       <rect y="104" width="296" height="88" rx="10" fill="#fff" stroke="#cbd5e1"/>
-      <text x="14" y="128" class="p">Bronze � Silver � Gold</text>
+      <text x="14" y="128" class="p">Bronze ’ Silver ’ Gold</text>
       <text x="14" y="150" class="m" font-size="12">Your /lake boundary</text>
       <text x="14" y="172" class="m" font-size="12">raw_sha256 + deterministic tests</text>
     </g>
@@ -59,12 +59,12 @@
     <text x="802" y="176" class="t" font-size="18" font-weight="850">vs typical GRC SaaS</text>
     <g transform="translate(802,200)" class="m" font-size="13">
       <text y="0" class="t" font-size="14" font-weight="800">Same connect pattern</text>
-      <text y="28"> Read-only IAM / OAuth / tokens</text>
-      <text y="52"> Scheduled API polling</text>
-      <text y="76"> Automated control tests</text>
+      <text y="28">• Read-only IAM / OAuth / tokens</text>
+      <text y="52">• Scheduled API polling</text>
+      <text y="76">• Automated control tests</text>
       <text y="116" class="t" font-size="14" font-weight="800">Different boundary</text>
-      <text y="144"> Vendor-owned evidence DB</text>
-      <text y="168" class="t" font-size="13" font-weight="700" fill="#047857"> TrustOps: your lake + warehouse</text>
+      <text y="144">• Vendor-owned evidence DB</text>
+      <text y="168" class="t" font-size="13" font-weight="700" fill="#047857">• TrustOps: your lake + warehouse</text>
     </g>
   </g>
 

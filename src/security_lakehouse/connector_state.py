@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import time
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -125,8 +126,26 @@ def _utc_now_iso() -> str:
 
 
 def _append_jsonl(path: Path, record: dict[str, Any]) -> None:
-    """Append one JSON object as a line to a gold-zone JSONL file."""
-    with path.open("a", encoding="utf-8") as fh:
+    """Append one JSON object as a line to a gold-zone JSONL file, owner-only.
+
+    These files hold connector configuration. Secret-shaped values are redacted
+    before they get here, but what remains still identifies the access path --
+    role ARNs, account ids, hosts, usernames, and the AWS External ID, which the
+    sync path reads back from this file. On a shared host the default 0644 hands
+    all of that to any local account, so the file is created 0600 and an
+    existing one is tightened on write.
+    """
+    existed = path.exists()
+    # O_NOFOLLOW: refuse to append through a symlink planted where this file goes.
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_APPEND | os.O_NOFOLLOW, 0o600)
+    try:
+        if existed:
+            os.fchmod(fd, 0o600)
+        handle = os.fdopen(fd, "a", encoding="utf-8")
+    except BaseException:
+        os.close(fd)  # fdopen never took ownership, so this is the only closer
+        raise
+    with handle as fh:
         # lgtm[py/clear-text-storage-sensitive-data] record is sanitized before this write
         fh.write(json.dumps(record, separators=(",", ":")) + "\n")
 
