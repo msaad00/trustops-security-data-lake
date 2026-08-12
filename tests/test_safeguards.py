@@ -174,3 +174,34 @@ def test_enrichment_records_verifiable_provenance() -> None:
         assert control["title_source_url"].startswith("https://")
         assert len(control["title_source_sha256"]) == 64
         assert control["title_source_name"]
+
+
+def test_every_safeguard_says_what_it_applies_to() -> None:
+    """Evaluation targets resources, not frameworks.
+
+    The catalog records `asset_types` on all 942 requirements. A safeguard that
+    does not carry the union of its members' asset types cannot be pointed at
+    anything, which makes it undeployable as the operated object.
+    """
+    catalog = load_control_catalog()
+    for entry in load_safeguards()["safeguards"]:
+        expected = sorted({t for m in entry["satisfies"] for t in (catalog[m["control_id"]].get("asset_types") or [])})
+        assert entry.get("asset_types") == expected, f"{entry['safeguard_id']} asset_types drifted from its members"
+
+
+def test_asset_type_lookup_finds_the_safeguards_that_apply() -> None:
+    from security_lakehouse.safeguards import safeguards_for_asset_type
+
+    for asset_type in ("iam_role", "ai_model", "data_store"):
+        found = safeguards_for_asset_type(asset_type)
+        assert found, f"no safeguard applies to {asset_type}"
+        assert found == sorted(set(found))
+    assert safeguards_for_asset_type("not-an-asset-type") == []
+
+
+def test_validation_rejects_a_safeguard_that_applies_to_nothing() -> None:
+    import json as _json
+
+    payload = _json.loads(_json.dumps(load_safeguards()))
+    payload["safeguards"][0]["asset_types"] = []
+    assert any("asset_types" in p for p in validate_safeguards(payload))

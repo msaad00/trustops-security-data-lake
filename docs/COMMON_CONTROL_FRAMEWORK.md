@@ -107,6 +107,19 @@ above would otherwise be read wrong.
 So a `cis_aws` percentage describes one cloud's hardening posture. It is not
 CIS Controls coverage, and should never be quoted as such.
 
+### What a safeguard applies to
+
+Evaluation targets resources, not frameworks. The catalog already records
+`asset_types` on all 942 requirements — `iam_role`, `data_store`, `ai_model`,
+`audit_log`, `cloud_resource` and 15 more — and a safeguard carries the union of
+what its members apply to. `safeguards_for_asset_type("iam_role")` returns the
+11 safeguards that bear on IAM roles.
+
+Without that a safeguard cannot be pointed at anything, which would make the
+operated object undeployable. The validator rejects a safeguard with no asset
+types, and a test asserts each one still matches its members rather than
+drifting as curation moves.
+
 ## The real ceiling is the catalog, not the curation
 
 262 of 942 titles (28%) still carry no content — an

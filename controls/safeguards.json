@@ -632,6 +632,25 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "account_config",
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "data_store",
+        "host",
+        "iam_role",
+        "identity_account",
+        "identity_group",
+        "identity_role_assignment",
+        "identity_user",
+        "okta_user",
+        "repo",
+        "s3_bucket",
+        "service",
+        "user"
       ]
     },
     {
@@ -700,6 +719,15 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "cloud_policy",
+        "cloud_resource",
+        "iam_role",
+        "identity_group",
+        "identity_user",
+        "okta_user",
+        "service"
       ]
     },
     {
@@ -918,6 +946,21 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "data_store",
+        "iam_role",
+        "identity_account",
+        "identity_group",
+        "identity_user",
+        "network",
+        "okta_user",
+        "repo",
+        "s3_bucket",
+        "service"
       ]
     },
     {
@@ -1154,6 +1197,24 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "ai_agent",
+        "ai_model",
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "data_store",
+        "host",
+        "iam_role",
+        "identity_account",
+        "identity_group",
+        "identity_user",
+        "okta_user",
+        "repo",
+        "s3_bucket",
+        "service"
       ]
     },
     {
@@ -1408,6 +1469,23 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "ai_agent",
+        "ai_model",
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "host",
+        "iam_role",
+        "identity_account",
+        "identity_group",
+        "identity_user",
+        "okta_user",
+        "repo",
+        "s3_bucket",
+        "service"
       ]
     },
     {
@@ -1584,6 +1662,20 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "data_store",
+        "host",
+        "iam_role",
+        "identity_group",
+        "identity_user",
+        "okta_user",
+        "repo",
+        "service"
       ]
     },
     {
@@ -1700,6 +1792,21 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "host",
+        "iam_role",
+        "identity_account",
+        "identity_group",
+        "identity_user",
+        "okta_user",
+        "repo",
+        "s3_bucket",
+        "service"
       ]
     },
     {
@@ -1786,6 +1893,17 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "ai_agent",
+        "ai_model",
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "data_store",
+        "identity_user",
+        "repo",
+        "service"
       ]
     },
     {
@@ -1890,6 +2008,16 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "ai_agent",
+        "ai_model",
+        "audit_log",
+        "container_image",
+        "data_store",
+        "repo",
+        "s3_bucket",
+        "service"
       ]
     },
     {
@@ -1988,6 +2116,16 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "data_store",
+        "host",
+        "repo",
+        "service"
       ]
     },
     {
@@ -2176,6 +2314,14 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "ai_agent",
+        "ai_model",
+        "audit_log",
+        "cloud_resource",
+        "data_store",
+        "service"
       ]
     },
     {
@@ -2304,6 +2450,21 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "ai_agent",
+        "ai_model",
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "data_store",
+        "host",
+        "iam_role",
+        "identity_account",
+        "identity_user",
+        "repo",
+        "s3_bucket",
+        "service"
       ]
     },
     {
@@ -2522,6 +2683,22 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "ai_agent",
+        "ai_model",
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "data_store",
+        "host",
+        "iam_role",
+        "identity_group",
+        "identity_user",
+        "okta_user",
+        "repo",
+        "service"
       ]
     },
     {
@@ -2584,6 +2761,14 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "audit_log",
+        "container_image",
+        "data_store",
+        "repo",
+        "service",
+        "user"
       ]
     },
     {
@@ -2730,6 +2915,17 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "iam_role",
+        "identity_group",
+        "identity_user",
+        "okta_user",
+        "repo",
+        "service"
       ]
     },
     {
@@ -2780,7 +2976,8 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
-      ]
+      ],
+      "asset_types": ["cloud_policy", "cloud_resource", "repo", "service"]
     },
     {
       "safeguard_id": "SG-NETWORK-001",
@@ -2890,6 +3087,18 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "iam_role",
+        "identity_group",
+        "identity_user",
+        "network",
+        "okta_user",
+        "repo",
+        "service"
       ]
     },
     {
@@ -2970,7 +3179,8 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
-      ]
+      ],
+      "asset_types": ["audit_log", "data_store", "identity_user", "service"]
     },
     {
       "safeguard_id": "SG-DATAINVENTORY-001",
@@ -3026,6 +3236,17 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "ai_agent",
+        "ai_model",
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "data_store",
+        "repo",
+        "s3_bucket",
+        "service"
       ]
     },
     {
@@ -3094,6 +3315,18 @@
           "role": "equivalent",
           "review_status": "proposed"
         }
+      ],
+      "asset_types": [
+        "audit_log",
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "data_store",
+        "host",
+        "identity_user",
+        "repo",
+        "s3_bucket",
+        "service"
       ]
     }
   ]
