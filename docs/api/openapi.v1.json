@@ -1246,6 +1246,53 @@
         "title": "UpdateVendorAssessmentRequest",
         "type": "object"
       },
+      "V1Envelope": {
+        "properties": {
+          "data": {
+            "description": "Resource payload; a list for collections.",
+            "nullable": true
+          },
+          "errors": {
+            "items": {
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "detail": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "properties": {
+              "api_version": {
+                "type": "string"
+              },
+              "count": {
+                "type": "integer"
+              },
+              "limit": {
+                "type": "integer"
+              },
+              "offset": {
+                "type": "integer"
+              },
+              "resource": {
+                "type": "string"
+              },
+              "returned": {
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "required": ["data", "meta", "errors"],
+        "type": "object"
+      },
       "ValidationError": {
         "properties": {
           "ctx": {
@@ -1928,6 +1975,51 @@
         "tags": ["agents"]
       }
     },
+    "/api/v1/assets": {
+      "get": {
+        "operationId": "get_assets",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "List assets",
+        "tags": ["assets"]
+      }
+    },
     "/api/v1/audit-log": {
       "get": {
         "operationId": "audit_log_v1_api_v1_audit_log_get",
@@ -2295,6 +2387,63 @@
         "summary": "Whoami"
       }
     },
+    "/api/v1/catalog/bundle": {
+      "get": {
+        "operationId": "get_catalog_bundle",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "as_of",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "full",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get catalog.bundle",
+        "tags": ["catalog"]
+      }
+    },
+    "/api/v1/connectors": {
+      "get": {
+        "description": "Requires scope: read.",
+        "operationId": "get_connectors",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "List connectors",
+        "tags": ["connectors"]
+      }
+    },
     "/api/v1/connectors/aws-posture/link/template.yaml": {
       "get": {
         "operationId": "aws_link_template_api_v1_connectors_aws_posture_link_template_yaml_get",
@@ -2411,6 +2560,304 @@
         "tags": ["connectors"]
       }
     },
+    "/api/v1/connectors/{connector_id}/configure": {
+      "post": {
+        "description": "Requires scope: connector_manage.",
+        "operationId": "post_connector_configure",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Post connector.configure",
+        "tags": ["connector"]
+      }
+    },
+    "/api/v1/connectors/{connector_id}/discover": {
+      "post": {
+        "description": "Requires scope: connector_manage.",
+        "operationId": "post_connector_discover",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Post connector.discover",
+        "tags": ["connector"]
+      }
+    },
+    "/api/v1/connectors/{connector_id}/link/complete": {
+      "post": {
+        "description": "Requires scope: connector_manage.",
+        "operationId": "post_connector_link_complete",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Post connector.link.complete",
+        "tags": ["connector"]
+      }
+    },
+    "/api/v1/connectors/{connector_id}/link/start": {
+      "post": {
+        "description": "Requires scope: connector_manage.",
+        "operationId": "post_connector_link_start",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Post connector.link.start",
+        "tags": ["connector"]
+      }
+    },
+    "/api/v1/connectors/{connector_id}/probe": {
+      "post": {
+        "description": "Requires scope: connector_manage.",
+        "operationId": "post_connector_probe",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Post connector.probe",
+        "tags": ["connector"]
+      }
+    },
+    "/api/v1/connectors/{connector_id}/runs": {
+      "get": {
+        "description": "Requires scope: read.",
+        "operationId": "get_connector_runs",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connector_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "List connector.runs",
+        "tags": ["connector"]
+      }
+    },
+    "/api/v1/connectors/{connector_id}/sync": {
+      "post": {
+        "description": "Requires scope: connector_manage.",
+        "operationId": "post_connector_sync",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Post connector.sync",
+        "tags": ["connector"]
+      }
+    },
+    "/api/v1/control-tests": {
+      "get": {
+        "operationId": "get_control_tests",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "List control-tests",
+        "tags": ["control-tests"]
+      }
+    },
+    "/api/v1/controls": {
+      "get": {
+        "operationId": "get_controls",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "List controls",
+        "tags": ["controls"]
+      }
+    },
+    "/api/v1/controls/as-of": {
+      "get": {
+        "operationId": "get_controls_as_of",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "as_of",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get controls.as_of",
+        "tags": ["controls"]
+      }
+    },
+    "/api/v1/controls/{control_id}/history": {
+      "get": {
+        "operationId": "get_control_history",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "control_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get control.history",
+        "tags": ["control"]
+      }
+    },
     "/api/v1/controls/{control_id}/remediation": {
       "get": {
         "operationId": "control_remediation_api_v1_controls__control_id__remediation_get",
@@ -2451,6 +2898,134 @@
           }
         ],
         "summary": "Control Remediation"
+      }
+    },
+    "/api/v1/crosswalk": {
+      "get": {
+        "operationId": "get_crosswalk",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get crosswalk",
+        "tags": ["crosswalk"]
+      }
+    },
+    "/api/v1/crosswalk/reviewed": {
+      "get": {
+        "operationId": "get_crosswalk_reviewed",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get crosswalk.reviewed",
+        "tags": ["crosswalk"]
+      }
+    },
+    "/api/v1/evidence": {
+      "get": {
+        "operationId": "get_evidence",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "List evidence",
+        "tags": ["evidence"]
+      }
+    },
+    "/api/v1/evidence/freshness": {
+      "get": {
+        "operationId": "get_evidence_freshness",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "List evidence.freshness",
+        "tags": ["evidence"]
       }
     },
     "/api/v1/evidence/freshness/escalate": {
@@ -2761,6 +3336,25 @@
         "tags": ["gov-compliance"]
       }
     },
+    "/api/v1/graph/coverage": {
+      "get": {
+        "operationId": "get_graph_coverage",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get graph.coverage",
+        "tags": ["graph"]
+      }
+    },
     "/api/v1/healthz": {
       "get": {
         "operationId": "v1_healthz_api_v1_healthz_get",
@@ -2776,6 +3370,90 @@
         },
         "summary": "V1 Healthz",
         "tags": ["discovery"]
+      }
+    },
+    "/api/v1/ingestion/eval": {
+      "post": {
+        "description": "Requires scope: connector_manage.",
+        "operationId": "post_ingestion_eval",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Post ingestion.eval",
+        "tags": ["ingestion"]
+      }
+    },
+    "/api/v1/ingestion/eval/runs": {
+      "get": {
+        "operationId": "get_ingestion_eval_runs",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "List ingestion.eval.runs",
+        "tags": ["ingestion"]
+      }
+    },
+    "/api/v1/ingestion/status": {
+      "get": {
+        "operationId": "get_ingestion_status",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get ingestion.status",
+        "tags": ["ingestion"]
       }
     },
     "/api/v1/insights/capture": {
@@ -2980,6 +3658,70 @@
         },
         "summary": "Accept Invite Route",
         "tags": ["commercial"]
+      }
+    },
+    "/api/v1/mappings": {
+      "get": {
+        "operationId": "get_mappings",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "List mappings",
+        "tags": ["mappings"]
+      }
+    },
+    "/api/v1/mappings/equivalence": {
+      "get": {
+        "operationId": "get_mappings_equivalence",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get mappings.equivalence",
+        "tags": ["mappings"]
       }
     },
     "/api/v1/platform/ai-governance": {
@@ -3543,6 +4285,54 @@
         "summary": "Get Policy Template"
       }
     },
+    "/api/v1/posture/as-of": {
+      "get": {
+        "operationId": "get_posture_as_of",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "as_of",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get posture.as_of",
+        "tags": ["posture"]
+      }
+    },
+    "/api/v1/posture/current": {
+      "get": {
+        "operationId": "get_posture_current",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get posture.current",
+        "tags": ["posture"]
+      }
+    },
     "/api/v1/remediation/evidence-requests": {
       "get": {
         "operationId": "list_evidence_requests_api_v1_remediation_evidence_requests_get",
@@ -3909,6 +4699,25 @@
         "summary": "Update Task"
       }
     },
+    "/api/v1/repo-graph": {
+      "get": {
+        "operationId": "get_repo_graph",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get repo-graph",
+        "tags": ["repo-graph"]
+      }
+    },
     "/api/v1/risks": {
       "get": {
         "operationId": "list_risks_api_v1_risks_get",
@@ -4163,6 +4972,26 @@
         "summary": "Delete Saved View"
       }
     },
+    "/api/v1/scheduler/tick": {
+      "post": {
+        "description": "Requires scope: connector_manage.",
+        "operationId": "post_scheduler_tick",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Post scheduler.tick",
+        "tags": ["scheduler"]
+      }
+    },
     "/api/v1/scim/v2/ServiceProviderConfig": {
       "get": {
         "operationId": "scim_service_provider_config_api_v1_scim_v2_ServiceProviderConfig_get",
@@ -4352,6 +5181,87 @@
         },
         "summary": "Self Serve Signup",
         "tags": ["commercial"]
+      }
+    },
+    "/api/v1/snapshots": {
+      "get": {
+        "operationId": "get_snapshots",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "List snapshots",
+        "tags": ["snapshots"]
+      },
+      "post": {
+        "operationId": "post_snapshots",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Post snapshots",
+        "tags": ["snapshots"]
+      }
+    },
+    "/api/v1/snapshots/integrity": {
+      "get": {
+        "operationId": "get_snapshots_integrity",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get snapshots.integrity",
+        "tags": ["snapshots"]
       }
     },
     "/api/v1/snapshots/{snapshot_id}": {
@@ -4687,6 +5597,117 @@
         "summary": "Delete Tag"
       }
     },
+    "/api/v1/tracking/integrity": {
+      "get": {
+        "operationId": "get_tracking_integrity",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get tracking.integrity",
+        "tags": ["tracking"]
+      }
+    },
+    "/api/v1/trust-shares": {
+      "get": {
+        "description": "Requires scope: read, snapshot.",
+        "operationId": "get_trust_shares",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "include_revoked",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "List trust-shares",
+        "tags": ["trust-shares"]
+      },
+      "post": {
+        "description": "Requires scope: read, snapshot.",
+        "operationId": "post_trust_shares",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Post trust-shares",
+        "tags": ["trust-shares"]
+      }
+    },
+    "/api/v1/trust-shares/{share_id}/revoke": {
+      "post": {
+        "description": "Requires scope: snapshot.",
+        "operationId": "post_trust_shares",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Post trust-shares",
+        "tags": ["trust-shares"]
+      }
+    },
     "/api/v1/vendor-assessments": {
       "get": {
         "operationId": "list_vendor_assessments_api_v1_vendor_assessments_get",
@@ -4944,16 +5965,31 @@
         "summary": "Get Vendor Questionnaire"
       }
     },
-    "/api/v1/{rest}": {
+    "/api/v1/violations": {
       "get": {
-        "operationId": "v1_get_api_v1__rest__get",
+        "operationId": "get_violations",
         "parameters": [
           {
-            "in": "path",
-            "name": "rest",
-            "required": true,
+            "in": "query",
+            "name": "limit",
+            "required": false,
             "schema": {
-              "title": "Rest",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
               "type": "string"
             }
           }
@@ -4962,38 +5998,105 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/V1Envelope"
                 }
               }
             },
-            "description": "Validation Error"
+            "description": "v1 envelope"
           }
         },
-        "security": [
+        "summary": "List violations",
+        "tags": ["violations"]
+      }
+    },
+    "/api/v1/workflows": {
+      "get": {
+        "operationId": "get_workflows",
+        "parameters": [
           {
-            "HTTPBearer": []
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
-        "summary": "V1 Get"
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "List workflows",
+        "tags": ["workflows"]
       },
       "post": {
-        "operationId": "v1_post_api_v1__rest__post",
+        "operationId": "post_workflows",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Post workflows",
+        "tags": ["workflows"]
+      }
+    },
+    "/api/v1/workflows/actions": {
+      "get": {
+        "operationId": "get_workflows_actions",
         "parameters": [
           {
-            "in": "path",
-            "name": "rest",
-            "required": true,
+            "in": "query",
+            "name": "limit",
+            "required": false,
             "schema": {
-              "title": "Rest",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
               "type": "string"
             }
           }
@@ -5002,28 +6105,206 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/V1Envelope"
                 }
               }
             },
-            "description": "Validation Error"
+            "description": "v1 envelope"
           }
         },
-        "security": [
+        "summary": "List workflows.actions",
+        "tags": ["workflows"]
+      }
+    },
+    "/api/v1/workflows/actions/run": {
+      "post": {
+        "description": "Requires scope: workflow_run.",
+        "operationId": "post_workflows_actions",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Post workflows.actions",
+        "tags": ["workflows"]
+      }
+    },
+    "/api/v1/workflows/runs/{run_id}": {
+      "get": {
+        "description": "Requires scope: read.",
+        "operationId": "get_workflows_run",
+        "parameters": [
           {
-            "HTTPBearer": []
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
-        "summary": "V1 Post"
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get workflows.run",
+        "tags": ["workflows"]
+      }
+    },
+    "/api/v1/workflows/runs/{run_id}/approve": {
+      "post": {
+        "description": "Requires scope: workflow_manage.",
+        "operationId": "post_workflows_run",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Post workflows.run",
+        "tags": ["workflows"]
+      }
+    },
+    "/api/v1/workflows/runs/{run_id}/reject": {
+      "post": {
+        "description": "Requires scope: workflow_manage.",
+        "operationId": "post_workflows_run",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Post workflows.run",
+        "tags": ["workflows"]
+      }
+    },
+    "/api/v1/workflows/runs/{run_id}/retry": {
+      "post": {
+        "description": "Requires scope: workflow_run.",
+        "operationId": "post_workflows_run",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Post workflows.run",
+        "tags": ["workflows"]
+      }
+    },
+    "/api/v1/workflows/{workflow_id}": {
+      "get": {
+        "description": "Requires scope: read.",
+        "operationId": "get_workflows",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workflow_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get workflows",
+        "tags": ["workflows"]
+      }
+    },
+    "/api/v1/workflows/{workflow_id}/run": {
+      "post": {
+        "description": "Requires scope: workflow_run.",
+        "operationId": "post_workflows_run",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Post workflows.run",
+        "tags": ["workflows"]
+      }
+    },
+    "/api/v1/workflows/{workflow_id}/runs": {
+      "get": {
+        "description": "Requires scope: read.",
+        "operationId": "get_workflows_runs",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workflow_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "List workflows.runs",
+        "tags": ["workflows"]
       }
     },
     "/api/{rest}": {
