@@ -1,4 +1,4 @@
-.PHONY: compile lint format-check diff-check test validate validate-json validate-generated validate-brand validate-doc-images pipeline dashboard api-smoke smoke ci web-install web-dev web-typecheck web-build web-clean web-ci docker-build helm-lint helm-template terraform-fmt terraform-validate deploy-check uv-sync uv-lock pre-commit-install pre-commit-run pip-audit npm-audit security openapi-export
+.PHONY: release-build compile lint format-check diff-check test validate validate-json validate-generated validate-brand validate-doc-images pipeline dashboard api-smoke smoke ci web-install web-dev web-typecheck web-build web-clean web-ci docker-build helm-lint helm-template terraform-fmt terraform-validate deploy-check uv-sync uv-lock pre-commit-install pre-commit-run pip-audit npm-audit security openapi-export
 
 test:
 	PYTHONPATH=src python -m pytest -q
@@ -41,6 +41,10 @@ dashboard:
 
 api-smoke:
 	PYTHONPATH=src python tools/api_smoke.py
+
+release-build: web-install web-build
+	python -m build
+	python tools/verify_wheel.py dist/*.whl
 
 openapi-export:
 	uv run security-lakehouse openapi --out docs/api/openapi.v1.json
