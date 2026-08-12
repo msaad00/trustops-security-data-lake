@@ -917,7 +917,115 @@ def resource_catalog() -> list[JsonObject]:
             }
         )
     catalog.extend(dict(entry) for entry in EXTENDED_RESOURCES)
-    return sorted(catalog, key=lambda row: row["path"])
+
+    # A path can be described twice -- once generated from a loader table and
+    # once hand-written in EXTENDED_RESOURCES to carry its scopes. Merge rather
+    # than emit both, with the hand-written entry winning on conflict, so the
+    # catalog stays a set of paths.
+    merged: dict[str, JsonObject] = {}
+    for row in catalog:
+        path = str(row["path"])
+        merged[path] = {**merged.get(path, {}), **row}
+    return sorted(merged.values(), key=lambda row: row["path"])
+
+
+# Response envelope shared by every v1 route, referenced by the generated spec.
+_ENVELOPE_SCHEMA: JsonObject = {
+    "type": "object",
+    "required": ["data", "meta", "errors"],
+    "properties": {
+        "data": {"nullable": True, "description": "Resource payload; a list for collections."},
+        "meta": {
+            "type": "object",
+            "properties": {
+                "api_version": {"type": "string"},
+                "resource": {"type": "string"},
+                "count": {"type": "integer"},
+                "returned": {"type": "integer"},
+                "limit": {"type": "integer"},
+                "offset": {"type": "integer"},
+            },
+        },
+        "errors": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {"code": {"type": "string"}, "detail": {"type": "string"}},
+            },
+        },
+    },
+}
+
+
+def openapi_paths() -> JsonObject:
+    """OpenAPI path items for routes served through the ``/api/v1/{rest}`` catch-all.
+
+    FastAPI can only describe decorated routes, so the core read surface --
+    violations, controls, evidence, posture, snapshots, workflows and the rest --
+    collapses into a single ``/api/v1/{rest}`` entry in the generated schema. A
+    client generated from that spec cannot fetch posture at all. These are built
+    from :func:`resource_catalog`, which is the same source the runtime dispatches
+    from, so the two cannot drift apart.
+    """
+    paths: JsonObject = {}
+    for row in resource_catalog():
+        path = str(row["path"])
+        resource = str(row["resource"])
+        collection = row.get("kind") == "collection"
+
+        parameters: list[JsonObject] = [
+            {
+                "name": name,
+                "in": "path",
+                "required": True,
+                "schema": {"type": "string"},
+            }
+            for name in row.get("path_params", [])
+        ]
+        for name in row.get("query", []):
+            if name.startswith("<"):  # `<field>=<value>` documents ad-hoc filters
+                continue
+            schema = {"type": "integer"} if name in {"limit", "offset"} else {"type": "string"}
+            parameters.append({"name": name, "in": "query", "required": False, "schema": schema})
+
+        item: JsonObject = {}
+        for method in row.get("methods", ["GET"]):
+            operation: JsonObject = {
+                "summary": f"{'List' if collection and method == 'GET' else method.title()} {resource}",
+                "operationId": f"{method.lower()}_{resource.replace('.', '_').replace('-', '_')}",
+                "tags": [resource.split(".")[0]],
+                "responses": {
+                    "200": {
+                        "description": "v1 envelope",
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/V1Envelope"}}},
+                    }
+                },
+            }
+            if parameters and method == "GET":
+                operation["parameters"] = parameters
+            if scopes := row.get("scopes"):
+                operation["description"] = f"Requires scope: {', '.join(scopes)}."
+            item[method.lower()] = operation
+        paths[path] = item
+    return paths
+
+
+def merge_openapi(spec: JsonObject) -> JsonObject:
+    """Fold the catch-all-served routes into a FastAPI-generated schema."""
+    paths = dict(spec.get("paths") or {})
+    # The catch-all itself documents nothing and implies a route that takes an
+    # arbitrary path segment, which is worse than absent.
+    paths.pop("/api/v1/{rest}", None)
+    for path, item in openapi_paths().items():
+        paths.setdefault(path, item)
+    spec["paths"] = paths
+
+    components = dict(spec.get("components") or {})
+    schemas = dict(components.get("schemas") or {})
+    schemas.setdefault("V1Envelope", _ENVELOPE_SCHEMA)
+    components["schemas"] = schemas
+    spec["components"] = components
+    return spec
 
 
 def index_payload() -> JsonObject:
