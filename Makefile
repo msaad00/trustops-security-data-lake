@@ -74,7 +74,7 @@ demo-screenshots-full:
 	bash tools/capture_readme_screenshots.sh
 
 # Local console with golden fixture (run on your machine — localhost is not remote-hosted).
-demo-local: web-build
+demo-local: web-install web-build
 	uv run security-lakehouse fixtures load --company golden --out build/lakehouse
 	uv run security-lakehouse db upgrade --lake build/lakehouse
 	@echo "Starting console at http://127.0.0.1:8787/console/dashboard/"
