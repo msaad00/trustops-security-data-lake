@@ -1371,6 +1371,27 @@ def handle_get(path: str, params: Params, lake_dir: str | Path) -> tuple[HTTPSta
     return HTTPStatus.NOT_FOUND, error_envelope("not_found", f"unknown route {path}")
 
 
+# `fixture_dir` points the connector runner at a directory of canned evidence
+# instead of a live API. That is a local development affordance: over HTTP it is
+# a file-read primitive, because the runner reads fixed filenames (users.json,
+# logs.json, ...) from wherever it points and ingests them into the evidence
+# lake, where they become readable at `read` scope. Verified: a file planted
+# outside the lake reached bronze/raw_events.jsonl through the configure+sync
+# API. The CLI and local seeding paths still accept it.
+_LOCAL_ONLY_OPTIONS = ("fixture_dir",)
+
+
+def _reject_local_only_options(options: JsonObject | None, *, resource: str) -> JsonObject | None:
+    for name in _LOCAL_ONLY_OPTIONS:
+        if options and name in options:
+            return error_envelope(
+                "bad_request",
+                f"{name} cannot be set over the API; it is a local-only option",
+                resource=resource,
+            )
+    return None
+
+
 def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tuple[HTTPStatus, JsonObject]:
     """Resolve a v1 POST into an ``(status, body)`` pair."""
     lake = resolve_path(lake_dir)
@@ -1488,6 +1509,9 @@ def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tup
         return HTTPStatus.CREATED, envelope("trust-shares", revoked)
     configure = _connector_action(path, "configure")
     if configure is not None:
+        rejection = _reject_local_only_options(payload.get("options"), resource="connector.configure")
+        if rejection is not None:
+            return HTTPStatus.BAD_REQUEST, rejection
         state = str(payload.get("state") or "enabled").lower()
         credentials, options = resolve_configure_payload(
             lake,
@@ -1523,6 +1547,9 @@ def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tup
         return HTTPStatus.CREATED, envelope("connector.configure", record)
     discover = _connector_action(path, "discover")
     if discover is not None:
+        rejection = _reject_local_only_options(payload.get("options"), resource="connector.discover")
+        if rejection is not None:
+            return HTTPStatus.BAD_REQUEST, rejection
         record = run_discovery(
             lake,
             connector_id=discover,
@@ -1533,6 +1560,9 @@ def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tup
         return HTTPStatus.CREATED, envelope("connector.discover", record)
     probe = _connector_action(path, "probe")
     if probe is not None:
+        rejection = _reject_local_only_options(payload.get("options"), resource="connector.probe")
+        if rejection is not None:
+            return HTTPStatus.BAD_REQUEST, rejection
         record = run_probe(
             lake,
             connector_id=probe,
