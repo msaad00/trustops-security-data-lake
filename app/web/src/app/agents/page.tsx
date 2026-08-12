@@ -200,25 +200,25 @@ const ROUTES: RouteSpec[] = [
   },
   {
     method: "GET",
-    path: "/api/frameworks",
+    path: "/api/v1/frameworks",
     description: "Framework registry + provenance + coverage.",
     scope: "controls",
   },
   {
     method: "GET",
-    path: "/api/workflows",
+    path: "/api/v1/workflows",
     description: "Workflow list (latest version per id).",
     scope: "workflows",
   },
   {
     method: "GET",
-    path: "/api/workflows/actions",
+    path: "/api/v1/workflows/actions",
     description: "Action library with input/output schemas.",
     scope: "workflows",
   },
   {
     method: "POST",
-    path: "/api/workflows/actions/run",
+    path: "/api/v1/workflows/actions/run",
     description: "Execute a single action against the lake.",
     scope: "workflows",
     body_example: {
@@ -228,13 +228,13 @@ const ROUTES: RouteSpec[] = [
   },
   {
     method: "GET",
-    path: "/api/trust-shares",
+    path: "/api/v1/trust-shares",
     description: "List active trust-share tokens.",
     scope: "trust",
   },
   {
     method: "POST",
-    path: "/api/trust-shares",
+    path: "/api/v1/trust-shares",
     description: "Issue a new auditor share (returns raw token once).",
     scope: "trust",
     body_example: {
@@ -264,13 +264,13 @@ const ROUTES: RouteSpec[] = [
   },
   {
     method: "GET",
-    path: "/api/graph",
+    path: "/api/v1/graph",
     description: "Framework -> control -> evidence -> asset graph.",
     scope: "graph",
   },
   {
     method: "GET",
-    path: "/api/crosswalk",
+    path: "/api/v1/crosswalk",
     description: "Framework x framework cross-mapping matrix.",
     scope: "graph",
   },
