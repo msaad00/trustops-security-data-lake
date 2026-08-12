@@ -18,6 +18,7 @@ the raw token returns once at create time.
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import secrets
 from datetime import UTC, datetime, timedelta
@@ -197,7 +198,7 @@ def resolve_share(lake_dir: str | Path, token: str) -> dict[str, Any] | None:
     token_hash = _hash_token(token)
     now = _iso(_utc_now())
     for record in list_shares(lake_dir, include_revoked=False):
-        if record.get("token_sha256") != token_hash:
+        if not hmac.compare_digest(str(record.get("token_sha256") or ""), token_hash):
             continue
         if record.get("revoked_at"):
             return None

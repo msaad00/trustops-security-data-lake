@@ -71,6 +71,14 @@ _ACCESS_FINGERPRINT_OPTION_EXCLUDES = frozenset(
 )
 _SECRET_REFERENCE_SUFFIXES = ("_ref", "_env")
 
+# Options that grant a local-only capability (e.g. reading an arbitrary fixture
+# directory off the server's disk) and must never be set — or silently
+# re-attached from a previously saved config — over the API. The API boundary
+# rejects them on the incoming request; the forward-merge below drops them from
+# saved options too, so a value seeded via a non-API path cannot ride along on a
+# later API configure that omits it.
+LOCAL_ONLY_OPTIONS = ("fixture_dir",)
+
 
 def _gold(lake_dir: str | Path) -> Path:
     return Path(lake_dir) / "gold"
@@ -332,7 +340,9 @@ def resolve_configure_payload(
         return incoming_credentials, incoming_options
 
     previous_credentials = dict(previous.get("credentials") or {})
-    previous_options = {k: v for k, v in dict(previous.get("options") or {}).items() if k != "raw"}
+    previous_options = {
+        k: v for k, v in dict(previous.get("options") or {}).items() if k != "raw" and k not in LOCAL_ONLY_OPTIONS
+    }
     if not incoming_credentials:
         incoming_credentials = previous_credentials
     if previous_options:

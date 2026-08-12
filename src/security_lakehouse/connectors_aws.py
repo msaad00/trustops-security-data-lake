@@ -390,9 +390,14 @@ def _access_key_event(
 ) -> dict[str, Any]:
     arn = str(user.get("Arn") or f"arn:aws:iam::{account}:user/{user_name}")
     active = [k for k in keys if isinstance(k, dict) and str(k.get("Status")) == "Active"]
-    ages = [age for k in active if (age := _access_key_age_days(k.get("CreateDate"), collected_at)) is not None]
+    active_ages = [_access_key_age_days(k.get("CreateDate"), collected_at) for k in active]
+    ages = [age for age in active_ages if age is not None]
+    # An active key whose CreateDate is missing or unparseable must not read as
+    # freshly rotated (oldest=0). Treat unknown age as stale so a genuinely old
+    # key can't score a false pass on the rotation control.
+    unknown_age = any(age is None for age in active_ages)
     oldest = max(ages) if ages else 0
-    stale = oldest > MAX_ACCESS_KEY_AGE_DAYS
+    stale = oldest > MAX_ACCESS_KEY_AGE_DAYS or unknown_age
     multiple_active = len(active) > 1
     # Key rotation is the access-management control that applies to a service
     # identity (where MFA does not). A stale or duplicated active key is the open
