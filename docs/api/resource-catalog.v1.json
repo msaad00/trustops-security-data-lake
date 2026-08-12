@@ -232,6 +232,13 @@
       "scopes": ["read"]
     },
     {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/frameworks",
+      "query": ["limit", "offset", "sort", "<field>=<value>"],
+      "resource": "frameworks"
+    },
+    {
       "kind": "singleton",
       "methods": ["GET"],
       "path": "/api/v1/frameworks/{framework_id}/detail",
@@ -266,6 +273,12 @@
       "path": "/api/v1/gov-compliance/sprs",
       "resource": "gov-compliance.sprs",
       "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/graph",
+      "resource": "graph"
     },
     {
       "kind": "singleton",
@@ -440,6 +453,13 @@
       "methods": ["GET"],
       "path": "/api/v1/posture/current",
       "resource": "posture.current"
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/readiness",
+      "query": ["limit", "offset", "sort", "<field>=<value>"],
+      "resource": "readiness"
     },
     {
       "kind": "collection",

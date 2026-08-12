@@ -39,7 +39,13 @@ from security_lakehouse.connector_state import (
     run_probe,
 )
 from security_lakehouse.framework_detail import build_framework_detail
-from security_lakehouse.graph import analyze_coverage, build_framework_crosswalk, build_repository_graph
+from security_lakehouse.framework_provenance import build_framework_view
+from security_lakehouse.graph import (
+    analyze_coverage,
+    build_compliance_graph,
+    build_framework_crosswalk,
+    build_repository_graph,
+)
 from security_lakehouse.ingestion_status import build_ingestion_status
 from security_lakehouse.io import read_jsonl, resolve_path
 from security_lakehouse.lake_eval import list_eval_runs, run_lake_eval
@@ -49,8 +55,10 @@ from security_lakehouse.mappings import (
     build_reviewed_crosswalk,
     load_control_article_mappings,
 )
-from security_lakehouse.tracking import verify_tracking_chain
+from security_lakehouse.readiness import build_readiness_view
+from security_lakehouse.tracking import ALLOWED_STATES, append_event, latest_state, list_events, verify_tracking_chain
 from security_lakehouse.trust_share import create_share, list_shares, revoke_share
+from security_lakehouse.verification import verify_event
 from security_lakehouse.workflows import (
     action_catalog,
     approve_workflow_run,
@@ -126,6 +134,7 @@ SINGLETON_LOADERS: dict[str, tuple[str, Callable[[Path], Any]]] = {
     "/api/v1/graph/coverage": ("graph.coverage", analyze_coverage),
     "/api/v1/platform/ai-governance": ("platform.ai-governance", lambda lake: build_ai_governance_status(lake=lake)),
     "/api/v1/repo-graph": ("repo-graph", build_repository_graph),
+    "/api/v1/graph": ("graph", build_compliance_graph),
     # Crosswalk and equivalence are computed from the control catalog and the
     # curated mapping files, not from the lake, so they ignore the lake path.
     "/api/v1/crosswalk": ("crosswalk", lambda _lake: build_framework_crosswalk()),
@@ -163,6 +172,8 @@ COLLECTION_LOADERS: dict[str, tuple[str, Callable[[Path], list[JsonObject]]]] = 
         lambda lake: list_ai_inventory(lake=lake, limit=10_000, offset=0),
     ),
     "/api/v1/mappings": ("mappings", lambda _lake: list(load_control_article_mappings().values())),
+    "/api/v1/frameworks": ("frameworks", lambda _lake: build_framework_view()),
+    "/api/v1/readiness": ("readiness", lambda _lake: build_readiness_view()),
     "/api/v1/workflows": ("workflows", list_workflows),
     "/api/v1/workflows/actions": ("workflows.actions", lambda _lake: action_catalog()),
 }
@@ -233,6 +244,10 @@ def required_post_scope(path: str) -> str:
     # workflow is `workflow_run`, while defining one or ruling on a run that
     # paused for approval is `workflow_manage`. Flattening these would let a
     # runner approve its own run.
+    if _suffix_match(path, "/api/v1/violations/", "/triage") is not None:
+        return "write"
+    if _suffix_match(path, "/api/v1/evidence/", "/verify") is not None:
+        return "write"
     if path == "/api/v1/workflows":
         return "workflow_manage"
     if path == "/api/v1/workflows/actions/run":
@@ -1152,6 +1167,17 @@ def handle_get(path: str, params: Params, lake_dir: str | Path) -> tuple[HTTPSta
                 "not_found", f"unknown control {control_id}", resource="control.history"
             )
         return HTTPStatus.OK, envelope("control.history", {"control_id": control_id, "versions": versions})
+    tracking = _suffix_match(path, "/api/v1/violations/", "/tracking")
+    if tracking is not None:
+        current = latest_state(lake, violation_id=tracking)
+        return HTTPStatus.OK, envelope(
+            "violations.tracking",
+            {
+                "violation_id": tracking,
+                "current_state": (current or {}).get("state", "open"),
+                "events": list_events(lake, violation_id=tracking),
+            },
+        )
     workflow_run_id = _workflow_run_id_match(path)
     if workflow_run_id is not None:
         run = get_workflow_run(lake, workflow_run_id)
@@ -1221,6 +1247,27 @@ def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tup
         reason = str(payload.get("reason") or "api_request")
         snapshot_path = write_assessment_snapshot(lake, reason=reason)
         return HTTPStatus.CREATED, envelope("snapshots", {"snapshot_path": str(snapshot_path), "reason": reason})
+    triage = _suffix_match(path, "/api/v1/violations/", "/triage")
+    if triage is not None:
+        state = str(payload.get("state") or "").lower()
+        if state not in ALLOWED_STATES:
+            return HTTPStatus.BAD_REQUEST, error_envelope(
+                "bad_request", f"state must be one of {sorted(ALLOWED_STATES)}", resource="violations.triage"
+            )
+        record = append_event(
+            lake,
+            violation_id=triage,
+            actor=str(payload.get("actor") or "anonymous"),
+            state=state,
+            assignee=payload.get("assignee"),
+            due_at=payload.get("due_at"),
+            note=payload.get("note"),
+            idempotency_key=payload.get("idempotency_key"),
+        )
+        return HTTPStatus.CREATED, envelope("violations.triage", record)
+    verify = _suffix_match(path, "/api/v1/evidence/", "/verify")
+    if verify is not None:
+        return HTTPStatus.CREATED, envelope("evidence.verify", verify_event(lake, verify))
     if path == "/api/v1/workflows":
         try:
             record = save_workflow(
