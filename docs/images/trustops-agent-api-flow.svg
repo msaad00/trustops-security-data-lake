@@ -25,10 +25,10 @@
     <filter id="shadow" x="-18%" y="-18%" width="136%" height="136%">
       <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#020617" flood-opacity="0.34"/>
     </filter>
-    <marker id="arrow" markerWidth="13" markerHeight="13" refX="11" refY="6.5" orient="auto">
+    <marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
       <path d="M0 0 13 6.5 0 13z" fill="#38bdf8"/>
     </marker>
-    <marker id="arrowGreen" markerWidth="13" markerHeight="13" refX="11" refY="6.5" orient="auto">
+    <marker id="arrowGreen" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
       <path d="M0 0 13 6.5 0 13z" fill="#34d399"/>
     </marker>
     <style>
@@ -82,7 +82,7 @@
       </g>
     </g>
 
-    <path d="M315 296h72" stroke="#38bdf8" stroke-width="5" marker-end="url(#arrow)"/>
+    <path d="M315 296h72" stroke="#38bdf8" stroke-width="3.5" marker-end="url(#arrow)"/>
 
     <g transform="translate(394 130)" filter="url(#shadow)">
       <rect width="286" height="334" rx="22" fill="url(#blue)" stroke="#60a5fa" stroke-width="1.7"/>
@@ -107,7 +107,7 @@
       <text x="26" y="316" class="muted">response: data + meta + errors</text>
     </g>
 
-    <path d="M692 296h70" stroke="#38bdf8" stroke-width="5" marker-end="url(#arrow)"/>
+    <path d="M692 296h70" stroke="#38bdf8" stroke-width="3.5" marker-end="url(#arrow)"/>
 
     <g transform="translate(774 130)" filter="url(#shadow)">
       <rect width="330" height="334" rx="22" class="green"/>
@@ -135,7 +135,7 @@
       </g>
     </g>
 
-    <path d="M938 476v58" stroke="#34d399" stroke-width="5" marker-end="url(#arrowGreen)"/>
+    <path d="M938 476v58" stroke="#34d399" stroke-width="3.5" marker-end="url(#arrowGreen)"/>
 
     <g transform="translate(58 548)" filter="url(#shadow)">
       <rect width="1100" height="122" rx="22" class="panel"/>
