@@ -556,6 +556,13 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "scopes": ["read"],
     },
     {
+        "resource": "policies.attestation-summary",
+        "path": "/api/v1/policies/attestation-summary",
+        "kind": "singleton",
+        "methods": ["GET"],
+        "scopes": ["read"],
+    },
+    {
         "resource": "policies",
         "path": "/api/v1/policies/{document_id}",
         "kind": "singleton",
@@ -569,6 +576,14 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "kind": "singleton",
         "methods": ["POST"],
         "scopes": ["control_manage"],
+        "path_params": ["document_id"],
+    },
+    {
+        "resource": "policies.acknowledgments",
+        "path": "/api/v1/policies/{document_id}/acknowledgments",
+        "kind": "collection",
+        "methods": ["GET", "POST"],
+        "scopes": ["read"],
         "path_params": ["document_id"],
     },
     {
@@ -732,6 +747,21 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "scopes": ["read"],
     },
     {
+        "resource": "insights.framework-trends",
+        "path": "/api/v1/insights/framework-trends",
+        "kind": "singleton",
+        "methods": ["GET"],
+        "scopes": ["read"],
+        "query": ["limit"],
+    },
+    {
+        "resource": "insights.sla-heatmap",
+        "path": "/api/v1/insights/sla-heatmap",
+        "kind": "singleton",
+        "methods": ["GET"],
+        "scopes": ["read"],
+    },
+    {
         "resource": "insights.capture",
         "path": "/api/v1/insights/capture",
         "kind": "singleton",
@@ -787,6 +817,21 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "kind": "action",
         "methods": ["POST"],
         "scopes": ["write"],
+    },
+    {
+        "resource": "evidence.freshness.request",
+        "path": "/api/v1/evidence/freshness/request",
+        "kind": "action",
+        "methods": ["POST"],
+        "scopes": ["evidence_request"],
+    },
+    {
+        "resource": "snapshots.detail",
+        "path": "/api/v1/snapshots/{snapshot_id}",
+        "kind": "singleton",
+        "methods": ["GET"],
+        "scopes": ["read"],
+        "path_params": ["snapshot_id"],
     },
     {
         "resource": "audit-log",
@@ -1066,6 +1111,7 @@ def merge_openapi(spec: JsonObject) -> JsonObject:
     # The catch-all itself documents nothing and implies a route that takes an
     # arbitrary path segment, which is worse than absent.
     paths.pop("/api/v1/{rest}", None)
+    paths.pop("/api/{rest}", None)
     for path, item in openapi_paths().items():
         paths.setdefault(path, item)
     spec["paths"] = paths

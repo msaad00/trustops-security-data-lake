@@ -225,6 +225,13 @@
       "scopes": ["write"]
     },
     {
+      "kind": "action",
+      "methods": ["POST"],
+      "path": "/api/v1/evidence/freshness/request",
+      "resource": "evidence.freshness.request",
+      "scopes": ["evidence_request"]
+    },
+    {
       "kind": "singleton",
       "methods": ["GET"],
       "path": "/api/v1/evidence/freshness/summary",
@@ -330,8 +337,23 @@
     {
       "kind": "singleton",
       "methods": ["GET"],
+      "path": "/api/v1/insights/framework-trends",
+      "query": ["limit"],
+      "resource": "insights.framework-trends",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
       "path": "/api/v1/insights/remediation",
       "resource": "insights.remediation",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/insights/sla-heatmap",
+      "resource": "insights.sla-heatmap",
       "scopes": ["read"]
     },
     {
@@ -399,6 +421,13 @@
       "scopes": ["read", "control_manage"]
     },
     {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/policies/attestation-summary",
+      "resource": "policies.attestation-summary",
+      "scopes": ["read"]
+    },
+    {
       "kind": "collection",
       "methods": ["GET"],
       "path": "/api/v1/policies/coverage",
@@ -412,6 +441,14 @@
       "path_params": ["document_id"],
       "resource": "policies",
       "scopes": ["read", "control_manage"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET", "POST"],
+      "path": "/api/v1/policies/{document_id}/acknowledgments",
+      "path_params": ["document_id"],
+      "resource": "policies.acknowledgments",
+      "scopes": ["read"]
     },
     {
       "kind": "singleton",
@@ -556,6 +593,14 @@
       "methods": ["GET"],
       "path": "/api/v1/snapshots/integrity",
       "resource": "snapshots.integrity"
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/snapshots/{snapshot_id}",
+      "path_params": ["snapshot_id"],
+      "resource": "snapshots.detail",
+      "scopes": ["read"]
     },
     {
       "kind": "action",
