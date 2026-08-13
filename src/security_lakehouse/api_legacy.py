@@ -128,7 +128,8 @@ def required_post_scope(path: str) -> str:
         return "snapshot"
     if _suffix_match(path, "/api/trust-shares/", "/revoke") is not None:
         return "snapshot"
-    return "write"
+    # Same fail-closed default as the v1 surface (kept in lockstep by test).
+    return api_v1._UNMAPPED_POST_SCOPE
 
 
 def handle_get(path: str, query: Query, lake_dir: str | Path) -> tuple[HTTPStatus, Body]:

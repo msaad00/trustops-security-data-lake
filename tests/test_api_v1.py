@@ -777,3 +777,20 @@ def test_v1_ingestion_status_includes_scale(tmp_path: Path) -> None:
         assert body["data"]["catalog_coverage"]["total"] >= 1
     finally:
         server.shutdown()
+
+
+def test_unmapped_post_route_fails_closed() -> None:
+    """A mutating route not explicitly scoped is denied, not given `write`.
+
+    Every path handle_post dispatches is enumerated in required_post_scope, so a
+    future POST added there but forgotten here must fall to a scope no role holds
+    (403) rather than quietly accepting a contributor's `write`.
+    """
+    from security_lakehouse import api_legacy
+    from security_lakehouse.auth.rbac import ROLE_SCOPES
+
+    scope = api_v1.required_post_scope("/api/v1/does-not-exist")
+    assert scope == "__unmapped_post__"
+    assert all(scope not in scopes for scopes in ROLE_SCOPES.values())
+    # v1 and legacy defaults stay in lockstep.
+    assert api_legacy.required_post_scope("/api/does-not-exist") == scope
