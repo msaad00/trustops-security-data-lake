@@ -1371,7 +1371,7 @@ def handle_get(path: str, params: Params, lake_dir: str | Path) -> tuple[HTTPSta
             return HTTPStatus.BAD_REQUEST, error_envelope(
                 "bad_request", "invalid request parameters", resource=resource
             )
-    return HTTPStatus.NOT_FOUND, error_envelope("not_found", f"unknown route {path}")
+    return HTTPStatus.NOT_FOUND, error_envelope("not_found", "unknown route")
 
 
 # `fixture_dir` points the connector runner at a directory of canned evidence
@@ -1667,4 +1667,4 @@ def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tup
         except ValueError as exc:
             return HTTPStatus.BAD_REQUEST, error_envelope("bad_request", str(exc), resource="connector.link.complete")
         return HTTPStatus.CREATED, envelope("connector.link.complete", result)
-    return HTTPStatus.NOT_FOUND, error_envelope("not_found", f"unknown route {path}")
+    return HTTPStatus.NOT_FOUND, error_envelope("not_found", "unknown route")

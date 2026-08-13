@@ -31,19 +31,26 @@ jobs:
           else
             echo "drift=true" >> "$GITHUB_OUTPUT"
           fi
+      - name: Compose PR body
+        if: steps.drift.outputs.drift == 'true'
+        run: |
+          {
+            echo "Automated framework sync detected drift in \`frameworks/registry.json\`."
+            echo "Reviewer should verify each updated \`source_sha256\` against the"
+            echo "regulator's site before merging."
+            echo
+            echo '```'
+            cat sync.json
+            echo '```'
+          } > pr-body.md
       - name: Open PR with drift
         if: steps.drift.outputs.drift == 'true'
         uses: peter-evans/create-pull-request@v8
         with:
           commit-message: "chore(frameworks): sync official sources"
           title: "chore(frameworks): sync official sources"
-          body: |
-            Automated framework sync detected drift in `frameworks/registry.json`.
-            Reviewer should verify each updated `source_sha256` against the
-            regulator's site before merging.
-
-            ```
-            $(cat sync.json)
-            ```
+          # body-path, not an inline body: a `$(cat sync.json)` in the YAML input
+          # is passed as a literal string, so the sync diff never rendered.
+          body-path: pr-body.md
           branch: chore/framework-sync
           delete-branch: true
