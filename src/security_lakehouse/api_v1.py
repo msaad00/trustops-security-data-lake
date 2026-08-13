@@ -233,8 +233,16 @@ def _connector_link_action(path: str, suffix: str) -> str | None:
     return _suffix_match(path, "/api/v1/connectors/", f"/link/{suffix}")
 
 
+# Fail-closed default for any mutating route not explicitly scoped below. It is a
+# scope no role in ROLE_SCOPES holds, so a POST path added to handle_post but
+# forgotten here is denied (403) instead of quietly accepting the low `write`
+# scope. Every path handle_post actually dispatches is enumerated below, so this
+# is only ever reached by unknown routes.
+_UNMAPPED_POST_SCOPE = "__unmapped_post__"
+
+
 def required_post_scope(path: str) -> str:
-    """Return the RBAC scope required to mutate a v1 route."""
+    """Return the RBAC scope required to mutate a v1 route (fail-closed default)."""
     if path == "/api/v1/snapshots":
         return "snapshot"
     # Trust shares hand a reviewer a signed view of posture, so they carry the
@@ -280,7 +288,7 @@ def required_post_scope(path: str) -> str:
         return "connector_manage"
     if _connector_link_action(path, "complete") is not None:
         return "connector_manage"
-    return "write"
+    return _UNMAPPED_POST_SCOPE
 
 
 # Typed write/read routes served only by the FastAPI server (``server_app``).

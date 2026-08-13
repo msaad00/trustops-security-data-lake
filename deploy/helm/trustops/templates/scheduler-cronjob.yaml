@@ -19,6 +19,19 @@ spec:
         spec:
           restartPolicy: OnFailure
           serviceAccountName: {{ include "trustops.serviceAccountName" . }}
+          {{- if and .Values.lake.persistence.enabled (not .Values.lake.readOnly) (eq .Values.lake.persistence.accessMode "ReadWriteOnce") }}
+          # A ReadWriteOnce lake volume is mountable read-write from a single
+          # node only. Pin the scheduler to the API pod's node so both can mount
+          # it; otherwise the CronJob can be scheduled elsewhere and fail to
+          # mount the PVC. (For multi-node HA use lake.persistence.accessMode=ReadWriteMany.)
+          affinity:
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchLabels:
+                      {{- include "trustops.selectorLabels" . | nindent 22 }}
+                  topologyKey: kubernetes.io/hostname
+          {{- end }}
           {{- with .Values.image.pullSecrets }}
           imagePullSecrets:
             {{- toYaml . | nindent 12 }}
