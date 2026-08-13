@@ -408,7 +408,11 @@ def test_aws_client_console_access_reads_login_profile(monkeypatch: pytest.Monke
         def get_login_profile(self, *, UserName: str):  # noqa: N803
             if UserName == "human":
                 return {"LoginProfile": {"UserName": "human"}}
-            raise RuntimeError("NoSuchEntity")
+            # Model botocore's ClientError shape so the client's code-based
+            # NoSuchEntity check (not a bare exception type) recognizes it.
+            err = RuntimeError("NoSuchEntity")
+            err.response = {"Error": {"Code": "NoSuchEntity"}}  # type: ignore[attr-defined]
+            raise err
 
     client = AWSClient.__new__(AWSClient)
     client._iam = _IAM()
@@ -486,3 +490,38 @@ def test_active_access_key_with_unparseable_date_flags_rotation() -> None:
     assert event["status"] == "open"
     assert event["attributes"]["stale_key"] is True
     assert event["attributes"]["needs_rotation"] is True
+
+
+class _FakeClientError(Exception):
+    def __init__(self, code: str) -> None:
+        super().__init__(code)
+        self.response = {"Error": {"Code": code}}
+
+
+class _RaisingIam:
+    def __init__(self, code: str) -> None:
+        self._code = code
+
+    def get_account_password_policy(self):  # noqa: ANN201
+        raise _FakeClientError(self._code)
+
+    def get_login_profile(self, **_kwargs):  # noqa: ANN003, ANN201
+        raise _FakeClientError(self._code)
+
+
+def _client_with_iam(code: str) -> AWSClient:
+    client = AWSClient.__new__(AWSClient)  # bypass boto3 in __init__
+    client._iam = _RaisingIam(code)  # type: ignore[attr-defined]  # noqa: SLF001
+    return client
+
+
+def test_password_policy_swallows_only_nosuchentity() -> None:
+    assert _client_with_iam("NoSuchEntity").password_policy() == {}
+    with pytest.raises(_FakeClientError):
+        _client_with_iam("Throttling").password_policy()
+
+
+def test_console_access_swallows_only_nosuchentity() -> None:
+    assert _client_with_iam("NoSuchEntity").console_access("svc-user") is False
+    with pytest.raises(_FakeClientError):
+        _client_with_iam("AccessDenied").console_access("svc-user")

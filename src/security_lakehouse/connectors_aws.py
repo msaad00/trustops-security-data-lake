@@ -54,6 +54,22 @@ MIN_PASSWORD_LENGTH = 14
 MAX_ACCESS_KEY_AGE_DAYS = 90
 
 
+def _aws_error_code(exc: Exception) -> str:
+    """Best-effort botocore ``ClientError`` code without importing botocore.
+
+    Lets the client distinguish an *expected* ``NoSuchEntity`` (a real "not
+    configured" answer) from any other error (an auth failure, or a throttle
+    that survived boto3's built-in retries) that must not be swallowed into a
+    false-pass posture result.
+    """
+    response = getattr(exc, "response", None)
+    if isinstance(response, dict):
+        error = response.get("Error")
+        if isinstance(error, dict):
+            return str(error.get("Code") or "")
+    return ""
+
+
 class AWSClient:
     """Authenticated, read-only AWS IAM client backed by ``boto3``.
 
@@ -117,8 +133,13 @@ class AWSClient:
     def password_policy(self) -> dict[str, Any]:
         try:
             return self._iam.get_account_password_policy().get("PasswordPolicy", {})
-        except Exception:  # noqa: BLE001 - NoSuchEntity means no policy is set
-            return {}
+        except Exception as exc:  # noqa: BLE001 - narrowed below
+            # NoSuchEntity means no policy is set (a real "empty" answer). Any
+            # other error must surface rather than read as "no policy", which
+            # would be a false pass on the password-policy control.
+            if _aws_error_code(exc) == "NoSuchEntity":
+                return {}
+            raise
 
     def account_summary(self) -> dict[str, Any]:
         try:
@@ -137,8 +158,13 @@ class AWSClient:
         try:
             self._iam.get_login_profile(UserName=user_name)
             return True
-        except Exception:  # noqa: BLE001 - NoSuchEntity => programmatic-only identity
-            return False
+        except Exception as exc:  # noqa: BLE001 - narrowed below
+            # NoSuchEntity => no console password => programmatic-only identity.
+            # Any other error must surface: silently returning False would drop a
+            # human account's missing-MFA finding.
+            if _aws_error_code(exc) == "NoSuchEntity":
+                return False
+            raise
 
     def access_keys(self, user_name: str) -> list[dict[str, Any]]:
         """Access-key metadata (id, status, create date) for an IAM user."""
