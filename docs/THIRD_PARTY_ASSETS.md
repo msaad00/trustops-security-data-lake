@@ -35,6 +35,20 @@ seals. NIST does not endorse TrustOps or its control evaluations.
 | NIST Cybersecurity Framework (CSF) 2.0 | `app/web/public/frameworks/nist-csf-2.0.png` | [NIST image record](https://www.nist.gov/image/nist-cybersecurity-framework-20) | [NIST copyright and disclaimers](https://www.nist.gov/copyrights-disclaimers) | NIST/Natasha Hanacek | SHA-256 in `frameworks/identity-assets.json` |
 | NIST AI Risk Management Framework 1.0  | `app/web/public/frameworks/nist-ai-rmf.png`  | [NIST image record](https://www.nist.gov/image/ai-risk-management-framework)    | [NIST copyright and disclaimers](https://www.nist.gov/copyrights-disclaimers) | N. Hanacek/NIST      | SHA-256 in `frameworks/identity-assets.json` |
 
+## Architecture diagram marks
+
+The architecture SVGs in `docs/images/` embed connector/provider brand marks to
+identify the integrated products — the same marks already registered under
+"Connector brand logos" above:
+
+| Mark                                                      | Source                              | Terms                         | File(s)             | Reviewed   |
+| --------------------------------------------------------- | ----------------------------------- | ----------------------------- | ------------------- | ---------- |
+| AWS, Microsoft Azure, Okta, GitHub, Snowflake, ClickHouse | Simple Icons (monochrome path data) | CC0 1.0; brand colors applied | `docs/images/*.svg` | 2026-08-13 |
+| Google Cloud                                              | Official multi-color brand path     | Nominative use                | `docs/images/*.svg` | 2026-08-13 |
+
+Marks identify the named products only and imply no endorsement by, or
+certification from, those vendors.
+
 The reviewed decision for every registered framework is recorded in
 `frameworks/identity-assets.json`. ISO, AICPA SOC, CIS, FedRAMP, PCI SSC, HHS,
 and EU institutional artwork is not bundled because its terms do not permit
