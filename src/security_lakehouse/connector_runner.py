@@ -23,6 +23,7 @@ from security_lakehouse.connectors_aws import (
     AWSClient,
     AWSFixtureClient,
     collect_aws_evidence,
+    collect_aws_inventory_evidence,
 )
 from security_lakehouse.connectors_azure import (
     AzureCliClient,
@@ -457,7 +458,12 @@ def _build_okta_system_log(inputs: SyncInputs) -> list[dict[str, Any]]:
 
 
 def _build_aws(inputs: SyncInputs) -> list[dict[str, Any]]:
-    return _collect_aws(fixture_dir=inputs.fixture_dir, env=inputs.env, credentials=inputs.credentials)
+    return _collect_aws(
+        fixture_dir=inputs.fixture_dir,
+        env=inputs.env,
+        credentials=inputs.credentials,
+        options=inputs.options,
+    )
 
 
 def _build_google_workspace(inputs: SyncInputs) -> list[dict[str, Any]]:
@@ -644,8 +650,10 @@ def _collect_aws(
     fixture_dir: str | Path | None,
     env: dict[str, str],
     credentials: dict[str, Any] | None = None,
+    options: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     creds = credentials or {}
+    scope = options or {}
     if fixture_dir:
         fixture_account = env.get(AWS_ACCOUNT_ID_ENV) or str(creds.get("account_id") or "") or "000000000000"
         return collect_aws_evidence(AWSFixtureClient(fixture_dir), account_id=fixture_account)
@@ -660,8 +668,31 @@ def _collect_aws(
         )
     role_arn = (env.get(AWS_ROLE_ARN_ENV) or str(creds.get("role_arn") or "")).strip() or None
     external_id = (env.get(AWS_EXTERNAL_ID_ENV) or str(creds.get("external_id") or "")).strip() or None
-    client = AWSClient(region_name=env.get(AWS_REGION_ENV), role_arn=role_arn, external_id=external_id)
-    return collect_aws_evidence(client, account_id=account_id)
+    default_region = env.get(AWS_REGION_ENV) or str(scope.get("region") or "us-east-1")
+    client = AWSClient(region_name=default_region, role_arn=role_arn, external_id=external_id)
+    rows = collect_aws_evidence(client, account_id=account_id)
+    raw_regions = scope.get("regions") or [default_region]
+    regions = (
+        [str(item).strip() for item in raw_regions]
+        if isinstance(raw_regions, list)
+        else [item.strip() for item in str(raw_regions).split(",")]
+    )
+    raw_services = scope.get("services") or []
+    services = (
+        [str(item).strip().lower() for item in raw_services]
+        if isinstance(raw_services, list)
+        else [item.strip().lower() for item in str(raw_services).split(",") if item.strip()]
+    )
+    if services:
+        rows.extend(
+            collect_aws_inventory_evidence(
+                client,
+                account_id=account_id,
+                regions=[region for region in regions if region],
+                services=services,
+            )
+        )
+    return rows
 
 
 def _collect_google_workspace(

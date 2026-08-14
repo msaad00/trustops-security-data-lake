@@ -12,7 +12,6 @@ import {
   PlayCircle,
   RefreshCw,
   Search,
-  ShieldCheck,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { BRAND } from "@/lib/brand";
@@ -65,6 +64,8 @@ interface SetupStep {
 
 const CONNECTED_TABS = ["Overview", "Config", "Runs"] as const;
 type ConnectedTab = (typeof CONNECTED_TABS)[number];
+const SETUP_TABS = ["Setup", "Runs", "Events"] as const;
+type SetupTab = (typeof SETUP_TABS)[number];
 
 const isRunnableConnector = (connector: ConnectorView) =>
   Boolean(connector.is_implemented);
@@ -383,6 +384,7 @@ export function ConnectorDrawer({
   const [discoveryRun, setDiscoveryRun] = useState<ConnectorRun | null>(null);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
   const [connectedTab, setConnectedTab] = useState<ConnectedTab>("Overview");
+  const [setupTab, setSetupTab] = useState<SetupTab>("Setup");
   const [editCloudSetup, setEditCloudSetup] = useState(false);
   const [savedOptionsBaseline, setSavedOptionsBaseline] = useState<
     Record<string, string>
@@ -407,6 +409,7 @@ export function ConnectorDrawer({
     setCreds({});
     setTouchedFields(new Set());
     setConnectedTab("Overview");
+    setSetupTab("Setup");
     setEditCloudSetup(false);
   }, [connector?.connector_id]);
 
@@ -543,16 +546,9 @@ export function ConnectorDrawer({
     usesManagedCloudLink && onboarding && !isEnabled;
   const showManagedCloudConfiguration =
     !usesManagedCloudLink ||
-    (hasStagedServerCredentials &&
-      !showConnectedCloudSummary &&
-      !showingFirstTimeCloudSetup);
+    (isEnabled && !showConnectedCloudSummary && !showingFirstTimeCloudSetup);
   const showCloudLinkPanel =
-    usesManagedCloudLink &&
-    ((!isEnabled &&
-      (showingFirstTimeCloudSetup ||
-        !hasStagedServerCredentials ||
-        editCloudSetup)) ||
-      (isEnabled && editCloudSetup));
+    usesManagedCloudLink && (!isEnabled || (isEnabled && editCloudSetup));
   const showInlineCloudSetup =
     showConnectedCloudSummary && connectedTab === "Config" && editCloudSetup;
   const integrationPreset = getIntegrationPreset(connector.connector_id);
@@ -560,11 +556,7 @@ export function ConnectorDrawer({
     Boolean(integrationPreset) &&
     !usesManagedCloudLink &&
     !showConnectedCloudSummary;
-  const showSetupProgressCard = !(
-    showingFirstTimeCloudSetup &&
-    showCloudLinkPanel &&
-    !showInlineCloudSetup
-  );
+  const showSetupProgressCard = !showCloudLinkPanel;
   const compactCloudDetails = [...scopeFields, ...schedulerFields].map(
     (field) => ({
       label: field.label,
@@ -572,6 +564,12 @@ export function ConnectorDrawer({
     }),
   );
   const runHistoryRows = runs.data ?? [];
+  const operationalRuns = runHistoryRows.filter((run) =>
+    ["probe", "sync", "discover"].includes(run.kind),
+  );
+  const configurationEvents = runHistoryRows.filter(
+    (run) => !["probe", "sync", "discover"].includes(run.kind),
+  );
   const setupSteps: SetupStep[] = [
     {
       label: "Authorize",
@@ -785,6 +783,7 @@ export function ConnectorDrawer({
               {showDiscoveryAction ? (
                 <Button
                   variant="primary"
+                  size="sm"
                   onClick={runDiscovery}
                   disabled={discover.isPending || !canDiscover}
                 >
@@ -798,6 +797,7 @@ export function ConnectorDrawer({
               ) : !accessReady ? (
                 <Button
                   variant="primary"
+                  size="sm"
                   onClick={runProbe}
                   disabled={probe.isPending || !canTestAccess}
                 >
@@ -811,6 +811,7 @@ export function ConnectorDrawer({
               ) : !isEnabled || hasPendingConfigChanges ? (
                 <Button
                   variant="primary"
+                  size="sm"
                   onClick={enable}
                   disabled={
                     configure.isPending ||
@@ -829,6 +830,7 @@ export function ConnectorDrawer({
               ) : (
                 <Button
                   variant="primary"
+                  size="sm"
                   onClick={runSync}
                   disabled={sync.isPending || !isRunnable}
                 >
@@ -843,6 +845,7 @@ export function ConnectorDrawer({
               {isEnabled ? (
                 <Button
                   variant="default"
+                  size="sm"
                   onClick={disable}
                   disabled={configure.isPending}
                 >
@@ -863,7 +866,117 @@ export function ConnectorDrawer({
             dismissHref="/connectors"
           />
         ) : null}
-        {!isRunnable && (
+        {usesManagedCloudLink && !showConnectedCloudSummary && (
+          <div
+            aria-label="Connector setup view"
+            className="grid grid-cols-3 rounded-lg border border-line bg-panel p-1"
+            role="tablist"
+          >
+            {SETUP_TABS.map((tab) => {
+              const count =
+                tab === "Runs"
+                  ? operationalRuns.length
+                  : tab === "Events"
+                    ? configurationEvents.length
+                    : 0;
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  role="tab"
+                  aria-selected={setupTab === tab}
+                  className={`rounded-md px-2 py-1.5 text-xs font-black ${
+                    setupTab === tab
+                      ? "bg-brand text-white"
+                      : "text-muted hover:bg-white"
+                  }`}
+                  onClick={() => setSetupTab(tab)}
+                >
+                  {tab}
+                  {count > 0 ? ` · ${count}` : ""}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {usesManagedCloudLink &&
+          !showConnectedCloudSummary &&
+          setupTab === "Runs" && (
+            <section className="rounded-lg border border-line bg-white p-3">
+              <div className="text-xs font-black uppercase tracking-wide text-muted">
+                Run history
+              </div>
+              <div className="mt-2 grid gap-2">
+                {operationalRuns.slice(0, 8).map((run) => (
+                  <div
+                    key={run.occurred_at + run.kind}
+                    className="rounded-lg border border-line p-2 text-xs"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span>
+                        <Badge tone={toneForResult(run.result)}>
+                          {run.result}
+                        </Badge>{" "}
+                        <Badge>{run.kind}</Badge>
+                      </span>
+                      <span className="text-muted">
+                        {formatWhen(run.occurred_at)}
+                      </span>
+                    </div>
+                    <div className="mt-1 text-muted">
+                      {run.actor}
+                      {run.duration_ms !== null && <> · {run.duration_ms} ms</>}
+                      {run.evidence_count !== null && (
+                        <> · {run.evidence_count} evidence</>
+                      )}
+                    </div>
+                    {run.error && (
+                      <div className="mt-1 text-rose-700">
+                        {runErrorDetail(run, connector)}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {operationalRuns.length === 0 && (
+                  <div className="text-xs text-muted">
+                    No probes or syncs yet.
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+        {usesManagedCloudLink &&
+          !showConnectedCloudSummary &&
+          setupTab === "Events" && (
+            <section className="rounded-lg border border-line bg-white p-3">
+              <div className="text-xs font-black uppercase tracking-wide text-muted">
+                Configuration events
+              </div>
+              <div className="mt-2 grid gap-2">
+                {configurationEvents.slice(0, 8).map((event) => (
+                  <div
+                    key={event.occurred_at + event.kind}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-line p-2 text-xs"
+                  >
+                    <span>
+                      <Badge>{event.kind}</Badge> <b>{event.actor}</b>
+                    </span>
+                    <span className="text-muted">
+                      {formatWhen(event.occurred_at)}
+                    </span>
+                  </div>
+                ))}
+                {configurationEvents.length === 0 && (
+                  <div className="text-xs text-muted">
+                    No configuration events yet.
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+        {(!usesManagedCloudLink || setupTab === "Setup") && !isRunnable && (
           <section className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs leading-4 text-amber-950">
             <div className="flex items-start gap-2">
               <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
@@ -875,102 +988,108 @@ export function ConnectorDrawer({
           </section>
         )}
 
-        <div
-          className={`grid gap-3 ${showSetupProgressCard ? "lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]" : "lg:grid-cols-1"}`}
-        >
-          {!auditor &&
-            connector &&
-            showCloudLinkPanel &&
-            !showInlineCloudSetup && (
-              <CloudLinkPanel
-                connector={connector}
-                linkSessionId={linkSessionId}
-                onLinked={(linked) => {
-                  setAccessValidated(false);
-                  setCreds((current) => ({ ...current, ...linked }));
-                  setEditCloudSetup(false);
-                }}
-                onToast={onToast}
-              />
-            )}
-          {showSetupProgressCard && (
-            <section
-              className={`rounded-lg border border-line bg-surface p-3 ${usesManagedCloudLink && (hasStagedServerCredentials || showConnectedCloudSummary) ? "lg:col-span-2" : ""}`}
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <ConnectorMark
-                    connectorId={connector.connector_id}
-                    name={connector.name}
-                    category={connector.category}
-                    size="sm"
-                  />
-                  <span className="text-xs font-semibold text-ink">
-                    Step {Math.min(onboardingStep, 4)} of 4 ·{" "}
-                    {setupSteps[Math.min(onboardingStep, 4) - 1]?.label}
-                  </span>
-                </div>
-                <Badge tone={isEnabled ? "ready" : "default"}>
-                  {connector.state}
-                </Badge>
-              </div>
-              <div
-                className="mt-2 grid grid-cols-4 gap-1"
-                aria-label="Connector progress"
+        {(!usesManagedCloudLink ||
+          showConnectedCloudSummary ||
+          setupTab === "Setup") && (
+          <div
+            className={`grid gap-3 ${showSetupProgressCard ? "lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]" : "lg:grid-cols-1"}`}
+          >
+            {!auditor &&
+              connector &&
+              showCloudLinkPanel &&
+              !showInlineCloudSetup && (
+                <CloudLinkPanel
+                  connector={connector}
+                  linkSessionId={linkSessionId}
+                  onLinked={(linked) => {
+                    setAccessValidated(false);
+                    setCreds((current) => ({ ...current, ...linked }));
+                    setEditCloudSetup(false);
+                  }}
+                  onToast={onToast}
+                />
+              )}
+            {showSetupProgressCard && (
+              <section
+                className={`rounded-lg border border-line bg-surface p-2.5 ${usesManagedCloudLink && (hasStagedServerCredentials || showConnectedCloudSummary) ? "lg:col-span-2" : ""}`}
               >
-                {setupSteps.map((step, index) => (
-                  <span
-                    key={step.label}
-                    title={`${step.label}: ${step.detail}`}
-                    className={`h-1.5 rounded-full ${index < onboardingStep ? "bg-brand" : "bg-line"}`}
-                  />
-                ))}
-              </div>
-              <p className="mt-2 text-xs leading-4 text-muted">
-                {setupSteps[Math.min(onboardingStep, 4) - 1]?.detail}
-              </p>
-            </section>
-          )}
-        </div>
-
-        {showManagedCloudConfiguration && !showConnectedCloudSummary && (
-          <details className="rounded-xl border border-line p-3">
-            <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
-              <ListChecks className="h-3.5 w-3.5" /> Connector contract
-            </summary>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              <div>
-                <div className="text-xs font-black uppercase tracking-wide text-muted">
-                  Permissions
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <ConnectorMark
+                      connectorId={connector.connector_id}
+                      name={connector.name}
+                      category={connector.category}
+                      size="sm"
+                    />
+                    <span className="text-xs font-semibold text-ink">
+                      Step {Math.min(onboardingStep, 4)} of 4 ·{" "}
+                      {setupSteps[Math.min(onboardingStep, 4) - 1]?.label}
+                    </span>
+                  </div>
+                  <Badge tone={isEnabled ? "ready" : "default"}>
+                    {connector.state}
+                  </Badge>
                 </div>
-                <ul className="mt-2 space-y-1 text-xs">
-                  {connector.minimum_permissions.map((perm) => (
-                    <li key={perm} className="flex items-start gap-2">
-                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
-                      <code className="text-ink">{perm}</code>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <div className="text-xs font-black uppercase tracking-wide text-muted">
-                  Evidence
-                </div>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {connector.evidence_types.map((t) => (
-                    <Badge key={t}>{t}</Badge>
+                <div
+                  className="mt-2 grid grid-cols-4 gap-1"
+                  aria-label="Connector progress"
+                >
+                  {setupSteps.map((step, index) => (
+                    <span
+                      key={step.label}
+                      title={`${step.label}: ${step.detail}`}
+                      className={`h-1.5 rounded-full ${index < onboardingStep ? "bg-brand" : "bg-line"}`}
+                    />
                   ))}
                 </div>
-              </div>
-            </div>
-          </details>
+                <p className="mt-2 text-xs leading-4 text-muted">
+                  {setupSteps[Math.min(onboardingStep, 4) - 1]?.detail}
+                </p>
+              </section>
+            )}
+          </div>
         )}
 
+        {showManagedCloudConfiguration &&
+          !showConnectedCloudSummary &&
+          (!usesManagedCloudLink || setupTab === "Setup") && (
+            <details className="rounded-xl border border-line p-3">
+              <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
+                <ListChecks className="h-3.5 w-3.5" /> Connector contract
+              </summary>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                <div>
+                  <div className="text-xs font-black uppercase tracking-wide text-muted">
+                    Permissions
+                  </div>
+                  <ul className="mt-2 space-y-1 text-xs">
+                    {connector.minimum_permissions.map((perm) => (
+                      <li key={perm} className="flex items-start gap-2">
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                        <code className="text-ink">{perm}</code>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <div className="text-xs font-black uppercase tracking-wide text-muted">
+                    Evidence
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {connector.evidence_types.map((t) => (
+                      <Badge key={t}>{t}</Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </details>
+          )}
+
         {showConnectedCloudSummary ? (
-          <section className="rounded-lg border border-line p-3">
+          <section className="rounded-lg border border-line p-2.5">
             <div
               aria-label="Connected connector view"
-              className="grid grid-cols-3 rounded-lg border border-line bg-panel p-1"
+              className="grid grid-cols-3 rounded-md border border-line bg-panel p-0.5"
               role="tablist"
             >
               {CONNECTED_TABS.map((tab) => (
@@ -979,7 +1098,7 @@ export function ConnectorDrawer({
                   type="button"
                   role="tab"
                   aria-selected={connectedTab === tab}
-                  className={`rounded-md px-2 py-1.5 text-xs font-black ${
+                  className={`rounded px-2 py-1 text-xs font-black ${
                     connectedTab === tab
                       ? "bg-brand text-white"
                       : "text-muted hover:bg-white"
@@ -1540,9 +1659,13 @@ export function ConnectorDrawer({
                 )}
                 {canEnable && !isEnabled && !probeGateSatisfied && (
                   <div className="mt-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-900">
-                    Test connection before enabling. Snowflake runs a live
-                    probe; other runnable connectors validate configuration only
-                    until sync.
+                    {connector.connector_id === "aws-posture"
+                      ? "Test connection before enabling. TrustOps will call AWS STS AssumeRole with the account target and external ID; no long-lived AWS keys are stored."
+                      : connector.connector_id === "azure-posture"
+                        ? "Test connection before enabling. TrustOps verifies that the configured identity can read the selected Azure subscription."
+                        : isSnowflake
+                          ? "Test connection before enabling. TrustOps runs a live read-only Snowflake probe."
+                          : "Test connection before enabling. TrustOps validates the connector configuration and reports whether access is ready."}
                   </div>
                 )}
                 {discoveryRun?.metadata && (
@@ -1626,67 +1749,6 @@ export function ConnectorDrawer({
             </details>
           )
         )}
-
-        {!showConnectedCloudSummary &&
-          runHistoryRows.length > 0 &&
-          !showingFirstTimeCloudSetup && (
-            <LatestSyncProof connector={connector} runnable={isRunnable} />
-          )}
-
-        {!showConnectedCloudSummary &&
-          runHistoryRows.length > 0 &&
-          !showingFirstTimeCloudSetup && (
-            <details className="rounded-lg border border-line p-3">
-              <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
-                <ShieldCheck className="h-3 w-3" /> Run log ·{" "}
-                {runHistoryRows.length} events
-              </summary>
-              <section className="mt-3">
-                <div className="grid gap-2">
-                  {runHistoryRows.slice(0, 8).map((r) => (
-                    <div
-                      key={r.occurred_at + r.kind}
-                      className="rounded-lg border border-line p-3 text-xs"
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <span>
-                          <Badge tone={toneForResult(r.result)}>
-                            {r.result}
-                          </Badge>{" "}
-                          <Badge>{r.kind}</Badge>
-                        </span>
-                        <span className="text-muted">{r.occurred_at}</span>
-                      </div>
-                      <div className="mt-1 text-muted">
-                        actor <b className="text-ink">{r.actor}</b>
-                        {r.duration_ms !== null && <> · {r.duration_ms} ms</>}
-                        {r.evidence_count !== null && (
-                          <>
-                            {" "}
-                            ·{" "}
-                            {r.kind === "sync"
-                              ? `${r.evidence_count} evidence row(s)`
-                              : `${r.evidence_count} object(s)`}
-                          </>
-                        )}
-                      </div>
-                      {r.error && (
-                        <div className="mt-1 text-rose-700">
-                          {runErrorDetail(r, connector)}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                  {runHistoryRows.length === 0 && (
-                    <div className="rounded-lg border border-dashed border-line p-3 text-xs text-muted">
-                      No probes or syncs recorded yet. Click{" "}
-                      <b>Test connection</b> to run one.
-                    </div>
-                  )}
-                </div>
-              </section>
-            </details>
-          )}
       </div>
     </Drawer>
   );
