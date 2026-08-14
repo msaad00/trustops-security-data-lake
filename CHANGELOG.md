@@ -3,6 +3,39 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
+## 0.2.3 - 2026-08-13
+
+Release theme: **security + supply-chain currency**. Publishes the fixes and the
+new connector work that landed on `main` after 0.2.2.
+
+### Security
+
+- Upgraded the bundled web console to Next.js 16, clearing four high-severity
+  production advisories (nanoid, postcss, sharp, and the transitive next chain).
+- AWS connector: `password_policy`/`console_access` now surface unexpected IAM
+  errors instead of swallowing them into a false control pass.
+- `required_post_scope` fails closed — a mutating route not explicitly scoped is
+  denied rather than accepting the low `write` scope.
+
+### Added
+
+- AWS connector cloud-linking: read-only posture role, a dedicated connector
+  runtime role, and the cloud-link console flow.
+
+### Fixed
+
+- Dropped the opaque `/api/{rest}` catch-all from the published OpenAPI spec and
+  catalogued six previously undocumented served routes.
+- Helm: pin the scheduler CronJob to the API pod's node when the lake PVC is
+  ReadWriteOnce, so it can mount; chart version is now gated against the release.
+- Corrected the `db upgrade` command in the hosted deployment guide.
+
+### Docs
+
+- README status badges + PyPI classifiers; architecture diagrams now use real
+  vendor logos and the official Snowflake/ClickHouse marks with proportionate
+  arrowheads.
+
 ## 0.2.2 - 2026-08-12
 
 Release theme: **audit follow-through**. Applies the confirmed findings from a
