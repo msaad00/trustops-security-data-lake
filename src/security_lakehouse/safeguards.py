@@ -116,6 +116,42 @@ def safeguards_by_requirement(
     return out
 
 
+def mapping_review_queue(payload: JsonObject | None = None, *, framework_id: str | None = None) -> list[JsonObject]:
+    """Proposed (unreviewed) safeguard→requirement mappings awaiting expert sign-off.
+
+    Read-only curation aid — it never promotes a mapping (that equivalence call is
+    the reviewer's). Each item carries the ``reviewed_anchors`` already confirmed on
+    the same safeguard, so a reviewer can judge a proposed equivalence against
+    mappings they already trust and accept/reject fast. This is the backlog whose
+    review grows the *attestable* coverage number.
+    """
+    data = payload or load_safeguards()
+    items: list[JsonObject] = []
+    for entry in data["safeguards"]:
+        anchors = [
+            str(member.get("control_id"))
+            for member in entry.get("satisfies", [])
+            if member.get("review_status", "reviewed") == "reviewed"
+        ]
+        for member in entry.get("satisfies", []):
+            if member.get("review_status", "reviewed") == "reviewed":
+                continue
+            if framework_id and str(member.get("framework_id")) != framework_id:
+                continue
+            items.append(
+                {
+                    "safeguard_id": str(entry["safeguard_id"]),
+                    "safeguard_title": entry.get("title"),
+                    "risk_domain": entry.get("risk_domain"),
+                    "control_id": str(member.get("control_id")),
+                    "framework_id": str(member.get("framework_id")),
+                    "role": member.get("role"),
+                    "reviewed_anchors": anchors,
+                }
+            )
+    return items
+
+
 def requirement_status(control_id: str, safeguard_results: dict[str, str], payload: JsonObject | None = None) -> str:
     """Derive one framework requirement's status from its safeguards.
 

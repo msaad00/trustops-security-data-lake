@@ -427,6 +427,12 @@ def _parser() -> argparse.ArgumentParser:
     frameworks_coverage = frameworks_sub.add_parser("coverage", help="show the source-linked framework coverage ledger")
     frameworks_coverage.add_argument("--format", choices=["json", "markdown"], default="json", help="output format")
     frameworks_coverage.set_defaults(func=_frameworks_coverage)
+    frameworks_review = frameworks_sub.add_parser(
+        "review-queue",
+        help="list proposed (unreviewed) safeguard->requirement mappings awaiting expert sign-off",
+    )
+    frameworks_review.add_argument("--framework", default=None, help="filter to one framework_id")
+    frameworks_review.set_defaults(func=_frameworks_review_queue)
     controls_ccf = frameworks_sub.add_parser(
         "safeguards",
         help="show Common Control Framework coverage (safeguards -> framework requirements)",
@@ -1705,6 +1711,28 @@ def _frameworks_coverage(args: argparse.Namespace) -> int:
                 sort_keys=True,
             )
         )
+    return 0
+
+
+def _frameworks_review_queue(args: argparse.Namespace) -> int:
+    from security_lakehouse.safeguards import mapping_review_queue
+
+    items = mapping_review_queue(framework_id=args.framework)
+    by_framework: dict[str, int] = {}
+    for item in items:
+        by_framework[item["framework_id"]] = by_framework.get(item["framework_id"], 0) + 1
+    print(
+        json.dumps(
+            {
+                "proposed_mapping_count": len(items),
+                "by_framework": dict(sorted(by_framework.items())),
+                "items": items,
+                "note": "Review is a domain-expert equivalence judgment; nothing here is auto-promoted.",
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 
