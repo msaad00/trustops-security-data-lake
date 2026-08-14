@@ -3,6 +3,40 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
+## 0.2.4 - 2026-08-14
+
+Release theme: **honest framework coverage + connector resilience**. Separates
+the coverage a compliance product may attest to from the coverage it merely
+touches, and hardens the read-only connectors against redirects and rate limits.
+
+### Security
+
+- Repo-governance connector (GitHub/GitLab) now reaches its APIs through the
+  same SSRF guard as every other HTTP connector, re-validating each redirect hop
+  and stripping `Authorization` across origins. The GitLab base URL is
+  operator-configurable, so a redirect could otherwise pivot the request and its
+  bearer token at an internal address.
+
+### Added
+
+- Framework coverage matrix that splits **evaluatable** (any safeguard mapping)
+  from **attestable** (human-reviewed — the only coverage an auditor accepts),
+  surfaced via `frameworks coverage`, an MCP tool, and a committed, gated doc.
+- Mapping review-queue (`frameworks review-queue`, `--framework` to scope, plus
+  an MCP tool) that lists the proposed safeguard→requirement mappings awaiting
+  expert sign-off, each paired with the reviewed anchors on the same safeguard.
+  It never auto-promotes a mapping — accepting one stays a domain-expert call.
+
+### Fixed
+
+- Connectors retry transient rate-limit / gateway errors (429/5xx, honoring
+  `Retry-After`, with exponential backoff + jitter) instead of failing a whole
+  sync on a single blip: SIEM, runtime-gateway, ClickHouse, and repo-governance.
+  4xx stays terminal.
+- Google Workspace connector follows the Directory API `nextPageToken` instead
+  of a single request, so a tenant with more than a page of users/groups/members
+  is no longer silently truncated.
+
 ## 0.2.3 - 2026-08-13
 
 Release theme: **security + supply-chain currency**. Publishes the fixes and the
