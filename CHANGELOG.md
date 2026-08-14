@@ -26,6 +26,10 @@ touches, and hardens the read-only connectors against redirects and rate limits.
   an MCP tool) that lists the proposed safeguard→requirement mappings awaiting
   expert sign-off, each paired with the reviewed anchors on the same safeguard.
   It never auto-promotes a mapping — accepting one stays a domain-expert call.
+- Google Workspace connector supports OAuth refresh tokens for unattended sync,
+  exchanging the refresh token when the access token is missing, near expiry, or
+  rejected once with 401. The refresh token and client secret resolve file-first,
+  and the resolved access token is held in memory only, never persisted.
 
 ### Fixed
 
