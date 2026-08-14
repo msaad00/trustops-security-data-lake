@@ -12,8 +12,8 @@
       <stop offset="1" stop-color="#115e59"/>
     </linearGradient>
     <linearGradient id="lake" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#6b3f00"/>
-      <stop offset="1" stop-color="#422006"/>
+      <stop offset="0" stop-color="#9a3412"/>
+      <stop offset="1" stop-color="#431407"/>
     </linearGradient>
     <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#312e81"/>
@@ -33,16 +33,16 @@
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#020617" flood-opacity="0.36"/>
     </filter>
-    <marker id="arrowCyan" markerWidth="13" markerHeight="13" refX="11" refY="6.5" orient="auto">
+    <marker id="arrowCyan" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
       <path d="M0 0 13 6.5 0 13z" fill="#22d3ee"/>
     </marker>
-    <marker id="arrowGreen" markerWidth="13" markerHeight="13" refX="11" refY="6.5" orient="auto">
+    <marker id="arrowGreen" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
       <path d="M0 0 13 6.5 0 13z" fill="#34d399"/>
     </marker>
-    <marker id="arrowGold" markerWidth="13" markerHeight="13" refX="11" refY="6.5" orient="auto">
+    <marker id="arrowGold" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
       <path d="M0 0 13 6.5 0 13z" fill="#facc15"/>
     </marker>
-    <marker id="arrowRose" markerWidth="13" markerHeight="13" refX="11" refY="6.5" orient="auto">
+    <marker id="arrowRose" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
       <path d="M0 0 13 6.5 0 13z" fill="#fb7185"/>
     </marker>
     <style>
@@ -55,8 +55,8 @@
       .laneRose { fill: #fecdd3; font-size: 11px; font-weight: 900; letter-spacing: 0.18em; }
       .cardTitle { fill: #ffffff; font-size: 18px; font-weight: 900; }
       .cardText { fill: #dbeafe; font-size: 12px; font-weight: 650; }
-      .muted { fill: #94a3b8; font-size: 11px; font-weight: 700; }
-      .tiny { fill: #94a3b8; font-size: 10px; font-weight: 700; }
+      .muted { fill: #cbd5e1; font-size: 11px; font-weight: 700; }
+      .tiny { fill: #cbd5e1; font-size: 10px; font-weight: 700; }
       .code { fill: #e0f2fe; font-size: 12px; font-weight: 850; }
       .box { fill: #0f172a; stroke: #334155; stroke-width: 1.4; }
       .signal { fill: #101b2d; stroke: #334155; stroke-width: 1.25; }
@@ -100,25 +100,25 @@
       <text x="26" y="66" class="cardText">Security events that need fast slices.</text>
       <g transform="translate(26 96)">
         <rect width="112" height="52" rx="11" class="signal"/>
-        <circle cx="25" cy="26" r="15" fill="#f59e0b"/>
+        <svg x="11" y="12" width="28" height="28" viewBox="0 0 24 24"><path fill="#fbbf24" d="M9 2h2v2h2V2h2v2h1a3 3 0 0 1 3 3v1h2v2h-2v2h2v2h-2v1a3 3 0 0 1-3 3h-1v2h-2v-2h-2v2H9v-2H8a3 3 0 0 1-3-3v-1H3v-2h2v-2H3V8h2V7a3 3 0 0 1 3-3h1V2zm-.5 6.5v7h7v-7h-7z"/></svg>
         <text x="50" y="24" class="code">Runtime</text>
         <text x="50" y="40" class="tiny">agents · MCP</text>
       </g>
       <g transform="translate(166 96)">
         <rect width="112" height="52" rx="11" class="signal"/>
-        <circle cx="25" cy="26" r="15" fill="#3b82f6"/>
+        <svg x="11" y="13" width="28" height="28" viewBox="0 0 24 24"><path fill="#60a5fa" d="M6.5 19a4.5 4.5 0 0 1-.62-8.96 6 6 0 0 1 11.65-1.2A4.5 4.5 0 0 1 17.5 19h-11z"/></svg>
         <text x="50" y="24" class="code">Cloud</text>
         <text x="50" y="40" class="tiny">flow · audit</text>
       </g>
       <g transform="translate(26 164)">
         <rect width="112" height="52" rx="11" class="signal"/>
-        <circle cx="25" cy="26" r="15" fill="#7c3aed"/>
+        <svg x="11" y="12" width="28" height="28" viewBox="0 0 24 24"><path fill="#007DC1" d="M12 0C5.389 0 0 5.35 0 12s5.35 12 12 12 12-5.35 12-12S18.611 0 12 0zm0 18c-3.325 0-6-2.675-6-6s2.675-6 6-6 6 2.675 6 6-2.675 6-6 6z"/></svg>
         <text x="50" y="24" class="code">Identity</text>
         <text x="50" y="40" class="tiny">Okta · group</text>
       </g>
       <g transform="translate(166 164)">
         <rect width="112" height="52" rx="11" class="signal"/>
-        <circle cx="25" cy="26" r="15" fill="#10b981"/>
+        <svg x="11" y="12" width="28" height="28" viewBox="0 0 24 24"><path fill="#e5e7eb" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
         <text x="50" y="24" class="code">Repos</text>
         <text x="50" y="40" class="tiny">push · config</text>
       </g>
