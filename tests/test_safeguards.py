@@ -10,6 +10,7 @@ from security_lakehouse.safeguards import (
     SCHEMA,
     coverage_by_framework,
     load_safeguards,
+    mapping_review_queue,
     requirement_status,
     safeguards_by_requirement,
     validate_safeguards,
@@ -116,6 +117,58 @@ def test_proposed_mappings_are_not_counted_as_reviewed_coverage() -> None:
     reviewed_only = safeguards_by_requirement(reviewed_only=True)
     everything = safeguards_by_requirement()
     assert set(reviewed_only) < set(everything)
+
+
+def test_review_queue_lists_only_proposed_mappings_with_reviewed_anchors() -> None:
+    """The queue is the backlog that grows attestable coverage.
+
+    It surfaces every proposed (unreviewed) mapping — never a reviewed one, which
+    would be busywork — and pairs each with the reviewed anchors on the same
+    safeguard, giving a reviewer trusted mappings to judge the equivalence against.
+    """
+    queue = mapping_review_queue()
+    proposed = [
+        (entry["safeguard_id"], member["control_id"])
+        for entry in load_safeguards()["safeguards"]
+        for member in entry["satisfies"]
+        if member.get("review_status", "reviewed") == "proposed"
+    ]
+    assert {(item["safeguard_id"], item["control_id"]) for item in queue} == set(proposed)
+    assert queue, "expected a real review backlog today"
+
+    reviewed = set(safeguards_by_requirement(reviewed_only=True))
+    for item in queue:
+        # A queued item is proposed, so it is not already attestable coverage.
+        assert item["control_id"] not in reviewed or len(safeguards_by_requirement()[item["control_id"]]) > 1
+        # Anchors are the reviewer's trusted reference points, all confirmed.
+        assert all(anchor in reviewed for anchor in item["reviewed_anchors"])
+
+
+def test_review_queue_filters_to_a_single_framework() -> None:
+    everything = mapping_review_queue()
+    target = everything[0]["framework_id"]
+    filtered = mapping_review_queue(framework_id=target)
+    assert filtered
+    assert {item["framework_id"] for item in filtered} == {target}
+    assert len(filtered) == sum(1 for item in everything if item["framework_id"] == target)
+
+
+def test_review_queue_never_promotes_a_mapping() -> None:
+    """Calling the queue must not change what attestation reads."""
+    before = dict(safeguards_by_requirement(reviewed_only=True))
+    mapping_review_queue()
+    after = dict(safeguards_by_requirement(reviewed_only=True))
+    assert before == after
+
+
+def test_review_queue_cli_reports_the_backlog(capsys) -> None:
+    from security_lakehouse.cli import main
+
+    assert main(["frameworks", "review-queue"]) == 0
+    out = json.loads(capsys.readouterr().out)
+    assert out["proposed_mapping_count"] == len(mapping_review_queue())
+    assert out["proposed_mapping_count"] == sum(out["by_framework"].values())
+    assert "domain-expert" in out["note"]
 
 
 def test_every_mapping_declares_a_known_review_state() -> None:

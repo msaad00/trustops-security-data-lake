@@ -140,7 +140,12 @@ Full coverage needs the catalog enriched before the curation can be checked.
 2. **Curate what is checkable** — the 393 requirements whose titles carry
    content. 216 are mapped; the rest are the near-term queue. Promoting a
    `proposed` mapping to `reviewed` is a human confirming the two requirements
-   are the same obligation. _In progress._
+   are the same obligation. `security-lakehouse frameworks review-queue`
+   (`--framework <id>` to scope) lists the 454 proposed mappings, each paired
+   with the reviewed anchors already on that safeguard, so a reviewer judges an
+   equivalence against mappings they already trust; the `get_mapping_review_queue`
+   MCP tool serves agents the same backlog. Neither promotes anything — that
+   equivalence call is the reviewer's. _In progress._
 3. **Enrich the 549 placeholder titles**, or import an authoritative crosswalk.
    NIST publishes 800-53 ↔ CSF mappings, CMMC L2 is NIST 800-171 with a
    published 800-53 mapping, and ISO ↔ NIST crosswalks exist. Importing those
