@@ -79,12 +79,7 @@
 
     <g transform="translate(1142 36)" filter="url(#shadow)">
       <rect width="292" height="76" rx="17" class="box"/>
-      <g transform="translate(24 18)" fill="#facc15">
-        <rect x="0" y="0" width="12" height="34"/>
-        <rect x="18" y="0" width="12" height="34"/>
-        <rect x="36" y="0" width="12" height="34"/>
-        <rect x="54" y="0" width="12" height="20" fill="#fef08a"/>
-      </g>
+      <svg x="22" y="14" width="44" height="44" viewBox="0 0 24 24"><path fill="#FAFF04" d="M21.333 10H24v4h-2.667ZM16 1.335h2.667v21.33H16Zm-5.333 0h2.666v21.33h-2.666ZM0 22.665V1.335h2.667v21.33zm5.333-21.33H8v21.33H5.333Z"/></svg>
       <text x="92" y="31" class="cardTitle" font-size="16">ClickHouse pack</text>
       <text x="92" y="52" class="tiny">MergeTree · TTL · materialized views</text>
     </g>
