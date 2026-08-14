@@ -90,7 +90,7 @@ Migration `0012_tenant_invites` adds the `tenant_invites` table.
 Migration `0013_tenant_plan_tier` adds `tenants.plan_tier` for hosted limits.
 
 ```bash
-security-lakehouse db migrate --lake build/lakehouse
+security-lakehouse db upgrade --lake build/lakehouse
 ```
 
 ## Related docs
