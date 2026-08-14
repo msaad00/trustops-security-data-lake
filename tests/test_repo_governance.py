@@ -6,12 +6,18 @@ import json
 import urllib.error
 from datetime import UTC, datetime
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from security_lakehouse.cli import main
 from security_lakehouse.io import read_jsonl
-from security_lakehouse.repo_governance import GitHubGovernanceClient, GovernanceRepoSpec, sync_repo_governance
+from security_lakehouse.repo_governance import (
+    GitHubGovernanceClient,
+    GitLabGovernanceClient,
+    GovernanceRepoSpec,
+    sync_repo_governance,
+)
 from security_lakehouse.validation import validate_raw_events
 
 
@@ -119,6 +125,98 @@ def test_governance_sync_requires_fixture_or_token(monkeypatch: pytest.MonkeyPat
     monkeypatch.delenv("TRUSTOPS_GITHUB_APP_INSTALLATION_TOKEN", raising=False)
     with pytest.raises(ValueError, match="requires --fixture-dir"):
         sync_repo_governance("acme/private-agent-api")
+
+
+def _mock_response(payload: object, *, status: int = 200) -> object:
+    response = MagicMock()
+    response.status = status
+    response.read.return_value = json.dumps(payload).encode("utf-8")
+    response.__enter__.return_value = response
+    return response
+
+
+def test_github_request_goes_through_ssrf_guard_not_raw_urlopen(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Every GitHub read must route through netguard (redirect-revalidated), like
+    every other HTTP connector — a raw urlopen is an SSRF-via-redirect bypass."""
+
+    def forbidden_urlopen(*_args: object, **_kwargs: object) -> object:
+        raise AssertionError("raw urllib.request.urlopen used — SSRF guard bypassed")
+
+    monkeypatch.setattr("security_lakehouse.repo_governance.urllib.request.urlopen", forbidden_urlopen)
+    client = GitHubGovernanceClient(GovernanceRepoSpec(provider="github", owner="acme", repo="api"), token="t")
+
+    with patch(
+        "security_lakehouse.netguard.open_public", return_value=_mock_response({"full_name": "acme/api"})
+    ) as guarded:
+        out = client.repo()
+
+    assert guarded.called
+    assert out["full_name"] == "acme/api"
+
+
+def test_github_request_retries_transient_error_then_succeeds(monkeypatch: pytest.MonkeyPatch) -> None:
+    import urllib.error
+
+    monkeypatch.setattr("security_lakehouse.ingestion.backoff.time.sleep", lambda *_: None)
+    client = GitHubGovernanceClient(GovernanceRepoSpec(provider="github", owner="acme", repo="api"), token="t")
+    sequence: list[object] = [
+        urllib.error.HTTPError("https://api.github.com", 503, "unavailable", {}, None),
+        _mock_response({"full_name": "acme/api"}),
+    ]
+
+    def flaky(*_args: object, **_kwargs: object) -> object:
+        item = sequence.pop(0)
+        if isinstance(item, Exception):
+            raise item
+        return item
+
+    with patch("security_lakehouse.netguard.open_public", side_effect=flaky):
+        out = client.repo()
+
+    assert out["full_name"] == "acme/api"
+    assert sequence == []
+
+
+def test_gitlab_request_goes_through_ssrf_guard(monkeypatch: pytest.MonkeyPatch) -> None:
+    def forbidden_urlopen(*_args: object, **_kwargs: object) -> object:
+        raise AssertionError("raw urllib.request.urlopen used — SSRF guard bypassed")
+
+    monkeypatch.setattr("security_lakehouse.repo_governance.urllib.request.urlopen", forbidden_urlopen)
+    client = GitLabGovernanceClient(GovernanceRepoSpec(provider="gitlab", owner="acme", repo="api"), token="t")
+
+    with patch(
+        "security_lakehouse.netguard.open_public",
+        return_value=_mock_response({"default_branch": "main", "visibility": "private", "id": 7}),
+    ) as guarded:
+        out = client.repo()
+
+    assert guarded.called
+    assert out["default_branch"] == "main"
+
+
+def test_github_204_is_still_read_as_enabled(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The 204 → {'enabled': True} contract must survive the netguard switch."""
+    client = GitHubGovernanceClient(GovernanceRepoSpec(provider="github", owner="acme", repo="api"), token="t")
+    response = MagicMock()
+    response.status = 204
+    response.__enter__.return_value = response
+
+    with patch("security_lakehouse.netguard.open_public", return_value=response):
+        assert client.vulnerability_alerts() == {"enabled": True}
+
+
+def test_github_security_findings_not_truncated_below_1000(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The page cap must not silently drop a repo's alerts at 10 pages (1000 rows)."""
+    client = GitHubGovernanceClient(GovernanceRepoSpec(provider="github", owner="acme", repo="api"), token="t")
+
+    def fake_request(url: str) -> object:
+        # 11 full pages then a short page — 1001 rows, more than the old 10-page cap.
+        page = int(url.rsplit("page=", 1)[1])
+        return [{"state": "open"}] * 100 if page <= 11 else [{"state": "open"}]
+
+    monkeypatch.setattr(client, "_request", fake_request)
+    findings = client.security_findings()
+    assert len(findings["code_scanning"]) == 1101  # 11×100 + 1, past the old 10-page (1000) cap
 
 
 def test_github_security_findings_paginates_with_a_hard_limit(monkeypatch: pytest.MonkeyPatch) -> None:

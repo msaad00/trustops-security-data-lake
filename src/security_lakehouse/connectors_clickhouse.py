@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from security_lakehouse import netguard
+from security_lakehouse.ingestion import backoff
 from security_lakehouse.io import read_json
 from security_lakehouse.models import parse_event_time, utc_iso
 
@@ -105,9 +106,15 @@ class ClickHouseClient:
             request.add_header("X-ClickHouse-User", self.user)
         if self.password:
             request.add_header("X-ClickHouse-Key", self.password)
-        try:
+
+        def _fetch() -> str:
             with netguard.open_public(request, timeout=self.timeout, label="clickhouse host") as resp:
-                body = resp.read().decode("utf-8")
+                return resp.read().decode("utf-8")
+
+        try:
+            # A read-only SELECT/SHOW is safe to retry; recover from a transient
+            # 429/5xx (honoring Retry-After) instead of failing the whole sync.
+            body = backoff.http_retry(_fetch)
         except urllib.error.HTTPError as exc:  # pragma: no cover - live only
             raise ValueError(exc.__class__.__name__) from exc
         rows: list[dict[str, Any]] = []

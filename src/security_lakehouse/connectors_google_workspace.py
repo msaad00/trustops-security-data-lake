@@ -33,6 +33,7 @@ from typing import Any
 
 from security_lakehouse import netguard
 from security_lakehouse.ingestion import backoff
+from security_lakehouse.ingestion.paginate import paginate
 from security_lakehouse.io import read_json
 from security_lakehouse.models import utc_iso
 
@@ -80,26 +81,37 @@ class GoogleWorkspaceClient:
         return self._json_collection(url, key="members")
 
     def _json_collection(self, url: str, *, key: str) -> list[dict[str, Any]]:
-        request = urllib.request.Request(
-            url,
-            headers={
-                "accept": "application/json",
-                "authorization": f"Bearer {self.access_token}",
-                "user-agent": "trustops-security-data-lake",
-            },
-        )
+        # The Directory API pages with nextPageToken; a single GET truncates a
+        # real tenant at maxResults, so follow the cursor to the end. It also
+        # rate-limits with HTTP 429 + Retry-After, so each page is fetched under
+        # backoff. `paginate` supplies the loop and a runaway page cap.
+        def fetch_page(page_token: str | None) -> dict[str, Any]:
+            page_url = url if not page_token else f"{url}&pageToken={urllib.parse.quote(page_token)}"
+            request = urllib.request.Request(
+                page_url,
+                headers={
+                    "accept": "application/json",
+                    "authorization": f"Bearer {self.access_token}",
+                    "user-agent": "trustops-security-data-lake",
+                },
+            )
 
-        # The Directory API rate-limits with HTTP 429 + a Retry-After header;
-        # back off and retry transient 429/5xx rather than failing collection.
-        def _fetch() -> Any:
-            with netguard.open_public(request, timeout=self.timeout, label="google workspace api") as resp:
-                return json.loads(resp.read().decode("utf-8"))
+            def _fetch() -> Any:
+                with netguard.open_public(request, timeout=self.timeout, label="google workspace api") as resp:
+                    return json.loads(resp.read().decode("utf-8"))
 
-        payload = backoff.http_retry(_fetch)
-        if isinstance(payload, dict):
-            items = payload.get(key, [])
-            return [item for item in items if isinstance(item, dict)]
-        raise ValueError(f"Google Workspace returned non-object JSON for {url}")
+            payload = backoff.http_retry(_fetch)
+            if not isinstance(payload, dict):
+                raise ValueError(f"Google Workspace returned non-object JSON for {page_url}")
+            return payload
+
+        def extract_items(page: dict[str, Any]) -> list[dict[str, Any]]:
+            return [item for item in page.get(key, []) if isinstance(item, dict)]
+
+        def next_cursor(page: dict[str, Any]) -> str | None:
+            return str(page.get("nextPageToken") or "") or None
+
+        return list(paginate(fetch_page, extract_items, next_cursor))
 
 
 class GoogleWorkspaceFixtureClient:

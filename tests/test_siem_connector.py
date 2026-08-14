@@ -115,6 +115,48 @@ def test_siem_live_query_parses_json_list() -> None:
     assert rows[0]["alert_id"] == "live-1"
 
 
+def test_siem_retries_on_rate_limit_then_succeeds(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A single 429 must be retried (honoring Retry-After), not fail the whole sync."""
+    import urllib.error
+
+    monkeypatch.setattr("security_lakehouse.ingestion.backoff.time.sleep", lambda *_: None)
+    response = MagicMock()
+    response.read.return_value = json.dumps([{"alert_id": "a1", "event_time": "2026-06-01T10:00:00Z"}]).encode("utf-8")
+    response.__enter__.return_value = response
+    sequence: list[object] = [
+        urllib.error.HTTPError("https://siem.example", 429, "slow down", {"Retry-After": "0"}, None),
+        response,
+    ]
+
+    def flaky(*_args: object, **_kwargs: object) -> object:
+        item = sequence.pop(0)
+        if isinstance(item, Exception):
+            raise item
+        return item
+
+    with patch("security_lakehouse.netguard.open_public", side_effect=flaky):
+        rows = SiemClient("https://siem.example", token="secret").alerts()
+
+    assert [row["alert_id"] for row in rows] == ["a1"]
+    assert sequence == []  # both the 429 and the success were consumed → retried once
+
+
+def test_siem_does_not_retry_client_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A 404 is terminal — surfaced as a sanitized error, never retried."""
+    import urllib.error
+
+    calls = {"n": 0}
+
+    def always_404(*_args: object, **_kwargs: object) -> object:
+        calls["n"] += 1
+        raise urllib.error.HTTPError("https://siem.example", 404, "missing", {}, None)
+
+    with patch("security_lakehouse.netguard.open_public", side_effect=always_404), pytest.raises(ValueError):
+        SiemClient("https://siem.example", token="secret").alerts()
+
+    assert calls["n"] == 1  # no retry on a 4xx
+
+
 def test_siem_probe_and_discovery_with_env_token(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("TRUSTOPS_SIEM_TOKEN", "secret-token")
 
