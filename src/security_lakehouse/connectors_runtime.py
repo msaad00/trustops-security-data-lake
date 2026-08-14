@@ -18,6 +18,7 @@ from typing import Any
 
 from security_lakehouse import netguard
 from security_lakehouse.ingestion import backoff
+from security_lakehouse.ingestion.paginate import paginate
 from security_lakehouse.io import read_json
 from security_lakehouse.models import parse_event_time, utc_iso
 
@@ -25,6 +26,9 @@ CONNECTOR_ID = "runtime-gateway"
 SOURCE = "runtime-gateway"
 DEFAULT_CONTROLS = ["SOC2-CC7.2", "NIST-AI-RMF-MEASURE-2.7"]
 DEFAULT_TIMEOUT = 30
+# Runaway guard on the cursor loop.
+MAX_PAGES = 10_000
+ITEM_KEYS = ("events", "items", "data")
 BLOCKED_STATUSES = frozenset({"blocked", "denied", "rejected"})
 IDENTIFIER = re.compile(r"^[A-Za-z0-9_.:-]+$")
 
@@ -46,10 +50,9 @@ class RuntimeGatewayClient:
         self.timeout = timeout
 
     def events(self, *, since: str | None = None) -> list[dict[str, Any]]:
-        query = f"{self.base_url}/api/v1/streams/{self.stream}/events"
-        if since:
-            query = f"{query}?since={urllib.parse.quote(since)}"
-        return self._json_list(query)
+        base = f"{self.base_url}/api/v1/streams/{self.stream}/events"
+        params = {"since": since} if since else {}
+        return self._json_list_paginated(base, params)
 
     def list_streams(self) -> list[str]:
         rows = self._json_list(f"{self.base_url}/api/v1/streams")
@@ -105,7 +108,7 @@ class RuntimeGatewayClient:
             "recommended_options": {"stream": selected},
         }
 
-    def _json_list(self, url: str) -> list[dict[str, Any]]:
+    def _fetch_json(self, url: str) -> Any:
         request = urllib.request.Request(
             url,
             headers={
@@ -122,16 +125,50 @@ class RuntimeGatewayClient:
         try:
             # Retry transient 429/5xx (honoring Retry-After); a terminal 4xx or an
             # exhausted retry surfaces as a sanitized error rather than failing loud.
-            payload = backoff.http_retry(_fetch)
+            return backoff.http_retry(_fetch)
         except urllib.error.HTTPError as exc:  # pragma: no cover - live only
             raise ValueError(exc.__class__.__name__) from exc
+
+    @staticmethod
+    def _extract_items(payload: Any, url: str) -> list[dict[str, Any]]:
         if isinstance(payload, list):
             return [item for item in payload if isinstance(item, dict)]
         if isinstance(payload, dict):
-            events = payload.get("events") or payload.get("items") or payload.get("data")
-            if isinstance(events, list):
-                return [item for item in events if isinstance(item, dict)]
+            for key in ITEM_KEYS:
+                value = payload.get(key)
+                if isinstance(value, list):
+                    return [item for item in value if isinstance(item, dict)]
         raise ValueError(f"runtime gateway returned non-list JSON for {url}")
+
+    def _json_list(self, url: str) -> list[dict[str, Any]]:
+        return self._extract_items(self._fetch_json(url), url)
+
+    def _json_list_paginated(self, base_url: str, params: dict[str, str]) -> list[dict[str, Any]]:
+        """Follow the export's ``next_cursor`` envelope until it is exhausted.
+
+        A bare-list (or cursor-less object) response yields exactly one page, so
+        this is backward compatible with an export that does not paginate.
+        ``since`` and any other params ride on every page.
+        """
+
+        def fetch_page(cursor: str | None) -> tuple[str, Any]:
+            query = dict(params)
+            if cursor:
+                query["cursor"] = cursor
+            url = f"{base_url}?{urllib.parse.urlencode(query)}" if query else base_url
+            return url, self._fetch_json(url)
+
+        def extract_items(page: tuple[str, Any]) -> list[dict[str, Any]]:
+            url, payload = page
+            return self._extract_items(payload, url)
+
+        def next_cursor(page: tuple[str, Any]) -> str | None:
+            _url, payload = page
+            if isinstance(payload, dict):
+                return str(payload.get("next_cursor") or "") or None
+            return None
+
+        return list(paginate(fetch_page, extract_items, next_cursor, max_pages=MAX_PAGES))
 
 
 class RuntimeGatewayFixtureClient:

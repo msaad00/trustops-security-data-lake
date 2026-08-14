@@ -282,7 +282,19 @@ security-lakehouse connectors sync \
 For live ClickHouse collection, point the connector at your cluster HTTP endpoint
 and mount the read-only token via `TRUSTOPS_CLICKHOUSE_TOKEN` (or the
 `credential_ref` you configured). TrustOps only issues `SELECT` reads against
-the discovered table.
+the discovered table, keyset-paginated on the composite `(event_time, event_id)`
+cursor with `LIMIT` so a large table streams in bounded pages instead of one
+unbounded response; rows sharing an `event_time` across a page boundary are never
+dropped, and the append-mode merge dedups by `event_id` as a second safety net.
+
+### Alert- and event-export pagination (SIEM, runtime-gateway)
+
+The `siem-alerts` and `runtime-gateway` readers pull an incremental window with a
+watermark cursor (`?since=`) and follow server-side pagination within that window:
+when a response is a JSON object carrying a `next_cursor` string, TrustOps requests
+the next page with `?cursor=<token>` and repeats until `next_cursor` is absent. An
+export that returns a bare JSON array (or an object without `next_cursor`) is read
+as a single page, so a non-paginating endpoint still works unchanged.
 
 For live Snowflake collection, install the cloud connector extra and use the
 fixed POC objects from [`docs/LIVE_CLOUD_POC.md`](LIVE_CLOUD_POC.md):

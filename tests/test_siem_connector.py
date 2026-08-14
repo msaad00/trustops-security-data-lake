@@ -115,6 +115,51 @@ def test_siem_live_query_parses_json_list() -> None:
     assert rows[0]["alert_id"] == "live-1"
 
 
+def test_siem_follows_next_cursor_across_pages() -> None:
+    """When the export returns a next_cursor envelope, the client follows it,
+    preserving the since window and stopping when the cursor is absent."""
+    pages = {
+        "": {"alerts": [{"alert_id": "a1", "event_time": "2026-06-01T10:00:00Z"}], "next_cursor": "CUR2"},
+        "CUR2": {"alerts": [{"alert_id": "a2", "event_time": "2026-06-01T11:00:00Z"}]},  # no cursor → last page
+    }
+    seen: list[str] = []
+
+    def fake_open_public(request: object, **_kwargs: object) -> object:
+        url = request.full_url  # type: ignore[attr-defined]
+        assert "since=2026-06-01T00%3A00%3A00Z" in url or "cursor=" in url  # since carried on page 1
+        cursor = url.split("cursor=", 1)[1].split("&", 1)[0] if "cursor=" in url else ""
+        seen.append(cursor)
+        response = MagicMock()
+        response.read.return_value = json.dumps(pages[cursor]).encode("utf-8")
+        response.__enter__.return_value = response
+        return response
+
+    with patch("security_lakehouse.netguard.open_public", side_effect=fake_open_public):
+        rows = SiemClient("https://siem.example", token="secret").alerts(since="2026-06-01T00:00:00Z")
+
+    assert [row["alert_id"] for row in rows] == ["a1", "a2"]
+    assert seen == ["", "CUR2"]  # followed exactly one cursor hop
+
+
+def test_siem_bare_list_response_is_a_single_page() -> None:
+    """A server with no cursor support (bare list) still works — one page, as before."""
+    body = json.dumps([{"alert_id": "only", "event_time": "2026-06-01T10:00:00Z"}]).encode("utf-8")
+    response = MagicMock()
+    response.read.return_value = body
+    response.__enter__.return_value = response
+    calls = {"n": 0}
+
+    def once(*_args: object, **_kwargs: object) -> object:
+        calls["n"] += 1
+        return response
+
+    with patch("security_lakehouse.netguard.open_public", side_effect=once):
+        rows = SiemClient("https://siem.example", token="secret").alerts()
+
+    assert [row["alert_id"] for row in rows] == ["only"]
+    assert calls["n"] == 1  # no cursor → no extra request
+
+
 def test_siem_retries_on_rate_limit_then_succeeds(monkeypatch: pytest.MonkeyPatch) -> None:
     """A single 429 must be retried (honoring Retry-After), not fail the whole sync."""
     import urllib.error

@@ -116,6 +116,61 @@ def test_clickhouse_live_query_parses_json_each_row() -> None:
     assert rows[0]["event_id"] == "live-1"
 
 
+def _keyset_clickhouse_server(dataset: list[dict[str, Any]], captured: list[str]):
+    """A fake ClickHouse HTTP endpoint that honors the client's keyset cursor.
+
+    Parses the outgoing SQL for the composite ``(event_time, event_id)`` boundary
+    and ``LIMIT``, returning the next slice — so the test exercises the real page
+    loop, not a fixed sequence.
+    """
+    import re
+
+    def handler(request: object, **_kwargs: object) -> object:
+        sql = request.data.decode("utf-8")  # type: ignore[attr-defined]
+        captured.append(sql)
+        limit = int(re.search(r"LIMIT (\d+)", sql).group(1))  # type: ignore[union-attr]
+        cursor = re.search(r"event_id > '([^']+)'", sql)
+        start = 0
+        if cursor is not None:
+            start = next(i for i, row in enumerate(dataset) if row["event_id"] == cursor.group(1)) + 1
+        page = dataset[start : start + limit]
+        response = MagicMock()
+        response.read.return_value = "\n".join(json.dumps(row) for row in page).encode("utf-8")
+        response.__enter__.return_value = response
+        return response
+
+    return handler
+
+
+def test_clickhouse_keyset_paginates_across_pages() -> None:
+    """A result larger than one page is fetched to completion via keyset paging,
+    stopping when a short page arrives."""
+    dataset = [{"event_id": f"e{i}", "event_time": f"2026-06-01T10:0{i}:00Z"} for i in range(5)]
+    captured: list[str] = []
+
+    with patch("security_lakehouse.netguard.open_public", side_effect=_keyset_clickhouse_server(dataset, captured)):
+        rows = ClickHouseClient("https://ch.example:8443", user="r", password="s").normalized_events(page_size=2)
+
+    assert [row["event_id"] for row in rows] == ["e0", "e1", "e2", "e3", "e4"]
+    assert len(captured) == 3  # 2 + 2 + 1 (short page stops the loop)
+    assert "event_id > 'e1'" in captured[1]  # page 2 continued from the composite cursor, not an offset
+    assert "LIMIT 2" in captured[0]
+
+
+def test_clickhouse_keyset_survives_duplicate_timestamps() -> None:
+    """Rows sharing an event_time straddling a page boundary must all be returned,
+    and the loop must terminate — the reason the cursor is (event_time, event_id),
+    not event_time alone."""
+    dataset = [{"event_id": eid, "event_time": "2026-06-01T10:00:00Z"} for eid in ("a", "b", "c")]
+    captured: list[str] = []
+
+    with patch("security_lakehouse.netguard.open_public", side_effect=_keyset_clickhouse_server(dataset, captured)):
+        rows = ClickHouseClient("https://ch.example:8443", user="r", password="s").normalized_events(page_size=2)
+
+    assert [row["event_id"] for row in rows] == ["a", "b", "c"]  # none dropped at the boundary
+    assert len(captured) == 2  # a,b then c — terminates, no infinite loop
+
+
 def test_clickhouse_retries_on_transient_gateway_error(monkeypatch: pytest.MonkeyPatch) -> None:
     """A read-only SELECT is safe to retry on a 502/503 — a single blip must not fail the sync."""
     import urllib.error
