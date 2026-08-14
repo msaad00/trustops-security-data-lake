@@ -114,10 +114,26 @@ def test_azure_consent_url_when_client_id_configured(monkeypatch: pytest.MonkeyP
     assert "state=sess-1" in url
 
 
+def test_azure_link_session_exposes_configured_non_secret_app_id(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("TRUSTOPS_AZURE_LINK_CLIENT_ID", "azure-client-id")
+    session = start_cloud_link(tmp_path, "azure-posture", tenant_id="tenant-a")
+
+    assert session["azure_app_id"] == "azure-client-id"
+    assert session["runtime_identity_ready"] is True
+
+
 def test_start_and_complete_aws_cloud_link_stages_connector(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("TRUSTOPS_AWS_LINK_PRINCIPAL", "arn:aws:iam::111122223333:role/TrustOpsLink")
     monkeypatch.setenv("TRUSTOPS_PUBLIC_URL", "https://demo.example.com")
     session = start_cloud_link(tmp_path, "aws-posture", tenant_id="tenant-a")
+    assert session["runtime_identity_ready"] is True
+    assert session["cloudshell_command"]
+    assert "127.0.0.1" not in session["cloudshell_command"]
+    assert "localhost" not in session["cloudshell_command"]
+    assert "YOUR_TRUSTOPS_PRINCIPAL_ARN" not in session["cloudshell_command"]
+    assert "base64" in session["cloudshell_command"]
     assert session["external_id"]
     assert session["quick_create_url"]
     assert session["terraform_url"] == "https://demo.example.com/api/v1/connectors/aws-posture/link/terraform.tf"
@@ -143,6 +159,16 @@ def test_start_and_complete_aws_cloud_link_stages_connector(tmp_path: Path, monk
     assert session["scale_strategy"]["mode"] == "stacksets_or_terraform"
     assert "CloudFormation StackSets" in session["scale_strategy"]["summary"]
     assert "Terraform workspaces" in session["scale_strategy"]["summary"]
+
+
+def test_aws_cloud_link_fails_closed_without_runtime_identity(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("TRUSTOPS_AWS_LINK_PRINCIPAL", raising=False)
+    session = start_cloud_link(tmp_path, "aws-posture", tenant_id="tenant-a", public_url="http://127.0.0.1:8787")
+
+    assert session["runtime_identity_ready"] is False
+    assert session["trusted_principal"] is None
+    assert session["cloudshell_command"] is None
+    assert session["quick_create_url"] is None
     assert "Bulk account import" in session["scale_strategy"]["follow_up"]
 
     result = complete_cloud_link(

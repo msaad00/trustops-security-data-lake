@@ -6,6 +6,18 @@ ROOT = Path(__file__).parents[1]
 PANEL = ROOT / "app/web/src/components/connectors/CloudLinkPanel.tsx"
 DRAWER = ROOT / "app/web/src/components/drawers/ConnectorDrawer.tsx"
 VALIDATION = ROOT / "app/web/src/lib/cloud-link-validation.ts"
+DRAWER_SHELL = ROOT / "app/web/src/components/ui/drawer.tsx"
+
+
+def test_connected_cloud_drawer_stays_compact_at_narrow_widths() -> None:
+    drawer = DRAWER.read_text(encoding="utf-8")
+    shell = DRAWER_SHELL.read_text(encoding="utf-8")
+
+    assert '"w-[min(560px,calc(100vw-16px))]"' in shell
+    assert 'className="flex-1 overflow-auto p-3 sm:p-4"' in shell
+    assert 'className="border-t border-line p-3 sm:p-4"' in shell
+    assert 'size="sm"' in drawer
+    assert 'aria-label="Connected connector view"' in drawer
 
 
 def test_aws_linking_explains_authorization_and_role_boundary() -> None:
@@ -18,8 +30,8 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     assert "CloudFormation CLI" in panel
     assert "Terraform CLI" in panel
     assert "Deployment method" in panel
-    assert "Deploy role" in panel
-    assert "Copy CloudShell script" in panel
+    assert "Deploy role" not in panel
+    assert "Copy script" in panel
     assert "View script" in panel
     assert "Run in the target AWS account; the final line prints" not in panel
     assert "AWS account" in panel
@@ -35,8 +47,8 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     assert "Advanced role settings" not in panel
     assert "Read-only IAM posture" in panel
     assert "IAM posture read-only" in panel
-    assert "mktemp /tmp/trustops-posture-readonly-role" in panel
-    assert "ROLLBACK_FAILED" in panel
+    assert "session.cloudshell_command" in panel
+    assert "YOUR_TRUSTOPS_PRINCIPAL_ARN" not in panel
     assert "TemplateURL" not in panel
     assert "Next: verify access" in panel
     assert "Save AWS account" not in panel
@@ -46,27 +58,49 @@ def test_aws_linking_explains_authorization_and_role_boundary() -> None:
     assert "Account ID or Role ARN" in panel
     assert "Confirm account ID" not in panel
     assert "Scale or custom role" not in panel
-    assert "One account: confirm the account ID." not in panel
+    assert "One AWS account" in panel
     assert "Many accounts: deploy" not in panel
     assert "CloudFormation StackSets or" in panel
     assert "Use the account ID when the script keeps the default role name." not in panel
-    assert "Default role: account ID. Custom role: full ARN." in panel
+    assert "Default role: account ID. Custom role: full ARN." not in panel
     assert "Use a custom Role ARN" not in panel
-    assert "Account coverage" not in panel
-    assert "Scale rollout" not in panel
-    assert "Advanced" in panel
-    assert "Organization rollout" in panel
+    assert "3. Add account targets" in panel
+    assert "View permissions" in panel
+    assert "Organization rollout" not in panel
     assert "Scale with StackSets or Terraform" not in panel
     assert "CloudFormation StackSets" in panel
     assert "Terraform workspaces" in panel
     assert "Bulk account import" not in panel
-    assert "Multiple AWS accounts?" not in panel
-    assert "Create one connection per account." not in panel
+    assert "Selected accounts" in panel
+    assert "Add another account" in panel
     assert "View trust details" not in panel
     assert "AWS role ARN" not in panel
-    assert "Deploy links unavailable" in panel
-    assert "TRUSTOPS_AWS_TEMPLATE_URL" in panel
+    assert "Deploy links unavailable" not in panel
+    assert "TRUSTOPS_AWS_TEMPLATE_URL" not in panel
     assert 'aria-label="AWS deployment method"' not in panel
+
+
+def test_aws_onboarding_is_a_guided_multi_account_wizard() -> None:
+    panel = PANEL.read_text(encoding="utf-8")
+    drawer = DRAWER.read_text(encoding="utf-8")
+
+    assert 'type AwsAccountScope = "single" | "organization" | "selected"' in panel
+    assert "Choose what you want to connect" not in panel
+    assert "One AWS account" in panel
+    assert "AWS Organization" in panel
+    assert "Selected accounts" in panel
+    assert "Best for getting started" in panel
+    assert "CloudFormation StackSets" in panel
+    assert "Add another account" in panel
+    assert "3. Add account targets" in panel
+    assert "Copy script" in panel
+    assert "Customize role" in panel
+    assert "1. Choose scope" in panel
+    assert "2. Deploy read-only access" in panel
+    assert "3. Add account targets" in panel
+    assert "4. Verify and finish" in panel
+    assert "Snowflake runs a live probe" not in drawer
+    assert "TrustOps will call AWS STS AssumeRole" in drawer
 
 
 def test_aws_linking_accepts_account_id_or_role_arn() -> None:
@@ -97,6 +131,7 @@ def test_azure_linking_is_provider_identity_first() -> None:
     assert "Copy Cloud Shell setup" in panel
     assert "View command" in panel
     assert "TRUSTOPS_AZURE_APP_ID" in panel
+    assert "session.azure_app_id" in panel
     assert "TRUSTOPS_AZURE_PRINCIPAL_OBJECT_ID" in panel
     assert "Set TRUSTOPS_AZURE_APP_ID or TRUSTOPS_AZURE_PRINCIPAL_OBJECT_ID" in panel
     assert "--role Reader" in panel
@@ -143,8 +178,7 @@ def test_enabled_cloud_connector_hides_onboarding_and_duplicate_credentials() ->
 
     assert "const usesManagedCloudLink = supportsCloudLink(connector.connector_id);" in drawer
     assert "const showCloudLinkPanel =" in drawer
-    assert "showingFirstTimeCloudSetup ||" in drawer
-    assert "!hasStagedServerCredentials ||" in drawer
+    assert "!isEnabled || (isEnabled && editCloudSetup)" in drawer
     assert "(isEnabled && editCloudSetup)" in drawer
     assert "<CloudLinkPanel" in drawer
     assert "!usesManagedCloudLink && (" in drawer
@@ -175,7 +209,7 @@ def test_enabled_cloud_connector_can_edit_and_reverify_setup() -> None:
 def test_cloud_link_setup_uses_one_compact_step_pattern() -> None:
     panel = PANEL.read_text(encoding="utf-8")
 
-    assert "Deploy role" in panel
+    assert "Deploy role" not in panel
     assert "Deploy Azure access" in panel
     assert "Deploy GCP access" in panel
     assert panel.count("View command") >= 2
@@ -226,10 +260,11 @@ def test_onboarding_cloud_connector_reopens_setup_even_with_staged_target() -> N
 
     assert "const showingFirstTimeCloudSetup =" in drawer
     assert "usesManagedCloudLink && onboarding && !isEnabled" in drawer
-    assert "showingFirstTimeCloudSetup ||" in drawer
+    assert "!isEnabled || (isEnabled && editCloudSetup)" in drawer
     assert "!showingFirstTimeCloudSetup" in drawer
-    assert "runHistoryRows.length > 0 &&" in drawer
+    assert 'setupTab === "Runs"' in drawer
     assert "const showSetupProgressCard =" in drawer
+    assert "const showSetupProgressCard = !showCloudLinkPanel;" in drawer
     assert "showSetupProgressCard && (" in drawer
     assert "onboarding && !showingFirstTimeCloudSetup" in drawer
 
@@ -246,6 +281,21 @@ def test_aws_drawer_has_one_linear_setup_flow_and_no_duplicate_sync_action() -> 
     assert "{showDiscoveryAction ? (" in drawer
 
 
+def test_disabled_cloud_drawer_separates_setup_runs_and_events() -> None:
+    drawer = DRAWER.read_text(encoding="utf-8")
+
+    assert 'const SETUP_TABS = ["Setup", "Runs", "Events"] as const;' in drawer
+    assert 'useState<SetupTab>("Setup")' in drawer
+    assert 'aria-label="Connector setup view"' in drawer
+    assert 'setupTab === "Setup"' in drawer
+    assert 'setupTab === "Runs"' in drawer
+    assert 'setupTab === "Events"' in drawer
+    assert "Run history" in drawer
+    assert "Configuration events" in drawer
+    assert "LatestSyncProof" in drawer
+    assert "Run log ·" not in drawer
+
+
 def test_managed_cloud_drawer_uses_progressive_disclosure() -> None:
     drawer = DRAWER.read_text(encoding="utf-8")
 
@@ -257,8 +307,8 @@ def test_managed_cloud_drawer_uses_progressive_disclosure() -> None:
     assert '<summary className="ui-label cursor-pointer list-none">' in drawer
     assert "Scope & automation" in drawer
     assert 'className="mt-3 grid items-start gap-2 2xl:grid-cols-[minmax(0,1fr)_minmax(18rem,0.72fr)]"' in drawer
-    assert "runHistoryRows.length > 0 &&" in drawer
-    assert "!showingFirstTimeCloudSetup && (" in drawer
+    assert 'setupTab === "Events"' in drawer
+    assert 'setupTab === "Setup"' in drawer
 
 
 def test_aws_probe_errors_are_actionable_in_drawer() -> None:
@@ -300,5 +350,5 @@ def test_connected_cloud_drawer_is_compact_and_non_redundant() -> None:
     assert "showConnectedCloudSummary ? (" in drawer
     assert "max-h-80 overflow-auto" in drawer
     assert "open={!usesManagedCloudLink && !showConnectedCloudSummary}" in drawer
-    assert "Run history" not in drawer
+    assert "Run history" in drawer
     assert "see history" not in drawer

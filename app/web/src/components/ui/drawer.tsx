@@ -25,7 +25,10 @@ export function Drawer({
   footer,
   width = "md",
 }: DrawerProps) {
-  const widthClass = width === "lg" ? "w-[640px]" : "w-[480px]";
+  const widthClass =
+    width === "lg"
+      ? "w-[min(560px,calc(100vw-16px))]"
+      : "w-[min(460px,calc(100vw-16px))]";
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <AnimatePresence>
@@ -50,7 +53,7 @@ export function Drawer({
                   widthClass,
                 )}
               >
-                <header className="flex items-start justify-between gap-4 border-b border-line p-5">
+                <header className="flex items-start justify-between gap-3 border-b border-line p-3 sm:p-4">
                   <div>
                     <Dialog.Title className="text-lg font-black text-ink">
                       {title}
@@ -68,9 +71,13 @@ export function Drawer({
                     <X className="h-4 w-4" />
                   </Dialog.Close>
                 </header>
-                <div className="flex-1 overflow-auto p-5">{children}</div>
+                <div className="flex-1 overflow-auto p-3 sm:p-4">
+                  {children}
+                </div>
                 {footer && (
-                  <footer className="border-t border-line p-4">{footer}</footer>
+                  <footer className="border-t border-line p-3 sm:p-4">
+                    {footer}
+                  </footer>
                 )}
               </motion.aside>
             </Dialog.Content>

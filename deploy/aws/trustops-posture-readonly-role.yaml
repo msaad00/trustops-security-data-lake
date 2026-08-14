@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: TrustOps read-only AWS posture role for IAM evidence collection.
+Description: TrustOps read-only AWS posture and inventory collection role.
 
 Parameters:
   TrustedPrincipalArn:
@@ -53,6 +53,23 @@ Resources:
                   - iam:ListAccessKeys
                   - iam:ListMFADevices
                   - iam:ListUsers
+                Resource: "*"
+              - Sid: TrustOpsInventoryReadOnly
+                Effect: Allow
+                Action:
+                  - ec2:DescribeInstances
+                  - ec2:DescribeRegions
+                  - s3:ListAllMyBuckets
+                  - s3:GetBucketLocation
+                  - rds:DescribeDBInstances
+                  - cloudtrail:DescribeTrails
+                  - cloudtrail:GetTrailStatus
+                  - config:DescribeConfigurationRecorders
+                  - config:DescribeConfigurationRecorderStatus
+                  - securityhub:DescribeHub
+                  - securityhub:GetEnabledStandards
+                  - organizations:DescribeOrganization
+                  - organizations:ListAccounts
                 Resource: "*"
 
 Outputs:

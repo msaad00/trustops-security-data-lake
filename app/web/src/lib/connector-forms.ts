@@ -236,6 +236,19 @@ export const CONNECTOR_SCOPE_FIELDS: Record<string, ConnectorFieldDef[]> = {
       label: "Region",
       placeholder: "us-east-1",
     },
+    {
+      name: "regions",
+      label: "Inventory regions",
+      placeholder: "us-east-1, us-west-2",
+      hint: "Comma-separated regions scanned on each sync.",
+    },
+    {
+      name: "services",
+      label: "Inventory services",
+      placeholder:
+        "ec2, s3, rds, cloudtrail, config, securityhub, organizations",
+      hint: "Choose only the read-only inventory surfaces you need.",
+    },
   ],
   "github-security": [
     {

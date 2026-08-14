@@ -586,7 +586,10 @@ export interface CloudLinkSession {
   manual_template_path?: string | null;
   manual_terraform_path?: string | null;
   trusted_principal?: string | null;
+  runtime_identity_ready?: boolean;
+  cloudshell_command?: string | null;
   azure_tenant_id?: string | null;
+  azure_app_id?: string | null;
   role_name?: string | null;
   deploy_command?: string | null;
   workload_identity_member?: string | null;

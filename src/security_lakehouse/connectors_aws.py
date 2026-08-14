@@ -112,9 +112,18 @@ class AWSClient:
                 aws_session_token=creds["SessionToken"],
                 region_name=region_name,
             )
+            self._session = session
             self._iam = session.client("iam")
         else:
+            self._session = None
+            self._boto3 = boto3
             self._iam = boto3.client("iam", region_name=region_name)
+
+    def service_client(self, service: str, *, region_name: str | None = None) -> Any:
+        """Create a provider client from the same short-lived assumed session."""
+        if self._session is not None:
+            return self._session.client(service, region_name=region_name)
+        return self._boto3.client(service, region_name=region_name)
 
     def users(self) -> list[dict[str, Any]]:
         users: list[dict[str, Any]] = []
@@ -173,6 +182,58 @@ class AWSClient:
         for page in paginator.paginate(UserName=user_name):
             keys.extend(page.get("AccessKeyMetadata", []))
         return keys
+
+    def inventory(self, service: str, *, region_name: str) -> list[dict[str, Any]]:
+        """Read a bounded normalized inventory slice for one AWS service."""
+        client = self.service_client(service, region_name=region_name)
+        if service == "ec2":
+            rows: list[dict[str, Any]] = []
+            for page in client.get_paginator("describe_instances").paginate():
+                for reservation in page.get("Reservations", []):
+                    for item in reservation.get("Instances", []):
+                        instance_id = str(item.get("InstanceId") or "")
+                        if instance_id:
+                            rows.append({"id": instance_id, "state": (item.get("State") or {}).get("Name")})
+            return rows
+        if service == "s3":
+            return [{"id": str(row.get("Name"))} for row in client.list_buckets().get("Buckets", []) if row.get("Name")]
+        if service == "rds":
+            return [
+                {
+                    "id": str(row.get("DBInstanceIdentifier")),
+                    "arn": row.get("DBInstanceArn"),
+                    "state": row.get("DBInstanceStatus"),
+                }
+                for page in client.get_paginator("describe_db_instances").paginate()
+                for row in page.get("DBInstances", [])
+                if row.get("DBInstanceIdentifier")
+            ]
+        if service == "cloudtrail":
+            return [
+                {"id": str(row.get("Name")), "arn": row.get("TrailARN"), "multi_region": row.get("IsMultiRegionTrail")}
+                for row in client.describe_trails(includeShadowTrails=False).get("trailList", [])
+                if row.get("Name")
+            ]
+        if service == "config":
+            return [
+                {
+                    "id": str(row.get("name")),
+                    "role_arn": row.get("roleARN"),
+                    "recording_group": row.get("recordingGroup"),
+                }
+                for row in client.describe_configuration_recorders().get("ConfigurationRecorders", [])
+                if row.get("name")
+            ]
+        if service == "securityhub":
+            hub = client.describe_hub()
+            return [{"id": "hub", "arn": hub.get("HubArn"), "auto_enable": hub.get("AutoEnable")}]
+        if service == "organizations":
+            organization = client.describe_organization().get("Organization", {})
+            organization_id = str(organization.get("Id") or "organization")
+            return [
+                {"id": organization_id, "arn": organization.get("Arn"), "feature_set": organization.get("FeatureSet")}
+            ]
+        raise ValueError(f"unsupported AWS inventory service: {service}")
 
 
 class AWSFixtureClient:
@@ -300,6 +361,55 @@ def collect_aws_evidence(
             rows.append(_access_key_event(account, user_name, user, keys, now, tenant_id, console_access=console))
 
     rows.append(_policy_event(account, client.password_policy(), now, tenant_id))
+    return rows
+
+
+def collect_aws_inventory_evidence(
+    client: Any,
+    *,
+    account_id: str,
+    regions: list[str],
+    services: list[str],
+    collected_at: datetime | None = None,
+    tenant_id: str = "customer-managed",
+) -> list[dict[str, Any]]:
+    """Collect selected inventory while isolating unsupported/denied service reads."""
+    now = collected_at or datetime.now(UTC)
+    account = _account_slug(account_id)
+    rows: list[dict[str, Any]] = []
+    global_services = {"s3", "organizations"}
+    seen_global: set[str] = set()
+    for region in regions:
+        for service in services:
+            if service in global_services and service in seen_global:
+                continue
+            try:
+                resources = client.inventory(service, region_name=region)
+            except Exception:  # noqa: BLE001 - one denied service must not discard successful inventory
+                continue
+            if service in global_services:
+                seen_global.add(service)
+            for resource in resources:
+                resource_id = str(resource.get("id") or "").strip()
+                if not resource_id:
+                    continue
+                evidence_ref = str(resource.get("arn") or f"aws:{service}:{region}:{account}:{resource_id}")
+                rows.append(
+                    _event(
+                        account=account,
+                        collected_at=now,
+                        tenant_id=tenant_id,
+                        signal=f"inventory-{service}",
+                        event_type=f"aws.inventory.{service}",
+                        asset_id=f"aws:{service}:{region}:{resource_id}",
+                        asset_type=f"aws_{service}_resource",
+                        controls=IDENTITY_CONTROLS,
+                        status="pass",
+                        severity="info",
+                        evidence_ref=evidence_ref,
+                        attributes={**resource, "account_id": account, "region": region, "service": service},
+                    )
+                )
     return rows
 
 

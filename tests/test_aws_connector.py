@@ -300,6 +300,7 @@ class _FakeBoto3:
         self.assume_calls: list[dict] = []
         self.iam_from = ""  # "client" (ambient) or "session" (assumed)
         self.session_creds: dict | None = None
+        self.session_services: list[tuple[str, str | None]] = []
 
     def client(self, service: str, region_name=None):  # noqa: ANN001
         if service == "sts":
@@ -327,9 +328,10 @@ class _FakeBoto3:
         outer = self
 
         class _Session:
-            def client(self, service: str):  # noqa: ANN001
-                assert service == "iam"
-                outer.iam_from = "session"
+            def client(self, service: str, region_name=None):  # noqa: ANN001
+                outer.session_services.append((service, region_name))
+                if service == "iam":
+                    outer.iam_from = "session"
                 return SimpleNamespace(get_paginator=lambda *_a, **_k: None)
 
         return _Session()
@@ -351,6 +353,66 @@ def test_aws_client_assumes_role_with_external_id(monkeypatch: pytest.MonkeyPatc
     # IAM client is built from the assumed short-lived session, not ambient.
     assert fake.iam_from == "session"
     assert fake.session_creds["aws_session_token"] == "token_tmp"
+
+
+def test_aws_inventory_clients_share_the_assumed_session(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = _FakeBoto3()
+    monkeypatch.setitem(sys.modules, "boto3", fake)
+    client = AWSClient(
+        role_arn="arn:aws:iam::123456789012:role/TrustOpsPostureReadOnlyRole",
+        external_id="ext-secret-123",
+    )
+
+    for service in ("ec2", "s3", "rds", "cloudtrail", "config", "securityhub", "organizations"):
+        client.service_client(service, region_name="us-west-2")
+
+    assert len(fake.assume_calls) == 1
+    assert {(service, region) for service, region in fake.session_services} >= {
+        (service, "us-west-2")
+        for service in ("ec2", "s3", "rds", "cloudtrail", "config", "securityhub", "organizations")
+    }
+
+
+def test_aws_role_template_covers_selected_inventory_services() -> None:
+    template = (Path(__file__).parents[1] / "deploy/aws/trustops-posture-readonly-role.yaml").read_text(
+        encoding="utf-8"
+    )
+    for action in (
+        "ec2:DescribeInstances",
+        "s3:ListAllMyBuckets",
+        "rds:DescribeDBInstances",
+        "cloudtrail:DescribeTrails",
+        "config:DescribeConfigurationRecorders",
+        "securityhub:DescribeHub",
+        "organizations:DescribeOrganization",
+    ):
+        assert action in template
+
+
+def test_selected_aws_inventory_is_normalized_and_partial_failures_are_isolated() -> None:
+    class InventoryClient:
+        def inventory(self, service: str, *, region_name: str) -> list[dict]:
+            if service == "rds":
+                raise RuntimeError("RDS is unavailable")
+            if service == "ec2":
+                return [{"id": "i-123", "arn": "arn:aws:ec2:us-east-1:123456789012:instance/i-123", "state": "running"}]
+            return []
+
+    from security_lakehouse.connectors_aws import collect_aws_inventory_evidence
+
+    rows = collect_aws_inventory_evidence(
+        InventoryClient(),
+        account_id=ACCOUNT,
+        regions=["us-east-1"],
+        services=["ec2", "rds"],
+        collected_at=datetime(2026, 5, 28, tzinfo=UTC),
+    )
+
+    assert validate_raw_events(rows) == []
+    assert len(rows) == 1
+    assert rows[0]["event_type"] == "aws.inventory.ec2"
+    assert rows[0]["entity"]["asset_id"] == "aws:ec2:us-east-1:i-123"
+    assert rows[0]["attributes"]["region"] == "us-east-1"
 
 
 def test_aws_client_uses_ambient_chain_without_role_arn(monkeypatch: pytest.MonkeyPatch) -> None:

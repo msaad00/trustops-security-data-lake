@@ -8,6 +8,7 @@ an admin-consent URL when ``TRUSTOPS_AZURE_LINK_CLIENT_ID`` is set.
 
 from __future__ import annotations
 
+import base64
 import json
 import os
 import re
@@ -161,6 +162,22 @@ def aws_deployment_methods() -> list[dict[str, str]]:
             "detail": "IaC workspace rollout",
         },
     ]
+
+
+def aws_cloudshell_command(*, external_id: str, trusted_principal: str, role_name: str) -> str:
+    """Return a self-contained CloudShell command with no TrustOps network dependency."""
+    encoded = base64.b64encode(aws_template_bytes()).decode("ascii")
+    template_path = "/tmp/trustops-posture-readonly-role.yaml"
+    return (
+        f"printf '%s' '{encoded}' | base64 --decode > {template_path} && "
+        "aws cloudformation deploy "
+        f"--template-file {template_path} --stack-name TrustOpsPostureReadOnly "
+        "--capabilities CAPABILITY_NAMED_IAM "
+        f"--parameter-overrides TrustedPrincipalArn={trusted_principal} "
+        f"ExternalId={external_id} RoleName={role_name} && "
+        "aws cloudformation describe-stacks --stack-name TrustOpsPostureReadOnly "
+        "--query 'Stacks[0].Outputs[?OutputKey==`RoleArn`].OutputValue' --output text"
+    )
 
 
 def aws_scale_strategy() -> dict[str, str]:
@@ -323,6 +340,16 @@ def start_cloud_link(
         "azure_tenant_id": None,
     }
     if connector_id == "aws-posture":
+        session["runtime_identity_ready"] = bool(trusted_principal)
+        session["cloudshell_command"] = (
+            aws_cloudshell_command(
+                external_id=external_id,
+                trusted_principal=trusted_principal,
+                role_name=role_name,
+            )
+            if trusted_principal
+            else None
+        )
         session["quick_create_url"] = aws_quick_create_url(
             external_id=external_id,
             public_url=public_url,
@@ -337,6 +364,9 @@ def start_cloud_link(
         session["deployment_methods"] = aws_deployment_methods()
         session["scale_strategy"] = aws_scale_strategy()
     if connector_id == "azure-posture":
+        azure_app_id = _azure_link_client_id()
+        session["azure_app_id"] = azure_app_id or None
+        session["runtime_identity_ready"] = bool(azure_app_id)
         session["consent_url"] = azure_consent_url(session_id=session_id, public_url=public_url)
     if connector_id == "gcp-posture":
         wif_member = _gcp_wif_member()
