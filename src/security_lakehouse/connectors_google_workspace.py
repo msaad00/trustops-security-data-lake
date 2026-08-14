@@ -27,7 +27,8 @@ import re
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import UTC, datetime
+from collections.abc import Callable
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -45,25 +46,152 @@ GROUP_CONTROLS = ["SOC2-CC6.1", "ISO27001-A.5.15"]
 # Directory API base URL for the Admin SDK Directory resource.
 DIRECTORY_API_BASE = "https://admin.googleapis.com/admin/directory/v1"
 
+# Google's OAuth 2.0 token endpoint (RFC 6749 §6 refresh-token grant).
+GOOGLE_TOKEN_URI = "https://oauth2.googleapis.com/token"
+
+# Refresh proactively once the access token is within this many seconds of
+# expiry, so a request is never issued with a token about to lapse mid-flight.
+TOKEN_EXPIRY_SKEW_SECONDS = 300
+
 DEFAULT_TIMEOUT = 20
 USER_PAGE_LIMIT = 200
 
 
+class GoogleOAuthTokenSource:
+    """Refreshes a short-lived Google access token from a refresh token.
+
+    A Google OAuth access token expires in ~1 hour, so a long-running or
+    scheduled directory sync would fail once it lapses. This source holds the
+    current access token in memory only and exchanges the long-lived refresh
+    token — with the OAuth client id/secret — at Google's token endpoint for a
+    fresh access token when the current one is missing, near expiry, or rejected
+    with HTTP 401. The refresh token, client id, and client secret are supplied
+    at construction (resolved upstream from file-first, least-privilege,
+    revocable secret references); the resolved access-token value is never
+    persisted.
+    """
+
+    def __init__(
+        self,
+        *,
+        refresh_token: str,
+        client_id: str,
+        client_secret: str,
+        access_token: str | None = None,
+        expires_at: datetime | None = None,
+        token_uri: str = GOOGLE_TOKEN_URI,
+        timeout: int = DEFAULT_TIMEOUT,
+        skew_seconds: int = TOKEN_EXPIRY_SKEW_SECONDS,
+        clock: Callable[[], datetime] | None = None,
+    ) -> None:
+        if not refresh_token or not client_id or not client_secret:
+            raise ValueError("Google OAuth refresh requires refresh_token, client_id, and client_secret")
+        self._refresh_token = refresh_token
+        self._client_id = client_id
+        self._client_secret = client_secret
+        self._access_token = access_token or None
+        self._expires_at = expires_at
+        self._token_uri = token_uri
+        self._timeout = timeout
+        self._skew = timedelta(seconds=max(0, skew_seconds))
+        self._clock = clock or (lambda: datetime.now(UTC))
+
+    def bearer(self) -> str:
+        """Return a usable access token, refreshing proactively near expiry."""
+        if self._access_token is None or self._is_expired():
+            self._exchange()
+        assert self._access_token is not None  # _exchange sets it or raises
+        return self._access_token
+
+    def refresh(self) -> str:
+        """Force a token exchange (used after a 401) and return the new token."""
+        self._exchange()
+        assert self._access_token is not None
+        return self._access_token
+
+    def _is_expired(self) -> bool:
+        # With no known expiry, don't refresh proactively — rely on the 401 path.
+        if self._expires_at is None:
+            return False
+        return self._clock() >= self._expires_at - self._skew
+
+    def _exchange(self) -> None:
+        body = urllib.parse.urlencode(
+            {
+                "client_id": self._client_id,
+                "client_secret": self._client_secret,
+                "refresh_token": self._refresh_token,
+                "grant_type": "refresh_token",
+            }
+        ).encode("ascii")
+        request = urllib.request.Request(
+            self._token_uri,
+            data=body,
+            method="POST",
+            headers={
+                "accept": "application/json",
+                "content-type": "application/x-www-form-urlencoded",
+                "user-agent": "trustops-security-data-lake",
+            },
+        )
+
+        # A revoked/expired refresh token returns a non-retryable 400
+        # (invalid_grant), which propagates and fails the sync closed. Only
+        # transient 429/5xx are retried.
+        def _post() -> Any:
+            with netguard.open_public(request, timeout=self._timeout, label="google oauth token") as resp:
+                return json.loads(resp.read().decode("utf-8"))
+
+        payload = backoff.http_retry(_post)
+        token = payload.get("access_token") if isinstance(payload, dict) else None
+        if not token:
+            raise ValueError("Google OAuth token endpoint returned no access_token")
+        self._access_token = str(token)
+        expires_in = payload.get("expires_in") if isinstance(payload, dict) else None
+        if isinstance(expires_in, (int, float)) and not isinstance(expires_in, bool) and expires_in > 0:
+            self._expires_at = self._clock() + timedelta(seconds=int(expires_in))
+        else:
+            self._expires_at = None
+
+
 class GoogleWorkspaceClient:
-    """Authenticated, read-only Google Workspace Directory API client."""
+    """Authenticated, read-only Google Workspace Directory API client.
+
+    Accepts either a static ``access_token`` (single-shot use) or a
+    :class:`GoogleOAuthTokenSource`. With a source, the token is refreshed
+    proactively before a page fetch when it is near expiry, and a page rejected
+    with HTTP 401 triggers exactly one refresh + retry before failing closed.
+    """
 
     def __init__(
         self,
         customer_id: str,
         *,
-        access_token: str,
+        access_token: str | None = None,
+        token_source: GoogleOAuthTokenSource | None = None,
         timeout: int = DEFAULT_TIMEOUT,
     ) -> None:
+        if not access_token and token_source is None:
+            raise ValueError("GoogleWorkspaceClient requires an access_token or a token_source")
         self.customer_id = customer_id
-        self.access_token = access_token
+        self._token_source = token_source
+        self._static_token = access_token
         self.timeout = timeout
         # A stable, non-secret origin slug used for asset scoping / ids.
         self.org_url = f"google-workspace://{customer_id}"
+
+    def _bearer(self) -> str:
+        """Current bearer token (proactively refreshed when a source is set)."""
+        if self._token_source is not None:
+            return self._token_source.bearer()
+        assert self._static_token is not None  # constructor guarantees one of the two
+        return self._static_token
+
+    def _refresh_bearer(self) -> str | None:
+        """Force a refresh after a 401; ``None`` when no refresh is possible."""
+        if self._token_source is not None:
+            return self._token_source.refresh()
+        return None
 
     def users(self) -> list[dict[str, Any]]:
         customer = urllib.parse.quote(str(self.customer_id), safe="")
@@ -87,20 +215,7 @@ class GoogleWorkspaceClient:
         # backoff. `paginate` supplies the loop and a runaway page cap.
         def fetch_page(page_token: str | None) -> dict[str, Any]:
             page_url = url if not page_token else f"{url}&pageToken={urllib.parse.quote(page_token)}"
-            request = urllib.request.Request(
-                page_url,
-                headers={
-                    "accept": "application/json",
-                    "authorization": f"Bearer {self.access_token}",
-                    "user-agent": "trustops-security-data-lake",
-                },
-            )
-
-            def _fetch() -> Any:
-                with netguard.open_public(request, timeout=self.timeout, label="google workspace api") as resp:
-                    return json.loads(resp.read().decode("utf-8"))
-
-            payload = backoff.http_retry(_fetch)
+            payload = backoff.http_retry(lambda: self._get_json(page_url))
             if not isinstance(payload, dict):
                 raise ValueError(f"Google Workspace returned non-object JSON for {page_url}")
             return payload
@@ -112,6 +227,36 @@ class GoogleWorkspaceClient:
             return str(page.get("nextPageToken") or "") or None
 
         return list(paginate(fetch_page, extract_items, next_cursor))
+
+    def _get_json(self, url: str) -> Any:
+        """GET ``url`` with the current bearer, refreshing once on a 401.
+
+        The bearer is resolved fresh per call so a proactive refresh (near
+        expiry) is picked up. A 401 forces exactly one refresh + retry when a
+        token source is configured; a static token, or a second 401, fails
+        closed by re-raising.
+        """
+        try:
+            return self._open_json(url, self._bearer())
+        except urllib.error.HTTPError as exc:
+            if exc.code != 401:
+                raise
+            refreshed = self._refresh_bearer()
+            if refreshed is None:
+                raise
+            return self._open_json(url, refreshed)
+
+    def _open_json(self, url: str, token: str) -> Any:
+        request = urllib.request.Request(
+            url,
+            headers={
+                "accept": "application/json",
+                "authorization": f"Bearer {token}",
+                "user-agent": "trustops-security-data-lake",
+            },
+        )
+        with netguard.open_public(request, timeout=self.timeout, label="google workspace api") as resp:
+            return json.loads(resp.read().decode("utf-8"))
 
 
 class GoogleWorkspaceFixtureClient:

@@ -48,6 +48,7 @@ from security_lakehouse.connectors_gcp import (
     collect_gcp_evidence,
 )
 from security_lakehouse.connectors_google_workspace import (
+    GoogleOAuthTokenSource,
     GoogleWorkspaceClient,
     GoogleWorkspaceFixtureClient,
     collect_google_workspace_evidence,
@@ -119,6 +120,43 @@ def _resolve_provider_token(token_env: str, provider_env: str, env: dict[str, st
     return env.get(provider_env)
 
 
+def _read_secret_file_first(name: str, env: dict[str, str]) -> str | None:
+    """Resolve a secret named by ``name``, preferring a mounted file.
+
+    A ``<NAME>_FILE`` variable naming a path (the Docker/K8s secret-file
+    convention) is read first, so the raw secret can live on disk with
+    least-privilege permissions and be revoked by rotating the file, rather than
+    sitting inline in the process environment. Falls back to the ``<NAME>`` value
+    when no file is configured. Returns ``None`` when neither is set.
+    """
+    name = (name or "").strip()
+    if not name:
+        return None
+    file_path = env.get(f"{name}_FILE")
+    if file_path:
+        try:
+            file_value = Path(file_path).read_text(encoding="utf-8").strip()
+        except OSError:
+            return None
+        return file_value or None
+    inline = env.get(name)
+    return inline.strip() if inline and inline.strip() else None
+
+
+def _resolve_provider_secret(ref: str, provider_env: str, env: dict[str, str]) -> str | None:
+    """File-first secret resolution for a provider, without cross-provider reuse.
+
+    An explicit ``ref`` (a stored ``*_ref`` credential naming the secret) wins;
+    otherwise the provider-specific default variable is used. Each name is
+    resolved file-first via :func:`_read_secret_file_first`.
+    """
+    for name in (ref, provider_env):
+        value = _read_secret_file_first(name, env)
+        if value:
+            return value
+    return None
+
+
 # Environment variable carrying the Okta org base URL for live collection. The
 # token is read from ``token_env`` (defaults to OKTA_API_TOKEN for this runner).
 OKTA_ORG_URL_ENV = "OKTA_ORG_URL"
@@ -139,6 +177,14 @@ AWS_EXTERNAL_ID_ENV = "AWS_EXTERNAL_ID"
 # collection. The OAuth bearer token is read from ``token_env`` (defaults to
 # GOOGLE_WORKSPACE_ACCESS_TOKEN for this runner).
 GOOGLE_WORKSPACE_CUSTOMER_ID_ENV = "GOOGLE_WORKSPACE_CUSTOMER_ID"
+# Optional OAuth refresh material for unattended/long-running collection: a
+# refresh token plus the OAuth client id/secret let the runner mint fresh
+# access tokens when the ~1h token lapses, rather than failing the sync. The
+# refresh token and client secret resolve file-first (see
+# ``_read_secret_file_first``); the client id is a non-secret identifier.
+GOOGLE_WORKSPACE_REFRESH_TOKEN_ENV = "GOOGLE_WORKSPACE_REFRESH_TOKEN"
+GOOGLE_WORKSPACE_OAUTH_CLIENT_ID_ENV = "GOOGLE_WORKSPACE_OAUTH_CLIENT_ID"
+GOOGLE_WORKSPACE_OAUTH_CLIENT_SECRET_ENV = "GOOGLE_WORKSPACE_OAUTH_CLIENT_SECRET"
 
 # Environment variable carrying the GCP project id for live collection.
 # Credentials resolve through Google's Application Default Credentials chain
@@ -710,14 +756,47 @@ def _collect_google_workspace(
         customer_id = str(env.get(GOOGLE_WORKSPACE_CUSTOMER_ID_ENV) or creds.get("customer_id") or "").strip()
         effective_token_env = str(creds.get("credential_ref") or token_env)
         access_token = _resolve_provider_token(effective_token_env, "GOOGLE_WORKSPACE_ACCESS_TOKEN", env)
-        if not customer_id or not access_token:
+        token_source = _build_google_workspace_token_source(creds, env, access_token=access_token)
+        if not customer_id or (token_source is None and not access_token):
             raise ValueError(
                 "google-workspace-identity sync requires --fixture-dir, or "
                 f"{GOOGLE_WORKSPACE_CUSTOMER_ID_ENV}/customer_id plus a read-only OAuth token "
-                "(GOOGLE_WORKSPACE_ACCESS_TOKEN or --token-env)"
+                "(GOOGLE_WORKSPACE_ACCESS_TOKEN or --token-env), optionally with a refresh token "
+                "and OAuth client id/secret for unattended refresh"
             )
-        client = GoogleWorkspaceClient(customer_id, access_token=access_token)
+        if token_source is not None:
+            client = GoogleWorkspaceClient(customer_id, token_source=token_source)
+        else:
+            client = GoogleWorkspaceClient(customer_id, access_token=access_token)
     return collect_google_workspace_evidence(client)
+
+
+def _build_google_workspace_token_source(
+    creds: dict[str, Any],
+    env: dict[str, str],
+    *,
+    access_token: str | None,
+) -> GoogleOAuthTokenSource | None:
+    """Build a self-refreshing token source when OAuth refresh material is set.
+
+    Returns ``None`` when the full set (refresh token + client id + client
+    secret) is not configured, so the connector falls back to the static
+    access-token path unchanged. Secrets resolve file-first; the resolved token
+    lives only in the source's memory and is never persisted.
+    """
+    refresh_ref = str(creds.get("refresh_token_ref") or "").strip()
+    client_secret_ref = str(creds.get("client_secret_ref") or "").strip()
+    refresh_token = _resolve_provider_secret(refresh_ref, GOOGLE_WORKSPACE_REFRESH_TOKEN_ENV, env)
+    client_secret = _resolve_provider_secret(client_secret_ref, GOOGLE_WORKSPACE_OAUTH_CLIENT_SECRET_ENV, env)
+    client_id = str(creds.get("client_id") or env.get(GOOGLE_WORKSPACE_OAUTH_CLIENT_ID_ENV) or "").strip()
+    if not (refresh_token and client_id and client_secret):
+        return None
+    return GoogleOAuthTokenSource(
+        refresh_token=refresh_token,
+        client_id=client_id,
+        client_secret=client_secret,
+        access_token=access_token,
+    )
 
 
 def _collect_gcp(

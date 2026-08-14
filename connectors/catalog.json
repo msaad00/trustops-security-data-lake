@@ -342,7 +342,7 @@
       "data_shape": "current_state",
       "vendor": "Google Workspace",
       "description": "Directory users, groups, and MFA posture.",
-      "setup_hint": "Read-only OAuth token and Workspace customer ID."
+      "setup_hint": "Read-only OAuth token and Workspace customer ID; add a refresh token plus OAuth client id/secret for unattended token refresh."
     },
     {
       "connector_id": "gcp-posture",
