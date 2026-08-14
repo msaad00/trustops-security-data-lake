@@ -49,12 +49,79 @@ def test_framework_coverage_markdown_is_source_linked_not_logo_based() -> None:
     summary = framework_coverage_summary(build_framework_coverage(), applicability)
     markdown = render_framework_coverage_markdown(build_framework_coverage(), applicability)
 
-    assert "Seeded mapping coverage: 100.0%" in markdown
+    # Honest coverage lines, not a single conflated "100%" claim.
+    assert f"Requirements catalogued: {summary['seeded_control_count']} (all source-cited)" in markdown
+    assert "Evaluatable (touched by a safeguard):" in markdown
+    assert "Attestable (reviewed safeguard mapping" in markdown
+    assert "Attestable |" in markdown  # the matrix column header
     assert "Asset types modeled: 20" in markdown
-    assert f"Control-to-asset applicability links: {summary['control_asset_applicability_link_count']}" in markdown
     assert "## Control-To-Asset Applicability" in markdown
     assert f"| `service` | {applicability[0]['applicable_control_count']} |" in markdown
     assert "Official source" in markdown
     assert "official logo" not in markdown.lower()
     assert "certification seal" not in markdown.lower()
     assert "EUR-Lex - Regulation (EU) 2016/679" in markdown
+
+
+def test_attestable_coverage_is_honest_and_bounded() -> None:
+    """Attestable (reviewed) coverage is the auditor-defensible number.
+
+    It must never exceed evaluatable (touched by any safeguard), which must
+    never exceed the seeded requirement count. Source-citation coverage
+    (`reviewed_mapping_count`, always 100%) is a different, weaker claim and must
+    not be conflated with attestable coverage.
+    """
+    from security_lakehouse.framework_coverage import build_framework_coverage, framework_coverage_summary
+    from security_lakehouse.safeguards import safeguards_by_requirement
+
+    rows = build_framework_coverage()
+    summary = framework_coverage_summary(rows)
+
+    for row in rows:
+        seeded = int(row["seeded_control_count"])
+        evaluatable = int(row["evaluatable_requirement_count"])
+        attestable = int(row["attestable_requirement_count"])
+        assert 0 <= attestable <= evaluatable <= seeded, row["framework_id"]
+        assert row["attestable_coverage_pct"] <= row["evaluatable_coverage_pct"] + 1e-9
+
+    # Summary aggregates match and preserve the ordering.
+    assert summary["attestable_requirement_count"] <= summary["evaluatable_requirement_count"]
+    assert summary["evaluatable_requirement_count"] <= summary["seeded_control_count"]
+    # There is a real review backlog today: broadly evaluatable, thinly attestable.
+    assert summary["attestable_requirement_count"] < summary["evaluatable_requirement_count"]
+    assert summary["attestable_requirement_count"] > 0
+
+    # Honesty guard: attestable is derived from reviewed_only mappings, never the
+    # broader touched set — so it can only grow as a human reviews mappings.
+    reviewed = set(safeguards_by_requirement(reviewed_only=True))
+    touched = set(safeguards_by_requirement())
+    assert reviewed <= touched
+    assert len(reviewed) == summary["attestable_requirement_count"] or reviewed != touched
+
+
+def test_committed_coverage_doc_matches_generator() -> None:
+    """docs/FRAMEWORK_COVERAGE.md must equal the generator (regenerate: make coverage-doc)."""
+    import pathlib
+
+    from security_lakehouse.framework_coverage import render_framework_coverage_doc
+
+    committed = pathlib.Path("docs/FRAMEWORK_COVERAGE.md").read_text()
+    assert committed == render_framework_coverage_doc(), "run `make coverage-doc` and commit"
+
+
+def test_mcp_framework_coverage_tool_reports_attestable() -> None:
+    """The MCP tool gives agents the same honest attestable ledger as the CLI."""
+    import inspect
+
+    from security_lakehouse import mcp_server
+
+    src = inspect.getsource(mcp_server)
+    assert "def get_framework_coverage" in src
+    from security_lakehouse.framework_coverage import build_framework_coverage, framework_coverage_summary
+
+    payload = {
+        "summary": framework_coverage_summary(build_framework_coverage()),
+        "frameworks": build_framework_coverage(),
+    }
+    assert "attestable_requirement_count" in payload["summary"]
+    assert payload["summary"]["attestable_requirement_count"] <= payload["summary"]["evaluatable_requirement_count"]
