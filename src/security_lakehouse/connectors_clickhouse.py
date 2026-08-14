@@ -27,6 +27,11 @@ DEFAULT_DATABASE = "security"
 DEFAULT_TABLE = "normalized_events"
 DEFAULT_CONTROLS = ["SOC2-CC7.2", "ISO27001-A.8.16"]
 DEFAULT_TIMEOUT = 30
+# Server-side page size for keyset paging. Large enough that small tables take
+# one round trip, bounded so a huge table streams instead of one giant response.
+DEFAULT_PAGE_SIZE = 50_000
+# Runaway guard on the page loop (DEFAULT_PAGE_SIZE * MAX_PAGES rows).
+MAX_PAGES = 10_000
 IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
 
@@ -48,13 +53,50 @@ class ClickHouseClient:
         self.database = database
         self.timeout = timeout
 
-    def normalized_events(self, *, table: str = DEFAULT_TABLE, since: str | None = None) -> list[dict[str, Any]]:
+    def normalized_events(
+        self,
+        *,
+        table: str = DEFAULT_TABLE,
+        since: str | None = None,
+        page_size: int = DEFAULT_PAGE_SIZE,
+    ) -> list[dict[str, Any]]:
+        """Read normalized events, keyset-paginated so a large table is not one
+        unbounded response.
+
+        The cursor is the composite ``(event_time, event_id)`` — a total order over
+        the table's own sort key — so rows sharing an ``event_time`` across a page
+        boundary are never dropped and the loop always advances. ``since`` (the
+        watermark) still bounds the first page; downstream merge dedups by
+        ``event_id`` as a second safety net.
+        """
         safe_table = _safe_table_ref(self.database, table)
-        query = f"SELECT * FROM {safe_table}"
-        if since:
-            query += f" WHERE event_time > parseDateTime64BestEffort({_quote_literal(since)})"
-        query += " ORDER BY event_time FORMAT JSONEachRow"
-        return self._query_json_each_row(query)
+        rows: list[dict[str, Any]] = []
+        last_time: str | None = None
+        last_id: str | None = None
+        for _ in range(MAX_PAGES):
+            conditions: list[str] = []
+            if since:
+                conditions.append(f"event_time > parseDateTime64BestEffort({_quote_literal(since)})")
+            if last_time is not None and last_id is not None:
+                boundary = f"parseDateTime64BestEffort({_quote_literal(last_time)})"
+                conditions.append(
+                    f"(event_time > {boundary} OR (event_time = {boundary} AND event_id > {_quote_literal(last_id)}))"
+                )
+            where = f" WHERE {' AND '.join(conditions)}" if conditions else ""
+            query = (
+                f"SELECT * FROM {safe_table}{where} ORDER BY event_time, event_id "
+                f"LIMIT {int(page_size)} FORMAT JSONEachRow"
+            )
+            page = self._query_json_each_row(query)
+            rows.extend(page)
+            if len(page) < page_size:
+                break
+            last_time = str(page[-1].get("event_time") or "")
+            last_id = str(page[-1].get("event_id") or "")
+            if not last_time or not last_id:
+                # Cannot form a safe cursor — stop rather than risk a loop or dupes.
+                break
+        return rows
 
     def show_tables(self) -> list[str]:
         rows = self._query_json_each_row(f"SHOW TABLES FROM {_safe_identifier(self.database)} FORMAT JSONEachRow")
@@ -135,7 +177,14 @@ class ClickHouseFixtureClient:
         self.fixture = Path(fixture_dir)
         self.database = database
 
-    def normalized_events(self, *, table: str = DEFAULT_TABLE, since: str | None = None) -> list[dict[str, Any]]:
+    def normalized_events(
+        self,
+        *,
+        table: str = DEFAULT_TABLE,
+        since: str | None = None,
+        page_size: int = DEFAULT_PAGE_SIZE,
+    ) -> list[dict[str, Any]]:
+        _ = page_size  # fixtures return the whole table; paging is a live-only concern
         rows = self._read_table(table)
         if not since:
             return rows

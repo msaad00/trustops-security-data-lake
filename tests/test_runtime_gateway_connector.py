@@ -116,6 +116,49 @@ def test_runtime_live_query_parses_json_list() -> None:
     assert rows[0]["event_id"] == "live-1"
 
 
+def test_runtime_follows_next_cursor_across_pages() -> None:
+    """The gateway export's next_cursor envelope is followed to completion,
+    carrying the since window and stopping when no cursor is returned."""
+    pages = {
+        "": {"events": [{"event_id": "e1", "event_time": "2026-06-01T10:00:00Z"}], "next_cursor": "N2"},
+        "N2": {"events": [{"event_id": "e2", "event_time": "2026-06-01T11:00:00Z"}]},
+    }
+    seen: list[str] = []
+
+    def fake_open_public(request: object, **_kwargs: object) -> object:
+        url = request.full_url  # type: ignore[attr-defined]
+        cursor = url.split("cursor=", 1)[1].split("&", 1)[0] if "cursor=" in url else ""
+        seen.append(cursor)
+        response = MagicMock()
+        response.read.return_value = json.dumps(pages[cursor]).encode("utf-8")
+        response.__enter__.return_value = response
+        return response
+
+    with patch("security_lakehouse.netguard.open_public", side_effect=fake_open_public):
+        rows = RuntimeGatewayClient("https://runtime.example", token="secret").events(since="2026-06-01T00:00:00Z")
+
+    assert [row["event_id"] for row in rows] == ["e1", "e2"]
+    assert seen == ["", "N2"]
+
+
+def test_runtime_bare_list_response_is_a_single_page() -> None:
+    body = json.dumps([{"event_id": "only", "event_time": "2026-06-01T10:00:00Z"}]).encode("utf-8")
+    response = MagicMock()
+    response.read.return_value = body
+    response.__enter__.return_value = response
+    calls = {"n": 0}
+
+    def once(*_args: object, **_kwargs: object) -> object:
+        calls["n"] += 1
+        return response
+
+    with patch("security_lakehouse.netguard.open_public", side_effect=once):
+        rows = RuntimeGatewayClient("https://runtime.example", token="secret").events()
+
+    assert [row["event_id"] for row in rows] == ["only"]
+    assert calls["n"] == 1
+
+
 def test_runtime_retries_on_transient_5xx_then_succeeds(monkeypatch: pytest.MonkeyPatch) -> None:
     """A transient 503 must be retried, not fail the whole export."""
     import urllib.error
