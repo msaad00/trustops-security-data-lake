@@ -3,6 +3,22 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
+## 0.2.5 - 2026-08-14
+
+Release theme: **complete the connector-resilience pass**. Closes the last gap
+from the resilience audit — the append-mode readers that pulled a whole window
+in one request now paginate it.
+
+### Fixed
+
+- ClickHouse, SIEM, and runtime-gateway readers paginate their `since`-window
+  instead of truncating it at the server's first page. ClickHouse keyset-paginates
+  on the composite `(event_time, event_id)` cursor with `LIMIT`, so rows sharing an
+  `event_time` across a page boundary are never dropped and the loop always
+  terminates. SIEM and runtime-gateway follow an optional `next_cursor` envelope
+  via `?cursor=`; an export that returns a bare list is still read as a single
+  page, so a non-paginating endpoint keeps working unchanged.
+
 ## 0.2.4 - 2026-08-14
 
 Release theme: **honest framework coverage + connector resilience**. Separates
