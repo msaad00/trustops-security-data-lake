@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -15,6 +17,7 @@ from security_lakehouse.connector_state import (
     run_probe,
 )
 from security_lakehouse.connectors_google_workspace import (
+    GoogleWorkspaceClient,
     GoogleWorkspaceFixtureClient,
     collect_google_workspace_evidence,
 )
@@ -27,6 +30,59 @@ CONNECTOR_ID = "google-workspace-identity"
 
 def _by_asset(rows: list[dict], event_type: str) -> dict[str, dict]:
     return {r["entity"]["asset_id"]: r for r in rows if r["event_type"] == event_type}
+
+
+def test_google_workspace_follows_next_page_token(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The Directory API pages with nextPageToken; a single GET truncates a real
+    tenant at maxResults. The client must follow the cursor to completion."""
+    monkeypatch.setattr("security_lakehouse.ingestion.backoff.time.sleep", lambda *_: None)
+    pages = {
+        "": {"users": [{"id": "1"}, {"id": "2"}], "nextPageToken": "PAGE2"},
+        "PAGE2": {"users": [{"id": "3"}]},  # no nextPageToken → last page
+    }
+    seen_tokens: list[str] = []
+
+    def fake_open_public(request: object, **_kwargs: object) -> object:
+        url = request.full_url  # type: ignore[attr-defined]
+        token = ""
+        if "pageToken=" in url:
+            token = url.split("pageToken=", 1)[1].split("&", 1)[0]
+        seen_tokens.append(token)
+        response = MagicMock()
+        response.read.return_value = json.dumps(pages[token]).encode("utf-8")
+        response.__enter__.return_value = response
+        return response
+
+    with patch("security_lakehouse.netguard.open_public", side_effect=fake_open_public):
+        users = GoogleWorkspaceClient("C123", access_token="tok").users()
+
+    assert [u["id"] for u in users] == ["1", "2", "3"]
+    assert seen_tokens == ["", "PAGE2"]  # followed exactly one cursor hop
+
+
+def test_google_workspace_retries_on_rate_limit(monkeypatch: pytest.MonkeyPatch) -> None:
+    import urllib.error
+
+    monkeypatch.setattr("security_lakehouse.ingestion.backoff.time.sleep", lambda *_: None)
+    response = MagicMock()
+    response.read.return_value = json.dumps({"groups": [{"id": "g1"}]}).encode("utf-8")
+    response.__enter__.return_value = response
+    sequence: list[object] = [
+        urllib.error.HTTPError("https://admin.googleapis.com", 429, "slow", {"Retry-After": "0"}, None),
+        response,
+    ]
+
+    def flaky(*_args: object, **_kwargs: object) -> object:
+        item = sequence.pop(0)
+        if isinstance(item, Exception):
+            raise item
+        return item
+
+    with patch("security_lakehouse.netguard.open_public", side_effect=flaky):
+        groups = GoogleWorkspaceClient("C123", access_token="tok").groups()
+
+    assert [g["id"] for g in groups] == ["g1"]
+    assert sequence == []
 
 
 def test_collect_google_workspace_evidence_is_schema_valid_and_mapped() -> None:

@@ -21,8 +21,34 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Protocol
 
+from security_lakehouse import netguard
+from security_lakehouse.ingestion import backoff
 from security_lakehouse.io import read_json, write_jsonl
 from security_lakehouse.models import utc_iso
+
+# Runaway guard for page-number pagination, matched to the shared paginator so a
+# repo with thousands of alerts is not silently truncated.
+_MAX_PAGES = 1000
+
+
+def _guarded_request(request: urllib.request.Request, *, timeout: int, label: str) -> object:
+    """Perform a read-only GET through the SSRF guard, with transient-error retry.
+
+    Routes through ``netguard.open_public`` — same as every other HTTP connector —
+    so a redirect from the configured host cannot pivot the request (or its bearer
+    token) at an internal address, and a base URL supplied via env/spec is still
+    boundary-checked on every hop. Retries 429/5xx (honoring ``Retry-After``); a
+    ``204`` keeps its ``{"enabled": True}`` contract.
+    """
+
+    def _fetch() -> object:
+        with netguard.open_public(request, timeout=timeout, label=label) as resp:
+            if getattr(resp, "status", None) == 204:
+                return {"enabled": True}
+            return json.loads(resp.read().decode("utf-8"))
+
+    return backoff.http_retry(_fetch)
+
 
 GITHUB_RE = re.compile(r"^(?:https://github\.com/)?(?P<owner>[\w.-]+)/(?P<repo>[\w.-]+?)(?:\.git)?/?$")
 GITLAB_RE = re.compile(
@@ -158,9 +184,12 @@ class GitHubGovernanceClient:
             return [item for item in payload if isinstance(item, dict)]
         raise ValueError(f"GitHub returned non-list JSON for {url}")
 
-    def _json_list_paginated(self, url: str, *, max_pages: int = 10) -> list[dict[str, Any]]:
-        """Read a bounded GitHub list endpoint without silently truncating page one."""
+    def _json_list_paginated(self, url: str, *, max_pages: int = _MAX_PAGES) -> list[dict[str, Any]]:
+        """Read a paginated GitHub list endpoint without silently truncating.
 
+        ``max_pages`` is a runaway guard, not an expected ceiling — matched to the
+        shared paginator so a repo with thousands of alerts is not dropped at 1000.
+        """
         rows: list[dict[str, Any]] = []
         separator = "&" if "?" in url else "?"
         for page in range(1, max_pages + 1):
@@ -182,10 +211,7 @@ class GitHubGovernanceClient:
                 "user-agent": "trustops-security-data-lake",
             },
         )
-        with urllib.request.urlopen(request, timeout=20) as resp:  # noqa: S310
-            if resp.status == 204:
-                return {"enabled": True}
-            return json.loads(resp.read().decode("utf-8"))
+        return _guarded_request(request, timeout=20, label="github api")
 
 
 class GitLabGovernanceClient:
@@ -283,10 +309,7 @@ class GitLabGovernanceClient:
                 "user-agent": "trustops-security-data-lake",
             },
         )
-        with urllib.request.urlopen(request, timeout=20) as resp:  # noqa: S310
-            if resp.status == 204:
-                return {"enabled": True}
-            return json.loads(resp.read().decode("utf-8"))
+        return _guarded_request(request, timeout=20, label="gitlab api")
 
 
 def _gitlab_access_label(level: int) -> str:

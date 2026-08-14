@@ -116,6 +116,32 @@ def test_runtime_live_query_parses_json_list() -> None:
     assert rows[0]["event_id"] == "live-1"
 
 
+def test_runtime_retries_on_transient_5xx_then_succeeds(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A transient 503 must be retried, not fail the whole export."""
+    import urllib.error
+
+    monkeypatch.setattr("security_lakehouse.ingestion.backoff.time.sleep", lambda *_: None)
+    response = MagicMock()
+    response.read.return_value = json.dumps([{"event_id": "e1", "event_time": "2026-06-01T10:00:00Z"}]).encode("utf-8")
+    response.__enter__.return_value = response
+    sequence: list[object] = [
+        urllib.error.HTTPError("https://runtime.example", 503, "unavailable", {}, None),
+        response,
+    ]
+
+    def flaky(*_args: object, **_kwargs: object) -> object:
+        item = sequence.pop(0)
+        if isinstance(item, Exception):
+            raise item
+        return item
+
+    with patch("security_lakehouse.netguard.open_public", side_effect=flaky):
+        rows = RuntimeGatewayClient("https://runtime.example", token="secret").events()
+
+    assert [row["event_id"] for row in rows] == ["e1"]
+    assert sequence == []
+
+
 def test_runtime_probe_and_discovery_with_env_token(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("TRUSTOPS_RUNTIME_GATEWAY_TOKEN", "secret-token")
 

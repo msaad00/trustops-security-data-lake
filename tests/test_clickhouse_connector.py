@@ -116,6 +116,32 @@ def test_clickhouse_live_query_parses_json_each_row() -> None:
     assert rows[0]["event_id"] == "live-1"
 
 
+def test_clickhouse_retries_on_transient_gateway_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A read-only SELECT is safe to retry on a 502/503 — a single blip must not fail the sync."""
+    import urllib.error
+
+    monkeypatch.setattr("security_lakehouse.ingestion.backoff.time.sleep", lambda *_: None)
+    response = MagicMock()
+    response.read.return_value = json.dumps({"event_id": "e1", "event_time": "2026-06-01T10:00:00Z"}).encode("utf-8")
+    response.__enter__.return_value = response
+    sequence: list[object] = [
+        urllib.error.HTTPError("https://ch.example:8443", 502, "bad gateway", {}, None),
+        response,
+    ]
+
+    def flaky(*_args: object, **_kwargs: object) -> object:
+        item = sequence.pop(0)
+        if isinstance(item, Exception):
+            raise item
+        return item
+
+    with patch("security_lakehouse.netguard.open_public", side_effect=flaky):
+        rows = ClickHouseClient("https://ch.example:8443", user="reader", password="secret").normalized_events()
+
+    assert [row["event_id"] for row in rows] == ["e1"]
+    assert sequence == []
+
+
 def test_clickhouse_probe_and_discovery_with_env_token(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("TRUSTOPS_CLICKHOUSE_TOKEN", "secret-token")
 

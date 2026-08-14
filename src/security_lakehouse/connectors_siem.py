@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from security_lakehouse import netguard
+from security_lakehouse.ingestion import backoff
 from security_lakehouse.io import read_json
 from security_lakehouse.models import parse_event_time, utc_iso
 
@@ -113,9 +114,15 @@ class SiemClient:
                 "user-agent": "trustops-security-data-lake",
             },
         )
-        try:
+
+        def _fetch() -> Any:
             with netguard.open_public(request, timeout=self.timeout, label="siem export url") as resp:
-                payload = json.loads(resp.read().decode("utf-8"))
+                return json.loads(resp.read().decode("utf-8"))
+
+        try:
+            # Retry transient 429/5xx (honoring Retry-After); a terminal 4xx or an
+            # exhausted retry surfaces as a sanitized error rather than failing loud.
+            payload = backoff.http_retry(_fetch)
         except urllib.error.HTTPError as exc:  # pragma: no cover - live only
             raise ValueError(exc.__class__.__name__) from exc
         if isinstance(payload, list):
