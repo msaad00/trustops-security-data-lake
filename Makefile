@@ -141,3 +141,7 @@ npm-audit:
 	cd app/web && npm audit --omit=dev --audit-level=high
 
 security: pip-audit npm-audit pre-commit-run
+
+coverage-doc:
+	uv run python -c "from security_lakehouse.framework_coverage import render_framework_coverage_doc; open('docs/FRAMEWORK_COVERAGE.md','w').write(render_framework_coverage_doc())"
+	@echo wrote docs/FRAMEWORK_COVERAGE.md

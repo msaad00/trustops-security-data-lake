@@ -7,6 +7,11 @@ derived from it.
 TrustOps is adopting this model. This document describes the target, what exists
 today, and how the rest gets there.
 
+The live, generated **[Framework Coverage Matrix](FRAMEWORK_COVERAGE.md)** shows
+per-framework coverage split into _evaluatable_ (any safeguard mapping) vs
+_attestable_ (human-reviewed — the only coverage an auditor accepts); the gap
+between them is the mapping-review backlog.
+
 ## Why the catalog alone is not a CCF
 
 `controls/catalog.json` is framework-first: 942 requirements, each carrying its

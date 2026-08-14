@@ -305,6 +305,25 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         """
         return _get("/api/v1/mappings/equivalence", lake)
 
+    @trustops_tool(title="Framework Coverage")
+    def get_framework_coverage() -> JsonObject:
+        """Per-framework coverage: catalogued requirements, evaluatable, and attestable counts.
+
+        ``attestable`` is the auditor-defensible coverage — requirements backed by
+        a human-reviewed safeguard mapping. ``evaluatable`` also counts proposed
+        (unreviewed) mappings; the gap between them is the mapping-review backlog.
+        Use this to answer "what is my defensible coverage for framework X, and
+        what's still unreviewed" — the same ledger as ``security-lakehouse
+        frameworks coverage``.
+        """
+        from security_lakehouse.framework_coverage import (
+            build_framework_coverage,
+            framework_coverage_summary,
+        )
+
+        rows = build_framework_coverage()
+        return {"summary": framework_coverage_summary(rows), "frameworks": rows}
+
     @trustops_tool(title="Ingestion Status")
     def get_ingestion_status() -> JsonObject:
         """Return live ingestion health, scale tier, schedules, and recommended actions.

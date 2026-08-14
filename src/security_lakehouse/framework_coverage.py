@@ -20,6 +20,7 @@ from security_lakehouse.catalog import (
 )
 from security_lakehouse.framework_provenance import build_framework_view
 from security_lakehouse.mappings import DEFAULT_MAPPINGS, load_control_article_mappings
+from security_lakehouse.safeguards import safeguards_by_requirement
 
 JsonObject = dict[str, Any]
 
@@ -61,6 +62,24 @@ def build_framework_coverage(
         if control_id in controls and framework_id:
             mappings_by_framework[framework_id].append(mapping)
 
+    # Attestable coverage: requirements backed by a *reviewed* safeguard mapping
+    # (what attestation reads via reviewed_only=True), vs merely evaluatable
+    # (touched by any safeguard, reviewed or proposed). Bucketed by the same
+    # control catalog so the counts are relative to seeded requirements. This is
+    # the honest number — distinct from source-citation coverage above, which is
+    # always 100% because every seeded control carries an official source link.
+    control_framework = {cid: str(control.get("framework_id") or "") for cid, control in controls.items()}
+    evaluatable_by_framework: Counter[str] = Counter()
+    attestable_by_framework: Counter[str] = Counter()
+    for control_id in safeguards_by_requirement():
+        framework_id = control_framework.get(str(control_id))
+        if framework_id:
+            evaluatable_by_framework[framework_id] += 1
+    for control_id in safeguards_by_requirement(reviewed_only=True):
+        framework_id = control_framework.get(str(control_id))
+        if framework_id:
+            attestable_by_framework[framework_id] += 1
+
     rows: list[JsonObject] = []
     for framework_id, framework in registry.items():
         seeded_controls = controls_by_framework.get(framework_id, [])
@@ -89,6 +108,17 @@ def build_framework_coverage(
                 "missing_mapping_count": len(missing),
                 "missing_mapping_control_ids": missing,
                 "seeded_mapping_coverage_pct": round(mapped_count / seeded_count * 100, 1) if seeded_count else 0.0,
+                # Attestable coverage: the auditor-defensible number.
+                "evaluatable_requirement_count": evaluatable_by_framework.get(framework_id, 0),
+                "attestable_requirement_count": attestable_by_framework.get(framework_id, 0),
+                "evaluatable_coverage_pct": (
+                    round(evaluatable_by_framework.get(framework_id, 0) / seeded_count * 100, 1)
+                    if seeded_count
+                    else 0.0
+                ),
+                "attestable_coverage_pct": (
+                    round(attestable_by_framework.get(framework_id, 0) / seeded_count * 100, 1) if seeded_count else 0.0
+                ),
                 "implementation_status": framework.get("implementation_status"),
                 "source_policy": _source_policy(framework),
                 "asset_policy": "neutral label; no official logo or certification seal bundled",
@@ -104,6 +134,8 @@ def framework_coverage_summary(
     seeded = sum(int(row["seeded_control_count"]) for row in rows)
     mapped = sum(int(row["reviewed_mapping_count"]) for row in rows)
     missing = sum(int(row["missing_mapping_count"]) for row in rows)
+    evaluatable = sum(int(row.get("evaluatable_requirement_count", 0)) for row in rows)
+    attestable = sum(int(row.get("attestable_requirement_count", 0)) for row in rows)
     applicability = applicability_rows if applicability_rows is not None else build_control_asset_applicability()
     implemented = [row for row in rows if str(row.get("implementation_status", "")).startswith("implemented")]
     planned = [row for row in rows if str(row.get("implementation_status", "")) == "planned"]
@@ -115,6 +147,10 @@ def framework_coverage_summary(
         "reviewed_mapping_count": mapped,
         "missing_mapping_count": missing,
         "seeded_mapping_coverage_pct": round(mapped / seeded * 100, 1) if seeded else 0.0,
+        "evaluatable_requirement_count": evaluatable,
+        "attestable_requirement_count": attestable,
+        "evaluatable_coverage_pct": round(evaluatable / seeded * 100, 1) if seeded else 0.0,
+        "attestable_coverage_pct": round(attestable / seeded * 100, 1) if seeded else 0.0,
         "asset_type_count": len(applicability),
         "control_asset_applicability_link_count": sum(int(row["applicable_control_count"]) for row in applicability),
         "official_logo_count": 0,
@@ -141,6 +177,22 @@ def _markdown_text(value: object) -> str:
     return str(value).replace("|", "\\|").replace("—", "-").replace("–", "-").replace("≥", ">=")
 
 
+def render_framework_coverage_doc() -> str:
+    """Full committed matrix doc (`docs/FRAMEWORK_COVERAGE.md`).
+
+    Generated from the catalog + CCF safeguards; the committed file is gated
+    against this so it can never drift. Regenerate with ``make coverage-doc``.
+    """
+    body = render_framework_coverage_markdown(build_framework_coverage())
+    return (
+        "# Framework Coverage Matrix\n\n"
+        "Generated from the control catalog + CCF safeguards — never hand-edited.\n"
+        "Regenerate with `make coverage-doc`. `Attestable` is the auditor-defensible\n"
+        "coverage (reviewed safeguard mappings); the gap to `Evaluatable` is the\n"
+        "review backlog.\n\n" + body + "\n"
+    )
+
+
 def render_framework_coverage_markdown(
     rows: list[JsonObject],
     applicability_rows: list[JsonObject] | None = None,
@@ -148,21 +200,22 @@ def render_framework_coverage_markdown(
     applicability = applicability_rows if applicability_rows is not None else build_control_asset_applicability()
     summary = framework_coverage_summary(rows, applicability)
     lines = [
-        "| Framework | Official source | Status | Seeded controls | Reviewed mappings | Seeded mapping coverage | Source state | Source policy |",
-        "| --- | --- | --- | ---: | ---: | ---: | --- | --- |",
+        "| Framework | Official source | Status | Requirements | Source-cited | Evaluatable | Attestable | Attestable % | Source state |",
+        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |",
     ]
     for row in rows:
         lines.append(
-            "| {name} | [{source}]({url}) | {status} | {controls} | {mappings} | {coverage}% | {freshness} | {policy} |".format(
+            "| {name} | [{source}]({url}) | {status} | {controls} | {mappings} | {evaluatable} | {attestable} | {attestable_pct}% | {freshness} |".format(
                 name=_markdown_text(row["name"]),
                 source=_markdown_text(row["official_source_name"]),
                 url=_markdown_text(row["official_source_url"]),
                 status=_markdown_text(row.get("implementation_status") or "unknown"),
                 controls=row["seeded_control_count"],
                 mappings=row["reviewed_mapping_count"],
-                coverage=row["seeded_mapping_coverage_pct"],
+                evaluatable=row.get("evaluatable_requirement_count", 0),
+                attestable=row.get("attestable_requirement_count", 0),
+                attestable_pct=row.get("attestable_coverage_pct", 0.0),
                 freshness=str(row["freshness_state"]).replace("_", " "),
-                policy=row["source_policy"],
             )
         )
     applicability_lines = [
@@ -174,11 +227,17 @@ def render_framework_coverage_markdown(
     return "\n".join(
         [
             f"Frameworks: {summary['framework_count']} ({summary['implemented_framework_count']} implemented, {summary['planned_framework_count']} planned)",
-            f"Seeded controls: {summary['seeded_control_count']}",
-            f"Reviewed mappings: {summary['reviewed_mapping_count']}",
+            f"Requirements catalogued: {summary['seeded_control_count']} (all source-cited)",
+            f"Evaluatable (touched by a safeguard): {summary['evaluatable_requirement_count']} "
+            f"({summary['evaluatable_coverage_pct']}%)",
+            f"**Attestable (reviewed safeguard mapping — what an auditor accepts): "
+            f"{summary['attestable_requirement_count']} ({summary['attestable_coverage_pct']}%)**",
             f"Asset types modeled: {summary['asset_type_count']}",
-            f"Control-to-asset applicability links: {summary['control_asset_applicability_link_count']}",
-            f"Seeded mapping coverage: {summary['seeded_mapping_coverage_pct']}%",
+            "",
+            "> `Source-cited` = the requirement has an official source link (always 100%). "
+            "`Evaluatable` = a safeguard claims it (reviewed or proposed). "
+            "`Attestable` = a human has confirmed the safeguard→requirement mapping — the only "
+            "coverage an audit accepts. The gap between Evaluatable and Attestable is the review backlog.",
             "",
             *lines,
             "",
