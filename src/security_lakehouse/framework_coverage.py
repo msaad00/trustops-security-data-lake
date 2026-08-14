@@ -235,9 +235,9 @@ def render_framework_coverage_markdown(
             f"Asset types modeled: {summary['asset_type_count']}",
             "",
             "> `Source-cited` = the requirement has an official source link (always 100%). "
-            "`Evaluatable` = a safeguard claims it (reviewed or proposed). "
-            "`Attestable` = a human has confirmed the safeguard→requirement mapping — the only "
-            "coverage an audit accepts. The gap between Evaluatable and Attestable is the review backlog.",
+            + "`Evaluatable` = a safeguard claims it (reviewed or proposed). "
+            + "`Attestable` = a human has confirmed the safeguard→requirement mapping — the only "
+            + "coverage an audit accepts. The gap between Evaluatable and Attestable is the review backlog.",
             "",
             *lines,
             "",
