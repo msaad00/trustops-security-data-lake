@@ -6,8 +6,8 @@ description: |
   in customer object storage (S3 / GCS / Azure Blob) via the Iceberg+Polaris
   read-only access pattern; nothing leaves the customer cloud.
 type: application
-version: 0.2.4
-appVersion: "0.2.4"
+version: 0.2.5
+appVersion: "0.2.5"
 kubeVersion: ">=1.27.0"
 home: https://github.com/msaad00/trustops-security-data-lake
 sources:
