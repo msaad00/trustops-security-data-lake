@@ -228,7 +228,9 @@ engineering, managed SaaS still wins on packaging.
 
 ## Issue map — what closes the gap fastest
 
-Open issues ranked by impact on **turnkey core GRC loop + premium UX**:
+Issues ranked by impact on **turnkey core GRC loop + premium UX**. All of them
+are closed on GitHub — read the Status column, not the issue state, for what is
+actually delivered.
 
 | Priority | Issue                                                                        | Closes                                       | Status                                       |
 | -------- | ---------------------------------------------------------------------------- | -------------------------------------------- | -------------------------------------------- |

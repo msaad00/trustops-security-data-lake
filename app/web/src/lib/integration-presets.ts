@@ -135,11 +135,12 @@ const PRESETS: Record<string, IntegrationPreset> = {
     providerSetup:
       "Authorize read-only Admin SDK Directory scopes for a service identity.",
     trustOpsInput:
-      "Workspace customer ID and the runtime OAuth token reference.",
+      "Workspace customer ID, plus either a runtime OAuth token reference or the refresh token, client ID, and client secret for unattended sync.",
     advancedTitle: "Directory scopes",
     advancedDetails: [
       "Use directory.users.readonly, directory.groups.readonly, and directory.user.security.readonly.",
       "TrustOps stores the reference name, not the token value.",
+      "Unattended sync needs all three refresh fields; TrustOps mints access tokens on demand and never persists them.",
     ],
   },
 };

@@ -5,8 +5,19 @@ Python package, Helm chart, and bundled web console.
 
 ## 0.2.6 - 2026-08-17
 
-Release theme: **dependency maintenance**. No functional changes to the Python
-package, connectors, or console behavior.
+Release theme: **maintenance + unattended Google Workspace sync**. Closes the
+last gap left by the 0.2.4 OAuth refresh work and refreshes dependencies.
+
+### Added
+
+- Google Workspace can be enabled with refresh-token material alone
+  (`refresh_token_ref` + `client_id` + `client_secret_ref`) instead of a
+  pre-minted access token. The runner already minted tokens from that triple;
+  enablement validation and the console connector form previously demanded a
+  static `credential_ref` anyway, so unattended sync could not be configured
+  through the console. A partially-supplied triple is now rejected by name at
+  probe and enable time rather than silently falling back to the static-token
+  path.
 
 ### Changed
 
@@ -20,6 +31,9 @@ package, connectors, or console behavior.
 - The example MCP host config moved from `.cursor/mcp.json.example` to
   `examples/mcp/mcp.json.example`; it is a generic stdio MCP config, not
   editor-specific. Contents are unchanged.
+- `ROADMAP.md` P7 no longer presents its issue table as open work; all nine
+  linked issues are closed on GitHub, and `docs/PRODUCT_SHAPE.md` carries the
+  honest per-item status (two are still _Partial_).
 
 ## 0.2.5 - 2026-08-14
 
