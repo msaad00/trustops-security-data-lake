@@ -3,6 +3,24 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
+## 0.2.6 - 2026-08-17
+
+Release theme: **dependency maintenance**. No functional changes to the Python
+package, connectors, or console behavior.
+
+### Changed
+
+- Web console dependencies updated: `next` and `eslint-config-next` 16.3.0 ->
+  16.3.1, `@xyflow/react` 12.11.2 -> 12.11.3, `@dagrejs/dagre` 3.1.0 -> 3.1.1,
+  `caniuse-lite` -> 1.0.30001809, `postcss` -> 8.5.26. The console still builds
+  with the pinned Webpack builder.
+- Release workflow actions updated to their current majors:
+  `docker/login-action` v4, `docker/metadata-action` v6,
+  `softprops/action-gh-release` v3.
+- The example MCP host config moved from `.cursor/mcp.json.example` to
+  `examples/mcp/mcp.json.example`; it is a generic stdio MCP config, not
+  editor-specific. Contents are unchanged.
+
 ## 0.2.5 - 2026-08-14
 
 Release theme: **complete the connector-resilience pass**. Closes the last gap
