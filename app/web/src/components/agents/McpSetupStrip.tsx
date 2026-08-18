@@ -114,9 +114,9 @@ export function McpSetupStrip() {
       </div>
       <p className="text-xs text-muted">
         Example config:{" "}
-        <code className="text-ink">.cursor/mcp.json.example</code> in the repo.
-        Set <code className="text-ink">TRUSTOPS_PUBLIC_URL</code> on hosted
-        servers so remote MCP clients fetch the logo from{" "}
+        <code className="text-ink">examples/mcp/mcp.json.example</code> in the
+        repo. Set <code className="text-ink">TRUSTOPS_PUBLIC_URL</code> on
+        hosted servers so remote MCP clients fetch the logo from{" "}
         <code className="text-ink">/brand/trustops-mark.svg</code>.
       </p>
     </section>

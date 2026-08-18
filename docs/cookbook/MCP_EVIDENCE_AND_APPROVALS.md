@@ -56,7 +56,7 @@ trustops-mcp
 
 Install the MCP server in Cursor, Claude Desktop, or another MCP host using
 stdio transport and the env vars above. Copy
-[`.cursor/mcp.json.example`](../../.cursor/mcp.json.example) as a starting point.
+[`examples/mcp/mcp.json.example`](../../examples/mcp/mcp.json.example) as a starting point.
 
 The server advertises **TrustOps icons** on `serverInfo` and each tool (MCP
 SEP-973). Hosted deployments should set `TRUSTOPS_PUBLIC_URL` so clients can
