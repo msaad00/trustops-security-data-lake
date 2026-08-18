@@ -479,3 +479,30 @@ high-water cursor (`gold/watermarks.jsonl`) rather than streamed, because the
 Okta System Log is a polled API. Modeling them separately keeps each control on
 the right freshness/cost path instead of over-provisioning the whole connector to
 the strictest SLO.
+
+## Google Workspace: two credential shapes
+
+`google-workspace-identity` accepts either an already-minted access token or the
+OAuth material to mint tokens itself. Pick one:
+
+| Shape               | Credentials                                             | When                                                                     |
+| ------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Static access token | `credential_ref`                                        | Your secret manager already rotates a short-lived Directory access token |
+| Unattended refresh  | `refresh_token_ref` + `client_id` + `client_secret_ref` | Scheduled sync with nothing external minting tokens                      |
+
+Both need `customer_id`. The `*_ref` fields name environment variables, never raw
+secrets; a `<NAME>_FILE` variant is preferred over the inline value when both are
+present. With the refresh shape, TrustOps exchanges the refresh token at
+`oauth2.googleapis.com/token` on first use, near expiry (300s skew), or once on a
+401, and the resolved access token stays in memory only.
+
+```bash
+security-lakehouse connectors probe \
+  --lake build/lakehouse \
+  --connector-id google-workspace-identity \
+  --credentials-json '{"customer_id":"C01234567","refresh_token_ref":"GOOGLE_WORKSPACE_REFRESH_TOKEN","client_id":"123-abc.apps.googleusercontent.com","client_secret_ref":"GOOGLE_WORKSPACE_OAUTH_CLIENT_SECRET"}'
+```
+
+Supplying part of the refresh triple is rejected at probe and enable time with the
+specific missing fields, because a partial triple silently falls back to the
+static-token path at sync time.

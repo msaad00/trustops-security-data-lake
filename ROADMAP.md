@@ -65,9 +65,12 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 - [x] Audit readiness API and audit room (#340)
 - [x] MCP/API resource catalog parity for platform endpoints (access reviews, policies, vendor diligence, insights)
 
-## P7 — Turnkey GRC loop + premium UX (open)
+## P7 — Turnkey GRC loop + premium UX
 
-Honest parity map: [PRODUCT_SHAPE.md](docs/PRODUCT_SHAPE.md)
+Every issue below is **closed on GitHub**; the links are kept as the design record.
+Closed does not mean complete — #14 (framework expansion) and #16 (agent workbench)
+are still rated _Partial_. The live status column, not this table, is the honest
+signal: [PRODUCT_SHAPE.md](docs/PRODUCT_SHAPE.md)
 
 | Issue                                                                                                                                             | Closes                                                                       |
 | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |

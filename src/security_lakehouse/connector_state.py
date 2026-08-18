@@ -455,7 +455,17 @@ def _missing_required_config(
         missing = []
         if not _has_value(credentials, "customer_id"):
             missing.append("customer_id")
-        if not (_has_value(credentials, "credential_ref") or _has_value(credentials, "token")):
+        # Either a static access token, or the full unattended-refresh triple the
+        # runner needs to mint one (refresh token + OAuth client id + secret).
+        # A partial triple is reported field-by-field so the operator can see
+        # which half of the refresh config is missing.
+        refresh_fields = ("refresh_token_ref", "client_id", "client_secret_ref")
+        supplied_refresh = [field for field in refresh_fields if _has_value(credentials, field)]
+        if _has_value(credentials, "credential_ref") or _has_value(credentials, "token"):
+            pass
+        elif supplied_refresh:
+            missing.extend(field for field in refresh_fields if field not in supplied_refresh)
+        else:
             missing.append("credential_ref")
         return missing
 

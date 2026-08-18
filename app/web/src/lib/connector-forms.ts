@@ -158,8 +158,23 @@ export const CONNECTOR_CREDENTIAL_FIELDS: Record<string, ConnectorFieldDef[]> =
         name: "credential_ref",
         label: "OAuth access token env",
         placeholder: "GOOGLE_WORKSPACE_ACCESS_TOKEN",
-        required: true,
-        hint: "Read-only directory scopes; token mounted by your secret manager.",
+        hint: "Read-only directory scopes; token mounted by your secret manager. Supply this or the three unattended-refresh fields below.",
+      },
+      {
+        name: "refresh_token_ref",
+        label: "Refresh token env (unattended)",
+        placeholder: "GOOGLE_WORKSPACE_REFRESH_TOKEN",
+        hint: "Set all three refresh fields to run without a pre-minted access token. A _FILE variant of this name is preferred when both are present.",
+      },
+      {
+        name: "client_id",
+        label: "OAuth client ID (unattended)",
+        placeholder: "1234567890-abc.apps.googleusercontent.com",
+      },
+      {
+        name: "client_secret_ref",
+        label: "OAuth client secret env (unattended)",
+        placeholder: "GOOGLE_WORKSPACE_OAUTH_CLIENT_SECRET",
       },
     ],
     "jira-ticketing": [

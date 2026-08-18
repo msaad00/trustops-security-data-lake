@@ -1001,3 +1001,71 @@ def test_connector_post_blocked_in_auditor_mode(tmp_path: Path) -> None:
         assert status == HTTPStatus.FORBIDDEN
     finally:
         server.shutdown()
+
+
+def test_google_workspace_accepts_refresh_material_without_access_token() -> None:
+    # The runner mints access tokens from the refresh triple, so an operator
+    # running unattended sync never has a static access token to reference.
+    assert (
+        _missing_required_config(
+            "google-workspace-identity",
+            "google_oauth_token",
+            {
+                "customer_id": "C01234567",
+                "refresh_token_ref": "GOOGLE_WORKSPACE_REFRESH_TOKEN",
+                "client_id": "123-abc.apps.googleusercontent.com",
+                "client_secret_ref": "GOOGLE_WORKSPACE_OAUTH_CLIENT_SECRET",
+            },
+            {},
+        )
+        == []
+    )
+
+
+def test_google_workspace_static_access_token_still_accepted() -> None:
+    assert (
+        _missing_required_config(
+            "google-workspace-identity",
+            "google_oauth_token",
+            {"customer_id": "C01234567", "credential_ref": "GOOGLE_WORKSPACE_ACCESS_TOKEN"},
+            {},
+        )
+        == []
+    )
+
+
+def test_google_workspace_partial_refresh_material_names_the_gap() -> None:
+    # A half-configured triple would build no token source in the runner, so the
+    # error points at the specific fields rather than the access-token path.
+    missing = _missing_required_config(
+        "google-workspace-identity",
+        "google_oauth_token",
+        {"customer_id": "C01234567", "refresh_token_ref": "GOOGLE_WORKSPACE_REFRESH_TOKEN"},
+        {},
+    )
+    assert missing == ["client_id", "client_secret_ref"]
+
+
+def test_google_workspace_without_any_credential_reports_credential_ref() -> None:
+    assert _missing_required_config(
+        "google-workspace-identity",
+        "google_oauth_token",
+        {"customer_id": "C01234567"},
+        {},
+    ) == ["credential_ref"]
+
+
+def test_google_workspace_probe_accepts_refresh_only_config(tmp_path: Path) -> None:
+    rec = run_probe(
+        tmp_path,
+        connector_id="google-workspace-identity",
+        credentials={
+            "customer_id": "C01234567",
+            "refresh_token_ref": "GOOGLE_WORKSPACE_REFRESH_TOKEN",
+            "client_id": "123-abc.apps.googleusercontent.com",
+            "client_secret_ref": "GOOGLE_WORKSPACE_OAUTH_CLIENT_SECRET",
+        },
+        options={},
+    )
+    assert rec["result"] == "ok"
+    assert rec["metadata"]["probe_mode"] == "config_only"
