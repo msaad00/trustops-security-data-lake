@@ -5,11 +5,16 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "trustops-security-data-lake"
 version = "0.2.6"
-description = "Continuous compliance assessment for security data lakes."
+description = "Open-source, self-hosted trust operations — SOC 2, NIST AI RMF, FedRAMP, ISO, HIPAA, PCI DSS. Read-only evidence collection, deterministic control tests, and audit-ready proof with an API-first, MCP-native design."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Mohamed Saad" }]
+keywords = [
+    "compliance", "soc2", "nist", "fedramp", "hipaa", "pci-dss", "iso27001",
+    "grc", "devsecops", "audit", "security", "evidence", "controls",
+    "mcp", "agents", "data-lake",
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -25,9 +30,16 @@ classifiers = [
 ]
 dependencies = []
 
+[project.urls]
+Homepage = "https://github.com/msaad00/trustops-security-data-lake"
+Documentation = "https://github.com/msaad00/trustops-security-data-lake/tree/main/docs"
+Repository = "https://github.com/msaad00/trustops-security-data-lake"
+Changelog = "https://github.com/msaad00/trustops-security-data-lake/blob/main/CHANGELOG.md"
+"Bug Tracker" = "https://github.com/msaad00/trustops-security-data-lake/issues"
+
 [project.optional-dependencies]
 # Server mode: the ASGI platform surface for auth, multi-tenancy, and live
-# connectors. Local mode stays zero-dependency (`pip install trustops`).
+# connectors. Local mode stays zero-dependency (`pip install trustops-security-data-lake`).
 server = [
     "fastapi>=0.115",
     "uvicorn>=0.30",

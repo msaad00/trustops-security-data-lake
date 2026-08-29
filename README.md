@@ -43,23 +43,70 @@ The catalog holds 942 requirements across 13 frameworks; run
 Evidence stays in your environment. Models may summarize and prioritize; they do
 not silently change evidence or decide pass/fail.
 
-## Quickstart
+**The open-source, self-hosted alternative to managed GRC SaaS — interoperable, secure, and built to scale in your environment.**
+
+| | TrustOps | Managed GRC SaaS |
+|---|---|---|
+| Evidence location | Your VPC or laptop — data never leaves | Vendor servers |
+| Control evaluation | Deterministic rules, no model drift | Varies by vendor |
+| API surface | Native `/api/v1` + MCP stdio for agents | Web-first, limited API |
+| Interoperability | CCF maps one safeguard to 13 frameworks | Proprietary control sets |
+| Cost model | Open source (Apache 2.0) | Per-seat subscription |
+| Self-hosted | Full stack on your infra or CI | Cloud-only options |
+
+## Where to start
+
+| I am… | Start here |
+|---|---|
+| **DevSecOps / security engineer** | [Quick start](#quick-start) → [Connectors](docs/CONNECTORS.md) → [CI gate](docs/CI_GATE.md) |
+| **Compliance / GRC lead** | [Product tour](docs/PRODUCT_WALKTHROUGH.md) → [Framework coverage](docs/FRAMEWORK_COVERAGE.md) |
+| **AI / agent builder** | [Agent API](docs/api/AGENT_API.md) → [MCP server](docs/MCP.md) → [AIBOM](docs/AIBOM.md) |
+| **Auditor / assessor** | [Audit room](docs/PRODUCT_WALKTHROUGH.md#audit-room) → [Snapshot integrity](docs/ARCHITECTURE.md#snapshots) |
+| **Operator deploying** | [deploy/README.md](deploy/README.md) → [Server auth](docs/SERVER_AUTH.md) |
+
+## Quick start
+
+Requires Python 3.11+ and Node 22+ (the console is built from source; it is not
+committed to the repository). For the fastest path, use `make demo-local` which
+runs the whole sequence in one step.
 
 ```bash
-# PyPI (Python 3.11+) — console + API
-pip install 'trustops-security-data-lake[server]'
-security-lakehouse platform seed-dev --lake ./lake
-security-lakehouse serve --server --lake ./lake   # http://127.0.0.1:8787/console/
+python -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev,server]"
 
-# Container image
-docker run -p 8787:8787 ghcr.io/msaad00/trustops:latest
+make web-install web-build   # builds the console into src/security_lakehouse/web/dist
 
-# Kubernetes (Helm)
-helm install trustops deploy/helm/trustops
+security-lakehouse fixtures load --company golden --out build/lakehouse
+security-lakehouse db upgrade --lake build/lakehouse
+security-lakehouse serve \
+  --lake build/lakehouse \
+  --server \
+  --allow-insecure-no-auth \
+  --port 8787
 ```
 
-See [deploy/README.md](deploy/README.md) for production configuration, and the
-[Product tour](docs/PRODUCT_WALKTHROUGH.md) for what to do once it is running.
+Open [http://127.0.0.1:8787/console/dashboard/](http://127.0.0.1:8787/console/dashboard/).
+
+> **Note:** Skipping `make web-install web-build` leaves `/console/` as a 404.
+> The server mounts the console only when a built dist is present.
+> `--allow-insecure-no-auth` is for local development only.
+
+**Other install paths:**
+
+```bash
+# Evaluator: container (no build required)
+docker run -p 8787:8787 ghcr.io/msaad00/trustops:latest
+
+# Kubernetes
+helm install trustops deploy/helm/trustops
+
+# CLI / local lake only (zero dependencies)
+pip install trustops-security-data-lake
+security-lakehouse fixtures load --company golden --out ./lake
+```
+
+See [deploy/README.md](deploy/README.md) for production configuration and authentication setup.
 
 <details>
 <summary><b>Surfaces</b> — console, API, CLI, MCP, CI</summary>
@@ -94,35 +141,6 @@ scanner, ticketing, and AI-platform entries in
 | <img src="docs/images/trustops-demo-evidence.png" alt="TrustOps evidence room" width="100%"> | <img src="docs/images/trustops-demo-connectors.png" alt="TrustOps connector registry" width="100%"> |
 
 More views: [frameworks](docs/images/trustops-demo-frameworks.png) · [insights](docs/images/trustops-demo-insights.png) · [workflows](docs/images/trustops-demo-workflows.png) · [trust center](docs/images/trustops-demo-trust-center.png)
-
-## Quick start
-
-Requires Python 3.11+ and Node 22+ (the console is built from source; it is not
-committed to the repository).
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev,server]"
-
-make web-install web-build   # builds the console into src/security_lakehouse/web/dist
-
-security-lakehouse fixtures load --company golden --out build/lakehouse
-security-lakehouse db upgrade --lake build/lakehouse
-security-lakehouse serve \
-  --lake build/lakehouse \
-  --server \
-  --allow-insecure-no-auth \
-  --port 8787
-```
-
-Open [http://127.0.0.1:8787/console/dashboard/](http://127.0.0.1:8787/console/dashboard/).
-
-Skipping the console build leaves that URL a 404: the server mounts `/console/`
-only when a built console is present, and falls back to a single status page.
-`make demo-local` runs the whole sequence in one step.
-
-`--allow-insecure-no-auth` is for local development only. Production deployments require configured authentication; see [server authentication](docs/SERVER_AUTH.md).
 
 ## Connect a live source
 

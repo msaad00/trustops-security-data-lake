@@ -676,14 +676,18 @@ export function ConnectorDrawer({
     }
   };
 
+  const [confirmDisable, setConfirmDisable] = useState(false);
+
   const disable = async () => {
     try {
       await configure.mutateAsync({
         id: connector.connector_id,
         payload: { state: "disabled", actor: "console" },
       });
+      setConfirmDisable(false);
       onToast(`${connector.name} disabled.`);
     } catch (err) {
+      setConfirmDisable(false);
       onToast(`Disable failed: ${(err as Error).message}`);
     }
   };
@@ -842,15 +846,36 @@ export function ConnectorDrawer({
                   Sync evidence
                 </Button>
               )}
-              {isEnabled ? (
+              {isEnabled && !confirmDisable ? (
                 <Button
                   variant="default"
                   size="sm"
-                  onClick={disable}
+                  onClick={() => setConfirmDisable(true)}
                   disabled={configure.isPending}
                 >
                   <PauseCircle className="h-4 w-4" /> Disable
                 </Button>
+              ) : null}
+              {isEnabled && confirmDisable ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Disable {connector.name}?</span>
+                  <Button
+                    variant="dark"
+                    size="sm"
+                    onClick={disable}
+                    disabled={configure.isPending}
+                  >
+                    Confirm disable
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setConfirmDisable(false)}
+                    disabled={configure.isPending}
+                  >
+                    Cancel
+                  </Button>
+                </div>
               ) : null}
             </div>
           </div>
@@ -1266,7 +1291,10 @@ export function ConnectorDrawer({
             {connectedTab === "Runs" && (
               <section className="mt-3 rounded-xl border border-line bg-white p-3">
                 <div className="text-xs font-black uppercase tracking-wide text-muted">
-                  Connector run log · {runHistoryRows.length} events
+                  Connector run log
+                  {runHistoryRows.length > 8
+                    ? ` · showing 8 of ${runHistoryRows.length} events`
+                    : ` · ${runHistoryRows.length} event${runHistoryRows.length === 1 ? "" : "s"}`}
                 </div>
                 <div className="mt-3 max-h-80 overflow-auto pr-1">
                   <div className="grid gap-2">
@@ -1282,7 +1310,7 @@ export function ConnectorDrawer({
                             </Badge>{" "}
                             <Badge>{r.kind}</Badge>
                           </span>
-                          <span className="text-muted">{r.occurred_at}</span>
+                          <span className="text-muted">{formatWhen(r.occurred_at)}</span>
                         </div>
                         <div className="mt-1 text-muted">
                           actor <b className="text-ink">{r.actor}</b>

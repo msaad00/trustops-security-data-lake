@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   createColumnHelper,
   flexRender,
@@ -104,9 +105,17 @@ export default function EvidencePage() {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "event_time", desc: true },
   ]);
+  const searchParams = useSearchParams();
   const [selected, setSelected] = useState<EvidenceRow | null>(null);
   const [activeTagId, setActiveTagId] = useState<string | null>(null);
   const taggedEvidence = useTagEntityIds(activeTagId, "evidence");
+
+  const deepLinkId = searchParams.get("id");
+  useEffect(() => {
+    if (!deepLinkId || !evidence.data) return;
+    const match = evidence.data.find((e) => e.event_id === deepLinkId);
+    if (match) setSelected({ ...match, freshness: undefined });
+  }, [deepLinkId, evidence.data]);
   const taggedIds = useMemo(
     () => new Set(taggedEvidence.data ?? []),
     [taggedEvidence.data],

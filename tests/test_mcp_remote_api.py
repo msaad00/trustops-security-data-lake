@@ -10,7 +10,12 @@ from pathlib import Path
 
 import pytest
 
-from security_lakehouse import mcp_server
+from security_lakehouse import mcp_server, netguard
+
+
+def _no_ssrf_check(url: str, **_kw: object) -> str:
+    """Bypass DNS resolution in unit tests that use non-resolving test domains."""
+    return url.split("//", 1)[1].split("/")[0]
 
 
 def test_resolve_api_base_url_requires_http(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -23,6 +28,7 @@ def test_resolve_api_base_url_requires_http(monkeypatch: pytest.MonkeyPatch) -> 
         mcp_server.resolve_api_base_url()
 
     monkeypatch.setenv("TRUSTOPS_API_URL", "https://trustops.example.test/")
+    monkeypatch.setattr(netguard, "assert_url_is_public", _no_ssrf_check)
     assert mcp_server.resolve_api_base_url() == "https://trustops.example.test"
 
 
@@ -51,6 +57,7 @@ def test_server_api_request_sends_bearer_json_without_secret_in_url(monkeypatch:
     monkeypatch.setenv("TRUSTOPS_API_URL", "https://trustops.example.test/")
     monkeypatch.setenv("TRUSTOPS_API_KEY", "secret-token")
     monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(netguard, "assert_url_is_public", _no_ssrf_check)
 
     body = mcp_server._server_api_request("POST", "/api/v1/agent-runs", {"harness": "posture_review"}, limit=10)
 
@@ -77,6 +84,7 @@ def test_server_api_request_redacts_token_from_error(monkeypatch: pytest.MonkeyP
     monkeypatch.setenv("TRUSTOPS_API_URL", "https://trustops.example.test")
     monkeypatch.setenv("TRUSTOPS_API_KEY", "secret-token")
     monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(netguard, "assert_url_is_public", _no_ssrf_check)
 
     with pytest.raises(ValueError) as exc:
         mcp_server._server_api_request("GET", "/api/v1/agent-runs")

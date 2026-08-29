@@ -19,8 +19,12 @@ pytest.importorskip("mcp")
 
 import anyio  # noqa: E402
 
-from security_lakehouse import mcp_server  # noqa: E402
+from security_lakehouse import mcp_server, netguard  # noqa: E402
 from test_api_v1 import _seed_lake  # noqa: E402
+
+
+def _no_ssrf_check(url: str, **_kw: object) -> str:
+    return url.split("//", 1)[1].split("/")[0]
 
 EXPECTED_TOOLS = {
     "get_posture",
@@ -182,6 +186,7 @@ def test_resolve_api_base_url(monkeypatch):
     with pytest.raises(ValueError):
         mcp_server.resolve_api_base_url()
     monkeypatch.setenv("TRUSTOPS_API_URL", "https://trustops.example.test/")
+    monkeypatch.setattr(netguard, "assert_url_is_public", _no_ssrf_check)
     assert mcp_server.resolve_api_base_url() == "https://trustops.example.test"
 
 

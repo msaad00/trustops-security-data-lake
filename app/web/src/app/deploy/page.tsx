@@ -35,19 +35,19 @@ const EDITIONS = [
   {
     name: "OSS",
     deploy: "Local / CI",
-    console: "Full workbench",
+    console: "Full console",
     support: "Community",
   },
   {
     name: "Self-hosted",
     deploy: "Your cluster",
-    console: "Workbench + OIDC",
+    console: "Console + OIDC",
     support: "Your ops",
   },
   {
     name: "Managed cloud",
     deploy: "Operator URL",
-    console: "Workbench + SSO",
+    console: "Console + SSO",
     support: "Commercial",
   },
 ] as const;

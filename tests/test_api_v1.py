@@ -296,8 +296,10 @@ def test_v1_connector_sync_failure_is_generic_and_does_not_leak(tmp_path: Path) 
     try:
         # Syncing a connector that is not enabled fails; the endpoint must return
         # a generic error envelope with no exception detail crossing the boundary.
+        # 502 (not 400) because the failure is a server-side sync error, not a
+        # client request error.
         status, body = _request(server, "POST", "/api/v1/connectors/aws-posture/sync", {})
-        assert status == HTTPStatus.BAD_REQUEST
+        assert status == HTTPStatus.BAD_GATEWAY
         assert body["errors"][0]["code"] == "sync_failed"
         assert "see the connector runs" in body["errors"][0]["detail"]
         assert "Traceback" not in json.dumps(body)
