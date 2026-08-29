@@ -250,8 +250,10 @@ where needed for control evaluation and audit proof.
 
 ## Example
 
+**Local development** (no auth required — `--allow-insecure-no-auth` disables the auth gate):
+
 ```bash
-security-lakehouse serve --lake build/lakehouse --port 8787
+security-lakehouse serve --lake build/lakehouse --allow-insecure-no-auth --port 8787
 
 curl -s http://127.0.0.1:8787/api/v1/posture/current | jq .
 curl -s 'http://127.0.0.1:8787/api/v1/control-tests?result=fail&sort=-confidence_score&limit=10' | jq .
@@ -260,4 +262,27 @@ curl -s 'http://127.0.0.1:8787/api/v1/evidence/freshness?status=stale,expired,mi
 curl -s -X POST http://127.0.0.1:8787/api/v1/snapshots \
   -H 'content-type: application/json' \
   --data '{"reason":"vendor_due_diligence"}' | jq .
+```
+
+**Server deployment** (create an API key in the console under Settings → API keys):
+
+```bash
+export TRUSTOPS_TOKEN="tok_..."
+
+curl -s -H "Authorization: Bearer $TRUSTOPS_TOKEN" \
+  https://your-server/api/v1/posture/current | jq .
+
+curl -s -H "Authorization: Bearer $TRUSTOPS_TOKEN" \
+  'https://your-server/api/v1/control-tests?result=fail&sort=-confidence_score&limit=10' | jq .
+
+curl -s -H "Authorization: Bearer $TRUSTOPS_TOKEN" \
+  'https://your-server/api/v1/violations?severity=critical,high' | jq .
+
+curl -s -H "Authorization: Bearer $TRUSTOPS_TOKEN" \
+  'https://your-server/api/v1/evidence/freshness?status=stale,expired,missing&sort=-age_minutes' | jq .
+
+curl -s -X POST -H "Authorization: Bearer $TRUSTOPS_TOKEN" \
+  -H 'content-type: application/json' \
+  --data '{"reason":"vendor_due_diligence"}' \
+  https://your-server/api/v1/snapshots | jq .
 ```
