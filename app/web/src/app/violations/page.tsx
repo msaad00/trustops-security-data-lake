@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   createColumnHelper,
   flexRender,
@@ -43,10 +44,11 @@ const toneForSeverity = (s: string) =>
 
 const SURFACE = "violations";
 
-export default function ViolationsPage() {
+function ViolationsPageContent() {
   const violations = useViolations();
   const controls = useControls();
   const tagsQuery = useTags();
+  const searchParams = useSearchParams();
 
   const { filters, setFilters } = useToolbar();
   const [sorting, setSorting] = useState<SortingState>([
@@ -54,6 +56,13 @@ export default function ViolationsPage() {
   ]);
   const [selected, setSelected] = useState<Violation | null>(null);
   const [activeTagId, setActiveTagId] = useState<string | null>(null);
+
+  const deepLinkId = searchParams.get("id");
+  useEffect(() => {
+    if (!deepLinkId || !violations.data) return;
+    const match = violations.data.find((v) => v.violation_id === deepLinkId);
+    if (match) setSelected(match);
+  }, [deepLinkId, violations.data]);
   const taggedViolations = useTagEntityIds(activeTagId, "violation");
   const taggedIds = useMemo(
     () => new Set(taggedViolations.data ?? []),
@@ -263,5 +272,17 @@ export default function ViolationsPage() {
         onToast={notify.success}
       />
     </div>
+  );
+}
+
+export default function ViolationsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="px-4 py-5 text-sm text-muted">Loading findings…</div>
+      }
+    >
+      <ViolationsPageContent />
+    </Suspense>
   );
 }

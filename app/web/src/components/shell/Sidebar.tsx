@@ -4,15 +4,23 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  ActivityIcon,
   AlertOctagon,
   BookOpen,
+  Bot,
+  BrainCircuit,
   ChevronLeft,
   ChevronRight,
   ClipboardCheck,
   FileSearch,
+  Layers,
   LayoutDashboard,
   Plug,
+  ShieldAlert,
   ShieldCheck,
+  Sparkles,
+  Users,
+  Zap,
 } from "lucide-react";
 import { SidebarFooter } from "./SidebarFooter";
 import { TrustOpsLogo } from "@/components/brand/TrustOpsLogo";
@@ -24,10 +32,11 @@ interface RailItem {
   href: string;
   label: string;
   Icon: typeof LayoutDashboard;
-  group: "Overview" | "Collect" | "Evaluate" | "Prove";
+  group: "Overview" | "Collect" | "Evaluate" | "Operate" | "Prove";
 }
 
 const ITEMS: RailItem[] = [
+  // ── Overview ──
   {
     href: "/dashboard",
     label: "Overview",
@@ -35,12 +44,29 @@ const ITEMS: RailItem[] = [
     group: "Overview",
   },
   {
-    href: "/connectors",
-    label: "Connections",
-    Icon: Plug,
+    href: "/insights",
+    label: "Insights",
+    Icon: ActivityIcon,
+    group: "Overview",
+  },
+
+  // ── Collect ──
+  { href: "/connectors", label: "Connections", Icon: Plug, group: "Collect" },
+  { href: "/evidence", label: "Evidence", Icon: FileSearch, group: "Collect" },
+  {
+    href: "/access-reviews",
+    label: "Access reviews",
+    Icon: Users,
     group: "Collect",
   },
-  { href: "/evidence", label: "Evidence", Icon: FileSearch, group: "Collect" },
+  {
+    href: "/vendor-risk",
+    label: "Vendor risk",
+    Icon: ShieldAlert,
+    group: "Collect",
+  },
+
+  // ── Evaluate ──
   {
     href: "/controls",
     label: "Controls",
@@ -60,9 +86,47 @@ const ITEMS: RailItem[] = [
     group: "Evaluate",
   },
   {
+    href: "/risks",
+    label: "Risk register",
+    Icon: ShieldAlert,
+    group: "Evaluate",
+  },
+  { href: "/policies", label: "Policies", Icon: BookOpen, group: "Evaluate" },
+  {
+    href: "/ai-governance",
+    label: "AI governance",
+    Icon: BrainCircuit,
+    group: "Evaluate",
+  },
+  { href: "/crosswalk", label: "Crosswalk", Icon: Layers, group: "Evaluate" },
+
+  // ── Operate ──
+  {
+    href: "/remediation",
+    label: "Remediation",
+    Icon: ShieldCheck,
+    group: "Operate",
+  },
+  { href: "/automation", label: "Workflows", Icon: Zap, group: "Operate" },
+  { href: "/agents", label: "Agents", Icon: Bot, group: "Operate" },
+
+  // ── Prove ──
+  {
     href: "/audit-room",
     label: "Audit room",
     Icon: ClipboardCheck,
+    group: "Prove",
+  },
+  {
+    href: "/trust-center",
+    label: "Trust center",
+    Icon: Sparkles,
+    group: "Prove",
+  },
+  {
+    href: "/audit-log",
+    label: "Audit log",
+    Icon: ActivityIcon,
     group: "Prove",
   },
 ];
@@ -71,6 +135,7 @@ const GROUPS: RailItem["group"][] = [
   "Overview",
   "Collect",
   "Evaluate",
+  "Operate",
   "Prove",
 ];
 

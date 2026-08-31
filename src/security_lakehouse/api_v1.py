@@ -1645,7 +1645,7 @@ def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tup
             # The run is persisted with its outcome; surface a generic failure
             # here so no exception detail crosses the HTTP boundary. The reason
             # is available via GET /api/v1/connectors/{id}/runs.
-            return HTTPStatus.BAD_REQUEST, error_envelope(
+            return HTTPStatus.BAD_GATEWAY, error_envelope(
                 "sync_failed", "connector sync failed; see the connector runs for details", resource="connector.sync"
             )
         return HTTPStatus.CREATED, envelope(
@@ -1661,7 +1661,7 @@ def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tup
     if path == "/api/v1/ingestion/eval":
         eval_result = run_lake_eval(lake, actor=str(payload.get("actor") or "console"))
         return (
-            HTTPStatus.CREATED if eval_result.result == "ok" else HTTPStatus.BAD_REQUEST,
+            HTTPStatus.CREATED if eval_result.result == "ok" else HTTPStatus.INTERNAL_SERVER_ERROR,
             envelope(
                 "ingestion.eval",
                 {

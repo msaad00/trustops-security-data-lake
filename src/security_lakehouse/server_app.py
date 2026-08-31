@@ -963,6 +963,17 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         app.state.oauth = build_oauth(app.state.oidc_config)
 
     @app.middleware("http")
+    async def _security_headers(request: Request, call_next):
+        response = await call_next(request)
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+        response.headers.setdefault("X-XSS-Protection", "0")
+        if _COOKIE_SECURE:
+            response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+        return response
+
+    @app.middleware("http")
     async def _record_request_audit(request: Request, call_next):
         correlation_id = str(uuid.uuid4())
         response = await call_next(request)

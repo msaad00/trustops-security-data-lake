@@ -12,6 +12,7 @@ import os
 from dataclasses import dataclass
 from datetime import datetime
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from security_lakehouse.db import repository
@@ -116,13 +117,17 @@ def complete_oidc_login(
             role_map=config.role_map,
             default_role=config.default_role,
         )
-    user = repository.find_or_provision_user(
-        session,
-        tenant_id=tenant.id,
-        email=email,
-        auto_provision=config.auto_provision,
-        default_role=mapped_role,
-    )
+    try:
+        user = repository.find_or_provision_user(
+            session,
+            tenant_id=tenant.id,
+            email=email,
+            auto_provision=config.auto_provision,
+            default_role=mapped_role,
+        )
+    except IntegrityError:
+        session.rollback()
+        user = repository.get_user_by_email(session, tenant_id=tenant.id, email=email)
     if user is None:
         raise OIDCLoginError(f"no provisioned user for {email!r} and auto-provisioning is disabled")
     if (

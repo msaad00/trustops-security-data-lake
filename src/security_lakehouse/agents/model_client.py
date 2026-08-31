@@ -8,6 +8,7 @@ import urllib.error
 import urllib.request
 from typing import Any
 
+from security_lakehouse import netguard
 from security_lakehouse.agents.model_contract import model_messages
 from security_lakehouse.agents.providers import ModelProviderConfig
 
@@ -89,6 +90,10 @@ def _call_openai_compatible(context: dict[str, Any], provider: ModelProviderConf
     if not api_key:
         raise ModelClientError(f"{provider.api_key_env} is not set")
     base_url = provider.base_url.rstrip("/") if provider.base_url else "https://api.openai.com/v1"
+    try:
+        netguard.assert_url_is_public(base_url, label="TRUSTOPS_AGENT_BASE_URL")
+    except ValueError as exc:
+        raise ModelClientError(str(exc)) from exc
     payload = {
         "model": provider.model,
         "messages": model_messages(context),
@@ -112,6 +117,11 @@ def _call_anthropic(context: dict[str, Any], provider: ModelProviderConfig) -> d
     api_key = os.environ.get(provider.api_key_env)
     if not api_key:
         raise ModelClientError(f"{provider.api_key_env} is not set")
+    anthropic_base = provider.base_url.rstrip("/") if provider.base_url else "https://api.anthropic.com"
+    try:
+        netguard.assert_url_is_public(anthropic_base, label="TRUSTOPS_AGENT_BASE_URL")
+    except ValueError as exc:
+        raise ModelClientError(str(exc)) from exc
     messages = model_messages(context)
     payload = {
         "model": provider.model,
@@ -120,7 +130,7 @@ def _call_anthropic(context: dict[str, Any], provider: ModelProviderConfig) -> d
         "messages": [{"role": "user", "content": messages[1]["content"]}],
     }
     response = _post_json(
-        (provider.base_url.rstrip("/") if provider.base_url else "https://api.anthropic.com") + "/v1/messages",
+        anthropic_base + "/v1/messages",
         payload,
         headers={
             "Content-Type": "application/json",

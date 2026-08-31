@@ -27,11 +27,28 @@ def is_retryable_http(exc: BaseException) -> bool:
 
 
 def http_retry_after(exc: BaseException) -> float | None:
-    """Read a server ``Retry-After`` (seconds) from a 429 response, if present."""
+    """Read a server ``Retry-After`` (seconds) from a 429 response, if present.
+
+    Accepts both delta-seconds (RFC 7231 integer form) and HTTP-date strings.
+    """
+    import email.utils
+
     if isinstance(exc, urllib.error.HTTPError) and exc.headers:
         raw = exc.headers.get("Retry-After")
-        if raw and str(raw).strip().isdigit():
-            return float(str(raw).strip())
+        if not raw:
+            return None
+        raw = str(raw).strip()
+        if raw.isdigit():
+            return float(raw)
+        # HTTP-date form: "Wed, 01 Jan 2026 00:00:00 GMT"
+        try:
+            dt = email.utils.parsedate_to_datetime(raw)
+            import datetime as _dt
+
+            delta = (dt - _dt.datetime.now(_dt.UTC)).total_seconds()
+            return max(0.0, delta)
+        except Exception:
+            pass
     return None
 
 
@@ -39,20 +56,20 @@ def next_delay(
     attempt: int,
     *,
     base: float = 0.5,
-    cap: float = 30.0,
+    cap: float = 300.0,
     retry_after: float | None = None,
     jitter: bool = True,
 ) -> float:
     """Seconds to sleep before retry ``attempt`` (0-indexed).
 
-    A server ``Retry-After`` wins (capped); otherwise exponential ``base*2**n``
-    with full jitter on the lower half to avoid thundering-herd retries.
+    A server ``Retry-After`` wins (capped at ``cap``); otherwise exponential
+    ``base*2**n`` with full jitter to avoid thundering-herd retries.
     """
     if retry_after is not None:
         return max(0.0, min(float(retry_after), cap))
     delay = min(base * (2**attempt), cap)
     if jitter:
-        delay = delay / 2 + random.uniform(0, delay / 2)
+        delay = random.uniform(0, delay)
     return delay
 
 

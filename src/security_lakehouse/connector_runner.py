@@ -8,6 +8,7 @@ and optionally materialize bronze/silver/gold outputs.
 
 from __future__ import annotations
 
+import fcntl
 import os
 import sys
 import time
@@ -1105,32 +1106,37 @@ def _upsert_raw_events(
     # without disturbing evidence collected by any other connector.
     for row in rows:
         row["connector_id"] = connector_id
-    existing = read_jsonl(raw_path) if raw_path.exists() else []
-    fresh = _dedupe_latest(rows)
 
-    if write_mode == "snapshot":
-        # Snapshot replace: drop this connector's prior rows (so entities deleted
-        # at the source vanish) and any row this pull re-delivers; keep everyone
-        # else's evidence untouched. This is what gives current-state connectors
-        # deletion detection instead of an ever-growing union.
-        incoming_ids = {str(row["event_id"]) for row in fresh}
-        retained = [
-            row
-            for row in existing
-            if row.get("connector_id") != connector_id and str(row.get("event_id")) not in incoming_ids
-        ]
-        merged = retained + fresh
-    else:
-        # Append (idempotent): dedup existing + incoming on event_id, last write
-        # wins, so an overlapping re-pull never double-counts and history stays.
-        indexed = list(enumerate(existing + fresh))
-        deduped = dedupe_by_key(indexed, key=lambda pair: str(pair[1]["event_id"]), recency=lambda pair: pair[0])
-        merged = [row for _position, row in deduped]
+    raw_path.parent.mkdir(parents=True, exist_ok=True)
+    lock_path = raw_path.with_suffix(".lock")
+    with open(lock_path, "a") as lock_fd:
+        fcntl.flock(lock_fd.fileno(), fcntl.LOCK_EX)
+        existing = read_jsonl(raw_path) if raw_path.exists() else []
+        fresh = _dedupe_latest(rows)
 
-    errors = validate_raw_events(merged)
-    if errors:
-        raise ValueError("connector raw evidence validation failed:\n" + "\n".join(errors))
-    write_jsonl(raw_path, merged)
+        if write_mode == "snapshot":
+            # Snapshot replace: drop this connector's prior rows (so entities deleted
+            # at the source vanish) and any row this pull re-delivers; keep everyone
+            # else's evidence untouched. This is what gives current-state connectors
+            # deletion detection instead of an ever-growing union.
+            incoming_ids = {str(row["event_id"]) for row in fresh}
+            retained = [
+                row
+                for row in existing
+                if row.get("connector_id") != connector_id and str(row.get("event_id")) not in incoming_ids
+            ]
+            merged = retained + fresh
+        else:
+            # Append (idempotent): dedup existing + incoming on event_id, last write
+            # wins, so an overlapping re-pull never double-counts and history stays.
+            indexed = list(enumerate(existing + fresh))
+            deduped = dedupe_by_key(indexed, key=lambda pair: str(pair[1]["event_id"]), recency=lambda pair: pair[0])
+            merged = [row for _position, row in deduped]
+
+        errors = validate_raw_events(merged)
+        if errors:
+            raise ValueError("connector raw evidence validation failed:\n" + "\n".join(errors))
+        write_jsonl(raw_path, merged)
     return merged
 
 

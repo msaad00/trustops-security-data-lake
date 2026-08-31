@@ -17,6 +17,7 @@ from security_lakehouse.db.base import apply_pagination
 from security_lakehouse.db.models import (
     EVIDENCE_REQUEST_STATUSES,
     EXCEPTION_STATUSES,
+    REMEDIATION_CLOSED,
     REMEDIATION_PRIORITIES,
     REMEDIATION_STATUSES,
     ControlException,
@@ -90,15 +91,25 @@ def list_tasks(
         stmt = stmt.where(RemediationTask.status == status)
     if owner:
         stmt = stmt.where(RemediationTask.owner == owner)
-    # ``overdue`` is derived from ``due_at`` + status (a model method, not a
-    # column), so it can only be filtered in Python. Pagination still bounds the
-    # rows we materialise; the overdue refinement then narrows the page.
-    stmt = apply_pagination(stmt.order_by(RemediationTask.created_at.desc()), limit=limit, offset=offset)
-    rows = list(session.scalars(stmt))
     if overdue is not None:
+        # Push the overdue predicate into SQL so pagination is stable.
+        # overdue = due_at IS NOT NULL AND due_at < now AND status is open.
         moment = _now(now)
-        rows = [t for t in rows if t.is_overdue(now=moment) == overdue]
-    return rows
+        closed = list(REMEDIATION_CLOSED)
+        if overdue:
+            stmt = stmt.where(
+                RemediationTask.due_at.is_not(None),
+                RemediationTask.due_at < moment,
+                RemediationTask.status.not_in(closed),
+            )
+        else:
+            stmt = stmt.where(
+                (RemediationTask.due_at.is_(None))
+                | (RemediationTask.due_at >= moment)
+                | (RemediationTask.status.in_(closed))
+            )
+    stmt = apply_pagination(stmt.order_by(RemediationTask.created_at.desc()), limit=limit, offset=offset)
+    return list(session.scalars(stmt))
 
 
 def update_task(

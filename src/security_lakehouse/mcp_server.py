@@ -12,7 +12,7 @@ agent contract cannot drift from the HTTP API contract.
 
 The optional ``mcp`` dependency is imported lazily inside :func:`build_server`
 so that importing this module (and the rest of the package) never requires the
-SDK to be installed. Install it with ``pip install 'trustops[mcp]'`` and run the
+SDK to be installed. Install it with ``pip install 'trustops-security-data-lake[mcp]'`` and run the
 ``trustops-mcp`` console script.
 """
 
@@ -27,7 +27,7 @@ from http import HTTPStatus
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from security_lakehouse import api_v1, workflows
+from security_lakehouse import api_v1, netguard, workflows
 from security_lakehouse.assessment import build_current_posture
 from security_lakehouse.brand_assets import (
     MCP_INSTRUCTIONS,
@@ -57,6 +57,7 @@ def resolve_api_base_url() -> str:
     scheme = urllib.parse.urlparse(base_url).scheme
     if scheme not in {"http", "https"}:
         raise ValueError("TRUSTOPS_API_URL must use http or https")
+    netguard.assert_url_is_public(base_url, label="TRUSTOPS_API_URL")
     return base_url
 
 

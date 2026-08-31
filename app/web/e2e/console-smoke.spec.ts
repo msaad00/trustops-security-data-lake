@@ -128,18 +128,32 @@ test.describe("console smoke", () => {
     await expect(page.getByText("Framework readiness")).toBeVisible();
   });
 
-  test("default navigation follows the core trust loop", async ({ page }) => {
+  test("default navigation exposes the full trust workflow", async ({
+    page,
+  }) => {
     await page.goto("/console/dashboard/");
     const sidebar = page.getByRole("complementary");
 
     for (const label of [
       "Overview",
+      "Insights",
       "Connections",
       "Evidence",
+      "Access reviews",
+      "Vendor risk",
       "Controls",
       "Frameworks",
       "Findings",
+      "Risk register",
+      "Policies",
+      "AI governance",
+      "Crosswalk",
+      "Remediation",
+      "Workflows",
+      "Agents",
       "Audit room",
+      "Trust center",
+      "Audit log",
     ]) {
       await expect(sidebar.getByRole("link", { name: label })).toBeVisible();
     }
@@ -149,9 +163,7 @@ test.describe("console smoke", () => {
       "Launch",
       "Demo",
       "Deploy",
-      "Workflows",
       "Agent harness",
-      "Vendor risk",
       "Pricing",
     ]) {
       await expect(sidebar.getByRole("link", { name: label })).toHaveCount(0);

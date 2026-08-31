@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   createColumnHelper,
   flexRender,
@@ -95,7 +96,7 @@ const toneForFreshness = (status?: string) =>
         ? "critical"
         : "default";
 
-export default function EvidencePage() {
+function EvidencePageContent() {
   const evidence = useEvidence();
   const freshness = useEvidenceFreshness();
   const controls = useControls();
@@ -104,9 +105,17 @@ export default function EvidencePage() {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "event_time", desc: true },
   ]);
+  const searchParams = useSearchParams();
   const [selected, setSelected] = useState<EvidenceRow | null>(null);
   const [activeTagId, setActiveTagId] = useState<string | null>(null);
   const taggedEvidence = useTagEntityIds(activeTagId, "evidence");
+
+  const deepLinkId = searchParams.get("id");
+  useEffect(() => {
+    if (!deepLinkId || !evidence.data) return;
+    const match = evidence.data.find((e) => e.event_id === deepLinkId);
+    if (match) setSelected({ ...match, freshness: undefined });
+  }, [deepLinkId, evidence.data]);
   const taggedIds = useMemo(
     () => new Set(taggedEvidence.data ?? []),
     [taggedEvidence.data],
@@ -392,5 +401,17 @@ export default function EvidencePage() {
       </QueryState>
       <EvidenceDrawer evidence={selected} onClose={() => setSelected(null)} />
     </div>
+  );
+}
+
+export default function EvidencePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="px-4 py-5 text-sm text-muted">Loading evidence…</div>
+      }
+    >
+      <EvidencePageContent />
+    </Suspense>
   );
 }

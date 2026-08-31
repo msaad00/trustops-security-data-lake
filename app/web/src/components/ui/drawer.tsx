@@ -34,7 +34,7 @@ export function Drawer({
       <AnimatePresence>
         {open && (
           <Dialog.Portal forceMount>
-            <Dialog.Overlay asChild>
+            <Dialog.Overlay forceMount asChild>
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -42,7 +42,7 @@ export function Drawer({
                 className="fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm"
               />
             </Dialog.Overlay>
-            <Dialog.Content asChild>
+            <Dialog.Content forceMount asChild>
               <motion.aside
                 initial={{ x: "100%" }}
                 animate={{ x: 0 }}

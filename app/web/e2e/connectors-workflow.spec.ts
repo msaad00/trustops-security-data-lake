@@ -19,6 +19,39 @@ async function ensureConnectorDisabled(
   expect(disable.ok()).toBeTruthy();
 }
 
+async function ensureConnectorEnabled(
+  request: import("@playwright/test").APIRequestContext,
+) {
+  const current = await request.get("/api/v1/connectors");
+  expect(current.ok()).toBeTruthy();
+  const connectors = (await current.json()).data ?? [];
+  const connector = connectors.find(
+    (item: { connector_id?: string }) => item.connector_id === CONNECTOR_ID,
+  );
+  if (connector?.state === "enabled") return;
+
+  const access = {
+    credentials: { token: "e2e-token" },
+    options: { repo: "acme/platform" },
+  };
+  const probe = await request.post(`/api/v1/connectors/${CONNECTOR_ID}/probe`, {
+    data: { actor: "e2e", ...access },
+  });
+  expect(probe.ok()).toBeTruthy();
+
+  const response = await request.post(
+    `/api/v1/connectors/${CONNECTOR_ID}/configure`,
+    {
+      data: {
+        state: "enabled",
+        actor: "e2e",
+        ...access,
+      },
+    },
+  );
+  expect(response.ok()).toBeTruthy();
+}
+
 test.describe("connectors workflow", () => {
   test("AWS starts as a compact authorization workspace", async ({
     page,
@@ -91,6 +124,54 @@ test.describe("connectors workflow", () => {
       (item: { connector_id?: string }) => item.connector_id === CONNECTOR_ID,
     );
     expect(enabled?.state).toBe("enabled");
+  });
+
+  test("disable requires confirmation and cancel leaves the connector enabled", async ({
+    page,
+    request,
+  }) => {
+    await ensureConnectorEnabled(request);
+    await page.goto(`/console/connectors/?connect=${CONNECTOR_ID}`);
+
+    const dialog = page.getByRole("dialog");
+    await expect(
+      dialog.getByRole("heading", { name: "GitHub Security" }),
+    ).toBeVisible({ timeout: 15_000 });
+
+    await dialog.getByRole("button", { name: "Disable", exact: true }).click();
+    await expect(
+      dialog.getByRole("button", { name: "Confirm disable" }),
+    ).toBeVisible();
+    await expect(
+      dialog.getByText("Disable GitHub Security?", { exact: true }),
+    ).toBeVisible();
+
+    await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
+    await expect(
+      dialog.getByRole("button", { name: "Confirm disable" }),
+    ).toHaveCount(0);
+
+    const stillEnabled = await request.get("/api/v1/connectors");
+    const enabledConnectors = (await stillEnabled.json()).data ?? [];
+    expect(
+      enabledConnectors.find(
+        (item: { connector_id?: string }) => item.connector_id === CONNECTOR_ID,
+      )?.state,
+    ).toBe("enabled");
+
+    await dialog.getByRole("button", { name: "Disable", exact: true }).click();
+    await dialog.getByRole("button", { name: "Confirm disable" }).click();
+    await expect(page.getByText(/GitHub Security disabled/i)).toBeVisible({
+      timeout: 15_000,
+    });
+
+    const disabledResponse = await request.get("/api/v1/connectors");
+    const disabledConnectors = (await disabledResponse.json()).data ?? [];
+    expect(
+      disabledConnectors.find(
+        (item: { connector_id?: string }) => item.connector_id === CONNECTOR_ID,
+      )?.state,
+    ).toBe("disabled");
   });
 
   test("control eval runs from dashboard sources view", async ({ page }) => {

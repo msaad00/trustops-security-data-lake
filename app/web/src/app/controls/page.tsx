@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { FrameworkBadge } from "@/components/framework/FrameworkBadge";
 import { resolveFrameworkId } from "@/lib/framework-visuals";
@@ -85,15 +86,23 @@ function ControlRow({
   );
 }
 
-export default function ControlsPage() {
+function ControlsPageContent() {
   const controls = useControls();
   const tests = useControlTests();
   const posture = usePosture();
   const tagsQuery = useTags();
+  const searchParams = useSearchParams();
   const { filters, setFilters } = useToolbar();
   const [selected, setSelected] = useState<ControlPosture | null>(null);
   const [violation, setViolation] = useState<Violation | null>(null);
   const [activeTagId, setActiveTagId] = useState<string | null>(null);
+
+  const deepLinkId = searchParams.get("id");
+  useEffect(() => {
+    if (!deepLinkId || !controls.data) return;
+    const match = controls.data.find((c) => c.control_id === deepLinkId);
+    if (match) setSelected(match);
+  }, [deepLinkId, controls.data]);
   const taggedControls = useTagEntityIds(activeTagId, "control");
   const taggedIds = useMemo(
     () => new Set(taggedControls.data ?? []),
@@ -207,5 +216,17 @@ export default function ControlsPage() {
         onToast={notify.success}
       />
     </div>
+  );
+}
+
+export default function ControlsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="px-4 py-5 text-sm text-muted">Loading controls…</div>
+      }
+    >
+      <ControlsPageContent />
+    </Suspense>
   );
 }
