@@ -16,9 +16,22 @@ async function firstRecord(
   return records[0];
 }
 
-async function expectDeepLinkDrawer(page: Page, path: string, id: string) {
-  await page.goto(`${path}?id=${encodeURIComponent(id)}`);
-  await expect(page.getByRole("main")).toBeVisible({ timeout: 20_000 });
+async function expectPaletteDeepLink(page: Page, path: string, id: string) {
+  await page.getByRole("button", { name: "Open command palette" }).click();
+  const palette = page.getByRole("dialog", { name: "Search" });
+  await expect(palette).toBeVisible();
+  await palette
+    .getByPlaceholder(
+      "Search controls, violations, evidence, workflows, routes…",
+    )
+    .fill(id);
+  const result = palette.getByRole("button").filter({ hasText: id });
+  await expect(result.first()).toBeVisible({ timeout: 15_000 });
+  await result.first().click();
+
+  await expect(page).toHaveURL(
+    new RegExp(`${path.replaceAll("/", "\\/")}\\?id=${encodeURIComponent(id)}`),
+  );
   await expect(
     page.getByRole("dialog").getByRole("heading", { name: id }),
   ).toBeVisible({ timeout: 15_000 });
@@ -33,7 +46,10 @@ test.describe("record deep links", () => {
     const violation = await firstRecord(request, "/api/v1/violations");
     const evidence = await firstRecord(request, "/api/v1/evidence");
 
-    await expectDeepLinkDrawer(
+    await page.goto("/console/dashboard/");
+    await expect(page.getByRole("main")).toBeVisible({ timeout: 20_000 });
+
+    await expectPaletteDeepLink(
       page,
       "/console/controls/",
       String(control.control_id),
@@ -51,7 +67,7 @@ test.describe("record deep links", () => {
     expect(exitPosition).toBeGreaterThan(openPosition);
     await expect(controlDialog).toHaveCount(0);
 
-    await expectDeepLinkDrawer(
+    await expectPaletteDeepLink(
       page,
       "/console/violations/",
       String(violation.violation_id),
@@ -62,7 +78,7 @@ test.describe("record deep links", () => {
       .click();
     await expect(page.getByRole("dialog")).toHaveCount(0);
 
-    await expectDeepLinkDrawer(
+    await expectPaletteDeepLink(
       page,
       "/console/evidence/",
       String(evidence.event_id),
