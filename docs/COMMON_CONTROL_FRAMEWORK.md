@@ -68,7 +68,7 @@ collapsing them would overstate both coverage and failure.
 
 ```
 $ security-lakehouse frameworks safeguards --format table
-21 safeguards map 499 of 942 requirements (53.0%) — 45 reviewed (4.8%), 454 proposed
+22 safeguards map 501 of 942 requirements (53.2%) — 45 reviewed (4.8%), 456 proposed
 ```
 
 A mapping is **reviewed** once a human has confirmed the requirements are the
@@ -87,11 +87,11 @@ Curation is ordered by what teams are actually audited and certified against.
 | hipaa-security-rule |           18 |     18 | 100.0% |
 | pci-dss-v4          |           12 |     12 | 100.0% |
 | soc2                |           61 |     61 | 100.0% |
-| cmmc-2-level2       |          110 |     92 |  83.6% |
+| cmmc-2-level2       |          110 |     93 |  84.5% |
 | cis_aws             |           62 |     49 |  79.0% |
 | iso-42001-2023      |           39 |     26 |  66.7% |
 | gdpr-2016-679       |           20 |     12 |  60.0% |
-| fedramp-moderate    |          287 |    167 |  58.2% |
+| fedramp-moderate    |          287 |    168 |  58.5% |
 | iso-27017-2015      |           47 |     24 |  51.1% |
 | iso-27001-2022      |           93 |     11 |  11.8% |
 | nist-ai-rmf         |           72 |      6 |   8.3% |
@@ -166,16 +166,17 @@ should not switch on until the mappings it depends on are `reviewed`.
 
 `controls/safeguards.json`, `schema: trustops.safeguards.v1`.
 
-| Field                  | Meaning                                                       |
-| ---------------------- | ------------------------------------------------------------- |
-| `safeguard_id`         | `SG-<RISKDOMAIN>-<NNN>`, stable                               |
-| `title`                | What the safeguard does                                       |
-| `risk_domain`          | Shared taxonomy with the control catalog                      |
-| `objective`            | Why these requirements are genuinely the same thing           |
-| `evidence_requirement` | The single statement this safeguard proves                    |
-| `evaluation_rule`      | The single test                                               |
-| `owner`, `frequency`   | Who operates it, how often                                    |
-| `satisfies[]`          | `control_id`, `framework_id`, `role` (`primary`/`equivalent`) |
+| Field                  | Meaning                                                                         |
+| ---------------------- | ------------------------------------------------------------------------------- |
+| `safeguard_id`         | `SG-<RISKDOMAIN>-<NNN>`, stable                                                 |
+| `title`                | What the safeguard does                                                         |
+| `risk_domain`          | Shared taxonomy with the control catalog                                        |
+| `objective`            | Why these requirements are genuinely the same thing                             |
+| `evidence_requirement` | The single statement this safeguard proves                                      |
+| `evaluation_rule`      | The single test                                                                 |
+| `owner`, `frequency`   | Who operates it, how often                                                      |
+| `satisfies[]`          | `control_id`, `framework_id`, `role` (`primary`/`equivalent`)                   |
+| `mapping_source`       | Optional source name, URL, SHA-256, and exact locator for a published crosswalk |
 
 Exactly one member carries `role: primary` — the requirement whose wording the
 safeguard is drafted against. Every `control_id` must exist in the catalog; the

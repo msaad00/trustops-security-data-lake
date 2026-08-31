@@ -3547,6 +3547,45 @@
         }
       ],
       "asset_types": ["audit_log", "data_store", "service"]
+    },
+    {
+      "safeguard_id": "SG-MAINTENANCE-001",
+      "title": "Controlled system maintenance",
+      "risk_domain": "controls-operations",
+      "objective": "Authorize, schedule, record, and review maintenance on organizational systems and components.",
+      "evidence_requirement": "Current maintenance records identify the system or component, authorized personnel, work performed, completion time, and review outcome with no open high-risk failure or stale proof.",
+      "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
+      "frequency": "continuous",
+      "owner": "platform-engineering",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST SP 800-171 Rev. 2",
+        "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf",
+        "sha256": "298bdbfcf6a4890a564b225c893230a0b32b2e69e3b98dd898aaeb1d544c5e12",
+        "locator": "Appendix D, Table D-7, requirement 3.7.1 maps to MA-2"
+      },
+      "satisfies": [
+        {
+          "control_id": "CMMC-3.7.1",
+          "framework_id": "cmmc-2-level2",
+          "role": "primary",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-MA-2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": [
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "repo",
+        "service"
+      ]
     }
   ]
 }
