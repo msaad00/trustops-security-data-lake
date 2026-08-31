@@ -1,0 +1,125 @@
+{
+  "count": 15,
+  "results": [
+    {
+      "framework_id": "soc2",
+      "new_sha": "610fb0dfb3a684349eeb3fc58a423a95e2d2b1f6180e8e99c5188a6861e00233",
+      "old_sha": null,
+      "pulled_at": "2026-08-31T13:51:07.667291Z",
+      "reason": null,
+      "state": "updated"
+    },
+    {
+      "framework_id": "nist-ai-rmf",
+      "new_sha": "da4baddaf59557450a5945edaf17ea207611dc4b8c306afc4b1b0f34cdc327cc",
+      "old_sha": null,
+      "pulled_at": "2026-08-31T13:51:08.172108Z",
+      "reason": null,
+      "state": "updated"
+    },
+    {
+      "framework_id": "iso-27001-2022",
+      "new_sha": null,
+      "old_sha": null,
+      "pulled_at": null,
+      "reason": "fetch failed: HTTPError: HTTP Error 403: Forbidden",
+      "state": "error"
+    },
+    {
+      "framework_id": "fedramp-moderate",
+      "new_sha": "4dafbe67c6d4f638f829a901531d42c724790f5a96c7bd1c8b52bf5d7d472203",
+      "old_sha": null,
+      "pulled_at": "2026-08-31T13:51:09.324080Z",
+      "reason": null,
+      "state": "updated"
+    },
+    {
+      "framework_id": "hipaa-security-rule",
+      "new_sha": null,
+      "old_sha": null,
+      "pulled_at": null,
+      "reason": "fetch failed: HTTPError: HTTP Error 403: Forbidden",
+      "state": "error"
+    },
+    {
+      "framework_id": "pci-dss-v4",
+      "new_sha": "730d5dda81afb63028d5c403b266474ffd76b06668ccf10599269290d78aa137",
+      "old_sha": null,
+      "pulled_at": "2026-08-31T13:51:10.526724Z",
+      "reason": null,
+      "state": "updated"
+    },
+    {
+      "framework_id": "gdpr-2016-679",
+      "new_sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "old_sha": null,
+      "pulled_at": "2026-08-31T13:51:10.716797Z",
+      "reason": null,
+      "state": "updated"
+    },
+    {
+      "framework_id": "eu-ai-act-2024-1689",
+      "new_sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "old_sha": null,
+      "pulled_at": "2026-08-31T13:51:10.767407Z",
+      "reason": null,
+      "state": "updated"
+    },
+    {
+      "framework_id": "iso-42001-2023",
+      "new_sha": null,
+      "old_sha": null,
+      "pulled_at": null,
+      "reason": "fetch failed: HTTPError: HTTP Error 403: Forbidden",
+      "state": "error"
+    },
+    {
+      "framework_id": "cis_aws",
+      "new_sha": "1505c45ab5cb9523fce6ecc3e589f5710a763eab6eae1396754373567c9f4c10",
+      "old_sha": null,
+      "pulled_at": "2026-08-31T13:51:11.578623Z",
+      "reason": null,
+      "state": "updated"
+    },
+    {
+      "framework_id": "nist-csf-2.0",
+      "new_sha": "ae6a0f64cfad53eb3566694bf3b503ee9c7091bfc2302807c72b47fc580ea84d",
+      "old_sha": null,
+      "pulled_at": "2026-08-31T13:51:11.665289Z",
+      "reason": null,
+      "state": "updated"
+    },
+    {
+      "framework_id": "cmmc-2-level2",
+      "new_sha": null,
+      "old_sha": null,
+      "pulled_at": null,
+      "reason": "fetch failed: HTTPError: HTTP Error 403: Forbidden",
+      "state": "error"
+    },
+    {
+      "framework_id": "iso-27017-2015",
+      "new_sha": null,
+      "old_sha": null,
+      "pulled_at": null,
+      "reason": "fetch failed: HTTPError: HTTP Error 403: Forbidden",
+      "state": "error"
+    },
+    {
+      "framework_id": "iso-27701-2019",
+      "new_sha": null,
+      "old_sha": null,
+      "pulled_at": null,
+      "reason": "fetch failed: HTTPError: HTTP Error 403: Forbidden",
+      "state": "error"
+    },
+    {
+      "framework_id": "soc1",
+      "new_sha": "804143848c74a0f23847d5e03d0c63b9838a5988dd14baa390067738e9bb0c2d",
+      "old_sha": null,
+      "pulled_at": "2026-08-31T13:51:12.894438Z",
+      "reason": null,
+      "state": "updated"
+    }
+  ]
+}
