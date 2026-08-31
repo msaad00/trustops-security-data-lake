@@ -117,7 +117,7 @@ def _call_anthropic(context: dict[str, Any], provider: ModelProviderConfig) -> d
     api_key = os.environ.get(provider.api_key_env)
     if not api_key:
         raise ModelClientError(f"{provider.api_key_env} is not set")
-    anthropic_base = (provider.base_url.rstrip("/") if provider.base_url else "https://api.anthropic.com")
+    anthropic_base = provider.base_url.rstrip("/") if provider.base_url else "https://api.anthropic.com"
     try:
         netguard.assert_url_is_public(anthropic_base, label="TRUSTOPS_AGENT_BASE_URL")
     except ValueError as exc:

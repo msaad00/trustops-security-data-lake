@@ -112,7 +112,7 @@ jobs:
         # Audit resolved deps from uv.lock, skipping the local editable
         # package (not on PyPI). Fails CI on any known CVE.
         run: |
-          uv export --no-emit-project --format requirements-txt --no-hashes > /tmp/reqs.txt
+          uv export --all-extras --no-emit-project --format requirements-txt --no-hashes > /tmp/reqs.txt
           uv run pip-audit --strict -r /tmp/reqs.txt
       - uses: actions/setup-node@v7
         with:

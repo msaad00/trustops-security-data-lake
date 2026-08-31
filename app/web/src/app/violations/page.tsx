@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   createColumnHelper,
@@ -44,7 +44,7 @@ const toneForSeverity = (s: string) =>
 
 const SURFACE = "violations";
 
-export default function ViolationsPage() {
+function ViolationsPageContent() {
   const violations = useViolations();
   const controls = useControls();
   const tagsQuery = useTags();
@@ -272,5 +272,17 @@ export default function ViolationsPage() {
         onToast={notify.success}
       />
     </div>
+  );
+}
+
+export default function ViolationsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="px-4 py-5 text-sm text-muted">Loading findings…</div>
+      }
+    >
+      <ViolationsPageContent />
+    </Suspense>
   );
 }

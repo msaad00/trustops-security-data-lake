@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   createColumnHelper,
@@ -96,7 +96,7 @@ const toneForFreshness = (status?: string) =>
         ? "critical"
         : "default";
 
-export default function EvidencePage() {
+function EvidencePageContent() {
   const evidence = useEvidence();
   const freshness = useEvidenceFreshness();
   const controls = useControls();
@@ -401,5 +401,17 @@ export default function EvidencePage() {
       </QueryState>
       <EvidenceDrawer evidence={selected} onClose={() => setSelected(null)} />
     </div>
+  );
+}
+
+export default function EvidencePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="px-4 py-5 text-sm text-muted">Loading evidence…</div>
+      }
+    >
+      <EvidencePageContent />
+    </Suspense>
   );
 }

@@ -386,6 +386,7 @@ export function ConnectorDrawer({
   const [connectedTab, setConnectedTab] = useState<ConnectedTab>("Overview");
   const [setupTab, setSetupTab] = useState<SetupTab>("Setup");
   const [editCloudSetup, setEditCloudSetup] = useState(false);
+  const [confirmDisable, setConfirmDisable] = useState(false);
   const [savedOptionsBaseline, setSavedOptionsBaseline] = useState<
     Record<string, string>
   >({});
@@ -411,6 +412,7 @@ export function ConnectorDrawer({
     setConnectedTab("Overview");
     setSetupTab("Setup");
     setEditCloudSetup(false);
+    setConfirmDisable(false);
   }, [connector?.connector_id]);
 
   useEffect(() => {
@@ -676,8 +678,6 @@ export function ConnectorDrawer({
     }
   };
 
-  const [confirmDisable, setConfirmDisable] = useState(false);
-
   const disable = async () => {
     try {
       await configure.mutateAsync({
@@ -858,7 +858,9 @@ export function ConnectorDrawer({
               ) : null}
               {isEnabled && confirmDisable ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">Disable {connector.name}?</span>
+                  <span className="text-xs text-muted-foreground">
+                    Disable {connector.name}?
+                  </span>
                   <Button
                     variant="dark"
                     size="sm"
@@ -1310,7 +1312,9 @@ export function ConnectorDrawer({
                             </Badge>{" "}
                             <Badge>{r.kind}</Badge>
                           </span>
-                          <span className="text-muted">{formatWhen(r.occurred_at)}</span>
+                          <span className="text-muted">
+                            {formatWhen(r.occurred_at)}
+                          </span>
                         </div>
                         <div className="mt-1 text-muted">
                           actor <b className="text-ink">{r.actor}</b>

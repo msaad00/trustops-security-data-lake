@@ -45,24 +45,24 @@ not silently change evidence or decide pass/fail.
 
 **The open-source, self-hosted alternative to managed GRC SaaS — interoperable, secure, and built to scale in your environment.**
 
-| | TrustOps | Managed GRC SaaS |
-|---|---|---|
-| Evidence location | Your VPC or laptop — data never leaves | Vendor servers |
-| Control evaluation | Deterministic rules, no model drift | Varies by vendor |
-| API surface | Native `/api/v1` + MCP stdio for agents | Web-first, limited API |
-| Interoperability | CCF maps one safeguard to 13 frameworks | Proprietary control sets |
-| Cost model | Open source (Apache 2.0) | Per-seat subscription |
-| Self-hosted | Full stack on your infra or CI | Cloud-only options |
+|                    | TrustOps                                | Managed GRC SaaS         |
+| ------------------ | --------------------------------------- | ------------------------ |
+| Evidence location  | Your VPC or laptop — data never leaves  | Vendor servers           |
+| Control evaluation | Deterministic rules, no model drift     | Varies by vendor         |
+| API surface        | Native `/api/v1` + MCP stdio for agents | Web-first, limited API   |
+| Interoperability   | CCF maps one safeguard to 13 frameworks | Proprietary control sets |
+| Cost model         | Open source (Apache 2.0)                | Per-seat subscription    |
+| Self-hosted        | Full stack on your infra or CI          | Cloud-only options       |
 
 ## Where to start
 
-| I am… | Start here |
-|---|---|
-| **DevSecOps / security engineer** | [Quick start](#quick-start) → [Connectors](docs/CONNECTORS.md) → [CI gate](docs/CI_GATE.md) |
-| **Compliance / GRC lead** | [Product tour](docs/PRODUCT_WALKTHROUGH.md) → [Framework coverage](docs/FRAMEWORK_COVERAGE.md) |
-| **AI / agent builder** | [Agent API](docs/api/AGENT_API.md) → [MCP server](docs/MCP.md) → [AIBOM](docs/AIBOM.md) |
-| **Auditor / assessor** | [Audit room](docs/PRODUCT_WALKTHROUGH.md#audit-room) → [Snapshot integrity](docs/ARCHITECTURE.md#snapshots) |
-| **Operator deploying** | [deploy/README.md](deploy/README.md) → [Server auth](docs/SERVER_AUTH.md) |
+| I am…                             | Start here                                                                                                  |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **DevSecOps / security engineer** | [Quick start](#quick-start) → [Connectors](docs/CONNECTORS.md) → [CI gate](docs/CI_GATE.md)                 |
+| **Compliance / GRC lead**         | [Product tour](docs/PRODUCT_WALKTHROUGH.md) → [Framework coverage](docs/FRAMEWORK_COVERAGE.md)              |
+| **AI / agent builder**            | [Agent API](docs/api/AGENT_API.md) → [MCP server](docs/MCP.md) → [AIBOM](docs/AIBOM.md)                     |
+| **Auditor / assessor**            | [Audit room](docs/PRODUCT_WALKTHROUGH.md#audit-room) → [Snapshot integrity](docs/ARCHITECTURE.md#snapshots) |
+| **Operator deploying**            | [deploy/README.md](deploy/README.md) → [Server auth](docs/SERVER_AUTH.md)                                   |
 
 ## Quick start
 

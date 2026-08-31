@@ -26,6 +26,7 @@ from test_api_v1 import _seed_lake  # noqa: E402
 def _no_ssrf_check(url: str, **_kw: object) -> str:
     return url.split("//", 1)[1].split("/")[0]
 
+
 EXPECTED_TOOLS = {
     "get_posture",
     "posture_as_of",

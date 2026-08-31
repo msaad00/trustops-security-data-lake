@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { FrameworkBadge } from "@/components/framework/FrameworkBadge";
@@ -86,7 +86,7 @@ function ControlRow({
   );
 }
 
-export default function ControlsPage() {
+function ControlsPageContent() {
   const controls = useControls();
   const tests = useControlTests();
   const posture = usePosture();
@@ -216,5 +216,17 @@ export default function ControlsPage() {
         onToast={notify.success}
       />
     </div>
+  );
+}
+
+export default function ControlsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="px-4 py-5 text-sm text-muted">Loading controls…</div>
+      }
+    >
+      <ControlsPageContent />
+    </Suspense>
   );
 }

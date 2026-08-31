@@ -45,7 +45,7 @@ def http_retry_after(exc: BaseException) -> float | None:
             dt = email.utils.parsedate_to_datetime(raw)
             import datetime as _dt
 
-            delta = (dt - _dt.datetime.now(_dt.timezone.utc)).total_seconds()
+            delta = (dt - _dt.datetime.now(_dt.UTC)).total_seconds()
             return max(0.0, delta)
         except Exception:
             pass
