@@ -3666,6 +3666,44 @@
         "repo",
         "service"
       ]
+    },
+    {
+      "safeguard_id": "SG-IDENTITY-003",
+      "title": "Unsuccessful logon attempt limits",
+      "risk_domain": "identity",
+      "objective": "Limit repeated unsuccessful authentication attempts so automated guessing and credential attacks are interrupted.",
+      "evidence_requirement": "Current authentication configuration and event evidence demonstrates failed-attempt thresholds and enforced responses with no open high-risk failure or stale proof.",
+      "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
+      "frequency": "continuous",
+      "owner": "security-platform",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST SP 800-171 Rev. 2",
+        "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf",
+        "sha256": "298bdbfcf6a4890a564b225c893230a0b32b2e69e3b98dd898aaeb1d544c5e12",
+        "locator": "Appendix D, Table D-1, requirement 3.1.8 maps to AC-7"
+      },
+      "satisfies": [
+        {
+          "control_id": "CMMC-3.1.8",
+          "framework_id": "cmmc-2-level2",
+          "role": "primary",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AC-7",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": [
+        "iam_role",
+        "identity_group",
+        "identity_user",
+        "okta_user"
+      ]
     }
   ]
 }
