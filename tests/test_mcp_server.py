@@ -122,6 +122,8 @@ EXPECTED_TOOLS = {
     "update_poam_item",
     "sync_poam_from_posture",
     "get_control_remediation",
+    "get_framework_coverage",
+    "get_mapping_review_queue",
 }
 
 
@@ -214,6 +216,15 @@ def test_get_framework_equivalence_resolves(tmp_path):
     equivalence = call_tool(server, "get_framework_equivalence")
     assert equivalence["group_count"] >= 1
     assert equivalence["groups"]
+
+
+def test_mapping_review_queue_can_scope_a_cross_framework_category(tmp_path):
+    server = _seeded_server(tmp_path)
+    report = call_tool(server, "get_mapping_review_queue", risk_domain="governance")
+
+    assert set(report["by_risk_domain"]) == {"governance"}
+    assert {item["risk_domain"] for item in report["items"]} == {"governance"}
+    assert report["source_backed_mapping_count"] + report["unsourced_mapping_count"] == report["proposed_mapping_count"]
 
 
 def test_mcp_tools_do_not_call_pre_v1_paths():
