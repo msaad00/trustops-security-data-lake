@@ -19,6 +19,9 @@ glance without changing TrustOps proof semantics.
 - Common Control Framework safeguards for controlled maintenance and
   separation of duties, sourced from the NIST SP 800-171 Rev. 2 crosswalk.
   Their new mappings remain proposed pending human review.
+- CMMC Level 2 awareness and role-based training mappings sourced from NIST SP
+  800-171 Rev. 2 Appendix D. They raise evaluatable CMMC coverage to 96/110;
+  attestable coverage is unchanged pending human review.
 
 ### Changed
 
@@ -26,6 +29,10 @@ glance without changing TrustOps proof semantics.
   wordmark, simpler four-stage operating-loop banner, and clearer navigation.
 - Consolidated the queued Python and web dependency updates into one verified
   lockfile refresh.
+- Mapping review output now carries validated crosswalk provenance, preferring
+  the exact per-mapping locator when a safeguard is backed by multiple rows. CLI
+  and MCP consumers can filter by normalized risk-domain category/family and
+  receive framework/domain plus source-backed/unsourced backlog rollups.
 
 ## 0.2.6 - 2026-08-17
 

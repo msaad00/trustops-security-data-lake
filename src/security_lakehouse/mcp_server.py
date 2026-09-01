@@ -326,26 +326,20 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
         return {"summary": framework_coverage_summary(rows), "frameworks": rows}
 
     @trustops_tool(title="Mapping Review Queue")
-    def get_mapping_review_queue(framework_id: str | None = None) -> JsonObject:
+    def get_mapping_review_queue(framework_id: str | None = None, risk_domain: str | None = None) -> JsonObject:
         """Proposed safeguard→requirement mappings awaiting domain-expert sign-off.
 
         This is the backlog that turns ``evaluatable`` coverage into ``attestable``
         coverage. Each item pairs a proposed mapping with the ``reviewed_anchors``
         already confirmed on the same safeguard, so a reviewer can judge the
-        equivalence against mappings they already trust. It is read-only and never
-        promotes a mapping — accepting one is a human equivalence judgment.
+        equivalence against mappings they already trust. Source-backed items also
+        carry their verified crosswalk name, URL, SHA-256, and exact locator. It is
+        read-only and never promotes a mapping — accepting one is a human
+        equivalence judgment.
         """
-        from security_lakehouse.safeguards import mapping_review_queue
+        from security_lakehouse.safeguards import mapping_review_report
 
-        items = mapping_review_queue(framework_id=framework_id)
-        by_framework: dict[str, int] = {}
-        for item in items:
-            by_framework[item["framework_id"]] = by_framework.get(item["framework_id"], 0) + 1
-        return {
-            "proposed_mapping_count": len(items),
-            "by_framework": dict(sorted(by_framework.items())),
-            "items": items,
-        }
+        return mapping_review_report(framework_id=framework_id, risk_domain=risk_domain)
 
     @trustops_tool(title="Ingestion Status")
     def get_ingestion_status() -> JsonObject:

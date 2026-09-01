@@ -11,6 +11,7 @@ from security_lakehouse.safeguards import (
     coverage_by_framework,
     load_safeguards,
     mapping_review_queue,
+    mapping_review_report,
     requirement_status,
     safeguards_by_requirement,
     validate_safeguards,
@@ -86,6 +87,22 @@ def test_validation_rejects_a_wrong_schema_marker() -> None:
     assert any(SCHEMA in p for p in validate_safeguards(payload))
 
 
+def test_validation_rejects_unverifiable_mapping_provenance() -> None:
+    payload = json.loads(json.dumps(load_safeguards()))
+    payload["safeguards"][0]["satisfies"][0]["mapping_source"] = {
+        "name": "A crosswalk",
+        "url": "http://example.test/crosswalk.pdf",
+        "sha256": "not-a-digest",
+        "locator": "",
+    }
+
+    problems = validate_safeguards(payload)
+
+    assert any("mapping_source.url must use https" in problem for problem in problems)
+    assert any("mapping_source.sha256 must be 64 lowercase hexadecimal characters" in problem for problem in problems)
+    assert any("mapping_source.locator must be a non-empty string" in problem for problem in problems)
+
+
 def test_the_ccf_doc_quotes_the_numbers_the_data_actually_reports() -> None:
     """The README once claimed 741 controls while the catalog held 942.
 
@@ -153,6 +170,45 @@ def test_review_queue_filters_to_a_single_framework() -> None:
     assert len(filtered) == sum(1 for item in everything if item["framework_id"] == target)
 
 
+def test_review_queue_filters_to_a_cross_framework_risk_domain() -> None:
+    everything = mapping_review_queue()
+    filtered = mapping_review_queue(risk_domain="detection")
+
+    assert filtered
+    assert {item["risk_domain"] for item in filtered} == {"detection"}
+    assert {item["framework_id"] for item in filtered} >= {
+        "cmmc-2-level2",
+        "fedramp-moderate",
+        "iso-42001-2023",
+        "nist-ai-rmf",
+        "soc2",
+    }
+    assert len(filtered) == sum(1 for item in everything if item["risk_domain"] == "detection")
+
+
+def test_review_report_groups_frameworks_categories_and_source_gaps() -> None:
+    report = mapping_review_report()
+
+    assert report["proposed_mapping_count"] == len(report["items"])
+    assert sum(report["by_framework"].values()) == report["proposed_mapping_count"]
+    assert sum(report["by_risk_domain"].values()) == report["proposed_mapping_count"]
+    assert report["source_backed_mapping_count"] + report["unsourced_mapping_count"] == report["proposed_mapping_count"]
+    assert sum(report["source_backed_by_framework"].values()) == report["source_backed_mapping_count"]
+    assert sum(report["unsourced_by_framework"].values()) == report["unsourced_mapping_count"]
+    assert report["source_backed_by_framework"] == {
+        "cmmc-2-level2": 5,
+        "fedramp-moderate": 4,
+    }
+
+
+def test_review_queue_falls_back_to_safeguard_level_provenance() -> None:
+    safeguards = {entry["safeguard_id"]: entry for entry in load_safeguards()["safeguards"]}
+    queue = mapping_review_queue()
+    item = next(entry for entry in queue if entry["control_id"] == "CMMC-3.1.4")
+
+    assert item["mapping_source"] == safeguards["SG-SEPARATIONOFDUTIES-001"]["mapping_source"]
+
+
 def test_review_queue_never_promotes_a_mapping() -> None:
     """Calling the queue must not change what attestation reads."""
     before = dict(safeguards_by_requirement(reviewed_only=True))
@@ -168,7 +224,21 @@ def test_review_queue_cli_reports_the_backlog(capsys) -> None:
     out = json.loads(capsys.readouterr().out)
     assert out["proposed_mapping_count"] == len(mapping_review_queue())
     assert out["proposed_mapping_count"] == sum(out["by_framework"].values())
+    assert out["proposed_mapping_count"] == sum(out["by_risk_domain"].values())
+    assert out["source_backed_mapping_count"] + out["unsourced_mapping_count"] == out["proposed_mapping_count"]
+    sourced = next(item for item in out["items"] if item["control_id"] == "CMMC-3.2.1")
+    assert sourced["mapping_source"]["url"].startswith("https://")
     assert "domain-expert" in out["note"]
+
+
+def test_review_queue_cli_filters_to_a_category_family(capsys) -> None:
+    from security_lakehouse.cli import main
+
+    assert main(["frameworks", "review-queue", "--risk-domain", "governance"]) == 0
+    out = json.loads(capsys.readouterr().out)
+
+    assert set(out["by_risk_domain"]) == {"governance"}
+    assert {item["risk_domain"] for item in out["items"]} == {"governance"}
 
 
 def test_every_mapping_declares_a_known_review_state() -> None:

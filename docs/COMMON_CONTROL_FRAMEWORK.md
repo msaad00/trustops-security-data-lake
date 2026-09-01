@@ -68,7 +68,7 @@ collapsing them would overstate both coverage and failure.
 
 ```
 $ security-lakehouse frameworks safeguards --format table
-23 safeguards map 503 of 942 requirements (53.4%) — 45 reviewed (4.8%), 458 proposed
+23 safeguards map 505 of 942 requirements (53.6%) — 45 reviewed (4.8%), 460 proposed
 ```
 
 A mapping is **reviewed** once a human has confirmed the requirements are the
@@ -87,7 +87,7 @@ Curation is ordered by what teams are actually audited and certified against.
 | hipaa-security-rule |           18 |     18 | 100.0% |
 | pci-dss-v4          |           12 |     12 | 100.0% |
 | soc2                |           61 |     61 | 100.0% |
-| cmmc-2-level2       |          110 |     94 |  85.5% |
+| cmmc-2-level2       |          110 |     96 |  87.3% |
 | cis_aws             |           62 |     49 |  79.0% |
 | iso-42001-2023      |           39 |     26 |  66.7% |
 | gdpr-2016-679       |           20 |     12 |  60.0% |
@@ -138,14 +138,18 @@ Full coverage needs the catalog enriched before the curation can be checked.
 1. **Model** — safeguards are the operated object, validated, coverage derived
    from data. _Done._
 2. **Curate what is checkable** — the 393 requirements whose titles carry
-   content. 216 are mapped; the rest are the near-term queue. Promoting a
+   content. 218 are mapped; the rest are the near-term queue. Promoting a
    `proposed` mapping to `reviewed` is a human confirming the two requirements
    are the same obligation. `security-lakehouse frameworks review-queue`
-   (`--framework <id>` to scope) lists the 458 proposed mappings, each paired
+   (`--framework <id>` to scope) lists the 460 proposed mappings, each paired
    with the reviewed anchors already on that safeguard, so a reviewer judges an
-   equivalence against mappings they already trust; the `get_mapping_review_queue`
-   MCP tool serves agents the same backlog. Neither promotes anything — that
-   equivalence call is the reviewer's. _In progress._
+   equivalence against mappings they already trust. `--risk-domain <domain>`
+   scopes the queue by the normalized cross-framework category/family, while
+   framework and risk-domain rollups expose the source-backed and unsourced gaps
+   across NIST, FedRAMP, ISO, SOC 2, and the other packs. The
+   `get_mapping_review_queue` MCP tool serves agents the same filters and ledger.
+   Neither promotes anything — that equivalence call is the reviewer's. _In
+   progress._
 3. **Enrich the 549 placeholder titles**, or import an authoritative crosswalk.
    NIST publishes 800-53 ↔ CSF mappings, CMMC L2 is NIST 800-171 with a
    published 800-53 mapping, and ISO ↔ NIST crosswalks exist. Importing those
@@ -166,18 +170,21 @@ should not switch on until the mappings it depends on are `reviewed`.
 
 `controls/safeguards.json`, `schema: trustops.safeguards.v1`.
 
-| Field                  | Meaning                                                                         |
-| ---------------------- | ------------------------------------------------------------------------------- |
-| `safeguard_id`         | `SG-<RISKDOMAIN>-<NNN>`, stable                                                 |
-| `title`                | What the safeguard does                                                         |
-| `risk_domain`          | Shared taxonomy with the control catalog                                        |
-| `objective`            | Why these requirements are genuinely the same thing                             |
-| `evidence_requirement` | The single statement this safeguard proves                                      |
-| `evaluation_rule`      | The single test                                                                 |
-| `owner`, `frequency`   | Who operates it, how often                                                      |
-| `satisfies[]`          | `control_id`, `framework_id`, `role` (`primary`/`equivalent`)                   |
-| `mapping_source`       | Optional source name, URL, SHA-256, and exact locator for a published crosswalk |
+| Field                        | Meaning                                                                        |
+| ---------------------------- | ------------------------------------------------------------------------------ |
+| `safeguard_id`               | `SG-<RISKDOMAIN>-<NNN>`, stable                                                |
+| `title`                      | What the safeguard does                                                        |
+| `risk_domain`                | Shared taxonomy with the control catalog                                       |
+| `objective`                  | Why these requirements are genuinely the same thing                            |
+| `evidence_requirement`       | The single statement this safeguard proves                                     |
+| `evaluation_rule`            | The single test                                                                |
+| `owner`, `frequency`         | Who operates it, how often                                                     |
+| `satisfies[]`                | `control_id`, `framework_id`, `role` (`primary`/`equivalent`), `review_status` |
+| `mapping_source`             | Optional source name, HTTPS URL, SHA-256, and exact locator for a crosswalk    |
+| `satisfies[].mapping_source` | Per-mapping provenance; overrides safeguard-level provenance in review output  |
 
 Exactly one member carries `role: primary` — the requirement whose wording the
 safeguard is drafted against. Every `control_id` must exist in the catalog; the
-validator rejects claimed coverage that does not resolve.
+validator rejects claimed coverage that does not resolve. When a safeguard has
+multiple source locators, provenance belongs on each mapping. The review queue
+uses that member-level source first and falls back to the safeguard-level source.
