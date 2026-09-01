@@ -1,38 +1,42 @@
-# TrustOps
-
 <p align="center">
-  <img src="docs/images/trustops-logo.svg" alt="TrustOps — open-source trust operations" width="360">
+  <img src="docs/images/trustops-social-preview.svg" alt="TrustOps turns customer-owned evidence into deterministic controls and audit-ready proof" width="960">
 </p>
 
 <p align="center">
-  <strong>Continuous compliance in your cloud.</strong><br/>
-  Read-only evidence collection, deterministic control tests, and audit-ready proof — in one self-hosted platform.
+  <sub>Open source · self-hosted · customer-owned evidence</sub>
 </p>
 
 <p align="center">
-  <a href="https://pypi.org/project/trustops-security-data-lake/"><img src="https://img.shields.io/pypi/v/trustops-security-data-lake?color=2b7bba&label=PyPI" alt="PyPI version"></a>
-  <a href="https://pypi.org/project/trustops-security-data-lake/"><img src="https://img.shields.io/badge/python-3.11%2B-blue" alt="Python 3.11+"></a>
-  <a href="https://github.com/msaad00/trustops-security-data-lake/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/msaad00/trustops-security-data-lake/ci.yml?branch=main&amp;label=CI" alt="CI status"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue" alt="License: Apache 2.0"></a>
+  <a href="https://pypi.org/project/trustops-security-data-lake/"><img src="https://img.shields.io/pypi/v/trustops-security-data-lake?style=flat-square&amp;color=4f7cff&amp;label=PyPI" alt="PyPI version"></a>
+  <a href="https://pypi.org/project/trustops-security-data-lake/"><img src="https://img.shields.io/badge/Python-3.11%2B-30a8c9?style=flat-square" alt="Python 3.11+"></a>
+  <a href="https://github.com/msaad00/trustops-security-data-lake/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/msaad00/trustops-security-data-lake/ci.yml?branch=main&amp;label=Build&amp;style=flat-square" alt="Build status"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-64748b?style=flat-square" alt="License: Apache 2.0"></a>
+</p>
+
+<h1 align="center">TrustOps</h1>
+
+<p align="center">
+  <strong>Read-only evidence. Deterministic controls. Audit-ready proof.</strong><br/>
+  One self-hosted platform for operators, agents, and auditors — backed by the same verifiable JSON.
 </p>
 
 <p align="center">
+  <a href="#quick-start"><strong>Quick start</strong></a> ·
   <a href="docs/PRODUCT_WALKTHROUGH.md"><strong>Product tour</strong></a> ·
   <a href="docs/CONNECTORS.md"><strong>Connectors</strong></a> ·
   <a href="docs/ARCHITECTURE.md"><strong>Architecture</strong></a> ·
-  <a href="docs/api/AGENT_API.md"><strong>API & agents</strong></a> ·
+  <a href="docs/api/AGENT_API.md"><strong>API &amp; MCP</strong></a> ·
   <a href="deploy/README.md"><strong>Deploy</strong></a>
 </p>
 
+## One operating loop
+
 <p align="center">
-  <img src="docs/images/trustops-readme-banner.svg" alt="TrustOps turns read-only source data into evaluated controls and audit-ready proof" width="100%">
+  <img src="docs/images/trustops-readme-banner.svg" alt="Collect evidence, evaluate controls, operate findings, and prove posture" width="100%">
 </p>
 
-## What TrustOps does
-
-One operating loop: **collect** evidence read-only, **evaluate** controls with
-deterministic rules, **operate** the findings, **prove** posture with immutable
-snapshots.
+**Collect** evidence read-only, **evaluate** controls with deterministic rules,
+**operate** the findings, and **prove** posture with immutable snapshots.
 
 Regulatory requirements are consolidated into a
 [Common Control Framework](docs/COMMON_CONTROL_FRAMEWORK.md): you operate one
