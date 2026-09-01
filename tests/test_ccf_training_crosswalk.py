@@ -58,18 +58,25 @@ def test_training_safeguard_uses_the_nist_800_171_crosswalk() -> None:
 
 
 def test_training_crosswalk_closes_two_cmmc_evaluation_gaps_without_overstating_attestation() -> None:
+    payload = load_safeguards()
+    training = next(entry for entry in payload["safeguards"] if entry["safeguard_id"] == "SG-TRAINING-001")
+    training["satisfies"] = [
+        member for member in training["satisfies"] if member["control_id"] not in {"CMMC-3.2.1", "CMMC-3.2.2"}
+    ]
+
+    without_training_crosswalk = coverage_by_framework(payload)
     coverage = coverage_by_framework()
 
-    assert coverage["safeguards"] == 24
-    assert coverage["covered"] == 507
-    assert coverage["uncovered"] == 435
-    assert coverage["reviewed"] == 45
-    assert coverage["proposed"] == 462
-    assert coverage["frameworks"]["cmmc-2-level2"] == {
-        "controls": 110,
-        "covered": 97,
-        "coverage_pct": 88.2,
-    }
+    assert coverage["safeguards"] == without_training_crosswalk["safeguards"]
+    assert coverage["covered"] == without_training_crosswalk["covered"] + 2
+    assert coverage["uncovered"] == without_training_crosswalk["uncovered"] - 2
+    assert coverage["reviewed"] == without_training_crosswalk["reviewed"]
+    assert coverage["proposed"] == without_training_crosswalk["proposed"] + 2
+    assert coverage["frameworks"]["cmmc-2-level2"]["controls"] == 110
+    assert (
+        coverage["frameworks"]["cmmc-2-level2"]["covered"]
+        == without_training_crosswalk["frameworks"]["cmmc-2-level2"]["covered"] + 2
+    )
 
 
 def test_training_crosswalk_source_is_visible_in_the_review_queue() -> None:
