@@ -172,16 +172,16 @@ wheels = [
 
 [[package]]
 name = "azure-mgmt-resource"
-version = "25.0.0"
+version = "26.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "azure-mgmt-core" },
     { name = "isodate" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d7/7e/b3f9d544a94782be9c5ab8123d2fa7fb20cbdf3f5a16b883f308865e1406/azure_mgmt_resource-25.0.0.tar.gz", hash = "sha256:dc123a9f6509c37299d7716c9090cff0a9d73309b228cc094ea950ce3cca3603", size = 92837, upload-time = "2026-02-06T06:00:39.699Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/61/e1/c6196381cc6bb3eff9e24f5bf31b7fd962651ddbd6120bc2a4c482a7af16/azure_mgmt_resource-26.0.0.tar.gz", hash = "sha256:54227c5db06d3be4dd4b77ad885b273e9eb2606d1de653c5b534066cfbb60c0c", size = 117372, upload-time = "2026-06-24T09:48:29.546Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/92/41/ce12546aa2a20c4f37d061bfa7df3bf8fa72ff01e7557ec330929c72ec7d/azure_mgmt_resource-25.0.0-py3-none-any.whl", hash = "sha256:f6f17b2305abe9bf6ec6c92a9410af21a2b0d805cc98e94d80c07220924a045b", size = 83670, upload-time = "2026-02-06T06:00:41.317Z" },
+    { url = "https://files.pythonhosted.org/packages/e6/6e/3e776a0817ebe3558fbd8d3f98b1bd8fa75a46596e5cf9bb4377960c4611/azure_mgmt_resource-26.0.0-py3-none-any.whl", hash = "sha256:ef36559a4c0843b4272aa584efb455c686e4c3f6357421b38c82f405c01a9a9f", size = 102492, upload-time = "2026-06-24T09:48:30.854Z" },
 ]
 
 [[package]]
@@ -2720,14 +2720,14 @@ wheels = [
 
 [[package]]
 name = "redis"
-version = "8.0.1"
+version = "8.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "async-timeout", marker = "python_full_version < '3.11.3'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/cc/c3/928b290c2c0ca99ab96eea5b4ff8f30be8112b075301a7d3ba214a3c8c12/redis-8.0.1.tar.gz", hash = "sha256:afc5a7a2f5a084f5b1880dec548dd45be17db7e43c82a30d84f952aefb05cfb0", size = 5114170, upload-time = "2026-06-23T14:52:37.728Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a8/99/604f0b666d4c616d891cf77ebb9db6bb21601344c051aebf1b72b9ff915f/redis-8.1.0.tar.gz", hash = "sha256:6e1a19beef9225c83efd689c7e6b7da2d5215b1f42cd13b7fc3714d0a09c7b25", size = 5254356, upload-time = "2026-07-30T08:51:00.269Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fd/0a/c2345ebf1ebe70840ce3f6c6ee612f8fa749cfbd1b03069c53bf0c62aaad/redis-8.0.1-py3-none-any.whl", hash = "sha256:47daa35a058c23468d6437f17a8c76882cb316b838ef763036af99b96cedd743", size = 502406, upload-time = "2026-06-23T14:52:36.137Z" },
+    { url = "https://files.pythonhosted.org/packages/66/9d/c5731f6e3608663d4d3656fd8d3aecee8b509c3082818f5a13eae925baea/redis-8.1.0-py3-none-any.whl", hash = "sha256:a4fe1aac3d3b3cc791d4b3d5931c5a956045dc951ee74d1c913ee3ac4d2ee9fb", size = 560618, upload-time = "2026-07-30T08:50:58.497Z" },
 ]
 
 [[package]]
@@ -2746,15 +2746,15 @@ wheels = [
 
 [[package]]
 name = "reportlab"
-version = "5.0.0"
+version = "5.0.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "charset-normalizer" },
     { name = "pillow" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/41/d6/4b7b0cf56880eb96533e607967be6a939e344675601e033d113a0bfa1f4e/reportlab-5.0.0.tar.gz", hash = "sha256:e4494a0c6623ae213bb856fba523171b2b54a7bf629fda02d5e525a7b899a784", size = 3701928, upload-time = "2026-06-18T11:34:31.145Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/4a/51/dbe28534ae12c852f61be91f039f343305fd1f34f1c66b8de75afae7a525/reportlab-5.0.1.tar.gz", hash = "sha256:ebd13154be1c8515e665de70bd2d303ae9ddc3ef47e44afd5116441ca0283a26", size = 3945711, upload-time = "2026-08-20T13:48:16.461Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a3/07/70085c17a369605f15e301d10ab902115019b1126c7253d964afc230c7d6/reportlab-5.0.0-py3-none-any.whl", hash = "sha256:9d5a3affa84919e1111ede580031266a570e93b1ce388219621347965ff1d93c", size = 1956710, upload-time = "2026-06-18T11:34:29.07Z" },
+    { url = "https://files.pythonhosted.org/packages/db/cb/dacbc268cb68d0428ea2cbd85266195a9ab3e677449589ddae59bd7542ac/reportlab-5.0.1-py3-none-any.whl", hash = "sha256:1c36e6bb0e71780c72331eba60da7f602e8d4389a8723825af71342e49d791e8", size = 1957258, upload-time = "2026-08-20T13:48:14.026Z" },
 ]
 
 [[package]]
@@ -3246,18 +3246,18 @@ requires-dist = [
     { name = "authlib", marker = "extra == 'server'", specifier = ">=1.3" },
     { name = "azure-identity", marker = "extra == 'cloud'", specifier = ">=1.17" },
     { name = "azure-mgmt-authorization", marker = "extra == 'cloud'", specifier = ">=4.0" },
-    { name = "azure-mgmt-resource", marker = "extra == 'cloud'", specifier = ">=23.0" },
+    { name = "azure-mgmt-resource", marker = "extra == 'cloud'", specifier = ">=26.0.0" },
     { name = "boto3", marker = "extra == 'cloud'", specifier = ">=1.34" },
     { name = "clickhouse-connect", marker = "extra == 'cloud'", specifier = ">=0.7" },
     { name = "commitizen", marker = "extra == 'dev'", specifier = ">=3.27" },
     { name = "duckdb", marker = "extra == 'analytics'", specifier = ">=1.0" },
-    { name = "fastapi", marker = "extra == 'dev'", specifier = ">=0.115" },
-    { name = "fastapi", marker = "extra == 'server'", specifier = ">=0.115" },
+    { name = "fastapi", marker = "extra == 'dev'", specifier = ">=0.141.1" },
+    { name = "fastapi", marker = "extra == 'server'", specifier = ">=0.141.1" },
     { name = "google-cloud-asset", marker = "extra == 'cloud'", specifier = ">=3.20" },
     { name = "google-cloud-org-policy", marker = "extra == 'cloud'", specifier = ">=1.11" },
     { name = "google-cloud-resource-manager", marker = "extra == 'cloud'", specifier = ">=1.12" },
-    { name = "httpx", marker = "extra == 'dev'", specifier = ">=0.27" },
-    { name = "httpx", marker = "extra == 'sdk'", specifier = ">=0.27" },
+    { name = "httpx", marker = "extra == 'dev'", specifier = ">=0.28.1" },
+    { name = "httpx", marker = "extra == 'sdk'", specifier = ">=0.28.1" },
     { name = "itsdangerous", marker = "extra == 'dev'", specifier = ">=2.2" },
     { name = "itsdangerous", marker = "extra == 'server'", specifier = ">=2.2" },
     { name = "jsonschema", marker = "extra == 'dev'", specifier = ">=4.23" },
@@ -3270,10 +3270,10 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
     { name = "python3-saml", marker = "extra == 'dev'", specifier = ">=1.16" },
     { name = "python3-saml", marker = "extra == 'server'", specifier = ">=1.16" },
-    { name = "redis", marker = "extra == 'dev'", specifier = ">=5.0" },
-    { name = "redis", marker = "extra == 'server'", specifier = ">=5.0" },
-    { name = "reportlab", marker = "extra == 'dev'", specifier = ">=4.2" },
-    { name = "reportlab", marker = "extra == 'server'", specifier = ">=4.2" },
+    { name = "redis", marker = "extra == 'dev'", specifier = ">=8.1.0" },
+    { name = "redis", marker = "extra == 'server'", specifier = ">=8.1.0" },
+    { name = "reportlab", marker = "extra == 'dev'", specifier = ">=5.0.1" },
+    { name = "reportlab", marker = "extra == 'server'", specifier = ">=5.0.1" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.8.0" },
     { name = "snowflake-connector-python", extras = ["pandas"], marker = "extra == 'cloud'", specifier = ">=3.12" },
     { name = "sqlalchemy", marker = "extra == 'dev'", specifier = ">=2.0" },
