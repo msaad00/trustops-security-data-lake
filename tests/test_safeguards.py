@@ -196,8 +196,8 @@ def test_review_report_groups_frameworks_categories_and_source_gaps() -> None:
     assert sum(report["source_backed_by_framework"].values()) == report["source_backed_mapping_count"]
     assert sum(report["unsourced_by_framework"].values()) == report["unsourced_mapping_count"]
     assert report["source_backed_by_framework"] == {
-        "cmmc-2-level2": 5,
-        "fedramp-moderate": 4,
+        "cmmc-2-level2": 6,
+        "fedramp-moderate": 5,
     }
 
 

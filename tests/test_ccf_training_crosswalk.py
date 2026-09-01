@@ -60,15 +60,15 @@ def test_training_safeguard_uses_the_nist_800_171_crosswalk() -> None:
 def test_training_crosswalk_closes_two_cmmc_evaluation_gaps_without_overstating_attestation() -> None:
     coverage = coverage_by_framework()
 
-    assert coverage["safeguards"] == 23
-    assert coverage["covered"] == 505
-    assert coverage["uncovered"] == 437
+    assert coverage["safeguards"] == 24
+    assert coverage["covered"] == 507
+    assert coverage["uncovered"] == 435
     assert coverage["reviewed"] == 45
-    assert coverage["proposed"] == 460
+    assert coverage["proposed"] == 462
     assert coverage["frameworks"]["cmmc-2-level2"] == {
         "controls": 110,
-        "covered": 96,
-        "coverage_pct": 87.3,
+        "covered": 97,
+        "coverage_pct": 88.2,
     }
 
 
