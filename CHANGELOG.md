@@ -3,6 +3,30 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
+## Unreleased
+
+Release theme: **secure dependencies + clearer first-run story**. Restores the
+release security gate and makes the README's product journey readable at a
+glance without changing TrustOps proof semantics.
+
+### Security
+
+- Raised the optional Snowflake connector floor to 4.7.1 and regenerated the
+  lockfile, replacing 4.6.0 after `pip-audit` identified CVE-2026-15925.
+
+### Added
+
+- Common Control Framework safeguards for controlled maintenance and
+  separation of duties, sourced from the NIST SP 800-171 Rev. 2 crosswalk.
+  Their new mappings remain proposed pending human review.
+
+### Changed
+
+- Rebuilt the README identity system around a crisp scalable hero, transparent
+  wordmark, simpler four-stage operating-loop banner, and clearer navigation.
+- Consolidated the queued Python and web dependency updates into one verified
+  lockfile refresh.
+
 ## 0.2.6 - 2026-08-17
 
 Release theme: **maintenance + unattended Google Workspace sync**. Closes the
