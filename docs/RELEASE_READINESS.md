@@ -1,6 +1,6 @@
 # Release Readiness
 
-This is the release audit for TrustOps `0.2.6`. It is intentionally factual:
+This is the release audit for TrustOps `0.2.7`. It is intentionally factual:
 what is implemented, what is safe to demo, and what still blocks a public
 commercial SaaS launch.
 
@@ -92,7 +92,7 @@ uv run pre-commit run --all-files
 uv run pytest
 npm run typecheck --prefix app/web
 npm run build --prefix app/web
-docker build -t trustops:0.2.6 .
+docker build -t trustops:0.2.7 .
 helm lint deploy/helm/trustops
 helm template trustops deploy/helm/trustops >/tmp/trustops-rendered.yaml
 ```
@@ -135,7 +135,7 @@ commercial-hosting gaps:
 
 | Release decision                                                 | Current answer                 |
 | ---------------------------------------------------------------- | ------------------------------ |
-| Ship OSS `0.2.6` release                                         | Go                             |
+| Ship OSS `0.2.7` release                                         | Go                             |
 | Share invite-only hosted POC with known evaluators               | Go after deployment gates pass |
 | Allow arbitrary public signup                                    | No-go                          |
 | Market as certification replacement                              | No-go                          |

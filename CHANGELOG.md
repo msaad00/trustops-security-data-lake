@@ -3,7 +3,7 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
-## Unreleased
+## 0.2.7 - 2026-09-01
 
 Release theme: **secure dependencies + clearer first-run story**. Restores the
 release security gate and makes the README's product journey readable at a
