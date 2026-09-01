@@ -1,0 +1,26 @@
+"""Source-backed CCF contract for separation of duties."""
+
+from security_lakehouse.safeguards import load_safeguards, safeguards_by_requirement
+
+
+def test_separation_of_duties_uses_the_nist_800_171_crosswalk() -> None:
+    safeguards = {entry["safeguard_id"]: entry for entry in load_safeguards()["safeguards"]}
+    safeguard = safeguards["SG-SEPARATIONOFDUTIES-001"]
+
+    assert safeguard["title"] == "Separation of duties"
+    assert {
+        (member["control_id"], member["framework_id"], member["review_status"]) for member in safeguard["satisfies"]
+    } == {
+        ("CMMC-3.1.4", "cmmc-2-level2", "proposed"),
+        ("FEDRAMP-AC-5", "fedramp-moderate", "proposed"),
+    }
+    assert safeguard["mapping_source"] == {
+        "name": "NIST SP 800-171 Rev. 2",
+        "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf",
+        "sha256": "298bdbfcf6a4890a564b225c893230a0b32b2e69e3b98dd898aaeb1d544c5e12",
+        "locator": "Appendix D, Table D-1, requirement 3.1.4 maps to AC-5",
+    }
+
+    mappings = safeguards_by_requirement()
+    assert mappings["CMMC-3.1.4"] == ["SG-SEPARATIONOFDUTIES-001"]
+    assert mappings["FEDRAMP-AC-5"] == ["SG-SEPARATIONOFDUTIES-001"]
