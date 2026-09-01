@@ -45,14 +45,24 @@ jobs:
             exit 1
           fi
           # The Helm chart pins image.tag to appVersion; if it lags the release
-          # tag, `helm install` pulls a non-existent image. Gate it here so the
-          # chart can never ship a patch behind the published image again.
+          # tag, `helm install` pulls a non-existent image. The chart package and
+          # bundled console must carry the same version too.
+          chart_version="$(grep -m1 '^version:' deploy/helm/trustops/Chart.yaml | awk '{print $2}')"
           chart_app_version="$(grep -m1 '^appVersion:' deploy/helm/trustops/Chart.yaml | sed 's/.*"\(.*\)".*/\1/')"
+          brand_version="$(sed -n 's/^[[:space:]]*version: "\(.*\)",$/\1/p' app/web/src/lib/brand.ts | head -n1)"
+          if [ "${chart_version}" != "${project_version}" ]; then
+            echo "::error::Chart.yaml version ${chart_version} does not match release version ${project_version}"
+            exit 1
+          fi
           if [ "${chart_app_version}" != "${project_version}" ]; then
             echo "::error::Chart.yaml appVersion ${chart_app_version} does not match release version ${project_version}"
             exit 1
           fi
-          echo "tag ${GITHUB_REF_NAME} matches pyproject + chart ${project_version}"
+          if [ "${brand_version}" != "${project_version}" ]; then
+            echo "::error::console brand version ${brand_version} does not match release version ${project_version}"
+            exit 1
+          fi
+          echo "tag ${GITHUB_REF_NAME} matches package, chart, and console ${project_version}"
 
   build:
     needs: verify-version
