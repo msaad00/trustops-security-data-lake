@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/trustops-social-preview.svg" alt="TrustOps collects read-only cloud, identity, code, and data evidence; evaluates deterministic controls through a common control framework; and produces immutable audit proof" width="100%">
+  <img src="docs/images/trustops-capability-header.svg" alt="TrustOps collects read-only cloud, identity, code, and data evidence; evaluates deterministic controls through a common control framework; and produces immutable audit proof" width="100%">
 </p>
 
 <p align="center">

@@ -4,14 +4,14 @@ import json
 from pathlib import Path
 from xml.etree import ElementTree
 
-from tools.render_readme_header import render_social_preview
+from tools.render_readme_header import render_logo, render_social_preview
 
 from security_lakehouse.safeguards import coverage_by_framework
 
 ROOT = Path(__file__).resolve().parents[1]
 README = ROOT / "README.md"
 ASSETS = (
-    ROOT / "docs" / "images" / "trustops-social-preview.svg",
+    ROOT / "docs" / "images" / "trustops-capability-header.svg",
     ROOT / "docs" / "images" / "trustops-logo.svg",
     ROOT / "docs" / "images" / "trustops-readme-banner.svg",
 )
@@ -21,13 +21,13 @@ def test_readme_header_leads_with_the_product_and_live_build_status() -> None:
     readme = README.read_text(encoding="utf-8")
     header = readme.split("## One operating loop", maxsplit=1)[0]
 
-    assert 'src="docs/images/trustops-social-preview.svg"' in header
+    assert 'src="docs/images/trustops-capability-header.svg"' in header
     assert '<h1 align="center">Continuous compliance in your cloud</h1>' in header
     assert '<h1 align="center">TrustOps</h1>' not in header
     assert "One self-hosted contract across Console · API · CLI · MCP · CI." in header
     assert "Quick start" in header
     assert "ci.yml?branch=main&amp;label=Build" in header
-    assert header.index("trustops-social-preview.svg") < header.index("<h1")
+    assert header.index("trustops-capability-header.svg") < header.index("<h1")
 
 
 def test_readme_hero_names_only_shipped_capabilities() -> None:
@@ -37,11 +37,11 @@ def test_readme_hero_names_only_shipped_capabilities() -> None:
 
     assert "Collect. Evaluate. Prove." in copy
     assert "Read-only evidence" in copy
-    assert "Deterministic tests" in copy
-    assert "Findings + approvals" in copy
-    assert "Immutable snapshots" in copy
-    assert f"CCF · {coverage['safeguards']} safeguards" in copy
-    assert f"{coverage['controls']} requirements · {len(coverage['frameworks'])} framework packs" in copy
+    assert "deterministic controls" in copy
+    assert "governed findings" in copy
+    assert "immutable proof" in copy
+    assert f"{coverage['safeguards']} safeguards · {coverage['controls']} catalogued requirements" in copy
+    assert f"{len(coverage['frameworks'])} framework packs" in copy
     assert "Console · API · CLI · MCP · CI" in copy
     source_ids = {
         "AWS": "aws-posture",
@@ -93,6 +93,10 @@ def test_readme_visuals_are_accessible_scalable_svg_assets() -> None:
 
 def test_readme_hero_matches_the_deterministic_renderer() -> None:
     assert ASSETS[0].read_text(encoding="utf-8") == render_social_preview()
+
+
+def test_readme_logo_matches_the_deterministic_renderer() -> None:
+    assert ASSETS[1].read_text(encoding="utf-8") == render_logo()
 
 
 def test_operating_loop_banner_is_presented_with_the_matching_section() -> None:
