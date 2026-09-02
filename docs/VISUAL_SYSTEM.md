@@ -93,5 +93,8 @@ Full index: [diagrams/README.md](diagrams/README.md)
 
 ### Hero SVGs
 
+- [README capability header](images/trustops-social-preview.svg) — regenerate
+  with `make readme-header`
+- [Operating loop banner](images/trustops-readme-banner.svg)
 - [Assessment architecture](images/trustops-assessment-architecture.svg)
 - [Snowflake evidence lake](images/trustops-snowflake-evidence-lake.svg)

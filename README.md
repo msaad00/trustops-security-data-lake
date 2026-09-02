@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/trustops-social-preview.svg" alt="TrustOps turns customer-owned evidence into deterministic controls and audit-ready proof" width="960">
+  <img src="docs/images/trustops-social-preview.svg" alt="TrustOps collects read-only cloud, identity, code, and data evidence; evaluates deterministic controls through a common control framework; and produces immutable audit proof" width="100%">
 </p>
 
 <p align="center">
@@ -13,11 +13,11 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-64748b?style=flat-square" alt="License: Apache 2.0"></a>
 </p>
 
-<h1 align="center">TrustOps</h1>
+<h1 align="center">Continuous compliance in your cloud</h1>
 
 <p align="center">
-  <strong>Read-only evidence. Deterministic controls. Audit-ready proof.</strong><br/>
-  One self-hosted platform for operators, agents, and auditors — backed by the same verifiable JSON.
+  <strong>One self-hosted contract across Console · API · CLI · MCP · CI.</strong><br/>
+  Customer-owned evidence, deterministic verdicts, governed workflows, and reproducible proof.
 </p>
 
 <p align="center">

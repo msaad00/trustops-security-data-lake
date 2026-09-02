@@ -1,7 +1,12 @@
 """README hero assets stay sharp, accessible, and wired into the product story."""
 
+import json
 from pathlib import Path
 from xml.etree import ElementTree
+
+from tools.render_readme_header import render_social_preview
+
+from security_lakehouse.safeguards import coverage_by_framework
 
 ROOT = Path(__file__).resolve().parents[1]
 README = ROOT / "README.md"
@@ -17,11 +22,59 @@ def test_readme_header_leads_with_the_product_and_live_build_status() -> None:
     header = readme.split("## One operating loop", maxsplit=1)[0]
 
     assert 'src="docs/images/trustops-social-preview.svg"' in header
-    assert '<h1 align="center">TrustOps</h1>' in header
-    assert "Read-only evidence. Deterministic controls. Audit-ready proof." in header
+    assert '<h1 align="center">Continuous compliance in your cloud</h1>' in header
+    assert '<h1 align="center">TrustOps</h1>' not in header
+    assert "One self-hosted contract across Console · API · CLI · MCP · CI." in header
     assert "Quick start" in header
     assert "ci.yml?branch=main&amp;label=Build" in header
     assert header.index("trustops-social-preview.svg") < header.index("<h1")
+
+
+def test_readme_hero_names_only_shipped_capabilities() -> None:
+    root = ElementTree.parse(ASSETS[0]).getroot()
+    copy = " ".join(text.strip() for text in root.itertext() if text.strip())
+    coverage = coverage_by_framework()
+
+    assert "Collect. Evaluate. Prove." in copy
+    assert "Read-only evidence" in copy
+    assert "Deterministic tests" in copy
+    assert "Findings + approvals" in copy
+    assert "Immutable snapshots" in copy
+    assert f"CCF · {coverage['safeguards']} safeguards" in copy
+    assert f"{coverage['controls']} requirements · {len(coverage['frameworks'])} framework packs" in copy
+    assert "Console · API · CLI · MCP · CI" in copy
+    source_ids = {
+        "AWS": "aws-posture",
+        "Azure": "azure-posture",
+        "GCP": "gcp-posture",
+        "GitHub": "github-security",
+        "GitLab": "gitlab-security",
+        "Okta": "okta-identity",
+        "Snowflake": "snowflake-evidence-lake",
+        "ClickHouse": "clickhouse-telemetry-lake",
+    }
+    connector_payload = json.loads((ROOT / "connectors" / "catalog.json").read_text(encoding="utf-8"))
+    connectors = {entry["connector_id"]: entry for entry in connector_payload["connectors"]}
+    for source, connector_id in source_ids.items():
+        assert source in copy
+        assert connectors[connector_id]["is_implemented"] is True
+        assert connectors[connector_id]["collection_mode"] in {"direct_api_read", "existing_lake_read"}
+    for framework in (
+        "SOC 2",
+        "ISO 27001",
+        "FedRAMP",
+        "CMMC",
+        "NIST CSF",
+        "CIS AWS",
+        "HIPAA",
+        "PCI DSS",
+        "GDPR",
+        "EU AI Act",
+        "ISO 27017",
+        "ISO 42001",
+        "NIST AI RMF",
+    ):
+        assert framework in copy
 
 
 def test_readme_visuals_are_accessible_scalable_svg_assets() -> None:
@@ -36,6 +89,10 @@ def test_readme_visuals_are_accessible_scalable_svg_assets() -> None:
         children = {child.tag.rsplit("}", 1)[-1]: child for child in root}
         assert children["title"].text
         assert children["desc"].text
+
+
+def test_readme_hero_matches_the_deterministic_renderer() -> None:
+    assert ASSETS[0].read_text(encoding="utf-8") == render_social_preview()
 
 
 def test_operating_loop_banner_is_presented_with_the_matching_section() -> None:

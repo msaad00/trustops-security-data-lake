@@ -1,4 +1,4 @@
-.PHONY: release-build compile lint format-check diff-check test validate validate-json validate-generated validate-brand validate-doc-images pipeline dashboard api-smoke smoke ci web-install web-dev web-typecheck web-build web-clean web-ci docker-build helm-lint helm-template terraform-fmt terraform-validate deploy-check uv-sync uv-lock pre-commit-install pre-commit-run pip-audit npm-audit security openapi-export
+.PHONY: release-build compile lint format-check diff-check test validate validate-json validate-generated validate-brand validate-doc-images pipeline dashboard api-smoke smoke ci web-install web-dev web-typecheck web-build web-clean web-ci docker-build helm-lint helm-template terraform-fmt terraform-validate deploy-check uv-sync uv-lock pre-commit-install pre-commit-run pip-audit npm-audit security openapi-export readme-header
 
 test:
 	PYTHONPATH=src python -m pytest -q
@@ -145,3 +145,6 @@ security: pip-audit npm-audit pre-commit-run
 coverage-doc:
 	uv run python -c "from security_lakehouse.framework_coverage import render_framework_coverage_doc; open('docs/FRAMEWORK_COVERAGE.md','w').write(render_framework_coverage_doc())"
 	@echo wrote docs/FRAMEWORK_COVERAGE.md
+
+readme-header:
+	uv run python tools/render_readme_header.py
