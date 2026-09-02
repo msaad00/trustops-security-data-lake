@@ -3743,6 +3743,39 @@
         "repo",
         "service"
       ]
+    },
+    {
+      "safeguard_id": "SG-SECURITYENGINEERING-001",
+      "title": "Security engineering principles",
+      "risk_domain": "controls-operations",
+      "objective": "Apply security engineering principles throughout system architecture, software development, and systems engineering activities.",
+      "evidence_requirement": "Current architecture decisions, engineering standards, and design-review evidence demonstrate that security principles are applied throughout the system lifecycle with no open high-risk failure or stale proof.",
+      "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
+      "frequency": "continuous",
+      "owner": "platform-engineering",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST SP 800-171 Rev. 2",
+        "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf",
+        "sha256": "298bdbfcf6a4890a564b225c893230a0b32b2e69e3b98dd898aaeb1d544c5e12",
+        "locator": "Appendix D, Table D-13, requirement 3.13.2 maps to SA-8"
+      },
+      "satisfies": [
+        {
+          "control_id": "CMMC-3.13.2",
+          "framework_id": "cmmc-2-level2",
+          "role": "primary",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SA-8",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     }
   ]
 }
