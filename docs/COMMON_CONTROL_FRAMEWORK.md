@@ -68,7 +68,7 @@ collapsing them would overstate both coverage and failure.
 
 ```
 $ security-lakehouse frameworks safeguards --format table
-28 safeguards map 515 of 942 requirements (54.7%) — 45 reviewed (4.8%), 470 proposed
+29 safeguards map 518 of 942 requirements (55.0%) — 45 reviewed (4.8%), 473 proposed
 ```
 
 A mapping is **reviewed** once a human has confirmed the requirements are the
@@ -87,11 +87,11 @@ Curation is ordered by what teams are actually audited and certified against.
 | hipaa-security-rule |           18 |     18 | 100.0% |
 | pci-dss-v4          |           12 |     12 | 100.0% |
 | soc2                |           61 |     61 | 100.0% |
-| cmmc-2-level2       |          110 |    101 |  91.8% |
+| cmmc-2-level2       |          110 |    102 |  92.7% |
 | cis_aws             |           62 |     49 |  79.0% |
 | iso-42001-2023      |           39 |     26 |  66.7% |
 | gdpr-2016-679       |           20 |     12 |  60.0% |
-| fedramp-moderate    |          287 |    174 |  60.6% |
+| fedramp-moderate    |          287 |    176 |  61.3% |
 | iso-27017-2015      |           47 |     24 |  51.1% |
 | iso-27001-2022      |           93 |     11 |  11.8% |
 | nist-ai-rmf         |           72 |      6 |   8.3% |
@@ -141,7 +141,7 @@ Full coverage needs the catalog enriched before the curation can be checked.
    content. 224 are mapped; the rest are the near-term queue. Promoting a
    `proposed` mapping to `reviewed` is a human confirming the two requirements
    are the same obligation. `security-lakehouse frameworks review-queue`
-   (`--framework <id>` to scope) lists the 470 proposed mappings, each paired
+   (`--framework <id>` to scope) lists the 473 proposed mappings, each paired
    with the reviewed anchors already on that safeguard, so a reviewer judges an
    equivalence against mappings they already trust. `--risk-domain <domain>`
    scopes the queue by the normalized cross-framework category/family, while
