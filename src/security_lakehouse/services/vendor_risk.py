@@ -23,6 +23,11 @@ def list_templates() -> list[dict[str, Any]]:
             "name": row.get("name"),
             "description": row.get("description"),
             "control_ids": row.get("control_ids") or [],
+            "framework_ids": row.get("framework_ids") or [],
+            "risk_domains": row.get("risk_domains") or [],
+            "safeguard_ids": row.get("safeguard_ids") or [],
+            "mapping_status": row.get("mapping_status"),
+            "mapped_question_count": row.get("mapped_question_count") or 0,
             "question_count": sum(len(section.get("questions") or []) for section in row.get("sections") or []),
         }
         for row in list_vendor_questionnaire_templates()

@@ -148,6 +148,10 @@ function QuestionRow({
           <span className="ml-1 text-critical">*</span>
         ) : null}
       </p>
+      <p className="text-xs text-muted">
+        {question.risk_domains.join(" · ")} ·{" "}
+        {question.safeguard_ids.join(", ")} · {question.mapping_status}
+      </p>
       <div className="flex flex-wrap gap-2">
         {ANSWERS.map((answer) => {
           if (answer === "na" && question.required) return null;
@@ -352,6 +356,23 @@ export default function VendorRiskPage() {
                 <p className="text-xs text-muted">
                   {template.template_id} · {template.question_count} questions
                 </p>
+                <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted">
+                  <Badge
+                    tone={
+                      template.mapping_status === "reviewed"
+                        ? "ready"
+                        : "attention"
+                    }
+                  >
+                    {template.mapping_status}
+                  </Badge>
+                  <span>
+                    {template.mapped_question_count}/{template.question_count}{" "}
+                    mapped · {template.safeguard_ids.length} safeguards ·{" "}
+                    {template.framework_ids.length} frameworks ·{" "}
+                    {template.risk_domains.length} risk domains
+                  </span>
+                </div>
               </div>
             )) ?? <p className="text-sm text-muted">Loading templates…</p>}
           </div>

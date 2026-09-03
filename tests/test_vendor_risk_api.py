@@ -49,7 +49,12 @@ def test_list_templates_readable(env) -> None:
     resp = client.get("/api/v1/vendor-questionnaires", headers=_bearer(tokens["read_only"]))
     assert resp.status_code == HTTPStatus.OK
     data = resp.json()["data"]
-    assert any(row["template_id"] == "soc2-vendor-standard" for row in data)
+    template = next(row for row in data if row["template_id"] == "soc2-vendor-standard")
+    assert template["mapped_question_count"] == template["question_count"] == 10
+    assert template["mapping_status"] == "proposed"
+    assert "third-party-risk" in template["risk_domains"]
+    assert {"soc2", "iso-27001-2022", "fedramp-moderate"} <= set(template["framework_ids"])
+    assert len(template["safeguard_ids"]) >= 7
 
 
 def test_create_requires_control_manage(env) -> None:
