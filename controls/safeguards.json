@@ -3886,6 +3886,39 @@
         }
       ],
       "asset_types": ["audit_log", "service"]
+    },
+    {
+      "safeguard_id": "SG-SECURITYASSESSMENT-001",
+      "title": "Security control assessments",
+      "risk_domain": "risk-management",
+      "objective": "Periodically assess whether implemented security controls are present, operating as intended, and effective.",
+      "evidence_requirement": "Current assessment plans, test results, findings, and approvals demonstrate that security controls are periodically assessed for implementation and operating effectiveness with no open high-risk failure or stale proof.",
+      "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
+      "frequency": "continuous",
+      "owner": "security-platform",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST SP 800-171 Rev. 2",
+        "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf",
+        "sha256": "298bdbfcf6a4890a564b225c893230a0b32b2e69e3b98dd898aaeb1d544c5e12",
+        "locator": "Appendix D, Table D-12, requirement 3.12.1 maps to CA-2"
+      },
+      "satisfies": [
+        {
+          "control_id": "CMMC-3.12.1",
+          "framework_id": "cmmc-2-level2",
+          "role": "primary",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CA-2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": ["audit_log", "service"]
     }
   ]
 }
