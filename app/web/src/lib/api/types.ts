@@ -1662,6 +1662,11 @@ export interface VendorQuestionnaireTemplateSummary {
   name: string;
   description?: string;
   control_ids: string[];
+  framework_ids: string[];
+  risk_domains: string[];
+  safeguard_ids: string[];
+  mapping_status: "proposed" | "reviewed";
+  mapped_question_count: number;
   question_count: number;
 }
 
@@ -1671,6 +1676,11 @@ export interface VendorQuestionnaireQuestion {
   response_type: string;
   weight: number;
   required: boolean;
+  mapping_status: "proposed" | "reviewed";
+  safeguard_ids: string[];
+  risk_domains: string[];
+  framework_ids: string[];
+  control_ids: string[];
   section_id?: string;
   section_title?: string;
 }
