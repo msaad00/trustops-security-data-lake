@@ -1,0 +1,52 @@
+"""Source-backed CCF contract for system use notices."""
+
+from security_lakehouse.safeguards import (
+    coverage_by_framework,
+    load_safeguards,
+    safeguards_by_requirement,
+)
+
+
+def test_system_use_notice_uses_the_nist_800_171_crosswalk() -> None:
+    safeguards = {entry["safeguard_id"]: entry for entry in load_safeguards()["safeguards"]}
+    safeguard = safeguards["SG-IDENTITY-004"]
+
+    assert safeguard["title"] == "System use privacy and security notices"
+    assert {
+        (member["control_id"], member["framework_id"], member["review_status"]) for member in safeguard["satisfies"]
+    } == {
+        ("CMMC-3.1.9", "cmmc-2-level2", "proposed"),
+        ("FEDRAMP-AC-8", "fedramp-moderate", "proposed"),
+    }
+    assert safeguard["mapping_source"] == {
+        "name": "NIST SP 800-171 Rev. 2",
+        "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf",
+        "sha256": "298bdbfcf6a4890a564b225c893230a0b32b2e69e3b98dd898aaeb1d544c5e12",
+        "locator": "Appendix D, Table D-1, requirement 3.1.9 maps to AC-8",
+    }
+
+    mappings = safeguards_by_requirement()
+    assert mappings["CMMC-3.1.9"] == ["SG-IDENTITY-004"]
+    assert mappings["FEDRAMP-AC-8"] == ["SG-IDENTITY-004"]
+
+
+def test_system_use_notice_closes_two_gaps_without_overstating_attestation() -> None:
+    payload = load_safeguards()
+    payload["safeguards"] = [entry for entry in payload["safeguards"] if entry["safeguard_id"] != "SG-IDENTITY-004"]
+
+    without_crosswalk = coverage_by_framework(payload)
+    coverage = coverage_by_framework()
+
+    assert coverage["safeguards"] == without_crosswalk["safeguards"] + 1
+    assert coverage["covered"] == without_crosswalk["covered"] + 2
+    assert coverage["uncovered"] == without_crosswalk["uncovered"] - 2
+    assert coverage["reviewed"] == without_crosswalk["reviewed"]
+    assert coverage["proposed"] == without_crosswalk["proposed"] + 2
+    assert (
+        coverage["frameworks"]["cmmc-2-level2"]["covered"]
+        == without_crosswalk["frameworks"]["cmmc-2-level2"]["covered"] + 1
+    )
+    assert (
+        coverage["frameworks"]["fedramp-moderate"]["covered"]
+        == without_crosswalk["frameworks"]["fedramp-moderate"]["covered"] + 1
+    )
