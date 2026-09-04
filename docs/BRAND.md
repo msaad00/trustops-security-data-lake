@@ -1,35 +1,35 @@
-# TrustOps brand
+# Trust Data Lake brand
 
-**TrustOps** is the only customer-facing product name. “Security data lake” describes the architecture; it is not a second brand.
+**Trust Data Lake** is the customer-facing product name. **TDL** is the compact monogram. The repository, package, CLI, environment variables, API identifiers, and MCP commands retain their existing technical names for compatibility.
 
-| Use                  | Form                          |
-| -------------------- | ----------------------------- |
-| Product              | **TrustOps**                  |
-| Console              | **TrustOps Console**          |
-| Reviewer shares      | **TrustOps Trust Center**     |
-| Repository / package | `trustops-security-data-lake` |
-| Operator CLI         | `security-lakehouse`          |
-| MCP command          | `trustops-mcp`                |
+| Use                  | Form                             |
+| -------------------- | -------------------------------- |
+| Product              | **Trust Data Lake**              |
+| Console              | **Trust Data Lake Console**      |
+| Reviewer shares      | **Trust Data Lake Trust Center** |
+| Repository / package | `trustops-security-data-lake`    |
+| Operator CLI         | `security-lakehouse`             |
+| MCP command          | `trustops-mcp`                   |
 
-Do not introduce alternate product names. Do not use “Workbench,” “Assessment Console,” or “Security Lakehouse” as a customer-facing brand.
+Do not introduce alternate customer-facing product names. Do not use “Workbench” or “Assessment Console” as the brand. “TrustOps” remains a technical compatibility identifier only.
 
 ## Positioning
 
-- **Category:** open-source trust operations
+- **Category:** open evidence infrastructure for GRC
 - **Promise:** continuous compliance in your cloud
 - **Differentiator:** customer-owned evidence, deterministic controls, one contract across Console · API · CLI · MCP · CI
 
 ## Visual identity
 
-The primary mark is a blue-to-cyan rounded square with a white **T** and a green proof check. It must remain legible at 16 px.
+The primary mark is a geometric **TDL** monogram over a deep-navy field with a restrained lake line. It must remain legible at 16 px and must not use generic shields, database stacks, or certification checks.
 
-| Token       | Value                 |
-| ----------- | --------------------- |
-| Gradient    | `#4f7cff` → `#30c7d2` |
-| Ink         | `#101623`             |
-| Dark rail   | `#07111e`             |
-| Proof check | `#047857`             |
-| Wordmark    | Inter, 800–900        |
+| Token     | Value                 |
+| --------- | --------------------- |
+| Gradient  | `#4f7cff` → `#30c7d2` |
+| Ink       | `#101623`             |
+| Dark rail | `#07111e`             |
+| Lake line | `#5eead4`             |
+| Wordmark  | Inter, 800–900        |
 
 Primary assets:
 

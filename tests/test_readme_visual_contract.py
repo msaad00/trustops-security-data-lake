@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from xml.etree import ElementTree
 
-from tools.render_readme_header import render_logo, render_social_preview
+from tools.render_readme_header import render_logo, render_open_graph, render_social_preview
 
 from security_lakehouse.safeguards import coverage_by_framework
 
@@ -14,6 +14,7 @@ ASSETS = (
     ROOT / "docs" / "images" / "trustops-capability-header.svg",
     ROOT / "docs" / "images" / "trustops-logo.svg",
     ROOT / "docs" / "images" / "trustops-readme-banner.svg",
+    ROOT / "app" / "web" / "public" / "og" / "trustops-share.svg",
 )
 
 
@@ -22,7 +23,7 @@ def test_readme_header_leads_with_the_product_and_live_build_status() -> None:
     header = readme.split("## One operating loop", maxsplit=1)[0]
 
     assert 'src="docs/images/trustops-capability-header.svg"' in header
-    assert '<h1 align="center">Continuous compliance in your cloud</h1>' in header
+    assert '<h1 align="center">Open evidence infrastructure for continuous GRC</h1>' in header
     assert '<h1 align="center">TrustOps</h1>' not in header
     assert "One self-hosted contract across Console · API · CLI · MCP · CI." in header
     assert "Quick start" in header
@@ -35,7 +36,8 @@ def test_readme_hero_names_only_shipped_capabilities() -> None:
     copy = " ".join(text.strip() for text in root.itertext() if text.strip())
     coverage = coverage_by_framework()
 
-    assert "Collect. Evaluate. Prove." in copy
+    assert "Collect. Evaluate. Operate. Prove." in copy
+    assert "Trust Data Lake" in copy
     assert "Read-only evidence" in copy
     assert "deterministic controls" in copy
     assert "governed findings" in copy
@@ -97,6 +99,10 @@ def test_readme_hero_matches_the_deterministic_renderer() -> None:
 
 def test_readme_logo_matches_the_deterministic_renderer() -> None:
     assert ASSETS[1].read_text(encoding="utf-8") == render_logo()
+
+
+def test_open_graph_image_matches_the_deterministic_renderer() -> None:
+    assert ASSETS[3].read_text(encoding="utf-8") == render_open_graph()
 
 
 def test_operating_loop_banner_is_presented_with_the_matching_section() -> None:

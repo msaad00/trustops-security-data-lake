@@ -10,7 +10,9 @@ test.describe("console smoke", () => {
         name: /^Executive trust overview$/,
       }),
     ).toBeVisible();
-    await expect(page.getByText("TrustOps overview")).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /Trust Data Lake/ }).first(),
+    ).toBeVisible();
     await expect(page.getByText("Framework posture")).toBeVisible();
     await expect(
       page.getByText("Control pass rate", { exact: true }),

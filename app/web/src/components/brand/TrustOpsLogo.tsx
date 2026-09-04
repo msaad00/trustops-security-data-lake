@@ -40,7 +40,10 @@ export function TrustOpsLogo({
               markSize === "sm" || markSize === "xs" ? "text-sm" : "text-lg",
             )}
           >
-            {BRAND.name}
+            {BRAND.wordmarkPrimary}{" "}
+            <span className={inverted ? "text-cyan-300" : "text-[#0f8f91]"}>
+              {BRAND.wordmarkAccent}
+            </span>
           </span>
           {subtitle && (
             <span

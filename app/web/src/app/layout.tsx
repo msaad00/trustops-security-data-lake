@@ -6,7 +6,12 @@ import { Shell } from "@/components/shell/Shell";
 import { BRAND } from "@/lib/brand";
 import "./globals.css";
 
+const metadataBase = new URL(
+  process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:8787",
+);
+
 export const metadata: Metadata = {
+  metadataBase,
   title: { default: BRAND.consoleName, template: `%s · ${BRAND.name}` },
   description: BRAND.description,
   applicationName: BRAND.name,

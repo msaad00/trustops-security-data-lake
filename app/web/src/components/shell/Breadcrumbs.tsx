@@ -59,7 +59,7 @@ export function Breadcrumbs() {
     >
       <Link
         href="/dashboard"
-        className="inline-flex items-center gap-1.5 rounded px-1 py-0.5 font-extrabold text-muted hover:bg-slate-100 hover:text-ink"
+        className="inline-flex items-center gap-1.5 rounded px-1 py-0.5 font-extrabold text-muted hover:bg-surfaceMuted hover:text-ink"
       >
         <TrustOpsMark size="xs" gradientId="trustops-crumb-gradient" />
         {BRAND.name}
@@ -72,7 +72,7 @@ export function Breadcrumbs() {
           ) : (
             <Link
               href={crumb.href}
-              className="rounded px-1 py-0.5 font-extrabold hover:bg-slate-100 hover:text-ink"
+              className="rounded px-1 py-0.5 font-extrabold hover:bg-surfaceMuted hover:text-ink"
             >
               {crumb.label}
             </Link>

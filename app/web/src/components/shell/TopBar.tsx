@@ -33,7 +33,7 @@ export function TopBar({ onRefresh, onSnapshot, onOpenPalette }: Props) {
   }, [onOpenPalette]);
 
   return (
-    <header className="sticky top-0 z-40 flex h-[52px] min-w-0 items-center justify-between gap-1.5 overflow-hidden border-b border-railLine bg-rail px-2 text-slate-100 md:px-3">
+    <header className="sticky top-0 z-40 flex h-[52px] min-w-0 items-center justify-between gap-1.5 overflow-hidden border-b border-white/10 bg-rail/95 px-2 text-slate-100 shadow-[0_8px_30px_rgba(2,6,23,0.18)] backdrop-blur-xl md:px-3">
       <TrustOpsLogo
         href="/dashboard"
         inverted
@@ -58,7 +58,7 @@ export function TopBar({ onRefresh, onSnapshot, onOpenPalette }: Props) {
         </kbd>
       </button>
       <div className="flex min-w-0 flex-none items-center gap-1.5">
-        <div className="hidden 2xl:block">
+        <div className="hidden md:block">
           <UserMenu />
         </div>
         <span

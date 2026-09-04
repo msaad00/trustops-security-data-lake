@@ -1,4 +1,4 @@
-"""Regression contract for TrustOps shell branding scale."""
+"""Regression contract for Trust Data Lake shell branding scale."""
 
 from pathlib import Path
 
@@ -8,12 +8,12 @@ SIDEBAR = ROOT / "app/web/src/components/shell/Sidebar.tsx"
 TOPBAR = ROOT / "app/web/src/components/shell/TopBar.tsx"
 
 
-def test_shell_trustops_mark_is_prominent() -> None:
+def test_shell_uses_one_prominent_product_lockup() -> None:
     sidebar = SIDEBAR.read_text(encoding="utf-8")
     topbar = TOPBAR.read_text(encoding="utf-8")
 
-    assert 'markSize="md"' in sidebar
     assert 'markSize="lg"' in topbar
+    assert "TrustOpsLogo" not in sidebar
 
 
 def test_shell_uses_document_scroll_not_fixed_canvas() -> None:

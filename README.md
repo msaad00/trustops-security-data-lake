@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/trustops-capability-header.svg" alt="TrustOps collects read-only cloud, identity, code, and data evidence; evaluates deterministic controls through a common control framework; and produces immutable audit proof" width="100%">
+  <img src="docs/images/trustops-capability-header.svg" alt="Trust Data Lake collects read-only cloud, identity, code, and data evidence; evaluates deterministic controls through a common control framework; and produces immutable audit proof" width="100%">
 </p>
 
 <p align="center">
@@ -13,7 +13,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-64748b?style=flat-square" alt="License: Apache 2.0"></a>
 </p>
 
-<h1 align="center">Continuous compliance in your cloud</h1>
+<h1 align="center">Open evidence infrastructure for continuous GRC</h1>
 
 <p align="center">
   <strong>One self-hosted contract across Console · API · CLI · MCP · CI.</strong><br/>
@@ -49,7 +49,7 @@ not silently change evidence or decide pass/fail.
 
 **The open-source, self-hosted alternative to managed GRC SaaS — interoperable, secure, and built to scale in your environment.**
 
-|                    | TrustOps                                | Managed GRC SaaS         |
+|                    | Trust Data Lake                         | Managed GRC SaaS         |
 | ------------------ | --------------------------------------- | ------------------------ |
 | Evidence location  | Your VPC or laptop — data never leaves  | Vendor servers           |
 | Control evaluation | Deterministic rules, no model drift     | Varies by vendor         |
@@ -136,13 +136,13 @@ scanner, ticketing, and AI-platform entries in
 
 ## Product preview
 
-|                                         Trust Home                                         |                                         Audit room                                          |
-| :----------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
-| <img src="docs/images/trustops-demo-dashboard.png" alt="TrustOps Trust Home" width="100%"> | <img src="docs/images/trustops-demo-audit-room.png" alt="TrustOps audit room" width="100%"> |
+|                                         Trust Home                                          |                                             Audit room                                             |
+| :-----------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------: |
+| <img src="docs/images/trustops-demo-dashboard.png" alt="Trust Data Lake home" width="100%"> | <img src="docs/images/trustops-demo-audit-room.png" alt="Trust Data Lake audit room" width="100%"> |
 
-|                                           Evidence                                           |                                             Connectors                                              |
-| :------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: |
-| <img src="docs/images/trustops-demo-evidence.png" alt="TrustOps evidence room" width="100%"> | <img src="docs/images/trustops-demo-connectors.png" alt="TrustOps connector registry" width="100%"> |
+|                                              Evidence                                               |                                                 Connectors                                                 |
+| :-------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------: |
+| <img src="docs/images/trustops-demo-evidence.png" alt="Trust Data Lake evidence room" width="100%"> | <img src="docs/images/trustops-demo-connectors.png" alt="Trust Data Lake connector registry" width="100%"> |
 
 More views: [frameworks](docs/images/trustops-demo-frameworks.png) · [insights](docs/images/trustops-demo-insights.png) · [workflows](docs/images/trustops-demo-workflows.png) · [trust center](docs/images/trustops-demo-trust-center.png)
 
@@ -154,16 +154,16 @@ The default path is agentless and read-only; no pre-existing data lake is requir
 - **Headless:** follow the [connector setup playbook](docs/playbooks/HEADLESS_CONNECTOR_SETUP.md) for API, CLI, and MCP flows.
 - **Existing lake:** connect Snowflake or ClickHouse when evidence already lives there.
 
-Cloud connectors use short-lived provider credentials or workload identity. No connector requires pasted long-lived cloud keys. TrustOps stores non-secret identifiers, redacted fingerprints, sync history, and evidence hashes.
+Cloud connectors use short-lived provider credentials or workload identity. No connector requires pasted long-lived cloud keys. Trust Data Lake stores non-secret identifiers, redacted fingerprints, sync history, and evidence hashes.
 
 Connector security contracts:
 
-- **AWS** uses STS AssumeRole, one External ID per deployed role, short-lived session credentials, and read-only IAM posture APIs. Temporary credentials expire after each session; TrustOps stores no long-lived access keys. Scale rollout with CloudFormation StackSets or Terraform workspaces; Bulk account import is the next operator surface.
+- **AWS** uses STS AssumeRole, one External ID per deployed role, short-lived session credentials, and read-only IAM posture APIs. Temporary credentials expire after each session; Trust Data Lake stores no long-lived access keys. Scale rollout with CloudFormation StackSets or Terraform workspaces; Bulk account import is the next operator surface.
 - **Azure** uses a customer-owned Entra application, managed identity, or federated workload identity with Reader scope. Tokens are short-lived, and no Azure password or raw client secret is stored.
-- **Snowflake** supports browser SSO for human proof or a read-only service identity with a key-pair or OAuth token reference held by the runtime secret manager. TrustOps stores account, role, and view identifiers — not passwords or private-key contents. Snowflake is the existing security-data-lake path.
+- **Snowflake** supports browser SSO for human proof or a read-only service identity with a key-pair or OAuth token reference held by the runtime secret manager. Trust Data Lake stores account, role, and view identifiers — not passwords or private-key contents. Snowflake is the existing security-data-lake path.
 
 <p align="center">
-  <img src="docs/images/trustops-aws-sts-lifecycle.svg" alt="TrustOps AWS STS AssumeRole lifecycle" width="96%">
+  <img src="docs/images/trustops-aws-sts-lifecycle.svg" alt="Trust Data Lake AWS STS AssumeRole lifecycle" width="96%">
 </p>
 
 ## Architecture
@@ -174,7 +174,7 @@ read-only source → raw observation → normalized fact → deterministic evalu
 ```
 
 <p align="center">
-  <img src="docs/images/trustops-assessment-architecture.svg" alt="TrustOps collection, evaluation, and proof architecture" width="96%">
+  <img src="docs/images/trustops-assessment-architecture.svg" alt="Trust Data Lake collection, evaluation, and proof architecture" width="96%">
 </p>
 
 The console, CLI, MCP server, agents, and CI gate share the same API and assessment engine. This keeps browser output and headless automation consistent.

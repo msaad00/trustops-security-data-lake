@@ -23,10 +23,12 @@ export function PostureRing({
   score,
   state,
   size = "default",
+  inverse = false,
 }: {
   score: number;
   state: string;
   size?: "compact" | "default";
+  inverse?: boolean;
 }) {
   const value = Math.round(score);
   const color = TONE[state] ?? "#f79009";
@@ -57,7 +59,9 @@ export function PostureRing({
             dataKey="value"
             cornerRadius={14}
             fill={color}
-            background={{ fill: "#eef2f7" }}
+            background={{
+              fill: inverse ? "rgba(148, 163, 184, 0.18)" : "var(--color-line)",
+            }}
           />
         </RadialBarChart>
       </ResponsiveContainer>
@@ -66,7 +70,7 @@ export function PostureRing({
           className={
             isCompact
               ? "text-[22px] font-black leading-none text-ink"
-              : "text-[52px] font-black leading-none text-ink"
+              : `text-[52px] font-black leading-none ${inverse ? "text-white" : "text-ink"}`
           }
         >
           {value}
@@ -77,7 +81,14 @@ export function PostureRing({
               ? "mt-1 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide"
               : "mt-1 rounded-full px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wide"
           }
-          style={{ color: "#475467", background: "#f1f5f9" }}
+          style={
+            inverse
+              ? { color: "#cbd5e1", background: "rgba(255, 255, 255, 0.08)" }
+              : {
+                  color: "var(--color-muted)",
+                  background: "var(--color-surface-muted)",
+                }
+          }
         >
           {LABEL[state] ?? state}
         </span>
