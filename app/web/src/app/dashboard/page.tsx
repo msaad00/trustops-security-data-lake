@@ -13,6 +13,7 @@ import {
 import { DashboardStripsRow } from "@/components/dashboard/DashboardStripsRow";
 import { PostureRing } from "@/components/dashboard/PostureRing";
 import { ComplianceOverview } from "@/components/dashboard/ComplianceOverview";
+import { TrustSignalFlow } from "@/components/dashboard/TrustSignalFlow";
 import { ReadinessGrid } from "@/components/dashboard/ReadinessGrid";
 import { FixNext } from "@/components/dashboard/FixNext";
 import { EvidenceTrend } from "@/components/dashboard/EvidenceTrend";
@@ -33,19 +34,25 @@ const DASHBOARD_TABS = ["Posture", "Sources", "Proof"] as const;
 type DashboardTab = (typeof DASHBOARD_TABS)[number];
 
 function stateHeadline(state?: string) {
-  if (state === "ready") return "Audit-ready posture";
-  if (state === "critical") return "Executive action required";
-  return "Posture needs review";
+  if (state === "ready") return "Proof ready to share";
+  if (state === "critical") return "Critical gaps need owners";
+  return "Evidence review needed";
 }
 
 function stateCopy(state?: string) {
   if (state === "ready") {
-    return "Ready for auditor or customer sharing.";
+    return "Current evidence is ready for auditor or customer review.";
   }
   if (state === "critical") {
-    return "Assign critical owners and refresh stale proof.";
+    return "Assign the highest-risk gaps and refresh stale proof.";
   }
-  return "Review gaps before the next trust share.";
+  return "Review evidence gaps before the next trust share.";
+}
+
+function stateBadge(state?: string) {
+  if (state === "ready") return "Ready";
+  if (state === "critical") return "Critical";
+  return "Needs review";
 }
 
 function formatPassRate(rate: number | null | undefined) {
@@ -90,11 +97,11 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="mx-auto grid w-full max-w-[1600px] gap-2 px-3 py-2 sm:px-4 lg:px-5">
+    <div className="ui-page-canvas mx-auto grid min-h-full w-full max-w-[1680px] gap-3 px-3 py-3 sm:px-4 lg:px-6 lg:py-4">
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div className="min-w-0">
-          <div className="text-[12px] font-black uppercase tracking-wider text-brand">
-            TrustOps overview
+          <div className="text-[12px] font-black uppercase tracking-[0.14em] text-brand">
+            Open trust data lake for GRC
           </div>
           <h1 className="ui-page-title mt-0.5">Executive trust overview</h1>
           <p className="text-sm text-muted">
@@ -120,32 +127,58 @@ export default function DashboardPage() {
       </div>
 
       <QueryState queries={[posture, ingestion]} label="overview">
-        <Card className="overflow-hidden border-line shadow-card">
-          <div className="grid lg:grid-cols-[minmax(220px,260px)_minmax(0,1fr)] xl:grid-cols-[minmax(220px,260px)_minmax(0,0.9fr)_minmax(320px,0.8fr)]">
-            <div className="flex items-center gap-4 border-b border-line bg-slate-50 p-3 lg:block lg:border-b-0 lg:border-r">
+        <section
+          aria-label="Trust command center"
+          className="ui-command-center overflow-hidden"
+        >
+          <div className="relative z-10 flex flex-wrap items-start justify-between gap-3 border-b border-white/10 px-4 py-3 sm:px-5">
+            <div>
+              <div className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300">
+                Evidence command center
+              </div>
+              <p className="mt-1 max-w-2xl text-sm text-slate-300">
+                One verifiable operating loop across sources, controls,
+                findings, and audit proof.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold">
+              <span className="rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-1 text-slate-300">
+                {frameworks.length}/{registeredCount} frameworks assessed
+              </span>
+              <span className="rounded-full border border-cyan-300/20 bg-cyan-300/[0.08] px-2.5 py-1 text-cyan-200">
+                {enabledConnectors}/{connectorCount} connectors enabled
+              </span>
+            </div>
+          </div>
+          <div className="relative z-10 grid lg:grid-cols-[minmax(210px,240px)_minmax(0,1fr)] xl:grid-cols-[minmax(210px,240px)_minmax(0,0.9fr)_minmax(320px,0.82fr)]">
+            <div className="flex items-center gap-4 border-b border-white/10 bg-white/[0.025] p-4 lg:block lg:border-b-0 lg:border-r lg:border-white/10">
               <PostureRing
                 score={p?.score ?? 0}
                 state={p?.state ?? "attention_required"}
                 size="default"
+                inverse
               />
               <div className="min-w-0 lg:mt-2">
-                <div className="ui-label">Trust score</div>
-                <p className="mt-1 text-xs leading-4 text-muted">
+                <div className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+                  Trust score
+                </div>
+                <p className="mt-1 text-xs leading-4 text-slate-400">
                   Calculated from the current gold assessment.
                 </p>
               </div>
             </div>
-            <div className="grid min-w-0 gap-3 border-b border-line p-3 xl:border-b-0 xl:border-r">
+            <div className="grid min-w-0 gap-4 border-b border-white/10 p-4 xl:border-b-0 xl:border-r xl:border-white/10">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <div className="ui-label">Current assessment</div>
-                  <h2 className="mt-0.5 text-xl font-black leading-tight text-ink">
+                  <div className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+                    Current assessment
+                  </div>
+                  <h2 className="mt-1 text-xl font-black leading-tight text-white sm:text-2xl">
                     {stateHeadline(p?.state)}
                   </h2>
-                  <p className="mt-1 max-w-[720px] text-sm text-muted">
-                    {stateCopy(p?.state)} Evidence starts at connected sources,
-                    lands raw, evaluates into gold controls, then exports for
-                    audit and analytics.
+                  <p className="mt-1 max-w-[720px] text-sm leading-5 text-slate-300">
+                    {stateCopy(p?.state)} Evidence lands raw, evaluates into
+                    gold controls, and exports as immutable proof.
                   </p>
                 </div>
                 <Badge
@@ -157,46 +190,54 @@ export default function DashboardPage() {
                         : "attention"
                   }
                 >
-                  {stateHeadline(p?.state)}
+                  {stateBadge(p?.state)}
                 </Badge>
               </div>
               <div className="grid gap-2 sm:grid-cols-3">
-                <div>
-                  <div className="ui-label">Control pass rate</div>
-                  <div className="mt-1 text-xl font-black text-ink">
+                <div className="rounded-xl border border-white/10 bg-white/[0.055] p-3 shadow-inner">
+                  <div className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-400">
+                    Control pass rate
+                  </div>
+                  <div className="mt-1 text-2xl font-black text-white">
                     {formatPassRate(passRate)}
                   </div>
-                  <p className="text-xs text-muted">
+                  <p className="text-xs text-slate-400">
                     {controlEvalReady
                       ? `${ingestion.data?.eval_accuracy?.failing ?? 0} failing tests`
                       : "run control eval"}
                   </p>
                 </div>
-                <div>
-                  <div className="ui-label">Open findings</div>
-                  <div className="mt-1 text-xl font-black text-ink">
+                <div className="rounded-xl border border-white/10 bg-white/[0.055] p-3 shadow-inner">
+                  <div className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-400">
+                    Open findings
+                  </div>
+                  <div className="mt-1 text-2xl font-black text-white">
                     {p?.open_violation_count ?? 0}
                   </div>
-                  <p className="text-xs text-muted">
+                  <p className="text-xs text-slate-400">
                     {p?.critical_violation_count ?? 0} critical
                   </p>
                 </div>
-                <div>
-                  <div className="ui-label">Proof export</div>
-                  <div className="mt-1 text-xl font-black text-ink">
+                <div className="rounded-xl border border-white/10 bg-white/[0.055] p-3 shadow-inner">
+                  <div className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-400">
+                    Proof export
+                  </div>
+                  <div className="mt-1 text-2xl font-black text-white">
                     {proofReady ? "ready" : "pending"}
                   </div>
-                  <p className="text-xs text-muted">
+                  <p className="text-xs text-slate-400">
                     {evidenceCount} raw evidence rows
                   </p>
                 </div>
               </div>
             </div>
-            <div className="min-w-0 p-3">
+            <div className="min-w-0 p-4">
               <div className="flex items-center justify-between gap-2">
                 <div>
-                  <div className="ui-label">Framework posture</div>
-                  <p className="mt-1 text-xs text-muted">
+                  <div className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+                    Framework posture
+                  </div>
+                  <p className="mt-1 text-xs text-slate-400">
                     Worst programs first, scroll to compare.
                   </p>
                 </div>
@@ -205,11 +246,22 @@ export default function DashboardPage() {
                 </Badge>
               </div>
               <div className="mt-3">
-                <ComplianceOverview frameworks={frameworks} />
+                <ComplianceOverview frameworks={frameworks} inverse />
               </div>
             </div>
           </div>
-        </Card>
+          <TrustSignalFlow
+            sourceCount={sourceCount}
+            enabledConnectors={enabledConnectors}
+            connectorCount={connectorCount}
+            passRate={passRate}
+            failingTests={ingestion.data?.eval_accuracy?.failing ?? 0}
+            openFindings={p?.open_violation_count ?? 0}
+            criticalFindings={p?.critical_violation_count ?? 0}
+            proofReady={proofReady}
+            evidenceCount={evidenceCount}
+          />
+        </section>
 
         <div className="rounded-lg border border-line bg-surface p-2">
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -227,7 +279,7 @@ export default function DashboardPage() {
                   className={`rounded-md px-3 py-1.5 text-xs font-black ${
                     activeDashboardTab === tab
                       ? "bg-brand text-white"
-                      : "text-muted hover:bg-white"
+                      : "text-muted hover:bg-surfaceMuted"
                   }`}
                   onClick={() => setActiveDashboardTab(tab)}
                 >
@@ -320,7 +372,7 @@ export default function DashboardPage() {
                     Raw collections and evaluated gold outputs
                   </h2>
                   <p className="mt-1 max-w-3xl text-sm leading-5 text-muted">
-                    TrustOps keeps raw connector evidence separate from
+                    Trust Data Lake keeps raw connector evidence separate from
                     evaluated posture so reports, audit-room exports, and cloud
                     analytics can all read the same defensible state.
                   </p>

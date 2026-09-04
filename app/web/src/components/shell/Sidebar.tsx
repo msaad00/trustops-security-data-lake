@@ -23,8 +23,6 @@ import {
   Zap,
 } from "lucide-react";
 import { SidebarFooter } from "./SidebarFooter";
-import { TrustOpsLogo } from "@/components/brand/TrustOpsLogo";
-import { BRAND } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import { usePersistentState } from "@/lib/state/preferences";
 
@@ -182,14 +180,14 @@ export function Sidebar() {
     >
       <div className="flex items-center justify-between border-b border-railLine p-2.5">
         {!effectiveCollapsed && (
-          <TrustOpsLogo
-            href="/dashboard"
-            inverted
-            markSize="md"
-            subtitle={BRAND.consoleSubtitle}
-            wordmarkClassName="max-w-[140px]"
-            gradientId="trustops-sidebar-gradient"
-          />
+          <div className="min-w-0 px-1.5">
+            <div className="truncate text-[10px] font-black uppercase tracking-[0.16em] text-[#708198]">
+              GRC workspace
+            </div>
+            <div className="truncate text-xs font-extrabold text-[#c6d1df]">
+              Customer-owned lake
+            </div>
+          </div>
         )}
         <button
           type="button"
@@ -249,14 +247,15 @@ export function Sidebar() {
                         key={href}
                         href={href}
                         title={effectiveCollapsed ? label : undefined}
+                        aria-current={active ? "page" : undefined}
                         className={cn(
                           "flex items-center gap-2 rounded-lg border px-2.5 text-[13px] font-extrabold transition-colors",
                           effectiveCollapsed
                             ? "h-9 justify-center px-0"
                             : "h-9 justify-between",
                           active
-                            ? "border-[#31435c] bg-[#172436] text-white"
-                            : "border-transparent text-[#c6d1df] hover:bg-[#152030]",
+                            ? "border-[#355071] bg-gradient-to-r from-[#1a2a41] to-[#132033] text-white shadow-[inset_3px_0_0_#30c7d2,0_8px_24px_rgba(2,6,23,0.2)]"
+                            : "border-transparent text-[#c6d1df] hover:border-white/5 hover:bg-[#152030]",
                         )}
                       >
                         <span

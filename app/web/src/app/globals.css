@@ -82,4 +82,66 @@
   .ui-input-error {
     @apply border-rose-300 focus:ring-rose-400;
   }
+
+  .ui-page-canvas {
+    background-image:
+      radial-gradient(
+        circle at 82% -8%,
+        rgba(48, 199, 210, 0.08),
+        transparent 25rem
+      ),
+      linear-gradient(rgba(79, 124, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79, 124, 255, 0.035) 1px, transparent 1px);
+    background-size:
+      auto,
+      32px 32px,
+      32px 32px;
+  }
+
+  .ui-command-center {
+    position: relative;
+    isolation: isolate;
+    border: 1px solid rgba(109, 143, 190, 0.3);
+    border-radius: 1.25rem;
+    color: #f8fafc;
+    background:
+      radial-gradient(
+        circle at 88% 0%,
+        rgba(48, 199, 210, 0.18),
+        transparent 28rem
+      ),
+      radial-gradient(
+        circle at 12% 110%,
+        rgba(79, 124, 255, 0.16),
+        transparent 25rem
+      ),
+      linear-gradient(135deg, #071426 0%, #0b1729 54%, #09232d 100%);
+    box-shadow:
+      0 28px 70px rgba(15, 23, 42, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .ui-command-center::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(148, 163, 184, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148, 163, 184, 0.045) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: linear-gradient(to bottom, black, transparent 78%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

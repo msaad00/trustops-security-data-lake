@@ -17,10 +17,12 @@ function ComplianceTile({
   label,
   frameworkId,
   score,
+  inverse,
 }: {
   label: string;
   frameworkId: string;
   score: number;
+  inverse: boolean;
 }) {
   const color = ringColor(score);
   const pct = Math.min(100, Math.max(0, score));
@@ -31,7 +33,12 @@ function ComplianceTile({
   return (
     <Link
       href={frameworkDetailHref(frameworkId)}
-      className="grid h-[84px] min-w-0 snap-start grid-cols-[36px_minmax(0,1fr)] items-center gap-2 rounded-lg border border-line bg-surface p-2 shadow-sm transition-colors hover:border-brand hover:shadow-card"
+      className={cn(
+        "grid h-[84px] min-w-0 snap-start grid-cols-[36px_minmax(0,1fr)] items-center gap-2 rounded-lg border p-2 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-card",
+        inverse
+          ? "border-white/10 bg-white/[0.06] hover:bg-white/[0.09]"
+          : "border-line bg-surface",
+      )}
     >
       <div className="relative h-9 w-9">
         <svg className="h-full w-full -rotate-90" viewBox="0 0 72 72">
@@ -40,7 +47,7 @@ function ComplianceTile({
             cy="36"
             r={r}
             fill="none"
-            stroke="#e2e8f0"
+            stroke={inverse ? "rgba(148, 163, 184, 0.18)" : "var(--color-line)"}
             strokeWidth="6"
           />
           <circle
@@ -67,7 +74,12 @@ function ComplianceTile({
         <div className="text-sm font-black tabular-nums" style={{ color }}>
           {Math.round(score)}%
         </div>
-        <div className="mt-0.5 truncate text-[10px] font-bold leading-tight text-muted">
+        <div
+          className={cn(
+            "mt-0.5 truncate text-[10px] font-bold leading-tight",
+            inverse ? "text-slate-400" : "text-muted",
+          )}
+        >
           {label}
         </div>
       </div>
@@ -78,9 +90,11 @@ function ComplianceTile({
 export function ComplianceOverview({
   frameworks,
   className,
+  inverse = false,
 }: {
   frameworks: FrameworkPosture[];
   className?: string;
+  inverse?: boolean;
 }) {
   const ordered = [...frameworks].sort(
     (a, b) =>
@@ -104,6 +118,7 @@ export function ComplianceOverview({
           label={f.framework}
           frameworkId={resolveFrameworkId(f.framework)}
           score={f.score}
+          inverse={inverse}
         />
       ))}
     </div>

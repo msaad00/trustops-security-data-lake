@@ -17,7 +17,7 @@ interface Props {
   gradientId?: string;
 }
 
-/** TrustOps monogram with a deterministic-proof check badge. */
+/** Trust Data Lake geometric monogram. */
 export function TrustOpsMark({
   size = "md",
   className,
@@ -37,16 +37,21 @@ export function TrustOpsMark({
           <stop offset="100%" stopColor="#30c7d2" />
         </linearGradient>
       </defs>
-      <rect width="32" height="32" rx="8" fill={`url(#${gradientId})`} />
-      <path d="M8 9h16v4.2h-5.9V26h-4.2V13.2H8z" fill="#fff" />
-      <circle cx="24" cy="24" r="7" fill="#fff" />
+      <rect width="32" height="32" rx="8" fill="#071426" />
       <path
-        d="M20.5 24l2 2 4.5-4.5"
-        stroke="#047857"
-        strokeWidth="1.8"
+        d="M4 7.5h7M7.5 7.5v16M13.5 7.5v16h3.2c4.5 0 6.8-2.8 6.8-8s-2.3-8-6.8-8h-3.2ZM26 7.5v16h3.5"
+        fill="none"
+        stroke={`url(#${gradientId})`}
+        strokeWidth="2.35"
+        strokeLinecap="square"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M4 27c5-1.7 8.5 1.7 13.5 0s8.5 1.7 12.5 0"
+        stroke="#5eead4"
+        strokeWidth="1.25"
         fill="none"
         strokeLinecap="round"
-        strokeLinejoin="round"
       />
     </svg>
   );

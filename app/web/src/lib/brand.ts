@@ -1,22 +1,25 @@
-/** TrustOps product identity — single source for UI copy and metadata. */
+/** Trust Data Lake product identity — single source for UI copy and metadata. */
 
 export const BRAND = {
   /** Customer-facing product name. */
-  name: "TrustOps",
+  name: "Trust Data Lake",
+  /** Wordmark segments used for the product lockup. */
+  wordmarkPrimary: "Trust Data",
+  wordmarkAccent: "Lake",
   /** Human console surface. */
-  consoleName: "TrustOps Console",
+  consoleName: "Trust Data Lake Console",
   /** Category line used in README and marketing-adjacent docs. */
-  category: "Open-source trust operations",
+  category: "Open evidence infrastructure for GRC",
   /** One-line mission for meta tags and share cards. */
   tagline:
-    "Your evidence lake, deterministic controls, audit-ready proof — same JSON everywhere.",
+    "Collect evidence, evaluate controls, operate findings, and prove continuously — same JSON everywhere.",
   /** Headless-first differentiator. */
   surfaces: "API · CLI · MCP · CI · Console",
   /** Short description for Open Graph / npm / package manifests. */
   description:
-    "Open-source, headless-first trust operations for customer-owned evidence lakes — SOC 2, NIST AI RMF, FedRAMP, ISO, and beyond.",
+    "Open-source, headless-first evidence infrastructure for customer-owned GRC data — SOC 2, NIST AI RMF, FedRAMP, ISO, and beyond.",
   /** Public trust-center header subtitle. */
-  trustShareTitle: "TrustOps Trust Center",
+  trustShareTitle: "Trust Data Lake Trust Center",
   /** Repo / PyPI technical name (not customer-facing). */
   packageName: "trustops-security-data-lake",
   /** CLI command (operator surface, not product rename). */

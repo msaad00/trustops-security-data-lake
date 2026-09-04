@@ -6,11 +6,11 @@ snapshots understandable for both humans and agents.
 
 Product name, logo, taglines, and naming hierarchy: [BRAND.md](BRAND.md).
 
-## TrustOps mark
+## Trust Data Lake mark
 
-- Gradient monogram (`#4f7cff` → `#30c7d2`) with white **T** — use
+- Geometric **TDL** monogram (`#4f7cff` → `#30c7d2`) with a mint lake line — use
   `TrustOpsMark` / `TrustOpsLogo` in the console shell; SVG wordmark in docs.
-- Console chrome label: **TrustOps Console** (sidebar subtitle), not
+- Console chrome label: **Trust Data Lake Console**, not
   "Workbench" or "Assessment Console".
 
 ## Framework visual identity
