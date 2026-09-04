@@ -21,9 +21,7 @@ export function FrameworkBadge({
 }: FrameworkBadgeProps) {
   const visual = frameworkVisual(frameworkId, fallbackLabel);
   const markSize = variant === "compact" ? Math.max(28, size - 4) : size;
-  const identityNote = visual.artwork
-    ? `${visual.label} official framework artwork; ${visual.attribution}; no endorsement`
-    : `${visual.label} framework scope label; not an official logo or certification seal`;
+  const identityNote = visual.label;
 
   if (variant === "mark-only") {
     return (
@@ -56,12 +54,6 @@ export function FrameworkBadge({
         <span className="min-w-0">
           <span className="block truncate text-[11px] font-black leading-tight text-ink">
             {visual.label}
-          </span>
-          <span
-            className="block truncate text-[9px] font-semibold uppercase tracking-wide"
-            style={{ color: visual.accent }}
-          >
-            {visual.mark} · scope label
           </span>
         </span>
       )}

@@ -3199,6 +3199,28 @@
         "tags": ["frameworks"]
       }
     },
+    "/api/v1/frameworks/coverage": {
+      "get": {
+        "operationId": "v1_framework_coverage_api_v1_frameworks_coverage_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "V1 Framework Coverage",
+        "tags": ["data"]
+      }
+    },
     "/api/v1/frameworks/{framework_id}/detail": {
       "get": {
         "operationId": "v1_framework_detail_api_v1_frameworks__framework_id__detail_get",

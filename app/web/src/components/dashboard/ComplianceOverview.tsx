@@ -34,13 +34,13 @@ function ComplianceTile({
     <Link
       href={frameworkDetailHref(frameworkId)}
       className={cn(
-        "grid h-[84px] min-w-0 snap-start grid-cols-[36px_minmax(0,1fr)] items-center gap-2 rounded-lg border p-2 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-card",
+        "grid h-[72px] min-w-0 snap-start grid-cols-[32px_minmax(0,1fr)] items-center gap-2 rounded-lg border p-2 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-card",
         inverse
           ? "border-white/10 bg-white/[0.06] hover:bg-white/[0.09]"
           : "border-line bg-surface",
       )}
     >
-      <div className="relative h-9 w-9">
+      <div className="relative h-8 w-8">
         <svg className="h-full w-full -rotate-90" viewBox="0 0 72 72">
           <circle
             cx="36"
@@ -66,12 +66,12 @@ function ComplianceTile({
           <FrameworkMark
             frameworkId={frameworkId}
             fallbackLabel={label}
-            size={20}
+            size={18}
           />
         </div>
       </div>
       <div className="min-w-0">
-        <div className="text-sm font-black tabular-nums" style={{ color }}>
+        <div className="text-xs font-black tabular-nums" style={{ color }}>
           {Math.round(score)}%
         </div>
         <div
@@ -106,7 +106,7 @@ export function ComplianceOverview({
   return (
     <div
       className={cn(
-        "grid max-h-[178px] grid-flow-col grid-rows-2 auto-cols-[96px] snap-x snap-mandatory gap-2 overflow-x-auto pb-2 pr-1 [-ms-overflow-style:none] [scrollbar-width:thin]",
+        "grid max-h-[154px] grid-flow-col grid-rows-2 auto-cols-[116px] snap-x snap-mandatory gap-2 overflow-x-auto pb-2 pr-1 [-ms-overflow-style:none] [scrollbar-width:thin]",
         className,
       )}
       role="region"

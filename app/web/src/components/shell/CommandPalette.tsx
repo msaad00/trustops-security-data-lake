@@ -329,6 +329,16 @@ export function CommandPalette({
           .toLowerCase()
           .includes(lower),
       )
+      .sort((a, b) => {
+        const rank = (item: PaletteItem) => {
+          const label = item.label.toLowerCase();
+          if (label === lower) return 0;
+          if (label.startsWith(lower)) return 1;
+          if (label.includes(lower)) return 2;
+          return 3;
+        };
+        return rank(a) - rank(b);
+      })
       .slice(0, 60);
   }, [controls, violations, evidence, workflows, query, onSnapshot, onRefresh]);
 

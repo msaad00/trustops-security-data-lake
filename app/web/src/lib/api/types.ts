@@ -921,6 +921,53 @@ export interface FrameworkView {
   next_pull_due: string | null;
 }
 
+export interface FrameworkCoverageSummary {
+  framework_count: number;
+  implemented_framework_count: number;
+  planned_framework_count: number;
+  seeded_control_count: number;
+  reviewed_mapping_count: number;
+  missing_mapping_count: number;
+  seeded_mapping_coverage_pct: number;
+  evaluatable_requirement_count: number;
+  attestable_requirement_count: number;
+  evaluatable_coverage_pct: number;
+  attestable_coverage_pct: number;
+  asset_type_count: number;
+  control_asset_applicability_link_count: number;
+  official_logo_count: number;
+  certification_seal_count: number;
+}
+
+export interface FrameworkCoverageRow {
+  framework_id: string;
+  name: string;
+  version: string;
+  official_source_name: string;
+  official_source_url: string;
+  effective_date: string | null;
+  source_sha256: string | null;
+  pulled_at: string | null;
+  freshness_state: FrameworkFreshness;
+  seeded_control_count: number;
+  reviewed_mapping_count: number;
+  missing_mapping_count: number;
+  missing_mapping_control_ids: string[];
+  seeded_mapping_coverage_pct: number;
+  evaluatable_requirement_count: number;
+  attestable_requirement_count: number;
+  evaluatable_coverage_pct: number;
+  attestable_coverage_pct: number;
+  implementation_status: string;
+  source_policy: string;
+  asset_policy: string;
+}
+
+export interface FrameworkCoveragePayload {
+  summary: FrameworkCoverageSummary;
+  frameworks: FrameworkCoverageRow[];
+}
+
 export interface FrameworkControlArticle {
   article_id: string;
   title: string;

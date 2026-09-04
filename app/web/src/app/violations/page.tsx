@@ -209,7 +209,12 @@ function ViolationsPageContent() {
               drawer.
             </CardDescription>
           </CardHeader>
-          <div className="overflow-x-auto">
+          <div
+            className="overflow-x-auto"
+            tabIndex={0}
+            role="region"
+            aria-label="Open violations table"
+          >
             <table className="min-w-[820px] w-full text-sm">
               <thead>
                 {table.getHeaderGroups().map((hg) => (

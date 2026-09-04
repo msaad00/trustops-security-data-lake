@@ -3054,6 +3054,26 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         _status, body = api_v1.handle_get(f"/api/v1/frameworks/{framework_id}/detail", {}, lake_for(identity))
         return JSONResponse(_redact_payload(body, identity), status_code=int(_status))
 
+    @app.get("/api/v1/frameworks/coverage", tags=["data"])
+    def v1_framework_coverage(identity: Identity = Depends(_require_read)) -> JSONResponse:
+        from security_lakehouse.framework_coverage import (
+            build_framework_coverage,
+            framework_coverage_summary,
+        )
+
+        rows = build_framework_coverage()
+        data = {
+            "summary": framework_coverage_summary(rows),
+            "frameworks": rows,
+        }
+        return JSONResponse(
+            api_v1.envelope(
+                "frameworks.coverage",
+                _redact_payload(data, identity),
+                meta={"count": len(rows)},
+            )
+        )
+
     @app.get("/api/v1/snapshots/{snapshot_id}", tags=["assessment"])
     def snapshot_detail(snapshot_id: str, identity: Identity = Depends(_require_read)) -> JSONResponse:
         from security_lakehouse.assessment import load_snapshot, snapshot_detail_summary

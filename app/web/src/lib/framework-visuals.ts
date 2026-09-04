@@ -10,25 +10,7 @@ export type FrameworkVisual = {
   bg: string;
   ring: string;
   gradient: string;
-  /** Lucide icon name key for FrameworkMark */
-  icon: FrameworkIconKey;
-  /** Approved framework artwork served from the self-hosted console. */
-  artwork?: string;
-  attribution?: string;
 };
-
-export type FrameworkIconKey =
-  | "shield"
-  | "brain"
-  | "lock"
-  | "sparkles"
-  | "heart-pulse"
-  | "credit-card"
-  | "scale"
-  | "bot"
-  | "cloud"
-  | "landmark"
-  | "layers";
 
 export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
   soc2: {
@@ -38,7 +20,6 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#eff6ff",
     ring: "#bfdbfe",
     gradient: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
-    icon: "shield",
   },
   "nist-ai-rmf": {
     label: "NIST AI Risk Management Framework 1.0",
@@ -47,9 +28,6 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#f5f3ff",
     ring: "#ddd6fe",
     gradient: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
-    icon: "brain",
-    artwork: "/console/frameworks/nist-ai-rmf.png",
-    attribution: "N. Hanacek/NIST",
   },
   "iso-27001-2022": {
     label: "ISO/IEC 27001:2022",
@@ -58,7 +36,6 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#ecfeff",
     ring: "#a5f3fc",
     gradient: "linear-gradient(135deg, #06b6d4 0%, #0e7490 100%)",
-    icon: "lock",
   },
   "iso-42001-2023": {
     label: "ISO/IEC 42001:2023",
@@ -67,7 +44,6 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#f0fdfa",
     ring: "#99f6e4",
     gradient: "linear-gradient(135deg, #14b8a6 0%, #0f766e 100%)",
-    icon: "sparkles",
   },
   "fedramp-moderate": {
     label: "FedRAMP",
@@ -76,7 +52,6 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#dbeafe",
     ring: "#93c5fd",
     gradient: "linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%)",
-    icon: "landmark",
   },
   cis_aws: {
     label: "CIS AWS",
@@ -85,7 +60,6 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#fff7ed",
     ring: "#fed7aa",
     gradient: "linear-gradient(135deg, #f97316 0%, #c2410c 100%)",
-    icon: "cloud",
   },
   "hipaa-security-rule": {
     label: "HIPAA",
@@ -94,7 +68,6 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#ecfdf5",
     ring: "#a7f3d0",
     gradient: "linear-gradient(135deg, #10b981 0%, #047857 100%)",
-    icon: "heart-pulse",
   },
   "pci-dss-v4": {
     label: "PCI DSS",
@@ -103,7 +76,6 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#fffbeb",
     ring: "#fde68a",
     gradient: "linear-gradient(135deg, #f59e0b 0%, #b45309 100%)",
-    icon: "credit-card",
   },
   "gdpr-2016-679": {
     label: "GDPR",
@@ -112,7 +84,6 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#eef2ff",
     ring: "#c7d2fe",
     gradient: "linear-gradient(135deg, #6366f1 0%, #3730a3 100%)",
-    icon: "scale",
   },
   "eu-ai-act-2024-1689": {
     label: "EU AI Act",
@@ -121,7 +92,6 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#fff1f2",
     ring: "#fecdd3",
     gradient: "linear-gradient(135deg, #e11d48 0%, #9f1239 100%)",
-    icon: "bot",
   },
   "nist-csf-2.0": {
     label: "NIST Cybersecurity Framework (CSF) 2.0",
@@ -130,9 +100,6 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#f0fdfa",
     ring: "#99f6e4",
     gradient: "linear-gradient(135deg, #14b8a6 0%, #0f766e 100%)",
-    icon: "shield",
-    artwork: "/console/frameworks/nist-csf-2.0.png",
-    attribution: "NIST/Natasha Hanacek",
   },
   "cmmc-2-level2": {
     label: "CMMC 2.0 Level 2",
@@ -141,7 +108,6 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#eff6ff",
     ring: "#bfdbfe",
     gradient: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
-    icon: "shield",
   },
   "iso-27017-2015": {
     label: "ISO/IEC 27017:2015",
@@ -150,7 +116,6 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#f0f9ff",
     ring: "#bae6fd",
     gradient: "linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%)",
-    icon: "cloud",
   },
   "iso-27701-2019": {
     label: "ISO/IEC 27701:2019",
@@ -159,7 +124,6 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#f5f3ff",
     ring: "#ddd6fe",
     gradient: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
-    icon: "lock",
   },
   soc1: {
     label: "SOC 1®",
@@ -168,7 +132,6 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#eff6ff",
     ring: "#bfdbfe",
     gradient: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
-    icon: "shield",
   },
 };
 
@@ -237,6 +200,5 @@ export function frameworkVisual(
     bg: "#eef4ff",
     ring: "#c7d7fe",
     gradient: "linear-gradient(135deg, #4f7cff 0%, #2563eb 100%)",
-    icon: "layers",
   };
 }

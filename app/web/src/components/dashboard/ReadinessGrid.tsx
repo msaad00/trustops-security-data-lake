@@ -52,7 +52,7 @@ function statusFor(framework: FrameworkPosture) {
     return { label: "Ready", tone: "ready" as const };
   }
   if (framework.critical_violation_count > 0 || framework.score < 50) {
-    return { label: "Action required", tone: "critical" as const };
+    return { label: "Needs action", tone: "critical" as const };
   }
   return { label: "Review", tone: "attention" as const };
 }
@@ -84,7 +84,8 @@ function FrameworkCard({
           <FrameworkBadge
             frameworkId={unmonitored.framework_id}
             fallbackLabel={frameworkLabel(unmonitored)}
-            size={40}
+            size={36}
+            variant="mark-only"
             className="bg-surface shadow-sm"
           />
           <div className="min-w-0 flex-1">
@@ -127,7 +128,8 @@ function FrameworkCard({
         <FrameworkBadge
           frameworkId={frameworkIdFor(framework.framework)}
           fallbackLabel={framework.framework}
-          size={40}
+          size={36}
+          variant="mark-only"
           className="bg-surface shadow-sm"
         />
         <div className="min-w-0 flex-1">

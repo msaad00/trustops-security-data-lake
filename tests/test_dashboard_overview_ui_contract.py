@@ -28,7 +28,8 @@ def test_dashboard_framework_posture_uses_compact_two_row_tray() -> None:
 
     assert "grid-rows-2" in overview
     assert "grid-flow-col" in overview
-    assert "auto-cols-[96px]" in overview
+    assert "auto-cols-[116px]" in overview
+    assert "h-[72px]" in overview
     assert "overflow-x-auto" in overview
     assert 'aria-label="Framework posture comparison"' in overview
     assert ".slice(0, 6)" not in overview

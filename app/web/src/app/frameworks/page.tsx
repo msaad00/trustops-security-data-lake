@@ -1,8 +1,20 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Calendar, ExternalLink, FileCheck2, ShieldAlert } from "lucide-react";
+import {
+  ArrowUpRight,
+  Calendar,
+  CheckCircle2,
+  ChevronDown,
+  ExternalLink,
+  FileCheck2,
+  GitCompareArrows,
+  Search,
+  ShieldAlert,
+  SlidersHorizontal,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -16,23 +28,18 @@ import { TrustPipelineStrip } from "@/components/TrustPipelineStrip";
 import { FrameworkBadge } from "@/components/framework/FrameworkBadge";
 import { FrameworkDrilldownPanel } from "@/components/framework/FrameworkDrilldownPanel";
 import { frameworkDetailHref } from "@/lib/framework-links";
-import { useFrameworks, useReadiness } from "@/lib/api/hooks";
+import {
+  useFrameworkCoverage,
+  useFrameworks,
+  useReadiness,
+} from "@/lib/api/hooks";
 import type {
+  FrameworkCoverageRow,
   FrameworkFreshness,
   FrameworkReadiness,
   FrameworkView,
   ReadinessStage,
 } from "@/lib/api/types";
-
-const TONE: Record<
-  FrameworkFreshness,
-  "ready" | "attention" | "critical" | "default"
-> = {
-  fresh: "ready",
-  stale: "attention",
-  expired: "critical",
-  never_pulled: "default",
-};
 
 const TONE_TEXT: Record<FrameworkFreshness, string> = {
   fresh: "Source pulled recently",
@@ -43,66 +50,135 @@ const TONE_TEXT: Record<FrameworkFreshness, string> = {
 
 function Row({
   framework,
+  coverage,
+  readiness,
   onSelect,
 }: {
   framework: FrameworkView;
+  coverage?: FrameworkCoverageRow;
+  readiness?: FrameworkReadiness;
   onSelect: () => void;
 }) {
+  const isPlanned = framework.implementation_status === "planned";
+  const seededCount = coverage?.seeded_control_count ?? framework.control_count;
+  const evaluatableCount = coverage?.evaluatable_requirement_count ?? 0;
+  const evaluatablePct = coverage?.evaluatable_coverage_pct ?? 0;
+  const attestableCount = coverage?.attestable_requirement_count ?? 0;
+  const attestablePct = coverage?.attestable_coverage_pct ?? 0;
+  const sourceMappingPct =
+    coverage?.seeded_mapping_coverage_pct ?? framework.mapping_coverage_pct;
+
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className="grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-4 rounded-xl border border-line bg-white p-4 text-left transition-colors hover:border-brand hover:shadow-card"
-    >
-      <FrameworkBadge
-        frameworkId={framework.framework_id}
-        fallbackLabel={framework.name}
-        size={44}
-      />
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="truncate font-black text-ink">{framework.name}</span>
-          <Badge tone={TONE[framework.freshness_state]}>
-            {framework.freshness_state.replace("_", " ")}
+    <article className="group grid min-w-0 gap-3 rounded-2xl border border-line bg-surface p-4 shadow-sm transition-all duration-base hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card">
+      <div className="flex min-w-0 items-start justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <FrameworkBadge
+            frameworkId={framework.framework_id}
+            fallbackLabel={framework.name}
+            size={36}
+            variant="mark-only"
+          />
+          <div className="min-w-0">
+            <h2 className="truncate text-sm font-black text-ink">
+              {framework.name}
+            </h2>
+            <div className="mt-0.5 truncate text-[11px] text-muted">
+              {framework.version}
+              {framework.effective_date &&
+                ` · effective ${framework.effective_date}`}
+            </div>
+          </div>
+        </div>
+        <div className="shrink-0">
+          <Badge
+            tone={
+              readiness?.is_ready
+                ? "ready"
+                : isPlanned
+                  ? "default"
+                  : "attention"
+            }
+          >
+            {readiness?.is_ready
+              ? "ready"
+              : isPlanned
+                ? "planned"
+                : "in progress"}
           </Badge>
         </div>
-        <div className="mt-1 truncate text-xs text-muted">
-          {framework.version}
-          {framework.effective_date &&
-            ` · effective ${framework.effective_date}`}
+      </div>
+
+      <div className="grid gap-3">
+        <div>
+          <div className="flex items-center justify-between gap-3 text-xs">
+            <span className="font-black text-ink">Evaluatable</span>
+            <span className="text-muted">
+              <b className="text-ink">{evaluatablePct}%</b> · {evaluatableCount}
+              /{seededCount}
+            </span>
+          </div>
+          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-surfaceMuted">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-brand to-cyan-400"
+              style={{ width: `${evaluatablePct}%` }}
+            />
+          </div>
         </div>
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          <Badge>{framework.control_count} controls</Badge>
-          {framework.implementation_status === "planned" ? (
-            <Badge tone="attention">planned pack</Badge>
-          ) : (
-            <Badge
-              tone={
-                framework.mapping_coverage_pct >= 95 ? "ready" : "attention"
-              }
-            >
-              {framework.mapping_coverage_pct}% coverage
-            </Badge>
-          )}
-          <Badge>sync every {framework.sync_cadence_days}d</Badge>
+        <div>
+          <div className="flex items-center justify-between gap-3 text-xs">
+            <span className="font-black text-ink">Attestable</span>
+            <span className="text-muted">
+              <b className="text-ink">{attestablePct}%</b> · {attestableCount}/
+              {seededCount}
+            </span>
+          </div>
+          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-surfaceMuted">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-brand-green"
+              style={{ width: `${attestablePct}%` }}
+            />
+          </div>
         </div>
       </div>
-      <div className="text-right">
-        <div className="text-xs text-muted">
-          pulled{" "}
-          {framework.pulled_age_days === null
-            ? "never"
-            : framework.pulled_age_days === 0
-              ? "today"
-              : `${framework.pulled_age_days}d ago`}
+
+      <div className="flex flex-wrap items-end justify-between gap-3 border-t border-line pt-3">
+        <div className="min-w-0 text-[11px] text-muted">
+          <a
+            href={framework.official_source_url}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 font-extrabold text-brand hover:underline"
+          >
+            official source <ExternalLink className="h-3 w-3" />
+          </a>
+          <div className="mt-1 truncate">
+            {sourceMappingPct}% source mapped ·{" "}
+            {framework.freshness_state.replaceAll("_", " ")} · pulled{" "}
+            {framework.pulled_age_days === null
+              ? "never"
+              : framework.pulled_age_days === 0
+                ? "today"
+                : `${framework.pulled_age_days}d ago`}
+            {framework.source_sha256
+              ? ` · sha ${framework.source_sha256.slice(0, 10)}…`
+              : " · hash pending"}
+          </div>
         </div>
-        {framework.source_sha256 && (
-          <code className="mt-1 block text-[10px] text-muted">
-            sha {framework.source_sha256.slice(0, 12)}…
-          </code>
-        )}
+        <button
+          type="button"
+          onClick={onSelect}
+          aria-label={`Inspect ${framework.name}`}
+          className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-surfaceMuted px-3 text-xs font-black text-ink transition-colors hover:border-brand hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+        >
+          Inspect <ArrowUpRight className="h-3.5 w-3.5" />
+        </button>
       </div>
-    </button>
+      {!isPlanned && !readiness?.is_ready ? (
+        <div className="-mt-1 text-[11px] font-bold text-amber-700 dark:text-amber-300">
+          Next gate: {STAGE_LABEL[readiness?.stage ?? "mapped"]}
+        </div>
+      ) : null}
+    </article>
   );
 }
 
@@ -250,8 +326,13 @@ const STAGE_LABEL: Record<ReadinessStage, string> = {
 };
 
 function ReadinessRow({ row }: { row: FrameworkReadiness }) {
+  const passedGateCount = STAGE_ORDER.filter(
+    (stage) => row.gates[stage],
+  ).length;
+  const progress = (passedGateCount / STAGE_ORDER.length) * 100;
+
   return (
-    <div className="rounded-xl border border-line bg-white p-3">
+    <div className="rounded-xl border border-line bg-surface p-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="flex items-center gap-2">
           <FrameworkBadge
@@ -271,27 +352,22 @@ function ReadinessRow({ row }: { row: FrameworkReadiness }) {
         {row.mapped_control_count}/{row.control_count} controls mapped ·{" "}
         {row.coverage_pct}% coverage
       </div>
-      <div className="mt-3 grid grid-cols-5 gap-1">
-        {STAGE_ORDER.map((stage) => {
-          const passed = row.gates[stage];
-          return (
-            <div
-              key={stage}
-              className={[
-                "rounded-md px-2 py-1.5 text-[10px] font-black uppercase tracking-wide",
-                passed
-                  ? "bg-emerald-100 text-emerald-700"
-                  : stage === row.stage
-                    ? "bg-amber-100 text-amber-800"
-                    : "bg-slate-100 text-slate-500",
-              ].join(" ")}
-              title={STAGE_LABEL[stage]}
-            >
-              {STAGE_LABEL[stage]}
-            </div>
-          );
-        })}
+      <div className="mt-3 flex items-center gap-3">
+        <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-surfaceMuted">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-brand to-brand-green"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <span className="shrink-0 text-[11px] font-bold text-muted">
+          {passedGateCount}/{STAGE_ORDER.length} gates
+        </span>
       </div>
+      {!row.is_ready ? (
+        <div className="mt-1.5 truncate text-[11px] text-muted">
+          Next: <b className="text-ink">{STAGE_LABEL[row.stage]}</b>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -300,12 +376,59 @@ function FrameworksPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const frameworks = useFrameworks();
+  const coverage = useFrameworkCoverage();
   const readiness = useReadiness();
   const [selected, setSelected] = useState<FrameworkView | null>(null);
-  const data = frameworks.data ?? [];
-  const readinessRows = readiness.data ?? [];
+  const [query, setQuery] = useState("");
+  const [readinessFilter, setReadinessFilter] = useState("all");
+  const [freshnessFilter, setFreshnessFilter] = useState("all");
+  const [showFilters, setShowFilters] = useState(false);
+  const [showReadiness, setShowReadiness] = useState(false);
+  const data = useMemo(() => frameworks.data ?? [], [frameworks.data]);
+  const readinessRows = useMemo(() => readiness.data ?? [], [readiness.data]);
   const frameworkParam = searchParams.get("framework");
   const controlParam = searchParams.get("control");
+  const readinessById = useMemo(
+    () => new Map(readinessRows.map((row) => [row.framework_id, row])),
+    [readinessRows],
+  );
+  const coverageRows = useMemo(
+    () => coverage.data?.frameworks ?? [],
+    [coverage.data?.frameworks],
+  );
+  const coverageById = useMemo(
+    () => new Map(coverageRows.map((row) => [row.framework_id, row])),
+    [coverageRows],
+  );
+  const coverageSummary = coverage.data?.summary;
+  const portfolio = useMemo(() => {
+    return {
+      ready: readinessRows.filter((row) => row.is_ready).length,
+    };
+  }, [readinessRows]);
+  const filtered = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    return data.filter((row) => {
+      const readinessRow = readinessById.get(row.framework_id);
+      const readinessMatch =
+        readinessFilter === "all" ||
+        (readinessFilter === "ready" && readinessRow?.is_ready) ||
+        (readinessFilter === "needs_work" &&
+          row.implementation_status !== "planned" &&
+          !readinessRow?.is_ready) ||
+        (readinessFilter === "planned" &&
+          row.implementation_status === "planned");
+      const freshnessMatch =
+        freshnessFilter === "all" || row.freshness_state === freshnessFilter;
+      const queryMatch =
+        !needle ||
+        [row.name, row.framework_id, row.version, row.official_source_name]
+          .join(" ")
+          .toLowerCase()
+          .includes(needle);
+      return Boolean(readinessMatch && freshnessMatch && queryMatch);
+    });
+  }, [data, freshnessFilter, query, readinessById, readinessFilter]);
 
   useEffect(() => {
     if (!frameworkParam || data.length === 0) return;
@@ -333,66 +456,257 @@ function FrameworksPageContent() {
   }
 
   return (
-    <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
+    <div className="ui-page-canvas grid min-h-full min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
       <PageHeader
         eyebrow="Frameworks"
-        title="Framework provenance"
-        description="Framework contracts define what deterministic eval can prove. Each framework declares its official source, version, sha256, effective date, and mapping coverage."
+        title="Framework coverage"
+        description="Review requirement coverage, mapping status, readiness gates, and source records for each framework."
         actions={
-          <span className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-black text-slate-600">
-            <FileCheck2 className="mr-1 inline h-3 w-3 text-emerald-600" />{" "}
-            {data.length} loaded
-          </span>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/crosswalk"
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-surface px-3 text-xs font-black text-ink shadow-sm transition-colors hover:border-brand hover:text-brand"
+            >
+              <GitCompareArrows className="h-3.5 w-3.5" /> Crosswalk
+            </Link>
+            <Link
+              href="/controls"
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-brand px-3 text-xs font-black text-white shadow-sm transition-opacity hover:opacity-90"
+            >
+              Explore controls <ArrowUpRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
         }
       />
       <TrustPipelineStrip activeStage="frameworks" />
 
-      <Card className="overflow-hidden">
-        <CardHeader>
-          <CardTitle>Staged readiness</CardTitle>
-          <CardDescription>
-            Coverage is verified after every gate is green: source pulled,
-            controls mapped to source articles, evidence requirements declared,
-            evaluation rules versioned, and mapping coverage ≥ 95%. The earliest
-            unmet gate is highlighted amber.
-          </CardDescription>
-        </CardHeader>
-        <div className="grid gap-2 p-5 pt-0">
-          {readinessRows.length === 0 && (
-            <div className="rounded-lg border border-dashed border-line p-3 text-xs text-muted">
-              Loading readiness…
+      <section
+        aria-label="Framework coverage summary"
+        className="ui-command-center overflow-hidden"
+      >
+        <div className="relative z-10 flex flex-wrap items-end justify-between gap-3 border-b border-white/10 px-4 py-4 sm:px-5">
+          <div>
+            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300">
+              Coverage summary
             </div>
-          )}
-          {readinessRows.map((row) => (
-            <ReadinessRow key={row.framework_id} row={row} />
-          ))}
+            <h2 className="mt-1 text-xl font-black text-white">
+              Requirement coverage
+            </h2>
+            <p className="mt-1 max-w-2xl text-sm text-slate-300">
+              Catalogued, evaluatable, and reviewed counts are reported
+              separately. Proposed mappings remain in the review queue.
+            </p>
+          </div>
+          <Badge
+            tone={
+              data.length > 0 && portfolio.ready === data.length
+                ? "ready"
+                : "attention"
+            }
+          >
+            {portfolio.ready}/{data.length} packs ready
+          </Badge>
         </div>
-      </Card>
+        <div className="relative z-10 grid gap-px bg-white/10 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="bg-[#09182a]/95 p-4">
+            <div className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
+              Catalogued requirements
+            </div>
+            <div className="mt-1 text-3xl font-black text-white">
+              {coverageSummary?.seeded_control_count ?? "—"}
+            </div>
+            <p className="mt-1 text-xs text-slate-400">
+              Across {coverageSummary?.framework_count ?? "—"} framework packs
+            </p>
+          </div>
+          <div className="bg-[#09182a]/95 p-4">
+            <div className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
+              Evaluatable coverage
+            </div>
+            <div className="mt-1 text-3xl font-black text-white">
+              {coverageSummary
+                ? `${coverageSummary.evaluatable_coverage_pct}%`
+                : "—"}
+            </div>
+            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-brand to-brand-green"
+                style={{
+                  width: `${coverageSummary?.evaluatable_coverage_pct ?? 0}%`,
+                }}
+              />
+            </div>
+            <p className="mt-1 text-xs text-slate-400">
+              {coverageSummary?.evaluatable_requirement_count ?? "—"} mapped to
+              safeguards
+            </p>
+          </div>
+          <div className="bg-[#09182a]/95 p-4">
+            <div className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
+              Attestable coverage
+            </div>
+            <div className="mt-1 flex items-center gap-2 text-3xl font-black text-white">
+              <CheckCircle2 className="h-6 w-6 text-emerald-300" />
+              {coverageSummary
+                ? `${coverageSummary.attestable_coverage_pct}%`
+                : "—"}
+            </div>
+            <p className="mt-1 text-xs text-slate-400">
+              {coverageSummary?.attestable_requirement_count ?? "—"} reviewed
+              mappings
+            </p>
+          </div>
+          <div className="bg-[#09182a]/95 p-4">
+            <div className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
+              Review backlog
+            </div>
+            <div className="mt-1 text-3xl font-black text-white">
+              {coverageSummary
+                ? coverageSummary.evaluatable_requirement_count -
+                  coverageSummary.attestable_requirement_count
+                : "—"}
+            </div>
+            <p className="mt-1 text-xs text-slate-400">
+              Proposed mappings awaiting review
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section
+        aria-label="Framework catalog"
+        className="grid gap-3 rounded-2xl border border-line bg-surface/85 p-3 shadow-card sm:p-4"
+      >
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-black text-ink">Framework catalog</h2>
+            <p className="mt-0.5 text-xs text-muted">
+              {filtered.length} of {data.length} packs · source URL, hash, and
+              mapping counts
+            </p>
+          </div>
+          <Badge>{filtered.length} shown</Badge>
+        </div>
+
+        <div className="grid gap-2 rounded-xl border border-line bg-surfaceMuted p-2">
+          <div className="grid min-w-0 gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+            <label className="flex h-10 min-w-0 items-center gap-2 rounded-lg border border-line bg-surface px-3 text-sm shadow-sm focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/20">
+              <Search className="h-4 w-4 shrink-0 text-muted" />
+              <input
+                type="search"
+                aria-label="Search frameworks"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search frameworks"
+                className="min-w-0 flex-1 bg-transparent text-ink outline-none placeholder:text-muted"
+              />
+            </label>
+            <button
+              type="button"
+              aria-expanded={showFilters}
+              aria-controls="framework-filters"
+              onClick={() => setShowFilters((value) => !value)}
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-line bg-surface px-3 text-sm font-black text-ink shadow-sm transition-colors hover:border-brand hover:text-brand"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              {showFilters ? "Hide filters" : "Show filters"}
+            </button>
+          </div>
+          {showFilters ? (
+            <div id="framework-filters" className="grid gap-2 sm:grid-cols-2">
+              <select
+                aria-label="Filter by readiness"
+                value={readinessFilter}
+                onChange={(event) => setReadinessFilter(event.target.value)}
+                className="h-10 min-w-0 rounded-lg border border-line bg-surface px-3 text-sm font-bold text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+              >
+                <option value="all">All readiness</option>
+                <option value="ready">Ready</option>
+                <option value="needs_work">Needs mapping</option>
+                <option value="planned">Planned</option>
+              </select>
+              <select
+                aria-label="Filter by source health"
+                value={freshnessFilter}
+                onChange={(event) => setFreshnessFilter(event.target.value)}
+                className="h-10 min-w-0 rounded-lg border border-line bg-surface px-3 text-sm font-bold text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+              >
+                <option value="all">All source health</option>
+                <option value="fresh">Fresh</option>
+                <option value="stale">Stale</option>
+                <option value="expired">Expired</option>
+                <option value="never_pulled">Never pulled</option>
+              </select>
+            </div>
+          ) : null}
+        </div>
+
+        {data.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-line p-5 text-sm text-muted">
+            No frameworks registered. Check{" "}
+            <code>frameworks/registry.json</code>.
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-line p-5 text-sm text-muted">
+            No frameworks match the current filters.
+          </div>
+        ) : (
+          <div className="grid min-w-0 gap-3 xl:grid-cols-2 2xl:grid-cols-3">
+            {filtered.map((framework) => (
+              <Row
+                key={framework.framework_id}
+                framework={framework}
+                coverage={coverageById.get(framework.framework_id)}
+                readiness={readinessById.get(framework.framework_id)}
+                onSelect={() => openFramework(framework)}
+              />
+            ))}
+          </div>
+        )}
+      </section>
 
       <Card className="overflow-hidden">
-        <CardHeader>
-          <CardTitle>{data.length} frameworks</CardTitle>
-          <CardDescription>
-            Provenance is the contract: source URL + sha256 + last-pulled
-            timestamp + mapping coverage. Frameworks past their sync cadence are
-            flagged stale or expired.
-          </CardDescription>
-        </CardHeader>
-        <div className="grid gap-2 p-5 pt-0">
-          {data.length === 0 && (
-            <div className="rounded-lg border border-dashed border-line p-4 text-sm text-muted">
-              No frameworks registered. Check{" "}
-              <code>frameworks/registry.json</code>.
-            </div>
-          )}
-          {data.map((f) => (
-            <Row
-              key={f.framework_id}
-              framework={f}
-              onSelect={() => openFramework(f)}
+        <CardHeader className="gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <CardTitle>Readiness gates</CardTitle>
+            <CardDescription>
+              {portfolio.ready} of {readinessRows.length} packs pass every gate.
+              Open the audit detail only when you need it.
+            </CardDescription>
+          </div>
+          <button
+            type="button"
+            aria-expanded={showReadiness}
+            aria-controls="framework-readiness-details"
+            onClick={() => setShowReadiness((value) => !value)}
+            className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-line bg-surfaceMuted px-3 text-xs font-black text-ink transition-colors hover:border-brand hover:text-brand"
+          >
+            {showReadiness
+              ? "Hide readiness details"
+              : "Show readiness details"}
+            <ChevronDown
+              className={`h-3.5 w-3.5 transition-transform ${showReadiness ? "rotate-180" : ""}`}
             />
-          ))}
-        </div>
+          </button>
+        </CardHeader>
+        {showReadiness ? (
+          <div
+            id="framework-readiness-details"
+            role="region"
+            aria-label="Readiness details"
+            className="grid gap-2 px-5 pb-5 xl:grid-cols-2"
+          >
+            {readinessRows.length === 0 ? (
+              <div className="rounded-lg border border-dashed border-line p-3 text-xs text-muted">
+                Loading readiness…
+              </div>
+            ) : (
+              readinessRows.map((row) => (
+                <ReadinessRow key={row.framework_id} row={row} />
+              ))
+            )}
+          </div>
+        ) : null}
       </Card>
 
       <Detail

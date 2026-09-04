@@ -161,7 +161,7 @@ jobs:
       - name: Render dashboard
         run: uv run security-lakehouse dashboard --lake build/lakehouse --out build/dashboard/index.html
       - name: Verify dashboard artifact
-        run: test -s build/dashboard/index.html && grep -q "Executive trust overview" build/dashboard/index.html
+        run: test -s build/dashboard/index.html && grep -q "Assessment summary" build/dashboard/index.html
       - name: Run live API smoke
         env:
           TRUSTOPS_COOKIE_SIGNING_KEY: ci-test-cookie-signing-key
