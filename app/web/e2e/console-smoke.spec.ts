@@ -7,7 +7,7 @@ test.describe("console smoke", () => {
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: /^Executive trust overview$/,
+        name: /^Dashboard$/,
       }),
     ).toBeVisible();
     await expect(
@@ -98,21 +98,18 @@ test.describe("console smoke", () => {
   test("frameworks render governed identity assets", async ({ page }) => {
     await page.goto("/console/frameworks/");
 
-    const nistArtwork = page
+    const nistMark = page
       .getByRole("img", {
-        name: /NIST AI Risk Management Framework 1\.0 official framework artwork/,
+        name: "NIST AI Risk Management Framework 1.0",
       })
       .first();
-    await expect(nistArtwork).toBeVisible();
-    await expect(nistArtwork.locator("img")).toHaveAttribute(
-      "src",
-      "/console/frameworks/nist-ai-rmf.png",
-    );
+    await expect(nistMark).toBeVisible();
+    await expect(nistMark.locator("img")).toHaveCount(0);
 
     await expect(
       page
         .getByRole("img", {
-          name: /ISO\/IEC 27001:2022 framework scope label; not an official logo/,
+          name: "ISO/IEC 27001:2022",
         })
         .first(),
     ).toBeVisible();
@@ -128,6 +125,12 @@ test.describe("console smoke", () => {
     await detail.click();
     await expect(detail).toHaveAttribute("aria-expanded", "true");
     await expect(page.getByText("Framework readiness")).toBeVisible();
+    await expect(
+      page.getByText("Action required", { exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByText("Needs action", { exact: true }).first(),
+    ).toBeVisible();
   });
 
   test("default navigation exposes the full trust workflow", async ({

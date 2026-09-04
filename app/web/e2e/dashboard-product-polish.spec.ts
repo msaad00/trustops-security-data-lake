@@ -5,15 +5,20 @@ test.describe("dashboard product polish", () => {
     await page.goto("/console/dashboard/");
 
     const commandCenter = page.getByRole("region", {
-      name: "Trust command center",
+      name: "Assessment summary",
     });
     await expect(commandCenter).toBeVisible({ timeout: 20_000 });
     await expect(
-      commandCenter.getByText("Evidence command center"),
+      commandCenter.getByText("Assessment summary", { exact: true }),
     ).toBeVisible();
     await expect(
       commandCenter.getByRole("region", { name: "Evidence operating loop" }),
     ).toBeVisible();
+    const frameworkMark = commandCenter
+      .getByRole("img", { name: /framework$/ })
+      .first();
+    await expect(frameworkMark).toBeVisible();
+    await expect(frameworkMark.locator("svg")).toHaveCount(0);
 
     for (const stage of ["Collect", "Evaluate", "Operate", "Prove"]) {
       await expect(
@@ -42,7 +47,7 @@ test.describe("dashboard product polish", () => {
 
     await expect(page.locator("html")).toHaveClass(/dark/);
     await expect(
-      page.getByRole("region", { name: "Trust command center" }),
+      page.getByRole("region", { name: "Assessment summary" }),
     ).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText("Critical gaps need owners")).toBeVisible();
     expect(

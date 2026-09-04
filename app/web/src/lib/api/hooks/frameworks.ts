@@ -3,7 +3,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../client";
 import { STALE, type Opts } from "./shared";
-import type { FrameworkDetail, FrameworkView } from "../types";
+import type {
+  FrameworkCoveragePayload,
+  FrameworkDetail,
+  FrameworkView,
+} from "../types";
 
 export function useFrameworks(opts?: Opts<FrameworkView[]>) {
   return useQuery({
@@ -20,6 +24,14 @@ export function useFrameworkDetail(id: string | null) {
     queryFn: () =>
       id ? api.frameworkDetail(id) : Promise.reject(new Error("no id")),
     enabled: Boolean(id),
+    staleTime: STALE,
+  });
+}
+
+export function useFrameworkCoverage() {
+  return useQuery<FrameworkCoveragePayload>({
+    queryKey: ["frameworks", "coverage"],
+    queryFn: api.frameworkCoverage,
     staleTime: STALE,
   });
 }

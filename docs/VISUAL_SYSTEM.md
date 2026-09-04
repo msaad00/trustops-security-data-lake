@@ -8,7 +8,7 @@ Product name, logo, taglines, and naming hierarchy: [BRAND.md](BRAND.md).
 
 ## Trust Data Lake mark
 
-- Geometric **TDL** monogram (`#4f7cff` → `#30c7d2`) with a mint lake line — use
+- Cloud, agent, and identity source glyphs over a lake-contour symbol (`#4f7cff` → `#30c7d2`) with a mint final line — use
   `TrustOpsMark` / `TrustOpsLogo` in the console shell; SVG wordmark in docs.
 - Console chrome label: **Trust Data Lake Console**, not
   "Workbench" or "Assessment Console".

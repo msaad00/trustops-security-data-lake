@@ -101,12 +101,12 @@ export default function DashboardPage() {
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div className="min-w-0">
           <div className="text-[12px] font-black uppercase tracking-[0.14em] text-brand">
-            Open trust data lake for GRC
+            Assessment status
           </div>
-          <h1 className="ui-page-title mt-0.5">Executive trust overview</h1>
+          <h1 className="ui-page-title mt-0.5">Dashboard</h1>
           <p className="text-sm text-muted">
-            Evidence-driven posture from connected sources, deterministic
-            controls, and proof exports.
+            Current posture from ingested evidence, control evaluations, and
+            saved proof exports.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -128,17 +128,16 @@ export default function DashboardPage() {
 
       <QueryState queries={[posture, ingestion]} label="overview">
         <section
-          aria-label="Trust command center"
+          aria-label="Assessment summary"
           className="ui-command-center overflow-hidden"
         >
           <div className="relative z-10 flex flex-wrap items-start justify-between gap-3 border-b border-white/10 px-4 py-3 sm:px-5">
             <div>
               <div className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300">
-                Evidence command center
+                Assessment summary
               </div>
               <p className="mt-1 max-w-2xl text-sm text-slate-300">
-                One verifiable operating loop across sources, controls,
-                findings, and audit proof.
+                Current sources, control results, findings, and export status.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold">
@@ -177,8 +176,7 @@ export default function DashboardPage() {
                     {stateHeadline(p?.state)}
                   </h2>
                   <p className="mt-1 max-w-[720px] text-sm leading-5 text-slate-300">
-                    {stateCopy(p?.state)} Evidence lands raw, evaluates into
-                    gold controls, and exports as immutable proof.
+                    {stateCopy(p?.state)}
                   </p>
                 </div>
                 <Badge

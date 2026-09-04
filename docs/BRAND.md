@@ -1,6 +1,6 @@
 # Trust Data Lake brand
 
-**Trust Data Lake** is the customer-facing product name. **TDL** is the compact monogram. The repository, package, CLI, environment variables, API identifiers, and MCP commands retain their existing technical names for compatibility.
+**Trust Data Lake** is the customer-facing product name. The repository, package, CLI, environment variables, API identifiers, and MCP commands retain their existing technical names for compatibility.
 
 | Use                  | Form                             |
 | -------------------- | -------------------------------- |
@@ -21,7 +21,7 @@ Do not introduce alternate customer-facing product names. Do not use “Workbenc
 
 ## Visual identity
 
-The primary mark is a geometric **TDL** monogram over a deep-navy field with a restrained lake line. It must remain legible at 16 px and must not use generic shields, database stacks, or certification checks.
+The primary mark is a cloud, agent spark, and identity glyph above lake contours on a deep-navy field. It must remain legible at 16 px and must not use letter monograms, generic shields, database stacks, or certification checks.
 
 | Token     | Value                 |
 | --------- | --------------------- |

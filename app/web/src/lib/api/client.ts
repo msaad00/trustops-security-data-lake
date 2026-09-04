@@ -47,6 +47,7 @@ import type {
   EntityTag,
   FrameworkReadiness,
   FrameworkReadinessTrends,
+  FrameworkCoveragePayload,
   FrameworkDetail,
   FrameworkEquivalence,
   FrameworkView,
@@ -513,6 +514,10 @@ export const api = {
       count,
       frameworks: items,
     })),
+  frameworkCoverage: () =>
+    get<{ data: FrameworkCoveragePayload }>("/v1/frameworks/coverage").then(
+      (body) => body.data,
+    ),
   frameworkDetail: (id: string) =>
     get<{ data: FrameworkDetail }>(
       `/v1/frameworks/${encodeURIComponent(id)}/detail`,
