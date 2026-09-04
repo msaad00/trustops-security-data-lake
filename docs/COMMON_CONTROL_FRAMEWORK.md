@@ -68,7 +68,7 @@ collapsing them would overstate both coverage and failure.
 
 ```
 $ security-lakehouse frameworks safeguards --format table
-32 safeguards map 525 of 942 requirements (55.7%) — 45 reviewed (4.8%), 480 proposed
+33 safeguards map 527 of 942 requirements (55.9%) — 45 reviewed (4.8%), 482 proposed
 ```
 
 A mapping is **reviewed** once a human has confirmed the requirements are the
