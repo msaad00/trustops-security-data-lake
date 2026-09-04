@@ -68,7 +68,7 @@ collapsing them would overstate both coverage and failure.
 
 ```
 $ security-lakehouse frameworks safeguards --format table
-30 safeguards map 520 of 942 requirements (55.2%) — 45 reviewed (4.8%), 475 proposed
+31 safeguards map 523 of 942 requirements (55.5%) — 45 reviewed (4.8%), 478 proposed
 ```
 
 A mapping is **reviewed** once a human has confirmed the requirements are the
@@ -141,7 +141,7 @@ Full coverage needs the catalog enriched before the curation can be checked.
    content. 224 are mapped; the rest are the near-term queue. Promoting a
    `proposed` mapping to `reviewed` is a human confirming the two requirements
    are the same obligation. `security-lakehouse frameworks review-queue`
-   (`--framework <id>` to scope) lists the 475 proposed mappings, each paired
+   (`--framework <id>` to scope) lists the 478 proposed mappings, each paired
    with the reviewed anchors already on that safeguard, so a reviewer judges an
    equivalence against mappings they already trust. `--risk-domain <domain>`
    scopes the queue by the normalized cross-framework category/family, while
