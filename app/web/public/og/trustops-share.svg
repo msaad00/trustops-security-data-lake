@@ -65,7 +65,7 @@
       <rect x="768" width="288" height="92" rx="16" fill="#e6fffb" stroke="#2dd4bf"/><text x="788" y="32" font-size="11" font-weight="800" letter-spacing="1.5" fill="#0f766e">04 · PROVE</text><text x="788" y="62" font-size="20" font-weight="820" fill="#102a34">Immutable snapshots</text>
     </g>
     <text x="72" y="548" font-size="14" font-weight="760" fill="#72d7df">COMMON CONTROL FRAMEWORK</text>
-    <text x="72" y="580" font-size="18" font-weight="720" fill="#e2e8f0">33 safeguards · 942 requirements · 13 framework packs</text>
+    <text x="72" y="580" font-size="18" font-weight="720" fill="#e2e8f0">35 safeguards · 942 requirements · 13 framework packs</text>
     <text x="1128" y="580" text-anchor="end" font-size="16" font-weight="690" fill="#8294ac">Console · API · CLI · MCP · CI</text>
   </g>
 </svg>

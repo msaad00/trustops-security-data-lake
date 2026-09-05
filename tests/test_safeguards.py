@@ -116,7 +116,7 @@ def test_the_ccf_doc_quotes_the_numbers_the_data_actually_reports() -> None:
     assert headline in doc, f"doc headline is stale; expected {headline!r}"
 
     for name, row in cov["frameworks"].items():
-        expected = f"| {name:19s} | {row['controls']:12d} |"
+        expected = f"| {name:19s} | {row['controls']:12d} | {row['covered']:6d} | {row['coverage_pct']:5.1f}% |"
         assert expected in doc, f"doc table row for {name} is stale; expected {expected!r}"
 
 
