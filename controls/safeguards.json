@@ -4024,6 +4024,72 @@
         }
       ],
       "asset_types": ["cloud_policy", "cloud_resource", "service"]
+    },
+    {
+      "safeguard_id": "SG-RISKASSESSMENT-002",
+      "title": "Organizational risk assessments",
+      "risk_domain": "risk-management",
+      "objective": "Periodically assess risks from organizational systems and their processing, storage, or transmission of CUI.",
+      "evidence_requirement": "Current risk assessment scope, results, risk-register entries, and approvals demonstrate that system and CUI risks are periodically assessed and tracked.",
+      "evaluation_rule": "fail_when_missing_evidence",
+      "frequency": "continuous",
+      "owner": "grc",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST SP 800-171 Rev. 2",
+        "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf",
+        "sha256": "298bdbfcf6a4890a564b225c893230a0b32b2e69e3b98dd898aaeb1d544c5e12",
+        "locator": "Appendix D, Table D-11, requirement 3.11.1 maps to RA-3"
+      },
+      "satisfies": [
+        {
+          "control_id": "CMMC-3.11.1",
+          "framework_id": "cmmc-2-level2",
+          "role": "primary",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-RA-3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": ["audit_log", "service"]
+    },
+    {
+      "safeguard_id": "SG-MALWARESCANNING-001",
+      "title": "Periodic and real-time malware scanning",
+      "risk_domain": "monitoring",
+      "objective": "Scan organizational systems periodically and scan externally sourced files when they are downloaded, opened, or executed.",
+      "evidence_requirement": "Current anti-malware configuration, scheduled scan results, real-time file scanning records, coverage inventories, and tracked exceptions demonstrate that systems and externally sourced files are scanned.",
+      "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
+      "frequency": "continuous",
+      "owner": "detection-engineering",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST SP 800-171 Rev. 2",
+        "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf",
+        "sha256": "298bdbfcf6a4890a564b225c893230a0b32b2e69e3b98dd898aaeb1d544c5e12",
+        "locator": "Appendix D, Table D-14, requirement 3.14.5 maps to SI-3"
+      },
+      "satisfies": [
+        {
+          "control_id": "CMMC-3.14.5",
+          "framework_id": "cmmc-2-level2",
+          "role": "primary",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-SI-3",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": ["audit_log", "host", "service"]
     }
   ]
 }
