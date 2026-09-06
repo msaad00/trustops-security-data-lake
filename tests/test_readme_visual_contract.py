@@ -116,3 +116,21 @@ def test_operating_loop_banner_is_presented_with_the_matching_section() -> None:
     assert "evaluate" in copy
     assert "operate" in copy
     assert "prove" in copy
+
+
+def test_product_preview_leads_with_current_operator_surfaces() -> None:
+    readme = README.read_text(encoding="utf-8")
+    preview = readme.split("## Product preview", maxsplit=1)[1]
+    preview = preview.split("\n## ", maxsplit=1)[0]
+
+    for label, image in (
+        ("Assessment overview", "trustops-demo-dashboard.png"),
+        ("Framework coverage", "trustops-demo-frameworks.png"),
+        ("Evidence", "trustops-demo-evidence.png"),
+        ("Connectors", "trustops-demo-connectors.png"),
+    ):
+        assert label in preview
+        assert image in preview
+
+    assert "TrustOps" not in preview
+    assert "audit room" in preview.lower()

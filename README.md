@@ -136,15 +136,15 @@ scanner, ticketing, and AI-platform entries in
 
 ## Product preview
 
-|                                         Trust Home                                          |                                             Audit room                                             |
-| :-----------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------: |
-| <img src="docs/images/trustops-demo-dashboard.png" alt="Trust Data Lake home" width="100%"> | <img src="docs/images/trustops-demo-audit-room.png" alt="Trust Data Lake audit room" width="100%"> |
+|                                            Assessment overview                                             |                                             Framework coverage                                             |
+| :--------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------: |
+| <img src="docs/images/trustops-demo-dashboard.png" alt="Trust Data Lake assessment overview" width="100%"> | <img src="docs/images/trustops-demo-frameworks.png" alt="Trust Data Lake framework coverage" width="100%"> |
 
-|                                              Evidence                                               |                                                 Connectors                                                 |
-| :-------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------: |
-| <img src="docs/images/trustops-demo-evidence.png" alt="Trust Data Lake evidence room" width="100%"> | <img src="docs/images/trustops-demo-connectors.png" alt="Trust Data Lake connector registry" width="100%"> |
+|                                                Evidence                                                |                                                 Connectors                                                 |
+| :----------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------: |
+| <img src="docs/images/trustops-demo-evidence.png" alt="Trust Data Lake evidence records" width="100%"> | <img src="docs/images/trustops-demo-connectors.png" alt="Trust Data Lake connector registry" width="100%"> |
 
-More views: [frameworks](docs/images/trustops-demo-frameworks.png) · [insights](docs/images/trustops-demo-insights.png) · [workflows](docs/images/trustops-demo-workflows.png) · [trust center](docs/images/trustops-demo-trust-center.png)
+More views: [audit room](docs/images/trustops-demo-audit-room.png) · [insights](docs/images/trustops-demo-insights.png) · [workflows](docs/images/trustops-demo-workflows.png) · [trust center](docs/images/trustops-demo-trust-center.png)
 
 ## Connect a live source
 
