@@ -68,7 +68,7 @@ collapsing them would overstate both coverage and failure.
 
 ```
 $ security-lakehouse frameworks safeguards --format table
-35 safeguards map 529 of 942 requirements (56.2%) — 45 reviewed (4.8%), 484 proposed
+37 safeguards map 532 of 942 requirements (56.5%) — 45 reviewed (4.8%), 487 proposed
 ```
 
 A mapping is **reviewed** once a human has confirmed the requirements are the
@@ -87,11 +87,11 @@ Curation is ordered by what teams are actually audited and certified against.
 | hipaa-security-rule |           18 |     18 | 100.0% |
 | pci-dss-v4          |           12 |     12 | 100.0% |
 | soc2                |           61 |     61 | 100.0% |
-| cmmc-2-level2       |          110 |    108 |  98.2% |
+| cmmc-2-level2       |          110 |    110 | 100.0% |
 | cis_aws             |           62 |     49 |  79.0% |
 | iso-42001-2023      |           39 |     26 |  66.7% |
 | gdpr-2016-679       |           20 |     12 |  60.0% |
-| fedramp-moderate    |          287 |    181 |  63.1% |
+| fedramp-moderate    |          287 |    182 |  63.4% |
 | iso-27017-2015      |           47 |     24 |  51.1% |
 | iso-27001-2022      |           93 |     11 |  11.8% |
 | nist-ai-rmf         |           72 |      6 |   8.3% |

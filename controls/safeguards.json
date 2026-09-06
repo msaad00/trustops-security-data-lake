@@ -4090,6 +4090,78 @@
         }
       ],
       "asset_types": ["audit_log", "host", "service"]
+    },
+    {
+      "safeguard_id": "SG-AUDITEVENTREVIEW-001",
+      "title": "Audit event review and updates",
+      "risk_domain": "monitoring",
+      "objective": "Review and update the events selected for logging so audit records remain relevant to monitoring and investigations.",
+      "evidence_requirement": "Current logged-event inventories, review records, selection rationale, approvals, and configuration changes demonstrate that logged events are reviewed and updated at the defined frequency.",
+      "evaluation_rule": "fail_when_missing_evidence",
+      "frequency": "continuous",
+      "owner": "security-platform",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST SP 800-171 Rev. 2",
+        "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf",
+        "sha256": "298bdbfcf6a4890a564b225c893230a0b32b2e69e3b98dd898aaeb1d544c5e12",
+        "locator": "Appendix D, Table D-3, requirement 3.3.3 maps to AU-2(3)"
+      },
+      "satisfies": [
+        {
+          "control_id": "CMMC-3.3.3",
+          "framework_id": "cmmc-2-level2",
+          "role": "primary",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-AU-2",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST SP 800-53 Rev. 5",
+            "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-53r5.pdf",
+            "sha256": "fc63bcd61715d0181dd8e85998b1e6201ae3515fc6626102101cab1841e11ec6",
+            "locator": "Chapter 3, AU-2(e), review and update the event types selected for logging"
+          }
+        }
+      ],
+      "asset_types": ["audit_log", "host", "service"]
+    },
+    {
+      "safeguard_id": "SG-SOFTWAREAUTHORIZATION-001",
+      "title": "Software execution authorization",
+      "risk_domain": "controls-operations",
+      "objective": "Prevent unauthorized software execution and allow only explicitly authorized software where allow-by-exception controls are used.",
+      "evidence_requirement": "Current software inventories, execution-control policies, allowlists or denylists, enforcement results, and approved exceptions demonstrate that unauthorized software is prevented from executing.",
+      "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
+      "frequency": "continuous",
+      "owner": "security-platform",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST SP 800-171 Rev. 2",
+        "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf",
+        "sha256": "298bdbfcf6a4890a564b225c893230a0b32b2e69e3b98dd898aaeb1d544c5e12",
+        "locator": "Appendix D, Table D-4, requirement 3.4.8 maps to CM-7(4) and CM-7(5)"
+      },
+      "satisfies": [
+        {
+          "control_id": "CMMC-3.4.8",
+          "framework_id": "cmmc-2-level2",
+          "role": "primary",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "FEDRAMP-CM-7.5",
+          "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": ["cloud_policy", "cloud_resource", "service"]
     }
   ]
 }
