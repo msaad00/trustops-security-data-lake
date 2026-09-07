@@ -18,7 +18,7 @@ from security_lakehouse.lake_scale import (
     write_lake_scale_state,
 )
 from security_lakehouse.models import PipelineResult, utc_iso
-from security_lakehouse.pipeline import run_pipeline, run_pipeline_incremental
+from security_lakehouse.pipeline import normalize_raw_events
 from security_lakehouse.sinks import land_if_configured
 
 EVAL_RUNS_FILE = ("gold", "eval_runs.jsonl")
@@ -75,14 +75,15 @@ def run_lake_eval(
                 env=runtime,
             )
         elif mode == "local_incremental":
-            pipeline = run_pipeline_incremental(
+            pipeline = normalize_raw_events(
                 raw_path,
                 lake,
                 mapping_path=mapping_path,
                 tenant_id=tenant_id,
+                incremental=True,
             )
         else:
-            pipeline = run_pipeline(raw_path, lake, mapping_path=mapping_path, tenant_id=tenant_id)
+            pipeline = normalize_raw_events(raw_path, lake, mapping_path=mapping_path, tenant_id=tenant_id)
         write_lake_scale_state(lake, strategy)
     except LakeEvalError as exc:
         result = "error"
@@ -131,14 +132,15 @@ def _run_warehouse_eval(
 ) -> PipelineResult:
     """Project to warehouse and keep a capped local posture slice when possible."""
     if _incremental_ready(lake):
-        result = run_pipeline_incremental(
+        result = normalize_raw_events(
             raw_path,
             lake,
             mapping_path=mapping_path,
             tenant_id=tenant_id,
+            incremental=True,
         )
     elif raw_path.is_file():
-        result = run_pipeline(raw_path, lake, mapping_path=mapping_path, tenant_id=tenant_id)
+        result = normalize_raw_events(raw_path, lake, mapping_path=mapping_path, tenant_id=tenant_id)
     else:
         raise LakeEvalError("no raw evidence to evaluate")
     landed = land_if_configured(lake, env)

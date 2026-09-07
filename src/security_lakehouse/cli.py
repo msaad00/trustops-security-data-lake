@@ -11,7 +11,7 @@ from pathlib import Path
 
 from security_lakehouse.dashboard import render_dashboard
 from security_lakehouse.io import read_jsonl
-from security_lakehouse.pipeline import run_pipeline
+from security_lakehouse.pipeline import normalize_raw_events, run_pipeline
 from security_lakehouse.validation import validate_raw_events
 
 # Risk vocabulary mirrored from security_lakehouse.db.models (RISK_LEVELS /
@@ -182,6 +182,20 @@ def _parser() -> argparse.ArgumentParser:
     ingestion_plan.add_argument("--catalog", default=None, help="optional connector catalog JSON")
     ingestion_plan.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     ingestion_plan.set_defaults(func=_ingestion_plan)
+    ingestion_normalize = ingestion_sub.add_parser(
+        "normalize",
+        help="normalize canonical raw evidence into bronze/silver/gold lake zones",
+    )
+    ingestion_normalize.add_argument("--raw", required=True, help="canonical raw security events JSONL")
+    ingestion_normalize.add_argument("--out", required=True, help="security data lake output directory")
+    ingestion_normalize.add_argument("--mapping", default=None, help="optional control mapping JSON")
+    ingestion_normalize.add_argument("--tenant-id", default="default", help="tenant recorded in analytical marts")
+    ingestion_normalize.add_argument(
+        "--incremental",
+        action="store_true",
+        help="materialize only changed raw evidence when a prior manifest exists",
+    )
+    ingestion_normalize.set_defaults(func=_ingestion_normalize)
 
     scenario = sub.add_parser("scenario", help="run repeatable TrustOps proof scenarios")
     scenario_sub = scenario.add_subparsers(dest="scenario_command", required=True)
@@ -948,6 +962,18 @@ def _ingestion_plan(args: argparse.Namespace) -> int:
     for p in plans:
         print(f"{p.connector_id:28} {p.velocity:18} {p.method:32} {p.freshness_slo:>6}")
         print(f"{'':28} └ {p.cost_note}")
+    return 0
+
+
+def _ingestion_normalize(args: argparse.Namespace) -> int:
+    result = normalize_raw_events(
+        args.raw,
+        args.out,
+        mapping_path=args.mapping,
+        tenant_id=args.tenant_id,
+        incremental=args.incremental,
+    )
+    print(json.dumps(result.__dict__, indent=2, sort_keys=True))
     return 0
 
 

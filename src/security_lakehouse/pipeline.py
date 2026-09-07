@@ -24,6 +24,10 @@ from security_lakehouse.policy import ControlContext, evaluate_control
 from security_lakehouse.programs import build_control_tests
 from security_lakehouse.validation import validate_raw_events
 
+RAW_EVENT_SCHEMA_VERSION = "trustops.raw_event.v1"
+NORMALIZED_EVENT_SCHEMA_VERSION = "trustops.normalized_event.v1"
+NORMALIZATION_TRANSFORM_VERSION = "trustops.normalization.v1"
+
 
 def run_pipeline(
     raw_path: str | Path,
@@ -48,6 +52,25 @@ def run_pipeline(
         tenant_id=tenant_id,
         materialize_mode="full",
     )
+
+
+def normalize_raw_events(
+    raw_path: str | Path,
+    out_dir: str | Path,
+    *,
+    mapping_path: str | Path | None = None,
+    tenant_id: str = "default",
+    incremental: bool = False,
+) -> PipelineResult:
+    """Normalize canonical raw evidence into the managed lake zones.
+
+    This is the shared handoff for connector adapters, pre-landed raw evidence,
+    and future existing-lake importers. Inputs must already satisfy the raw
+    evidence contract; source-specific parsing belongs in the adapter before
+    this boundary.
+    """
+    runner = run_pipeline_incremental if incremental else run_pipeline
+    return runner(raw_path, out_dir, mapping_path=mapping_path, tenant_id=tenant_id)
 
 
 def run_pipeline_incremental(
@@ -229,6 +252,11 @@ def _materialize_from_rows(
         {
             "raw_path": str(raw_path),
             "materialize_mode": materialize_mode,
+            "normalization": {
+                "input_contract": RAW_EVENT_SCHEMA_VERSION,
+                "schema_version": NORMALIZED_EVENT_SCHEMA_VERSION,
+                "transform_version": NORMALIZATION_TRANSFORM_VERSION,
+            },
             "delta_count": delta_count,
             "removed_count": removed_count,
             "raw_index": raw_index if raw_index is not None else _build_raw_index(raw_rows),
