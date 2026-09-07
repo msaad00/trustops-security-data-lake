@@ -258,7 +258,7 @@ export default function ConnectorsPage() {
       <PageHeader
         eyebrow="Sources"
         title="Connect evidence"
-        description="Read an existing lake or connect a source, normalize evidence, then evaluate it."
+        description="Connect a source, test access, then sync evidence — or read an existing lake, normalize evidence, then evaluate it."
         actions={
           totals.unhealthy > 0 ? (
             <span className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-black text-rose-700">

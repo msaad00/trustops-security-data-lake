@@ -29,7 +29,10 @@ export function EvidencePathPanel() {
     >
       <div>
         <div className="ui-eyebrow">Evidence paths</div>
-        <h2 id="evidence-path-title" className="mt-1 text-lg font-black text-ink">
+        <h2
+          id="evidence-path-title"
+          className="mt-1 text-lg font-black text-ink"
+        >
           Choose an evidence path
         </h2>
         <p className="mt-1 max-w-3xl text-sm leading-5 text-muted">
@@ -65,7 +68,9 @@ export function EvidencePathPanel() {
               <FileJson2 className="h-4 w-4" aria-hidden="true" />
             </span>
             <div className="min-w-0">
-              <h3 className="font-black text-ink">Normalize pre-landed evidence</h3>
+              <h3 className="font-black text-ink">
+                Normalize pre-landed evidence
+              </h3>
               <p className="mt-1 text-xs leading-5 text-muted">
                 Put canonical raw JSONL on the server, then materialize the
                 bronze, silver, and gold zones with the CLI.
