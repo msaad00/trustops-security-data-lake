@@ -78,6 +78,28 @@ test.describe("console smoke", () => {
     ).toBeVisible();
   });
 
+  test("connections explains live lake and pre-landed normalization paths", async ({
+    page,
+  }) => {
+    await page.goto("/console/connectors/");
+    await expect(page.getByRole("main")).toBeVisible({ timeout: 20_000 });
+    await expect(
+      page.getByRole("heading", { name: "Choose an evidence path" }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Read an existing lake", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Normalize pre-landed evidence", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Copy normalize command" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Open data lake connectors" }),
+    ).toBeVisible();
+  });
+
   test("core trust pages share pipeline orientation", async ({ page }) => {
     for (const [path, active] of [
       ["/console/frameworks/", "Framework map"],

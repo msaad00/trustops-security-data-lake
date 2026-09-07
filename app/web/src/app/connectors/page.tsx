@@ -15,6 +15,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { ConnectorDrawer } from "@/components/drawers/ConnectorDrawer";
 import { ConnectorMark } from "@/components/connectors/ConnectorMark";
+import { EvidencePathPanel } from "@/components/connectors/EvidencePathPanel";
 import { OnboardingGuideBanner } from "@/components/onboarding/OnboardingGuideBanner";
 import { connectorNotify } from "@/lib/connector-notify";
 import { CONNECT_FLOW } from "@/lib/console-copy";
@@ -257,7 +258,7 @@ export default function ConnectorsPage() {
       <PageHeader
         eyebrow="Sources"
         title="Connect evidence"
-        description="Connect a source, test access, then sync evidence."
+        description="Read an existing lake or connect a source, normalize evidence, then evaluate it."
         actions={
           totals.unhealthy > 0 ? (
             <span className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-black text-rose-700">
@@ -266,6 +267,8 @@ export default function ConnectorsPage() {
           ) : null
         }
       />
+
+      <EvidencePathPanel />
 
       <div className="grid min-w-0 gap-2 overflow-hidden rounded-lg border border-line bg-white p-2 shadow-card">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
