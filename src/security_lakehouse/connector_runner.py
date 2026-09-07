@@ -93,7 +93,7 @@ from security_lakehouse.ingestion.merge import dedupe_by_key
 from security_lakehouse.ingestion.watermark import read_watermark, write_watermark
 from security_lakehouse.io import read_jsonl, write_jsonl
 from security_lakehouse.lake_scale import resolve_materialize_strategy, write_lake_scale_state
-from security_lakehouse.pipeline import run_pipeline, run_pipeline_incremental
+from security_lakehouse.pipeline import normalize_raw_events
 from security_lakehouse.repo_governance import sync_repo_governance
 from security_lakehouse.sinks import land_if_configured
 from security_lakehouse.validation import validate_raw_events
@@ -328,16 +328,13 @@ def _materialize_after_sync(lake: Path, raw_path: Path, *, connector_id: str) ->
     if mode == "warehouse_required":
         raise LakeEvalError(str(strategy["recommendation"]))
     if mode == "warehouse":
-        if (lake / "manifest.json").is_file():
-            run_pipeline_incremental(raw_path, lake)
-        else:
-            run_pipeline(raw_path, lake)
+        normalize_raw_events(raw_path, lake, incremental=(lake / "manifest.json").is_file())
         _land_to_sink(lake, connector_id=connector_id)
         return
     if mode == "local_incremental":
-        run_pipeline_incremental(raw_path, lake)
+        normalize_raw_events(raw_path, lake, incremental=True)
     else:
-        run_pipeline(raw_path, lake)
+        normalize_raw_events(raw_path, lake)
     _land_to_sink(lake, connector_id=connector_id)
 
 

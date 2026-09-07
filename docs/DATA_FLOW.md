@@ -75,6 +75,20 @@ The tool creates:
 
 The sample repo implements this locally from `data/raw/security_events.jsonl`.
 
+The normalization handoff is explicit and reusable for pre-landed canonical raw
+evidence:
+
+```bash
+security-lakehouse ingestion normalize \
+  --raw ./raw/connector_events.jsonl \
+  --out ./lake
+```
+
+Use `--incremental` for replay-safe updates when the output lake already has a
+manifest. Direct connectors use the same normalization boundary after they land
+raw evidence; existing Snowflake, ClickHouse, object-storage, and SIEM sources
+must first be mapped by their source adapter into the canonical raw contract.
+
 ## Evaluation Steps
 
 ```text
