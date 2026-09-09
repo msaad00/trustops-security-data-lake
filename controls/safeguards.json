@@ -2582,6 +2582,174 @@
           "review_status": "proposed"
         },
         {
+          "control_id": "NIST-CSF-GV.OC-01",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, GV (Govern): GV.OC-01 through GV.OC-05; GV.OV-01 through GV.OV-03; GV.PO-01 through GV.PO-02; GV.RR-01 through GV.RR-04"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-GV.OC-02",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, GV (Govern): GV.OC-01 through GV.OC-05; GV.OV-01 through GV.OV-03; GV.PO-01 through GV.PO-02; GV.RR-01 through GV.RR-04"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-GV.OC-03",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, GV (Govern): GV.OC-01 through GV.OC-05; GV.OV-01 through GV.OV-03; GV.PO-01 through GV.PO-02; GV.RR-01 through GV.RR-04"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-GV.OC-04",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, GV (Govern): GV.OC-01 through GV.OC-05; GV.OV-01 through GV.OV-03; GV.PO-01 through GV.PO-02; GV.RR-01 through GV.RR-04"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-GV.OC-05",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, GV (Govern): GV.OC-01 through GV.OC-05; GV.OV-01 through GV.OV-03; GV.PO-01 through GV.PO-02; GV.RR-01 through GV.RR-04"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-GV.OV-01",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, GV (Govern): GV.OC-01 through GV.OC-05; GV.OV-01 through GV.OV-03; GV.PO-01 through GV.PO-02; GV.RR-01 through GV.RR-04"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-GV.OV-02",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, GV (Govern): GV.OC-01 through GV.OC-05; GV.OV-01 through GV.OV-03; GV.PO-01 through GV.PO-02; GV.RR-01 through GV.RR-04"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-GV.OV-03",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, GV (Govern): GV.OC-01 through GV.OC-05; GV.OV-01 through GV.OV-03; GV.PO-01 through GV.PO-02; GV.RR-01 through GV.RR-04"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-GV.PO-01",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, GV (Govern): GV.OC-01 through GV.OC-05; GV.OV-01 through GV.OV-03; GV.PO-01 through GV.PO-02; GV.RR-01 through GV.RR-04"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-GV.PO-02",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, GV (Govern): GV.OC-01 through GV.OC-05; GV.OV-01 through GV.OV-03; GV.PO-01 through GV.PO-02; GV.RR-01 through GV.RR-04"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-GV.RR-01",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, GV (Govern): GV.OC-01 through GV.OC-05; GV.OV-01 through GV.OV-03; GV.PO-01 through GV.PO-02; GV.RR-01 through GV.RR-04"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-GV.RR-02",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, GV (Govern): GV.OC-01 through GV.OC-05; GV.OV-01 through GV.OV-03; GV.PO-01 through GV.PO-02; GV.RR-01 through GV.RR-04"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-GV.RR-03",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, GV (Govern): GV.OC-01 through GV.OC-05; GV.OV-01 through GV.OV-03; GV.PO-01 through GV.PO-02; GV.RR-01 through GV.RR-04"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-GV.RR-04",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, GV (Govern): GV.OC-01 through GV.OC-05; GV.OV-01 through GV.OV-03; GV.PO-01 through GV.PO-02; GV.RR-01 through GV.RR-04"
+          }
+        },
+        {
           "control_id": "CMMC-3.3.2",
           "framework_id": "cmmc-2-level2",
           "role": "equivalent",
@@ -3451,6 +3619,78 @@
           "framework_id": "iso-42001-2023",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-CSF-ID.AM-01",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, ID.AM (Asset Management): ID.AM-01 through ID.AM-05 and ID.AM-07"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-ID.AM-02",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, ID.AM (Asset Management): ID.AM-01 through ID.AM-05 and ID.AM-07"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-ID.AM-03",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, ID.AM (Asset Management): ID.AM-01 through ID.AM-05 and ID.AM-07"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-ID.AM-04",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, ID.AM (Asset Management): ID.AM-01 through ID.AM-05 and ID.AM-07"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-ID.AM-05",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, ID.AM (Asset Management): ID.AM-01 through ID.AM-05 and ID.AM-07"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-ID.AM-07",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, ID.AM (Asset Management): ID.AM-01 through ID.AM-05 and ID.AM-07"
+          }
         }
       ],
       "asset_types": [
