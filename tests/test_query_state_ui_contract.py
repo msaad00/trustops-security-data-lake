@@ -2,7 +2,6 @@
 
 from pathlib import Path
 
-
 ROOT = Path(__file__).parents[1]
 QUERY_STATE = ROOT / "app/web/src/components/QueryState.tsx"
 BRAND = ROOT / "app/web/src/lib/brand.ts"

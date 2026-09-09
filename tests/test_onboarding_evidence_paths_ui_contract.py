@@ -2,7 +2,6 @@
 
 from pathlib import Path
 
-
 ROOT = Path(__file__).parents[1]
 PAGE = ROOT / "app/web/src/app/onboarding/page.tsx"
 COMPONENT = ROOT / "app/web/src/components/onboarding/OnboardingEvidencePaths.tsx"
