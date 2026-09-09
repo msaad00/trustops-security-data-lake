@@ -10,7 +10,6 @@ from security_lakehouse.safeguards import (
     mapping_review_report,
 )
 
-
 CSF_SOURCE = {
     "name": "NIST Cybersecurity Framework (CSF) 2.0",
     "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
@@ -25,10 +24,7 @@ ASSET_CONTROLS = {
     "NIST-CSF-ID.AM-05",
     "NIST-CSF-ID.AM-07",
 }
-ASSET_LOCATOR = (
-    "NIST CSF 2.0 Core, Appendix A, ID.AM (Asset Management): "
-    "ID.AM-01 through ID.AM-05 and ID.AM-07"
-)
+ASSET_LOCATOR = "NIST CSF 2.0 Core, Appendix A, ID.AM (Asset Management): ID.AM-01 through ID.AM-05 and ID.AM-07"
 
 GOVERNANCE_CONTROLS = {
     *(f"NIST-CSF-GV.OC-0{i}" for i in range(1, 6)),
