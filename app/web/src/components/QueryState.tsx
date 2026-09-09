@@ -1,6 +1,7 @@
 import * as React from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TrustOpsMark } from "@/components/brand/TrustOpsMark";
 
 /**
  * Minimal shape of a TanStack query result this component depends on. Accepting
@@ -42,10 +43,19 @@ function ErrorState({
   );
 }
 
-function DefaultSkeleton() {
+function DefaultSkeleton({ label }: { label: string }) {
   return (
-    <div className="grid gap-2 p-5" aria-hidden>
-      <Skeleton className="h-8 w-1/3" />
+    <div className="grid gap-3 p-5" role="status" aria-live="polite">
+      <div className="flex items-center gap-3 rounded-xl border border-line bg-surface px-4 py-3 shadow-card">
+        <TrustOpsMark size="sm" gradientId="trustops-query-state-gradient" />
+        <div className="min-w-0">
+          <p className="text-sm font-bold text-ink">Loading {label}…</p>
+          <p className="text-xs text-muted">
+            Connecting to the security data lake and checking the latest trust state.
+          </p>
+        </div>
+        <span className="ml-auto h-2 w-2 shrink-0 animate-pulse rounded-full bg-brand" />
+      </div>
       <Skeleton className="h-24 w-full" />
       <Skeleton className="h-24 w-full" />
     </div>
@@ -79,7 +89,7 @@ export function QueryState({
     );
   }
   if (list.some((q) => q.isPending)) {
-    return <>{skeleton ?? <DefaultSkeleton />}</>;
+    return <>{skeleton ?? <DefaultSkeleton label={label} />}</>;
   }
   return <>{children}</>;
 }

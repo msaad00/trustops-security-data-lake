@@ -27,6 +27,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { TrustPipelineStrip } from "@/components/TrustPipelineStrip";
 import { FrameworkBadge } from "@/components/framework/FrameworkBadge";
 import { FrameworkDrilldownPanel } from "@/components/framework/FrameworkDrilldownPanel";
+import { FrameworkRoster } from "@/components/framework/FrameworkRoster";
 import { frameworkDetailHref } from "@/lib/framework-links";
 import {
   useFrameworkCoverage,
@@ -572,6 +573,12 @@ function FrameworksPageContent() {
           </div>
         </div>
       </section>
+
+      <FrameworkRoster
+        frameworks={data}
+        coverage={coverageRows}
+        readiness={readinessRows}
+      />
 
       <section
         aria-label="Framework catalog"

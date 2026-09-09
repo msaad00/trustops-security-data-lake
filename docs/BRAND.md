@@ -15,8 +15,8 @@ Do not introduce alternate customer-facing product names. Do not use “Workbenc
 
 ## Positioning
 
-- **Category:** open evidence infrastructure for GRC
-- **Promise:** continuous compliance in your cloud
+- **Category:** the trust layer for security data lakes
+- **Promise:** normalize security evidence, evaluate controls, and prove trust continuously
 - **Differentiator:** customer-owned evidence, deterministic controls, one contract across Console · API · CLI · MCP · CI
 
 ## Visual identity

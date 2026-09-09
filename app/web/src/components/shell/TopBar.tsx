@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Camera, RefreshCw, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TrustOpsLogo } from "@/components/brand/TrustOpsLogo";
+import { BRAND } from "@/lib/brand";
 import { NotificationBell } from "./NotificationBell";
 import { UserMenu } from "./UserMenu";
 import { useHealth } from "@/lib/api/hooks";
@@ -39,6 +40,7 @@ export function TopBar({ onRefresh, onSnapshot, onOpenPalette }: Props) {
         inverted
         markSize="lg"
         showWordmark
+        subtitle={BRAND.consoleSubtitle}
         wordmarkClassName="hidden xl:block"
         className="flex-none"
         gradientId="trustops-topbar-gradient"

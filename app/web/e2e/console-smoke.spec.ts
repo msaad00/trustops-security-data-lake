@@ -100,6 +100,36 @@ test.describe("console smoke", () => {
     ).toBeVisible();
   });
 
+  test("onboarding makes both evidence-entry paths actionable", async ({
+    page,
+  }) => {
+    await page.goto("/console/onboarding/");
+    await expect(page.getByRole("main")).toBeVisible({ timeout: 20_000 });
+    await expect(
+      page.getByRole("heading", {
+        name: "Choose how evidence enters TrustOps",
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Connect sources directly" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Bring an existing lake" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Choose a connector" }),
+    ).toHaveAttribute("href", "/console/connectors/?onboarding=1");
+    await expect(
+      page.getByRole("link", { name: "Open lake path" }),
+    ).toHaveAttribute(
+      "href",
+      "/console/connectors/?connect=snowflake-evidence-lake&onboarding=1",
+    );
+    await expect(
+      page.getByText(/No local paths or raw secrets are accepted/),
+    ).toBeVisible();
+  });
+
   test("core trust pages share pipeline orientation", async ({ page }) => {
     for (const [path, active] of [
       ["/console/frameworks/", "Framework map"],
@@ -119,6 +149,12 @@ test.describe("console smoke", () => {
 
   test("frameworks render governed identity assets", async ({ page }) => {
     await page.goto("/console/frameworks/");
+
+    await expect(
+      page.getByRole("heading", { name: "Framework roster" }),
+    ).toBeVisible();
+    await expect(page.getByText("Readiness tracked", { exact: true })).toBeVisible();
+    await expect(page.getByText("Not evaluated", { exact: true }).first()).toBeVisible();
 
     const nistMark = page
       .getByRole("img", {
