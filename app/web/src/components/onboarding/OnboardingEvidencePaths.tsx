@@ -28,7 +28,9 @@ export function OnboardingEvidencePaths() {
   return (
     <Card className="overflow-hidden border-brand/20 bg-slate-50/70">
       <CardHeader className="p-3 pb-2">
-        <CardTitle className="text-base">Choose how evidence enters TrustOps</CardTitle>
+        <CardTitle className="text-base">
+          Choose how evidence enters TrustOps
+        </CardTitle>
         <p className="text-sm text-muted">
           Both paths end in the same normalized evidence → control evaluation →
           audit proof loop.
@@ -58,8 +60,8 @@ export function OnboardingEvidencePaths() {
       </CardContent>
       <div className="border-t border-brand/10 px-3 py-2 text-xs text-muted">
         No local paths or raw secrets are accepted in the console. Use the CLI
-        for local raw files, then connect the resulting lake through a
-        read-only connector.
+        for local raw files, then connect the resulting lake through a read-only
+        connector.
       </div>
     </Card>
   );

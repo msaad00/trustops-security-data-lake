@@ -153,8 +153,12 @@ test.describe("console smoke", () => {
     await expect(
       page.getByRole("heading", { name: "Framework roster" }),
     ).toBeVisible();
-    await expect(page.getByText("Readiness tracked", { exact: true })).toBeVisible();
-    await expect(page.getByText("Not evaluated", { exact: true }).first()).toBeVisible();
+    await expect(
+      page.getByText("Readiness tracked", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Not evaluated", { exact: true }).first(),
+    ).toBeVisible();
 
     const nistMark = page
       .getByRole("img", {

@@ -51,7 +51,8 @@ function DefaultSkeleton({ label }: { label: string }) {
         <div className="min-w-0">
           <p className="text-sm font-bold text-ink">Loading {label}…</p>
           <p className="text-xs text-muted">
-            Connecting to the security data lake and checking the latest trust state.
+            Connecting to the security data lake and checking the latest trust
+            state.
           </p>
         </div>
         <span className="ml-auto h-2 w-2 shrink-0 animate-pulse rounded-full bg-brand" />

@@ -25,7 +25,8 @@ function FrameworkLine({
   notEvaluated?: boolean;
 }) {
   const mapped =
-    coverage?.evaluatable_requirement_count ?? framework.implemented_control_count;
+    coverage?.evaluatable_requirement_count ??
+    framework.implemented_control_count;
   const total = coverage?.seeded_control_count ?? framework.control_count;
   const attestable = coverage?.attestable_requirement_count ?? 0;
 
@@ -63,9 +64,7 @@ function FrameworkLine({
 }
 
 export function FrameworkRoster({ frameworks, coverage, readiness }: Props) {
-  const coverageById = new Map(
-    coverage.map((row) => [row.framework_id, row]),
-  );
+  const coverageById = new Map(coverage.map((row) => [row.framework_id, row]));
   const readinessById = new Map(
     readiness.map((row) => [row.framework_id, row]),
   );
