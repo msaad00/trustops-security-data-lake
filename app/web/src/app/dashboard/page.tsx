@@ -136,12 +136,12 @@ export default function DashboardPage() {
               <div className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300">
                 Assessment summary
               </div>
-              <p className="mt-1 max-w-2xl text-sm text-slate-300">
+              <p className="mt-1 max-w-2xl text-sm text-slate-200">
                 Current sources, control results, findings, and export status.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold">
-              <span className="rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-1 text-slate-300">
+              <span className="rounded-full border border-white/15 bg-white/[0.09] px-2.5 py-1 text-slate-200">
                 {frameworks.length}/{registeredCount} frameworks assessed
               </span>
               <span className="rounded-full border border-cyan-300/20 bg-cyan-300/[0.08] px-2.5 py-1 text-cyan-200">
@@ -158,10 +158,10 @@ export default function DashboardPage() {
                 inverse
               />
               <div className="min-w-0 lg:mt-2">
-                <div className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+                <div className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">
                   Trust score
                 </div>
-                <p className="mt-1 text-xs leading-4 text-slate-400">
+                <p className="mt-1 text-xs leading-4 text-slate-300">
                   Calculated from the current gold assessment.
                 </p>
               </div>
@@ -169,13 +169,13 @@ export default function DashboardPage() {
             <div className="grid min-w-0 gap-4 border-b border-white/10 p-4 xl:border-b-0 xl:border-r xl:border-white/10">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <div className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+                  <div className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">
                     Current assessment
                   </div>
                   <h2 className="mt-1 text-xl font-black leading-tight text-white sm:text-2xl">
                     {stateHeadline(p?.state)}
                   </h2>
-                  <p className="mt-1 max-w-[720px] text-sm leading-5 text-slate-300">
+                  <p className="mt-1 max-w-[720px] text-sm leading-5 text-slate-200">
                     {stateCopy(p?.state)}
                   </p>
                 </div>
@@ -192,38 +192,38 @@ export default function DashboardPage() {
                 </Badge>
               </div>
               <div className="grid gap-2 sm:grid-cols-3">
-                <div className="rounded-xl border border-white/10 bg-white/[0.055] p-3 shadow-inner">
-                  <div className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-400">
+                <div className="rounded-xl border border-white/15 bg-white/[0.09] p-3 shadow-inner">
+                  <div className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-300">
                     Control pass rate
                   </div>
                   <div className="mt-1 text-2xl font-black text-white">
                     {formatPassRate(passRate)}
                   </div>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-300">
                     {controlEvalReady
                       ? `${ingestion.data?.eval_accuracy?.failing ?? 0} failing tests`
                       : "run control eval"}
                   </p>
                 </div>
-                <div className="rounded-xl border border-white/10 bg-white/[0.055] p-3 shadow-inner">
-                  <div className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-400">
+                <div className="rounded-xl border border-white/15 bg-white/[0.09] p-3 shadow-inner">
+                  <div className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-300">
                     Open findings
                   </div>
                   <div className="mt-1 text-2xl font-black text-white">
                     {p?.open_violation_count ?? 0}
                   </div>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-300">
                     {p?.critical_violation_count ?? 0} critical
                   </p>
                 </div>
-                <div className="rounded-xl border border-white/10 bg-white/[0.055] p-3 shadow-inner">
-                  <div className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-400">
+                <div className="rounded-xl border border-white/15 bg-white/[0.09] p-3 shadow-inner">
+                  <div className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-300">
                     Proof export
                   </div>
                   <div className="mt-1 text-2xl font-black text-white">
                     {proofReady ? "ready" : "pending"}
                   </div>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-300">
                     {evidenceCount} raw evidence rows
                   </p>
                 </div>
@@ -232,10 +232,10 @@ export default function DashboardPage() {
             <div className="min-w-0 p-4">
               <div className="flex items-center justify-between gap-2">
                 <div>
-                  <div className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+                  <div className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">
                     Framework posture
                   </div>
-                  <p className="mt-1 text-xs text-slate-400">
+                  <p className="mt-1 text-xs text-slate-300">
                     Worst programs first, scroll to compare.
                   </p>
                 </div>

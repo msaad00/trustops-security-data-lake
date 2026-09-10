@@ -30,18 +30,18 @@ function FrameworkLine({
   const attestable = coverage?.attestable_requirement_count ?? 0;
 
   return (
-    <li className="flex min-w-0 items-center gap-3 border-b border-line py-3 last:border-b-0">
+    <li className="flex min-w-0 items-center gap-3 border-b border-line py-3.5 last:border-b-0">
       <FrameworkBadge
         frameworkId={framework.framework_id}
         fallbackLabel={framework.name}
-        size={38}
+        size={44}
         variant="mark-only"
       />
       <div className="min-w-0 flex-1">
         <div className="truncate text-sm font-black text-ink">
           {framework.name}
         </div>
-        <div className="mt-0.5 truncate text-xs text-muted">
+        <div className="mt-0.5 truncate text-xs font-medium leading-5 text-slate-600">
           {notEvaluated
             ? `Not evaluated · ${total ? `${total} controls in catalog` : "catalog pack pending"}`
             : `${mapped}/${total} controls mapped · ${attestable} attestable`}

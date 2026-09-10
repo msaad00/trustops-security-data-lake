@@ -84,7 +84,7 @@ function FrameworkCard({
           <FrameworkBadge
             frameworkId={unmonitored.framework_id}
             fallbackLabel={frameworkLabel(unmonitored)}
-            size={36}
+            size={44}
             variant="mark-only"
             className="bg-surface shadow-sm"
           />
@@ -128,7 +128,7 @@ function FrameworkCard({
         <FrameworkBadge
           frameworkId={frameworkIdFor(framework.framework)}
           fallbackLabel={framework.framework}
-          size={36}
+          size={44}
           variant="mark-only"
           className="bg-surface shadow-sm"
         />
