@@ -52,6 +52,11 @@ def test_openapi_documents_fastapi_surface() -> None:
         assert path in paths, path
 
 
+def test_openapi_documents_public_trust_route() -> None:
+    spec = json.loads(COMMITTED.read_text(encoding="utf-8"))
+    assert "/console/trust/{token}" in spec["paths"]
+
+
 def test_openapi_documents_every_catalogued_route() -> None:
     """The core read surface must appear in the spec, not behind a catch-all.
 
