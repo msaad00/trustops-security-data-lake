@@ -81,6 +81,13 @@ auditor.
 
 Curation is ordered by what teams are actually audited and certified against.
 
+The family ledger is available through `security-lakehouse frameworks safeguards`
+and `GET /api/v1/ccf/coverage`. It groups the operated safeguards by their
+`risk_domain`, then reports the frameworks touched plus reviewed and proposed
+mapping counts. A family with proposed mappings is **evaluatable**, not
+attestable; the endpoint keeps those states separate so a broad family view
+cannot become a false certification claim.
+
 | Framework           | Requirements | Mapped |    Pct |
 | ------------------- | -----------: | -----: | -----: |
 | eu-ai-act-2024-1689 |           15 |     15 | 100.0% |

@@ -42,6 +42,8 @@ _FORMAT_PATTERNS: dict[str, str] = {
     "fedramp-moderate": r"^[A-Z]{2}-\d",
 }
 
+_FRAMEWORK_FAMILIES = {"assurance", "security", "privacy", "ai-governance", "cloud", "sector"}
+
 
 def _load(rel: str) -> dict:
     return json.loads(Path(rel).read_text())
@@ -143,6 +145,16 @@ def test_catalog_controls_reference_registered_frameworks() -> None:
         if framework_id not in registry_ids:
             offenders.append(f"{control['control_id']}: framework_id {framework_id!r} not in registry")
     assert offenders == [], offenders
+
+
+def test_framework_registry_declares_a_display_family() -> None:
+    registry = _frameworks(_load("frameworks/registry.json"))
+    offenders = [
+        f"{fw.get('framework_id')}: invalid family {fw.get('family')!r}"
+        for fw in registry
+        if fw.get("family") not in _FRAMEWORK_FAMILIES
+    ]
+    assert offenders == []
 
 
 def test_mapping_controls_exist_in_catalog() -> None:
