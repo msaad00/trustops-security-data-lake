@@ -23,10 +23,10 @@ See [FRAMEWORK_COVERAGE.md](./FRAMEWORK_COVERAGE.md) for the live matrix. Curren
 
 ## Planned next (registry only)
 
-| Framework ID     | Official source                                                                                        | Target stream       | Notes                                                          |
-| ---------------- | ------------------------------------------------------------------------------------------------------ | ------------------- | -------------------------------------------------------------- |
-| `iso-27701-2019` | [ISO/IEC 27701:2019](https://www.iso.org/standard/71670.html)                                          | Privacy pack        | Extends ISO 27001 PIMS; requires license review before seeding |
-| `soc1`           | [AICPA SOC 1](https://www.aicpa-cima.com/topic/audit-assurance/audit-and-assurance-greater-than-soc-2) | Financial reporting | ICFR-focused; distinct evidence types from SOC 2               |
+| Framework ID     | Official source                                                                                        | Target stream       | Notes                                                                                                           |
+| ---------------- | ------------------------------------------------------------------------------------------------------ | ------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `iso-27701-2019` | [ISO/IEC 27701:2019](https://www.iso.org/standard/71670.html)                                          | Privacy pack        | Extends ISO 27001 PIMS; requires license review before seeding                                                  |
+| `soc1`           | [AICPA SOC 1](https://www.aicpa-cima.com/topic/audit-assurance/audit-and-assurance-greater-than-soc-2) | Financial reporting | Planned boundary is explicit in the registry; requires service-specific ICFR objectives before seeding controls |
 
 ## Expansion rules (do not skip)
 
@@ -34,7 +34,7 @@ See [FRAMEWORK_COVERAGE.md](./FRAMEWORK_COVERAGE.md) for the live matrix. Curren
 2. **Evidence requirements** — each new control ships `required_evidence_types` and connector hints.
 3. **Tests** — add catalog integrity, mapping coverage, and at least one pipeline fixture event per new evidence type.
 4. **Copyright guardrails** — reproduce identifiers and short titles only; link official sources.
-5. **Planned stays honest** — `planned` frameworks must have `seeded_control_count = 0` until a pack PR lands.
+5. **Planned stays honest** — `planned` frameworks must have `seeded_control_count = 0` until a pack PR lands. A planned framework may expose an evidence focus and next step, but those are guidance—not controls or evaluated coverage.
 
 ## Adding a new pack (contributor checklist)
 
