@@ -68,7 +68,7 @@ collapsing them would overstate both coverage and failure.
 
 ```
 $ security-lakehouse frameworks safeguards --format table
-37 safeguards map 532 of 942 requirements (56.5%) — 45 reviewed (4.8%), 487 proposed
+37 safeguards map 552 of 942 requirements (58.6%) — 45 reviewed (4.8%), 507 proposed
 ```
 
 A mapping is **reviewed** once a human has confirmed the requirements are the
@@ -95,7 +95,7 @@ Curation is ordered by what teams are actually audited and certified against.
 | iso-27017-2015      |           47 |     24 |  51.1% |
 | iso-27001-2022      |           93 |     11 |  11.8% |
 | nist-ai-rmf         |           72 |      6 |   8.3% |
-| nist-csf-2.0        |          106 |      6 |   5.7% |
+| nist-csf-2.0        |          106 |     26 |  24.5% |
 
 ### What a safeguard applies to
 

@@ -195,7 +195,7 @@ def test_review_report_groups_frameworks_categories_and_source_gaps() -> None:
     assert report["source_backed_mapping_count"] + report["unsourced_mapping_count"] == report["proposed_mapping_count"]
     assert sum(report["source_backed_by_framework"].values()) == report["source_backed_mapping_count"]
     assert sum(report["unsourced_by_framework"].values()) == report["unsourced_mapping_count"]
-    assert set(report["source_backed_by_framework"]) == {"cmmc-2-level2", "fedramp-moderate"}
+    assert set(report["source_backed_by_framework"]) == {"cmmc-2-level2", "fedramp-moderate", "nist-csf-2.0"}
 
 
 def test_review_queue_falls_back_to_safeguard_level_provenance() -> None:
