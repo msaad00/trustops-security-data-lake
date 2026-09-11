@@ -3185,20 +3185,23 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     def favicon() -> RedirectResponse:
         return RedirectResponse(url="/brand/trustops-mark.svg", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
 
+    # The public trust page is a static export under a dynamic segment, so
+    # only one placeholder is prebuilt. Keep the route in the OpenAPI contract
+    # whether or not a bundle is installed; otherwise generated contracts
+    # drift between source checkouts and CI jobs that download web-dist.
+    # Serve that prebuilt HTML for any token path (the client reads the real
+    # token from the URL). No auth — this is the unauthenticated reviewer
+    # surface. The handler remains an explicit 404 when the optional bundle is
+    # absent, matching the existing legacy-console fallback boundary.
+    trust_page = web_dist / "trust" / "share" / "index.html" if web_dist is not None else None
+
+    @app.get("/console/trust/{token}", response_class=HTMLResponse)
+    def public_trust_page(token: str) -> HTMLResponse:  # noqa: ARG001 - token read client-side
+        if trust_page is None or not trust_page.is_file():
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not found")
+        return HTMLResponse(trust_page.read_text(encoding="utf-8"))
+
     if web_dist is not None:
-        # The public trust page is a static export under a dynamic segment, so
-        # only one placeholder is prebuilt. Serve that prebuilt HTML for any
-        # token path (the client reads the real token from the URL); registered
-        # before the StaticFiles mount so arbitrary tokens are not a 404. No
-        # auth — this is the unauthenticated reviewer surface.
-        trust_page = web_dist / "trust" / "share" / "index.html"
-
-        @app.get("/console/trust/{token}", response_class=HTMLResponse)
-        def public_trust_page(token: str) -> HTMLResponse:  # noqa: ARG001 - token read client-side
-            if not trust_page.is_file():
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not found")
-            return HTMLResponse(trust_page.read_text(encoding="utf-8"))
-
         # Next.js static export; html=True resolves /console/<route>/ to index.html.
         app.mount("/console", StaticFiles(directory=str(web_dist), html=True), name="console")
 
