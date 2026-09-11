@@ -9,15 +9,15 @@ export const BRAND = {
   /** Human console surface. */
   consoleName: "Trust Data Lake Console",
   /** Category line used in README and marketing-adjacent docs. */
-  category: "Open evidence infrastructure for GRC",
+  category: "The trust layer for security data lakes",
   /** One-line mission for meta tags and share cards. */
   tagline:
-    "Collect evidence, evaluate controls, operate findings, and prove continuously — same JSON everywhere.",
+    "Normalize security evidence, evaluate controls, and prove trust continuously.",
   /** Headless-first differentiator. */
   surfaces: "API · CLI · MCP · CI · Console",
   /** Short description for Open Graph / npm / package manifests. */
   description:
-    "Open-source, headless-first evidence infrastructure for customer-owned GRC data — SOC 2, NIST AI RMF, FedRAMP, ISO, and beyond.",
+    "Customer-owned security data lake infrastructure for normalized evidence, deterministic control evaluations, and continuous trust proof.",
   /** Public trust-center header subtitle. */
   trustShareTitle: "Trust Data Lake Trust Center",
   /** Repo / PyPI technical name (not customer-facing). */
@@ -36,5 +36,5 @@ export const BRAND = {
   /** Dashboard home eyebrow (feature area, not product name). */
   homeEyebrow: "Home",
   /** Short label under the wordmark in chrome. */
-  consoleSubtitle: "Console",
+  consoleSubtitle: "Security trust layer",
 } as const;

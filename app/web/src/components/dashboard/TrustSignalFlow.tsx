@@ -127,7 +127,7 @@ export function TrustSignalFlow({
                   <Icon className="h-4 w-4" />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+                  <span className="block text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">
                     <span aria-hidden>
                       {String(index + 1).padStart(2, "0")} ·{" "}
                     </span>
@@ -136,11 +136,11 @@ export function TrustSignalFlow({
                   <span className="mt-0.5 block truncate text-sm font-black text-white">
                     {stage.title}
                   </span>
-                  <span className="block truncate text-[11px] text-slate-400">
+                  <span className="block truncate text-[11px] font-medium text-slate-300">
                     {stage.detail}
                   </span>
                 </span>
-                <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-slate-500 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white" />
+                <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-slate-300 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white" />
               </Link>
             </motion.div>
           );

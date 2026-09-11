@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
 import { OnboardingProgressHero } from "@/components/onboarding/OnboardingProgressHero";
 import { OnboardingQuickConnect } from "@/components/onboarding/OnboardingQuickConnect";
+import { OnboardingEvidencePaths } from "@/components/onboarding/OnboardingEvidencePaths";
 import { usePocReadiness } from "@/lib/api/hooks";
 import type { PocReadinessStep } from "@/lib/api/types";
 
@@ -34,6 +35,8 @@ export default function OnboardingPage() {
         title="Onboarding"
         description="Connect sources, prove sync, reach a shareable workspace."
       />
+
+      <OnboardingEvidencePaths />
 
       {readiness.isLoading && (
         <Card>
