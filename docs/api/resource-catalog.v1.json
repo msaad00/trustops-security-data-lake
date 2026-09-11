@@ -93,6 +93,12 @@
       "resource": "catalog.bundle"
     },
     {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/ccf/coverage",
+      "resource": "ccf.coverage"
+    },
+    {
       "kind": "collection",
       "methods": ["GET"],
       "path": "/api/v1/connectors",
