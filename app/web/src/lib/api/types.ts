@@ -902,6 +902,15 @@ export type FrameworkFreshness = "fresh" | "stale" | "expired" | "never_pulled";
 
 export interface FrameworkView {
   framework_id: string;
+  /** Product-owned grouping for scope marks; it is not a certification claim. */
+  family?:
+    | "assurance"
+    | "security"
+    | "privacy"
+    | "ai-governance"
+    | "cloud"
+    | "sector"
+    | string;
   name: string;
   version: string;
   effective_date: string | null;
