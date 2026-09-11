@@ -149,15 +149,15 @@ export default function DashboardPage() {
               </span>
             </div>
           </div>
-          <div className="relative z-10 grid lg:grid-cols-[minmax(210px,240px)_minmax(0,1fr)] xl:grid-cols-[minmax(210px,240px)_minmax(0,0.9fr)_minmax(320px,0.82fr)]">
-            <div className="flex items-center gap-4 border-b border-white/10 bg-white/[0.025] p-4 lg:block lg:border-b-0 lg:border-r lg:border-white/10">
+          <div className="relative z-10 grid lg:grid-cols-[minmax(200px,220px)_minmax(0,1fr)] xl:grid-cols-[minmax(200px,220px)_minmax(0,0.9fr)_minmax(320px,0.82fr)]">
+            <div className="flex items-center gap-3 border-b border-white/10 bg-white/[0.025] p-3 lg:block lg:border-b-0 lg:border-r lg:border-white/10">
               <PostureRing
                 score={p?.score ?? 0}
                 state={p?.state ?? "attention_required"}
-                size="default"
+                size="compact"
                 inverse
               />
-              <div className="min-w-0 lg:mt-2">
+              <div className="min-w-0 lg:mt-1">
                 <div className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">
                   Trust score
                 </div>
@@ -166,7 +166,7 @@ export default function DashboardPage() {
                 </p>
               </div>
             </div>
-            <div className="grid min-w-0 gap-4 border-b border-white/10 p-4 xl:border-b-0 xl:border-r xl:border-white/10">
+            <div className="grid min-w-0 gap-3 border-b border-white/10 p-3 xl:border-b-0 xl:border-r xl:border-white/10">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0">
                   <div className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">
@@ -192,7 +192,7 @@ export default function DashboardPage() {
                 </Badge>
               </div>
               <div className="grid gap-2 sm:grid-cols-3">
-                <div className="rounded-xl border border-white/15 bg-white/[0.09] p-3 shadow-inner">
+                <div className="rounded-xl border border-white/15 bg-white/[0.09] p-2.5 shadow-inner">
                   <div className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-300">
                     Control pass rate
                   </div>
@@ -205,7 +205,7 @@ export default function DashboardPage() {
                       : "run control eval"}
                   </p>
                 </div>
-                <div className="rounded-xl border border-white/15 bg-white/[0.09] p-3 shadow-inner">
+                <div className="rounded-xl border border-white/15 bg-white/[0.09] p-2.5 shadow-inner">
                   <div className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-300">
                     Open findings
                   </div>
@@ -216,7 +216,7 @@ export default function DashboardPage() {
                     {p?.critical_violation_count ?? 0} critical
                   </p>
                 </div>
-                <div className="rounded-xl border border-white/15 bg-white/[0.09] p-3 shadow-inner">
+                <div className="rounded-xl border border-white/15 bg-white/[0.09] p-2.5 shadow-inner">
                   <div className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-300">
                     Proof export
                   </div>
@@ -229,7 +229,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
-            <div className="min-w-0 p-4">
+            <div className="min-w-0 p-3">
               <div className="flex items-center justify-between gap-2">
                 <div>
                   <div className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">
@@ -244,7 +244,11 @@ export default function DashboardPage() {
                 </Badge>
               </div>
               <div className="mt-3">
-                <ComplianceOverview frameworks={frameworks} inverse />
+                <ComplianceOverview
+                  frameworks={frameworks}
+                  catalog={registeredFrameworks.data ?? []}
+                  inverse
+                />
               </div>
             </div>
           </div>
@@ -380,7 +384,10 @@ export default function DashboardPage() {
                 </Link>
               </div>
               <div className="mt-3">
-                <ComplianceOverview frameworks={frameworks} />
+                <ComplianceOverview
+                  frameworks={frameworks}
+                  catalog={registeredFrameworks.data ?? []}
+                />
               </div>
             </Card>
             <TrustLifecycle

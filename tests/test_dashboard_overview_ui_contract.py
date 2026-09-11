@@ -30,14 +30,22 @@ def test_dashboard_framework_posture_uses_compact_two_row_tray() -> None:
 
     assert "grid-rows-2" in overview
     assert "grid-flow-col" in overview
-    assert "auto-cols-[132px]" in overview
-    assert "h-[88px]" in overview
-    assert "grid-cols-[44px_minmax(0,1fr)]" in overview
-    assert "size={26}" in overview
-    assert "text-slate-200" in overview
+    assert "auto-cols-[104px]" in overview
+    assert "h-[72px]" in overview
+    assert "grid-cols-[30px_minmax(0,1fr)]" in overview
+    assert "Framework families" in overview
+    assert "catalog only" in overview
+    assert "planned" in overview
     assert "overflow-x-auto" in overview
     assert 'aria-label="Framework posture comparison"' in overview
     assert ".slice(0, 6)" not in overview
+
+
+def test_dashboard_compacts_the_score_ring_and_passes_the_framework_catalog() -> None:
+    dashboard = DASHBOARD.read_text(encoding="utf-8")
+
+    assert 'size="compact"' in dashboard
+    assert "catalog={registeredFrameworks.data ?? []}" in dashboard
 
 
 def test_dashboard_readiness_cards_keep_framework_marks_legible() -> None:
