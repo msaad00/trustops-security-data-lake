@@ -59,6 +59,7 @@ from security_lakehouse.mappings import (
     load_control_article_mappings,
 )
 from security_lakehouse.readiness import build_readiness_view
+from security_lakehouse.safeguards import coverage_by_family, coverage_by_framework
 from security_lakehouse.tracking import ALLOWED_STATES, append_event, latest_state, list_events, verify_tracking_chain
 from security_lakehouse.trust_share import create_share, list_shares, revoke_share
 from security_lakehouse.verification import verify_event
@@ -143,6 +144,10 @@ SINGLETON_LOADERS: dict[str, tuple[str, Callable[[Path], Any]]] = {
     "/api/v1/crosswalk": ("crosswalk", lambda _lake: build_framework_crosswalk()),
     "/api/v1/crosswalk/reviewed": ("crosswalk.reviewed", lambda _lake: build_reviewed_crosswalk()),
     "/api/v1/mappings/equivalence": ("mappings.equivalence", lambda _lake: build_framework_equivalence()),
+    "/api/v1/ccf/coverage": (
+        "ccf.coverage",
+        lambda _lake: {"families": coverage_by_family(), "frameworks": coverage_by_framework()},
+    ),
 }
 
 # Route -> (resource name, loader) for endpoints returning a row collection.

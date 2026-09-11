@@ -1715,6 +1715,14 @@ def _frameworks_safeguards(args: argparse.Namespace) -> int:
     print(f"{'framework':26s} {'requirements':>12s} {'covered':>8s} {'pct':>7s}")
     for name, row in coverage["frameworks"].items():
         print(f"{name:26s} {row['controls']:12d} {row['covered']:8d} {row['coverage_pct']:6.1f}%")
+    print()
+    print("CCF safeguard families (reviewed vs proposed mappings)")
+    print(f"{'family':28s} {'safeguards':>10s} {'frameworks':>10s} {'reviewed':>10s} {'proposed':>10s}")
+    for row in coverage["families"]:
+        print(
+            f"{row['label']:28s} {row['safeguard_count']:10d} {row['framework_count']:10d} "
+            f"{row['reviewed_mapping_count']:10d} {row['proposed_mapping_count']:10d}"
+        )
     return 0
 
 

@@ -781,6 +781,17 @@ def test_v1_ingestion_status_includes_scale(tmp_path: Path) -> None:
         server.shutdown()
 
 
+def test_ccf_coverage_endpoint_exposes_family_states(tmp_path: Path) -> None:
+    status, body = api_v1.handle_get("/api/v1/ccf/coverage", {}, tmp_path)
+
+    assert status == HTTPStatus.OK
+    assert body["meta"]["resource"] == "ccf.coverage"
+    families = body["data"]["families"]
+    assert families
+    assert {row["state"] for row in families} >= {"reviewed", "proposed_only"}
+    assert "frameworks" in body["data"]
+
+
 def test_unmapped_post_route_fails_closed() -> None:
     """A mutating route not explicitly scoped is denied, not given `write`.
 

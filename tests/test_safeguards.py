@@ -8,6 +8,7 @@ from pathlib import Path
 from security_lakehouse.catalog import load_control_catalog
 from security_lakehouse.safeguards import (
     SCHEMA,
+    coverage_by_family,
     coverage_by_framework,
     load_safeguards,
     mapping_review_queue,
@@ -70,6 +71,21 @@ def test_coverage_matches_a_direct_count() -> None:
     assert cov["controls"] == len(controls)
     assert cov["covered"] == len(mapped & set(controls))
     assert cov["covered"] + cov["uncovered"] == cov["controls"]
+
+
+def test_ccf_family_ledger_separates_reviewed_and_proposed_mappings() -> None:
+    families = coverage_by_family()
+
+    assert families
+    assert [row["family_id"] for row in families] == sorted(row["family_id"] for row in families)
+    assert all(row["safeguard_count"] > 0 for row in families)
+    assert all(row["frameworks"] == sorted(row["frameworks"]) for row in families)
+    assert all(
+        row["reviewed_mapping_count"] + row["proposed_mapping_count"] == row["mapping_count"] for row in families
+    )
+    assert any(row["state"] == "reviewed" for row in families)
+    assert any(row["state"] == "proposed_only" for row in families)
+    assert {"identity", "data-protection", "ai-governance"} <= {row["family_id"] for row in families}
 
 
 def test_validation_rejects_a_safeguard_claiming_an_unknown_control(tmp_path: Path) -> None:

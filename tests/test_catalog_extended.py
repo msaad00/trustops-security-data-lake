@@ -33,6 +33,13 @@ def test_catalog_lists_extended_write_resources() -> None:
     } <= paths
 
 
+def test_catalog_lists_ccf_family_coverage() -> None:
+    catalog = api_v1.resource_catalog()
+    row = _by_path(catalog, "/api/v1/ccf/coverage")
+    assert row["resource"] == "ccf.coverage"
+    assert row["methods"] == ["GET"]
+
+
 def test_catalog_advertises_write_methods() -> None:
     catalog = api_v1.resource_catalog()
 
