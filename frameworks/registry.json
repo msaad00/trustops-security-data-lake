@@ -208,6 +208,13 @@
       "pulled_at": null,
       "implementation_status": "planned",
       "copyright_guardrail": "ISO standard text is licensed. Planned pack will store clause identifiers and short internal titles only after customer license review.",
+      "coverage_boundary": "No controls seeded: ISO/IEC 27701 is licensed, and the local privacy pack is blocked on license review before source-linked control seeding.",
+      "evidence_focus": [
+        "Privacy information management scope and roles",
+        "PII processing inventory, purpose, and data-flow evidence",
+        "Privacy risk, data-subject rights, and supplier evidence"
+      ],
+      "next_step": "Complete license review and confirm permitted identifier/title use before seeding a source-linked privacy pack.",
       "sync_cadence_days": 90
     },
     {

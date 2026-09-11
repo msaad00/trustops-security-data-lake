@@ -25,7 +25,7 @@ See [FRAMEWORK_COVERAGE.md](./FRAMEWORK_COVERAGE.md) for the live matrix. Curren
 
 | Framework ID     | Official source                                                                                        | Target stream       | Notes                                                                                                           |
 | ---------------- | ------------------------------------------------------------------------------------------------------ | ------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `iso-27701-2019` | [ISO/IEC 27701:2019](https://www.iso.org/standard/71670.html)                                          | Privacy pack        | Extends ISO 27001 PIMS; requires license review before seeding                                                  |
+| `iso-27701-2019` | [ISO/IEC 27701:2019](https://www.iso.org/standard/71670.html)                                          | Privacy pack        | Planned boundary is explicit in the registry; license review is required before seeding controls                |
 | `soc1`           | [AICPA SOC 1](https://www.aicpa-cima.com/topic/audit-assurance/audit-and-assurance-greater-than-soc-2) | Financial reporting | Planned boundary is explicit in the registry; requires service-specific ICFR objectives before seeding controls |
 
 ## Expansion rules (do not skip)
