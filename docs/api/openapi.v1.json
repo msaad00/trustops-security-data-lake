@@ -2424,6 +2424,25 @@
         "tags": ["catalog"]
       }
     },
+    "/api/v1/ccf/coverage": {
+      "get": {
+        "operationId": "get_ccf_coverage",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get ccf.coverage",
+        "tags": ["ccf"]
+      }
+    },
     "/api/v1/connectors": {
       "get": {
         "description": "Requires scope: read.",

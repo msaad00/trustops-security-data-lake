@@ -36,6 +36,31 @@ SCHEMA = "trustops.safeguards.v1"
 VALID_ROLES = {"primary", "equivalent"}
 VALID_REVIEW_STATES = {"reviewed", "proposed"}
 
+# These labels describe the operated CCF safeguard families, not official
+# framework names. Keep the ids stable so the CLI, API, and console can join on
+# the same family even when a safeguard title changes.
+CCF_FAMILY_LABELS = {
+    "identity": "Identity and access",
+    "data-protection": "Data protection",
+    "detection": "Detection",
+    "logging": "Audit logging",
+    "change-management": "Change management",
+    "vulnerability-management": "Vulnerability management",
+    "third-party-risk": "Third-party risk",
+    "risk-management": "Risk management",
+    "availability": "Availability and recovery",
+    "ai-governance": "AI governance",
+    "incident-response": "Incident response",
+    "training": "Security awareness",
+    "physical": "Physical security",
+    "secure-development": "Secure development",
+    "network": "Network security",
+    "privacy-rights": "Privacy rights",
+    "data-inventory": "Data inventory",
+    "data-retention": "Data retention",
+    "processing-integrity": "Processing integrity",
+}
+
 JsonObject = dict[str, Any]
 
 
@@ -250,6 +275,64 @@ def safeguards_for_asset_type(asset_type: str, payload: JsonObject | None = None
     )
 
 
+def coverage_by_family(payload: JsonObject | None = None) -> list[JsonObject]:
+    """Report CCF coverage by operated safeguard family.
+
+    A family is the safeguard's ``risk_domain``. This is deliberately separate
+    from framework coverage: a family can touch several frameworks, and a
+    proposed mapping makes a requirement evaluatable but not attestable. The
+    ledger preserves both counts so the console can show breadth without
+    overstating assurance.
+    """
+    data = payload or load_safeguards()
+    grouped: dict[str, dict[str, Any]] = {}
+    for entry in data["safeguards"]:
+        family_id = str(entry.get("risk_domain") or "uncategorized")
+        row = grouped.setdefault(
+            family_id,
+            {
+                "family_id": family_id,
+                "label": CCF_FAMILY_LABELS.get(family_id, family_id.replace("-", " ").title()),
+                "safeguard_count": 0,
+                "frameworks": set(),
+                "control_ids": set(),
+                "mapping_count": 0,
+                "reviewed_mapping_count": 0,
+                "proposed_mapping_count": 0,
+            },
+        )
+        row["safeguard_count"] += 1
+        for member in entry.get("satisfies", []):
+            row["mapping_count"] += 1
+            row["control_ids"].add(str(member.get("control_id")))
+            framework_id = member.get("framework_id")
+            if framework_id:
+                row["frameworks"].add(str(framework_id))
+            if member.get("review_status", "reviewed") == "reviewed":
+                row["reviewed_mapping_count"] += 1
+            else:
+                row["proposed_mapping_count"] += 1
+
+    rows: list[JsonObject] = []
+    for family_id, row in sorted(grouped.items()):
+        reviewed = int(row["reviewed_mapping_count"])
+        rows.append(
+            {
+                "family_id": family_id,
+                "label": row["label"],
+                "safeguard_count": row["safeguard_count"],
+                "framework_count": len(row["frameworks"]),
+                "frameworks": sorted(row["frameworks"]),
+                "mapped_requirement_count": len(row["control_ids"]),
+                "mapping_count": row["mapping_count"],
+                "reviewed_mapping_count": reviewed,
+                "proposed_mapping_count": row["proposed_mapping_count"],
+                "state": "reviewed" if reviewed else "proposed_only",
+            }
+        )
+    return rows
+
+
 def coverage_by_framework(payload: JsonObject | None = None, *, catalog: dict[str, Any] | None = None) -> JsonObject:
     """Report how much of each framework the CCF currently covers."""
     controls = catalog if catalog is not None else load_control_catalog()
@@ -285,4 +368,5 @@ def coverage_by_framework(payload: JsonObject | None = None, *, catalog: dict[st
             }
             for name, row in sorted(per_framework.items())
         },
+        "families": coverage_by_family(data),
     }
