@@ -9,12 +9,17 @@ import type { NextConfig } from "next";
 // ("distDirRoot should not navigate out of the projectPath"). The console must
 // emit straight into the Python package tree (../../src/.../web/dist), so we
 // stay on the Webpack builder, which supports the out-of-project distDir.
+// During `next dev`, keep the build output inside app/web/. Next resolves
+// server-only runtime chunks relative to that output directory; an external
+// dev distDir makes those chunks unable to resolve app/web/node_modules.
+const isDev = process.env.NODE_ENV === "development";
+
 const config: NextConfig = {
   output: "export",
   basePath: "/console",
   assetPrefix: "/console",
   trailingSlash: true,
-  distDir: "../../src/security_lakehouse/web/dist",
+  distDir: isDev ? ".next" : "../../src/security_lakehouse/web/dist",
   cleanDistDir: true,
   images: { unoptimized: true },
   reactStrictMode: true,
