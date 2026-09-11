@@ -7,7 +7,7 @@ review backlog.
 
 Frameworks: 15 (13 implemented, 2 planned)
 Requirements catalogued: 942 (all source-cited)
-Evaluatable (touched by a safeguard): 532 (56.5%)
+Evaluatable (touched by a safeguard): 552 (58.6%)
 **Attestable (reviewed safeguard mapping — what an auditor accepts): 45 (4.8%)**
 Asset types modeled: 20
 
@@ -26,7 +26,7 @@ Asset types modeled: 20
 | ISO/IEC 27701:2019 Privacy information management | [ISO/IEC 27701:2019](https://www.iso.org/standard/71670.html) | planned | 0 | 0 | 0 | 0 | 0.0% | never pulled |
 | ISO/IEC 42001:2023 AI management system | [ISO/IEC 42001:2023](https://www.iso.org/standard/42001) | implemented_full_pack | 39 | 39 | 26 | 1 | 2.6% | never pulled |
 | NIST AI Risk Management Framework | [NIST Artificial Intelligence Risk Management Framework (AI RMF 1.0)](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10) | implemented_full_pack | 72 | 72 | 6 | 1 | 1.4% | never pulled |
-| NIST Cybersecurity Framework (CSF) 2.0 | [NIST Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework) | implemented_full_pack | 106 | 106 | 6 | 6 | 5.7% | never pulled |
+| NIST Cybersecurity Framework (CSF) 2.0 | [NIST Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework) | implemented_full_pack | 106 | 106 | 26 | 6 | 5.7% | never pulled |
 | PCI DSS v4.0 Payment Card Industry Data Security Standard | [PCI Security Standards Council - PCI DSS v4.0](https://www.pcisecuritystandards.org/document_library/?category=pcidss) | implemented_limited_mapping | 12 | 12 | 12 | 3 | 25.0% | never pulled |
 | SOC 1 Type II (ICFR) | [AICPA SOC 1 Reporting on Controls at a Service Organization](https://www.aicpa-cima.com/topic/audit-assurance/audit-and-assurance-greater-than-soc-2) | planned | 0 | 0 | 0 | 0 | 0.0% | never pulled |
 | SOC 2 Trust Services Criteria | [AICPA & CIMA 2017 Trust Services Criteria (With Revised Points of Focus - 2022)](https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022) | implemented_full_pack | 61 | 61 | 61 | 10 | 16.4% | never pulled |
