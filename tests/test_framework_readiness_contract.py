@@ -19,3 +19,13 @@ def test_planned_framework_readiness_metadata_does_not_create_controls() -> None
     assert soc1["control_count"] == 0
     assert soc1["implemented_control_count"] == 0
     assert soc1["mapping_coverage_pct"] == 0.0
+
+
+def test_iso_27701_planned_view_explains_license_boundary() -> None:
+    iso_27701 = next(row for row in build_framework_view() if row["framework_id"] == "iso-27701-2019")
+
+    assert iso_27701["implementation_status"] == "planned"
+    assert "licensed" in iso_27701["coverage_boundary"]
+    assert iso_27701["evidence_focus"]
+    assert "license review" in iso_27701["next_step"]
+    assert iso_27701["control_count"] == 0

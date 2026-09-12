@@ -5,7 +5,7 @@
   "control_count": 942,
   "crosswalk_count": 942,
   "components": {
-    "frameworks": "19eefaaf8ff28653ba181f3f7a8fa2e278f12f8caef5988e52e2257a41cb4580",
+    "frameworks": "19254ebd5e13c36a1be00c9cfc7146d0e023bfadf77e0703a6d804afe8518e20",
     "controls": "de2be4148253fec5a82d970553aa022fe0b9541df72d5da4457480ade8f1f339",
     "crosswalk": "53b046cfe5638c4783c1f14f1b4ebe5d26cc9026735ab4ce9edf666767b73f3a"
   },
@@ -6712,5 +6712,5 @@
       "lifecycle_status": "active"
     }
   ],
-  "bundle_sha256": "363deee5258e449c3f44b9e15fc2c50c4a19951df025d6b6ead5f950130b5bbb"
+  "bundle_sha256": "6dc8f028437dba4571cb9d3b8f3cd834c1bbafaf602ae0a6367c7ea54b37e3fc"
 }
