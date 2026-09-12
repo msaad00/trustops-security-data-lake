@@ -142,6 +142,30 @@ function Row({
         </div>
       </div>
 
+      {isPlanned &&
+      (framework.coverage_boundary || framework.evidence_focus?.length) ? (
+        <div className="grid gap-2 rounded-xl border border-dashed border-line bg-surfaceMuted/50 p-3 text-[11px] text-muted">
+          <div className="font-black uppercase tracking-wide text-ink">
+            Planned boundary
+          </div>
+          {framework.coverage_boundary ? (
+            <p>{framework.coverage_boundary}</p>
+          ) : null}
+          {framework.evidence_focus?.length ? (
+            <div className="flex flex-wrap gap-1.5">
+              {framework.evidence_focus.map((focus) => (
+                <span
+                  key={focus}
+                  className="rounded-full border border-line bg-surface px-2 py-1"
+                >
+                  {focus}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
       <div className="flex flex-wrap items-end justify-between gap-3 border-t border-line pt-3">
         <div className="min-w-0 text-[11px] text-muted">
           <a
@@ -237,6 +261,34 @@ function Detail({
             </div>
             <p className="mt-1 text-xs">{framework.copyright_guardrail}</p>
           </section>
+
+          {framework.implementation_status === "planned" &&
+          (framework.coverage_boundary ||
+            framework.evidence_focus?.length ||
+            framework.next_step) ? (
+            <section className="grid gap-2 rounded-xl border border-dashed border-line bg-surfaceMuted/50 p-3">
+              <div className="text-xs font-black uppercase tracking-wide text-muted">
+                Planned boundary
+              </div>
+              {framework.coverage_boundary ? (
+                <p className="text-xs text-ink">
+                  {framework.coverage_boundary}
+                </p>
+              ) : null}
+              {framework.evidence_focus?.length ? (
+                <ul className="grid gap-1 text-xs text-muted">
+                  {framework.evidence_focus.map((focus) => (
+                    <li key={focus}>• {focus}</li>
+                  ))}
+                </ul>
+              ) : null}
+              {framework.next_step ? (
+                <p className="text-xs font-bold text-ink">
+                  Next step: {framework.next_step}
+                </p>
+              ) : null}
+            </section>
+          ) : null}
 
           <dl className="grid grid-cols-[140px_1fr] gap-x-3 gap-y-1.5">
             <dt className="text-muted">Source</dt>

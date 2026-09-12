@@ -921,6 +921,9 @@ export interface FrameworkView {
   pulled_at: string | null;
   implementation_status: string;
   copyright_guardrail: string;
+  coverage_boundary?: string;
+  evidence_focus?: string[];
+  next_step?: string;
   sync_cadence_days: number;
   control_count: number;
   implemented_control_count: number;

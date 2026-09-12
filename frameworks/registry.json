@@ -223,6 +223,13 @@
       "pulled_at": null,
       "implementation_status": "planned",
       "copyright_guardrail": "Do not reproduce licensed criteria text. Planned pack will cite official AICPA SOC 1 guidance with local control IDs only.",
+      "coverage_boundary": "No controls seeded: SOC 1 control objectives are service-specific and require an agreed internal-control-over-financial-reporting scope.",
+      "evidence_focus": [
+        "ICFR scope and service-specific control objectives",
+        "Financial close, reconciliation, and reporting evidence",
+        "Access and change evidence tied to financial reporting"
+      ],
+      "next_step": "Define the service-specific control objectives and review licensed AICPA guidance before seeding a source-linked pack.",
       "sync_cadence_days": 90
     }
   ]
