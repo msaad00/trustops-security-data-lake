@@ -112,7 +112,7 @@ function Row({
       <div className="grid gap-3">
         <div>
           <div className="flex items-center justify-between gap-3 text-xs">
-            <span className="font-black text-ink">Evaluatable</span>
+            <span className="font-black text-ink">Mapped</span>
             <span className="text-muted">
               <b className="text-ink">{evaluatablePct}%</b> · {evaluatableCount}
               /{seededCount}
@@ -127,7 +127,7 @@ function Row({
         </div>
         <div>
           <div className="flex items-center justify-between gap-3 text-xs">
-            <span className="font-black text-ink">Attestable</span>
+            <span className="font-black text-ink">Reviewed</span>
             <span className="text-muted">
               <b className="text-ink">{attestablePct}%</b> · {attestableCount}/
               {seededCount}
@@ -574,7 +574,7 @@ function FrameworksPageContent() {
           </div>
           <div className="bg-[#09182a]/95 p-4">
             <div className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
-              Evaluatable coverage
+              Mapped requirements
             </div>
             <div className="mt-1 text-3xl font-black text-white">
               {coverageSummary
@@ -596,7 +596,7 @@ function FrameworksPageContent() {
           </div>
           <div className="bg-[#09182a]/95 p-4">
             <div className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
-              Attestable coverage
+              Reviewed mappings
             </div>
             <div className="mt-1 flex items-center gap-2 text-3xl font-black text-white">
               <CheckCircle2 className="h-6 w-6 text-emerald-300" />

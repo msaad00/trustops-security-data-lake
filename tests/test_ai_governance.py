@@ -172,11 +172,11 @@ def test_build_ai_governance_empty_lake_gaps(tmp_path: Path) -> None:
     assert data["aibom"]["shipped"] is True
 
 
-def test_build_ai_governance_governed_when_loops_complete(tmp_path: Path) -> None:
+def test_complete_inventory_without_passing_controls_is_not_governed(tmp_path: Path) -> None:
     _seed_ai_events(tmp_path)
     data = build_ai_governance_status(lake=tmp_path)
-    assert data["governance_score"] >= 85
-    assert data["state"] == "governed"
+    assert data["governance_score"] < 85
+    assert data["state"] != "governed"
     assert data["gaps"] == []
 
 
@@ -194,3 +194,35 @@ def test_ai_governance_api_requires_auth(tmp_path: Path) -> None:
     client = TestClient(app)
     resp = client.get("/api/v1/platform/ai-governance")
     assert resp.status_code == HTTPStatus.UNAUTHORIZED
+
+
+@pytest.mark.parametrize("status", ["fail", "unknown"])
+def test_evidence_presence_does_not_make_ai_posture_pass(status):
+    from security_lakehouse.ai_governance import _framework_rows
+
+    control_id = "NIST-AI-RMF-GOVERN-1.1"
+    rows = _framework_rows(
+        controls=[{"control_id": control_id, "status": status}],
+        events=[{"control_ids": [control_id], "status": "open"}],
+    )
+    row = next(r for r in rows if r["framework_id"] == "nist-ai-rmf")
+    assert row["coverage_pct"] == 100.0  # Evidence exists; it does not prove a pass.
+    assert row["score"] == 0
+    assert row["passing_controls"] == 0
+
+
+def test_ai_posture_separates_pass_fail_and_unevaluated_controls():
+    from security_lakehouse.ai_governance import _framework_rows
+
+    rows = _framework_rows(
+        controls=[
+            {"control_id": "NIST-AI-RMF-GOVERN-1.1", "status": "pass"},
+            {"control_id": "NIST-AI-RMF-GOVERN-1.2", "status": "fail"},
+        ],
+        events=[{"control_ids": ["NIST-AI-RMF-GOVERN-1.3"], "status": "observed"}],
+    )
+    row = next(r for r in rows if r["framework_id"] == "nist-ai-rmf")
+    assert row["score"] == 33
+    assert row["passing_controls"] == 1
+    assert row["failing_controls"] == 1
+    assert row["unevaluated_controls"] == 1

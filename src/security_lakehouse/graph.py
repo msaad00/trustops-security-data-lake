@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 from security_lakehouse.catalog import load_control_catalog, load_framework_registry
+from security_lakehouse.generations import generation_reader
 from security_lakehouse.io import read_jsonl
 
 
@@ -69,6 +70,7 @@ def _freshness_index(lake: Path) -> dict[str, dict[str, Any]]:
     return index
 
 
+@generation_reader
 def build_compliance_graph(lake_dir: str | Path) -> dict[str, Any]:
     """Return a serialisable graph spanning frameworks → controls → evidence → assets."""
     lake = Path(lake_dir)
@@ -200,6 +202,7 @@ def build_compliance_graph(lake_dir: str | Path) -> dict[str, Any]:
     return {"nodes": nodes, "edges": edges, "counts": counts}
 
 
+@generation_reader
 def analyze_coverage(lake_dir: str | Path, graph: dict[str, Any] | None = None) -> dict[str, Any]:
     """Compute compliance coverage and gaps over the directed compliance graph.
 
@@ -346,6 +349,7 @@ def analyze_coverage(lake_dir: str | Path, graph: dict[str, Any] | None = None) 
     }
 
 
+@generation_reader
 def build_repository_graph(lake_dir: str | Path) -> dict[str, Any]:
     """Return a graph of repository topology + governance evidence.
 

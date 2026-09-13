@@ -61,3 +61,10 @@ def test_container_command_runs_the_authenticated_server() -> None:
     assert "serve" in argv
     # The image binds 0.0.0.0; --server is what makes that bind authenticated.
     assert "--server" in argv, f"container CMD {argv!r} would serve local mode on a network"
+
+
+def test_container_includes_cloud_collection_and_agent_dependencies() -> None:
+    installs = re.findall(r'pip install "\.\[([^\]]+)\]"', DOCKERFILE.read_text(encoding="utf-8"))
+    assert any({"server", "cloud", "mcp"} <= set(extras.split(",")) for extras in installs), (
+        "Default container must support live collection and the advertised MCP entry point"
+    )

@@ -17,7 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
-import { BRAND } from "@/lib/brand";
+import { ControlFamilyIcon } from "@/components/framework/ControlFamilyIcon";
 import { FrameworkBadge } from "@/components/framework/FrameworkBadge";
 import {
   useCrosswalk,
@@ -84,7 +84,7 @@ export default function CrosswalkPage() {
       <PageHeader
         eyebrow="Crosswalk"
         title="Control mapping coverage"
-        description={`Reviewed mappings from ${BRAND.name} controls to framework source articles, with fallback framework-to-framework diagnostics kept separate.`}
+        description="Reviewed control mappings and framework overlap."
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone="ready">
@@ -110,9 +110,7 @@ export default function CrosswalkPage() {
             Cross-framework control equivalence
           </CardTitle>
           <CardDescription>
-            Curated answer-once groups linking SOC 2, ISO, NIST CSF, FedRAMP,
-            CIS, HIPAA, GDPR, PCI, and AI governance controls — the mapping
-            layer managed GRC platforms use for multi-framework posture.
+            Reviewed groups of related controls.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3">
@@ -122,6 +120,7 @@ export default function CrosswalkPage() {
               className="rounded-lg border border-line bg-slate-50/80 p-3"
             >
               <div className="flex flex-wrap items-center gap-2">
+                <ControlFamilyIcon domain={group.risk_domain} />
                 <span className="text-sm font-black text-ink">
                   {group.label}
                 </span>
@@ -140,7 +139,8 @@ export default function CrosswalkPage() {
                     <FrameworkBadge
                       frameworkId={ref.framework_id}
                       fallbackLabel={ref.framework_id}
-                      size={14}
+                      size={24}
+                      variant="mark-only"
                     />
                     {ref.control_id}
                   </span>

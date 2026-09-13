@@ -45,6 +45,7 @@ docker run --rm -p 8787:8787 -v $PWD/build/lakehouse:/lake trustops:dev
 Notes:
 
 - The image bundles the Next.js workbench (built in stage 1) inside the Python wheel (stage 2) so the runtime image has no Node dependency.
+- Includes the public demo fixtures, cloud connector SDKs, and MCP entry point.
 - Runs as UID 1100 (non-root) with `readOnlyRootFilesystem` compatible defaults.
 - Listens on `:8787`; `/api/healthz` is the liveness probe.
 

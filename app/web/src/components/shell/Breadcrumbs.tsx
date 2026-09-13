@@ -10,7 +10,7 @@ import { BRAND } from "@/lib/brand";
 const LABEL: Record<string, string> = {
   dashboard: "Dashboard",
   controls: "Controls",
-  violations: "Violations",
+  violations: "Findings",
   evidence: "Evidence",
   automation: "Workflows",
   graph: "Graph",

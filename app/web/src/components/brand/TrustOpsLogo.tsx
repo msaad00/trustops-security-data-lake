@@ -4,7 +4,7 @@ import { BRAND } from "@/lib/brand";
 import { TrustOpsMark } from "./TrustOpsMark";
 
 interface Props {
-  /** Show wordmark text beside the monogram. */
+  /** Show wordmark text beside the evidence-lake mark. */
   showWordmark?: boolean;
   /** Optional subtitle under the wordmark (e.g. "Console"). */
   subtitle?: string;
@@ -40,12 +40,7 @@ export function TrustOpsLogo({
               markSize === "sm" || markSize === "xs" ? "text-sm" : "text-lg",
             )}
           >
-            <span className="mr-[0.22em] inline-block">
-              {BRAND.wordmarkPrimary}
-            </span>
-            <span className={inverted ? "text-cyan-300" : "text-[#0f8f91]"}>
-              {BRAND.wordmarkAccent}
-            </span>
+            {BRAND.name}
           </span>
           {subtitle && (
             <span

@@ -53,3 +53,12 @@ The reviewed decision for every registered framework is recorded in
 `frameworks/identity-assets.json`. ISO, AICPA SOC, CIS, FedRAMP, PCI SSC, HHS,
 and EU institutional artwork is not bundled because its terms do not permit
 generic OSS product use or because no official framework logo exists.
+
+## Compact framework identities
+
+`app/web/public/frameworks/badges/` contains project-owned recognition icons
+adapted from Agent-Bom (`ui/public/logos/frameworks/`, Apache-2.0). These use
+framework names, simple monograms, a globe, a shield, and a stars motif to
+identify scope. They are not official institutional logos or certification
+seals. The console uses these at small sizes; the approved NIST illustrations
+remain bundled separately. No runtime or repository dependency is introduced.

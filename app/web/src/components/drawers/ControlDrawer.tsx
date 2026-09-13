@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Drawer } from "@/components/ui/drawer";
 import {
   useControlRemediation,
@@ -45,7 +45,7 @@ export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
       width="lg"
     >
       {control && (
-        <div className="grid gap-5">
+        <div className="grid min-w-0 gap-5 [overflow-wrap:anywhere]">
           {test && (
             <div className="rounded-xl border border-line bg-slate-50/60 p-3">
               <div className="flex items-center justify-between gap-2">
@@ -64,7 +64,7 @@ export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
               </div>
             </div>
           )}
-          <dl className="grid grid-cols-[120px_1fr] gap-x-3 gap-y-1.5 text-sm">
+          <dl className="grid grid-cols-[100px_minmax(0,1fr)] gap-x-3 gap-y-1.5 text-sm">
             <dt className="text-muted">Framework</dt>
             <dd>
               <FrameworkBadge
@@ -87,12 +87,12 @@ export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
           </dl>
           <div>
             <div className="mb-2 text-xs font-black uppercase tracking-wide text-muted">
-              Open violations · {violations.length}
+              Open findings · {violations.length}
             </div>
             <div className="grid gap-2">
               {violations.length === 0 && (
                 <div className="rounded-lg border border-dashed border-line p-3 text-xs text-muted">
-                  No open violations linked to this control.
+                  No open findings linked to this control.
                 </div>
               )}
               {violations.map((v) => (
@@ -122,7 +122,7 @@ export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
           {remediation.data && (
             <div className="rounded-xl border border-line bg-blue-50/40 p-3">
               <div className="mb-1 text-xs font-black uppercase tracking-wide text-muted">
-                How to fix
+                Suggested remediation
                 {!remediation.data.matched && (
                   <Badge tone="default" className="ml-2 normal-case">
                     general guidance
@@ -149,8 +149,18 @@ export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
             entityId={control.control_id}
           />
           <div className="flex flex-wrap gap-2">
-            <Button variant="default">Request evidence</Button>
-            <Button variant="default">Open in dashboard</Button>
+            <Link
+              className="rounded-lg border border-line px-3 py-2 text-sm font-semibold text-brand hover:bg-slate-50"
+              href={`/remediation?tab=evidence&control=${encodeURIComponent(control.control_id)}`}
+            >
+              Request evidence
+            </Link>
+            <Link
+              className="rounded-lg border border-line px-3 py-2 text-sm font-semibold text-brand hover:bg-slate-50"
+              href={`/remediation?tab=tasks&control=${encodeURIComponent(control.control_id)}`}
+            >
+              Create task
+            </Link>
           </div>
         </div>
       )}

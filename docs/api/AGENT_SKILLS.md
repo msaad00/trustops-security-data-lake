@@ -9,6 +9,14 @@ is a peer surface on the same contracts.
 Related: [AGENT_API.md](AGENT_API.md) · [openapi.v1.json](openapi.v1.json) ·
 [HEADLESS_CONNECTOR_SETUP.md](../playbooks/HEADLESS_CONNECTOR_SETUP.md)
 
+## Portable agent skills
+
+The repository includes [TrustOps operator](../../agent-skills/trustops-operator/SKILL.md)
+and six [analyst skills](../../agent-skills/FRAMEWORK_SKILLS.md). Copy the chosen
+skill folder into the skill search path supported by your agent client, and
+configure access to your TrustOps deployment separately. These Markdown skills
+provide instructions; they do not grant API permissions or install credentials.
+
 ## Quick discovery
 
 ```bash
@@ -49,6 +57,11 @@ validate access, enable collection, sync evidence, run control eval.
 
 **Scope:** `connector_manage` for mutate steps; `read` for list/status.
 
+Inspect sync completion before evaluation. A pagination cap or failed required
+source read is an error, not a successful partial inventory; retained posture
+still describes the prior successful assessment. Invalid mapping/rule validation
+must stop the run rather than substitute a different rule.
+
 **Example (GitHub Security):**
 
 ```bash
@@ -88,7 +101,7 @@ Full walkthrough: [HEADLESS_CONNECTOR_SETUP.md](../playbooks/HEADLESS_CONNECTOR_
 ## Skill: `posture.read`
 
 **Intent:** Explain current trust posture, failing control tests, and open
-violations — read-only, safe for any agent context window.
+violations — read-only; redact private evidence before including it in agent output.
 
 | Resource         | REST                                    | MCP tool                  |
 | ---------------- | --------------------------------------- | ------------------------- |
@@ -138,7 +151,6 @@ export — usually after explicit human or policy approval.
 curl -sS -X POST "$TRUSTOPS_API_URL/api/v1/snapshots" \
   -H "Authorization: Bearer $TRUSTOPS_API_KEY" \
   -H "Content-Type: application/json" \
-  -H "Idempotency-Key: snapshot-audit-$(date +%Y%m%d)" \
   -d '{"reason":"quarterly_audit","actor":"grc-agent"}'
 ```
 
@@ -218,12 +230,11 @@ Playbook: [CI_POSTURE_GATE.md](../playbooks/CI_POSTURE_GATE.md)
 
 ## Headers agents should send
 
-| Header                            | When                                                    |
-| --------------------------------- | ------------------------------------------------------- |
-| `Authorization: Bearer <api_key>` | Always (except local `--allow-insecure-no-auth`)        |
-| `X-Correlation-ID`                | Every mutating call — one ID per logical attempt        |
-| `Idempotency-Key`                 | Retries of POST configure, snapshot, agent-run, approve |
-| `X-Trust-Role`                    | Optional role override for local dev                    |
+| Header                            | When                                                                                                               |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `Authorization: Bearer <api_key>` | Always (except local `--allow-insecure-no-auth`)                                                                   |
+| `X-Correlation-ID`                | Every mutating call — one ID per logical attempt                                                                   |
+| `Idempotency-Key`                 | Only when the specific endpoint documents replay handling; inspect existing state before retrying other mutations. |
 
 ## MCP vs REST
 

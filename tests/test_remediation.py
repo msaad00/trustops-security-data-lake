@@ -33,9 +33,11 @@ def env(tmp_path: Path):
     tokens: dict[str, str] = {}
     with session_scope(app.state.sessionmaker) as session:
         tenant = create_tenant(session, slug="acme", name="Acme")
-        for role in ("read_only", "contributor", "security_admin"):
+        for role in ("read_only", "auditor", "contributor", "security_admin", "admin"):
             user = create_user(session, tenant_id=tenant.id, email=f"{role}@acme.test", role=role)
-            _key, token = create_api_key(session, tenant_id=tenant.id, user_id=user.id)
+            _key, token = create_api_key(
+                session, tenant_id=tenant.id, user_id=user.id, expires_at=datetime.now(UTC) + timedelta(minutes=10)
+            )
             tokens[role] = token
     return app, client, tokens
 
@@ -175,3 +177,19 @@ def test_exceptions_require_control_manage(env) -> None:
     revoked = client.delete(f"/api/v1/remediation/exceptions/{exc_id}", headers=_bearer(tokens["security_admin"]))
     assert revoked.status_code == HTTPStatus.OK
     assert revoked.json()["data"]["status"] == "revoked"
+
+
+@pytest.mark.parametrize("role", ["admin", "security_admin", "contributor", "auditor", "read_only"])
+def test_evidence_request_operator_permissions(env, role: str) -> None:
+    _app, client, tokens = env
+    response = client.post(
+        "/api/v1/remediation/evidence-requests",
+        headers=_bearer(tokens[role]),
+        json={"control_id": "SOC2-CC6.1", "requested_from": "evidence-owner"},
+    )
+    allowed = role in {"admin", "security_admin", "contributor"}
+    assert response.status_code == (HTTPStatus.CREATED if allowed else HTTPStatus.FORBIDDEN)
+    if allowed:
+        created = response.json()["data"]
+        listed = client.get("/api/v1/remediation/evidence-requests", headers=_bearer(tokens[role])).json()["data"]
+        assert any(row["id"] == created["id"] and row["control_id"] == "SOC2-CC6.1" for row in listed)

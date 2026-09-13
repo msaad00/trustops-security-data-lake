@@ -119,59 +119,32 @@ drifting as curation moves.
 
 ## The real ceiling is the catalog, not the curation
 
-262 of 942 titles (28%) still carry no content — an
-identifier plus boilerplate. `frameworks enrich` has already filled the FedRAMP
-set from NIST SP 800-53 Rev. 5, recording the source URL and SHA-256 on every
-control so the import is checkable rather than asserted.
+156 of 942 titles still contain identifier-only or boilerplate descriptions:
+90 ISO 27001 entries and 66 NIST AI RMF entries. Licensed standards need short
+internal summaries or licensed access; their text must not be copied into this
+public repository.
 
-What remains cannot be filled the same way:
+The CSF 2.0 catalog now uses the 106 identifiers and outcomes from the pinned
+[NIST publication](https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf).
+Subcategory numbers are not consecutive. The previous generator produced 13
+invalid identifiers and omitted 13 official ones despite matching the total
+count. Those prior definitions remain in control history; they are not silently
+remapped to different outcomes. The new source reconciliation is proposed and
+does not claim expert review or full compliance automation.
 
-- **ISO (82)** — the registry's guardrail is explicit that ISO text is
-  licensed, so identifiers and short internal titles are the correct shape.
-  Mapping ISO _ids_ into safeguards is still fine; it reproduces nothing.
-- **NIST CSF (106)** — public domain, but its OSCAL catalog titles each
-  subcategory with its own identifier (`GV.OC-01` is titled "GV.OC-01"). The
-  importer rejects a title that merely repeats the id, because coverage that
-  looks enriched while saying nothing is worse than an honest placeholder.
-- **NIST AI RMF (66)** — no OSCAL catalog is published.
+## Review and evaluation boundaries
 
-So 680 of 942 controls now carry curatable content, and the rest need
-either a published crosswalk or a human with the source document.
+`security-lakehouse frameworks review-queue` lists proposed mappings, with
+framework and risk-domain filters and source references. The
+`get_mapping_review_queue` MCP tool exposes the same review ledger. A reviewer
+must confirm semantic equivalence; source provenance alone does not do so.
 
-## Getting there
-
-Full coverage needs the catalog enriched before the curation can be checked.
-
-1. **Model** — safeguards are the operated object, validated, coverage derived
-   from data. _Done._
-2. **Curate what is checkable** — the 393 requirements whose titles carry
-   content. 224 are mapped; the rest are the near-term queue. Promoting a
-   `proposed` mapping to `reviewed` is a human confirming the two requirements
-   are the same obligation. `security-lakehouse frameworks review-queue`
-   (`--framework <id>` to scope) lists the 518 proposed mappings, each paired
-   with the reviewed anchors already on that safeguard, so a reviewer judges an
-   equivalence against mappings they already trust. `--risk-domain <domain>`
-   scopes the queue by the normalized cross-framework category/family, while
-   framework and risk-domain rollups expose the source-backed and unsourced gaps
-   across NIST, FedRAMP, ISO, SOC 2, and the other packs. The
-   `get_mapping_review_queue` MCP tool serves agents the same filters and ledger.
-   Neither promotes anything — that equivalence call is the reviewer's. _In
-   progress._
-3. **Enrich the 549 placeholder titles**, or import an authoritative crosswalk.
-   NIST publishes 800-53 ↔ CSF mappings, CMMC L2 is NIST 800-171 with a
-   published 800-53 mapping, and ISO ↔ NIST crosswalks exist. Importing those
-   is how FedRAMP, CSF and ISO 27001 become curatable — and an imported
-   crosswalk is checkable against its source, which invented equivalences never
-   are.
-4. **Invert the engine** — evaluate safeguards, derive requirement status via
-   `requirement_status()`, let framework readiness fall out of that.
-5. **Retire the overlay** — `mappings/framework_equivalence.json` and the
-   `/crosswalk` surface become views over the CCF rather than a second source
-   of truth.
-
-Steps 1–3 change no behaviour: coverage is reported, nothing is evaluated
-through it. Step 4 is where posture starts flowing through safeguards, and it
-should not switch on until the mappings it depends on are `reviewed`.
+Safeguard rules are executable, but the current assessment pipeline still
+operates framework controls. Mapped coverage is not the number of safeguards
+evaluated on a live environment. Integrating safeguard evaluation into the
+pipeline and deriving requirement results from reviewed mappings remains work
+to complete. The framework-equivalence overlay also remains a separate source
+until that transition is validated.
 
 ## Schema
 

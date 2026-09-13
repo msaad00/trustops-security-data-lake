@@ -1,30 +1,27 @@
-/** Trust Data Lake product identity — single source for UI copy and metadata. */
+/** TrustOps product identity — single source for UI copy and metadata. */
 
 export const BRAND = {
   /** Customer-facing product name. */
-  name: "Trust Data Lake",
-  /** Wordmark segments used for the product lockup. */
-  wordmarkPrimary: "Trust Data",
-  wordmarkAccent: "Lake",
+  name: "TrustOps",
   /** Human console surface. */
-  consoleName: "Trust Data Lake Console",
+  consoleName: "TrustOps Console",
   /** Category line used in README and marketing-adjacent docs. */
-  category: "The trust layer for security data lakes",
+  category: "Open, self-hosted GRC for cloud and AI",
   /** One-line mission for meta tags and share cards. */
   tagline:
-    "Normalize security evidence, evaluate controls, and prove trust continuously.",
+    "Customer-owned evidence. Deterministic controls. Continuous assurance.",
   /** Headless-first differentiator. */
   surfaces: "API · CLI · MCP · CI · Console",
   /** Short description for Open Graph / npm / package manifests. */
   description:
-    "Customer-owned security data lake infrastructure for normalized evidence, deterministic control evaluations, and continuous trust proof.",
+    "Open, self-hosted GRC for cloud and AI, built for humans and agents — customer-owned evidence, deterministic controls, and reviewable assessments.",
   /** Public trust-center header subtitle. */
-  trustShareTitle: "Trust Data Lake Trust Center",
+  trustShareTitle: "TrustOps Trust Center",
   /** Repo / PyPI technical name (not customer-facing). */
   packageName: "trustops-security-data-lake",
   /** CLI command (operator surface, not product rename). */
   cliCommand: "security-lakehouse",
-  version: "0.2.7",
+  version: "0.2.8",
   colors: {
     blue: "#4f7cff",
     cyan: "#30c7d2",
@@ -36,5 +33,5 @@ export const BRAND = {
   /** Dashboard home eyebrow (feature area, not product name). */
   homeEyebrow: "Home",
   /** Short label under the wordmark in chrome. */
-  consoleSubtitle: "Security trust layer",
+  consoleSubtitle: "Console",
 } as const;

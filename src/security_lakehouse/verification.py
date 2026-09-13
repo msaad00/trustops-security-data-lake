@@ -14,8 +14,9 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse.generations import ARTIFACTS, generation_reader, pin_generation, verify_generation
+from security_lakehouse.io import canonical_sha256 as _canonical_sha256
 from security_lakehouse.io import read_json, read_jsonl
-from security_lakehouse.pipeline import _canonical_sha256
 
 
 def _bronze_paths(lake_dir: str | Path) -> list[Path]:
@@ -44,6 +45,7 @@ def _bronze_record(lake_dir: str | Path, event_id: str) -> dict[str, Any] | None
     return None
 
 
+@generation_reader
 def verify_event(lake_dir: str | Path, event_id: str) -> dict[str, Any]:
     """Verify a silver event's hash against its bronze source.
 
@@ -93,11 +95,20 @@ def verify_event(lake_dir: str | Path, event_id: str) -> dict[str, Any]:
     }
 
 
+@generation_reader
 def verify_lake_integrity(lake_dir: str | Path) -> dict[str, Any]:
     """Verify the generated evidence integrity manifest against lake files."""
     lake = Path(lake_dir)
     manifest_path = lake / "gold" / "evidence_integrity.json"
     issues: list[str] = []
+    with pin_generation(lake) as generation:
+        if generation is None and (lake / "generation.json").is_file():
+            generation = lake
+        if generation is not None:
+            try:
+                verify_generation(generation)
+            except (ValueError, OSError) as exc:
+                issues.append(str(exc))
     if not manifest_path.is_file():
         return {
             "ok": False,
@@ -113,8 +124,11 @@ def verify_lake_integrity(lake_dir: str | Path) -> dict[str, Any]:
 
     for name, artifact in (manifest.get("artifacts") or {}).items():
         path = Path(str(artifact.get("path") or ""))
-        if not path.is_absolute() and not path.is_file():
-            path = lake / path
+        relative = "/".join(path.parts[-2:])
+        if relative not in ARTIFACTS:
+            issues.append(f"artifact {name}: unknown assessment artifact")
+            continue
+        path = (generation or lake) / relative
         if not path.is_file():
             issues.append(f"artifact {name}: file is missing")
             continue

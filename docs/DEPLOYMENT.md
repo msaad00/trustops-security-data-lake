@@ -108,7 +108,7 @@ Already centralize security evidence in Snowflake or a SIEM lake?
 
 | Goal                                         | Doc                                                  |
 | -------------------------------------------- | ---------------------------------------------------- |
-| Run locally in 5 minutes                     | [README.md](../README.md#run-locally)                |
+| Run locally in 5 minutes                     | [README.md](../README.md#quick-start)                |
 | Host a shareable POC                         | [SHAREABLE_POC_HOSTING.md](SHAREABLE_POC_HOSTING.md) |
 | Evaluator demo script                        | [SHAREABLE_DEMO.md](SHAREABLE_DEMO.md)               |
 | Framework packs (SOC 2, NIST AI RMF, custom) | [FRAMEWORK_PACKS.md](FRAMEWORK_PACKS.md)             |

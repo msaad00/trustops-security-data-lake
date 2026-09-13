@@ -8,6 +8,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse.policy import validate_rule
+
 
 def _data_root() -> Path:
     """Return the directory holding ``frameworks/``, ``controls/``, ``mappings/``.
@@ -113,6 +115,7 @@ def validate_catalog(
         ):
             if not str(control.get(required, "")).strip():
                 errors.append(f"control {control_id} missing {required}")
+        errors.extend(f"control {control_id}: {problem}" for problem in validate_rule(control.get("evaluation_rule")))
         control_status = str(control.get("implementation_status") or "")
         if control_status not in CONTROL_IMPLEMENTATION_STATUSES:
             errors.append(

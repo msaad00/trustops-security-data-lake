@@ -5,19 +5,19 @@ description: >-
   audit, control, evidence, vulnerability, runtime, posture, snapshot, and
   executive-risk questions. The skill is read-only unless the user explicitly
   requests a point-in-time snapshot.
-version: 0.1.0
 license: MIT
 metadata:
+  version: "0.1.0"
   author: Mohamed Saad
   data_flow: >-
     Reads generated lakehouse JSON and SQLite artifacts from the local repo.
     Does not call external services and does not modify production systems.
   file_reads:
-    - build/lakehouse/gold/current_posture.json
-    - build/lakehouse/gold/metrics.json
-    - build/lakehouse/gold/control_posture.jsonl
-    - build/lakehouse/gold/asset_risk.jsonl
-    - build/lakehouse/mart/security_lakehouse.sqlite
+    - build/fixture-lake/gold/current_posture.json
+    - build/fixture-lake/gold/metrics.json
+    - build/fixture-lake/gold/control_posture.jsonl
+    - build/fixture-lake/gold/asset_risk.jsonl
+    - build/fixture-lake/mart/security_lakehouse.sqlite
     - deploy/snowflake/schema.sql
     - deploy/clickhouse/schema.sql
   file_writes: []
@@ -40,26 +40,27 @@ Use this skill when the user asks:
 
 ## Required Artifacts
 
-If the lakehouse has not been built, run:
+For an authorized local fixture demonstration, build a separate fixture lake;
+do not replace the user's operational lake. Fixture results are illustrative:
 
 ```bash
 security-lakehouse pipeline run \
   --raw data/raw/security_events.jsonl \
-  --out build/lakehouse
+  --out build/fixture-lake
 ```
 
 For dashboard review:
 
 ```bash
 security-lakehouse dashboard \
-  --lake build/lakehouse \
+  --lake build/fixture-lake \
   --out build/dashboard/index.html
 ```
 
 For the human and agent API:
 
 ```bash
-security-lakehouse serve --lake build/lakehouse --port 8787
+security-lakehouse serve --lake build/fixture-lake --port 8787
 ```
 
 Agent routes:
@@ -106,20 +107,21 @@ Backend architecture evidence:
 Current posture:
 
 ```bash
-security-lakehouse assessment status --lake build/lakehouse
+security-lakehouse assessment status --lake build/fixture-lake
 ```
 
 Open violations:
 
 ```bash
-security-lakehouse assessment violations --lake build/lakehouse
+security-lakehouse assessment violations --lake build/fixture-lake
 ```
 
 ## Response Rules
 
 - Cite generated artifacts or SQL results for every material claim.
 - Separate observed evidence from recommended next actions.
-- Do not claim certification, compliance, or remediation completion unless the
-  generated control posture says `pass`.
+- A passing control result is limited to its rule, evidence and assessment scope.
+  It does not establish certification or complete framework compliance. Claim
+  remediation completion only after verifying the changed state in fresh evidence.
 - Treat `evidence_ref` as a pointer; do not invent contents that are not in the
   lakehouse artifacts.

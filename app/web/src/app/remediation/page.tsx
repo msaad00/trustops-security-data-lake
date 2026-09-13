@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -72,7 +72,7 @@ function TasksSection() {
   const create = useCreateTaskMutation();
   const update = useUpdateTaskMutation();
   const [title, setTitle] = useState("");
-  const [controlId, setControlId] = useState("");
+  const [controlId, setControlId] = useState(searchParams.get("control") ?? "");
   const [owner, setOwner] = useState("");
   const [priority, setPriority] = useState("medium");
   const [dueAt, setDueAt] = useState("");
@@ -104,25 +104,28 @@ function TasksSection() {
       <CardHeader>
         <CardTitle>Remediation tasks</CardTitle>
         <CardDescription>
-          Owned work with SLA due dates. Overdue is derived live.
+          Owners, priorities, and due dates.
           {selectedOwner ? ` Filtered to ${selectedOwner}.` : ""}
         </CardDescription>
       </CardHeader>
       <div className="flex flex-wrap items-center gap-2 px-5 pb-4">
         <input
           className={`${inputClass} min-w-[220px] flex-1`}
+          aria-label="Task title"
           placeholder="Task title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
         <input
           className={`${inputClass} w-40`}
+          aria-label="Control ID"
           placeholder="control id"
           value={controlId}
           onChange={(e) => setControlId(e.target.value)}
         />
         <input
           className={`${inputClass} w-36`}
+          aria-label="Owner"
           placeholder="owner"
           value={owner}
           onChange={(e) => setOwner(e.target.value)}
@@ -155,8 +158,16 @@ function TasksSection() {
           Add task
         </Button>
       </div>
+      {(create.isError || update.isError) && (
+        <p
+          role="alert"
+          className="mx-5 mb-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-700"
+        >
+          Unable to save task. Try again.
+        </p>
+      )}
       <QueryState queries={tasks} label="remediation tasks">
-        <div className="divide-y divide-line border-t border-line">
+        <div className="max-h-[520px] divide-y divide-line overflow-y-auto border-t border-line">
           {rows.length === 0 && (
             <div className="px-5 py-6 text-sm text-muted">No tasks yet.</div>
           )}
@@ -166,10 +177,10 @@ function TasksSection() {
               className="flex flex-wrap items-center gap-3 px-5 py-3"
             >
               <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-black text-ink">
+                <div className="text-sm font-semibold text-ink [overflow-wrap:anywhere]">
                   {task.title}
                 </div>
-                <div className="text-[11px] text-muted">
+                <div className="text-xs leading-5 text-muted">
                   {task.control_id ?? "no control"} ·{" "}
                   {task.owner || "unassigned"} · due {fmtDate(task.due_at)}
                 </div>
@@ -214,10 +225,11 @@ function TasksSection() {
 }
 
 function EvidenceRequestsSection() {
+  const searchParams = useSearchParams();
   const requests = useEvidenceRequests();
   const create = useCreateEvidenceRequestMutation();
   const setStatus = useSetEvidenceRequestStatusMutation();
-  const [controlId, setControlId] = useState("");
+  const [controlId, setControlId] = useState(searchParams.get("control") ?? "");
   const [from, setFrom] = useState("");
 
   const submit = () => {
@@ -238,19 +250,19 @@ function EvidenceRequestsSection() {
     <Card className="overflow-hidden">
       <CardHeader>
         <CardTitle>Evidence requests</CardTitle>
-        <CardDescription>
-          Ask a control owner for fresh evidence and track fulfillment.
-        </CardDescription>
+        <CardDescription>Owners and fulfillment status.</CardDescription>
       </CardHeader>
       <div className="flex flex-wrap items-center gap-2 px-5 pb-4">
         <input
           className={`${inputClass} w-44`}
+          aria-label="Control ID"
           placeholder="control id"
           value={controlId}
           onChange={(e) => setControlId(e.target.value)}
         />
         <input
           className={`${inputClass} min-w-[200px] flex-1`}
+          aria-label="Requested from"
           placeholder="requested from"
           value={from}
           onChange={(e) => setFrom(e.target.value)}
@@ -264,8 +276,22 @@ function EvidenceRequestsSection() {
           Request evidence
         </Button>
       </div>
+      {(create.isError || setStatus.isError) && (
+        <p
+          role="alert"
+          className="mx-5 mb-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-700"
+        >
+          Unable to save evidence request. Your entries are still here. Try
+          again.
+        </p>
+      )}
+      {create.isSuccess && (
+        <p role="status" className="px-5 pb-4 text-sm text-emerald-700">
+          Evidence request saved.
+        </p>
+      )}
       <QueryState queries={requests} label="evidence requests">
-        <div className="divide-y divide-line border-t border-line">
+        <div className="max-h-[520px] divide-y divide-line overflow-y-auto border-t border-line">
           {rows.length === 0 && (
             <div className="px-5 py-6 text-sm text-muted">
               No evidence requests.
@@ -277,10 +303,10 @@ function EvidenceRequestsSection() {
               className="flex flex-wrap items-center gap-3 px-5 py-3"
             >
               <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-black text-ink">
+                <div className="text-sm font-semibold text-ink [overflow-wrap:anywhere]">
                   {req.control_id}
                 </div>
-                <div className="text-[11px] text-muted">
+                <div className="text-xs leading-5 text-muted">
                   from {req.requested_from || "—"} · created{" "}
                   {fmtDate(req.created_at)}
                 </div>
@@ -347,19 +373,19 @@ function ExceptionsSection() {
     <Card className="overflow-hidden">
       <CardHeader>
         <CardTitle>Control exceptions</CardTitle>
-        <CardDescription>
-          Time-boxed, approved exceptions. Requires the control-manage role.
-        </CardDescription>
+        <CardDescription>Approvals and expiry dates.</CardDescription>
       </CardHeader>
       <div className="flex flex-wrap items-center gap-2 px-5 pb-4">
         <input
           className={`${inputClass} w-44`}
+          aria-label="Control ID"
           placeholder="control id"
           value={controlId}
           onChange={(e) => setControlId(e.target.value)}
         />
         <input
           className={`${inputClass} min-w-[200px] flex-1`}
+          aria-label="Reason"
           placeholder="reason"
           value={reason}
           onChange={(e) => setReason(e.target.value)}
@@ -380,8 +406,16 @@ function ExceptionsSection() {
           Add exception
         </Button>
       </div>
+      {(create.isError || revoke.isError) && (
+        <p
+          role="alert"
+          className="mx-5 mb-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-700"
+        >
+          Unable to save exception. Try again.
+        </p>
+      )}
       <QueryState queries={exceptions} label="control exceptions">
-        <div className="divide-y divide-line border-t border-line">
+        <div className="max-h-[520px] divide-y divide-line overflow-y-auto border-t border-line">
           {rows.length === 0 && (
             <div className="px-5 py-6 text-sm text-muted">No exceptions.</div>
           )}
@@ -391,10 +425,10 @@ function ExceptionsSection() {
               className="flex flex-wrap items-center gap-3 px-5 py-3"
             >
               <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-black text-ink">
+                <div className="text-sm font-semibold text-ink [overflow-wrap:anywhere]">
                   {exc.control_id}
                 </div>
-                <div className="text-[11px] text-muted">
+                <div className="text-xs leading-5 text-muted">
                   {exc.reason || "no reason"} · by {exc.approved_by || "—"} ·
                   expires {fmtDate(exc.expires_at)}
                 </div>
@@ -419,25 +453,63 @@ function ExceptionsSection() {
   );
 }
 
+const TABS = [
+  { id: "tasks", label: "Tasks" },
+  { id: "evidence", label: "Evidence requests" },
+  { id: "exceptions", label: "Exceptions" },
+];
+
+function RemediationContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const requestedTab = searchParams.get("tab") ?? "tasks";
+  const tab = TABS.some((item) => item.id === requestedTab)
+    ? requestedTab
+    : "tasks";
+  return (
+    <div className="grid min-w-0 gap-4 px-4 py-5 sm:px-5 lg:px-7">
+      <PageHeader
+        eyebrow="Resolve"
+        title="Remediation"
+        description="Tasks, evidence requests, and exceptions."
+      />
+      <div
+        role="tablist"
+        aria-label="Remediation view"
+        className="flex flex-wrap gap-1 rounded-xl border border-line bg-white p-2"
+      >
+        {TABS.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            role="tab"
+            aria-selected={tab === item.id}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold ${tab === item.id ? "bg-brand text-white" : "text-muted hover:bg-slate-50"}`}
+            onClick={() => {
+              const params = new URLSearchParams(searchParams.toString());
+              params.set("tab", item.id);
+              router.replace(`/remediation?${params}`, { scroll: false });
+            }}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+      {tab === "tasks" && <TasksSection />}
+      {tab === "evidence" && <EvidenceRequestsSection />}
+      {tab === "exceptions" && <ExceptionsSection />}
+    </div>
+  );
+}
+
 export default function RemediationPage() {
   return (
-    <div className="space-y-6">
-      <PageHeader
-        eyebrow="Operate"
-        title="Remediation"
-        description="Assign and track remediation work, request evidence from owners, and manage time-boxed control exceptions."
-      />
-      <Suspense
-        fallback={
-          <Card className="p-5 text-sm text-muted">
-            Loading remediation tasks…
-          </Card>
-        }
-      >
-        <TasksSection />
-      </Suspense>
-      <EvidenceRequestsSection />
-      <ExceptionsSection />
-    </div>
+    <Suspense
+      fallback={
+        <div className="p-5 text-sm text-muted">Loading remediation…</div>
+      }
+    >
+      <RemediationContent />
+    </Suspense>
   );
 }

@@ -1,60 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="330" viewBox="0 0 1280 330" role="img" aria-labelledby="title desc">
-  <title id="title">The TrustOps operating loop</title>
-  <desc id="desc">Four stages turn customer-owned evidence into deterministic controls and audit-ready proof.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="270" viewBox="0 0 1280 270" role="img" aria-labelledby="title desc">
+  <title id="title">TrustOps — Collect. Evaluate. Resolve. Export.</title>
+  <desc id="desc">Read-only evidence, deterministic controls, owned findings, and assessment exports.</desc>
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop stop-color="#07111f"/>
-      <stop offset="0.55" stop-color="#0b1628"/>
-      <stop offset="1" stop-color="#092b34"/>
-    </linearGradient>
-    <linearGradient id="line" x1="70" y1="0" x2="1210" y2="0" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#6687ff"/>
-      <stop offset="1" stop-color="#2dd4bf"/>
-    </linearGradient>
-    <style>
-      .font { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-      .step { font-size: 12px; font-weight: 800; letter-spacing: 2px; fill: #7dd3fc; }
-      .name { font-size: 25px; font-weight: 850; fill: #f8fafc; }
-      .body { font-size: 14px; font-weight: 600; fill: #a8b5c7; }
-    </style>
-  </defs>
-  <rect width="1280" height="330" rx="26" fill="url(#bg)"/>
-  <path d="M0 254C232 182 382 326 626 250s403-21 654-109v189H0Z" fill="#0da6a6" opacity="0.08"/>
-  <g class="font">
-    <text x="64" y="55" font-size="14" font-weight="800" letter-spacing="2.4" fill="#7c93b4">ONE OPERATING LOOP</text>
-    <text x="64" y="91" font-size="25" font-weight="800" fill="#eef5ff">From source evidence to verifiable posture</text>
-    <path d="M76 145H1204" stroke="url(#line)" stroke-width="3" opacity="0.55"/>
-    <g transform="translate(64 124)">
-      <circle cx="18" cy="21" r="18" fill="#6687ff"/>
-      <text x="18" y="26" text-anchor="middle" font-size="14" font-weight="900" fill="#fff">1</text>
-      <text x="0" y="72" class="step">COLLECT</text>
-      <text x="0" y="105" class="name">Evidence lake</text>
-      <text x="0" y="132" class="body">Read-only · customer-owned</text>
-      <text x="0" y="153" class="body">Bronze → silver → gold</text>
-    </g>
-    <g transform="translate(360 124)">
-      <circle cx="18" cy="21" r="18" fill="#5c83fa"/>
-      <text x="18" y="26" text-anchor="middle" font-size="14" font-weight="900" fill="#fff">2</text>
-      <text x="0" y="72" class="step">EVALUATE</text>
-      <text x="0" y="105" class="name">Control tests</text>
-      <text x="0" y="132" class="body">Deterministic verdicts</text>
-      <text x="0" y="153" class="body">Freshness · provenance</text>
-    </g>
-    <g transform="translate(656 124)">
-      <circle cx="18" cy="21" r="18" fill="#40a8dc"/>
-      <text x="18" y="26" text-anchor="middle" font-size="14" font-weight="900" fill="#fff">3</text>
-      <text x="0" y="72" class="step">OPERATE</text>
-      <text x="0" y="105" class="name">Findings</text>
-      <text x="0" y="132" class="body">Owners · remediation</text>
-      <text x="0" y="153" class="body">Approvals · audit trail</text>
-    </g>
-    <g transform="translate(952 124)">
-      <circle cx="18" cy="21" r="18" fill="#2dd4bf"/>
-      <text x="18" y="26" text-anchor="middle" font-size="14" font-weight="900" fill="#06201e">4</text>
-      <text x="0" y="72" class="step">PROVE</text>
-      <text x="0" y="105" class="name">Audit-ready proof</text>
-      <text x="0" y="132" class="body">Immutable snapshots</text>
-      <text x="0" y="153" class="body">Console · API · CLI · MCP</text>
-    </g>
+    <linearGradient id="accent" x2="1" y2="0"><stop stop-color="#4f7cff"/><stop offset="1" stop-color="#30c7d2"/></linearGradient>
+  <linearGradient id="lake" gradientUnits="userSpaceOnUse" x1="4" y1="7" x2="55" y2="58"><stop stop-color="#4f7cff"/><stop offset="1" stop-color="#42dfcf"/></linearGradient></defs>
+  <rect width="1280" height="270" rx="18" fill="#07111e"/>
+  <g transform="translate(48 24)"><rect width="64" height="64" rx="15" fill="#0b1b2c"/><g fill="none" stroke="url(#lake)" color="#5b9aff" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1.8"><g transform="translate(4 10) scale(.66)"><path d="M3 14h12a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.4-1.7A4.5 4.5 0 0 0 3 14Z"/></g><g transform="translate(18.5 10) scale(.66)"><circle cx="9" cy="4.5" r="3"/><path d="M3 16v-2a6 6 0 0 1 12 0v2"/></g><g transform="translate(33 10) scale(.66)"><rect x="2" y="5" width="14" height="11" rx="3"/><path d="M9 5V1M0 9v4M18 9v4"/><circle cx="6" cy="10" r=".9" fill="currentColor"/><circle cx="12" cy="10" r=".9" fill="currentColor"/></g><g transform="translate(47.5 10) scale(.66)"><rect x="3" y="1" width="12" height="16" rx="2"/><path d="M6 5h6M6 9h6M6 13h4"/></g></g><g stroke-width="2.4"><path d="M10 35c7-4.8 14-4.8 22 0s14 4.8 22 0M10 44c7-4.8 14-4.8 22 0s14 4.8 22 0M10 53c7-4.8 14-4.8 22 0s14 4.8 22 0"/></g></g></g>
+  <g font-family="Inter, Arial, sans-serif">
+    <text x="128" y="65" font-size="28" font-weight="800" fill="#f8fafc">TrustOps</text>
+    <text x="1230" y="60" text-anchor="end" font-size="13" letter-spacing="2" font-weight="700" fill="#60d9e2">OPEN SOURCE · SELF-HOSTED</text>
+    <text x="48" y="147" font-size="49" font-weight="800" fill="#f8fafc">Collect. Evaluate. Resolve. <tspan fill="url(#accent)">Export.</tspan></text>
+    <text x="50" y="193" font-size="20" fill="#b0bfd0">Read-only evidence → deterministic controls → owned findings → assessment exports.</text>
+    <path d="M48 227H1232" stroke="#203449"/>
+    <text x="50" y="252" font-size="14" fill="#b0bfd0">Built for humans and agents · Console · API · CLI · MCP · CI</text>
   </g>
 </svg>

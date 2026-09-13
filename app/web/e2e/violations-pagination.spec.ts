@@ -58,7 +58,7 @@ test("the findings queue reads every page, not just the first", async ({
   await page.goto("/console/violations/");
   await page.waitForSelector("table tbody tr");
 
-  await expect(page.getByText(`${TOTAL} open violations`)).toBeVisible();
+  await expect(page.getByText(`${TOTAL} findings`)).toBeVisible();
   await expect
     .poll(async () => page.locator("table tbody tr").count())
     .toBe(TOTAL);

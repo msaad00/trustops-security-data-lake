@@ -14,7 +14,12 @@ def test_wheel_data_files_include_runtime_catalogs() -> None:
 
     expected = {
         "connectors": ["connectors/catalog.json"],
-        "controls": ["controls/bundle.lock.json", "controls/catalog.json"],
+        "controls": [
+            "controls/bundle.lock.json",
+            "controls/catalog.json",
+            "controls/safeguards.json",
+            "controls/history.jsonl",
+        ],
         "frameworks": ["frameworks/registry.json", "frameworks/verified_article_ids.json"],
         "mappings": [
             "mappings/control_articles.json",
@@ -24,8 +29,26 @@ def test_wheel_data_files_include_runtime_catalogs() -> None:
         "programs": ["programs/catalog.json", "programs/vendor_questionnaires.json"],
         "policy_templates": ["policy_templates/catalog.json"],
     }
-    assert data_files == expected
+    for company in ("ai_lab", "fintech", "golden", "healthcare", "saas"):
+        directory = f"mockup_companies/{company}/raw"
+        expected[directory] = [f"{directory}/security_events.jsonl"]
+    for directory, files in expected.items():
+        assert set(files).issubset(data_files[directory])
+
+    for skill in (REPO_ROOT / "agent-skills").glob("*/SKILL.md"):
+        directory = str(skill.parent.relative_to(REPO_ROOT))
+        assert str(skill.relative_to(REPO_ROOT)) in data_files[directory]
 
     for files in expected.values():
         for rel_path in files:
             assert (REPO_ROOT / rel_path).is_file(), rel_path
+
+
+def test_mcp_dependency_excludes_incompatible_major_version() -> None:
+    from packaging.requirements import Requirement
+
+    pyproject = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    dependencies = [Requirement(value) for value in pyproject["project"]["optional-dependencies"]["mcp"]]
+    mcp = next(requirement for requirement in dependencies if requirement.name == "mcp")
+    assert "2.0.0" not in mcp.specifier, "FastMCP entry point is incompatible with the MCP 2 API"
+    assert "1.26.0" in mcp.specifier

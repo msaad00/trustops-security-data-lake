@@ -14,8 +14,8 @@ def test_python_dependency_audit_exports_every_installed_extra() -> None:
     assert "uv export --all-extras --no-emit-project" in workflow
 
 
-def test_dashboard_smoke_asserts_current_operational_copy() -> None:
+def test_dashboard_smoke_asserts_embedded_assessment_data() -> None:
     workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
 
-    assert 'grep -q "Assessment summary"' in workflow
+    assert """grep -q 'id="app-data"'""" in workflow
     assert "Executive trust overview" not in workflow

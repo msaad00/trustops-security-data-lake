@@ -6,11 +6,13 @@ snapshots understandable for both humans and agents.
 
 Product name, logo, taglines, and naming hierarchy: [BRAND.md](BRAND.md).
 
-## Trust Data Lake mark
+## TrustOps mark
 
-- Cloud, agent, and identity source glyphs over a lake-contour symbol (`#4f7cff` → `#30c7d2`) with a mint final line — use
-  `TrustOpsMark` / `TrustOpsLogo` in the console shell; SVG wordmark in docs.
-- Console chrome label: **Trust Data Lake Console**, not
+- Blue-to-mint evidence-lake mark (`#4f7cff` → `#42dfcf`) with cloud,
+  identity, agent, and log glyphs. Use `TrustOpsMark` / `TrustOpsLogo` in the
+  console shell and the SVG lockup in docs. Below 48 px, use the compact
+  activity-log and waves variant.
+- Console chrome label: **TrustOps Console** (sidebar subtitle), not
   "Workbench" or "Assessment Console".
 
 ## Framework visual identity
@@ -93,8 +95,5 @@ Full index: [diagrams/README.md](diagrams/README.md)
 
 ### Hero SVGs
 
-- [README capability header](images/trustops-social-preview.svg) — regenerate
-  with `make readme-header`
-- [Operating loop banner](images/trustops-readme-banner.svg)
 - [Assessment architecture](images/trustops-assessment-architecture.svg)
 - [Snowflake evidence lake](images/trustops-snowflake-evidence-lake.svg)

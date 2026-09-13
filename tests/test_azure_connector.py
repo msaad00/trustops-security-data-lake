@@ -211,11 +211,12 @@ def test_azure_connector_sync_without_fixture_or_creds_errors(tmp_path: Path, mo
         connector_runner.run_connector_sync(tmp_path, connector_id="azure-posture")
 
 
-def test_azure_client_policy_assignments_degrade_when_policy_sdk_missing() -> None:
+def test_azure_client_rejects_incomplete_collection_when_policy_sdk_missing() -> None:
     client = AzureClient.__new__(AzureClient)
     client._policy = None
 
-    assert client.policy_assignments() == []
+    with pytest.raises(RuntimeError, match="policy collection unavailable"):
+        client.policy_assignments()
 
 
 def test_azure_cli_client_reads_cloud_shell_json(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -428,3 +429,30 @@ def test_azure_adapter_is_registered_and_probe_reports_ok(tmp_path: Path) -> Non
     # Adapter-available -> probe is "ok", not "skipped", and reports no count.
     assert ok["result"] == "ok"
     assert ok["evidence_count"] is None
+
+
+@pytest.mark.parametrize("modern", [True, False])
+def test_azure_sdk_namespace_compatibility(monkeypatch, modern: bool) -> None:
+    import builtins
+
+    original_import = builtins.__import__
+    policy = SimpleNamespace(policy_assignments=SimpleNamespace(list=lambda: [{"id": "policy-test"}]))
+
+    def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+        if name == "azure.identity":
+            return SimpleNamespace(DefaultAzureCredential=object)
+        if name == "azure.mgmt.authorization":
+            return SimpleNamespace(AuthorizationManagementClient=lambda *args: object())
+        if name == "azure.mgmt.resource.resources" and modern:
+            return SimpleNamespace(ResourceManagementClient=lambda *args: object())
+        if name == "azure.mgmt.resource.policy" and modern:
+            return SimpleNamespace(PolicyClient=lambda *args: policy)
+        if name == "azure.mgmt.resource" and not modern:
+            return SimpleNamespace(ResourceManagementClient=lambda *args: object(), PolicyClient=lambda *args: policy)
+        if name.startswith("azure.mgmt.resource"):
+            raise ImportError("SDK namespace absent")
+        return original_import(name, globals, locals, fromlist, level)
+
+    monkeypatch.setattr(builtins, "__import__", fake_import)
+    client = AzureClient(SUBSCRIPTION)
+    assert client.policy_assignments() == [{"id": "policy-test"}]

@@ -12,17 +12,14 @@ NEXT_CONFIG = ROOT / "app/web/next.config.ts"
 def test_dashboard_overview_is_source_aligned_and_tabbed() -> None:
     dashboard = DASHBOARD.read_text(encoding="utf-8")
 
-    assert "const DASHBOARD_TABS" in dashboard
-    assert '"Posture", "Sources", "Proof"' in dashboard
-    assert 'useState<DashboardTab>("Posture")' in dashboard
-    assert 'aria-label="Dashboard view"' in dashboard
+    assert 'title="Compliance"' in dashboard
+    assert 'title="Operations"' in dashboard
+    for label in ("Frameworks", "Control families", "Test results", "Findings", "Sources", "Exports"):
+        assert f'label: "{label}"' in dashboard
     assert "Current assessment" in dashboard
-    assert "Framework posture" in dashboard
     assert "Control pass rate" in dashboard
     assert "Open findings" in dashboard
-    assert "Proof export" in dashboard
-    assert "Security data lake" in dashboard
-    assert "activeDashboardTab ===" in dashboard
+    assert "Assessment export" in dashboard
     assert "Evidence loop" not in dashboard
 
 
@@ -52,8 +49,8 @@ def test_dashboard_compacts_the_score_ring_and_passes_the_framework_catalog() ->
 def test_dashboard_readiness_cards_keep_framework_marks_legible() -> None:
     readiness = READINESS.read_text(encoding="utf-8")
 
-    assert readiness.count("size={44}") == 2
-    assert 'aria-label="Framework readiness cards"' in readiness
+    assert "size={40}" in readiness
+    assert 'aria-label="Framework posture list"' in readiness
 
 
 def test_dashboard_evidence_loop_keeps_stage_labels_readable() -> None:

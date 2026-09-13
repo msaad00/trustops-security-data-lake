@@ -66,20 +66,26 @@ class AzureClient:
             from azure.mgmt.authorization import (
                 AuthorizationManagementClient,  # type: ignore[import-not-found]  # noqa: PLC0415
             )
-            from azure.mgmt.resource import ResourceManagementClient  # type: ignore[import-not-found]  # noqa: PLC0415
+
+            try:
+                from azure.mgmt.resource.resources import ResourceManagementClient  # noqa: PLC0415
+            except ImportError:
+                from azure.mgmt.resource import (
+                    ResourceManagementClient,  # type: ignore[import-not-found]  # noqa: PLC0415
+                )
+            try:
+                from azure.mgmt.resource.policy import PolicyClient  # noqa: PLC0415
+            except ImportError:
+                from azure.mgmt.resource import PolicyClient  # type: ignore[attr-defined]  # noqa: PLC0415
         except ImportError as exc:  # pragma: no cover - exercised only with live Azure
             raise RuntimeError(
                 "azure-posture live collection requires azure-identity and azure-mgmt-* "
-                "packages; install them or use --fixture-dir"
+                "packages with resource and policy clients; install the cloud extra or use --fixture-dir"
             ) from exc
-        try:
-            from azure.mgmt.resource import PolicyClient  # type: ignore[attr-defined,import-not-found]  # noqa: PLC0415
-        except (AttributeError, ImportError):  # pragma: no cover - depends on installed Azure SDK version
-            PolicyClient = None  # type: ignore[assignment]
         self.subscription_id = subscription_id
         credential = DefaultAzureCredential()
         self._authz = AuthorizationManagementClient(credential, subscription_id)
-        self._policy = PolicyClient(credential, subscription_id) if PolicyClient is not None else None
+        self._policy = PolicyClient(credential, subscription_id)
         self._resources = ResourceManagementClient(credential, subscription_id)
 
     def role_assignments(self) -> list[dict[str, Any]]:
@@ -91,7 +97,7 @@ class AzureClient:
 
     def policy_assignments(self) -> list[dict[str, Any]]:
         if self._policy is None:
-            return []
+            raise RuntimeError("Azure policy collection unavailable; assessment was not completed")
         return [self._as_dict(item) for item in self._policy.policy_assignments.list()]
 
     def resources(self) -> list[dict[str, Any]]:

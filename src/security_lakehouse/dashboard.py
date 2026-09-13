@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Any
 
 from security_lakehouse.assessment import build_current_posture
+from security_lakehouse.generations import generation_reader
 from security_lakehouse.io import read_json, read_jsonl
 from security_lakehouse.web import web_dist_dir, web_dist_index
 
@@ -43,6 +44,7 @@ def render_dashboard(lake_dir: str | Path, out_path: str | Path) -> Path:
     return output
 
 
+@generation_reader
 def _load_app_data(lake: Path) -> dict[str, Any]:
     # First-boot tolerance: when the container mounts an empty lake, every
     # gold/silver file is absent. Return an empty payload rather than

@@ -23,12 +23,12 @@ export function PostureRing({
   score,
   state,
   size = "default",
-  inverse = false,
+  dark = false,
 }: {
   score: number;
   state: string;
   size?: "compact" | "default";
-  inverse?: boolean;
+  dark?: boolean;
 }) {
   const value = Math.round(score);
   const color = TONE[state] ?? "#f79009";
@@ -59,18 +59,17 @@ export function PostureRing({
             dataKey="value"
             cornerRadius={14}
             fill={color}
-            background={{
-              fill: inverse ? "rgba(148, 163, 184, 0.18)" : "var(--color-line)",
-            }}
+            background={{ fill: dark ? "#ffffff18" : "#eef2f7" }}
           />
         </RadialBarChart>
       </ResponsiveContainer>
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
         <span
+          style={{ color: dark ? "#ffffff" : undefined }}
           className={
             isCompact
               ? "text-[22px] font-black leading-none text-ink"
-              : `text-[52px] font-black leading-none ${inverse ? "text-white" : "text-ink"}`
+              : "text-[52px] font-black leading-none text-ink"
           }
         >
           {value}
@@ -81,14 +80,10 @@ export function PostureRing({
               ? "mt-1 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide"
               : "mt-1 rounded-full px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wide"
           }
-          style={
-            inverse
-              ? { color: "#cbd5e1", background: "rgba(255, 255, 255, 0.08)" }
-              : {
-                  color: "var(--color-muted)",
-                  background: "var(--color-surface-muted)",
-                }
-          }
+          style={{
+            color: dark ? "#cbd5e1" : "#475467",
+            background: dark ? "#ffffff10" : "#f1f5f9",
+          }}
         >
           {LABEL[state] ?? state}
         </span>

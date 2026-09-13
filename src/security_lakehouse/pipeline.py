@@ -18,9 +18,17 @@ from security_lakehouse.evidence_freshness import (
     summarize_source_freshness,
 )
 from security_lakehouse.evidence_types import expand_evidence_types
+from security_lakehouse.generations import (
+    active_generation,
+    new_generation,
+    publish_generation,
+    seal_generation,
+    serialized_publication,
+)
+from security_lakehouse.io import canonical_sha256 as _canonical_sha256
 from security_lakehouse.io import iter_jsonl, read_json, read_jsonl, write_json, write_jsonl
 from security_lakehouse.models import SEVERITY_SCORE, PipelineResult, parse_event_time, utc_iso
-from security_lakehouse.policy import ControlContext, evaluate_control
+from security_lakehouse.policy import ControlContext, RuleResult, evaluate_control
 from security_lakehouse.programs import build_control_tests
 from security_lakehouse.validation import validate_raw_events
 
@@ -29,6 +37,7 @@ NORMALIZED_EVENT_SCHEMA_VERSION = "trustops.normalized_event.v1"
 NORMALIZATION_TRANSFORM_VERSION = "trustops.normalization.v1"
 
 
+@serialized_publication
 def run_pipeline(
     raw_path: str | Path,
     out_dir: str | Path,
@@ -73,6 +82,7 @@ def normalize_raw_events(
     return runner(raw_path, out_dir, mapping_path=mapping_path, tenant_id=tenant_id)
 
 
+@serialized_publication
 def run_pipeline_incremental(
     raw_path: str | Path,
     out_dir: str | Path,
@@ -81,12 +91,19 @@ def run_pipeline_incremental(
     tenant_id: str = "default",
 ) -> PipelineResult:
     """Materialize only raw evidence that changed since the last manifest."""
-    out = Path(out_dir)
+    # Validate the catalog even when no raw rows changed.
+    current_controls = load_control_map(mapping_path)
+    out = active_generation(out_dir) or Path(out_dir)
     manifest_path = out / "manifest.json"
     if not manifest_path.is_file():
         return run_pipeline(raw_path, out_dir, mapping_path=mapping_path, tenant_id=tenant_id)
 
     manifest = read_json(manifest_path, base_dir=out)
+    if (
+        manifest.get("control_map_sha256") != _canonical_sha256(current_controls)
+        or manifest.get("tenant_id") != tenant_id
+    ):
+        return run_pipeline(raw_path, out_dir, mapping_path=mapping_path, tenant_id=tenant_id)
     prior_index = manifest.get("raw_index") or {}
     if not isinstance(prior_index, dict):
         prior_index = {}
@@ -144,7 +161,24 @@ def run_pipeline_incremental(
     )
 
 
-def _materialize_from_rows(
+def _materialize_from_rows(**kwargs) -> PipelineResult:
+    lake = Path(kwargs["out_dir"]).resolve()
+    generation = new_generation(lake)
+    result = _write_generation(**{**kwargs, "out_dir": generation})
+    from security_lakehouse.verification import verify_lake_integrity
+
+    integrity = verify_lake_integrity(generation)
+    if not integrity["ok"]:
+        raise ValueError("staged assessment integrity verification failed")
+    with sqlite3.connect(f"{Path(result.mart_path).as_uri()}?mode=ro", uri=True) as connection:
+        if connection.execute("PRAGMA quick_check").fetchone() != ("ok",):
+            raise ValueError("staged assessment mart verification failed")
+    seal_generation(generation)
+    publish_generation(lake, generation)
+    return result
+
+
+def _write_generation(
     *,
     raw_path: str | Path,
     out_dir: str | Path,
@@ -167,6 +201,10 @@ def _materialize_from_rows(
         directory.mkdir(parents=True, exist_ok=True)
 
     control_map = load_control_map(mapping_path)
+    from security_lakehouse.catalog_versions import bundle_summary
+
+    write_json(out / "catalog" / "control_map.json", {"controls": list(control_map.values())})
+    write_json(out / "catalog" / "bundle.json", bundle_summary(catalog_path=out / "catalog" / "control_map.json"))
     evidence_freshness_rows = build_evidence_freshness(silver_rows)
     stale_controls = stale_control_ids(evidence_freshness_rows)
     control_rows = _build_control_rows(silver_rows, control_map, stale_controls)
@@ -251,6 +289,9 @@ def _materialize_from_rows(
         out / "manifest.json",
         {
             "raw_path": str(raw_path),
+            "tenant_id": tenant_id,
+            "control_map_sha256": _canonical_sha256(control_map),
+            "generation_id": out.name,
             "materialize_mode": materialize_mode,
             "normalization": {
                 "input_contract": RAW_EVENT_SCHEMA_VERSION,
@@ -359,11 +400,6 @@ def _pipeline_result_from_manifest(out: Path, manifest: dict[str, Any]) -> Pipel
         dashboard_data_path=str(gold_dir / "dashboard_data.json"),
         duckdb_mart_path=marts.get("duckdb"),
     )
-
-
-def _canonical_sha256(payload: Any) -> str:
-    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
-    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 def _file_sha256(path: Path) -> str:
@@ -514,12 +550,18 @@ def _build_control_rows(
             max_severity=str(top_open["severity"]) if top_open else "info",
             evidence_status="stale" if control_id in stale else "fresh",
         )
-        result = evaluate_control(context, control.get("evaluation_rule"))
+        result = (
+            evaluate_control(context, control.get("evaluation_rule"))
+            if control_id in control_map
+            else RuleResult("not_evaluated", "unmapped", ["No active control definition is available."])
+        )
         # `stale` is a first-class status: a control with no fresh evidence inside
         # its freshness SLO is stale (not silently passing), but an open violation
         # always dominates. Precedence: fail (violation) > stale > rule result.
         is_stale = control_id in stale or len(evidence_rows) == 0
-        if len(failing_rows) > 0:
+        if control_id not in control_map:
+            status = "not_evaluated"
+        elif len(failing_rows) > 0:
             status = "fail"
         elif is_stale:
             status = "stale"

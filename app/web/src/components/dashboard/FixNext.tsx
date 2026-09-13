@@ -4,12 +4,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { Violation } from "@/lib/api/types";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { CollapsibleCard } from "@/components/ui/collapsible-card";
 
 const SEVERITY_TONE: Record<
   string,
@@ -22,29 +17,39 @@ const SEVERITY_TONE: Record<
   info: "default",
 };
 
-export function FixNext({ violations }: { violations: Violation[] }) {
+export function FixNext({
+  violations,
+  embedded = false,
+}: {
+  violations: Violation[];
+  embedded?: boolean;
+}) {
   const top = [...violations]
     .sort((a, b) => b.severity_score - a.severity_score)
     .slice(0, 6);
 
   return (
-    <Card className="overflow-hidden">
-      <CardHeader>
-        <CardTitle>Fix next</CardTitle>
-        <CardDescription>
-          Highest-severity open violations — the fastest path to a better score.
-        </CardDescription>
-      </CardHeader>
-      <div className="divide-y divide-line border-t border-line">
+    <CollapsibleCard
+      embedded={embedded}
+      storageKey="dashboard-priority-findings"
+      defaultOpen
+      title="Priority findings"
+      description="Highest severity"
+      contentClassName="p-0"
+    >
+      <div
+        className="max-h-[360px] divide-y divide-line overflow-y-auto overscroll-contain"
+        role="region"
+        aria-label="Findings to triage"
+        tabIndex={0}
+      >
         {top.length === 0 && (
-          <div className="px-5 py-6 text-sm text-muted">
-            No open violations. Posture is clean.
-          </div>
+          <div className="px-5 py-6 text-sm text-muted">No open findings.</div>
         )}
         {top.map((v) => (
           <Link
             key={v.violation_id}
-            href="/violations"
+            href={`/violations?id=${encodeURIComponent(v.violation_id)}`}
             className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-slate-50"
           >
             <Badge tone={SEVERITY_TONE[v.severity] ?? "default"}>
@@ -54,14 +59,39 @@ export function FixNext({ violations }: { violations: Violation[] }) {
               <div className="truncate text-sm font-black text-ink">
                 {v.control_id}
               </div>
-              <div className="truncate text-[11px] text-muted">
-                {v.source} · {v.event_type} · {v.environment}
+              <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
+                <span
+                  className={`rounded px-1.5 py-0.5 font-semibold ${["prod", "production"].includes(v.environment?.toLowerCase()) ? "bg-amber-50 text-amber-800" : "bg-slate-100 text-slate-600"}`}
+                >
+                  {v.environment || "Environment unknown"}
+                </span>
+                <span>{v.source}</span>
+                <span className="truncate">
+                  Owner: {v.asset_owner || "Unassigned"}
+                </span>
+              </div>
+              <div
+                className="mt-1 truncate text-xs text-muted"
+                title={v.asset_id}
+              >
+                {v.asset_id || "Asset unknown"}
               </div>
             </div>
             <ArrowRight className="h-4 w-4 shrink-0 text-muted" />
           </Link>
         ))}
       </div>
-    </Card>
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line px-5 py-3">
+        <span className="text-xs text-muted">
+          {violations.length} open findings
+        </span>
+        <Link
+          href="/violations"
+          className="text-sm font-semibold text-brand hover:underline"
+        >
+          Triage all findings →
+        </Link>
+      </div>
+    </CollapsibleCard>
   );
 }

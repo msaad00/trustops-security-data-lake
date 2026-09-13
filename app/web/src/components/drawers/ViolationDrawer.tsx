@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, History, Loader2 } from "lucide-react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Drawer } from "@/components/ui/drawer";
@@ -43,9 +44,11 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
   const [assignee, setAssignee] = useState("");
   const [note, setNote] = useState("");
   const [dueAt, setDueAt] = useState("");
+  const [saveError, setSaveError] = useState(false);
 
   useEffect(() => {
     if (!violation) return;
+    setSaveError(false);
     setState("triaged");
     setActor("trust-admin");
     setAssignee(violation.asset_owner ?? "");
@@ -61,6 +64,7 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
 
   const submit = async () => {
     if (!violation) return;
+    setSaveError(false);
     try {
       await triage.mutateAsync({
         violationId: violation.violation_id,
@@ -69,12 +73,12 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
           actor,
           assignee: assignee || undefined,
           note: note || undefined,
-          due_at: dueAt || undefined,
+          due_at: dueAt ? new Date(dueAt).toISOString() : undefined,
         },
       });
       onToast(`Triage recorded: ${violation.violation_id} → ${state}`);
-    } catch (err) {
-      onToast(`Triage failed: ${(err as Error).message}`);
+    } catch {
+      setSaveError(true);
     }
   };
 
@@ -92,19 +96,14 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
     <Drawer
       open={Boolean(violation)}
       onOpenChange={(o) => !o && onClose()}
-      title={violation?.violation_id ?? "Violation"}
-      description={
-        violation
-          ? `${violation.event_type} · ${violation.control_id}`
-          : undefined
-      }
+      title={violation?.control_id ?? "Finding"}
+      description={violation ? violation.event_type : undefined}
       width="lg"
       footer={
         !auditor && (
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-xs text-muted">
-              Persisted to gold/violation_tracking.jsonl — auditable +
-              append-only.
+              Changes are recorded in triage history.
             </span>
             <Button
               variant="primary"
@@ -116,14 +115,14 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
               ) : (
                 <CheckCircle2 className="h-4 w-4" />
               )}{" "}
-              Record triage event
+              Save triage
             </Button>
           </div>
         )
       }
     >
       {violation && (
-        <div className="grid gap-5">
+        <div className="grid min-w-0 gap-5 [overflow-wrap:anywhere]">
           <div className="rounded-xl border border-line bg-slate-50/60 p-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <Badge
@@ -139,36 +138,53 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
                 {currentState}
               </Badge>
             </div>
-            <dl className="mt-3 grid grid-cols-[120px_1fr] gap-x-3 gap-y-1.5 text-xs">
+            <dl className="mt-3 grid grid-cols-[100px_minmax(0,1fr)] gap-x-3 gap-y-1.5 text-xs">
               <dt className="text-muted">Asset</dt>
               <dd>
                 <code className="text-ink">{violation.asset_id}</code>
               </dd>
               <dt className="text-muted">Owner</dt>
-              <dd className="font-extrabold">{violation.asset_owner}</dd>
+              <dd className="font-medium">
+                {violation.asset_owner?.trim() || "Unassigned"}
+              </dd>
+              <dt className="text-muted">Environment</dt>
+              <dd>{violation.environment?.trim() || "Unknown"}</dd>
+              <dt className="text-muted">Business impact</dt>
+              <dd>Not recorded</dd>
               <dt className="text-muted">Source</dt>
               <dd className="font-extrabold">{violation.source}</dd>
               <dt className="text-muted">Detected</dt>
               <dd className="font-extrabold">{violation.detected_at}</dd>
-              <dt className="text-muted">Evidence ref</dt>
-              <dd>
-                <code className="text-ink">{violation.evidence_ref}</code>
-              </dd>
-              <dt className="text-muted">Raw hash</dt>
-              <dd>
-                <code className="text-ink">
-                  {violation.raw_sha256.slice(0, 24)}…
-                </code>
-              </dd>
             </dl>
           </div>
+
+          <div className="flex flex-wrap gap-3 text-sm font-semibold text-brand">
+            <Link
+              href={`/controls?id=${encodeURIComponent(violation.control_id)}`}
+            >
+              Review control →
+            </Link>
+            <Link
+              href={`/remediation?tab=tasks&control=${encodeURIComponent(violation.control_id)}`}
+            >
+              Create task →
+            </Link>
+          </div>
+          {saveError && (
+            <p
+              role="alert"
+              className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700"
+            >
+              Unable to save triage. Your changes are still here. Try again.
+            </p>
+          )}
 
           {!auditor && (
             <fieldset className="grid gap-3">
               <legend className="text-xs font-black uppercase tracking-wide text-muted">
                 Triage action
               </legend>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
                   State
                   <select
@@ -196,11 +212,11 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
                   />
                 </label>
                 <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
-                  Due (ISO 8601)
+                  Due date
                   <input
                     value={dueAt}
                     onChange={(e) => setDueAt(e.target.value)}
-                    placeholder="2026-06-01T00:00:00Z"
+                    type="datetime-local"
                     className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
                   />
                 </label>
@@ -216,6 +232,26 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
               </label>
             </fieldset>
           )}
+
+          <details className="rounded-xl border border-line p-3">
+            <summary className="cursor-pointer text-sm font-semibold text-ink">
+              Evidence & provenance
+            </summary>
+            <dl className="mt-3 grid grid-cols-[100px_minmax(0,1fr)] gap-2 text-xs">
+              <dt className="text-muted">Finding ID</dt>
+              <dd>{violation.violation_id}</dd>
+              <dt className="text-muted">Evidence ref</dt>
+              <dd>
+                <code className="text-ink">{violation.evidence_ref}</code>
+              </dd>
+              <dt className="text-muted">Raw hash</dt>
+              <dd>
+                <code className="text-ink">
+                  {violation.raw_sha256.slice(0, 24)}…
+                </code>
+              </dd>
+            </dl>
+          </details>
 
           <EntityTagsEditor
             entityType="violation"

@@ -31,6 +31,7 @@ from security_lakehouse.connector_state import (
 )
 from security_lakehouse.framework_detail import build_framework_detail
 from security_lakehouse.framework_provenance import build_framework_view
+from security_lakehouse.generations import generation_reader
 from security_lakehouse.graph import build_compliance_graph, build_framework_crosswalk, build_repository_graph
 from security_lakehouse.io import read_jsonl, resolve_path
 from security_lakehouse.mappings import (
@@ -132,6 +133,7 @@ def required_post_scope(path: str) -> str:
     return api_v1._UNMAPPED_POST_SCOPE
 
 
+@generation_reader
 def handle_get(path: str, query: Query, lake_dir: str | Path) -> tuple[HTTPStatus, Body]:
     """Resolve a legacy GET into ``(status, body)``. Auditor redaction is applied by the transport."""
     lake = resolve_path(lake_dir)

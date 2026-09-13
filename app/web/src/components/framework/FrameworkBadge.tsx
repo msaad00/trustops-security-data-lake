@@ -21,7 +21,7 @@ export function FrameworkBadge({
 }: FrameworkBadgeProps) {
   const visual = frameworkVisual(frameworkId, fallbackLabel);
   const markSize = variant === "compact" ? Math.max(28, size - 4) : size;
-  const identityNote = visual.label;
+  const identityNote = `${visual.label} framework identity`;
 
   if (variant === "mark-only") {
     return (
@@ -52,15 +52,13 @@ export function FrameworkBadge({
       />
       {variant !== "compact" && (
         <span className="min-w-0">
-          <span className="block truncate text-[11px] font-black leading-tight text-ink">
+          <span className="block text-xs font-black leading-tight text-ink">
             {visual.label}
           </span>
         </span>
       )}
       {variant === "compact" && (
-        <span className="truncate text-[11px] font-bold text-ink">
-          {visual.label}
-        </span>
+        <span className="text-xs font-bold text-ink">{visual.label}</span>
       )}
     </span>
   );

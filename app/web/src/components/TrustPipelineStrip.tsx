@@ -18,7 +18,6 @@ const stages = [
     id: "frameworks",
     label: "Map",
     title: "Framework map",
-    detail: "Official controls and mappings define what eval can prove.",
     href: "/frameworks",
     Icon: ClipboardCheck,
   },
@@ -26,7 +25,6 @@ const stages = [
     id: "evidence",
     label: "Collect",
     title: "Evidence facts",
-    detail: "Connector sync lands normalized, hash-backed evidence.",
     href: "/evidence",
     Icon: Database,
   },
@@ -34,7 +32,6 @@ const stages = [
     id: "controls",
     label: "Evaluate",
     title: "Control eval",
-    detail: "Deterministic rules produce gold pass/fail posture.",
     href: "/controls",
     Icon: ShieldCheck,
   },
@@ -42,7 +39,6 @@ const stages = [
     id: "findings",
     label: "Triage",
     title: "Findings",
-    detail: "Failed controls become owner-ready findings.",
     href: "/violations",
     Icon: TriangleAlert,
   },
@@ -50,7 +46,6 @@ const stages = [
     id: "proof",
     label: "Prove",
     title: "Proof export",
-    detail: "Audit room freezes snapshots and exports reports.",
     href: "/audit-room",
     Icon: FileCheck2,
   },
@@ -71,8 +66,8 @@ export function TrustPipelineStrip({
         className,
       )}
     >
-      <div className="grid min-w-[920px] grid-cols-5 divide-x divide-line">
-        {stages.map(({ id, label, title, detail, href, Icon }) => {
+      <div className="grid min-w-[660px] grid-cols-5 divide-x divide-line">
+        {stages.map(({ id, label, title, href, Icon }) => {
           const active = id === activeStage;
           return (
             <Link
@@ -101,9 +96,6 @@ export function TrustPipelineStrip({
                 <div className="truncate text-sm font-black text-ink">
                   {title}
                 </div>
-                <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted">
-                  {detail}
-                </p>
               </div>
             </Link>
           );

@@ -5,7 +5,12 @@ const scoreColumn = async (page: import("@playwright/test").Page) => {
   await expect.poll(async () => await rows.count()).toBeGreaterThan(1);
   return await rows.evaluateAll((trs) =>
     trs
-      .map((tr) => tr.querySelectorAll("td")[4]?.textContent?.trim() ?? "")
+      .map(
+        (tr) =>
+          tr
+            .querySelectorAll("td")[2]
+            ?.textContent?.match(/Score\s+(\d+)/)?.[1] ?? "",
+      )
       .filter(Boolean),
   );
 };
@@ -22,7 +27,7 @@ test("violations table sorts by score and toggles direction", async ({
   // Default sorting state is severity_score desc.
   expect([...nums].sort((a, b) => b - a)).toEqual(nums);
 
-  await page.getByRole("columnheader", { name: /Score/i }).click();
+  await page.getByRole("columnheader", { name: /Severity/i }).click();
   const asc = (await scoreColumn(page)).map(Number).filter((n) => !isNaN(n));
   expect([...asc].sort((a, b) => a - b)).toEqual(asc);
   expect(asc).not.toEqual(nums);

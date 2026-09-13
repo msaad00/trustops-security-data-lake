@@ -14,6 +14,7 @@ from typing import Any
 from security_lakehouse.catalog import load_control_catalog
 from security_lakehouse.evidence_hints import enabled_connector_ids, resolve_connector_hints
 from security_lakehouse.framework_provenance import build_framework_view
+from security_lakehouse.generations import generation_reader
 from security_lakehouse.io import read_jsonl
 from security_lakehouse.mappings import load_control_article_mappings
 
@@ -51,6 +52,7 @@ def _source_rollups(evidence: list[JsonObject], freshness: list[JsonObject]) -> 
     return sorted(out, key=lambda row: (-int(row["event_count"]), str(row["source"])))
 
 
+@generation_reader
 def build_framework_detail(framework_id: str, lake_dir: str | Path) -> JsonObject | None:
     """Return framework -> controls -> rules -> evidence -> source detail."""
     framework_id = str(framework_id or "").strip()
