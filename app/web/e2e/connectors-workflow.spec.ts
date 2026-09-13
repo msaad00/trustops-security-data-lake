@@ -178,7 +178,7 @@ test.describe("connectors workflow", () => {
     await page.goto("/console/dashboard/");
     await expect(page.getByRole("main")).toBeVisible({ timeout: 20_000 });
     await expect(
-      page.getByRole("tab", { name: "Posture", exact: true }),
+      page.getByRole("tab", { name: "Frameworks", exact: true }),
     ).toHaveAttribute("aria-selected", "true");
 
     await page.getByRole("tab", { name: "Sources", exact: true }).click();

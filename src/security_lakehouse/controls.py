@@ -23,10 +23,13 @@ def load_control_map(path: str | Path | None = None) -> dict[str, dict[str, Any]
     for control in controls:
         if not isinstance(control, dict) or not str(control.get("control_id", "")).strip():
             raise ValueError("every control mapping must include control_id")
+        control_id = str(control["control_id"])
+        if control_id in mapped:
+            raise ValueError(f"duplicate control mapping: {control_id}")
         problems = validate_rule(control.get("evaluation_rule"))
         if problems:
-            raise PolicyError(f"control {control['control_id']}: " + "; ".join(problems))
-        mapped[str(control["control_id"])] = control
+            raise PolicyError(f"control {control_id}: " + "; ".join(problems))
+        mapped[control_id] = control
     return mapped
 
 

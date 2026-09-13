@@ -24,6 +24,27 @@ ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw" / "security_events.jsonl"
 
 
+def test_unmapped_control_is_not_evaluated_instead_of_passing():
+    from security_lakehouse.pipeline import _build_control_rows
+
+    rows = _build_control_rows(
+        [
+            {
+                "control_ids": ["UNKNOWN-1"],
+                "status": "passed",
+                "evidence_ref": "fixture:evidence",
+                "severity_score": 0,
+                "severity": "info",
+                "event_time": "2026-09-13T00:00:00Z",
+            }
+        ],
+        {},
+    )
+    assert rows[0]["status"] == "not_evaluated"
+    assert rows[0]["evaluation_rule"] == "unmapped"
+    assert rows[0]["evidence_count"] == 1
+
+
 def test_sample_raw_events_are_valid() -> None:
     rows = read_jsonl(RAW)
 

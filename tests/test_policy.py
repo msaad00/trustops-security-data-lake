@@ -107,3 +107,27 @@ def test_catalog_rules_all_known() -> None:
         f"{c.get('control_id')}: {p}" for c in catalog["controls"] for p in validate_rule(c.get("evaluation_rule"))
     ]
     assert problems == [], problems
+
+
+@pytest.mark.parametrize(
+    "bad_entry",
+    [
+        {"control_id": "UNUSED", "evaluation_rule": "typo-invalid-rule"},
+        {"control_id": "SOC2-CC6.1", "evaluation_rule": "fail_when_missing_evidence"},
+    ],
+)
+def test_normalization_rejects_invalid_or_ambiguous_mapping_before_publication(tmp_path, bad_entry):
+    from security_lakehouse.pipeline import normalize_raw_events
+
+    raw = Path(__file__).resolve().parents[1] / "data/raw/security_events.jsonl"
+    lake = tmp_path / "lake"
+    normalize_raw_events(raw, lake)
+    before = {str(p.relative_to(lake)): p.read_bytes() for p in lake.rglob("*") if p.is_file()}
+    catalog = json.loads(DEFAULT_CATALOG_PATH.read_text())
+    catalog["controls"].append(bad_entry)
+    custom = tmp_path / "invalid-map.json"
+    custom.write_text(json.dumps(catalog))
+    with pytest.raises(ValueError):
+        normalize_raw_events(raw, lake, mapping_path=custom)
+    after = {str(p.relative_to(lake)): p.read_bytes() for p in lake.rglob("*") if p.is_file()}
+    assert after == before

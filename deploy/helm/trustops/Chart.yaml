@@ -6,8 +6,8 @@ description: |
   JSONL evidence lake and SQLite mart. DuckDB is optional. Iceberg REST and
   Polaris integration are planned; egress depends on configured connectors and sinks.
 type: application
-version: 0.2.7
-appVersion: "0.2.7"
+version: 0.2.8
+appVersion: "0.2.8"
 kubeVersion: ">=1.27.0"
 home: https://github.com/msaad00/trustops-security-data-lake
 sources:

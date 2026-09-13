@@ -18,9 +18,10 @@ the shape of the active set:
 
 A **catalog bundle** is the content-addressed lockfile that ties an audit to a
 point in catalog evolution: a sha256 over the framework registry + active
-controls + reviewed crosswalk, plus per-component digests and the framework
-versions in force. Snapshots embed the bundle so re-running an assessment
-reproduces the exact controls/frameworks that were evaluated.
+controls + crosswalk + safeguards, plus per-component digests and framework
+versions. Snapshots embed this manifest to identify the evaluated catalog.
+Re-execution also requires retaining the matching catalog bodies and evaluator
+version; a digest alone cannot reconstruct them.
 
 The module is pure/deterministic except :func:`retire_control` and
 :func:`write_bundle_lock`, which are the only writers.

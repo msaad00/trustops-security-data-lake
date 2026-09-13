@@ -27,7 +27,7 @@ from security_lakehouse.generations import (
 )
 from security_lakehouse.io import iter_jsonl, read_json, read_jsonl, write_json, write_jsonl
 from security_lakehouse.models import SEVERITY_SCORE, PipelineResult, parse_event_time, utc_iso
-from security_lakehouse.policy import ControlContext, evaluate_control
+from security_lakehouse.policy import ControlContext, RuleResult, evaluate_control
 from security_lakehouse.programs import build_control_tests
 from security_lakehouse.validation import validate_raw_events
 
@@ -554,12 +554,18 @@ def _build_control_rows(
             max_severity=str(top_open["severity"]) if top_open else "info",
             evidence_status="stale" if control_id in stale else "fresh",
         )
-        result = evaluate_control(context, control.get("evaluation_rule"))
+        result = (
+            evaluate_control(context, control.get("evaluation_rule"))
+            if control_id in control_map
+            else RuleResult("not_evaluated", "unmapped", ["No active control definition is available."])
+        )
         # `stale` is a first-class status: a control with no fresh evidence inside
         # its freshness SLO is stale (not silently passing), but an open violation
         # always dominates. Precedence: fail (violation) > stale > rule result.
         is_stale = control_id in stale or len(evidence_rows) == 0
-        if len(failing_rows) > 0:
+        if control_id not in control_map:
+            status = "not_evaluated"
+        elif len(failing_rows) > 0:
             status = "fail"
         elif is_stale:
             status = "stale"

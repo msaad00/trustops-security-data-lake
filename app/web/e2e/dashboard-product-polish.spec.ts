@@ -5,26 +5,33 @@ test.describe("dashboard product polish", () => {
     await page.goto("/console/dashboard/");
 
     const commandCenter = page.getByRole("region", {
-      name: "Assessment summary",
+      name: "Current assessment",
     });
     await expect(commandCenter).toBeVisible({ timeout: 20_000 });
     await expect(
-      commandCenter.getByText("Assessment summary", { exact: true }),
+      commandCenter.getByText("Current assessment", { exact: true }),
     ).toBeVisible();
-    await expect(
-      commandCenter.getByRole("region", { name: "Evidence operating loop" }),
-    ).toBeVisible();
-    const frameworkMark = commandCenter
-      .getByRole("img", { name: /framework$/ })
-      .first();
-    await expect(frameworkMark).toBeVisible();
-    await expect(frameworkMark.locator("svg")).toHaveCount(0);
-
-    for (const stage of ["Collect", "Evaluate", "Operate", "Prove"]) {
+    for (const metric of [
+      "Control pass rate",
+      "Open findings",
+      "Assessment export",
+    ]) {
       await expect(
-        commandCenter.getByText(stage, { exact: true }),
+        commandCenter.getByText(metric, { exact: true }),
       ).toBeVisible();
     }
+    const frameworks = page.getByRole("region", {
+      name: "Framework posture list",
+    });
+    await expect(
+      frameworks.getByRole("img", { name: /framework$/ }).first(),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("tablist", { name: "Compliance views" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("tablist", { name: "Operations views" }),
+    ).toBeVisible();
   });
 
   test("keeps workspace and theme controls available on desktop", async ({
@@ -47,9 +54,9 @@ test.describe("dashboard product polish", () => {
 
     await expect(page.locator("html")).toHaveClass(/dark/);
     await expect(
-      page.getByRole("region", { name: "Assessment summary" }),
+      page.getByRole("region", { name: "Current assessment" }),
     ).toBeVisible({ timeout: 20_000 });
-    await expect(page.getByText("Critical gaps need owners")).toBeVisible();
+    await expect(page.getByText("Critical findings open")).toBeVisible();
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= window.innerWidth,

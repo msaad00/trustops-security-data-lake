@@ -47,7 +47,7 @@ def test_bundle_detects_changed_safeguard_rule(tmp_path: Path) -> None:
     path.write_text(json.dumps(payload))
     lock = tmp_path / "bundle.lock.json"
     cv.write_bundle_lock(lock_path=lock, safeguards_path=path)
-    payload["safeguards"][0]["rule"] = {"name": "fail_when_missing_evidence"}
+    payload["safeguards"][0]["evaluation_rule"] = "fail_when_missing_evidence"
     path.write_text(json.dumps(payload))
     result = cv.verify_bundle_lock(lock_path=lock, safeguards_path=path)
     assert result["ok"] is False

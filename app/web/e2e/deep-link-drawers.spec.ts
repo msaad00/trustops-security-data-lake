@@ -16,7 +16,12 @@ async function firstRecord(
   return records[0];
 }
 
-async function expectPaletteDeepLink(page: Page, path: string, id: string) {
+async function expectPaletteDeepLink(
+  page: Page,
+  path: string,
+  id: string,
+  title = id,
+) {
   await page.getByRole("button", { name: "Open command palette" }).click();
   const palette = page.getByRole("dialog", { name: "Search" });
   await expect(palette).toBeVisible();
@@ -33,7 +38,7 @@ async function expectPaletteDeepLink(page: Page, path: string, id: string) {
     new RegExp(`${path.replaceAll("/", "\\/")}\\?id=${encodeURIComponent(id)}`),
   );
   await expect(
-    page.getByRole("dialog").getByRole("heading", { name: id }),
+    page.getByRole("dialog").getByRole("heading", { name: title }),
   ).toBeVisible({ timeout: 15_000 });
 }
 
@@ -71,7 +76,17 @@ test.describe("record deep links", () => {
       page,
       "/console/violations/",
       String(violation.violation_id),
+      String(violation.control_id),
     );
+    await page
+      .getByRole("dialog")
+      .getByText("Evidence & provenance", { exact: true })
+      .click();
+    await expect(
+      page
+        .getByRole("dialog")
+        .getByText(String(violation.violation_id), { exact: true }),
+    ).toBeVisible();
     await page
       .getByRole("dialog")
       .getByRole("button", { name: "Close" })

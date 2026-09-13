@@ -3,6 +3,37 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
+## 0.2.8 - 2026-09-13
+
+### Fixed
+
+- Stop incomplete pagination and failed required GCP reads before replacing
+  retained evidence. Reject invalid evaluation rules and duplicate control IDs.
+  Preserve unknown/retired controls as not evaluated instead of applying a default rule.
+- Publish verified assessment generations through an atomic current pointer;
+  interrupted publication preserves the prior generation.
+- Compute AI framework posture from passing controls, separately from evidence
+  presence. Correct CSF 2.0 identifiers against the pinned NIST source and retain
+  prior control definitions in history.
+- Include safeguard definitions in catalog hashes and installed packages. Ship
+  framework pack data, equivalence mappings, history, fixtures, and agent skills.
+- Restore supported Azure resource-policy and MCP dependency bounds.
+
+### Changed
+
+- Apply the TrustOps identity across the console, README, shared images, and MCP.
+  Add independent collapsible dashboard panels, readable framework rows,
+  control-family icons, contextual triage, and reviewable evidence requests.
+- Organize the README into a short setup path and expandable reference sections.
+- Add proposed AI inventory/context and risk/monitoring safeguards. The catalog
+  now has 44 safeguards mapping 559/942 requirements; 45 remain reviewed.
+- Add the TrustOps operator skill alongside six specialist skills. Document
+  evidence completeness, scoped conclusions, authorization, and retry boundaries.
+
+Mapping coverage does not establish framework compliance. Live precision,
+recall, production capacity, and vendor cost savings have not been established;
+the benchmark protocol separates those measurements from synthetic validation.
+
 ## 0.2.7 - 2026-09-01
 
 Release theme: **secure dependencies + clearer first-run story**. Restores the

@@ -4402,6 +4402,327 @@
         }
       ],
       "asset_types": ["cloud_policy", "cloud_resource", "service"]
+    },
+    {
+      "safeguard_id": "SG-AIINVENTORY-001",
+      "title": "AI system inventory and risk resourcing",
+      "risk_domain": "ai-governance",
+      "objective": "Maintain an AI system inventory with resources assigned according to documented risk priorities.",
+      "evidence_requirement": "Current inventory identifies models, agents, AI services, owners, lifecycle state, scope and risk priority; a resource allocation record shows how inventory and oversight are maintained.",
+      "evaluation_rule": {
+        "fail_if": {
+          "any": [
+            {
+              "evidence_present": false
+            },
+            {
+              "evidence_status": {
+                "in": ["stale", "expired", "missing"]
+              }
+            },
+            {
+              "open_violations": {
+                "min": 1
+              }
+            }
+          ]
+        }
+      },
+      "frequency": "continuous",
+      "owner": "ai-governance",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST AI RMF 1.0 (NIST AI 100-1)",
+        "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+        "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+        "locator": "Table 1, GOVERN 1.6"
+      },
+      "satisfies": [
+        {
+          "control_id": "NIST-AI-RMF-GOVERN-1.6",
+          "framework_id": "nist-ai-rmf",
+          "role": "primary",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": ["ai_agent", "ai_model"]
+    },
+    {
+      "safeguard_id": "SG-AICONTEXT-001",
+      "title": "AI deployment context and affected users",
+      "risk_domain": "ai-governance",
+      "objective": "Document intended and beneficial uses, deployment settings, users, applicable expectations, impacts, assumptions, limitations and relevant evaluation metrics.",
+      "evidence_requirement": "A reviewed context record links each AI system to intended uses, deployment environments, affected users and communities, applicable laws and norms, beneficial and adverse impacts, assumptions, limitations and TEVV metrics. Missing business or deployment context is recorded as unknown.",
+      "evaluation_rule": {
+        "fail_if": {
+          "any": [
+            {
+              "evidence_present": false
+            },
+            {
+              "evidence_status": {
+                "in": ["stale", "expired", "missing"]
+              }
+            },
+            {
+              "open_violations": {
+                "min": 1
+              }
+            }
+          ]
+        }
+      },
+      "frequency": "continuous",
+      "owner": "ai-governance",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST AI RMF 1.0 (NIST AI 100-1)",
+        "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+        "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+        "locator": "Table 2, MAP 1.1"
+      },
+      "satisfies": [
+        {
+          "control_id": "NIST-AI-RMF-MAP-1.1",
+          "framework_id": "nist-ai-rmf",
+          "role": "primary",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": ["ai_agent", "ai_model", "data_store", "service"]
+    },
+    {
+      "safeguard_id": "SG-AICATEGORIZATION-001",
+      "title": "AI tasks and implementation methods",
+      "risk_domain": "ai-governance",
+      "objective": "Define the AI tasks and methods that support each intended use.",
+      "evidence_requirement": "A current system record identifies supported tasks and methods, such as generation, classification or recommendation, and the associated models, agent tools and services. An inventory entry alone does not demonstrate task categorization.",
+      "evaluation_rule": {
+        "fail_if": {
+          "any": [
+            {
+              "evidence_present": false
+            },
+            {
+              "evidence_status": {
+                "in": ["stale", "expired", "missing"]
+              }
+            },
+            {
+              "open_violations": {
+                "min": 1
+              }
+            }
+          ]
+        }
+      },
+      "frequency": "continuous",
+      "owner": "ai-governance",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST AI RMF 1.0 (NIST AI 100-1)",
+        "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+        "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+        "locator": "Table 2, MAP 2.1"
+      },
+      "satisfies": [
+        {
+          "control_id": "NIST-AI-RMF-MAP-2.1",
+          "framework_id": "nist-ai-rmf",
+          "role": "primary",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": ["ai_agent", "ai_model", "data_store", "service"]
+    },
+    {
+      "safeguard_id": "SG-RISKPRIORITY-001",
+      "title": "Threat likelihood and impact prioritization",
+      "risk_domain": "risk-management",
+      "objective": "Identify potential threat impacts and likelihoods, then use threats, vulnerabilities, likelihood and impact to prioritize inherent risk.",
+      "evidence_requirement": "A current risk assessment links threats and vulnerabilities to affected assets, likelihood, business impact and the rationale for response priority. Production, customer exposure and internal use are explicit context where known; unknown values remain unknown.",
+      "evaluation_rule": {
+        "fail_if": {
+          "any": [
+            {
+              "evidence_present": false
+            },
+            {
+              "evidence_status": {
+                "in": ["stale", "expired", "missing"]
+              }
+            },
+            {
+              "open_violations": {
+                "min": 1
+              }
+            }
+          ]
+        }
+      },
+      "frequency": "continuous",
+      "owner": "risk-owner",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST Cybersecurity Framework 2.0 (CSWP 29)",
+        "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+        "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+        "locator": "CSF 2.0 Core, ID.RA-04 and ID.RA-05"
+      },
+      "satisfies": [
+        {
+          "control_id": "NIST-CSF-ID.RA-04",
+          "framework_id": "nist-csf-2.0",
+          "role": "primary",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-CSF-ID.RA-05",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": ["audit_log", "service"]
+    },
+    {
+      "safeguard_id": "SG-RISKRESPONSE-001",
+      "title": "Owned risk response and tracking",
+      "risk_domain": "risk-management",
+      "objective": "Choose, prioritize, plan, track and communicate risk responses.",
+      "evidence_requirement": "Risk response records connect each prioritized risk to a treatment decision, accountable owner, planned actions, tracking status and communication evidence. A suggestion without a selected and tracked response is insufficient.",
+      "evaluation_rule": {
+        "fail_if": {
+          "any": [
+            {
+              "evidence_present": false
+            },
+            {
+              "evidence_status": {
+                "in": ["stale", "expired", "missing"]
+              }
+            },
+            {
+              "open_violations": {
+                "min": 1
+              }
+            }
+          ]
+        }
+      },
+      "frequency": "continuous",
+      "owner": "risk-owner",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST Cybersecurity Framework 2.0 (CSWP 29)",
+        "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+        "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+        "locator": "CSF 2.0 Core, ID.RA-06"
+      },
+      "satisfies": [
+        {
+          "control_id": "NIST-CSF-ID.RA-06",
+          "framework_id": "nist-csf-2.0",
+          "role": "primary",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": ["audit_log", "service"]
+    },
+    {
+      "safeguard_id": "SG-AIMONITORING-001",
+      "title": "AI monitoring ownership and periodic review",
+      "risk_domain": "ai-governance",
+      "objective": "Plan continuing monitoring and periodic review of AI risk management processes and outcomes with explicit responsibility and review frequency.",
+      "evidence_requirement": "A monitoring plan defines scope, accountable roles, review frequency, last review and next review, and links to current monitoring results. A live connection indicator alone does not demonstrate risk monitoring.",
+      "evaluation_rule": {
+        "fail_if": {
+          "any": [
+            {
+              "evidence_present": false
+            },
+            {
+              "evidence_status": {
+                "in": ["stale", "expired", "missing"]
+              }
+            },
+            {
+              "open_violations": {
+                "min": 1
+              }
+            }
+          ]
+        }
+      },
+      "frequency": "continuous",
+      "owner": "ai-governance",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST AI RMF 1.0 (NIST AI 100-1)",
+        "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+        "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+        "locator": "Table 1, GOVERN 1.5"
+      },
+      "satisfies": [
+        {
+          "control_id": "NIST-AI-RMF-GOVERN-1.5",
+          "framework_id": "nist-ai-rmf",
+          "role": "primary",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": ["ai_agent", "ai_model", "data_store", "service"]
+    },
+    {
+      "safeguard_id": "SG-AIPOSTDEPLOYMENT-001",
+      "title": "Post-deployment AI monitoring and response",
+      "risk_domain": "ai-governance",
+      "objective": "Implement post-deployment monitoring covering feedback, appeals, overrides, decommissioning, incident response, recovery and change management.",
+      "evidence_requirement": "Current monitoring and response records demonstrate implemented feedback evaluation, user appeals and overrides, decommissioning, incident handling, recovery and change management for deployed AI systems. Plans without implementation evidence are incomplete.",
+      "evaluation_rule": {
+        "fail_if": {
+          "any": [
+            {
+              "evidence_present": false
+            },
+            {
+              "evidence_status": {
+                "in": ["stale", "expired", "missing"]
+              }
+            },
+            {
+              "open_violations": {
+                "min": 1
+              }
+            }
+          ]
+        }
+      },
+      "frequency": "continuous",
+      "owner": "ai-governance",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST AI RMF 1.0 (NIST AI 100-1)",
+        "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+        "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+        "locator": "Table 4, MANAGE 4.1"
+      },
+      "satisfies": [
+        {
+          "control_id": "NIST-AI-RMF-MANAGE-4.1",
+          "framework_id": "nist-ai-rmf",
+          "role": "primary",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": ["ai_agent", "ai_model", "data_store", "service"]
     }
   ]
 }

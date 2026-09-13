@@ -36,6 +36,7 @@ COPY mappings/ ./mappings/
 COPY programs/ ./programs/
 COPY mockup_companies/ ./mockup_companies/
 COPY policy_templates/ ./policy_templates/
+COPY agent-skills/ ./agent-skills/
 # Bring the static export into the package tree before install so wheel
 # package-data picks it up.
 COPY --from=web-build /src/security_lakehouse/web/dist/ ./src/security_lakehouse/web/dist/
@@ -77,6 +78,7 @@ COPY mappings/ /opt/trustops-data/mappings/
 COPY programs/ /opt/trustops-data/programs/
 COPY mockup_companies/ /opt/trustops-data/mockup_companies/
 COPY policy_templates/ /opt/trustops-data/policy_templates/
+COPY agent-skills/ /opt/trustops-data/agent-skills/
 
 USER trustops
 WORKDIR /home/trustops

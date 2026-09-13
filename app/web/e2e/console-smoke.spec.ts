@@ -10,7 +10,9 @@ test.describe("console smoke", () => {
         name: /^Dashboard$/,
       }),
     ).toBeVisible();
-    await expect(page.getByText("Framework posture")).toBeVisible();
+    await expect(
+      page.getByRole("tab", { name: "Frameworks", exact: true }),
+    ).toBeVisible();
     await expect(
       page.getByText("Control pass rate", { exact: true }),
     ).toBeVisible();
@@ -21,13 +23,13 @@ test.describe("console smoke", () => {
       page.getByText("Assessment export", { exact: true }),
     ).toBeVisible();
     await expect(
-      page.getByRole("tab", { name: "Posture", exact: true }),
+      page.getByRole("tab", { name: "Frameworks", exact: true }),
     ).toHaveAttribute("aria-selected", "true");
     await expect(
       page.getByRole("tab", { name: "Sources", exact: true }),
     ).toBeVisible();
     await expect(
-      page.getByRole("tab", { name: "Proof", exact: true }),
+      page.getByRole("tab", { name: "Exports", exact: true }),
     ).toBeVisible();
     await expect(page.getByText("Scale tier")).toHaveCount(0);
   });
@@ -50,7 +52,7 @@ test.describe("console smoke", () => {
       await portfolio.evaluate((node) => node.scrollHeight > node.clientHeight),
     ).toBe(true);
     const toggle = page.getByRole("button", {
-      name: /^Framework posture$/,
+      name: /^Compliance$/,
     });
     await toggle.click();
     await expect(portfolio).not.toBeVisible();
@@ -58,7 +60,10 @@ test.describe("console smoke", () => {
     await expect(portfolio).toBeVisible();
     await page.getByRole("button", { name: "Priority", exact: true }).click();
     await expect(portfolio.getByRole("link")).toHaveCount(priorityCount);
-    const families = page.getByRole("button", { name: /^Control families/ });
+    const families = page.getByRole("tab", {
+      name: "Control families",
+      exact: true,
+    });
     await families.click();
     const family = page.getByRole("main").locator("details").first();
     await family.locator("summary").click();
@@ -167,7 +172,7 @@ test.describe("console smoke", () => {
     await detail.click();
     await expect(detail).toHaveAttribute("aria-expanded", "true");
     await expect(
-      page.getByText("Framework posture", { exact: true }),
+      page.getByRole("tab", { name: "Frameworks", exact: true }),
     ).toBeVisible();
   });
 

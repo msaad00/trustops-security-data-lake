@@ -99,6 +99,8 @@ export default function DashboardPage() {
 
       <QueryState queries={[posture, ingestion]} label="overview">
         <Card
+          role="region"
+          aria-label="Current assessment"
           className="overflow-hidden border-slate-700 shadow-card"
           style={{
             background:
