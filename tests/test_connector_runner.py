@@ -275,3 +275,27 @@ def test_connector_configure_cli_requires_matching_probe(tmp_path: Path, capsys)
 
     assert code == 1
     assert "exact credentials" in capsys.readouterr().err
+
+
+def test_incomplete_collection_keeps_raw_watermark_and_published_view(tmp_path, monkeypatch):
+    from security_lakehouse.ingestion.paginate import paginate
+    from security_lakehouse.ingestion.watermark import read_watermark, write_watermark
+
+    append_config_event(tmp_path, connector_id="github-security", state="enabled", actor="alice")
+    run_connector_sync(tmp_path, connector_id="github-security", repo="acme/model-service", fixture_dir=FIXTURE)
+    raw_before = (tmp_path / CONNECTOR_RAW_FILE).read_bytes()
+    posture_before = (tmp_path / "gold/current_posture.json").read_bytes()
+    write_watermark(tmp_path, "github-security", "previous")
+
+    def incomplete(*args, **kwargs):
+        return list(paginate(lambda c: {}, lambda p: [{"partial": True}], lambda p: "secret-cursor", max_pages=1))
+
+    monkeypatch.setattr("security_lakehouse.connector_runner._collect", incomplete)
+    with pytest.raises(ConnectorSyncError) as caught:
+        run_connector_sync(tmp_path, connector_id="github-security")
+    assert caught.value.run["result"] == "error"
+    assert caught.value.run["error"] == "IncompleteCollectionError"
+    assert "secret-cursor" not in str(caught.value)
+    assert read_watermark(tmp_path, "github-security") == "previous"
+    assert (tmp_path / CONNECTOR_RAW_FILE).read_bytes() == raw_before
+    assert (tmp_path / "gold/current_posture.json").read_bytes() == posture_before

@@ -81,9 +81,8 @@ class GCPClient:
         self._projects = resourcemanager_v3.ProjectsClient()
         self._assets = asset_v1.AssetServiceClient()
         # Org Policy lives in the separate google-cloud-org-policy distribution
-        # (google.cloud.orgpolicy_v2), not resourcemanager_v3. It is optional so
-        # IAM-binding and asset collection still run when the package is absent
-        # or the reader lacks orgpolicy access.
+        # (google.cloud.orgpolicy_v2), not resourcemanager_v3. Missing support
+        # is reported during collection so an incomplete scope cannot succeed.
         self._org_policies: Any | None = None
         try:
             from google.cloud import orgpolicy_v2  # noqa: PLC0415
@@ -106,7 +105,9 @@ class GCPClient:
 
     def org_policies(self) -> list[dict[str, Any]]:
         if self._org_policies is None:
-            return []
+            raise RuntimeError(
+                "GCP collection incomplete: install google-cloud-org-policy to read organization policies"
+            )
         policies: list[dict[str, Any]] = []
         try:
             listing = self._org_policies.list_policies(parent=f"projects/{self.project_id}")
@@ -121,10 +122,8 @@ class GCPClient:
                         "enforced": enforced,
                     }
                 )
-        except Exception:  # noqa: BLE001 - best-effort: Org Policy API may be disabled/unauthorized
-            # The Org Policy API may be disabled or unauthorized for a
-            # least-privilege reader. IAM + asset evidence still collects.
-            return []
+        except Exception:  # noqa: BLE001 - provider details must not enter stored errors
+            raise RuntimeError("GCP collection incomplete: organization policy read failed") from None
         return policies
 
     def assets(self) -> list[dict[str, Any]]:
@@ -138,10 +137,8 @@ class GCPClient:
                         "asset_type": getattr(asset, "asset_type", ""),
                     }
                 )
-        except Exception:  # noqa: BLE001 - best-effort: Cloud Asset API may be disabled/unauthorized
-            # IAM-binding evidence still collects when the Cloud Asset API is
-            # not enabled; enabling cloudasset.googleapis.com adds inventory.
-            return []
+        except Exception:  # noqa: BLE001 - provider details must not enter stored errors
+            raise RuntimeError("GCP collection incomplete: asset inventory read failed") from None
         return assets
 
 
