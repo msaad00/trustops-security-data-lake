@@ -161,9 +161,10 @@
       "official_source_url": "https://www.nist.gov/cyberframework",
       "source_sha256": null,
       "pulled_at": null,
-      "implementation_status": "implemented_full_pack",
+      "implementation_status": "implemented_limited_mapping",
       "copyright_guardrail": "NIST CSF is public NIST guidance. Pack cites official CSF 2.0 function/category/subcategory IDs with short internal titles only.",
-      "sync_cadence_days": 90
+      "sync_cadence_days": 90,
+      "coverage_boundary": "All 106 official Core outcomes are catalogued. Automated checks and proposed safeguard mappings provide limited evidence coverage; they do not establish full compliance."
     },
     {
       "framework_id": "cmmc-2-level2",

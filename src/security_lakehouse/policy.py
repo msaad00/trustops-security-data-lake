@@ -78,7 +78,7 @@ class RuleResult:
 
 
 class PolicyError(ValueError):
-    """Raised when a rule spec is malformed (used by linting)."""
+    """Raised when a rule spec is malformed; evaluation must stop."""
 
 
 def resolve_rule(rule: Any) -> tuple[dict[str, Any], str]:
@@ -91,26 +91,18 @@ def resolve_rule(rule: Any) -> tuple[dict[str, Any], str]:
             raise PolicyError(f"unknown named rule {rule!r}; known: {sorted(NAMED_RULES)}")
         return spec, rule
     if isinstance(rule, Mapping):
-        if "fail_if" not in rule:
-            raise PolicyError("inline rule must contain a 'fail_if' predicate")
+        if set(rule) != {"fail_if"}:
+            raise PolicyError("inline rule must contain only a 'fail_if' predicate")
         return dict(rule), "inline"
     raise PolicyError(f"rule must be a name or a spec object, got {type(rule).__name__}")
 
 
 def evaluate_control(context: ControlContext, rule: Any) -> RuleResult:
-    """Evaluate ``rule`` against ``context`` → pass/fail with reasons.
-
-    Resilient: an unknown/malformed rule falls back to the default rule (so one
-    bad catalog entry never crashes the pipeline) while ``policy lint`` still
-    flags it via :func:`validate_rule`.
-    """
-    try:
-        spec, name = resolve_rule(rule)
-    except PolicyError as exc:
-        spec, name = NAMED_RULES[DEFAULT_RULE], DEFAULT_RULE
-        matched, reasons = _eval_predicate(spec["fail_if"], context)
-        reasons = [f"rule fallback ({exc}); evaluated as {DEFAULT_RULE}", *reasons]
-        return RuleResult(status="fail" if matched else "pass", rule=name, reasons=reasons)
+    """Evaluate a validated rule; invalid rules stop assessment publication."""
+    problems = validate_rule(rule)
+    if problems:
+        raise PolicyError(f"control {context.control_id}: " + "; ".join(problems))
+    spec, name = resolve_rule(rule)
     matched, reasons = _eval_predicate(spec["fail_if"], context)
     return RuleResult(status="fail" if matched else "pass", rule=name, reasons=reasons)
 
@@ -181,16 +173,53 @@ def _validate_predicate(pred: Any, problems: list[str]) -> None:
     if not isinstance(pred, Mapping):
         problems.append(f"predicate must be an object, got {type(pred).__name__}")
         return
-    for combinator in ("all", "any"):
-        if combinator in pred:
-            for sub in _as_list(pred[combinator]):
-                _validate_predicate(sub, problems)
-            return
-    if "not" in pred:
-        _validate_predicate(pred["not"], problems)
+    if len(pred) != 1 or not set(pred) <= _LEAF_KEYS | {"all", "any", "not"}:
+        problems.append("predicate must contain exactly one recognized operator")
         return
-    if not (set(pred) & _LEAF_KEYS):
-        problems.append(f"unknown predicate keys {sorted(pred)}; expected one of {sorted(_LEAF_KEYS)}")
+    key, value = next(iter(pred.items()))
+    if key in {"all", "any"}:
+        if not isinstance(value, list) or not value:
+            problems.append(f"{key} expects a nonempty list of predicates")
+            return
+        for sub in value:
+            _validate_predicate(sub, problems)
+        return
+    if key == "not":
+        _validate_predicate(value, problems)
+        return
+    if key == "evidence_present":
+        if not isinstance(value, bool):
+            problems.append("evidence_present expects a boolean")
+        return
+    allowed = {
+        "open_violations": {"min", "max"},
+        "max_severity": {"at_least"},
+        "evidence_status": {"in"},
+        "min_evidence_coverage": {"below"},
+    }[key]
+    if not isinstance(value, Mapping) or not value or not set(value) <= allowed:
+        problems.append(f"{key} expects an object with {sorted(allowed)}")
+        return
+    if key == "open_violations":
+        if any(type(n) is not int or n < 0 for n in value.values()):
+            problems.append("open_violations bounds must be nonnegative integers")
+    elif key == "max_severity":
+        if not isinstance(value["at_least"], str) or value["at_least"].lower() not in SEVERITY_ORDER:
+            problems.append("max_severity requires a recognized severity")
+    elif key == "evidence_status":
+        statuses = value["in"]
+        if (
+            not isinstance(statuses, list)
+            or not statuses
+            or any(
+                not isinstance(v, str) or v.lower() not in {"fresh", "stale", "expired", "missing"} for v in statuses
+            )
+        ):
+            problems.append("evidence_status requires a nonempty list of recognized statuses")
+    elif key == "min_evidence_coverage":
+        n = value["below"]
+        if type(n) not in (int, float) or not 0 <= n <= 1:
+            problems.append("min_evidence_coverage below must be a finite number between 0 and 1")
 
 
 def _as_list(value: Any) -> Sequence[Any]:

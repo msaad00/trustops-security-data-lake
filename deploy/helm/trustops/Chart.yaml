@@ -2,9 +2,9 @@ apiVersion: v2
 name: trustops
 description: |
   TrustOps Security Data Lake — continuous compliance assessment workbench.
-  Ships the API + React workbench in one OCI image. Customer evidence stays
-  in customer object storage (S3 / GCS / Azure Blob) via the Iceberg+Polaris
-  read-only access pattern; nothing leaves the customer cloud.
+  Ships the API + React workbench in one OCI image with a persistent local
+  JSONL evidence lake and SQLite mart. DuckDB is optional. Iceberg REST and
+  Polaris integration are planned; egress depends on configured connectors and sinks.
 type: application
 version: 0.2.7
 appVersion: "0.2.7"

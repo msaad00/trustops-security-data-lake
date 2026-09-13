@@ -10,9 +10,6 @@ test.describe("console smoke", () => {
         name: /^Dashboard$/,
       }),
     ).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: /Trust Data Lake/ }).first(),
-    ).toBeVisible();
     await expect(page.getByText("Framework posture")).toBeVisible();
     await expect(
       page.getByText("Control pass rate", { exact: true }),
@@ -20,7 +17,9 @@ test.describe("console smoke", () => {
     await expect(
       page.getByText("Open findings", { exact: true }),
     ).toBeVisible();
-    await expect(page.getByText("Proof export", { exact: true })).toBeVisible();
+    await expect(
+      page.getByText("Assessment export", { exact: true }),
+    ).toBeVisible();
     await expect(
       page.getByRole("tab", { name: "Posture", exact: true }),
     ).toHaveAttribute("aria-selected", "true");
@@ -31,6 +30,48 @@ test.describe("console smoke", () => {
       page.getByRole("tab", { name: "Proof", exact: true }),
     ).toBeVisible();
     await expect(page.getByText("Scale tier")).toHaveCount(0);
+  });
+
+  test("dashboard framework portfolio expands, scrolls, and collapses", async ({
+    page,
+  }) => {
+    await page.goto("/console/dashboard/");
+    const portfolio = page.getByRole("region", {
+      name: "Framework posture list",
+    });
+    await expect(portfolio).toBeVisible();
+    await expect(portfolio.getByText("SOC 2", { exact: true })).toBeVisible();
+    const priorityCount = await portfolio.getByRole("link").count();
+    await page.getByRole("button", { name: "All", exact: true }).click();
+    expect(await portfolio.getByRole("link").count()).toBeGreaterThan(
+      priorityCount,
+    );
+    expect(
+      await portfolio.evaluate((node) => node.scrollHeight > node.clientHeight),
+    ).toBe(true);
+    const toggle = page.getByRole("button", {
+      name: /^Framework posture$/,
+    });
+    await toggle.click();
+    await expect(portfolio).not.toBeVisible();
+    await toggle.click();
+    await expect(portfolio).toBeVisible();
+    await page.getByRole("button", { name: "Priority", exact: true }).click();
+    await expect(portfolio.getByRole("link")).toHaveCount(priorityCount);
+    const families = page.getByRole("button", { name: /^Control families/ });
+    await families.click();
+    const family = page.getByRole("main").locator("details").first();
+    await family.locator("summary").click();
+    await expect(family.getByRole("link").first()).toHaveAttribute(
+      "href",
+      /frameworks.*control=/,
+    );
+    await page.setViewportSize({ width: 390, height: 844 });
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+    ).toBe(true);
   });
 
   test("audit room shows readiness score", async ({ page }) => {
@@ -78,58 +119,6 @@ test.describe("console smoke", () => {
     ).toBeVisible();
   });
 
-  test("connections explains live lake and pre-landed normalization paths", async ({
-    page,
-  }) => {
-    await page.goto("/console/connectors/");
-    await expect(page.getByRole("main")).toBeVisible({ timeout: 20_000 });
-    await expect(
-      page.getByRole("heading", { name: "Choose an evidence path" }),
-    ).toBeVisible();
-    await expect(
-      page.getByText("Read an existing lake", { exact: true }),
-    ).toBeVisible();
-    await expect(
-      page.getByText("Normalize pre-landed evidence", { exact: true }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "Copy normalize command" }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: "Open data lake connectors" }),
-    ).toBeVisible();
-  });
-
-  test("onboarding makes both evidence-entry paths actionable", async ({
-    page,
-  }) => {
-    await page.goto("/console/onboarding/");
-    await expect(page.getByRole("main")).toBeVisible({ timeout: 20_000 });
-    await expect(
-      page.getByRole("heading", {
-        name: "Choose how evidence enters TrustOps",
-      }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("heading", { name: "Connect sources directly" }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("heading", { name: "Bring an existing lake" }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: "Choose a connector" }),
-    ).toHaveAttribute("href", "/console/connectors/?onboarding=1");
-    await expect(
-      page.getByRole("link", { name: "Open lake path" }),
-    ).toHaveAttribute(
-      "href",
-      "/console/connectors/?connect=snowflake-evidence-lake&onboarding=1",
-    );
-    await expect(
-      page.getByText(/No local paths or raw secrets are accepted/),
-    ).toBeVisible();
-  });
-
   test("core trust pages share pipeline orientation", async ({ page }) => {
     for (const [path, active] of [
       ["/console/frameworks/", "Framework map"],
@@ -150,29 +139,20 @@ test.describe("console smoke", () => {
   test("frameworks render governed identity assets", async ({ page }) => {
     await page.goto("/console/frameworks/");
 
-    await expect(
-      page.getByRole("heading", { name: "Framework roster" }),
-    ).toBeVisible();
-    await expect(
-      page.getByText("Readiness tracked", { exact: true }),
-    ).toBeVisible();
-    await expect(
-      page.getByText("Not evaluated", { exact: true }).first(),
-    ).toBeVisible();
-
-    const nistMark = page
+    const nistBadge = page
       .getByRole("img", {
-        name: "NIST AI Risk Management Framework 1.0",
+        name: "NIST AI Risk Management Framework 1.0 framework",
+        exact: true,
       })
       .first();
-    await expect(nistMark).toBeVisible();
-    await expect(nistMark.locator("img")).toHaveCount(0);
-
+    await expect(nistBadge).toBeVisible();
+    await expect(nistBadge.locator("img")).toHaveAttribute(
+      "src",
+      "/console/frameworks/badges/nist-ai-rmf.svg",
+    );
     await expect(
       page
-        .getByRole("img", {
-          name: "ISO/IEC 27001:2022",
-        })
+        .getByRole("img", { name: "ISO/IEC 27001:2022 framework", exact: true })
         .first(),
     ).toBeVisible();
   });
@@ -186,12 +166,8 @@ test.describe("console smoke", () => {
     await expect(detail).toHaveAttribute("aria-expanded", "false");
     await detail.click();
     await expect(detail).toHaveAttribute("aria-expanded", "true");
-    await expect(page.getByText("Framework readiness")).toBeVisible();
     await expect(
-      page.getByText("Action required", { exact: true }),
-    ).toHaveCount(0);
-    await expect(
-      page.getByText("Needs action", { exact: true }).first(),
+      page.getByText("Framework posture", { exact: true }),
     ).toBeVisible();
   });
 

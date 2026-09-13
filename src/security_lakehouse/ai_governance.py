@@ -109,7 +109,8 @@ def _framework_rows(
             if str(row.get("control_id", "")).startswith(prefix)
             and str(row.get("status", "")).lower() in {"fail", "failed", "open"}
         )
-        score = max(0, min(100, round(coverage_pct - failing * 5)))
+        # Evidence coverage measures availability, not a successful control verdict.
+        score = round(100 * len(passing) / max(len(mapped), 1))
         rows.append(
             {
                 "framework_id": framework_id,
@@ -118,6 +119,8 @@ def _framework_rows(
                 "controls_covered": len(covered),
                 "coverage_pct": coverage_pct,
                 "failing_controls": failing,
+                "passing_controls": len(passing),
+                "unevaluated_controls": max(0, len(mapped) - len(passing) - failing),
                 "score": score,
             }
         )

@@ -10,40 +10,70 @@ export type FrameworkVisual = {
   bg: string;
   ring: string;
   gradient: string;
+  /** Lucide icon name key for FrameworkMark */
+  icon: FrameworkIconKey;
+  /** Approved framework artwork served from the self-hosted console. */
+  artwork?: string;
+  attribution?: string;
+  /** Project-owned compact identity, not a certification seal. */
+  badge?: string;
 };
+
+export type FrameworkIconKey =
+  | "shield"
+  | "brain"
+  | "lock"
+  | "sparkles"
+  | "heart-pulse"
+  | "credit-card"
+  | "scale"
+  | "bot"
+  | "cloud"
+  | "landmark"
+  | "layers";
 
 export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
   soc2: {
+    badge: "/console/frameworks/badges/soc2.svg",
     label: "SOC 2® Trust Services Criteria",
     mark: "SOC",
     accent: "#2563eb",
     bg: "#eff6ff",
     ring: "#bfdbfe",
     gradient: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+    icon: "shield",
   },
   "nist-ai-rmf": {
+    badge: "/console/frameworks/badges/nist-ai-rmf.svg",
     label: "NIST AI Risk Management Framework 1.0",
     mark: "AI",
     accent: "#7c3aed",
     bg: "#f5f3ff",
     ring: "#ddd6fe",
     gradient: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
+    icon: "brain",
+    artwork: "/console/frameworks/nist-ai-rmf.png",
+    attribution: "N. Hanacek/NIST",
   },
   "iso-27001-2022": {
+    badge: "/console/frameworks/badges/iso.svg",
     label: "ISO/IEC 27001:2022",
     mark: "ISO",
     accent: "#0891b2",
     bg: "#ecfeff",
     ring: "#a5f3fc",
     gradient: "linear-gradient(135deg, #06b6d4 0%, #0e7490 100%)",
+    icon: "lock",
   },
   "iso-42001-2023": {
+    badge: "/console/frameworks/badges/iso.svg",
     label: "ISO/IEC 42001:2023",
     mark: "AIMS",
     accent: "#0f766e",
     bg: "#f0fdfa",
     ring: "#99f6e4",
     gradient: "linear-gradient(135deg, #14b8a6 0%, #0f766e 100%)",
+    icon: "sparkles",
   },
   "fedramp-moderate": {
     label: "FedRAMP",
@@ -52,14 +82,17 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#dbeafe",
     ring: "#93c5fd",
     gradient: "linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%)",
+    icon: "landmark",
   },
   cis_aws: {
+    badge: "/console/frameworks/badges/cis.svg",
     label: "CIS AWS",
     mark: "CIS",
     accent: "#ea580c",
     bg: "#fff7ed",
     ring: "#fed7aa",
     gradient: "linear-gradient(135deg, #f97316 0%, #c2410c 100%)",
+    icon: "cloud",
   },
   "hipaa-security-rule": {
     label: "HIPAA",
@@ -68,6 +101,7 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#ecfdf5",
     ring: "#a7f3d0",
     gradient: "linear-gradient(135deg, #10b981 0%, #047857 100%)",
+    icon: "heart-pulse",
   },
   "pci-dss-v4": {
     label: "PCI DSS",
@@ -76,54 +110,69 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#fffbeb",
     ring: "#fde68a",
     gradient: "linear-gradient(135deg, #f59e0b 0%, #b45309 100%)",
+    icon: "credit-card",
   },
   "gdpr-2016-679": {
+    badge: "/console/frameworks/badges/eu-ai-act.svg",
     label: "GDPR",
     mark: "EU",
     accent: "#4338ca",
     bg: "#eef2ff",
     ring: "#c7d2fe",
     gradient: "linear-gradient(135deg, #6366f1 0%, #3730a3 100%)",
+    icon: "scale",
   },
   "eu-ai-act-2024-1689": {
+    badge: "/console/frameworks/badges/eu-ai-act.svg",
     label: "EU AI Act",
     mark: "EU AI",
     accent: "#be123c",
     bg: "#fff1f2",
     ring: "#fecdd3",
     gradient: "linear-gradient(135deg, #e11d48 0%, #9f1239 100%)",
+    icon: "bot",
   },
   "nist-csf-2.0": {
+    badge: "/console/frameworks/badges/nist-csf.svg",
     label: "NIST Cybersecurity Framework (CSF) 2.0",
     mark: "CSF",
     accent: "#0f766e",
     bg: "#f0fdfa",
     ring: "#99f6e4",
     gradient: "linear-gradient(135deg, #14b8a6 0%, #0f766e 100%)",
+    icon: "shield",
+    artwork: "/console/frameworks/nist-csf-2.0.png",
+    attribution: "NIST/Natasha Hanacek",
   },
   "cmmc-2-level2": {
+    badge: "/console/frameworks/badges/cmmc.svg",
     label: "CMMC 2.0 Level 2",
     mark: "CMMC",
     accent: "#1d4ed8",
     bg: "#eff6ff",
     ring: "#bfdbfe",
     gradient: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+    icon: "shield",
   },
   "iso-27017-2015": {
+    badge: "/console/frameworks/badges/iso.svg",
     label: "ISO/IEC 27017:2015",
     mark: "27017",
     accent: "#0369a1",
     bg: "#f0f9ff",
     ring: "#bae6fd",
     gradient: "linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%)",
+    icon: "cloud",
   },
   "iso-27701-2019": {
+    badge: "/console/frameworks/badges/iso.svg",
     label: "ISO/IEC 27701:2019",
     mark: "27701",
     accent: "#6d28d9",
     bg: "#f5f3ff",
     ring: "#ddd6fe",
     gradient: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
+    icon: "lock",
   },
   soc1: {
     label: "SOC 1®",
@@ -132,6 +181,7 @@ export const FRAMEWORK_VISUALS: Record<string, FrameworkVisual> = {
     bg: "#eff6ff",
     ring: "#bfdbfe",
     gradient: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+    icon: "shield",
   },
 };
 
@@ -200,5 +250,6 @@ export function frameworkVisual(
     bg: "#eef4ff",
     ring: "#c7d7fe",
     gradient: "linear-gradient(135deg, #4f7cff 0%, #2563eb 100%)",
+    icon: "layers",
   };
 }

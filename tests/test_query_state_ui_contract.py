@@ -17,10 +17,10 @@ def test_loading_state_is_visible_and_branded() -> None:
     assert "security data lake" in source
 
 
-def test_shell_surfaces_security_data_lake_positioning() -> None:
+def test_shell_uses_current_product_identity() -> None:
     brand = BRAND.read_text(encoding="utf-8")
     top_bar = TOP_BAR.read_text(encoding="utf-8")
 
-    assert "trust layer for security data lakes" in brand
-    assert "Normalize security evidence" in brand
+    assert 'name: "TrustOps"' in brand
+    assert "Open, self-hosted GRC for cloud and AI" in brand
     assert "subtitle={BRAND.consoleSubtitle}" in top_bar

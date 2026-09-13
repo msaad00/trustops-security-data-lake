@@ -48,7 +48,9 @@ def _iter_jsonl_lines(
     base_dir: str | Path | None = None,
 ) -> Iterator[tuple[int, str]]:
     """Yield ``(line_no, stripped_line)`` from a JSONL file without loading it whole."""
-    target = resolve_path(path, base_dir=base_dir)
+    from security_lakehouse.generations import pinned_path
+
+    target = resolve_path(pinned_path(Path(path)), base_dir=base_dir)
     # lgtm[py/path-injection]
     if missing_ok and not target.exists():
         return
@@ -172,6 +174,9 @@ def _atomic_write(output: Path, text_chunks: Iterable[str]) -> None:
     file is removed and the exception re-raised, so a failed write never
     replaces the existing destination.
     """
+    from security_lakehouse.generations import assert_mutable
+
+    assert_mutable(output)
     output.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp_name = tempfile.mkstemp(dir=output.parent, prefix=output.name + ".", suffix=".tmp")
     tmp_path = Path(tmp_name)
@@ -213,7 +218,10 @@ def append_jsonl(
     call returns so a crash cannot lose an acknowledged record. Unlike
     :func:`write_jsonl` this never rewrites existing content.
     """
+    from security_lakehouse.generations import assert_mutable
+
     output = resolve_path(path, base_dir=base_dir)
+    assert_mutable(output)
     output.parent.mkdir(parents=True, exist_ok=True)
     line = json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n"
     with output.open("a", encoding="utf-8") as handle:
@@ -228,4 +236,6 @@ def write_json(path: str | Path, payload: Any, *, base_dir: str | Path | None = 
 
 
 def read_json(path: str | Path, *, base_dir: str | Path | None = None) -> Any:
-    return json.loads(resolve_path(path, base_dir=base_dir).read_text(encoding="utf-8"))
+    from security_lakehouse.generations import pinned_path
+
+    return json.loads(resolve_path(pinned_path(Path(path)), base_dir=base_dir).read_text(encoding="utf-8"))

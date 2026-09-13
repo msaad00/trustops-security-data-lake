@@ -1,21 +1,17 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   createColumnHelper,
   flexRender,
   useTable,
   type SortingState,
 } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
 import { SavedViewsBar } from "@/components/SavedViewsBar";
 import { QueryState } from "@/components/QueryState";
@@ -49,6 +45,8 @@ function ViolationsPageContent() {
   const controls = useControls();
   const tagsQuery = useTags();
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const [environment, setEnvironment] = useState("all");
 
   const { filters, setFilters } = useToolbar();
   const [sorting, setSorting] = useState<SortingState>([
@@ -59,10 +57,34 @@ function ViolationsPageContent() {
 
   const deepLinkId = searchParams.get("id");
   useEffect(() => {
-    if (!deepLinkId || !violations.data) return;
+    if (!deepLinkId) {
+      setSelected(null);
+      return;
+    }
+    if (!violations.data) return;
     const match = violations.data.find((v) => v.violation_id === deepLinkId);
-    if (match) setSelected(match);
+    setSelected(match ?? null);
   }, [deepLinkId, violations.data]);
+  function selectFinding(finding: Violation | null) {
+    setSelected(finding);
+    const params = new URLSearchParams(searchParams.toString());
+    if (finding) params.set("id", finding.violation_id);
+    else params.delete("id");
+    router.replace(`/violations${params.size ? `?${params}` : ""}`, {
+      scroll: false,
+    });
+  }
+  const environmentFor = (value: string) =>
+    value?.trim().toLowerCase() || "unknown";
+  const environments = [
+    ...new Set(
+      (violations.data ?? []).map((v) => environmentFor(v.environment)),
+    ),
+  ].sort();
+  const controlTitles = useMemo(
+    () => new Map((controls.data ?? []).map((c) => [c.control_id, c.title])),
+    [controls.data],
+  );
   const taggedViolations = useTagEntityIds(activeTagId, "violation");
   const taggedIds = useMemo(
     () => new Set(taggedViolations.data ?? []),
@@ -85,69 +107,101 @@ function ViolationsPageContent() {
       (violations.data ?? []).filter((v) => {
         if (activeTagId && !taggedIds.has(v.violation_id)) return false;
         if (
+          environment !== "all" &&
+          environmentFor(v.environment) !== environment
+        )
+          return false;
+        if (
           filters.framework !== "all" &&
           controlFramework.get(v.control_id) !== filters.framework
         )
           return false;
         if (filters.severity !== "all" && v.severity !== filters.severity)
           return false;
-        return matchesQuery(v, filters.query);
+        return matchesQuery(
+          { ...v, title: controlTitles.get(v.control_id) },
+          filters.query,
+        );
       }),
-    [violations.data, filters, controlFramework, activeTagId, taggedIds],
+    [
+      violations.data,
+      filters,
+      controlFramework,
+      activeTagId,
+      taggedIds,
+      environment,
+      controlTitles,
+    ],
   );
 
   const columns: SortableColumnDefs<Violation> = [
-    helper.accessor("violation_id", {
-      header: "Violation",
+    helper.accessor("control_id", {
+      header: "Finding",
       cell: (info) => (
-        <div>
-          <code className="text-xs text-ink">{info.getValue()}</code>
-          <div className="text-xs text-muted">
-            {info.row.original.event_type}
+        <div className="max-w-[320px]">
+          <div className="font-semibold leading-5 text-ink">
+            {controlTitles.get(info.getValue()) ?? info.row.original.event_type}
           </div>
+          <div className="mt-1 text-xs text-muted">{info.getValue()}</div>
         </div>
       ),
-    }),
-    helper.accessor("control_id", {
-      header: "Control",
-      cell: (info) => <code className="text-xs">{info.getValue()}</code>,
     }),
     helper.accessor("asset_id", {
-      header: "Asset",
+      header: "Asset & environment",
       cell: (info) => (
-        <div>
-          <code className="text-xs text-ink">{info.getValue()}</code>
-          <div className="text-xs text-muted">
-            {info.row.original.asset_owner}
+        <div className="max-w-[280px]">
+          <div className="break-words text-xs leading-5 text-ink [overflow-wrap:anywhere]">
+            {info.getValue() || "Unknown asset"}
           </div>
+          <Badge
+            className="mt-1"
+            tone={
+              ["prod", "production"].includes(
+                environmentFor(info.row.original.environment),
+              )
+                ? "attention"
+                : "default"
+            }
+          >
+            {info.row.original.environment?.trim() || "Unknown"}
+          </Badge>
         </div>
       ),
     }),
-    helper.accessor("severity", {
-      header: "Severity",
-      cell: (info) => {
-        const v = info.getValue() as string;
-        return (
-          <div>
-            <Badge tone={toneForSeverity(v)}>{v}</Badge>
-            <div className="mt-1 text-xs text-muted">
-              score {info.row.original.severity_score}
-            </div>
-          </div>
-        );
-      },
-    }),
     helper.accessor("severity_score", {
-      header: "Score",
-      cell: (info) => info.getValue(),
+      header: "Severity",
+      cell: (info) => (
+        <div>
+          <Badge tone={toneForSeverity(info.row.original.severity)}>
+            {info.row.original.severity}
+          </Badge>
+          <div className="mt-1 text-xs text-muted">Score {info.getValue()}</div>
+        </div>
+      ),
     }),
-    helper.accessor("source", {
-      header: "Source",
-      cell: (info) => <Badge>{info.getValue()}</Badge>,
+    helper.accessor("asset_owner", {
+      header: "Owner & source",
+      cell: (info) => (
+        <div className="max-w-[190px] break-words text-xs leading-5">
+          <div className="font-medium text-ink">
+            {info.getValue()?.trim() || "Unassigned"}
+          </div>
+          <div className="text-muted">{info.row.original.source}</div>
+        </div>
+      ),
     }),
-    helper.accessor("evidence_ref", {
-      header: "Evidence",
-      cell: (info) => <code className="text-xs">{info.getValue()}</code>,
+    helper.display({
+      id: "review",
+      header: "Action",
+      cell: (info) => (
+        <Button
+          size="sm"
+          aria-label={`Review finding ${info.row.original.violation_id}`}
+          onClick={() => selectFinding(info.row.original)}
+        >
+          Review
+        </Button>
+      ),
     }),
   ];
 
@@ -166,7 +220,7 @@ function ViolationsPageContent() {
       <PageHeader
         eyebrow="Findings"
         title="Findings queue"
-        description="Failed deterministic controls with severity, asset, source, and evidence reference. Click a row to triage and persist the action server-side."
+        description="Prioritize findings, assign owners, and review evidence."
       />
       <TrustPipelineStrip activeStage="findings" />
 
@@ -184,36 +238,68 @@ function ViolationsPageContent() {
           framework: filters.framework,
           severity: filters.severity,
           query: filters.query,
+          environment,
         }}
-        onApply={(viewFilters) =>
+        onApply={(viewFilters) => {
+          setEnvironment((viewFilters.environment as string) ?? "all");
           setFilters({
             framework: (viewFilters.framework as string) ?? "all",
             severity: (viewFilters.severity as Severity | "all") ?? "all",
             query: (viewFilters.query as string) ?? "",
-          })
-        }
+          });
+        }}
       />
 
       <Toolbar
         filters={filters}
         frameworks={frameworks}
         onChange={setFilters}
-        placeholder="Search by violation, asset, source, owner…"
+        placeholder="Search findings, assets, sources, owners…"
       />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-2 text-xs">
+          <Badge tone="critical">
+            {filtered.filter((v) => v.severity === "critical").length} critical
+          </Badge>
+          <Badge>
+            {filtered.filter((v) => !v.asset_owner?.trim()).length} unassigned
+          </Badge>
+          <Badge>
+            {
+              filtered.filter(
+                (v) => environmentFor(v.environment) === "unknown",
+              ).length
+            }{" "}
+            unknown environment
+          </Badge>
+        </div>
+        <label className="flex items-center gap-2 text-xs font-medium text-muted">
+          Environment
+          <select
+            aria-label="Filter by environment"
+            value={environment}
+            onChange={(e) => setEnvironment(e.target.value)}
+            className="rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink"
+          >
+            <option value="all">All environments</option>
+            {environments.map((value) => (
+              <option key={value} value={value}>
+                {value === "unknown" ? "Unknown" : value}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
       <QueryState queries={violations} label="violations">
         <Card className="overflow-hidden">
           <CardHeader>
-            <CardTitle>{filtered.length} open violations</CardTitle>
-            <CardDescription>
-              Click any column to re-sort. Click any row to open the triage
-              drawer.
-            </CardDescription>
+            <CardTitle>{filtered.length} findings</CardTitle>
           </CardHeader>
           <div
-            className="overflow-x-auto"
-            tabIndex={0}
+            className="max-h-[640px] overflow-auto"
             role="region"
-            aria-label="Open violations table"
+            aria-label="Findings queue"
+            tabIndex={0}
           >
             <table className="min-w-[820px] w-full text-sm">
               <thead>
@@ -225,10 +311,15 @@ function ViolationsPageContent() {
                     {hg.headers.map((h) => (
                       <th
                         key={h.id}
-                        onClick={h.column.getToggleSortingHandler()}
+                        scope="col"
                         className="cursor-pointer px-4 py-3 text-left text-[11px] font-black uppercase tracking-wide text-muted"
                       >
-                        <span className="inline-flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={h.column.getToggleSortingHandler()}
+                          disabled={!h.column.getCanSort()}
+                          className="inline-flex items-center gap-1 text-left"
+                        >
                           {flexRender(
                             h.column.columnDef.header,
                             h.getContext(),
@@ -236,7 +327,7 @@ function ViolationsPageContent() {
                           {h.column.getCanSort() && (
                             <ArrowUpDown className="h-3 w-3 opacity-40" />
                           )}
-                        </span>
+                        </button>
                       </th>
                     ))}
                   </tr>
@@ -246,8 +337,7 @@ function ViolationsPageContent() {
                 {table.getRowModel().rows.map((r) => (
                   <tr
                     key={r.id}
-                    onClick={() => setSelected(r.original)}
-                    className="cursor-pointer border-b border-line last:border-0 hover:bg-blue-50/40"
+                    className="border-b border-line last:border-0 hover:bg-blue-50/40"
                   >
                     {r.getVisibleCells().map((c) => (
                       <td key={c.id} className="px-4 py-3 align-top">
@@ -262,7 +352,7 @@ function ViolationsPageContent() {
                       className="px-4 py-8 text-center text-sm text-muted"
                       colSpan={columns.length}
                     >
-                      No violations match the current filters.
+                      No findings match the current filters.
                     </td>
                   </tr>
                 )}
@@ -273,7 +363,7 @@ function ViolationsPageContent() {
       </QueryState>
       <ViolationDrawer
         violation={selected}
-        onClose={() => setSelected(null)}
+        onClose={() => selectFinding(null)}
         onToast={notify.success}
       />
     </div>

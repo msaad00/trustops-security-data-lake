@@ -24,8 +24,8 @@ def test_core_pages_share_the_trust_pipeline_strip() -> None:
     assert "Control eval" in component
     assert "Findings" in component
     assert "Proof export" in component
-    assert "Deterministic rules produce gold pass/fail posture." in component
-    assert "Audit room freezes snapshots and exports reports." in component
+    assert 'aria-current={active ? "page" : undefined}' in component
+    assert 'href: "/audit-room"' in component
 
     assert 'activeStage="controls"' in controls
     assert 'activeStage="frameworks"' in frameworks

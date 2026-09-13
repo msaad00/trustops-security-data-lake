@@ -1,198 +1,193 @@
 <p align="center">
-  <img src="docs/images/trustops-capability-header.svg" alt="Trust Data Lake collects read-only cloud, identity, code, and data evidence; evaluates deterministic controls through a common control framework; and produces immutable audit proof" width="100%">
+  <img src="docs/images/trustops-readme-banner.svg" alt="TrustOps — Collect. Evaluate. Resolve. Export." width="100%">
+</p>
+
+<p align="center"><strong>Open, self-hosted GRC for cloud and AI.</strong></p>
+
+<p align="center">
+  <a href="https://pypi.org/project/trustops-security-data-lake/"><img src="https://img.shields.io/pypi/v/trustops-security-data-lake?color=2b7bba&label=PyPI" alt="PyPI version"></a>
+  <a href="https://pypi.org/project/trustops-security-data-lake/"><img src="https://img.shields.io/badge/python-3.11%2B-blue" alt="Python 3.11+"></a>
+  <a href="https://github.com/msaad00/trustops-security-data-lake/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/msaad00/trustops-security-data-lake/ci.yml?branch=main&amp;label=CI" alt="CI status"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue" alt="License: Apache 2.0"></a>
 </p>
 
 <p align="center">
-  <sub>Open source · self-hosted · customer-owned evidence</sub>
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#explore">Explore</a> ·
+  <a href="#develop-and-verify">Develop & verify</a>
 </p>
 
-<p align="center">
-  <a href="https://pypi.org/project/trustops-security-data-lake/"><img src="https://img.shields.io/pypi/v/trustops-security-data-lake?style=flat-square&amp;color=4f7cff&amp;label=PyPI" alt="PyPI version"></a>
-  <a href="https://pypi.org/project/trustops-security-data-lake/"><img src="https://img.shields.io/badge/Python-3.11%2B-30a8c9?style=flat-square" alt="Python 3.11+"></a>
-  <a href="https://github.com/msaad00/trustops-security-data-lake/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/msaad00/trustops-security-data-lake/ci.yml?branch=main&amp;label=Build&amp;style=flat-square" alt="Build status"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-64748b?style=flat-square" alt="License: Apache 2.0"></a>
-</p>
-
-<h1 align="center">Open evidence infrastructure for continuous GRC</h1>
-
-<p align="center">
-  <strong>One self-hosted contract across Console · API · CLI · MCP · CI.</strong><br/>
-  Customer-owned evidence, deterministic verdicts, governed workflows, and reproducible proof.
-</p>
-
-<p align="center">
-  <a href="#quick-start"><strong>Quick start</strong></a> ·
-  <a href="docs/PRODUCT_WALKTHROUGH.md"><strong>Product tour</strong></a> ·
-  <a href="docs/CONNECTORS.md"><strong>Connectors</strong></a> ·
-  <a href="docs/ARCHITECTURE.md"><strong>Architecture</strong></a> ·
-  <a href="docs/api/AGENT_API.md"><strong>API &amp; MCP</strong></a> ·
-  <a href="deploy/README.md"><strong>Deploy</strong></a>
-</p>
-
-## One operating loop
-
-<p align="center">
-  <img src="docs/images/trustops-readme-banner.svg" alt="Collect evidence, evaluate controls, operate findings, and prove posture" width="100%">
-</p>
-
-**Collect** evidence read-only, **evaluate** controls with deterministic rules,
-**operate** the findings, and **prove** posture with immutable snapshots.
-
-Regulatory requirements are consolidated into a
-[Common Control Framework](docs/COMMON_CONTROL_FRAMEWORK.md): you operate one
-safeguard, and it satisfies every requirement mapped to it across frameworks.
-The catalog holds 942 requirements across 13 frameworks; run
-`security-lakehouse frameworks safeguards` for current coverage.
-
-Evidence stays in your environment. Models may summarize and prioritize; they do
-not silently change evidence or decide pass/fail.
-
-**The open-source, self-hosted alternative to managed GRC SaaS — interoperable, secure, and built to scale in your environment.**
-
-|                    | Trust Data Lake                         | Managed GRC SaaS         |
-| ------------------ | --------------------------------------- | ------------------------ |
-| Evidence location  | Your VPC or laptop — data never leaves  | Vendor servers           |
-| Control evaluation | Deterministic rules, no model drift     | Varies by vendor         |
-| API surface        | Native `/api/v1` + MCP stdio for agents | Web-first, limited API   |
-| Interoperability   | CCF maps one safeguard to 13 frameworks | Proprietary control sets |
-| Cost model         | Open source (Apache 2.0)                | Per-seat subscription    |
-| Self-hosted        | Full stack on your infra or CI          | Cloud-only options       |
-
-## Where to start
-
-| I am…                             | Start here                                                                                                  |
-| --------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **DevSecOps / security engineer** | [Quick start](#quick-start) → [Connectors](docs/CONNECTORS.md) → [CI gate](docs/CI_GATE.md)                 |
-| **Compliance / GRC lead**         | [Product tour](docs/PRODUCT_WALKTHROUGH.md) → [Framework coverage](docs/FRAMEWORK_COVERAGE.md)              |
-| **AI / agent builder**            | [Agent API](docs/api/AGENT_API.md) → [MCP server](docs/MCP.md) → [AIBOM](docs/AIBOM.md)                     |
-| **Auditor / assessor**            | [Audit room](docs/PRODUCT_WALKTHROUGH.md#audit-room) → [Snapshot integrity](docs/ARCHITECTURE.md#snapshots) |
-| **Operator deploying**            | [deploy/README.md](deploy/README.md) → [Server auth](docs/SERVER_AUTH.md)                                   |
+TrustOps collects security evidence, evaluates controls, tracks follow-up work,
+and exports assessments for review. **Built for humans and agents:** use the
+console for investigation and review, or API, CLI, MCP, and CI for automation.
+Deploy it in your environment. Data access and egress depend on your configured
+connectors, sinks, and model integrations.
 
 ## Quick start
 
-Requires Python 3.11+ and Node 22+ (the console is built from source; it is not
-committed to the repository). For the fastest path, use `make demo-local` which
-runs the whole sequence in one step.
+**Try the console with fixture data.** From a cloned repository, use Python 3.11+,
+[uv](https://docs.astral.sh/uv/), and Node 22+:
+
+```bash
+uv sync --frozen --extra dev --extra server
+make demo-local
+```
+
+Open [localhost:8787/console/dashboard/](http://127.0.0.1:8787/console/dashboard/).
+The command builds the console, loads the golden fixture, migrates the local
+database, and starts the server. This local demo disables authentication; use
+[authenticated deployment](deploy/README.md) for a shared environment.
+
+<details>
+<summary><strong>Other setup paths</strong> — pip, CLI-only, and deployment</summary>
+
+For a source install without uv:
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev,server]"
-
-make web-install web-build   # builds the console into src/security_lakehouse/web/dist
-
+make web-install web-build
 security-lakehouse fixtures load --company golden --out build/lakehouse
 security-lakehouse db upgrade --lake build/lakehouse
-security-lakehouse serve \
-  --lake build/lakehouse \
-  --server \
-  --allow-insecure-no-auth \
-  --port 8787
+security-lakehouse serve --lake build/lakehouse --server --allow-insecure-no-auth --port 8787
 ```
 
-Open [http://127.0.0.1:8787/console/dashboard/](http://127.0.0.1:8787/console/dashboard/).
-
-> **Note:** Skipping `make web-install web-build` leaves `/console/` as a 404.
-> The server mounts the console only when a built dist is present.
-> `--allow-insecure-no-auth` is for local development only.
-
-**Other install paths:**
+For the CLI and local lake only:
 
 ```bash
-# Evaluator: container (no build required)
-docker run -p 8787:8787 ghcr.io/msaad00/trustops:latest
-
-# Kubernetes
-helm install trustops deploy/helm/trustops
-
-# CLI / local lake only (zero dependencies)
 pip install trustops-security-data-lake
 security-lakehouse fixtures load --company golden --out ./lake
 ```
 
-See [deploy/README.md](deploy/README.md) for production configuration and authentication setup.
+[Docker, Helm, and production configuration](deploy/README.md) ·
+[Server authentication](docs/SERVER_AUTH.md)
+
+</details>
+
+## How it works
+
+| Step         | What you do                                          | What you get                                        |
+| ------------ | ---------------------------------------------------- | --------------------------------------------------- |
+| **Collect**  | Connect a source with read-only access.              | Evidence with source, freshness, and provenance.    |
+| **Evaluate** | Apply deterministic control rules.                   | Results tied to evidence and the evaluated catalog. |
+| **Resolve**  | Assign findings, track fixes, and review exceptions. | Ownership and a record of follow-up decisions.      |
+| **Export**   | Freeze an assessment and share reports.              | Evidence and assessment history for reviewers.      |
+
+The [Common Control Framework](docs/COMMON_CONTROL_FRAMEWORK.md) reuses safeguards
+across framework mappings. A mapping does not itself establish compliance.
+Models may summarize or propose actions; deterministic rules decide control results.
+
+## Explore
 
 <details>
-<summary><b>Surfaces</b> — console, API, CLI, MCP, CI</summary>
+<summary><strong>01 · Product tour</strong> — overview, evidence, and audit room</summary>
 
-| Surface          | Purpose                                                            |
-| ---------------- | ------------------------------------------------------------------ |
-| **Console**      | Posture, controls, evidence, findings, workflows, and audit room   |
-| **API**          | Versioned `/api/v1` contract                                       |
-| **CLI**          | Local pipelines, validation, snapshots, and server operations      |
-| **MCP & agents** | Read posture and propose governed actions with approval boundaries |
-| **CI**           | Block releases when posture or control-test thresholds regress     |
+The images below show the stored demo fixture, not live customer evidence.
+
+|                              Overview                              |                             Evidence                              |
+| :----------------------------------------------------------------: | :---------------------------------------------------------------: |
+| ![TrustOps demo overview](docs/images/trustops-demo-dashboard.png) | ![TrustOps demo evidence](docs/images/trustops-demo-evidence.png) |
+
+[Full walkthrough](docs/PRODUCT_WALKTHROUGH.md) ·
+[Connectors](docs/images/trustops-demo-connectors.png) ·
+[Frameworks](docs/images/trustops-demo-frameworks.png) ·
+[Findings](docs/images/trustops-demo-findings.png) ·
+[Triage](docs/images/trustops-demo-triage.png) ·
+[Remediation](docs/images/trustops-demo-remediation.png) ·
+[Audit room](docs/images/trustops-demo-audit-room.png) ·
+[Workflows](docs/images/trustops-demo-workflows.png)
 
 </details>
 
 <details>
-<summary><b>Connectors</b> — least-privilege, read-only</summary>
+<summary><strong>02 · Connect sources</strong> — cloud, identity, code, and existing lakes</summary>
 
-AWS · Azure · GCP · GitHub · GitLab · Okta · Snowflake · ClickHouse, plus the
-scanner, ticketing, and AI-platform entries in
-[`connectors/catalog.json`](connectors/catalog.json).
+In the console, open **Connectors → choose a source → Discover → Test → Enable → Sync**.
+No pre-existing data lake is required. For automation, use the
+[headless setup playbook](docs/playbooks/HEADLESS_CONNECTOR_SETUP.md).
+
+Sources include AWS, Azure, GCP, GitHub, GitLab, Okta, Snowflake, and ClickHouse.
+Check the [connector catalog](docs/CONNECTORS.md) for each integration's scope and status.
+
+No connector requires pasted long-lived cloud keys.
+
+- **AWS** uses STS AssumeRole, one External ID per deployed role, short-lived session credentials, and read-only IAM posture APIs. Temporary credentials expire after each session; TrustOps stores no long-lived access keys. Scale rollout with CloudFormation StackSets or Terraform workspaces; Bulk account import is the next operator surface. See the [cloud setup guide](docs/LIVE_CLOUD_POC.md).
+- **Azure** supports a customer-owned Entra application, managed identity, or federated workload identity with Reader scope.
+- **Snowflake** uses a read-only service identity with a key-pair or OAuth token reference. TrustOps stores identifiers, not passwords or private-key contents. Snowflake is the existing security-data-lake path.
+
+[AWS credential lifecycle diagram](docs/images/trustops-aws-sts-lifecycle.svg) ·
+[Continuous ingestion](docs/CONTINUOUS_INGESTION.md)
 
 </details>
 
-## Product preview
+<details>
+<summary><strong>03 · Controls and workflows</strong> — safeguards, frameworks, and ownership</summary>
 
-|                                            Assessment overview                                             |                                             Framework coverage                                             |
-| :--------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------: |
-| <img src="docs/images/trustops-demo-dashboard.png" alt="Trust Data Lake assessment overview" width="100%"> | <img src="docs/images/trustops-demo-frameworks.png" alt="Trust Data Lake framework coverage" width="100%"> |
+| Area                                                 | Read more                                                                                       |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Safeguards and executable rules                      | [Common Control Framework](docs/COMMON_CONTROL_FRAMEWORK.md)                                    |
+| Framework mappings and coverage                      | [Framework coverage](docs/FRAMEWORK_COVERAGE.md)                                                |
+| Findings, reviews, exceptions, and audit preparation | [Product walkthrough](docs/PRODUCT_WALKTHROUGH.md) · [Audit readiness](docs/AUDIT_READINESS.md) |
+| Implemented, partial, and planned capabilities       | [Product status](docs/PRODUCT_SHAPE.md) · [Roadmap](ROADMAP.md)                                 |
 
-|                                                Evidence                                                |                                                 Connectors                                                 |
-| :----------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------: |
-| <img src="docs/images/trustops-demo-evidence.png" alt="Trust Data Lake evidence records" width="100%"> | <img src="docs/images/trustops-demo-connectors.png" alt="Trust Data Lake connector registry" width="100%"> |
+Catalog size, mapped coverage, and evaluated results are separate measures. Inspect
+the current safeguard catalog with `security-lakehouse frameworks safeguards`.
 
-More views: [audit room](docs/images/trustops-demo-audit-room.png) · [insights](docs/images/trustops-demo-insights.png) · [workflows](docs/images/trustops-demo-workflows.png) · [trust center](docs/images/trustops-demo-trust-center.png)
+</details>
 
-## Connect a live source
-
-The default path is agentless and read-only; no pre-existing data lake is required.
-
-- **Console:** open **Connectors**, choose a source, then run **Discover → Test → Enable → Sync**.
-- **Headless:** follow the [connector setup playbook](docs/playbooks/HEADLESS_CONNECTOR_SETUP.md) for API, CLI, and MCP flows.
-- **Existing lake:** connect Snowflake or ClickHouse when evidence already lives there.
-
-Cloud connectors use short-lived provider credentials or workload identity. No connector requires pasted long-lived cloud keys. Trust Data Lake stores non-secret identifiers, redacted fingerprints, sync history, and evidence hashes.
-
-Connector security contracts:
-
-- **AWS** uses STS AssumeRole, one External ID per deployed role, short-lived session credentials, and read-only IAM posture APIs. Temporary credentials expire after each session; Trust Data Lake stores no long-lived access keys. Scale rollout with CloudFormation StackSets or Terraform workspaces; Bulk account import is the next operator surface.
-- **Azure** uses a customer-owned Entra application, managed identity, or federated workload identity with Reader scope. Tokens are short-lived, and no Azure password or raw client secret is stored.
-- **Snowflake** supports browser SSO for human proof or a read-only service identity with a key-pair or OAuth token reference held by the runtime secret manager. Trust Data Lake stores account, role, and view identifiers — not passwords or private-key contents. Snowflake is the existing security-data-lake path.
-
-<p align="center">
-  <img src="docs/images/trustops-aws-sts-lifecycle.svg" alt="Trust Data Lake AWS STS AssumeRole lifecycle" width="96%">
-</p>
-
-## Architecture
+<details>
+<summary><strong>04 · Deployment and interoperability</strong> — local, cloud, and evidence storage</summary>
 
 ```text
-read-only source → raw observation → normalized fact → deterministic evaluation
-                 → finding/current posture → immutable snapshot → governed action
+Source → Raw evidence → Normalized facts → Control evaluation → Assessment
+                                                ↓                  ↓
+                                           Owned findings    Review / export
 ```
 
-<p align="center">
-  <img src="docs/images/trustops-assessment-architecture.svg" alt="Trust Data Lake collection, evaluation, and proof architecture" width="96%">
-</p>
+| Layer                   | Current boundary                                                         |
+| ----------------------- | ------------------------------------------------------------------------ |
+| Evidence and evaluation | Local JSONL, deterministic rules, and verified assessment generations.   |
+| Local analytics         | SQLite mart; DuckDB is optional.                                         |
+| Operational state       | Application database and local state for jobs, assignments, and reviews. |
+| External storage        | Snowflake and ClickHouse integrations; verify the configured deployment. |
+| Open table formats      | Parquet, Iceberg REST, and Polaris interoperability are planned.         |
 
-The console, CLI, MCP server, agents, and CI gate share the same API and assessment engine. This keeps browser output and headless automation consistent.
+Run locally with Python or Docker, or deploy the Helm chart in your own cloud.
+The current assessment writer needs durable local POSIX storage and one writer
+per lake. Snowflake and ClickHouse integrations are evidence backends; they do
+not host the TrustOps application. Snowflake Native App packaging and Databricks
+support are planned. See the [deployment guide](deploy/README.md).
 
-## What ships
+[Architecture guide](docs/ARCHITECTURE.md) ·
+[Architecture diagram](docs/images/trustops-assessment-architecture.svg) ·
+[Assessment publication and failure contracts](docs/ASSESSMENT_GENERATIONS.md)
 
-| Area              | Included                                                                             |
-| ----------------- | ------------------------------------------------------------------------------------ |
-| **Compliance**    | SOC 2, NIST AI RMF, FedRAMP, ISO, CIS AWS, HIPAA, PCI DSS, GDPR, and EU AI Act packs |
-| **Evidence**      | Freshness SLAs, provenance, SHA-256 verification, tags, and saved views              |
-| **GRC workflows** | Remediation, policies, attestations, vendor risk, access reviews, and approvals      |
-| **Identity**      | OIDC, SAML, API keys, RBAC, tenant boundaries, and SCIM scaffolding                  |
-| **Deployment**    | Local, Docker, Helm, EKS reference IaC, Snowflake, and ClickHouse                    |
-| **Exports**       | Snapshots, executive PDF, trust shares, OpenAPI, MCP, and GitHub posture gate        |
+</details>
 
-See the [product shape](docs/PRODUCT_SHAPE.md) for shipped, partial, and planned capability status.
+<details>
+<summary><strong>05 · API, agents, and CI</strong> — use the same assessment engine headlessly</summary>
 
-## Verify
+| Surface                                 | Purpose                                                          |
+| --------------------------------------- | ---------------------------------------------------------------- |
+| Console                                 | Browse posture, evidence, findings, and reviews.                 |
+| [API](docs/api/AGENT_API.md)            | Versioned `/api/v1` access for integrations.                     |
+| CLI                                     | Collect, evaluate, verify, export, and run the local server.     |
+| [MCP](docs/HEADLESS_GRC.md)             | Read assessments and propose actions through governed tools.     |
+| [CI](docs/playbooks/CI_POSTURE_GATE.md) | Apply posture and control-test thresholds to delivery workflows. |
+
+[TrustOps operator skill](agent-skills/trustops-operator/SKILL.md) ·
+[Specialist skills](agent-skills/FRAMEWORK_SKILLS.md) ·
+[Agent workflow catalog](docs/api/AGENT_SKILLS.md) ·
+[AI bill of materials](docs/AIBOM.md)
+
+</details>
+
+## Develop and verify
+
+<details>
+<summary><strong>Checks, repository layout, and documentation</strong></summary>
 
 ```bash
 make smoke       # backend, contracts, docs, brand, pipeline, API
@@ -200,27 +195,20 @@ make web-ci      # install, typecheck, production build
 make security    # dependency audits and pre-commit checks
 ```
 
-Regenerate documentation screenshots with `make demo-screenshots-full`.
+Regenerate fixture screenshots with `make demo-screenshots-full`.
 
-## Repository map
+| Directory                               | Contents                                           |
+| --------------------------------------- | -------------------------------------------------- |
+| `src/security_lakehouse/`               | Assessment engine, API, auth, connectors, and MCP. |
+| `app/web/`                              | Next.js console.                                   |
+| `controls/`, `frameworks/`, `mappings/` | Rules, framework catalogs, and mappings.           |
+| `deploy/`                               | Deployment and infrastructure examples.            |
+| `docs/`                                 | Product, architecture, operations, and API guides. |
 
-```text
-src/security_lakehouse/   assessment engine, API, auth, connectors, MCP
-app/web/                  Next.js console
-controls/ frameworks/     control catalogs, packs, and mappings
-deploy/                   Docker, Helm, cloud, warehouse, and IaC examples
-docs/                     product, architecture, operations, and API guides
-```
+[Validation and benchmark plan](docs/BENCHMARKS.md) ·
+[Deployment](docs/DEPLOYMENT.md) · [Roadmap](ROADMAP.md) ·
+[Third-party assets](docs/THIRD_PARTY_ASSETS.md)
 
-## Documentation
+</details>
 
-- [Product walkthrough](docs/PRODUCT_WALKTHROUGH.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Connector catalog](docs/CONNECTORS.md)
-- [Continuous ingestion](docs/CONTINUOUS_INGESTION.md)
-- [Audit readiness](docs/AUDIT_READINESS.md)
-- [Agent API](docs/api/AGENT_API.md)
-- [Deployment](docs/DEPLOYMENT.md)
-- [Roadmap](ROADMAP.md)
-
-Apache-2.0 licensed. Third-party visual assets and usage terms are documented in [THIRD_PARTY_ASSETS.md](docs/THIRD_PARTY_ASSETS.md).
+[Apache-2.0 license](LICENSE).

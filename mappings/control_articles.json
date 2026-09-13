@@ -10686,30 +10686,17 @@
       ]
     },
     {
-      "control_id": "NIST-CSF-DE.AE-01",
-      "framework_id": "nist-csf-2.0",
-      "articles": [
-        {
-          "article_id": "DE.AE-01",
-          "title": "NIST CSF 2.0 DE.AE-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 DE.AE-01."
-        }
-      ]
-    },
-    {
       "control_id": "NIST-CSF-DE.AE-02",
       "framework_id": "nist-csf-2.0",
       "articles": [
         {
           "article_id": "DE.AE-02",
-          "title": "NIST CSF 2.0 DE.AE-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 DE.AE-02."
+          "title": "Potentially adverse events are analyzed to better understand associated activities",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10719,11 +10706,12 @@
       "articles": [
         {
           "article_id": "DE.AE-03",
-          "title": "NIST CSF 2.0 DE.AE-03 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 DE.AE-03."
+          "title": "Information is correlated from multiple sources",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10733,25 +10721,12 @@
       "articles": [
         {
           "article_id": "DE.AE-04",
-          "title": "NIST CSF 2.0 DE.AE-04 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 DE.AE-04."
-        }
-      ]
-    },
-    {
-      "control_id": "NIST-CSF-DE.AE-05",
-      "framework_id": "nist-csf-2.0",
-      "articles": [
-        {
-          "article_id": "DE.AE-05",
-          "title": "NIST CSF 2.0 DE.AE-05 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 DE.AE-05."
+          "title": "The estimated impact and scope of adverse events are understood",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10761,11 +10736,42 @@
       "articles": [
         {
           "article_id": "DE.AE-06",
-          "title": "NIST CSF 2.0 DE.AE-06 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 DE.AE-06."
+          "title": "Information on adverse events is provided to authorized staff and tools",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-DE.AE-07",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "DE.AE-07",
+          "title": "Cyber threat intelligence and other contextual information are integrated into the analysis",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-DE.AE-08",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "DE.AE-08",
+          "title": "Incidents are declared when adverse events meet the defined incident criteria",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10775,11 +10781,12 @@
       "articles": [
         {
           "article_id": "DE.CM-01",
-          "title": "NIST CSF 2.0 DE.CM-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 DE.CM-01."
+          "title": "Networks and network services are monitored to find potentially adverse events",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10789,11 +10796,12 @@
       "articles": [
         {
           "article_id": "DE.CM-02",
-          "title": "NIST CSF 2.0 DE.CM-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 DE.CM-02."
+          "title": "The physical environment is monitored to find potentially adverse events",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10803,39 +10811,42 @@
       "articles": [
         {
           "article_id": "DE.CM-03",
-          "title": "NIST CSF 2.0 DE.CM-03 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 DE.CM-03."
+          "title": "Personnel activity and technology usage are monitored to find potentially adverse events",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
     {
-      "control_id": "NIST-CSF-DE.CM-04",
+      "control_id": "NIST-CSF-DE.CM-06",
       "framework_id": "nist-csf-2.0",
       "articles": [
         {
-          "article_id": "DE.CM-04",
-          "title": "NIST CSF 2.0 DE.CM-04 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 DE.CM-04."
+          "article_id": "DE.CM-06",
+          "title": "External service provider activities and services are monitored to find potentially adverse events",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
     {
-      "control_id": "NIST-CSF-DE.CM-05",
+      "control_id": "NIST-CSF-DE.CM-09",
       "framework_id": "nist-csf-2.0",
       "articles": [
         {
-          "article_id": "DE.CM-05",
-          "title": "NIST CSF 2.0 DE.CM-05 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 DE.CM-05."
+          "article_id": "DE.CM-09",
+          "title": "Computing hardware and software, runtime environments, and their data are monitored to find potentially adverse events",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10845,11 +10856,12 @@
       "articles": [
         {
           "article_id": "GV.OC-01",
-          "title": "NIST CSF 2.0 GV.OC-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.OC-01."
+          "title": "The organizational mission is understood and informs cybersecurity risk management",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10859,11 +10871,12 @@
       "articles": [
         {
           "article_id": "GV.OC-02",
-          "title": "NIST CSF 2.0 GV.OC-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.OC-02."
+          "title": "Internal and external stakeholders are understood, and their needs and expectations regarding cybersecurity risk management are understood and considered",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10873,11 +10886,12 @@
       "articles": [
         {
           "article_id": "GV.OC-03",
-          "title": "NIST CSF 2.0 GV.OC-03 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.OC-03."
+          "title": "Legal, regulatory, and contractual requirements regarding cybersecurity \u2014 including privacy and civil liberties obligations \u2014 are understood and managed",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10887,11 +10901,12 @@
       "articles": [
         {
           "article_id": "GV.OC-04",
-          "title": "NIST CSF 2.0 GV.OC-04 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.OC-04."
+          "title": "Critical objectives, capabilities, and services that external stakeholders depend on or expect from the organization are understood and communicated",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10901,11 +10916,12 @@
       "articles": [
         {
           "article_id": "GV.OC-05",
-          "title": "NIST CSF 2.0 GV.OC-05 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.OC-05."
+          "title": "Outcomes, capabilities, and services that the organization depends on are understood and communicated",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10915,11 +10931,12 @@
       "articles": [
         {
           "article_id": "GV.OV-01",
-          "title": "NIST CSF 2.0 GV.OV-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.OV-01."
+          "title": "Cybersecurity risk management strategy outcomes are reviewed to inform and adjust strategy and direction",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10929,11 +10946,12 @@
       "articles": [
         {
           "article_id": "GV.OV-02",
-          "title": "NIST CSF 2.0 GV.OV-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.OV-02."
+          "title": "The cybersecurity risk management strategy is reviewed and adjusted to ensure coverage of organizational requirements and risks",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10943,11 +10961,12 @@
       "articles": [
         {
           "article_id": "GV.OV-03",
-          "title": "NIST CSF 2.0 GV.OV-03 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.OV-03."
+          "title": "Organizational cybersecurity risk management performance is evaluated and reviewed for adjustments needed",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10957,11 +10976,12 @@
       "articles": [
         {
           "article_id": "GV.PO-01",
-          "title": "NIST CSF 2.0 GV.PO-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.PO-01."
+          "title": "Policy for managing cybersecurity risks is established based on organizational context, cybersecurity strategy, and priorities and is communicated and enforced",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10971,11 +10991,12 @@
       "articles": [
         {
           "article_id": "GV.PO-02",
-          "title": "NIST CSF 2.0 GV.PO-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.PO-02."
+          "title": "Policy for managing cybersecurity risks is reviewed, updated, communicated, and enforced to reflect changes in requirements, threats, technology, and organizational mission",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10985,11 +11006,12 @@
       "articles": [
         {
           "article_id": "GV.RM-01",
-          "title": "NIST CSF 2.0 GV.RM-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.RM-01."
+          "title": "Risk management objectives are established and agreed to by organizational stakeholders",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -10999,11 +11021,12 @@
       "articles": [
         {
           "article_id": "GV.RM-02",
-          "title": "NIST CSF 2.0 GV.RM-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.RM-02."
+          "title": "Risk appetite and risk tolerance statements are established, communicated, and maintained",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11013,11 +11036,12 @@
       "articles": [
         {
           "article_id": "GV.RM-03",
-          "title": "NIST CSF 2.0 GV.RM-03 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.RM-03."
+          "title": "Cybersecurity risk management activities and outcomes are included in enterprise risk management processes",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11027,11 +11051,12 @@
       "articles": [
         {
           "article_id": "GV.RM-04",
-          "title": "NIST CSF 2.0 GV.RM-04 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.RM-04."
+          "title": "Strategic direction that describes appropriate risk response options is established and communicated",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11041,11 +11066,12 @@
       "articles": [
         {
           "article_id": "GV.RM-05",
-          "title": "NIST CSF 2.0 GV.RM-05 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.RM-05."
+          "title": "Lines of communication across the organization are established for cybersecurity risks, including risks from suppliers and other third parties",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11055,11 +11081,12 @@
       "articles": [
         {
           "article_id": "GV.RM-06",
-          "title": "NIST CSF 2.0 GV.RM-06 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.RM-06."
+          "title": "A standardized method for calculating, documenting, categorizing, and prioritizing cybersecurity risks is established and communicated",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11069,11 +11096,12 @@
       "articles": [
         {
           "article_id": "GV.RM-07",
-          "title": "NIST CSF 2.0 GV.RM-07 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.RM-07."
+          "title": "Strategic opportunities (i.e., positive risks) are characterized and are included in organizational cybersecurity risk discussions",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11083,11 +11111,12 @@
       "articles": [
         {
           "article_id": "GV.RR-01",
-          "title": "NIST CSF 2.0 GV.RR-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.RR-01."
+          "title": "Organizational leadership is responsible and accountable for cybersecurity risk and fosters a culture that is risk-aware, ethical, and continually improving",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11097,11 +11126,12 @@
       "articles": [
         {
           "article_id": "GV.RR-02",
-          "title": "NIST CSF 2.0 GV.RR-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.RR-02."
+          "title": "Roles, responsibilities, and authorities related to cybersecurity risk management are established, communicated, understood, and enforced",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11111,11 +11141,12 @@
       "articles": [
         {
           "article_id": "GV.RR-03",
-          "title": "NIST CSF 2.0 GV.RR-03 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.RR-03."
+          "title": "Adequate resources are allocated commensurate with the cybersecurity risk strategy, roles, responsibilities, and policies",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11125,11 +11156,12 @@
       "articles": [
         {
           "article_id": "GV.RR-04",
-          "title": "NIST CSF 2.0 GV.RR-04 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.RR-04."
+          "title": "Cybersecurity is included in human resources practices",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11139,11 +11171,12 @@
       "articles": [
         {
           "article_id": "GV.SC-01",
-          "title": "NIST CSF 2.0 GV.SC-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-01."
+          "title": "A cybersecurity supply chain risk management program, strategy, objectives, policies, and processes are established and agreed to by organizational stakeholders",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11153,11 +11186,12 @@
       "articles": [
         {
           "article_id": "GV.SC-02",
-          "title": "NIST CSF 2.0 GV.SC-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-02."
+          "title": "Cybersecurity roles and responsibilities for suppliers, customers, and partners are established, communicated, and coordinated internally and externally",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11167,11 +11201,12 @@
       "articles": [
         {
           "article_id": "GV.SC-03",
-          "title": "NIST CSF 2.0 GV.SC-03 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-03."
+          "title": "Cybersecurity supply chain risk management is integrated into cybersecurity and enterprise risk management, risk assessment, and improvement processes",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11181,11 +11216,12 @@
       "articles": [
         {
           "article_id": "GV.SC-04",
-          "title": "NIST CSF 2.0 GV.SC-04 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-04."
+          "title": "Suppliers are known and prioritized by criticality",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11195,11 +11231,12 @@
       "articles": [
         {
           "article_id": "GV.SC-05",
-          "title": "NIST CSF 2.0 GV.SC-05 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-05."
+          "title": "Requirements to address cybersecurity risks in supply chains are established, prioritized, and integrated into contracts and other types of agreements with suppliers and other relevant third parties",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11209,11 +11246,12 @@
       "articles": [
         {
           "article_id": "GV.SC-06",
-          "title": "NIST CSF 2.0 GV.SC-06 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-06."
+          "title": "Planning and due diligence are performed to reduce risks before entering into formal supplier or other third-party relationships",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11223,11 +11261,12 @@
       "articles": [
         {
           "article_id": "GV.SC-07",
-          "title": "NIST CSF 2.0 GV.SC-07 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-07."
+          "title": "The risks posed by a supplier, their products and services, and other third parties are understood, recorded, prioritized, assessed, responded to, and monitored over the course of the relationship",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11237,11 +11276,12 @@
       "articles": [
         {
           "article_id": "GV.SC-08",
-          "title": "NIST CSF 2.0 GV.SC-08 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-08."
+          "title": "Relevant suppliers and other third parties are included in incident planning, response, and recovery activities",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11251,11 +11291,12 @@
       "articles": [
         {
           "article_id": "GV.SC-09",
-          "title": "NIST CSF 2.0 GV.SC-09 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-09."
+          "title": "Supply chain security practices are integrated into cybersecurity and enterprise risk management programs, and their performance is monitored throughout the technology product and service life cycle",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11265,11 +11306,12 @@
       "articles": [
         {
           "article_id": "GV.SC-10",
-          "title": "NIST CSF 2.0 GV.SC-10 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 GV.SC-10."
+          "title": "Cybersecurity supply chain risk management plans include provisions for activities that occur after the conclusion of a partnership or service agreement",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11279,11 +11321,12 @@
       "articles": [
         {
           "article_id": "ID.AM-01",
-          "title": "NIST CSF 2.0 ID.AM-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.AM-01."
+          "title": "Inventories of hardware managed by the organization are maintained",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11293,11 +11336,12 @@
       "articles": [
         {
           "article_id": "ID.AM-02",
-          "title": "NIST CSF 2.0 ID.AM-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.AM-02."
+          "title": "Inventories of software, services, and systems managed by the organization are maintained",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11307,11 +11351,12 @@
       "articles": [
         {
           "article_id": "ID.AM-03",
-          "title": "NIST CSF 2.0 ID.AM-03 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.AM-03."
+          "title": "Representations of the organization\u2019s authorized network communication and internal and external network data flows are maintained",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11321,11 +11366,12 @@
       "articles": [
         {
           "article_id": "ID.AM-04",
-          "title": "NIST CSF 2.0 ID.AM-04 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.AM-04."
+          "title": "Inventories of services provided by suppliers are maintained",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11335,25 +11381,12 @@
       "articles": [
         {
           "article_id": "ID.AM-05",
-          "title": "NIST CSF 2.0 ID.AM-05 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.AM-05."
-        }
-      ]
-    },
-    {
-      "control_id": "NIST-CSF-ID.AM-06",
-      "framework_id": "nist-csf-2.0",
-      "articles": [
-        {
-          "article_id": "ID.AM-06",
-          "title": "NIST CSF 2.0 ID.AM-06 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.AM-06."
+          "title": "Assets are prioritized based on classification, criticality, resources, and impact on the mission",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11363,11 +11396,27 @@
       "articles": [
         {
           "article_id": "ID.AM-07",
-          "title": "NIST CSF 2.0 ID.AM-07 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.AM-07."
+          "title": "Inventories of data and corresponding metadata for designated data types are maintained",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-ID.AM-08",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "ID.AM-08",
+          "title": "Systems, hardware, software, services, and data are managed throughout their life cycles",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11377,11 +11426,12 @@
       "articles": [
         {
           "article_id": "ID.IM-01",
-          "title": "NIST CSF 2.0 ID.IM-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.IM-01."
+          "title": "Improvements are identified from evaluations",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11391,11 +11441,12 @@
       "articles": [
         {
           "article_id": "ID.IM-02",
-          "title": "NIST CSF 2.0 ID.IM-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.IM-02."
+          "title": "Improvements are identified from security tests and exercises, including those done in coordination with suppliers and relevant third parties",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11405,11 +11456,12 @@
       "articles": [
         {
           "article_id": "ID.IM-03",
-          "title": "NIST CSF 2.0 ID.IM-03 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.IM-03."
+          "title": "Improvements are identified from execution of operational processes, procedures, and activities",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11419,11 +11471,12 @@
       "articles": [
         {
           "article_id": "ID.IM-04",
-          "title": "NIST CSF 2.0 ID.IM-04 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.IM-04."
+          "title": "Incident response plans and other cybersecurity plans that affect operations are established, communicated, maintained, and improved",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11433,11 +11486,12 @@
       "articles": [
         {
           "article_id": "ID.RA-01",
-          "title": "NIST CSF 2.0 ID.RA-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-01."
+          "title": "Vulnerabilities in assets are identified, validated, and recorded",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11447,11 +11501,12 @@
       "articles": [
         {
           "article_id": "ID.RA-02",
-          "title": "NIST CSF 2.0 ID.RA-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-02."
+          "title": "Cyber threat intelligence is received from information sharing forums and sources",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11461,11 +11516,12 @@
       "articles": [
         {
           "article_id": "ID.RA-03",
-          "title": "NIST CSF 2.0 ID.RA-03 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-03."
+          "title": "Internal and external threats to the organization are identified and recorded",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11475,11 +11531,12 @@
       "articles": [
         {
           "article_id": "ID.RA-04",
-          "title": "NIST CSF 2.0 ID.RA-04 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-04."
+          "title": "Potential impacts and likelihoods of threats exploiting vulnerabilities are identified and recorded",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11489,11 +11546,12 @@
       "articles": [
         {
           "article_id": "ID.RA-05",
-          "title": "NIST CSF 2.0 ID.RA-05 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-05."
+          "title": "Threats, vulnerabilities, likelihoods, and impacts are used to understand inherent risk and inform risk response prioritization",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11503,11 +11561,12 @@
       "articles": [
         {
           "article_id": "ID.RA-06",
-          "title": "NIST CSF 2.0 ID.RA-06 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-06."
+          "title": "Risk responses are chosen, prioritized, planned, tracked, and communicated",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11517,11 +11576,12 @@
       "articles": [
         {
           "article_id": "ID.RA-07",
-          "title": "NIST CSF 2.0 ID.RA-07 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-07."
+          "title": "Changes and exceptions are managed, assessed for risk impact, recorded, and tracked",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11531,11 +11591,12 @@
       "articles": [
         {
           "article_id": "ID.RA-08",
-          "title": "NIST CSF 2.0 ID.RA-08 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-08."
+          "title": "Processes for receiving, analyzing, and responding to vulnerability disclosures are established",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11545,11 +11606,12 @@
       "articles": [
         {
           "article_id": "ID.RA-09",
-          "title": "NIST CSF 2.0 ID.RA-09 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-09."
+          "title": "The authenticity and integrity of hardware and software are assessed prior to acquisition and use",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11559,11 +11621,12 @@
       "articles": [
         {
           "article_id": "ID.RA-10",
-          "title": "NIST CSF 2.0 ID.RA-10 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 ID.RA-10."
+          "title": "Critical suppliers are assessed prior to acquisition",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11573,11 +11636,12 @@
       "articles": [
         {
           "article_id": "PR.AA-01",
-          "title": "NIST CSF 2.0 PR.AA-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.AA-01."
+          "title": "Identities and credentials for authorized users, services, and hardware are managed by the organization",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11587,11 +11651,12 @@
       "articles": [
         {
           "article_id": "PR.AA-02",
-          "title": "NIST CSF 2.0 PR.AA-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.AA-02."
+          "title": "Identities are proofed and bound to credentials based on the context of interactions",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11601,11 +11666,12 @@
       "articles": [
         {
           "article_id": "PR.AA-03",
-          "title": "NIST CSF 2.0 PR.AA-03 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.AA-03."
+          "title": "Users, services, and hardware are authenticated",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11615,11 +11681,12 @@
       "articles": [
         {
           "article_id": "PR.AA-04",
-          "title": "NIST CSF 2.0 PR.AA-04 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.AA-04."
+          "title": "Identity assertions are protected, conveyed, and verified",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11629,11 +11696,12 @@
       "articles": [
         {
           "article_id": "PR.AA-05",
-          "title": "NIST CSF 2.0 PR.AA-05 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.AA-05."
+          "title": "Access permissions, entitlements, and authorizations are defined in a policy, managed, enforced, and reviewed, and incorporate the principles of least privilege and separation of duties",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11643,11 +11711,12 @@
       "articles": [
         {
           "article_id": "PR.AA-06",
-          "title": "NIST CSF 2.0 PR.AA-06 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.AA-06."
+          "title": "Physical access to assets is managed, monitored, and enforced commensurate with risk",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11657,11 +11726,12 @@
       "articles": [
         {
           "article_id": "PR.AT-01",
-          "title": "NIST CSF 2.0 PR.AT-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.AT-01."
+          "title": "Personnel are provided with awareness and training so that they possess the knowledge and skills to perform general tasks with cybersecurity risks in mind",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11671,11 +11741,12 @@
       "articles": [
         {
           "article_id": "PR.AT-02",
-          "title": "NIST CSF 2.0 PR.AT-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.AT-02."
+          "title": "Individuals in specialized roles are provided with awareness and training so that they possess the knowledge and skills to perform relevant tasks with cybersecurity risks in mind",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11685,11 +11756,12 @@
       "articles": [
         {
           "article_id": "PR.DS-01",
-          "title": "NIST CSF 2.0 PR.DS-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.DS-01."
+          "title": "The confidentiality, integrity, and availability of data-at-rest are protected",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11699,39 +11771,42 @@
       "articles": [
         {
           "article_id": "PR.DS-02",
-          "title": "NIST CSF 2.0 PR.DS-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.DS-02."
+          "title": "The confidentiality, integrity, and availability of data-in-transit are protected",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
     {
-      "control_id": "NIST-CSF-PR.DS-03",
+      "control_id": "NIST-CSF-PR.DS-10",
       "framework_id": "nist-csf-2.0",
       "articles": [
         {
-          "article_id": "PR.DS-03",
-          "title": "NIST CSF 2.0 PR.DS-03 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.DS-03."
+          "article_id": "PR.DS-10",
+          "title": "The confidentiality, integrity, and availability of data-in-use are protected",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
     {
-      "control_id": "NIST-CSF-PR.DS-04",
+      "control_id": "NIST-CSF-PR.DS-11",
       "framework_id": "nist-csf-2.0",
       "articles": [
         {
-          "article_id": "PR.DS-04",
-          "title": "NIST CSF 2.0 PR.DS-04 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.DS-04."
+          "article_id": "PR.DS-11",
+          "title": "Backups of data are created, protected, maintained, and tested",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11741,11 +11816,12 @@
       "articles": [
         {
           "article_id": "PR.IR-01",
-          "title": "NIST CSF 2.0 PR.IR-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.IR-01."
+          "title": "Networks and environments are protected from unauthorized logical access and usage",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11755,11 +11831,12 @@
       "articles": [
         {
           "article_id": "PR.IR-02",
-          "title": "NIST CSF 2.0 PR.IR-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.IR-02."
+          "title": "The organization\u2019s technology assets are protected from environmental threats",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11769,11 +11846,12 @@
       "articles": [
         {
           "article_id": "PR.IR-03",
-          "title": "NIST CSF 2.0 PR.IR-03 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.IR-03."
+          "title": "Mechanisms are implemented to achieve resilience requirements in normal and adverse situations",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11783,11 +11861,12 @@
       "articles": [
         {
           "article_id": "PR.IR-04",
-          "title": "NIST CSF 2.0 PR.IR-04 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.IR-04."
+          "title": "Adequate resource capacity to ensure availability is maintained",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11797,11 +11876,12 @@
       "articles": [
         {
           "article_id": "PR.PS-01",
-          "title": "NIST CSF 2.0 PR.PS-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.PS-01."
+          "title": "Configuration management practices are established and applied",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11811,11 +11891,12 @@
       "articles": [
         {
           "article_id": "PR.PS-02",
-          "title": "NIST CSF 2.0 PR.PS-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.PS-02."
+          "title": "Software is maintained, replaced, and removed commensurate with risk",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11825,11 +11906,12 @@
       "articles": [
         {
           "article_id": "PR.PS-03",
-          "title": "NIST CSF 2.0 PR.PS-03 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.PS-03."
+          "title": "Hardware is maintained, replaced, and removed commensurate with risk",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11839,11 +11921,12 @@
       "articles": [
         {
           "article_id": "PR.PS-04",
-          "title": "NIST CSF 2.0 PR.PS-04 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.PS-04."
+          "title": "Log records are generated and made available for continuous monitoring",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11853,11 +11936,12 @@
       "articles": [
         {
           "article_id": "PR.PS-05",
-          "title": "NIST CSF 2.0 PR.PS-05 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.PS-05."
+          "title": "Installation and execution of unauthorized software are prevented",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11867,39 +11951,42 @@
       "articles": [
         {
           "article_id": "PR.PS-06",
-          "title": "NIST CSF 2.0 PR.PS-06 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 PR.PS-06."
+          "title": "Secure software development practices are integrated, and their performance is monitored throughout the software development life cycle",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
     {
-      "control_id": "NIST-CSF-RC.CO-01",
+      "control_id": "NIST-CSF-RC.CO-03",
       "framework_id": "nist-csf-2.0",
       "articles": [
         {
-          "article_id": "RC.CO-01",
-          "title": "NIST CSF 2.0 RC.CO-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RC.CO-01."
+          "article_id": "RC.CO-03",
+          "title": "Recovery activities and progress in restoring operational capabilities are communicated to designated internal and external stakeholders",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
     {
-      "control_id": "NIST-CSF-RC.CO-02",
+      "control_id": "NIST-CSF-RC.CO-04",
       "framework_id": "nist-csf-2.0",
       "articles": [
         {
-          "article_id": "RC.CO-02",
-          "title": "NIST CSF 2.0 RC.CO-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RC.CO-02."
+          "article_id": "RC.CO-04",
+          "title": "Public updates on incident recovery are shared using approved methods and messaging",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11909,11 +11996,12 @@
       "articles": [
         {
           "article_id": "RC.RP-01",
-          "title": "NIST CSF 2.0 RC.RP-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RC.RP-01."
+          "title": "The recovery portion of the incident response plan is executed once initiated from the incident response process",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11923,11 +12011,12 @@
       "articles": [
         {
           "article_id": "RC.RP-02",
-          "title": "NIST CSF 2.0 RC.RP-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RC.RP-02."
+          "title": "Recovery actions are selected, scoped, prioritized, and performed",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11937,11 +12026,12 @@
       "articles": [
         {
           "article_id": "RC.RP-03",
-          "title": "NIST CSF 2.0 RC.RP-03 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RC.RP-03."
+          "title": "The integrity of backups and other restoration assets is verified before using them for restoration",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11951,11 +12041,12 @@
       "articles": [
         {
           "article_id": "RC.RP-04",
-          "title": "NIST CSF 2.0 RC.RP-04 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RC.RP-04."
+          "title": "Critical mission functions and cybersecurity risk management are considered to establish post-incident operational norms",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11965,11 +12056,12 @@
       "articles": [
         {
           "article_id": "RC.RP-05",
-          "title": "NIST CSF 2.0 RC.RP-05 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RC.RP-05."
+          "title": "The integrity of restored assets is verified, systems and services are restored, and normal operating status is confirmed",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -11979,39 +12071,12 @@
       "articles": [
         {
           "article_id": "RC.RP-06",
-          "title": "NIST CSF 2.0 RC.RP-06 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RC.RP-06."
-        }
-      ]
-    },
-    {
-      "control_id": "NIST-CSF-RS.AN-01",
-      "framework_id": "nist-csf-2.0",
-      "articles": [
-        {
-          "article_id": "RS.AN-01",
-          "title": "NIST CSF 2.0 RS.AN-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RS.AN-01."
-        }
-      ]
-    },
-    {
-      "control_id": "NIST-CSF-RS.AN-02",
-      "framework_id": "nist-csf-2.0",
-      "articles": [
-        {
-          "article_id": "RS.AN-02",
-          "title": "NIST CSF 2.0 RS.AN-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RS.AN-02."
+          "title": "The end of incident recovery is declared based on criteria, and incident- related documentation is completed",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -12021,39 +12086,57 @@
       "articles": [
         {
           "article_id": "RS.AN-03",
-          "title": "NIST CSF 2.0 RS.AN-03 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RS.AN-03."
+          "title": "Analysis is performed to establish what has taken place during an incident and the root cause of the incident",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
     {
-      "control_id": "NIST-CSF-RS.AN-04",
+      "control_id": "NIST-CSF-RS.AN-06",
       "framework_id": "nist-csf-2.0",
       "articles": [
         {
-          "article_id": "RS.AN-04",
-          "title": "NIST CSF 2.0 RS.AN-04 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RS.AN-04."
+          "article_id": "RS.AN-06",
+          "title": "Actions performed during an investigation are recorded, and the records\u2019 integrity and provenance are preserved",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
     {
-      "control_id": "NIST-CSF-RS.CO-01",
+      "control_id": "NIST-CSF-RS.AN-07",
       "framework_id": "nist-csf-2.0",
       "articles": [
         {
-          "article_id": "RS.CO-01",
-          "title": "NIST CSF 2.0 RS.CO-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RS.CO-01."
+          "article_id": "RS.AN-07",
+          "title": "Incident data and metadata are collected, and their integrity and provenance are preserved",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RS.AN-08",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RS.AN-08",
+          "title": "An incident\u2019s magnitude is estimated and validated",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -12063,11 +12146,27 @@
       "articles": [
         {
           "article_id": "RS.CO-02",
-          "title": "NIST CSF 2.0 RS.CO-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RS.CO-02."
+          "title": "Internal and external stakeholders are notified of incidents",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "NIST-CSF-RS.CO-03",
+      "framework_id": "nist-csf-2.0",
+      "articles": [
+        {
+          "article_id": "RS.CO-03",
+          "title": "Information is shared with designated internal and external stakeholders",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -12077,11 +12176,12 @@
       "articles": [
         {
           "article_id": "RS.MA-01",
-          "title": "NIST CSF 2.0 RS.MA-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RS.MA-01."
+          "title": "The incident response plan is executed in coordination with relevant third parties once an incident is declared",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -12091,11 +12191,12 @@
       "articles": [
         {
           "article_id": "RS.MA-02",
-          "title": "NIST CSF 2.0 RS.MA-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RS.MA-02."
+          "title": "Incident reports are triaged and validated",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -12105,11 +12206,12 @@
       "articles": [
         {
           "article_id": "RS.MA-03",
-          "title": "NIST CSF 2.0 RS.MA-03 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RS.MA-03."
+          "title": "Incidents are categorized and prioritized",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -12119,11 +12221,12 @@
       "articles": [
         {
           "article_id": "RS.MA-04",
-          "title": "NIST CSF 2.0 RS.MA-04 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RS.MA-04."
+          "title": "Incidents are escalated or elevated as needed",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -12133,11 +12236,12 @@
       "articles": [
         {
           "article_id": "RS.MA-05",
-          "title": "NIST CSF 2.0 RS.MA-05 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RS.MA-05."
+          "title": "The criteria for initiating incident recovery are applied",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -12147,11 +12251,12 @@
       "articles": [
         {
           "article_id": "RS.MI-01",
-          "title": "NIST CSF 2.0 RS.MI-01 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RS.MI-01."
+          "title": "Incidents are contained",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },
@@ -12161,11 +12266,12 @@
       "articles": [
         {
           "article_id": "RS.MI-02",
-          "title": "NIST CSF 2.0 RS.MI-02 \u2014 assessed from cybersecurity program and operational evidence",
-          "official_source_url": "https://www.nist.gov/cyberframework",
-          "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to NIST CSF 2.0 RS.MI-02."
+          "title": "Incidents are eradicated",
+          "official_source_url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+          "reviewed_by": "automated-source-reconciliation",
+          "reviewed_at": "2026-09-13",
+          "review_status": "proposed",
+          "rationale": "Direct identifier and outcome from pinned NIST CSF 2.0 Appendix A; source verification does not attest equivalence."
         }
       ]
     },

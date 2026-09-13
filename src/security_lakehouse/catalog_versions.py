@@ -41,6 +41,7 @@ from security_lakehouse.catalog import (
     load_framework_registry,
 )
 from security_lakehouse.io import append_jsonl, read_jsonl
+from security_lakehouse.safeguards import load_safeguards
 
 CONTROL_SCHEMA_VERSION = "trustops.control.v2"
 BUNDLE_SCHEMA_VERSION = "trustops.catalog_bundle.v1"
@@ -294,14 +295,17 @@ def compute_bundle(
     registry_path: str | Path | None = None,
     catalog_path: str | Path | None = None,
     crosswalk_path: str | Path | None = None,
+    safeguards_path: str | Path | None = None,
     as_of: str | date | datetime | None = None,
     history_path: str | Path | None = None,
 ) -> dict[str, Any]:
     """Compute the content-addressed catalog bundle.
 
-    Deterministic: the same registry + controls + crosswalk always yield the
+    Deterministic: the same registry + controls + crosswalk + safeguards always yield the
     same ``bundle_sha256``. Pass ``as_of`` to bundle the historical control set
-    in force on that date instead of the active set (audit reconstruction).
+    in force on that date instead of the active set. Registry, crosswalk and
+    safeguards remain the supplied/current versions; use a saved snapshot
+    bundle for the original assessment manifest.
     """
     registry = load_framework_registry(registry_path)
     if as_of is not None:
@@ -321,6 +325,7 @@ def compute_bundle(
         "frameworks": _digest(full_frameworks),
         "controls": _digest(full_controls),
         "crosswalk": _digest(crosswalk),
+        "safeguards": _digest(load_safeguards(safeguards_path)),
     }
     body = {
         "schema_version": BUNDLE_SCHEMA_VERSION,
@@ -362,12 +367,14 @@ def write_bundle_lock(
     registry_path: str | Path | None = None,
     catalog_path: str | Path | None = None,
     crosswalk_path: str | Path | None = None,
+    safeguards_path: str | Path | None = None,
 ) -> dict[str, Any]:
     """Recompute the active bundle and write it to the lockfile. Returns it."""
     bundle = compute_bundle(
         registry_path=registry_path,
         catalog_path=catalog_path,
         crosswalk_path=crosswalk_path,
+        safeguards_path=safeguards_path,
     )
     path = Path(lock_path or DEFAULT_BUNDLE_LOCK_PATH)
     path.write_text(json.dumps(bundle, indent=2) + "\n", encoding="utf-8")
@@ -380,6 +387,7 @@ def verify_bundle_lock(
     registry_path: str | Path | None = None,
     catalog_path: str | Path | None = None,
     crosswalk_path: str | Path | None = None,
+    safeguards_path: str | Path | None = None,
 ) -> dict[str, Any]:
     """Compare the recomputed active bundle to the committed lockfile.
 
@@ -392,6 +400,7 @@ def verify_bundle_lock(
         registry_path=registry_path,
         catalog_path=catalog_path,
         crosswalk_path=crosswalk_path,
+        safeguards_path=safeguards_path,
     )
     if not path.exists():
         return {

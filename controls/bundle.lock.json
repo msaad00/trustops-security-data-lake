@@ -5,9 +5,10 @@
   "control_count": 942,
   "crosswalk_count": 942,
   "components": {
-    "frameworks": "19254ebd5e13c36a1be00c9cfc7146d0e023bfadf77e0703a6d804afe8518e20",
-    "controls": "de2be4148253fec5a82d970553aa022fe0b9541df72d5da4457480ade8f1f339",
-    "crosswalk": "53b046cfe5638c4783c1f14f1b4ebe5d26cc9026735ab4ce9edf666767b73f3a"
+    "frameworks": "e7c82c3545946da70273d5c2accda41c93f83a9b29b5ff973eac3483972f9067",
+    "controls": "05082971c18787eed2720e1050d8665f7316471a194121fe198153a230c122c4",
+    "crosswalk": "c48213882c4bfa1dec81208da9775066fdbeb0ac7548faca2c255167706507cd",
+    "safeguards": "685fb53769475b2b35f302ce01b5d321b086e4cf95ff35ce215c12cde36e9902"
   },
   "framework_versions": [
     {
@@ -5459,745 +5460,745 @@
       "lifecycle_status": "active"
     },
     {
-      "control_id": "NIST-CSF-DE.AE-01",
-      "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
-      "lifecycle_status": "active"
-    },
-    {
       "control_id": "NIST-CSF-DE.AE-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-DE.AE-03",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-DE.AE-04",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
-      "lifecycle_status": "active"
-    },
-    {
-      "control_id": "NIST-CSF-DE.AE-05",
-      "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-DE.AE-06",
       "framework_id": "nist-csf-2.0",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "NIST-CSF-DE.AE-07",
+      "framework_id": "nist-csf-2.0",
       "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "valid_from": "2026-09-13",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "NIST-CSF-DE.AE-08",
+      "framework_id": "nist-csf-2.0",
+      "version": "1.0.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-DE.CM-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-DE.CM-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-DE.CM-03",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
-      "control_id": "NIST-CSF-DE.CM-04",
+      "control_id": "NIST-CSF-DE.CM-06",
       "framework_id": "nist-csf-2.0",
       "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
-      "control_id": "NIST-CSF-DE.CM-05",
+      "control_id": "NIST-CSF-DE.CM-09",
       "framework_id": "nist-csf-2.0",
       "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.OC-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.OC-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.OC-03",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.OC-04",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.OC-05",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.OV-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.OV-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.OV-03",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.PO-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.PO-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.RM-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.RM-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.RM-03",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.RM-04",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.RM-05",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.RM-06",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.RM-07",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.RR-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.RR-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.RR-03",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.RR-04",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.SC-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.SC-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.SC-03",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.SC-04",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.SC-05",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.SC-06",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.SC-07",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.SC-08",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.SC-09",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-GV.SC-10",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.AM-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.AM-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.AM-03",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.AM-04",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.AM-05",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
-      "lifecycle_status": "active"
-    },
-    {
-      "control_id": "NIST-CSF-ID.AM-06",
-      "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.AM-07",
       "framework_id": "nist-csf-2.0",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "NIST-CSF-ID.AM-08",
+      "framework_id": "nist-csf-2.0",
       "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.IM-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.IM-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.IM-03",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.IM-04",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.RA-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.RA-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.RA-03",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.RA-04",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.RA-05",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.RA-06",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.RA-07",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.RA-08",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.RA-09",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-ID.RA-10",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.AA-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.AA-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.AA-03",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.AA-04",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.AA-05",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.AA-06",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.AT-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.AT-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.DS-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.DS-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
-      "control_id": "NIST-CSF-PR.DS-03",
+      "control_id": "NIST-CSF-PR.DS-10",
       "framework_id": "nist-csf-2.0",
       "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
-      "control_id": "NIST-CSF-PR.DS-04",
+      "control_id": "NIST-CSF-PR.DS-11",
       "framework_id": "nist-csf-2.0",
       "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.IR-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.IR-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.IR-03",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.IR-04",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.PS-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.PS-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.PS-03",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.PS-04",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.PS-05",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-PR.PS-06",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
-      "control_id": "NIST-CSF-RC.CO-01",
+      "control_id": "NIST-CSF-RC.CO-03",
       "framework_id": "nist-csf-2.0",
       "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
-      "control_id": "NIST-CSF-RC.CO-02",
+      "control_id": "NIST-CSF-RC.CO-04",
       "framework_id": "nist-csf-2.0",
       "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-RC.RP-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-RC.RP-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-RC.RP-03",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-RC.RP-04",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-RC.RP-05",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-RC.RP-06",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
-      "lifecycle_status": "active"
-    },
-    {
-      "control_id": "NIST-CSF-RS.AN-01",
-      "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
-      "lifecycle_status": "active"
-    },
-    {
-      "control_id": "NIST-CSF-RS.AN-02",
-      "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-RS.AN-03",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
-      "control_id": "NIST-CSF-RS.AN-04",
+      "control_id": "NIST-CSF-RS.AN-06",
       "framework_id": "nist-csf-2.0",
       "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
-      "control_id": "NIST-CSF-RS.CO-01",
+      "control_id": "NIST-CSF-RS.AN-07",
       "framework_id": "nist-csf-2.0",
       "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "valid_from": "2026-09-13",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "NIST-CSF-RS.AN-08",
+      "framework_id": "nist-csf-2.0",
+      "version": "1.0.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-RS.CO-02",
       "framework_id": "nist-csf-2.0",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "NIST-CSF-RS.CO-03",
+      "framework_id": "nist-csf-2.0",
       "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-RS.MA-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-RS.MA-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-RS.MA-03",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-RS.MA-04",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-RS.MA-05",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-RS.MI-01",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
       "control_id": "NIST-CSF-RS.MI-02",
       "framework_id": "nist-csf-2.0",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-13",
       "lifecycle_status": "active"
     },
     {
@@ -6712,5 +6713,5 @@
       "lifecycle_status": "active"
     }
   ],
-  "bundle_sha256": "6dc8f028437dba4571cb9d3b8f3cd834c1bbafaf602ae0a6367c7ea54b37e3fc"
+  "bundle_sha256": "b8ae259cae78f5adbd72fd86e65787ba908715da21307ea81aee402415f6658f"
 }

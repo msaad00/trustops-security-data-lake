@@ -36,7 +36,22 @@ def test_bundle_is_deterministic_and_covers_components() -> None:
     assert a["framework_count"] == len(load_framework_registry())
     assert a["control_count"] == len(load_control_catalog())
     assert a["control_count"] >= 741
-    assert set(a["components"]) == {"frameworks", "controls", "crosswalk"}
+    assert set(a["components"]) == {"frameworks", "controls", "crosswalk", "safeguards"}
+
+
+def test_bundle_detects_changed_safeguard_rule(tmp_path: Path) -> None:
+    from security_lakehouse.safeguards import load_safeguards
+
+    path = tmp_path / "safeguards.json"
+    payload = load_safeguards()
+    path.write_text(json.dumps(payload))
+    lock = tmp_path / "bundle.lock.json"
+    cv.write_bundle_lock(lock_path=lock, safeguards_path=path)
+    payload["safeguards"][0]["rule"] = {"name": "fail_when_missing_evidence"}
+    path.write_text(json.dumps(payload))
+    result = cv.verify_bundle_lock(lock_path=lock, safeguards_path=path)
+    assert result["ok"] is False
+    assert result["drifted_components"] == ["safeguards"]
 
 
 def test_bundle_sha_changes_when_a_control_changes(tmp_path: Path) -> None:

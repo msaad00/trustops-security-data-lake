@@ -13,7 +13,6 @@ from security_lakehouse.policy import (
     ControlContext,
     PolicyError,
     evaluate_control,
-    resolve_rule,
     validate_rule,
 )
 
@@ -68,14 +67,24 @@ def test_min_evidence_coverage_leaf() -> None:
     assert evaluate_control(_ctx(event_count=4, evidence_count=3), rule).status == "pass"
 
 
-def test_unknown_rule_resolves_strict_but_evaluates_resilient() -> None:
+@pytest.mark.parametrize(
+    "rule",
+    [
+        "typo-invalid-rule",
+        {"fail_if": {"open_violations": {"min": "bad"}}},
+        {"fail_if": {"evidence_present": "false"}},
+        {"fail_if": {"all": []}},
+        {"fail_if": {"any": 1}},
+        {"fail_if": {"max_severity": {"at_least": "typo"}}},
+        {"fail_if": {"open_violations": {"minimum": 1}}},
+        {"fail_if": {"evidence_present": True, "unknown": False}},
+        {"fail_if": {"evidence_present": True}, "unknown": False},
+    ],
+)
+def test_invalid_rule_stops_evaluation(rule) -> None:
+    assert validate_rule(rule)
     with pytest.raises(PolicyError):
-        resolve_rule("fail_when_mercury_is_in_retrograde")
-    # evaluate_control never crashes: it falls back to the default rule.
-    result = evaluate_control(_ctx(open_violation_count=1), "fail_when_mercury_is_in_retrograde")
-    assert result.status == "fail"
-    assert result.rule == "fail_when_open_violation"
-    assert any("fallback" in r for r in result.reasons)
+        evaluate_control(_ctx(open_violation_count=0), rule)
 
 
 def test_validate_rule_catches_bad_specs() -> None:

@@ -24,6 +24,24 @@ export TRUSTOPS_COOKIE_SIGNING_KEY="$(openssl rand -hex 32)"
 Without this key, `create_app()` fails fast when auth is required (CI, Helm, and
 production deployments).
 
+## Preferred credential model
+
+Prefer platform workload identity or federation with scoped, short-lived access
+for collectors and automation. Acquire tokens just in time; do not persist or
+log token bodies, authorization headers, refresh tokens, private keys, or secrets
+in evidence, screenshots, source control, or generated reports. JWTs remain
+credentials and require issuer, audience, expiry, and authorization checks.
+
+The current implementation has exceptions: TrustOps API keys can be issued without
+an expiry, browser sessions need protected signing material, and the Snowflake
+sink currently uses a private-key reference. These are not a fully federated,
+credential-free deployment. Use explicit API-key expiry for trials and keep any
+required signing material in a protected runtime secret service. Do not claim
+universal credential-free operation until each integration is verified.
+
+Platform references: [Google workload identity federation](https://docs.cloud.google.com/iam/docs/workload-identity-federation)
+and [Snowflake workload identity federation](https://docs.snowflake.com/en/user-guide/workload-identity-federation).
+
 ## API Keys
 
 API keys are for agents, CI, and service accounts. The database stores only a
@@ -154,13 +172,13 @@ boundary.
 
 ## Roles
 
-| Role             | Access                                                      |
-| ---------------- | ----------------------------------------------------------- |
-| `admin`          | Full access, including user and API key administration      |
-| `security_admin` | Connector, workflow, snapshot, and control operations       |
-| `contributor`    | Evidence request, workflow action, and triage operations    |
-| `auditor`        | Read-only, with owner, credential, and note fields redacted |
-| `read_only`      | Internal read-only view without mutation                    |
+| Role             | Access                                                            |
+| ---------------- | ----------------------------------------------------------------- |
+| `admin`          | Full access, including user and API key administration            |
+| `security_admin` | Evidence requests, connectors, workflows, snapshots, and controls |
+| `contributor`    | Evidence request, workflow action, and triage operations          |
+| `auditor`        | Read-only, with owner, credential, and note fields redacted       |
+| `read_only`      | Internal read-only view without mutation                          |
 
 All non-health `/api/v1/*` and `/api/*` requests are authenticated in server
 mode. Request audit events include a correlation ID, actor, tenant, route,

@@ -7,6 +7,7 @@ from typing import Any
 
 from security_lakehouse.catalog import _data_root
 from security_lakehouse.io import read_json
+from security_lakehouse.policy import PolicyError, validate_rule
 
 ROOT = _data_root()
 DEFAULT_MAPPING_PATH = ROOT / "mappings" / "control_map.json"
@@ -22,6 +23,9 @@ def load_control_map(path: str | Path | None = None) -> dict[str, dict[str, Any]
     for control in controls:
         if not isinstance(control, dict) or not str(control.get("control_id", "")).strip():
             raise ValueError("every control mapping must include control_id")
+        problems = validate_rule(control.get("evaluation_rule"))
+        if problems:
+            raise PolicyError(f"control {control['control_id']}: " + "; ".join(problems))
         mapped[str(control["control_id"])] = control
     return mapped
 

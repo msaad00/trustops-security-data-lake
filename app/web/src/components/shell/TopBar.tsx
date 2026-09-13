@@ -38,7 +38,7 @@ export function TopBar({ onRefresh, onSnapshot, onOpenPalette }: Props) {
       <TrustOpsLogo
         href="/dashboard"
         inverted
-        markSize="lg"
+        markSize="xl"
         showWordmark
         subtitle={BRAND.consoleSubtitle}
         wordmarkClassName="hidden xl:block"

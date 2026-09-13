@@ -32,3 +32,18 @@ def test_mcp_icons_add_hosted_url_when_api_url_set(monkeypatch) -> None:
 def test_human_tool_title() -> None:
     assert human_tool_title("get_posture") == "Get Posture"
     assert MCP_SERVER_NAME == "trustops"
+
+
+def test_distributed_marks_match_the_approved_identity() -> None:
+    import base64
+    from pathlib import Path
+    from xml.etree import ElementTree
+
+    root = Path(__file__).resolve().parents[1]
+    approved = (root / "docs/images/trustops-mark.svg").read_text().strip()
+    embedded = base64.b64decode(trustops_mark_data_uri().split(",", 1)[1]).decode()
+    assert embedded == approved
+    for file in ("app/web/src/app/icon.svg", "src/security_lakehouse/static/trustops-mark.svg"):
+        assert (root / file).read_text().strip() == approved
+    nodes = ElementTree.fromstring(approved)
+    assert len(nodes.findall(".//{http://www.w3.org/2000/svg}g[@transform]")) == 4

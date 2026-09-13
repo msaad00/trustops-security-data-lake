@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 
 interface Props {
   title: ReactNode;
+  embedded?: boolean;
   description?: ReactNode;
   actions?: ReactNode;
   /**
@@ -23,6 +24,7 @@ interface Props {
 
 export function CollapsibleCard({
   title,
+  embedded = false,
   description,
   actions,
   storageKey,
@@ -38,6 +40,15 @@ export function CollapsibleCard({
   );
   const open = storageKey ? persistedOpen : localOpen;
   const setOpen = storageKey ? setPersistedOpen : setLocalOpen;
+
+  if (embedded) {
+    return (
+      <div className="min-w-0">
+        {actions && <div className="flex justify-end px-4 pt-3">{actions}</div>}
+        <div className={cn("p-3", contentClassName)}>{children}</div>
+      </div>
+    );
+  }
 
   return (
     <Card className={cn("overflow-hidden", className)}>

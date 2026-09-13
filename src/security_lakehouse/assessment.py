@@ -25,7 +25,8 @@ from security_lakehouse.evidence_freshness import (
     stale_control_ids,
     summarize_source_freshness,
 )
-from security_lakehouse.io import append_jsonl, iter_jsonl, read_jsonl, write_json
+from security_lakehouse.generations import generation_identity, generation_reader
+from security_lakehouse.io import append_jsonl, iter_jsonl, read_json, read_jsonl, write_json
 from security_lakehouse.models import SEVERITY_SCORE, utc_iso
 
 VIOLATION_STATUSES = {"open", "failed", "blocked", "noncompliant"}
@@ -36,6 +37,7 @@ VIOLATION_STATUSES = {"open", "failed", "blocked", "noncompliant"}
 SNAPSHOT_LEDGER = ("gold", "snapshots", "_ledger.jsonl")
 
 
+@generation_reader
 def build_current_posture(
     lake_dir: str | Path,
     *,
@@ -111,6 +113,9 @@ def build_current_posture(
             "stale_evidence": stale_evidence[:50],
         },
     }
+    generation = generation_identity(lake)
+    if generation is not None:
+        assessment["generation"] = generation
     assessment["assessment_hash"] = _assessment_hash(assessment)
     return assessment
 
@@ -158,6 +163,7 @@ def _chain_tip(lake_dir: str | Path) -> str | None:
     return entries[-1].get("assessment_hash") if entries else None
 
 
+@generation_reader
 def write_assessment_snapshot(
     lake_dir: str | Path,
     *,
@@ -179,7 +185,8 @@ def write_assessment_snapshot(
     # Pin the catalog bundle (framework + control versions in force) so this
     # audit reproduces against the exact controls it was evaluated with. The
     # bundle is covered by assessment_hash below, so it is tamper-evident too.
-    assessment["catalog_bundle"] = _catalog_bundle_for_snapshot()
+    bundle_path = lake / "catalog" / "bundle.json"
+    assessment["catalog_bundle"] = read_json(bundle_path) if bundle_path.is_file() else _catalog_bundle_for_snapshot()
     assessment["prev_hash"] = prev_hash
     # assessment_hash covers prev_hash, so the chain is tamper-evident.
     assessment["assessment_hash"] = _assessment_hash(assessment)

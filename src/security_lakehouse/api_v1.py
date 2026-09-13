@@ -43,6 +43,7 @@ from security_lakehouse.connector_state import (
 )
 from security_lakehouse.framework_detail import build_framework_detail
 from security_lakehouse.framework_provenance import build_framework_view
+from security_lakehouse.generations import generation_identity, generation_reader
 from security_lakehouse.graph import (
     analyze_coverage,
     build_compliance_graph,
@@ -1291,8 +1292,17 @@ def collection_response(resource: str, rows: list[JsonObject], params: Params) -
     )
 
 
+@generation_reader
 def handle_get(path: str, params: Params, lake_dir: str | Path) -> tuple[HTTPStatus, JsonObject]:
-    """Resolve a v1 GET into an ``(status, body)`` pair."""
+    """Resolve a v1 GET against one pinned assessment generation."""
+    status, body = _handle_get(path, params, lake_dir)
+    generation = generation_identity(lake_dir)
+    if generation is not None:
+        body["meta"]["generation"] = generation
+    return status, body
+
+
+def _handle_get(path: str, params: Params, lake_dir: str | Path) -> tuple[HTTPStatus, JsonObject]:
     lake = resolve_path(lake_dir)
     if path == "/api/v1":
         return HTTPStatus.OK, envelope("index", index_payload())

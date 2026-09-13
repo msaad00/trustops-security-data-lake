@@ -20,15 +20,12 @@ ASSETS = (
 
 def test_readme_header_leads_with_the_product_and_live_build_status() -> None:
     readme = README.read_text(encoding="utf-8")
-    header = readme.split("## One operating loop", maxsplit=1)[0]
-
-    assert 'src="docs/images/trustops-capability-header.svg"' in header
-    assert '<h1 align="center">Open evidence infrastructure for continuous GRC</h1>' in header
-    assert '<h1 align="center">TrustOps</h1>' not in header
-    assert "One self-hosted contract across Console · API · CLI · MCP · CI." in header
+    header = readme.split("## Quick start", maxsplit=1)[0]
+    assert 'src="docs/images/trustops-readme-banner.svg"' in header
+    assert "Open, self-hosted GRC for cloud and AI." in header
     assert "Quick start" in header
-    assert "ci.yml?branch=main&amp;label=Build" in header
-    assert header.index("trustops-capability-header.svg") < header.index("<h1")
+    assert "ci.yml?branch=main&amp;label=CI" in header
+    assert readme.count("<details>") == readme.count("</details>") >= 6
 
 
 def test_readme_hero_names_only_shipped_capabilities() -> None:
@@ -36,12 +33,12 @@ def test_readme_hero_names_only_shipped_capabilities() -> None:
     copy = " ".join(text.strip() for text in root.itertext() if text.strip())
     coverage = coverage_by_framework()
 
-    assert "Collect. Evaluate. Operate. Prove." in copy
-    assert "Trust Data Lake" in copy
+    assert "Collect. Evaluate. Resolve. Export." in copy
+    assert "TrustOps" in copy
     assert "Read-only evidence" in copy
     assert "deterministic controls" in copy
-    assert "governed findings" in copy
-    assert "immutable proof" in copy
+    assert "owned findings" in copy
+    assert "assessment exports" in copy
     assert f"{coverage['safeguards']} safeguards · {coverage['controls']} catalogued requirements" in copy
     assert f"{len(coverage['frameworks'])} framework packs" in copy
     assert "Console · API · CLI · MCP · CI" in copy
@@ -105,32 +102,16 @@ def test_open_graph_image_matches_the_deterministic_renderer() -> None:
     assert ASSETS[3].read_text(encoding="utf-8") == render_open_graph()
 
 
-def test_operating_loop_banner_is_presented_with_the_matching_section() -> None:
+def test_operating_loop_uses_concrete_actions() -> None:
     readme = README.read_text(encoding="utf-8")
-    section = readme.split("## One operating loop", maxsplit=1)[1]
-    before_next_section = section.split("\n## ", maxsplit=1)[0]
-
-    assert 'src="docs/images/trustops-readme-banner.svg"' in before_next_section
-    copy = before_next_section.lower()
-    assert "collect" in copy
-    assert "evaluate" in copy
-    assert "operate" in copy
-    assert "prove" in copy
+    section = readme.split("## How it works", maxsplit=1)[1].split("## Explore", maxsplit=1)[0]
+    for action in ("Collect", "Evaluate", "Resolve", "Export"):
+        assert action in section
 
 
-def test_product_preview_leads_with_current_operator_surfaces() -> None:
+def test_product_preview_is_collapsible_and_uses_fixture_evidence() -> None:
     readme = README.read_text(encoding="utf-8")
-    preview = readme.split("## Product preview", maxsplit=1)[1]
-    preview = preview.split("\n## ", maxsplit=1)[0]
-
-    for label, image in (
-        ("Assessment overview", "trustops-demo-dashboard.png"),
-        ("Framework coverage", "trustops-demo-frameworks.png"),
-        ("Evidence", "trustops-demo-evidence.png"),
-        ("Connectors", "trustops-demo-connectors.png"),
-    ):
-        assert label in preview
-        assert image in preview
-
-    assert "TrustOps" not in preview
-    assert "audit room" in preview.lower()
+    preview = readme.split("01 · Product tour", maxsplit=1)[1].split("</details>", maxsplit=1)[0]
+    assert "not live customer evidence" in preview
+    for image in ("dashboard", "frameworks", "evidence", "connectors", "audit-room"):
+        assert f"trustops-demo-{image}.png" in preview

@@ -17,7 +17,7 @@ interface Props {
   gradientId?: string;
 }
 
-/** Cloud, agent, and identity sources over lake contours. */
+/** The approved evidence-lake identity is consistent at every display size. */
 export function TrustOpsMark({
   size = "md",
   className,
@@ -25,53 +25,58 @@ export function TrustOpsMark({
 }: Props) {
   return (
     <svg
-      viewBox="0 0 32 32"
+      viewBox="0 0 64 64"
       role="img"
       aria-label={BRAND.name}
       className={cn("flex-none", SIZES[size], className)}
     >
       <title>{BRAND.name}</title>
       <defs>
-        <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#4f7cff" />
-          <stop offset="100%" stopColor="#30c7d2" />
+        <linearGradient
+          id={gradientId}
+          gradientUnits="userSpaceOnUse"
+          x1="4"
+          y1="7"
+          x2="55"
+          y2="58"
+        >
+          <stop stopColor="#4f7cff" />
+          <stop offset="1" stopColor="#42dfcf" />
         </linearGradient>
       </defs>
-      <rect width="32" height="32" rx="8" fill="#071426" />
-      <g
-        data-mark="source-types"
-        fill="none"
-        strokeWidth="1.15"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path
-          d="M4.5 7.7h4.7a1.5 1.5 0 0 0 .1-3 2.2 2.2 0 0 0-4.1.6 1.25 1.25 0 0 0-.7 2.4"
-          stroke="#4f7cff"
-        />
-        <path
-          d="M16 3.7c.2 1.6.9 2.4 2.5 2.6-1.6.2-2.3 1-2.5 2.6-.2-1.6-.9-2.4-2.5-2.6 1.6-.2 2.3-1 2.5-2.6Z"
-          fill="#30c7d2"
-          stroke="#30c7d2"
-        />
-        <circle cx="25.5" cy="4.7" r="1.15" stroke="#5eead4" />
-        <path d="M22.8 8.5c.5-1.35 1.4-2 2.7-2s2.2.65 2.7 2" stroke="#5eead4" />
+      <g>
+        <rect width="64" height="64" rx="15" fill="#0b1b2c" />
+        <g
+          fill="none"
+          stroke={`url(#${gradientId})`}
+          color="#5b9aff"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <g strokeWidth="1.8">
+            <g transform="translate(4 10) scale(.66)">
+              <path d="M3 14h12a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.4-1.7A4.5 4.5 0 0 0 3 14Z" />
+            </g>
+            <g transform="translate(18.5 10) scale(.66)">
+              <circle cx="9" cy="4.5" r="3" />
+              <path d="M3 16v-2a6 6 0 0 1 12 0v2" />
+            </g>
+            <g transform="translate(33 10) scale(.66)">
+              <rect x="2" y="5" width="14" height="11" rx="3" />
+              <path d="M9 5V1M0 9v4M18 9v4" />
+              <circle cx="6" cy="10" r=".9" fill="currentColor" />
+              <circle cx="12" cy="10" r=".9" fill="currentColor" />
+            </g>
+            <g transform="translate(47.5 10) scale(.66)">
+              <rect x="3" y="1" width="12" height="16" rx="2" />
+              <path d="M6 5h6M6 9h6M6 13h4" />
+            </g>
+          </g>
+          <g strokeWidth="2.4">
+            <path d="M10 35c7-4.8 14-4.8 22 0s14 4.8 22 0M10 44c7-4.8 14-4.8 22 0s14 4.8 22 0M10 53c7-4.8 14-4.8 22 0s14 4.8 22 0" />
+          </g>
+        </g>
       </g>
-      <path
-        data-mark="lake-contours"
-        d="M5 10c3.2-2.4 6.8-2.4 10.6 0s7.2 2.4 11.4 0M5 16c3.2-2.4 6.8-2.4 10.6 0s7.2 2.4 11.4 0"
-        fill="none"
-        stroke={`url(#${gradientId})`}
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-      <path
-        d="M5 22c3.2-2.4 6.8-2.4 10.6 0s7.2 2.4 11.4 0"
-        fill="none"
-        stroke="#5eead4"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
     </svg>
   );
 }

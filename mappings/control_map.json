@@ -5209,744 +5209,744 @@
       "owner": "ai-security"
     },
     {
-      "control_id": "NIST-CSF-DE.AE-01",
-      "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 DE.AE-01 \u2014 assessed from cybersecurity program and operational evidence",
-      "risk_domain": "monitoring",
-      "owner": "detection-engineering"
-    },
-    {
       "control_id": "NIST-CSF-DE.AE-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 DE.AE-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Potentially adverse events are analyzed to better understand associated activities",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
       "control_id": "NIST-CSF-DE.AE-03",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 DE.AE-03 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Information is correlated from multiple sources",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
       "control_id": "NIST-CSF-DE.AE-04",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 DE.AE-04 \u2014 assessed from cybersecurity program and operational evidence",
-      "risk_domain": "monitoring",
-      "owner": "detection-engineering"
-    },
-    {
-      "control_id": "NIST-CSF-DE.AE-05",
-      "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 DE.AE-05 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "The estimated impact and scope of adverse events are understood",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
       "control_id": "NIST-CSF-DE.AE-06",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 DE.AE-06 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Information on adverse events is provided to authorized staff and tools",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "NIST-CSF-DE.AE-07",
+      "framework": "NIST CSF 2.0",
+      "title": "Cyber threat intelligence and other contextual information are integrated into the analysis",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "NIST-CSF-DE.AE-08",
+      "framework": "NIST CSF 2.0",
+      "title": "Incidents are declared when adverse events meet the defined incident criteria",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
       "control_id": "NIST-CSF-DE.CM-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 DE.CM-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Networks and network services are monitored to find potentially adverse events",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
       "control_id": "NIST-CSF-DE.CM-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 DE.CM-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "The physical environment is monitored to find potentially adverse events",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
       "control_id": "NIST-CSF-DE.CM-03",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 DE.CM-03 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Personnel activity and technology usage are monitored to find potentially adverse events",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
-      "control_id": "NIST-CSF-DE.CM-04",
+      "control_id": "NIST-CSF-DE.CM-06",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 DE.CM-04 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "External service provider activities and services are monitored to find potentially adverse events",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
-      "control_id": "NIST-CSF-DE.CM-05",
+      "control_id": "NIST-CSF-DE.CM-09",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 DE.CM-05 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Computing hardware and software, runtime environments, and their data are monitored to find potentially adverse events",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
       "control_id": "NIST-CSF-GV.OC-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.OC-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "The organizational mission is understood and informs cybersecurity risk management",
       "risk_domain": "governance",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.OC-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.OC-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Internal and external stakeholders are understood, and their needs and expectations regarding cybersecurity risk management are understood and considered",
       "risk_domain": "governance",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.OC-03",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.OC-03 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Legal, regulatory, and contractual requirements regarding cybersecurity \u2014 including privacy and civil liberties obligations \u2014 are understood and managed",
       "risk_domain": "governance",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.OC-04",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.OC-04 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Critical objectives, capabilities, and services that external stakeholders depend on or expect from the organization are understood and communicated",
       "risk_domain": "governance",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.OC-05",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.OC-05 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Outcomes, capabilities, and services that the organization depends on are understood and communicated",
       "risk_domain": "governance",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.OV-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.OV-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Cybersecurity risk management strategy outcomes are reviewed to inform and adjust strategy and direction",
       "risk_domain": "governance",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.OV-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.OV-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "The cybersecurity risk management strategy is reviewed and adjusted to ensure coverage of organizational requirements and risks",
       "risk_domain": "governance",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.OV-03",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.OV-03 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Organizational cybersecurity risk management performance is evaluated and reviewed for adjustments needed",
       "risk_domain": "governance",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.PO-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.PO-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Policy for managing cybersecurity risks is established based on organizational context, cybersecurity strategy, and priorities and is communicated and enforced",
       "risk_domain": "governance",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.PO-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.PO-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Policy for managing cybersecurity risks is reviewed, updated, communicated, and enforced to reflect changes in requirements, threats, technology, and organizational mission",
       "risk_domain": "governance",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.RM-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.RM-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Risk management objectives are established and agreed to by organizational stakeholders",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.RM-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.RM-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Risk appetite and risk tolerance statements are established, communicated, and maintained",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.RM-03",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.RM-03 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Cybersecurity risk management activities and outcomes are included in enterprise risk management processes",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.RM-04",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.RM-04 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Strategic direction that describes appropriate risk response options is established and communicated",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.RM-05",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.RM-05 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Lines of communication across the organization are established for cybersecurity risks, including risks from suppliers and other third parties",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.RM-06",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.RM-06 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "A standardized method for calculating, documenting, categorizing, and prioritizing cybersecurity risks is established and communicated",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.RM-07",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.RM-07 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Strategic opportunities (i.e., positive risks) are characterized and are included in organizational cybersecurity risk discussions",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.RR-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.RR-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Organizational leadership is responsible and accountable for cybersecurity risk and fosters a culture that is risk-aware, ethical, and continually improving",
       "risk_domain": "governance",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.RR-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.RR-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Roles, responsibilities, and authorities related to cybersecurity risk management are established, communicated, understood, and enforced",
       "risk_domain": "governance",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.RR-03",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.RR-03 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Adequate resources are allocated commensurate with the cybersecurity risk strategy, roles, responsibilities, and policies",
       "risk_domain": "governance",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.RR-04",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.RR-04 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Cybersecurity is included in human resources practices",
       "risk_domain": "governance",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.SC-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.SC-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "A cybersecurity supply chain risk management program, strategy, objectives, policies, and processes are established and agreed to by organizational stakeholders",
       "risk_domain": "vendor-risk",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.SC-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.SC-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Cybersecurity roles and responsibilities for suppliers, customers, and partners are established, communicated, and coordinated internally and externally",
       "risk_domain": "vendor-risk",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.SC-03",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.SC-03 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Cybersecurity supply chain risk management is integrated into cybersecurity and enterprise risk management, risk assessment, and improvement processes",
       "risk_domain": "vendor-risk",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.SC-04",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.SC-04 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Suppliers are known and prioritized by criticality",
       "risk_domain": "vendor-risk",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.SC-05",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.SC-05 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Requirements to address cybersecurity risks in supply chains are established, prioritized, and integrated into contracts and other types of agreements with suppliers and other relevant third parties",
       "risk_domain": "vendor-risk",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.SC-06",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.SC-06 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Planning and due diligence are performed to reduce risks before entering into formal supplier or other third-party relationships",
       "risk_domain": "vendor-risk",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.SC-07",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.SC-07 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "The risks posed by a supplier, their products and services, and other third parties are understood, recorded, prioritized, assessed, responded to, and monitored over the course of the relationship",
       "risk_domain": "vendor-risk",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.SC-08",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.SC-08 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Relevant suppliers and other third parties are included in incident planning, response, and recovery activities",
       "risk_domain": "vendor-risk",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.SC-09",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.SC-09 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Supply chain security practices are integrated into cybersecurity and enterprise risk management programs, and their performance is monitored throughout the technology product and service life cycle",
       "risk_domain": "vendor-risk",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-GV.SC-10",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 GV.SC-10 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Cybersecurity supply chain risk management plans include provisions for activities that occur after the conclusion of a partnership or service agreement",
       "risk_domain": "vendor-risk",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-ID.AM-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.AM-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Inventories of hardware managed by the organization are maintained",
       "risk_domain": "controls-operations",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-ID.AM-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.AM-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Inventories of software, services, and systems managed by the organization are maintained",
       "risk_domain": "controls-operations",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-ID.AM-03",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.AM-03 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Representations of the organization\u2019s authorized network communication and internal and external network data flows are maintained",
       "risk_domain": "controls-operations",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-ID.AM-04",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.AM-04 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Inventories of services provided by suppliers are maintained",
       "risk_domain": "controls-operations",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-ID.AM-05",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.AM-05 \u2014 assessed from cybersecurity program and operational evidence",
-      "risk_domain": "controls-operations",
-      "owner": "security-platform"
-    },
-    {
-      "control_id": "NIST-CSF-ID.AM-06",
-      "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.AM-06 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Assets are prioritized based on classification, criticality, resources, and impact on the mission",
       "risk_domain": "controls-operations",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-ID.AM-07",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.AM-07 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Inventories of data and corresponding metadata for designated data types are maintained",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "NIST-CSF-ID.AM-08",
+      "framework": "NIST CSF 2.0",
+      "title": "Systems, hardware, software, services, and data are managed throughout their life cycles",
       "risk_domain": "controls-operations",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-ID.IM-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.IM-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Improvements are identified from evaluations",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-ID.IM-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.IM-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Improvements are identified from security tests and exercises, including those done in coordination with suppliers and relevant third parties",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-ID.IM-03",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.IM-03 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Improvements are identified from execution of operational processes, procedures, and activities",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-ID.IM-04",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.IM-04 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Incident response plans and other cybersecurity plans that affect operations are established, communicated, maintained, and improved",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-ID.RA-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.RA-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Vulnerabilities in assets are identified, validated, and recorded",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-ID.RA-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.RA-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Cyber threat intelligence is received from information sharing forums and sources",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-ID.RA-03",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.RA-03 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Internal and external threats to the organization are identified and recorded",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-ID.RA-04",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.RA-04 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Potential impacts and likelihoods of threats exploiting vulnerabilities are identified and recorded",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-ID.RA-05",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.RA-05 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Threats, vulnerabilities, likelihoods, and impacts are used to understand inherent risk and inform risk response prioritization",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-ID.RA-06",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.RA-06 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Risk responses are chosen, prioritized, planned, tracked, and communicated",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-ID.RA-07",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.RA-07 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Changes and exceptions are managed, assessed for risk impact, recorded, and tracked",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-ID.RA-08",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.RA-08 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Processes for receiving, analyzing, and responding to vulnerability disclosures are established",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-ID.RA-09",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.RA-09 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "The authenticity and integrity of hardware and software are assessed prior to acquisition and use",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-ID.RA-10",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 ID.RA-10 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Critical suppliers are assessed prior to acquisition",
       "risk_domain": "risk-management",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-PR.AA-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.AA-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Identities and credentials for authorized users, services, and hardware are managed by the organization",
       "risk_domain": "identity",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-PR.AA-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.AA-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Identities are proofed and bound to credentials based on the context of interactions",
       "risk_domain": "identity",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-PR.AA-03",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.AA-03 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Users, services, and hardware are authenticated",
       "risk_domain": "identity",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-PR.AA-04",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.AA-04 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Identity assertions are protected, conveyed, and verified",
       "risk_domain": "identity",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-PR.AA-05",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.AA-05 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Access permissions, entitlements, and authorizations are defined in a policy, managed, enforced, and reviewed, and incorporate the principles of least privilege and separation of duties",
       "risk_domain": "identity",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-PR.AA-06",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.AA-06 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Physical access to assets is managed, monitored, and enforced commensurate with risk",
       "risk_domain": "identity",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-PR.AT-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.AT-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Personnel are provided with awareness and training so that they possess the knowledge and skills to perform general tasks with cybersecurity risks in mind",
       "risk_domain": "governance",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-PR.AT-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.AT-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Individuals in specialized roles are provided with awareness and training so that they possess the knowledge and skills to perform relevant tasks with cybersecurity risks in mind",
       "risk_domain": "governance",
       "owner": "grc"
     },
     {
       "control_id": "NIST-CSF-PR.DS-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.DS-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "The confidentiality, integrity, and availability of data-at-rest are protected",
       "risk_domain": "controls-operations",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-PR.DS-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.DS-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "The confidentiality, integrity, and availability of data-in-transit are protected",
       "risk_domain": "controls-operations",
       "owner": "security-platform"
     },
     {
-      "control_id": "NIST-CSF-PR.DS-03",
+      "control_id": "NIST-CSF-PR.DS-10",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.DS-03 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "The confidentiality, integrity, and availability of data-in-use are protected",
       "risk_domain": "controls-operations",
       "owner": "security-platform"
     },
     {
-      "control_id": "NIST-CSF-PR.DS-04",
+      "control_id": "NIST-CSF-PR.DS-11",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.DS-04 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Backups of data are created, protected, maintained, and tested",
       "risk_domain": "controls-operations",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-PR.IR-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.IR-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Networks and environments are protected from unauthorized logical access and usage",
       "risk_domain": "change-management",
       "owner": "platform-engineering"
     },
     {
       "control_id": "NIST-CSF-PR.IR-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.IR-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "The organization\u2019s technology assets are protected from environmental threats",
       "risk_domain": "change-management",
       "owner": "platform-engineering"
     },
     {
       "control_id": "NIST-CSF-PR.IR-03",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.IR-03 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Mechanisms are implemented to achieve resilience requirements in normal and adverse situations",
       "risk_domain": "change-management",
       "owner": "platform-engineering"
     },
     {
       "control_id": "NIST-CSF-PR.IR-04",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.IR-04 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Adequate resource capacity to ensure availability is maintained",
       "risk_domain": "change-management",
       "owner": "platform-engineering"
     },
     {
       "control_id": "NIST-CSF-PR.PS-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.PS-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Configuration management practices are established and applied",
       "risk_domain": "controls-operations",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-PR.PS-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.PS-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Software is maintained, replaced, and removed commensurate with risk",
       "risk_domain": "controls-operations",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-PR.PS-03",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.PS-03 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Hardware is maintained, replaced, and removed commensurate with risk",
       "risk_domain": "controls-operations",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-PR.PS-04",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.PS-04 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Log records are generated and made available for continuous monitoring",
       "risk_domain": "controls-operations",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-PR.PS-05",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.PS-05 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Installation and execution of unauthorized software are prevented",
       "risk_domain": "controls-operations",
       "owner": "security-platform"
     },
     {
       "control_id": "NIST-CSF-PR.PS-06",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 PR.PS-06 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Secure software development practices are integrated, and their performance is monitored throughout the software development life cycle",
       "risk_domain": "controls-operations",
       "owner": "security-platform"
     },
     {
-      "control_id": "NIST-CSF-RC.CO-01",
+      "control_id": "NIST-CSF-RC.CO-03",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RC.CO-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Recovery activities and progress in restoring operational capabilities are communicated to designated internal and external stakeholders",
       "risk_domain": "change-management",
       "owner": "platform-engineering"
     },
     {
-      "control_id": "NIST-CSF-RC.CO-02",
+      "control_id": "NIST-CSF-RC.CO-04",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RC.CO-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Public updates on incident recovery are shared using approved methods and messaging",
       "risk_domain": "change-management",
       "owner": "platform-engineering"
     },
     {
       "control_id": "NIST-CSF-RC.RP-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RC.RP-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "The recovery portion of the incident response plan is executed once initiated from the incident response process",
       "risk_domain": "change-management",
       "owner": "platform-engineering"
     },
     {
       "control_id": "NIST-CSF-RC.RP-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RC.RP-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Recovery actions are selected, scoped, prioritized, and performed",
       "risk_domain": "change-management",
       "owner": "platform-engineering"
     },
     {
       "control_id": "NIST-CSF-RC.RP-03",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RC.RP-03 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "The integrity of backups and other restoration assets is verified before using them for restoration",
       "risk_domain": "change-management",
       "owner": "platform-engineering"
     },
     {
       "control_id": "NIST-CSF-RC.RP-04",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RC.RP-04 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Critical mission functions and cybersecurity risk management are considered to establish post-incident operational norms",
       "risk_domain": "change-management",
       "owner": "platform-engineering"
     },
     {
       "control_id": "NIST-CSF-RC.RP-05",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RC.RP-05 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "The integrity of restored assets is verified, systems and services are restored, and normal operating status is confirmed",
       "risk_domain": "change-management",
       "owner": "platform-engineering"
     },
     {
       "control_id": "NIST-CSF-RC.RP-06",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RC.RP-06 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "The end of incident recovery is declared based on criteria, and incident- related documentation is completed",
       "risk_domain": "change-management",
       "owner": "platform-engineering"
     },
     {
-      "control_id": "NIST-CSF-RS.AN-01",
-      "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RS.AN-01 \u2014 assessed from cybersecurity program and operational evidence",
-      "risk_domain": "monitoring",
-      "owner": "detection-engineering"
-    },
-    {
-      "control_id": "NIST-CSF-RS.AN-02",
-      "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RS.AN-02 \u2014 assessed from cybersecurity program and operational evidence",
-      "risk_domain": "monitoring",
-      "owner": "detection-engineering"
-    },
-    {
       "control_id": "NIST-CSF-RS.AN-03",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RS.AN-03 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Analysis is performed to establish what has taken place during an incident and the root cause of the incident",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
-      "control_id": "NIST-CSF-RS.AN-04",
+      "control_id": "NIST-CSF-RS.AN-06",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RS.AN-04 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Actions performed during an investigation are recorded, and the records\u2019 integrity and provenance are preserved",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
-      "control_id": "NIST-CSF-RS.CO-01",
+      "control_id": "NIST-CSF-RS.AN-07",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RS.CO-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Incident data and metadata are collected, and their integrity and provenance are preserved",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "NIST-CSF-RS.AN-08",
+      "framework": "NIST CSF 2.0",
+      "title": "An incident\u2019s magnitude is estimated and validated",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
       "control_id": "NIST-CSF-RS.CO-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RS.CO-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Internal and external stakeholders are notified of incidents",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "NIST-CSF-RS.CO-03",
+      "framework": "NIST CSF 2.0",
+      "title": "Information is shared with designated internal and external stakeholders",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
       "control_id": "NIST-CSF-RS.MA-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RS.MA-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "The incident response plan is executed in coordination with relevant third parties once an incident is declared",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
       "control_id": "NIST-CSF-RS.MA-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RS.MA-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Incident reports are triaged and validated",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
       "control_id": "NIST-CSF-RS.MA-03",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RS.MA-03 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Incidents are categorized and prioritized",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
       "control_id": "NIST-CSF-RS.MA-04",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RS.MA-04 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Incidents are escalated or elevated as needed",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
       "control_id": "NIST-CSF-RS.MA-05",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RS.MA-05 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "The criteria for initiating incident recovery are applied",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
       "control_id": "NIST-CSF-RS.MI-01",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RS.MI-01 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Incidents are contained",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },
     {
       "control_id": "NIST-CSF-RS.MI-02",
       "framework": "NIST CSF 2.0",
-      "title": "NIST CSF 2.0 RS.MI-02 \u2014 assessed from cybersecurity program and operational evidence",
+      "title": "Incidents are eradicated",
       "risk_domain": "monitoring",
       "owner": "detection-engineering"
     },

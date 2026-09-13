@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from security_lakehouse.catalog import DEFAULT_CONTROL_CATALOG
+from security_lakehouse.catalog import DEFAULT_CONTROL_CATALOG, ROOT
 from security_lakehouse.catalog_versions import (
     DEFAULT_BUNDLE_LOCK_PATH,
     write_bundle_lock,
@@ -38,13 +38,14 @@ from security_lakehouse.pack_data import (
     iso_27017_2015_controls,
     iso_27017_risk_domain,
     nist_800_53_rev5_moderate_ids,
+    nist_csf_2_outcomes,
     nist_family_risk_domain,
 )
 from security_lakehouse.pack_spec import PackControlSpec
 
 JsonObject = dict[str, Any]
 
-DEFAULT_VERIFIED_ARTICLE_IDS = Path(__file__).resolve().parents[2] / "frameworks" / "verified_article_ids.json"
+DEFAULT_VERIFIED_ARTICLE_IDS = ROOT / "frameworks" / "verified_article_ids.json"
 
 PACK_SCOPE = "framework_packs_full_soc2_nist_fedramp_cis_iso_plus_seed"
 
@@ -326,48 +327,29 @@ def nist_ai_rmf_specs() -> list[PackControlSpec]:
     return specs
 
 
-def _csf_2_category_blocks() -> list[tuple[str, list[tuple[str, int]]]]:
-    """Official NIST CSF 2.0 Core: 106 subcategories across six functions."""
-    return [
-        ("GV", [("OC", 5), ("RM", 7), ("RR", 4), ("PO", 2), ("OV", 3), ("SC", 10)]),
-        ("ID", [("AM", 7), ("RA", 10), ("IM", 4)]),
-        ("PR", [("AA", 6), ("AT", 2), ("DS", 4), ("PS", 6), ("IR", 4)]),
-        ("DE", [("CM", 5), ("AE", 6)]),
-        ("RS", [("MA", 5), ("AN", 4), ("CO", 2), ("MI", 2)]),
-        ("RC", [("RP", 6), ("CO", 2)]),
-    ]
-
-
 def nist_csf_2_specs() -> list[PackControlSpec]:
-    """All 106 NIST CSF 2.0 Core subcategories across GOVERN, IDENTIFY, PROTECT, DETECT, RESPOND, RECOVER."""
+    """Use pinned official IDs: CSF subcategory numbers are not consecutive."""
     specs: list[PackControlSpec] = []
-    for function, categories in _csf_2_category_blocks():
-        for category, count in categories:
-            risk = csf_category_risk_domain(function, category)
-            owner = _soc2_owner(risk)
-            for sub in range(1, count + 1):
-                article_id = f"{function}.{category}-{sub:02d}"
-                title = f"NIST CSF 2.0 {article_id} — assessed from cybersecurity program and operational evidence"
-                specs.append(
-                    PackControlSpec(
-                        control_id=f"NIST-CSF-{article_id}",
-                        framework_id="nist-csf-2.0",
-                        framework="NIST CSF 2.0",
-                        framework_ref=f"NIST CSF 2.0 {article_id}",
-                        article_id=article_id,
-                        title=title,
-                        risk_domain=risk,
-                        owner=owner,
-                        evaluation_rule=_soc2_evaluation_rule(risk),
-                        evidence_requirement=(
-                            f"Current evidence supports NIST CSF 2.0 outcome {article_id} "
-                            "with reviewed mappings and fresh operational proof."
-                        ),
-                        asset_types=_soc2_assets(risk),
-                        source_url=NIST_CSF_2_SOURCE,
-                        official_source_ref="nist-csf-2.0",
-                    )
-                )
+    for article_id, title in nist_csf_2_outcomes().items():
+        function, category = article_id.split("-")[0].split(".")
+        risk = csf_category_risk_domain(function, category)
+        specs.append(
+            PackControlSpec(
+                control_id=f"NIST-CSF-{article_id}",
+                framework_id="nist-csf-2.0",
+                framework="NIST CSF 2.0",
+                framework_ref=f"NIST CSF 2.0 {article_id}",
+                article_id=article_id,
+                title=title,
+                risk_domain=risk,
+                owner=_soc2_owner(risk),
+                evaluation_rule="fail_when_missing_evidence",
+                evidence_requirement=f"Evidence supporting {article_id}: {title}. Outcome sufficiency requires review.",
+                asset_types=_soc2_assets(risk),
+                source_url=NIST_CSF_2_SOURCE,
+                official_source_ref="nist-csf-2.0",
+            )
+        )
     return specs
 
 
@@ -575,7 +557,9 @@ def pack_control_row(spec: PackControlSpec) -> JsonObject:
         "evidence_requirement": spec.evidence_requirement,
         "evaluation_rule": spec.evaluation_rule,
         "frequency": "continuous",
-        "implementation_status": "implemented",
+        "implementation_status": "implemented_limited_mapping"
+        if spec.framework_id == "nist-csf-2.0"
+        else "implemented",
         "version": "1.0.0",
         "valid_from": REVIEWED_DATE,
         "valid_to": None,
@@ -587,8 +571,9 @@ def pack_control_row(spec: PackControlSpec) -> JsonObject:
         "framework_ref": spec.framework_ref,
         "source_url": spec.source_url,
         "mapping_rationale": f"Pack mapping: control identifier matches {spec.framework_ref} verbatim.",
-        "reviewed_by": REVIEWED_BY,
-        "reviewed_date": REVIEWED_DATE,
+        "reviewed_by": None if spec.framework_id == "nist-csf-2.0" else REVIEWED_BY,
+        "review_status": "proposed" if spec.framework_id == "nist-csf-2.0" else "reviewed",
+        "reviewed_date": None if spec.framework_id == "nist-csf-2.0" else REVIEWED_DATE,
         "signal_source": "silver/normalized_events.jsonl",
         "asset_types": list(spec.asset_types),
     }
@@ -603,8 +588,9 @@ def pack_mapping_row(spec: PackControlSpec) -> JsonObject:
                 "article_id": spec.article_id,
                 "title": spec.title[:120],
                 "official_source_url": spec.source_url,
-                "reviewed_by": REVIEWED_BY,
-                "reviewed_at": f"{REVIEWED_DATE}T00:00:00Z",
+                "reviewed_by": None if spec.framework_id == "nist-csf-2.0" else REVIEWED_BY,
+                "review_status": "proposed" if spec.framework_id == "nist-csf-2.0" else "reviewed",
+                "reviewed_at": None if spec.framework_id == "nist-csf-2.0" else f"{REVIEWED_DATE}T00:00:00Z",
                 "rationale": f"Pack mapping to {spec.framework_ref}.",
             }
         ],

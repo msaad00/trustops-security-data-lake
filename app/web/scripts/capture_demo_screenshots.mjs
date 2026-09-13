@@ -18,6 +18,9 @@ const outDir = path.join(root, "docs", "images");
 /** [filename, route, optional setup fn] */
 const shots = [
   ["trustops-demo-dashboard.png", "/console/dashboard/"],
+  ["trustops-demo-findings.png", "/console/violations/"],
+  ["trustops-demo-remediation.png", "/console/remediation/"],
+  ["trustops-demo-triage.png", "/console/violations/", "finding-drawer"],
   ["trustops-demo-audit-room.png", "/console/audit-room/"],
   ["trustops-demo-evidence.png", "/console/evidence/"],
   ["trustops-demo-insights.png", "/console/insights/"],
@@ -42,12 +45,20 @@ async function waitForShell() {
   await page.waitForTimeout(3500);
 }
 
-for (const entry of shots) {
+const requested = new Set(process.argv.slice(2));
+const selected = requested.size ? shots.filter(([file]) => requested.has(file)) : shots;
+if (requested.size && selected.length !== requested.size) throw new Error("Unknown screenshot filename");
+for (const entry of selected) {
   const [file, route, setup] = entry;
   const url = `${base}${route}`;
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 45_000 });
   await waitForShell();
 
+  if (setup === "finding-drawer") {
+    await page.getByRole("button", { name: /Review finding/ }).first().click();
+    await page.getByRole("dialog").waitFor();
+    await page.waitForTimeout(500);
+  }
   if (setup === "control-drawer") {
     const row = page.locator("button").filter({ hasText: /SOC2|CC6|NIST/i }).first();
     if (await row.count()) {

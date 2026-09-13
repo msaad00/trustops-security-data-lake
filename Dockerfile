@@ -34,6 +34,7 @@ COPY controls/ ./controls/
 COPY frameworks/ ./frameworks/
 COPY mappings/ ./mappings/
 COPY programs/ ./programs/
+COPY mockup_companies/ ./mockup_companies/
 COPY policy_templates/ ./policy_templates/
 # Bring the static export into the package tree before install so wheel
 # package-data picks it up.
@@ -43,7 +44,7 @@ RUN python -m venv /opt/trustops-venv \
   # The image binds 0.0.0.0, so it must be able to run the authenticated
   # server. Without the `server` extra the CMD below silently falls back to
   # local mode, which has no authentication at all.
-  && /opt/trustops-venv/bin/pip install ".[server,analytics]"
+  && /opt/trustops-venv/bin/pip install ".[server,analytics,cloud,mcp]"
 
 # --- 3. Slim runtime ------------------------------------------------------
 FROM python:${PYTHON_VERSION}-slim AS runtime
@@ -74,6 +75,7 @@ COPY controls/ /opt/trustops-data/controls/
 COPY connectors/ /opt/trustops-data/connectors/
 COPY mappings/ /opt/trustops-data/mappings/
 COPY programs/ /opt/trustops-data/programs/
+COPY mockup_companies/ /opt/trustops-data/mockup_companies/
 COPY policy_templates/ /opt/trustops-data/policy_templates/
 
 USER trustops

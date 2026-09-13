@@ -9,6 +9,7 @@ from typing import Any
 
 from security_lakehouse.connector_health import build_connector_health
 from security_lakehouse.connector_state import build_catalog_view, list_runs
+from security_lakehouse.generations import generation_reader
 from security_lakehouse.ingestion_metrics import build_catalog_coverage, build_eval_accuracy
 from security_lakehouse.io import count_jsonl, jsonl_field_counts, read_json, read_jsonl
 from security_lakehouse.lake_scale import (
@@ -23,6 +24,7 @@ from security_lakehouse.scheduler import eval_schedule_status
 JsonObject = dict[str, Any]
 
 
+@generation_reader
 def build_ingestion_status(lake_dir: str | Path) -> JsonObject:
     """Return one compact status object for the continuous ingestion loop."""
     lake = Path(lake_dir)

@@ -139,7 +139,7 @@ function ControlsPageContent() {
       <PageHeader
         eyebrow="Continuous control monitoring"
         title="Control workbench"
-        description="Deterministic gold control results from normalized evidence. Filter by result, framework, and owner, then drill into any control for evidence and remediation."
+        description="Results, evidence, and owners."
       />
       <TrustPipelineStrip activeStage="controls" />
       <QueryState queries={[tests]} label="control tests">

@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import json
 from functools import lru_cache
-from pathlib import Path
 
-PACK_DATA_DIR = Path(__file__).resolve().parents[2] / "frameworks" / "packs" / "data"
+from security_lakehouse.catalog import ROOT
+
+PACK_DATA_DIR = ROOT / "frameworks" / "packs" / "data"
 
 FEDRAMP_MODERATE_COUNT = 287
 CMMC_2_LEVEL2_COUNT = 110
@@ -229,3 +230,9 @@ def csf_category_risk_domain(function: str, category: str) -> str:
         "RC.RP": "change-management",
         "RC.CO": "change-management",
     }.get(key, "governance")
+
+
+def nist_csf_2_outcomes() -> dict[str, str]:
+    """Official public CSF 2.0 outcome text, pinned with source digest."""
+    payload = json.loads((PACK_DATA_DIR / "nist_csf_2_core.json").read_text(encoding="utf-8"))
+    return dict(payload["outcomes"])

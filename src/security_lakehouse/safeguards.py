@@ -27,9 +27,8 @@ import re
 from pathlib import Path
 from typing import Any
 
-from security_lakehouse.catalog import load_control_catalog
+from security_lakehouse.catalog import ROOT, load_control_catalog
 
-ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SAFEGUARDS = ROOT / "controls" / "safeguards.json"
 
 SCHEMA = "trustops.safeguards.v1"
