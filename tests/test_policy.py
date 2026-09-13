@@ -13,7 +13,6 @@ from security_lakehouse.policy import (
     ControlContext,
     PolicyError,
     evaluate_control,
-    resolve_rule,
     validate_rule,
 )
 
@@ -68,14 +67,24 @@ def test_min_evidence_coverage_leaf() -> None:
     assert evaluate_control(_ctx(event_count=4, evidence_count=3), rule).status == "pass"
 
 
-def test_unknown_rule_resolves_strict_but_evaluates_resilient() -> None:
+@pytest.mark.parametrize(
+    "rule",
+    [
+        "typo-invalid-rule",
+        {"fail_if": {"open_violations": {"min": "bad"}}},
+        {"fail_if": {"evidence_present": "false"}},
+        {"fail_if": {"all": []}},
+        {"fail_if": {"any": 1}},
+        {"fail_if": {"max_severity": {"at_least": "typo"}}},
+        {"fail_if": {"open_violations": {"minimum": 1}}},
+        {"fail_if": {"evidence_present": True, "unknown": False}},
+        {"fail_if": {"evidence_present": True}, "unknown": False},
+    ],
+)
+def test_invalid_rule_stops_evaluation(rule) -> None:
+    assert validate_rule(rule)
     with pytest.raises(PolicyError):
-        resolve_rule("fail_when_mercury_is_in_retrograde")
-    # evaluate_control never crashes: it falls back to the default rule.
-    result = evaluate_control(_ctx(open_violation_count=1), "fail_when_mercury_is_in_retrograde")
-    assert result.status == "fail"
-    assert result.rule == "fail_when_open_violation"
-    assert any("fallback" in r for r in result.reasons)
+        evaluate_control(_ctx(open_violation_count=0), rule)
 
 
 def test_validate_rule_catches_bad_specs() -> None:
@@ -98,3 +107,27 @@ def test_catalog_rules_all_known() -> None:
         f"{c.get('control_id')}: {p}" for c in catalog["controls"] for p in validate_rule(c.get("evaluation_rule"))
     ]
     assert problems == [], problems
+
+
+@pytest.mark.parametrize(
+    "bad_entry",
+    [
+        {"control_id": "UNUSED", "evaluation_rule": "typo-invalid-rule"},
+        {"control_id": "SOC2-CC6.1", "evaluation_rule": "fail_when_missing_evidence"},
+    ],
+)
+def test_normalization_rejects_invalid_or_ambiguous_mapping_before_publication(tmp_path, bad_entry):
+    from security_lakehouse.pipeline import normalize_raw_events
+
+    raw = Path(__file__).resolve().parents[1] / "data/raw/security_events.jsonl"
+    lake = tmp_path / "lake"
+    normalize_raw_events(raw, lake)
+    before = {str(p.relative_to(lake)): p.read_bytes() for p in lake.rglob("*") if p.is_file()}
+    catalog = json.loads(DEFAULT_CATALOG_PATH.read_text())
+    catalog["controls"].append(bad_entry)
+    custom = tmp_path / "invalid-map.json"
+    custom.write_text(json.dumps(catalog))
+    with pytest.raises(ValueError):
+        normalize_raw_events(raw, lake, mapping_path=custom)
+    after = {str(p.relative_to(lake)): p.read_bytes() for p in lake.rglob("*") if p.is_file()}
+    assert after == before
