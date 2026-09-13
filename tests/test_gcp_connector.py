@@ -158,35 +158,8 @@ def test_gcp_required_config_is_project_id_only() -> None:
     assert _missing_required_config("gcp-posture", "gcp_adc_reader", {"project_id": "p"}, {}) == []
 
 
-def test_gcp_client_org_policies_and_assets_degrade_when_apis_unavailable() -> None:
-    # A least-privilege reader (or a project with the Org Policy / Cloud Asset
-    # APIs disabled) must not fail the whole sync: those two collectors degrade
-    # to empty while IAM-binding evidence still flows.
-    from security_lakehouse.connectors_gcp import GCPClient
-
-    client = GCPClient.__new__(GCPClient)
-    client.project_id = PROJECT
-
-    class _ApiDisabled:
-        def list_policies(self, **_kwargs: object) -> list[object]:
-            raise RuntimeError("Org Policy API has not been used in project ... or it is disabled")
-
-        def list_assets(self, **_kwargs: object) -> list[object]:
-            raise RuntimeError("Cloud Asset API has not been used in project ... or it is disabled")
-
-    client._org_policies = _ApiDisabled()
-    client._assets = _ApiDisabled()
-    assert client.org_policies() == []
-    assert client.assets() == []
-
-    # An absent org-policy client (package/API unavailable) is also non-fatal.
-    client._org_policies = None
-    assert client.org_policies() == []
-
-
-def test_gcp_collect_is_iam_only_valid_when_org_and_assets_degrade() -> None:
-    # Mirrors the live degraded path: IAM bindings collect and map to controls,
-    # privileged roles surface as findings, with org-policy/asset collectors empty.
+def test_gcp_collect_accepts_successful_empty_org_and_asset_reads() -> None:
+    # A successful empty response is different from an API read failure.
     class _IamOnlyClient:
         project_id = PROJECT
 
@@ -213,3 +186,32 @@ def test_gcp_collect_is_iam_only_valid_when_org_and_assets_degrade() -> None:
     # Sole "serviceAccount:" member => service identity.
     viewer = next(r for r in bindings if r["attributes"]["role"] == "roles/viewer")
     assert viewer["attributes"]["identity_type"] == "service"
+
+
+@pytest.mark.parametrize("method", ["org_policies", "assets"])
+def test_gcp_read_failure_is_not_empty_success(method: str) -> None:
+    from security_lakehouse.connectors_gcp import GCPClient
+
+    class FailingClient:
+        def list_policies(self, **kwargs):
+            raise PermissionError("private-provider-details")
+
+        def list_assets(self, **kwargs):
+            raise PermissionError("private-provider-details")
+
+    client = object.__new__(GCPClient)
+    client.project_id = PROJECT
+    client._org_policies = FailingClient()
+    client._assets = FailingClient()
+    with pytest.raises(RuntimeError, match="incomplete") as caught:
+        getattr(client, method)()
+    assert "private-provider-details" not in str(caught.value)
+
+
+def test_gcp_missing_org_policy_client_is_not_empty_success() -> None:
+    from security_lakehouse.connectors_gcp import GCPClient
+
+    client = object.__new__(GCPClient)
+    client._org_policies = None
+    with pytest.raises(RuntimeError, match="incomplete"):
+        client.org_policies()

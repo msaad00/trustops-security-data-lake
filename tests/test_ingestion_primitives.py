@@ -53,16 +53,28 @@ def test_paginate_walks_pages_until_no_cursor() -> None:
     assert out == [1, 2, 3]
 
 
-def test_paginate_respects_max_pages() -> None:
-    out = list(
-        paginate(
-            fetch_page=lambda c: {"items": [1], "next": "loop"},
-            extract_items=lambda p: p["items"],
-            next_cursor=lambda p: p["next"],
-            max_pages=3,
-        )
-    )
-    assert out == [1, 1, 1]
+def test_paginate_reports_incomplete_and_preserves_resume_cursor() -> None:
+    pages = {None: {"items": [1], "next": "a"}, "a": {"items": [2], "next": "b"}, "b": {"items": [3], "next": None}}
+    stream = paginate(lambda c: pages[c], lambda p: p["items"], lambda p: p["next"], max_pages=2)
+    assert next(stream) == 1
+    assert next(stream) == 2
+    with pytest.raises(RuntimeError, match="incomplete") as caught:
+        next(stream)
+    assert caught.value.cursor == "b"
+    assert caught.value.pages_fetched == 2
+    assert list(
+        paginate(lambda c: pages[c], lambda p: p["items"], lambda p: p["next"], start_cursor=caught.value.cursor)
+    ) == [3]
+
+
+@pytest.mark.parametrize("budget", [0, -1])
+def test_paginate_rejects_invalid_budget(budget) -> None:
+    with pytest.raises(ValueError, match="max_pages"):
+        list(paginate(lambda c: {}, lambda p: [], lambda p: None, max_pages=budget))
+
+
+def test_paginate_complete_at_budget_is_success() -> None:
+    assert list(paginate(lambda c: {}, lambda p: [1], lambda p: None, max_pages=1)) == [1]
 
 
 # --- backoff ----------------------------------------------------------------
