@@ -56,6 +56,14 @@ def _parser() -> argparse.ArgumentParser:
     )
     verify_integrity.add_argument("--lake", required=True, help="security data lake output directory")
     verify_integrity.set_defaults(func=_verify_pipeline_integrity)
+    export_parquet = pipeline_sub.add_parser(
+        "export-parquet", help="export verified normalized evidence as a local Parquet bundle"
+    )
+    export_parquet.add_argument("--lake", required=True, help="single-tenant assessment lake")
+    export_parquet.add_argument("--out", required=True, help="new directory outside the lake; never overwritten")
+    export_parquet.add_argument("--tenant-id", required=True, help="must match both assessment and evidence tenant")
+    export_parquet.add_argument("--batch-size", type=int, default=8192, help="rows per Parquet write batch (1–65536)")
+    export_parquet.set_defaults(func=_export_parquet)
 
     connectors = sub.add_parser("connectors", help="connector catalog commands")
     connectors_sub = connectors.add_subparsers(dest="connectors_command", required=True)
@@ -1932,6 +1940,14 @@ def _openapi(args: argparse.Namespace) -> int:
         print(f"wrote OpenAPI schema ({len(spec.get('paths', {}))} paths): {args.out}")
     else:
         print(text)
+    return 0
+
+
+def _export_parquet(args: argparse.Namespace) -> int:
+    from security_lakehouse.parquet_export import export_parquet
+
+    result = export_parquet(args.lake, args.out, tenant_id=args.tenant_id, batch_size=args.batch_size)
+    print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 
 

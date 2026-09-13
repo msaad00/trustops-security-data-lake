@@ -146,13 +146,14 @@ Source → Raw evidence → Normalized facts → Control evaluation → Assessme
                                            Owned findings    Review / export
 ```
 
-| Layer                   | Current boundary                                                         |
-| ----------------------- | ------------------------------------------------------------------------ |
-| Evidence and evaluation | Local JSONL, deterministic rules, and verified assessment generations.   |
-| Local analytics         | SQLite mart; DuckDB is optional.                                         |
-| Operational state       | Application database and local state for jobs, assignments, and reviews. |
-| External storage        | Snowflake and ClickHouse integrations; verify the configured deployment. |
-| Open table formats      | Parquet, Iceberg REST, and Polaris interoperability are planned.         |
+| Layer                   | Current boundary                                                                                                |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Evidence and evaluation | Local JSONL, deterministic rules, and verified assessment generations.                                          |
+| Local analytics         | SQLite mart; DuckDB is optional.                                                                                |
+| Operational state       | Application database and local state for jobs, assignments, and reviews.                                        |
+| External storage        | Snowflake and ClickHouse integrations; verify the configured deployment.                                        |
+| Portable evidence       | Optional [Parquet export](docs/PARQUET_EXPORT.md) of one verified generation; independently tested with DuckDB. |
+| Open table catalogs     | Iceberg REST and Polaris interoperability remain planned.                                                       |
 
 Run locally with Python or Docker, or deploy the Helm chart in your own cloud.
 The current assessment writer needs durable local POSIX storage and one writer

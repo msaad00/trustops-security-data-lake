@@ -993,6 +993,13 @@ def _evidence_freshness_sql_row(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _insert_duckdb_rows(connection, statement, rows):
+    # DuckDB rejects an empty executemany batch; an empty assessment still has
+    # valid typed tables and must remain exportable.
+    if rows:
+        connection.executemany(statement, rows)
+
+
 def _write_duckdb_mart_if_available(
     mart_path: Path,
     silver_rows: list[dict[str, Any]],
@@ -1128,7 +1135,8 @@ def _write_duckdb_mart_if_available(
             """
         )
         conn.execute("CREATE TABLE metrics (metric VARCHAR, value VARCHAR)")
-        conn.executemany(
+        _insert_duckdb_rows(
+            conn,
             """
             INSERT INTO normalized_events VALUES (
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
@@ -1157,7 +1165,8 @@ def _write_duckdb_mart_if_available(
                 for row in silver_rows
             ],
         )
-        conn.executemany(
+        _insert_duckdb_rows(
+            conn,
             "INSERT INTO control_posture VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 (
@@ -1178,7 +1187,8 @@ def _write_duckdb_mart_if_available(
                 for row in control_rows
             ],
         )
-        conn.executemany(
+        _insert_duckdb_rows(
+            conn,
             "INSERT INTO asset_risk VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 (
@@ -1196,7 +1206,8 @@ def _write_duckdb_mart_if_available(
                 for row in asset_rows
             ],
         )
-        conn.executemany(
+        _insert_duckdb_rows(
+            conn,
             "INSERT INTO control_tests VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 (
@@ -1233,7 +1244,8 @@ def _write_duckdb_mart_if_available(
                 for row in control_test_rows
             ],
         )
-        conn.executemany(
+        _insert_duckdb_rows(
+            conn,
             "INSERT INTO evidence_freshness VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 (
@@ -1257,7 +1269,9 @@ def _write_duckdb_mart_if_available(
                 for row in evidence_freshness_rows
             ],
         )
-        conn.executemany("INSERT INTO metrics VALUES (?, ?)", [(key, str(value)) for key, value in metrics.items()])
+        _insert_duckdb_rows(
+            conn, "INSERT INTO metrics VALUES (?, ?)", [(key, str(value)) for key, value in metrics.items()]
+        )
         conn.execute(
             """
             CREATE VIEW daily_control_results AS

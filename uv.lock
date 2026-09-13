@@ -3286,6 +3286,10 @@ dev = [
 mcp = [
     { name = "mcp" },
 ]
+parquet = [
+    { name = "pyarrow", version = "23.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.14'" },
+    { name = "pyarrow", version = "24.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.14'" },
+]
 sdk = [
     { name = "httpx" },
 ]
@@ -3331,6 +3335,7 @@ requires-dist = [
     { name = "pip-audit", marker = "extra == 'dev'", specifier = ">=2.7" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.7" },
     { name = "psycopg", extras = ["binary"], marker = "extra == 'server'", specifier = ">=3.1" },
+    { name = "pyarrow", marker = "extra == 'parquet'", specifier = ">=23.0.1,<26" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
     { name = "python3-saml", marker = "extra == 'dev'", specifier = ">=1.16" },
     { name = "python3-saml", marker = "extra == 'server'", specifier = ">=1.16" },
@@ -3345,7 +3350,7 @@ requires-dist = [
     { name = "uvicorn", marker = "extra == 'dev'", specifier = ">=0.30" },
     { name = "uvicorn", marker = "extra == 'server'", specifier = ">=0.30" },
 ]
-provides-extras = ["server", "dev", "analytics", "cloud", "mcp", "sdk", "agents"]
+provides-extras = ["server", "dev", "parquet", "analytics", "cloud", "mcp", "sdk", "agents"]
 
 [[package]]
 name = "typing-extensions"

@@ -1,9 +1,10 @@
 # Assessment publication and failure contracts
 
 TrustOps keeps local JSONL and SQL artifacts as its working evidence mode. An
-assessment publication consists of one verified generation. Parquet, an Iceberg
-REST adapter, and Polaris interoperability remain planned work; the Helm chart
-does not implement those integrations.
+assessment publication consists of one verified generation. An optional
+[Parquet export](PARQUET_EXPORT.md) preserves normalized evidence from one pinned
+generation. Iceberg REST and Polaris integrations remain planned; the Helm chart
+does not implement them.
 
 ## Invalid rules and incomplete collection
 
@@ -85,5 +86,6 @@ CLI/API errors, and preservation of previously published exports.
 Publication requires a local POSIX filesystem with atomic same-filesystem rename,
 symlinks, directory locks, and fsync support. This does not establish crash or
 locking guarantees for NFS, object storage, Windows, or distributed writers. No
-Iceberg commit, independent SQL-engine interoperability, or cloud deployment is
-proved by these tests.
+Iceberg commit or cloud deployment is proved by these tests. The separate
+Parquet export tests verify normalized evidence parity with DuckDB; this does
+not establish interoperability of every assessment artifact.
