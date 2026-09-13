@@ -15,8 +15,8 @@ from pathlib import Path
 from typing import Any
 
 from security_lakehouse.generations import ARTIFACTS, generation_reader, pin_generation, verify_generation
+from security_lakehouse.io import canonical_sha256 as _canonical_sha256
 from security_lakehouse.io import read_json, read_jsonl
-from security_lakehouse.pipeline import _canonical_sha256
 
 
 def _bronze_paths(lake_dir: str | Path) -> list[Path]:

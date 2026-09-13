@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import contextlib
+import hashlib
 import json
 import os
 import tempfile
@@ -10,6 +11,12 @@ from collections import Counter
 from collections.abc import Callable, Iterable, Iterator
 from pathlib import Path
 from typing import Any, TypeVar
+
+
+def canonical_sha256(payload: Any) -> str:
+    """Hash the stable JSON representation shared by writers and verifiers."""
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 def resolve_path(path: str | Path, *, base_dir: str | Path | None = None) -> Path:

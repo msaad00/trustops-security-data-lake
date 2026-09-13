@@ -25,6 +25,7 @@ from security_lakehouse.generations import (
     seal_generation,
     serialized_publication,
 )
+from security_lakehouse.io import canonical_sha256 as _canonical_sha256
 from security_lakehouse.io import iter_jsonl, read_json, read_jsonl, write_json, write_jsonl
 from security_lakehouse.models import SEVERITY_SCORE, PipelineResult, parse_event_time, utc_iso
 from security_lakehouse.policy import ControlContext, RuleResult, evaluate_control
@@ -399,11 +400,6 @@ def _pipeline_result_from_manifest(out: Path, manifest: dict[str, Any]) -> Pipel
         dashboard_data_path=str(gold_dir / "dashboard_data.json"),
         duckdb_mart_path=marts.get("duckdb"),
     )
-
-
-def _canonical_sha256(payload: Any) -> str:
-    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
-    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 def _file_sha256(path: Path) -> str:

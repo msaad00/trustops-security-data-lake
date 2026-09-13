@@ -440,7 +440,7 @@ def test_azure_sdk_namespace_compatibility(monkeypatch, modern: bool) -> None:
 
     def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
         if name == "azure.identity":
-            return SimpleNamespace(DefaultAzureCredential=lambda: object())
+            return SimpleNamespace(DefaultAzureCredential=object)
         if name == "azure.mgmt.authorization":
             return SimpleNamespace(AuthorizationManagementClient=lambda *args: object())
         if name == "azure.mgmt.resource.resources" and modern:
