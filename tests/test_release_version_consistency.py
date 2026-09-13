@@ -23,4 +23,7 @@ def test_release_version_is_consistent_across_package_chart_and_console() -> Non
     assert re.search(rf'^appVersion: "{re.escape(RELEASE_VERSION)}"$', chart, re.MULTILINE)
     assert f'version: "{RELEASE_VERSION}"' in brand
     assert f"## {RELEASE_VERSION} - {RELEASE_DATE}" in changelog
-    assert "## Unreleased" not in changelog
+    # Development after a release may add an Unreleased section without
+    # changing the published package/chart/console version.
+    if "## Unreleased" in changelog:
+        assert changelog.index("## Unreleased") < changelog.index(f"## {RELEASE_VERSION} - {RELEASE_DATE}")

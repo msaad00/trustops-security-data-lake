@@ -3,6 +3,14 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
+## Unreleased
+
+- Add an optional, generation-pinned Parquet evidence export with explicit tenant
+  checks, private atomic publication, provenance, and independent DuckDB parity
+  tests. Iceberg REST and Polaris remain planned.
+- Allow empty assessments to create typed DuckDB tables without failing on
+  empty insert batches.
+
 ## 0.2.8 - 2026-09-13
 
 ### Fixed
