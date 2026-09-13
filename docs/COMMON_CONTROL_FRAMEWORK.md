@@ -68,7 +68,7 @@ collapsing them would overstate both coverage and failure.
 
 ```
 $ security-lakehouse frameworks safeguards --format table
-37 safeguards map 552 of 942 requirements (58.6%) — 45 reviewed (4.8%), 507 proposed
+40 safeguards map 554 of 942 requirements (58.8%) — 45 reviewed (4.8%), 509 proposed
 ```
 
 A mapping is **reviewed** once a human has confirmed the requirements are the
@@ -101,7 +101,7 @@ cannot become a false certification claim.
 | fedramp-moderate    |          287 |    182 |  63.4% |
 | iso-27017-2015      |           47 |     24 |  51.1% |
 | iso-27001-2022      |           93 |     11 |  11.8% |
-| nist-ai-rmf         |           72 |      6 |   8.3% |
+| nist-ai-rmf         |           72 |      8 |  11.1% |
 | nist-csf-2.0        |          106 |     26 |  24.5% |
 
 ### What a safeguard applies to
@@ -148,7 +148,7 @@ Full coverage needs the catalog enriched before the curation can be checked.
    content. 224 are mapped; the rest are the near-term queue. Promoting a
    `proposed` mapping to `reviewed` is a human confirming the two requirements
    are the same obligation. `security-lakehouse frameworks review-queue`
-   (`--framework <id>` to scope) lists the 478 proposed mappings, each paired
+   (`--framework <id>` to scope) lists the 513 proposed mappings, each paired
    with the reviewed anchors already on that safeguard, so a reviewer judges an
    equivalence against mappings they already trust. `--risk-domain <domain>`
    scopes the queue by the normalized cross-framework category/family, while

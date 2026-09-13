@@ -4402,6 +4402,141 @@
         }
       ],
       "asset_types": ["cloud_policy", "cloud_resource", "service"]
+    },
+    {
+      "safeguard_id": "SG-AIINVENTORY-001",
+      "title": "AI system inventory and risk resourcing",
+      "risk_domain": "ai-governance",
+      "objective": "Maintain an AI system inventory with resources assigned according to documented risk priorities.",
+      "evidence_requirement": "Current inventory identifies models, agents, AI services, owners, lifecycle state, scope and risk priority; a resource allocation record shows how inventory and oversight are maintained.",
+      "evaluation_rule": {
+        "fail_if": {
+          "any": [
+            {
+              "evidence_present": false
+            },
+            {
+              "evidence_status": {
+                "in": ["stale", "expired", "missing"]
+              }
+            },
+            {
+              "open_violations": {
+                "min": 1
+              }
+            }
+          ]
+        }
+      },
+      "frequency": "continuous",
+      "owner": "ai-governance",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST AI RMF 1.0 (NIST AI 100-1)",
+        "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+        "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+        "locator": "Table 1, GOVERN 1.6"
+      },
+      "satisfies": [
+        {
+          "control_id": "NIST-AI-RMF-GOVERN-1.6",
+          "framework_id": "nist-ai-rmf",
+          "role": "primary",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": ["ai_agent", "ai_model"]
+    },
+    {
+      "safeguard_id": "SG-AICONTEXT-001",
+      "title": "AI deployment context and affected users",
+      "risk_domain": "ai-governance",
+      "objective": "Document intended and beneficial uses, deployment settings, users, applicable expectations, impacts, assumptions, limitations and relevant evaluation metrics.",
+      "evidence_requirement": "A reviewed context record links each AI system to intended uses, deployment environments, affected users and communities, applicable laws and norms, beneficial and adverse impacts, assumptions, limitations and TEVV metrics. Missing business or deployment context is recorded as unknown.",
+      "evaluation_rule": {
+        "fail_if": {
+          "any": [
+            {
+              "evidence_present": false
+            },
+            {
+              "evidence_status": {
+                "in": ["stale", "expired", "missing"]
+              }
+            },
+            {
+              "open_violations": {
+                "min": 1
+              }
+            }
+          ]
+        }
+      },
+      "frequency": "continuous",
+      "owner": "ai-governance",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST AI RMF 1.0 (NIST AI 100-1)",
+        "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+        "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+        "locator": "Table 2, MAP 1.1"
+      },
+      "satisfies": [
+        {
+          "control_id": "NIST-AI-RMF-MAP-1.1",
+          "framework_id": "nist-ai-rmf",
+          "role": "primary",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": ["ai_agent", "ai_model", "data_store", "service"]
+    },
+    {
+      "safeguard_id": "SG-AICATEGORIZATION-001",
+      "title": "AI tasks and implementation methods",
+      "risk_domain": "ai-governance",
+      "objective": "Define the AI tasks and methods that support each intended use.",
+      "evidence_requirement": "A current system record identifies supported tasks and methods, such as generation, classification or recommendation, and the associated models, agent tools and services. An inventory entry alone does not demonstrate task categorization.",
+      "evaluation_rule": {
+        "fail_if": {
+          "any": [
+            {
+              "evidence_present": false
+            },
+            {
+              "evidence_status": {
+                "in": ["stale", "expired", "missing"]
+              }
+            },
+            {
+              "open_violations": {
+                "min": 1
+              }
+            }
+          ]
+        }
+      },
+      "frequency": "continuous",
+      "owner": "ai-governance",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "mapping_source": {
+        "name": "NIST AI RMF 1.0 (NIST AI 100-1)",
+        "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+        "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+        "locator": "Table 2, MAP 2.1"
+      },
+      "satisfies": [
+        {
+          "control_id": "NIST-AI-RMF-MAP-2.1",
+          "framework_id": "nist-ai-rmf",
+          "role": "primary",
+          "review_status": "proposed"
+        }
+      ],
+      "asset_types": ["ai_agent", "ai_model", "data_store", "service"]
     }
   ]
 }
