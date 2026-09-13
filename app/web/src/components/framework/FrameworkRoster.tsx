@@ -45,7 +45,7 @@ function FrameworkLine({
         <div className="mt-0.5 truncate text-xs font-medium leading-5 text-slate-600">
           {notEvaluated
             ? `Not evaluated · ${total ? `${total} controls in catalog` : "catalog pack pending"}`
-            : `${mapped}/${total} controls mapped · ${attestable} attestable`}
+            : `${mapped}/${total} controls mapped · ${attestable} reviewed`}
         </div>
       </div>
       <Badge
@@ -85,17 +85,14 @@ export function FrameworkRoster({ frameworks, coverage, readiness }: Props) {
         <div>
           <h2 className="text-lg font-black text-ink">Framework roster</h2>
           <p className="mt-0.5 max-w-3xl text-xs leading-5 text-muted">
-            Recognizable framework marks with an explicit boundary between
-            readiness tracked today and packs that are not evaluated yet.
+            Mapping and review status by framework.
           </p>
         </div>
         <div className="text-right text-xs font-bold text-muted">
           <div>
             {evaluated.length} tracked · {notEvaluated.length} not evaluated
           </div>
-          <div className="mt-0.5 font-normal">
-            proposed mappings are not attestations
-          </div>
+          <div className="mt-0.5 font-normal">Catalog and mapping status</div>
         </div>
       </div>
       <div className="grid gap-5 px-4 pb-3 md:grid-cols-2 md:gap-6">
