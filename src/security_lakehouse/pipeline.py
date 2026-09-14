@@ -26,7 +26,7 @@ from security_lakehouse.generations import (
     serialized_publication,
 )
 from security_lakehouse.io import canonical_sha256 as _canonical_sha256
-from security_lakehouse.io import iter_jsonl, read_json, read_jsonl, write_json, write_jsonl
+from security_lakehouse.io import file_sha256, iter_jsonl, read_json, read_jsonl, write_json, write_jsonl
 from security_lakehouse.models import SEVERITY_SCORE, PipelineResult, parse_event_time, utc_iso
 from security_lakehouse.policy import ControlContext, RuleResult, evaluate_control
 from security_lakehouse.programs import build_control_tests
@@ -403,7 +403,7 @@ def _pipeline_result_from_manifest(out: Path, manifest: dict[str, Any]) -> Pipel
 
 
 def _file_sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return file_sha256(path)
 
 
 def build_evidence_integrity(

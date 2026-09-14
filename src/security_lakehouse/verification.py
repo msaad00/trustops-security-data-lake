@@ -16,7 +16,7 @@ from typing import Any
 
 from security_lakehouse.generations import ARTIFACTS, generation_reader, pin_generation, verify_generation
 from security_lakehouse.io import canonical_sha256 as _canonical_sha256
-from security_lakehouse.io import read_json, read_jsonl
+from security_lakehouse.io import file_sha256, read_json, read_jsonl
 
 
 def _bronze_paths(lake_dir: str | Path) -> list[Path]:
@@ -133,7 +133,7 @@ def verify_lake_integrity(lake_dir: str | Path) -> dict[str, Any]:
             issues.append(f"artifact {name}: file is missing")
             continue
         expected_sha = str(artifact.get("sha256") or "")
-        actual_sha = hashlib.sha256(path.read_bytes()).hexdigest()
+        actual_sha = file_sha256(path)
         if expected_sha != actual_sha:
             issues.append(f"artifact {name}: sha256 mismatch")
 

@@ -1,9 +1,13 @@
 # TrustOps validation and benchmark plan
 
-**Status: protocol, not published results.** This document defines reproducible
+**Status: validation protocol.** This document defines reproducible
 methods for evaluating TrustOps. Existing unit tests,
 synthetic fixtures, connector availability, and configured warehouse sinks do
 not establish live accuracy, production capacity, or certification readiness.
+
+The [artifact hashing microbenchmark](benchmarks/ARTIFACT_HASHING.md) measures one
+specific memory improvement using synthetic files. It does not establish
+end-to-end capacity, detection accuracy, or cost savings.
 
 ## 1. Record the experiment
 

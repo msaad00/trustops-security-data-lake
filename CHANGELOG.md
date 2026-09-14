@@ -3,6 +3,14 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
+## Unreleased
+
+- Stream artifact SHA-256 checks through a reusable 1 MiB buffer during evidence
+  integrity creation/verification, generation sealing/verification, and Parquet
+  export. Preserve digest formats, tamper detection, and publication failure
+  behavior. Add a reproducible synthetic hashing memory benchmark; full-pipeline
+  capacity, live accuracy, and cost savings remain unverified.
+
 ## 0.2.9 - 2026-09-13
 
 - Add an optional, generation-pinned Parquet evidence export with explicit tenant

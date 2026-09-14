@@ -88,8 +88,9 @@ The destination must be outside the source lake. Publication requires local
 POSIX directory locks, rename, and fsync support. NFS, distributed writers,
 object storage, and Windows publication guarantees have not been verified.
 Conversion uses bounded row batches (`--batch-size`, default 8192; maximum
-65536). This is not a whole-pipeline memory guarantee: generation verification
-still uses the existing verifier, and source-record size is not bounded here.
+65536). Generation artifact hashes use a reusable 1 MiB buffer. This is not a
+whole-pipeline memory guarantee: manifests are parsed in memory, and
+source-record size is not bounded here.
 No production throughput or cost benchmark is claimed.
 
 ## Validation

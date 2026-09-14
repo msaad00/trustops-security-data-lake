@@ -1,0 +1,213 @@
+{
+  "schema_version": "trustops.artifact_hash_benchmark.v1",
+  "scope": "synthetic file hashing only; not pipeline capacity or accuracy",
+  "timestamp": "2026-09-14T04:06:27.588170+00:00",
+  "revision": "9b895f64cca3441d5bf3bcc965c4db066e93b5cd",
+  "tracked_tree_dirty": true,
+  "tracked_diff_sha256": "0bf3f3116a5243596131da2b78924303adbe1a3c13a820463fce9a428f92de16",
+  "measured_sources": {
+    "src/security_lakehouse/io.py": "b6ce05d9832805186cab6a5005285e193f7f3f211ac6729c781e022e16583a2b",
+    "tools/benchmark_artifact_hashing.py": "b3c5b45074af875f72fbfdff3dbe7f25136cb101958a15630a965bb33775c117"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "os": "Darwin",
+    "os_release": "25.6.0",
+    "architecture": "arm64",
+    "logical_cpus": 10,
+    "disk_type": "not_recorded"
+  },
+  "protocol": {
+    "cache": "warm: parent reads the file before each worker; no cold-cache measurements",
+    "concurrency": 1,
+    "repeats": 3,
+    "worker_timeout_seconds": 60,
+    "max_fixture_mib": 256,
+    "fixture": "repeated bytes 0..255; no randomness or private data",
+    "order": "alternate whole-file/streaming order each repeat",
+    "rss": "process lifetime peak including interpreter/imports",
+    "python_memory": "tracemalloc peak during hash call"
+  },
+  "attempts": [
+    {
+      "size_bytes": 8388608,
+      "repeat": 1,
+      "method": "whole_file",
+      "sha256": "7d212b9c884f5c77896de960ae17cc341cda43b14d6a971f34ca29ebd4badf7f",
+      "seconds": 0.006778499984648079,
+      "peak_python_bytes": 8393374,
+      "peak_rss_bytes": 34258944,
+      "status": "measured"
+    },
+    {
+      "size_bytes": 8388608,
+      "repeat": 1,
+      "method": "streaming",
+      "sha256": "7d212b9c884f5c77896de960ae17cc341cda43b14d6a971f34ca29ebd4badf7f",
+      "seconds": 0.006206542020663619,
+      "peak_python_bytes": 1054125,
+      "peak_rss_bytes": 26787840,
+      "status": "measured"
+    },
+    {
+      "size_bytes": 8388608,
+      "repeat": 2,
+      "method": "streaming",
+      "sha256": "7d212b9c884f5c77896de960ae17cc341cda43b14d6a971f34ca29ebd4badf7f",
+      "seconds": 0.00624945800518617,
+      "peak_python_bytes": 1054125,
+      "peak_rss_bytes": 26902528,
+      "status": "measured"
+    },
+    {
+      "size_bytes": 8388608,
+      "repeat": 2,
+      "method": "whole_file",
+      "sha256": "7d212b9c884f5c77896de960ae17cc341cda43b14d6a971f34ca29ebd4badf7f",
+      "seconds": 0.006838125002104789,
+      "peak_python_bytes": 8393374,
+      "peak_rss_bytes": 34242560,
+      "status": "measured"
+    },
+    {
+      "size_bytes": 8388608,
+      "repeat": 3,
+      "method": "whole_file",
+      "sha256": "7d212b9c884f5c77896de960ae17cc341cda43b14d6a971f34ca29ebd4badf7f",
+      "seconds": 0.006611125019844621,
+      "peak_python_bytes": 8393374,
+      "peak_rss_bytes": 34242560,
+      "status": "measured"
+    },
+    {
+      "size_bytes": 8388608,
+      "repeat": 3,
+      "method": "streaming",
+      "sha256": "7d212b9c884f5c77896de960ae17cc341cda43b14d6a971f34ca29ebd4badf7f",
+      "seconds": 0.006095374992582947,
+      "peak_python_bytes": 1054125,
+      "peak_rss_bytes": 26902528,
+      "status": "measured"
+    },
+    {
+      "size_bytes": 67108864,
+      "repeat": 1,
+      "method": "whole_file",
+      "sha256": "281e519df3077b557c6b03f5da83c4e8d397219259615dd7c3308f89cae8f2a6",
+      "seconds": 0.05299983295844868,
+      "peak_python_bytes": 67113630,
+      "peak_rss_bytes": 92979200,
+      "status": "measured"
+    },
+    {
+      "size_bytes": 67108864,
+      "repeat": 1,
+      "method": "streaming",
+      "sha256": "281e519df3077b557c6b03f5da83c4e8d397219259615dd7c3308f89cae8f2a6",
+      "seconds": 0.04711145895998925,
+      "peak_python_bytes": 1054125,
+      "peak_rss_bytes": 26820608,
+      "status": "measured"
+    },
+    {
+      "size_bytes": 67108864,
+      "repeat": 2,
+      "method": "streaming",
+      "sha256": "281e519df3077b557c6b03f5da83c4e8d397219259615dd7c3308f89cae8f2a6",
+      "seconds": 0.046938540996052325,
+      "peak_python_bytes": 1054125,
+      "peak_rss_bytes": 26836992,
+      "status": "measured"
+    },
+    {
+      "size_bytes": 67108864,
+      "repeat": 2,
+      "method": "whole_file",
+      "sha256": "281e519df3077b557c6b03f5da83c4e8d397219259615dd7c3308f89cae8f2a6",
+      "seconds": 0.05553520901594311,
+      "peak_python_bytes": 67113630,
+      "peak_rss_bytes": 92946432,
+      "status": "measured"
+    },
+    {
+      "size_bytes": 67108864,
+      "repeat": 3,
+      "method": "whole_file",
+      "sha256": "281e519df3077b557c6b03f5da83c4e8d397219259615dd7c3308f89cae8f2a6",
+      "seconds": 0.05326383403735235,
+      "peak_python_bytes": 67113630,
+      "peak_rss_bytes": 92979200,
+      "status": "measured"
+    },
+    {
+      "size_bytes": 67108864,
+      "repeat": 3,
+      "method": "streaming",
+      "sha256": "281e519df3077b557c6b03f5da83c4e8d397219259615dd7c3308f89cae8f2a6",
+      "seconds": 0.047809959040023386,
+      "peak_python_bytes": 1054125,
+      "peak_rss_bytes": 26804224,
+      "status": "measured"
+    },
+    {
+      "size_bytes": 268435456,
+      "repeat": 1,
+      "method": "whole_file",
+      "sha256": "486cc817b95d853d3c357ff283b204c0144bd255e73fe2deb1389493b257e3c0",
+      "seconds": 0.21418858401011676,
+      "peak_python_bytes": 268440222,
+      "peak_rss_bytes": 294469632,
+      "status": "measured"
+    },
+    {
+      "size_bytes": 268435456,
+      "repeat": 1,
+      "method": "streaming",
+      "sha256": "486cc817b95d853d3c357ff283b204c0144bd255e73fe2deb1389493b257e3c0",
+      "seconds": 0.1938222920289263,
+      "peak_python_bytes": 1054125,
+      "peak_rss_bytes": 26804224,
+      "status": "measured"
+    },
+    {
+      "size_bytes": 268435456,
+      "repeat": 2,
+      "method": "streaming",
+      "sha256": "486cc817b95d853d3c357ff283b204c0144bd255e73fe2deb1389493b257e3c0",
+      "seconds": 0.19382470904383808,
+      "peak_python_bytes": 1054125,
+      "peak_rss_bytes": 26836992,
+      "status": "measured"
+    },
+    {
+      "size_bytes": 268435456,
+      "repeat": 2,
+      "method": "whole_file",
+      "sha256": "486cc817b95d853d3c357ff283b204c0144bd255e73fe2deb1389493b257e3c0",
+      "seconds": 0.22362520796013996,
+      "peak_python_bytes": 268440222,
+      "peak_rss_bytes": 294305792,
+      "status": "measured"
+    },
+    {
+      "size_bytes": 268435456,
+      "repeat": 3,
+      "method": "whole_file",
+      "sha256": "486cc817b95d853d3c357ff283b204c0144bd255e73fe2deb1389493b257e3c0",
+      "seconds": 0.22551525000017136,
+      "peak_python_bytes": 268440222,
+      "peak_rss_bytes": 294289408,
+      "status": "measured"
+    },
+    {
+      "size_bytes": 268435456,
+      "repeat": 3,
+      "method": "streaming",
+      "sha256": "486cc817b95d853d3c357ff283b204c0144bd255e73fe2deb1389493b257e3c0",
+      "seconds": 0.19978516700211912,
+      "peak_python_bytes": 1054125,
+      "peak_rss_bytes": 26722304,
+      "status": "measured"
+    }
+  ]
+}
