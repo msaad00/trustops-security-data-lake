@@ -153,7 +153,7 @@ Source → Raw evidence → Normalized facts → Control evaluation → Assessme
 | Operational state       | Application database and local state for jobs, assignments, and reviews.                                        |
 | External storage        | Snowflake and ClickHouse integrations; verify the configured deployment.                                        |
 | Portable evidence       | Optional [Parquet export](docs/PARQUET_EXPORT.md) of one verified generation; independently tested with DuckDB. |
-| Open table catalogs     | Iceberg REST and Polaris interoperability remain planned.                                                       |
+| Open table catalogs     | Optional [Iceberg REST publication](docs/ICEBERG_REST.md); local Polaris and DuckDB snapshot reads tested.      |
 
 Run locally with Python or Docker, or deploy the Helm chart in your own cloud.
 The current assessment writer needs durable local POSIX storage and one writer

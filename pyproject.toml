@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "trustops-security-data-lake"
-version = "0.2.8"
+version = "0.2.9"
 description = "Open-source, self-hosted trust operations — SOC 2, NIST AI RMF, FedRAMP, ISO, HIPAA, PCI DSS. Read-only evidence collection, deterministic control tests, and audit-ready proof with an API-first, MCP-native design."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -78,6 +78,11 @@ dev = [
 parquet = [
     "pyarrow>=23.0.1,<26",
 ]
+# Optional Iceberg REST publication; basic local mode remains dependency-free.
+iceberg = [
+    "pyiceberg[pyarrow]>=0.12.0,<0.13",
+    "pyarrow>=23.0.1,<26",
+]
 analytics = [
     "duckdb>=1.0",
 ]
@@ -117,7 +122,7 @@ agents = [
 # validate every commit message format.
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.2.8"
+version = "0.2.9"
 version_files = ["pyproject.toml:version"]
 tag_format = "v$version"
 

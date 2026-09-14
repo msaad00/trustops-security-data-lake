@@ -64,6 +64,24 @@ def _parser() -> argparse.ArgumentParser:
     export_parquet.add_argument("--tenant-id", required=True, help="must match both assessment and evidence tenant")
     export_parquet.add_argument("--batch-size", type=int, default=8192, help="rows per Parquet write batch (1–65536)")
     export_parquet.set_defaults(func=_export_parquet)
+    publish_iceberg = pipeline_sub.add_parser(
+        "publish-iceberg", help="publish verified evidence to a tenant-scoped Iceberg REST table"
+    )
+    publish_iceberg.add_argument("--lake", required=True, help="single-tenant assessment lake")
+    publish_iceberg.add_argument("--tenant-id", required=True, help="must match evidence, namespace, and table scope")
+    publish_iceberg.add_argument("--catalog-uri", required=True, help="HTTPS Iceberg REST catalog endpoint")
+    publish_iceberg.add_argument("--warehouse", required=True, help="catalog warehouse name")
+    publish_iceberg.add_argument("--namespace", required=True, help="preprovisioned tenant namespace")
+    publish_iceberg.add_argument("--table", default="evidence", help="TrustOps evidence table name")
+    publish_iceberg.add_argument(
+        "--token-env",
+        default="TRUSTOPS_ICEBERG_TOKEN",
+        help="environment variable containing a short-lived bearer token",
+    )
+    publish_iceberg.add_argument(
+        "--allow-http-localhost", action="store_true", help="allow loopback HTTP for local catalog testing"
+    )
+    publish_iceberg.set_defaults(func=_publish_iceberg)
 
     connectors = sub.add_parser("connectors", help="connector catalog commands")
     connectors_sub = connectors.add_subparsers(dest="connectors_command", required=True)
@@ -1947,6 +1965,25 @@ def _export_parquet(args: argparse.Namespace) -> int:
     from security_lakehouse.parquet_export import export_parquet
 
     result = export_parquet(args.lake, args.out, tenant_id=args.tenant_id, batch_size=args.batch_size)
+    print(json.dumps(result, indent=2, sort_keys=True))
+    return 0
+
+
+def _publish_iceberg(args: argparse.Namespace) -> int:
+    from security_lakehouse.iceberg_export import publish_iceberg, rest_catalog
+
+    catalog = rest_catalog(
+        args.catalog_uri,
+        warehouse=args.warehouse,
+        token_env=args.token_env,
+        allow_http_localhost=args.allow_http_localhost,
+    )
+    try:
+        result = publish_iceberg(
+            args.lake, catalog, namespace=args.namespace, table_name=args.table, tenant_id=args.tenant_id
+        )
+    finally:
+        catalog.close()
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 

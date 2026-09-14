@@ -8,14 +8,15 @@ including arrays, tenant IDs, evidence references, and raw hashes.
 This is an optional file export. JSONL remains the working evidence format.
 Iceberg tables, REST catalog commits, Polaris compatibility, remote storage,
 framework verdict exports, and API/MCP export endpoints are not implemented by
-this command.
+this command. Use the separate [Iceberg REST adapter](ICEBERG_REST.md) for
+snapshot publication.
 
 ## Try it locally
 
-Install from a checkout containing this feature:
+Install the optional dependencies (the example also uses repository sample data):
 
 ```bash
-pip install -e '.[parquet,analytics]'
+pip install 'trustops-security-data-lake[parquet,analytics]==0.2.9'
 security-lakehouse ingestion normalize \
   --raw data/raw/security_events.jsonl --out build/parquet-demo-lake \
   --tenant-id acme-prod

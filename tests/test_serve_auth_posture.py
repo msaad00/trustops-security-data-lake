@@ -46,7 +46,7 @@ def test_local_mode_can_be_exposed_with_an_explicit_acknowledgement(monkeypatch)
 
 def test_container_installs_the_extra_that_provides_authentication() -> None:
     """Without the `server` extra the CMD below cannot run authenticated mode."""
-    installs = re.findall(r'pip install "\.\[([^\]]+)\]"', DOCKERFILE.read_text(encoding="utf-8"))
+    installs = re.findall(r'pip install\b[^&]*"\.\[([^\]]+)\]"', DOCKERFILE.read_text(encoding="utf-8"))
     assert installs, "Dockerfile no longer pip-installs the package with extras"
     assert any("server" in extras.split(",") for extras in installs), (
         f"Dockerfile installs {installs!r} — without the 'server' extra the image "
@@ -64,7 +64,7 @@ def test_container_command_runs_the_authenticated_server() -> None:
 
 
 def test_container_includes_cloud_collection_and_agent_dependencies() -> None:
-    installs = re.findall(r'pip install "\.\[([^\]]+)\]"', DOCKERFILE.read_text(encoding="utf-8"))
-    assert any({"server", "cloud", "mcp"} <= set(extras.split(",")) for extras in installs), (
-        "Default container must support live collection and the advertised MCP entry point"
+    installs = re.findall(r'pip install\b[^&]*"\.\[([^\]]+)\]"', DOCKERFILE.read_text(encoding="utf-8"))
+    assert any({"server", "cloud", "mcp", "iceberg"} <= set(extras.split(",")) for extras in installs), (
+        "Default container must support collection, MCP, and optional evidence publication"
     )
