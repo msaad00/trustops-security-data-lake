@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, MailCheck } from "lucide-react";
 import { TrustOpsLogo } from "@/components/brand/TrustOpsLogo";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { notify } from "@/lib/toast";
 
 function InviteAcceptForm() {
   const params = useSearchParams();
+  const router = useRouter();
   const token = params.get("token") ?? "";
   const [displayName, setDisplayName] = useState("");
   const [pending, setPending] = useState(false);
@@ -26,7 +27,7 @@ function InviteAcceptForm() {
     try {
       await api.acceptInvite({ token, display_name: displayName });
       notify.success("Invite accepted — sign in to continue");
-      window.location.assign("/console/login/");
+      router.replace("/login/");
     } catch (err) {
       notify.error(String((err as Error).message));
     } finally {

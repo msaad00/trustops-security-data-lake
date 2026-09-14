@@ -61,7 +61,7 @@ export function NodeConfigPanel({
     setParams(node?.data.params ?? {});
     setTestResult(null);
     setTestError(null);
-  }, [node?.id]);
+  }, [node?.id, node?.data.params]);
 
   if (!node || !spec) {
     return (

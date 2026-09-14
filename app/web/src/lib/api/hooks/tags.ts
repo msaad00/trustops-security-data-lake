@@ -132,7 +132,7 @@ export function useDeleteSavedViewMutation() {
   return useMutation({
     mutationFn: ({ viewId, surface }: { viewId: string; surface: string }) =>
       api.deleteSavedView(viewId).then((r) => ({ ...r, surface })),
-    onSuccess: (_data) => {
+    onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["saved-views"] });
     },
   });

@@ -29,7 +29,7 @@ export function NotificationBell() {
     "",
   );
 
-  const entries = log.data ?? [];
+  const entries = useMemo(() => log.data ?? [], [log.data]);
   const unread = useMemo(
     () =>
       entries.filter(

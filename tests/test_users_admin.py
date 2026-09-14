@@ -82,7 +82,9 @@ def test_session_from_key_sets_cookie(env) -> None:
     assert resp.json()["data"]["email"] == "contributor@acme.test"
     cookie = resp.cookies.get(SESSION_COOKIE)
     assert cookie
-    whoami = client.get("/api/v1/auth/whoami", cookies={SESSION_COOKIE: cookie})
+    client.cookies.clear()
+    client.cookies.set(SESSION_COOKIE, cookie)
+    whoami = client.get("/api/v1/auth/whoami")
     assert whoami.status_code == HTTPStatus.OK
     assert whoami.json()["data"]["role"] == "contributor"
 

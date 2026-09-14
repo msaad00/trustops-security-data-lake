@@ -33,7 +33,7 @@ import {
 import { AgentRunDrawer } from "@/components/drawers/AgentRunDrawer";
 import { useAuditorMode } from "@/lib/state/auditor";
 import { useAgentRuns, useCreateAgentRunMutation } from "@/lib/api/hooks";
-import type { AgentHarness, AgentRun } from "@/lib/api/types";
+import type { AgentHarness } from "@/lib/api/types";
 
 type BadgeTone = "ready" | "info" | "attention" | "critical" | "default";
 
@@ -469,7 +469,7 @@ function AgentsPageContent() {
   const [useModel, setUseModel] = useState(false);
   const [budgetProfile, setBudgetProfile] = useState<BudgetProfile>("small");
 
-  const runs = agentRuns.data ?? [];
+  const runs = useMemo(() => agentRuns.data ?? [], [agentRuns.data]);
   const selectedRun =
     runs.find((run) => run.id === selectedRunId) ?? runs[0] ?? null;
   const pendingDecisionCount = runs.reduce(

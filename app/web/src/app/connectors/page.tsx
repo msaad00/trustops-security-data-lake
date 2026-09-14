@@ -177,7 +177,7 @@ export default function ConnectorsPage() {
   const [selected, setSelected] = useState<ConnectorView | null>(null);
   const [onboarding, setOnboarding] = useState(false);
 
-  const data = connectors.data ?? [];
+  const data = useMemo(() => connectors.data ?? [], [connectors.data]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
