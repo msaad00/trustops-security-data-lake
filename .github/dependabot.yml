@@ -18,6 +18,10 @@ updates:
     commit-message:
       prefix: "chore(deps)"
       include: "scope"
+    # MCP 2 removes mcp.server.fastmcp; migrate the server before widening <2.
+    ignore:
+      - dependency-name: "mcp"
+        update-types: ["version-update:semver-major"]
     groups:
       python-minor:
         update-types: ["minor", "patch"]
