@@ -6,6 +6,8 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
+import pytest
+
 from security_lakehouse.cli import main
 from security_lakehouse.io import read_jsonl
 from security_lakehouse.repo_audit import audit_public_repo, parse_repo_spec
@@ -48,7 +50,7 @@ def _fixture(tmp_path: Path) -> Path:
         "models/model-card.md",
         "src/index.ts",
     ]
-    _write_json(fixture / "tree.json", {"tree": [{"path": path, "type": "blob"} for path in paths]})
+    _write_json(fixture / "tree.json", {"truncated": False, "tree": [{"path": path, "type": "blob"} for path in paths]})
     (fixture / "files" / ".github").mkdir(parents=True)
     (fixture / "files" / ".github" / "CODEOWNERS").write_text("* @acme/security\n", encoding="utf-8")
     (fixture / "files" / "SECURITY.md").write_text("Report issues. token=super-secret-value\n", encoding="utf-8")
@@ -87,8 +89,8 @@ def test_audit_public_repo_redacts_secret_like_sample_text(tmp_path: Path) -> No
         collected_at=datetime(2026, 5, 24, 12, 0, tzinfo=UTC),
     )
     policy = next(row for row in rows if row["event_type"] == "repository.security_policy")
-    assert "super-secret-value" not in policy["attributes"]["sample_excerpt"]
-    assert "[redacted]" in policy["attributes"]["sample_excerpt"]
+    assert "super-secret-value" not in json.dumps(rows)
+    assert policy["attributes"]["sample_excerpt"] is None
 
 
 def test_audit_public_repo_event_ids_are_stable(tmp_path: Path) -> None:
@@ -108,3 +110,56 @@ def test_repo_audit_cli_writes_jsonl(tmp_path: Path, capsys) -> None:  # type: i
     assert out.is_file()
     rows = read_jsonl(out)
     assert validate_raw_events(rows) == []
+
+
+def test_truncated_tree_preserves_existing_evidence(tmp_path):
+    fixture = _fixture(tmp_path)
+    out = tmp_path / "retained.jsonl"
+    audit_public_repo("acme/agent-api", fixture_dir=fixture, out=out)
+    before = out.read_bytes()
+    tree = json.loads((fixture / "tree.json").read_text())
+    tree["truncated"] = True
+    _write_json(fixture / "tree.json", tree)
+    with pytest.raises(ValueError, match="incomplete"):
+        audit_public_repo("acme/agent-api", fixture_dir=fixture, out=out)
+    assert out.read_bytes() == before
+
+
+def test_source_text_is_not_retained_in_repository_evidence(tmp_path):
+    fixture = _fixture(tmp_path)
+    marker = "synthetic-sensitive-marker"
+    (fixture / "files" / "SECURITY.md").write_text(json.dumps({"api_key": marker}))
+    rows = audit_public_repo("acme/agent-api", fixture_dir=fixture)
+    assert marker not in json.dumps(rows)
+    policy = next(row for row in rows if row["event_type"] == "repository.security_policy")
+    assert policy["attributes"]["sample_excerpt"] is None
+    assert len(policy["attributes"]["sample_sha256"]) == 64
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"tree": []},
+        {"truncated": "false", "tree": []},
+        {"truncated": False},
+        {"truncated": False, "tree": {}},
+        {"truncated": False, "tree": [None]},
+        {"truncated": False, "tree": [{"type": "blob", "path": None}]},
+    ],
+)
+def test_unknown_or_malformed_tree_does_not_publish(tmp_path, payload):
+    fixture = _fixture(tmp_path)
+    _write_json(fixture / "tree.json", payload)
+    out = tmp_path / "evidence.jsonl"
+    with pytest.raises(ValueError, match="repository tree"):
+        audit_public_repo("acme/agent-api", fixture_dir=fixture, out=out)
+    assert not out.exists()
+
+
+def test_explicitly_complete_empty_tree_is_valid(tmp_path):
+    fixture = _fixture(tmp_path)
+    _write_json(fixture / "tree.json", {"truncated": False, "tree": []})
+    rows = audit_public_repo("acme/agent-api", fixture_dir=fixture)
+    graph = next(row for row in rows if row["event_type"] == "repository.code_graph")
+    assert graph["attributes"]["counts"]["files"] == 0
+    assert all(not row["controls"] for row in rows)

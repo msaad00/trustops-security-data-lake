@@ -1,14 +1,15 @@
-"""Release 0.2.9 must present one version across every shipped surface."""
+"""Release 0.2.10 must present one version across every shipped surface."""
 
 from __future__ import annotations
 
+import json
 import re
 import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-RELEASE_VERSION = "0.2.9"
-RELEASE_DATE = "2026-09-13"
+RELEASE_VERSION = "0.2.10"
+RELEASE_DATE = "2026-09-14"
 
 
 def test_release_version_is_consistent_across_package_chart_and_console() -> None:
@@ -17,6 +18,9 @@ def test_release_version_is_consistent_across_package_chart_and_console() -> Non
     brand = (ROOT / "app" / "web" / "src" / "lib" / "brand.ts").read_text(encoding="utf-8")
     changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
 
+    package = json.loads((ROOT / "app/web/package.json").read_text())
+    lock = json.loads((ROOT / "app/web/package-lock.json").read_text())
+    assert package["version"] == lock["version"] == lock["packages"][""]["version"] == RELEASE_VERSION
     assert pyproject["project"]["version"] == RELEASE_VERSION
     assert pyproject["tool"]["commitizen"]["version"] == RELEASE_VERSION
     assert re.search(rf"^version: {re.escape(RELEASE_VERSION)}$", chart, re.MULTILINE)
