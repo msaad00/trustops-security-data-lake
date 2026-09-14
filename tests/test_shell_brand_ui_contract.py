@@ -8,12 +8,12 @@ SIDEBAR = ROOT / "app/web/src/components/shell/Sidebar.tsx"
 TOPBAR = ROOT / "app/web/src/components/shell/TopBar.tsx"
 
 
-def test_shell_trustops_mark_is_prominent() -> None:
+def test_shell_trustops_mark_fits_sidebar_and_compact_header() -> None:
     sidebar = SIDEBAR.read_text(encoding="utf-8")
     topbar = TOPBAR.read_text(encoding="utf-8")
 
     assert 'markSize="lg"' in sidebar
-    assert 'markSize="xl"' in topbar
+    assert 'markSize="md"' in topbar
 
 
 def test_shell_uses_document_scroll_not_fixed_canvas() -> None:

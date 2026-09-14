@@ -48,7 +48,7 @@ export function NotificationBell() {
         <button
           type="button"
           aria-label="Notifications"
-          className="relative inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#27364a] bg-[#101926] text-[#d9e4f2] hover:bg-[#152030]"
+          className="relative inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-300 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
         >
           <Bell className="h-4 w-4" />
           {unread > 0 && (

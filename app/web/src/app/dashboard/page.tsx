@@ -11,7 +11,7 @@ import {
 } from "@/lib/api/hooks";
 import { DashboardPanel } from "@/components/dashboard/DashboardPanel";
 import { DashboardStripsRow } from "@/components/dashboard/DashboardStripsRow";
-import { PostureRing } from "@/components/dashboard/PostureRing";
+import { AssessmentOverview } from "@/components/dashboard/AssessmentOverview";
 import { ComplianceOverview } from "@/components/dashboard/ComplianceOverview";
 import { ControlFamilies } from "@/components/dashboard/ControlFamilies";
 import { ReadinessGrid } from "@/components/dashboard/ReadinessGrid";
@@ -29,27 +29,6 @@ import { CollapsibleCard } from "@/components/ui/collapsible-card";
 import { QueryState } from "@/components/QueryState";
 import { shortDate } from "@/lib/utils";
 
-function stateHeadline(state?: string) {
-  if (state === "ready") return "Ready for review";
-  if (state === "critical") return "Critical findings open";
-  return "Review required";
-}
-
-function stateCopy(state?: string) {
-  if (state === "ready") {
-    return "Review the evidence and scope before sharing.";
-  }
-  if (state === "critical") {
-    return "Assign owners to critical findings and refresh stale evidence.";
-  }
-  return "Review open findings and stale evidence.";
-}
-
-function formatPassRate(rate: number | null | undefined) {
-  if (rate == null) return "—";
-  return `${Math.round(rate * 100)}%`;
-}
-
 export default function DashboardPage() {
   const posture = usePosture();
   const tests = useControlTests();
@@ -61,10 +40,7 @@ export default function DashboardPage() {
   const frameworks = data?.frameworks ?? [];
   const registeredCount =
     registeredFrameworks.data?.length ?? frameworks.length;
-  const evidenceCount = ingestion.data?.summary.evidence_count ?? 0;
   const proofReady = Boolean(ingestion.data?.proof?.proof_pack_exists);
-  const controlEvalReady = Boolean(ingestion.data?.eval_accuracy?.has_tests);
-  const passRate = ingestion.data?.eval_accuracy?.pass_rate;
   const ingestionNeedsAttention =
     ingestion.data?.state !== "active" ||
     Boolean(ingestion.data?.recommended_actions?.length) ||
@@ -98,76 +74,11 @@ export default function DashboardPage() {
       </div>
 
       <QueryState queries={[posture, ingestion]} label="overview">
-        <Card
-          role="region"
-          aria-label="Current assessment"
-          className="overflow-hidden border-slate-700 shadow-card"
-          style={{
-            background:
-              "radial-gradient(ellipse at top right, #124753 0%, transparent 65%), linear-gradient(120deg, #0b1728, #101f34)",
-            color: "#fff",
-          }}
-        >
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-5 py-3">
-            <span className="text-xs font-semibold uppercase tracking-[0.15em] text-cyan-200">
-              Current assessment
-            </span>
-            <span className="text-xs text-slate-300">
-              {frameworks.length}/{registeredCount} frameworks assessed
-            </span>
-          </div>
-          <div className="grid gap-5 p-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:items-center">
-            <div className="flex min-w-0 items-center gap-4">
-              <div className="shrink-0">
-                <PostureRing
-                  score={p?.score ?? 0}
-                  state={p?.state ?? "attention_required"}
-                  size="compact"
-                  dark
-                />
-              </div>
-              <div className="min-w-0">
-                <h2 className="mt-1 text-xl font-semibold text-white">
-                  {stateHeadline(p?.state)}
-                </h2>
-                <p className="mt-2 text-sm text-slate-300">
-                  {stateCopy(p?.state)}
-                </p>
-              </div>
-            </div>
-            <dl className="grid grid-cols-3 divide-x divide-white/15 border-t border-white/15 pt-4 lg:border-t-0 lg:pt-0">
-              <div className="px-3">
-                <dt className="text-xs text-slate-300">Control pass rate</dt>
-                <dd className="mt-1 text-2xl font-semibold tabular-nums text-white">
-                  {formatPassRate(passRate)}
-                </dd>
-                <p className="mt-1 text-xs text-slate-300">
-                  {controlEvalReady
-                    ? `${ingestion.data?.eval_accuracy?.failing ?? 0} failing tests`
-                    : "Not evaluated"}
-                </p>
-              </div>
-              <div className="px-3">
-                <dt className="text-xs text-slate-300">Open findings</dt>
-                <dd className="mt-1 text-2xl font-semibold tabular-nums text-white">
-                  {p?.open_violation_count ?? 0}
-                </dd>
-                <p className="mt-1 text-xs text-slate-300">
-                  {p?.critical_violation_count ?? 0} critical
-                </p>
-              </div>
-              <div className="px-3">
-                <dt className="text-xs text-slate-300">Assessment export</dt>
-                <dd className="mt-1 text-2xl font-semibold text-white">
-                  {proofReady ? "Available" : "Pending"}
-                </dd>
-                <p className="mt-1 text-xs text-slate-300">
-                  {evidenceCount} evidence rows
-                </p>
-              </div>
-            </dl>
-          </div>
-        </Card>
+        <AssessmentOverview
+          assessment={data}
+          ingestion={ingestion.data}
+          frameworkCount={registeredCount}
+        />
 
         <div className="grid min-w-0 items-start gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
           <DashboardPanel

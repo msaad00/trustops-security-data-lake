@@ -2,9 +2,7 @@
 
 import { useEffect } from "react";
 import { Camera, RefreshCw, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { TrustOpsLogo } from "@/components/brand/TrustOpsLogo";
-import { BRAND } from "@/lib/brand";
 import { NotificationBell } from "./NotificationBell";
 import { UserMenu } from "./UserMenu";
 import { useHealth } from "@/lib/api/hooks";
@@ -16,8 +14,8 @@ interface Props {
 }
 
 export function TopBar({ onRefresh, onSnapshot, onOpenPalette }: Props) {
-  const { data } = useHealth();
-  const live = data?.ok ?? null;
+  const { data, isError } = useHealth();
+  const live = isError ? false : (data?.ok ?? null);
 
   // cmd/ctrl + K opens the palette anywhere in the app.
   useEffect(() => {
@@ -33,15 +31,17 @@ export function TopBar({ onRefresh, onSnapshot, onOpenPalette }: Props) {
     return () => window.removeEventListener("keydown", handler);
   }, [onOpenPalette]);
 
+  const actionClass =
+    "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-300 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300";
+
   return (
-    <header className="sticky top-0 z-40 flex h-[52px] min-w-0 items-center justify-between gap-1.5 overflow-hidden border-b border-white/10 bg-rail/95 px-2 text-slate-100 shadow-[0_8px_30px_rgba(2,6,23,0.18)] backdrop-blur-xl md:px-3">
+    <header className="sticky top-0 z-40 flex h-14 min-w-0 items-center gap-3 border-b border-white/10 bg-rail px-3 text-slate-100 sm:gap-5 sm:px-5">
       <TrustOpsLogo
         href="/dashboard"
         inverted
-        markSize="xl"
+        markSize="md"
         showWordmark
-        subtitle={BRAND.consoleSubtitle}
-        wordmarkClassName="hidden xl:block"
+        wordmarkClassName="hidden lg:block"
         className="flex-none"
         gradientId="trustops-topbar-gradient"
       />
@@ -49,57 +49,53 @@ export function TopBar({ onRefresh, onSnapshot, onOpenPalette }: Props) {
         type="button"
         onClick={onOpenPalette}
         aria-label="Open command palette"
-        className="group flex h-9 w-9 flex-none items-center justify-center rounded-lg border border-[#27364a] bg-[#101926] text-left text-sm text-[#7d8ca3] hover:border-[#3b4d68] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-rail md:min-w-[150px] md:flex-1 md:justify-start md:gap-2.5 md:pl-3 md:pr-2 xl:max-w-[440px] 2xl:max-w-[520px]"
+        className="flex h-8 min-w-0 flex-1 items-center gap-2 rounded-md border border-white/10 bg-white/[0.04] px-2.5 text-left text-xs text-slate-400 transition-colors hover:border-slate-500 hover:bg-white/[0.07] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 lg:max-w-[480px]"
       >
-        <Search className="h-4 w-4 text-[#5b6a7e]" />
-        <span className="hidden flex-1 truncate md:block">
-          Search controls, evidence, owners, assets, workflows…
+        <Search aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
+        <span className="truncate sm:hidden">Search…</span>
+        <span className="hidden flex-1 truncate sm:block">
+          Search controls, assets, evidence…
         </span>
-        <kbd className="hidden rounded border border-[#27364a] bg-[#0b1118] px-1.5 py-0.5 text-[10px] font-bold text-[#9aa9bc] xl:block">
-          ⌘K
+        <kbd className="ml-auto hidden rounded border border-white/15 px-1 py-0.5 text-[10px] leading-none text-slate-400 md:block">
+          ⌘ K
         </kbd>
       </button>
-      <div className="flex min-w-0 flex-none items-center gap-1.5">
-        <div className="hidden md:block">
-          <UserMenu />
-        </div>
-        <span
-          className={[
-            "hidden h-9 items-center gap-2 rounded-lg border px-2.5 text-sm font-extrabold 2xl:inline-flex",
-            live
-              ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-              : "border-amber-300 bg-amber-50 text-amber-700",
-          ].join(" ")}
-        >
+      <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
+        <span className="mr-2 hidden items-center gap-1.5 text-[11px] text-slate-400 xl:inline-flex">
           <span
-            className={[
-              "h-2.5 w-2.5 rounded-full",
-              live ? "bg-emerald-500" : "bg-amber-500",
-            ].join(" ")}
+            className={`h-1.5 w-1.5 rounded-full ${live ? "bg-emerald-400" : "bg-amber-400"}`}
           />
-          {live === null ? "API checking" : live ? "API live" : "static mode"}
+          {live === null
+            ? "Connecting"
+            : live
+              ? "API connected"
+              : "API unavailable"}
         </span>
-        <div className="hidden lg:block">
-          <NotificationBell />
-        </div>
-        <Button
-          variant="default"
-          size="sm"
+        <button
+          type="button"
           onClick={onRefresh}
           aria-label="Refresh data"
+          title="Refresh data"
+          className={actionClass}
         >
-          <RefreshCw className="h-4 w-4" />
-          <span className="hidden 2xl:inline">Refresh</span>
-        </Button>
-        <Button
-          variant="primary"
-          size="sm"
+          <RefreshCw aria-hidden="true" className="h-4 w-4" />
+        </button>
+        <div className="hidden sm:block">
+          <NotificationBell />
+        </div>
+        <button
+          type="button"
           onClick={onSnapshot}
           aria-label="Capture snapshot"
+          title="Capture snapshot"
+          className="inline-flex h-8 shrink-0 items-center justify-center gap-2 rounded-md border border-cyan-300/25 bg-cyan-300/10 px-2 text-xs font-medium text-cyan-100 transition-colors hover:bg-cyan-300/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 sm:px-3"
         >
-          <Camera className="h-4 w-4" />
-          <span className="hidden 2xl:inline">Snapshot</span>
-        </Button>
+          <Camera aria-hidden="true" className="h-4 w-4" />
+          <span className="hidden md:inline">Snapshot</span>
+        </button>
+        <div className="ml-1 border-l border-white/10 pl-2 sm:ml-2 sm:pl-3">
+          <UserMenu compact />
+        </div>
       </div>
     </header>
   );

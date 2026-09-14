@@ -217,7 +217,7 @@ async function mutate<T>(
 }
 
 export const api = {
-  health: () => get<Health>("/v1/healthz"),
+  health: () => get<{ data: Health }>("/v1/healthz").then((body) => body.data),
   authMethods: () =>
     get<{ data: AuthMethods }>("/v1/auth/methods").then((body) => body.data),
   authWhoami: () =>

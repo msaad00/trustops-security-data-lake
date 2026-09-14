@@ -20,7 +20,7 @@ import { useAuditorMode } from "@/lib/state/auditor";
 import { useTheme, type ThemeMode } from "@/components/theme/ThemeProvider";
 import { workspaceIdentity } from "@/lib/workspace";
 
-export function UserMenu() {
+export function UserMenu({ compact = false }: { compact?: boolean }) {
   const router = useRouter();
   const auditor = useAuditorMode();
   const whoami = useAuthWhoami();
@@ -51,15 +51,19 @@ export function UserMenu() {
         <button
           type="button"
           aria-label={`${sessionLabel} — account menu`}
-          className="inline-flex items-center gap-2 rounded-lg border border-[#27364a] bg-[#101926] px-3 py-2 text-sm font-extrabold text-[#d9e4f2] hover:bg-[#152030] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-rail"
+          className={`${compact ? "h-8 w-8 justify-center !border-transparent !bg-transparent !p-0" : ""} inline-flex items-center gap-2 rounded-lg border border-[#27364a] bg-[#101926] px-3 py-2 text-sm font-extrabold text-[#d9e4f2] hover:bg-[#152030] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-rail`}
         >
           <span className="grid h-6 w-6 place-items-center rounded-full bg-gradient-to-br from-brand to-brand-cyan text-[11px] text-white">
             {avatar}
           </span>
-          <span className="hidden max-w-[190px] truncate 2xl:inline">
+          <span
+            className={
+              compact ? "sr-only" : "hidden max-w-[190px] truncate 2xl:inline"
+            }
+          >
             {sessionLabel}
           </span>
-          <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+          {!compact && <ChevronDown className="h-3.5 w-3.5 opacity-60" />}
         </button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>

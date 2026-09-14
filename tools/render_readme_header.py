@@ -162,10 +162,39 @@ def render_open_graph() -> str:
     return _render_brand_template("open-graph")
 
 
+def update_readme_summary() -> None:
+    safeguards = json.loads((ROOT / "controls" / "safeguards.json").read_text())["safeguards"]
+    mapped = {item["control_id"] for safeguard in safeguards for item in safeguard["satisfies"]}
+    reviewed = {
+        item["control_id"]
+        for safeguard in safeguards
+        for item in safeguard["satisfies"]
+        if item["review_status"] == "reviewed"
+    }
+    safeguard_count, requirement_count, framework_count = _coverage_summary()
+    domains = len({safeguard["risk_domain"] for safeguard in safeguards})
+    summary = (
+        f"**{framework_count} framework packs · {safeguard_count} reusable safeguards · "
+        f"{domains} control families · {requirement_count} catalogued requirements.**\n\n"
+        f"{len(mapped)} requirements have safeguard mappings; **{len(reviewed)} have reviewed mappings**. "
+        "Catalog coverage and evaluated customer posture are separate measures."
+    )
+    readme = ROOT / "README.md"
+    text = readme.read_text(encoding="utf-8")
+    text = re.sub(
+        r"<!-- BEGIN README CCF SUMMARY -->.*?<!-- END README CCF SUMMARY -->",
+        f"<!-- BEGIN README CCF SUMMARY -->\n\n{summary}\n<!-- END README CCF SUMMARY -->",
+        text,
+        flags=re.DOTALL,
+    )
+    readme.write_text(text, encoding="utf-8")
+
+
 def main() -> int:
     HERO_OUTPUT.write_text(render_social_preview(), encoding="utf-8")
     LOGO_OUTPUT.write_text(render_logo(), encoding="utf-8")
     OG_OUTPUT.write_text(render_open_graph(), encoding="utf-8")
+    update_readme_summary()
     print(f"wrote {HERO_OUTPUT.relative_to(ROOT)}")
     print(f"wrote {LOGO_OUTPUT.relative_to(ROOT)}")
     print(f"wrote {OG_OUTPUT.relative_to(ROOT)}")

@@ -4,6 +4,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parents[1]
 DASHBOARD = ROOT / "app/web/src/app/dashboard/page.tsx"
+ASSESSMENT = ROOT / "app/web/src/components/dashboard/AssessmentOverview.tsx"
 READINESS = ROOT / "app/web/src/components/dashboard/ReadinessGrid.tsx"
 SIGNAL_FLOW = ROOT / "app/web/src/components/dashboard/TrustSignalFlow.tsx"
 NEXT_CONFIG = ROOT / "app/web/next.config.ts"
@@ -11,15 +12,18 @@ NEXT_CONFIG = ROOT / "app/web/next.config.ts"
 
 def test_dashboard_overview_is_source_aligned_and_tabbed() -> None:
     dashboard = DASHBOARD.read_text(encoding="utf-8")
+    assessment = ASSESSMENT.read_text(encoding="utf-8")
 
     assert 'title="Compliance"' in dashboard
     assert 'title="Operations"' in dashboard
     for label in ("Frameworks", "Control families", "Test results", "Findings", "Sources", "Exports"):
         assert f'label: "{label}"' in dashboard
-    assert "Current assessment" in dashboard
-    assert "Control pass rate" in dashboard
-    assert "Open findings" in dashboard
-    assert "Assessment export" in dashboard
+    assert "assessment={data}" in dashboard
+    assert "ingestion={ingestion.data}" in dashboard
+    assert "Current assessment" in assessment
+    assert "Control pass rate" in assessment
+    assert "Open findings" in assessment
+    assert "Assessment export" in assessment
     assert "Evidence loop" not in dashboard
 
 
@@ -42,7 +46,7 @@ def test_dashboard_framework_posture_uses_compact_two_row_tray() -> None:
 def test_dashboard_compacts_the_score_ring_and_passes_the_framework_catalog() -> None:
     dashboard = DASHBOARD.read_text(encoding="utf-8")
 
-    assert 'size="compact"' in dashboard
+    assert 'size="compact"' in ASSESSMENT.read_text(encoding="utf-8")
     assert "catalog={registeredFrameworks.data ?? []}" in dashboard
 
 
