@@ -109,6 +109,19 @@ test("overview leads with overall posture and distinguishes score from test pass
       { exact: true },
     ),
   ).toBeVisible();
+  const accuracy = ingestion.eval_accuracy;
+  const other = Math.max(
+    0,
+    accuracy.total_tests -
+      accuracy.passing -
+      accuracy.failing -
+      accuracy.warning,
+  );
+  await expect(
+    overview
+      .getByRole("link", { name: /Control pass rate/ })
+      .getByText(`${other} Other`, { exact: true }),
+  ).toBeVisible();
 });
 
 test("unevaluated controls do not appear as a zero-percent result", async ({
@@ -136,4 +149,36 @@ test("unevaluated controls do not appear as a zero-percent result", async ({
   ).toBeVisible();
   await expect(passRate.getByRole("progressbar")).toHaveCount(0);
   await expect(passRate.getByText("0%", { exact: true })).toHaveCount(0);
+});
+
+test("overview shows actual finding severity and stays compact at tablet width", async ({
+  page,
+}) => {
+  const response = await page.request.get("/api/v1/posture/current");
+  const { data: assessment } = await response.json();
+  const {
+    open_violation_count: total,
+    critical_violation_count: critical,
+    high_violation_count: high,
+  } = assessment.posture;
+  await page.setViewportSize({ width: 720, height: 900 });
+  await page.goto("/console/dashboard/");
+  const overview = page.getByRole("region", {
+    name: "Current assessment",
+    exact: true,
+  });
+  await expect(
+    overview.getByRole("img", {
+      name: `Finding severity: ${critical} critical, ${high} high, ${Math.max(0, total - critical - high)} other`,
+      exact: true,
+    }),
+  ).toBeVisible();
+  const bounds = await overview.boundingBox();
+  expect(bounds).not.toBeNull();
+  expect(bounds!.height).toBeLessThan(450);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
 });
