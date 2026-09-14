@@ -22,8 +22,17 @@ The public path collects only signals GitHub exposes without credentials:
 | code graph           | repository, top-level directories, languages, and evidence-signal graph                     |
 
 Each record includes a stable `event_id`, `evidence_id`, `evidence_ref`,
-`evidence_collected_at`, and SHA-256 hash. File excerpts are short and
-secret-like values are redacted before they are written.
+`evidence_collected_at`, and SHA-256 hash. Source text is read transiently for
+sample hashing but is not retained in audit events; `sample_excerpt` is always
+null. Sample hashes describe sampled text, not necessarily an entire file.
+Previously collected events are not rewritten; regenerate older audit exports
+if they contain source-text excerpts.
+
+The tree response must explicitly report `truncated: false` and contain a valid
+entry list. Truncated, unknown-completeness, or malformed trees fail before the
+output is replaced. Large repositories beyond the recursive API limit need a
+scoped collector; subtree traversal is not implemented in this command. See
+[GitHub tree response limits](https://docs.github.com/en/rest/git/trees#get-a-tree).
 
 ## Public Limits
 

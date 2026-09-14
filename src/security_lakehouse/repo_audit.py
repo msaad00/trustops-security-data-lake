@@ -241,7 +241,10 @@ def _build_events(
                     "paths": signal_paths[:INTERESTING_FILE_LIMIT],
                     "path_count": len(signal_paths),
                     "sample_sha256": _sha(sample_text) if sample_text else None,
-                    "sample_excerpt": _redacted_excerpt(sample_text) if sample_text else None,
+                    # Arbitrary source text can contain credentials that pattern
+                    # redaction misses. Keep the field for compatibility, but
+                    # persist only its sample hash, never the source excerpt.
+                    "sample_excerpt": None,
                 },
             )
         )
@@ -292,7 +295,17 @@ def _default_branch(repo: dict[str, Any]) -> str:
 
 
 def _tree_paths(tree_payload: dict[str, Any]) -> list[str]:
-    tree = tree_payload.get("tree") or []
+    if tree_payload.get("truncated") is not False:
+        raise ValueError("repository tree is incomplete or completeness is unknown; retained evidence was not replaced")
+    tree = tree_payload.get("tree")
+    if not isinstance(tree, list) or any(
+        not isinstance(item, dict)
+        or item.get("type") not in {"blob", "tree", "commit"}
+        or not isinstance(item.get("path"), str)
+        or not item["path"]
+        for item in tree
+    ):
+        raise ValueError("repository tree is malformed; retained evidence was not replaced")
     return sorted(
         str(item.get("path"))
         for item in tree
@@ -382,11 +395,6 @@ def _sample_file_text(client: PublicGitHubClient | FixtureRepoClient, branch: st
         if text:
             return text
     return None
-
-
-def _redacted_excerpt(text: str) -> str:
-    scrubbed = re.sub(r"(?i)(token|secret|password|apikey|api_key)\s*[:=]\s*\S+", r"\1=[redacted]", text)
-    return scrubbed.strip()[:500]
 
 
 def _sha(value: object) -> str:

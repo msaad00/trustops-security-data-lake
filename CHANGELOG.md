@@ -3,7 +3,12 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
-## Unreleased
+## 0.2.10 - 2026-09-14
+
+- Reject truncated, unknown-completeness, and malformed public repository trees
+  before replacing collected evidence.
+- Stop saving source-text excerpts in public repository audit events. Keep paths
+  and sample hashes; existing collected evidence is not rewritten.
 
 - Stream artifact SHA-256 checks through a reusable 1 MiB buffer during evidence
   integrity creation/verification, generation sealing/verification, and Parquet
