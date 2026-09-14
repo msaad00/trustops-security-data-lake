@@ -243,7 +243,7 @@ export default function GraphPage() {
     setFilterStaleOnly(false);
     setLayout(graphMode === "compliance" ? "TB" : "LR");
     clearPath();
-  }, [graphMode]);
+  }, [graphMode, activeKinds]);
 
   const data = graph.data;
   const counts = useMemo(

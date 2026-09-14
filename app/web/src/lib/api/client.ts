@@ -99,6 +99,8 @@ function redirectToLogin(): void {
   const pathname = window.location.pathname.replace(/\/$/, "");
   if (pathname === LOGIN_PATH) return;
   const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  // Authentication loss must discard cached data from the previous session.
+  // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- Full document reload is intentional at the auth boundary.
   window.location.assign(
     `${LOGIN_PATH}?return_to=${encodeURIComponent(returnTo)}`,
   );

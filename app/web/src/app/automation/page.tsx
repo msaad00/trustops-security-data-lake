@@ -324,6 +324,8 @@ export default function AutomationPage() {
   const catalog = useActionCatalog();
   const save = useSaveWorkflow();
   const run = useRunWorkflow();
+  const saveWorkflow = save.mutateAsync;
+  const runWorkflow = run.mutateAsync;
   const retryRun = useRetryWorkflowRun();
   const approveRun = useApproveWorkflowRun();
   const rejectRun = useRejectWorkflowRun();
@@ -453,67 +455,71 @@ export default function AutomationPage() {
     flash("Starter workflow opened.");
   };
 
-  const saveCurrentWorkflow = async ({
-    announce,
-  }: {
-    announce: boolean;
-  }): Promise<string | null> => {
-    if (!editor.name.trim()) {
-      flash("Workflow needs a name");
-      return null;
-    }
-    if (editor.nodes.length === 0) {
-      flash("Add at least one node before saving");
-      return null;
-    }
-    try {
-      const { workflow } = await save.mutateAsync({
-        workflow_id: editor.workflow_id ?? undefined,
-        name: editor.name.trim(),
-        description: editor.description.trim(),
-        nodes: toApiNodes(editor.nodes),
-        edges: toApiEdges(editor.edges),
-      });
-      setEditor((current) => ({
-        ...current,
-        workflow_id: workflow.workflow_id,
-        name: workflow.name,
-        description: workflow.description,
-      }));
-      setActiveId(workflow.workflow_id);
-      if (announce) {
-        flash(`Saved ${workflow.name} v${workflow.version}.`);
+  const saveCurrentWorkflow = useCallback(
+    async ({ announce }: { announce: boolean }): Promise<string | null> => {
+      if (!editor.name.trim()) {
+        flash("Workflow needs a name");
+        return null;
       }
-      return workflow.workflow_id;
-    } catch (err) {
-      flash(`Save failed: ${(err as Error).message}`);
-      return null;
-    }
-  };
+      if (editor.nodes.length === 0) {
+        flash("Add at least one node before saving");
+        return null;
+      }
+      try {
+        const { workflow } = await saveWorkflow({
+          workflow_id: editor.workflow_id ?? undefined,
+          name: editor.name.trim(),
+          description: editor.description.trim(),
+          nodes: toApiNodes(editor.nodes),
+          edges: toApiEdges(editor.edges),
+        });
+        setEditor((current) => ({
+          ...current,
+          workflow_id: workflow.workflow_id,
+          name: workflow.name,
+          description: workflow.description,
+        }));
+        setActiveId(workflow.workflow_id);
+        if (announce) {
+          flash(`Saved ${workflow.name} v${workflow.version}.`);
+        }
+        return workflow.workflow_id;
+      } catch (err) {
+        flash(`Save failed: ${(err as Error).message}`);
+        return null;
+      }
+    },
+    [editor, flash, saveWorkflow],
+  );
 
-  const persist = async () => {
+  const persist = useCallback(async () => {
     await saveCurrentWorkflow({ announce: true });
-  };
+  }, [saveCurrentWorkflow]);
 
-  const execute = async (dryRun = false) => {
-    const workflowId =
-      editor.workflow_id ?? (await saveCurrentWorkflow({ announce: false }));
-    if (!workflowId) {
-      return;
-    }
-    try {
-      const { run: result } = await run.mutateAsync({
-        id: workflowId,
-        dry_run: dryRun,
-      });
-      setLastRun(result);
-      flash(
-        `${dryRun ? "Preview" : "Run"} ${result.result.toUpperCase()} — ${result.node_results.length} nodes executed.`,
-      );
-    } catch (err) {
-      flash(`${dryRun ? "Preview" : "Run"} failed: ${(err as Error).message}`);
-    }
-  };
+  const execute = useCallback(
+    async (dryRun = false) => {
+      const workflowId =
+        editor.workflow_id ?? (await saveCurrentWorkflow({ announce: false }));
+      if (!workflowId) {
+        return;
+      }
+      try {
+        const { run: result } = await runWorkflow({
+          id: workflowId,
+          dry_run: dryRun,
+        });
+        setLastRun(result);
+        flash(
+          `${dryRun ? "Preview" : "Run"} ${result.result.toUpperCase()} — ${result.node_results.length} nodes executed.`,
+        );
+      } catch (err) {
+        flash(
+          `${dryRun ? "Preview" : "Run"} failed: ${(err as Error).message}`,
+        );
+      }
+    },
+    [editor.workflow_id, flash, runWorkflow, saveCurrentWorkflow],
+  );
 
   const selected = nodesWithRunState.find((n) => n.id === selectedNode) ?? null;
   const selectedSpec = selected

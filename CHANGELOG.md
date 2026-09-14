@@ -3,6 +3,14 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
+## Unreleased
+
+- Refresh selected workflow-node parameters when the loaded workflow changes,
+  and clear test results associated with the previous parameters.
+- Replace an accepted invite's URL with sign-in so Back does not reopen the
+  consumed invite link. Preserve full session-cache reset on authentication loss.
+- Stabilize console effect dependencies and workflow keyboard handlers.
+
 ## 0.2.10 - 2026-09-14
 
 - Reject truncated, unknown-completeness, and malformed public repository trees
