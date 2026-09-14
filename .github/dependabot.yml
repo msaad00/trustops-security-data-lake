@@ -1,5 +1,10 @@
-# Weekly bumps so dependency security patches don't sit. Grouped where
-# the bumps tend to land together to keep PR noise down.
+# Group by ecosystem and upgrade risk, not vendor: related runtime, type, and
+# test packages share one lockfile and should be validated together.
+# One outstanding version PR per ecosystem. Minor/patch updates form a weekly
+# batch; eligible major upgrades remain individual reviews. An open major PR can
+# hold the next routine batch until it is resolved.
+# Security fixes use separate groups and are not delayed by the weekly schedule
+# or the version-PR limit. No automatic merging is configured.
 
 version: 2
 updates:
@@ -11,7 +16,7 @@ updates:
       day: "monday"
       time: "07:00"
       timezone: "UTC"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     labels:
       - "dependencies"
       - "python"
@@ -23,8 +28,13 @@ updates:
       - dependency-name: "mcp"
         update-types: ["version-update:semver-major"]
     groups:
-      python-minor:
+      python-weekly:
+        applies-to: version-updates
+        patterns: ["*"]
         update-types: ["minor", "patch"]
+      python-security:
+        applies-to: security-updates
+        patterns: ["*"]
 
   # React workbench (app/web/package.json + package-lock.json)
   - package-ecosystem: "npm"
@@ -34,17 +44,14 @@ updates:
       day: "monday"
       time: "07:15"
       timezone: "UTC"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     labels:
       - "dependencies"
       - "javascript"
     commit-message:
       prefix: "chore(deps)"
       include: "scope"
-    # Major-version bumps for these three are gated behind manual upgrade
-    # PRs: each ships breaking API changes (Tailwind 4 = CSS-driven
-    # theme rewrite, Next 16 = async dynamic APIs + Image/Link, Recharts
-    # 3 = renamed Tooltip/Tick props). Patch + minor still flow.
+    # These known migrations need explicit work before dependency upgrades.
     ignore:
       - dependency-name: "tailwindcss"
         update-types: ["version-update:semver-major"]
@@ -53,19 +60,13 @@ updates:
       - dependency-name: "recharts"
         update-types: ["version-update:semver-major"]
     groups:
-      react-flow:
-        patterns:
-          - "@xyflow/*"
-          - "@dagrejs/*"
-      radix:
-        patterns:
-          - "@radix-ui/*"
-      tanstack:
-        patterns:
-          - "@tanstack/*"
-      types:
-        patterns:
-          - "@types/*"
+      web-weekly:
+        applies-to: version-updates
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+      web-security:
+        applies-to: security-updates
+        patterns: ["*"]
 
   # GitHub Actions pinned versions
   - package-ecosystem: "github-actions"
@@ -75,13 +76,21 @@ updates:
       day: "monday"
       time: "07:30"
       timezone: "UTC"
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 1
     labels:
       - "dependencies"
       - "ci"
     commit-message:
       prefix: "chore(actions)"
       include: "scope"
+    groups:
+      actions-weekly:
+        applies-to: version-updates
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+      actions-security:
+        applies-to: security-updates
+        patterns: ["*"]
 
   # Container base images (Dockerfile)
   - package-ecosystem: "docker"
@@ -91,10 +100,18 @@ updates:
       day: "monday"
       time: "07:45"
       timezone: "UTC"
-    open-pull-requests-limit: 2
+    open-pull-requests-limit: 1
     labels:
       - "dependencies"
       - "docker"
     commit-message:
       prefix: "chore(docker)"
       include: "scope"
+    groups:
+      containers-weekly:
+        applies-to: version-updates
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+      containers-security:
+        applies-to: security-updates
+        patterns: ["*"]
