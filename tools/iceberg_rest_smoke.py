@@ -48,12 +48,18 @@ def run():
         warehouse = root / "warehouse"
         warehouse.mkdir(mode=0o777)
         warehouse.chmod(0o777)  # Synthetic shared FILE warehouse for the container UID.
+        previous_umask = os.umask(0o002)
         try:
             docker(
                 "run",
                 "-d",
                 "--name",
                 name,
+                # Both processes write the synthetic FILE warehouse. Preserve
+                # the image's named user (required by Hadoop) and share the
+                # runner's group; the temporary umask makes directories writable.
+                "--group-add",
+                str(os.getgid()),
                 "-p",
                 "127.0.0.1::8181",
                 "-p",
@@ -82,6 +88,7 @@ def run():
                     if session.get(f"http://127.0.0.1:{health_port}/q/health", timeout=2).status_code == 200:
                         break
                 except requests.RequestException:
+                    # Connection refusal is expected while Polaris starts.
                     pass
                 time.sleep(0.5)
             else:
@@ -219,6 +226,7 @@ def run():
             )
             return report
         finally:
+            os.umask(previous_umask)
             os.environ.pop("TRUSTOPS_POLARIS_SMOKE_TOKEN", None)
             subprocess.run(["docker", "rm", "-f", name], capture_output=True, timeout=30)
             session.close()
@@ -229,5 +237,10 @@ if __name__ == "__main__":
         print(json.dumps(run(), indent=2, sort_keys=True))
     except Exception as error:
         # Do not emit arbitrary HTTP/provider errors, request bodies, or tokens.
-        print(json.dumps({"passed": False, "error_type": type(error).__name__}))
+        causes = []
+        cause = error
+        while cause is not None and len(causes) < 5:
+            causes.append(type(cause).__name__)
+            cause = cause.__cause__ or cause.__context__
+        print(json.dumps({"passed": False, "error_types": causes}))
         raise SystemExit(1) from None
