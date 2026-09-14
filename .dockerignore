@@ -20,8 +20,17 @@ build/dashboard/
 app/web/node_modules/
 app/web/.next/
 app/web/out/
+app/web/test-results/
+app/web/playwright-report/
 src/security_lakehouse/web/dist/*
 !src/security_lakehouse/web/dist/.gitkeep
+
+# Local credentials/configuration and browser traces are not build inputs.
+**/.env
+**/.env.*
+.aws/
+.azure/
+.config/gcloud/
 
 # Editor + scratch
 .idea/

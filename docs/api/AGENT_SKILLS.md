@@ -145,6 +145,15 @@ export — usually after explicit human or policy approval.
 
 **Scope:** `read` for list/export; `write` or `admin` for create/revoke.
 
+For portable normalized evidence, authorized local agents can use
+[`pipeline export-parquet`](../PARQUET_EXPORT.md) or
+[`pipeline publish-iceberg`](../ICEBERG_REST.md). These are CLI operations, not
+REST/MCP endpoints. Verify the tenant and generation, confirm authorization for
+the destination, and retain the export manifest or snapshot receipt. A row count
+or successful publication does not establish collection completeness or framework
+compliance. Supply catalog bearer tokens through a process environment supplied
+by the identity broker; do not put tokens in prompts, command arguments, or reports.
+
 **Example:**
 
 ```bash

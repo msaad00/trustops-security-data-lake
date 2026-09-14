@@ -83,13 +83,13 @@ warehouse execution or that local memory bottlenecks have been removed.
 
 ## 5. Security and interoperability
 
-| Area                       | Required evidence                                                                                                                                                                                           |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Tenant isolation           | Negative access tests across inventory, evidence, jobs, caches, exports, and every supported interface, including concurrent workloads.                                                                     |
-| Permissions and agents     | Least-privilege collection, role enforcement, approval boundaries, audit trails, and no unauthorized mutation from suggested remediation or untrusted evidence.                                             |
-| Data handling              | Secret redaction, configured egress behavior, retention/deletion behavior, and integrity checks under interrupted writes.                                                                                   |
-| Portability                | Read an exported artifact with an independent implementation; compare schema, types, row counts, stable identifiers, provenance, and representative values.                                                 |
-| Planned open-table adapter | Parquet export has fixture-based DuckDB parity tests. Iceberg snapshots, schema evolution through a REST catalog, Polaris compatibility, and interrupted catalog commits remain untested until implemented. |
+| Area                        | Required evidence                                                                                                                                                                                                                                                                    |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Tenant isolation            | Negative access tests across inventory, evidence, jobs, caches, exports, and every supported interface, including concurrent workloads.                                                                                                                                              |
+| Permissions and agents      | Least-privilege collection, role enforcement, approval boundaries, audit trails, and no unauthorized mutation from suggested remediation or untrusted evidence.                                                                                                                      |
+| Data handling               | Secret redaction, configured egress behavior, retention/deletion behavior, and integrity checks under interrupted writes.                                                                                                                                                            |
+| Portability                 | Read an exported artifact with an independent implementation; compare schema, types, row counts, stable identifiers, provenance, and representative values.                                                                                                                          |
+| Optional open-table adapter | [Parquet](PARQUET_EXPORT.md) has fixture-based DuckDB parity tests. [Iceberg REST](ICEBERG_REST.md) has local Polaris publication and DuckDB historical-read checks. Injected commit failures and concurrency are unit-tested. Cloud storage and production scale remain unverified. |
 
 Record the versions and commands of independent readers. Reading an export back
 through TrustOps alone is insufficient evidence of interoperability. A dependency

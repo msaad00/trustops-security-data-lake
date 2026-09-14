@@ -27,7 +27,7 @@ RUN npm run build
 FROM python:${PYTHON_VERSION}-slim AS py-build
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_NO_CACHE_DIR=1
 WORKDIR /src
-COPY pyproject.toml README.md ./
+COPY pyproject.toml uv.lock README.md ./
 COPY src/ ./src/
 COPY connectors/ ./connectors/
 COPY controls/ ./controls/
@@ -41,11 +41,15 @@ COPY agent-skills/ ./agent-skills/
 # package-data picks it up.
 COPY --from=web-build /src/security_lakehouse/web/dist/ ./src/security_lakehouse/web/dist/
 RUN python -m venv /opt/trustops-venv \
-  && /opt/trustops-venv/bin/pip install --upgrade pip \
+  && python -m pip install uv==0.10.9 \
+  && uv export --frozen --no-dev --no-emit-project --no-hashes \
+       --extra server --extra analytics --extra cloud --extra mcp --extra iceberg \
+       --output-file /tmp/trustops-constraints.txt \
   # The image binds 0.0.0.0, so it must be able to run the authenticated
   # server. Without the `server` extra the CMD below silently falls back to
   # local mode, which has no authentication at all.
-  && /opt/trustops-venv/bin/pip install ".[server,analytics,cloud,mcp]"
+  && uv pip install --python /opt/trustops-venv/bin/python \
+       --constraint /tmp/trustops-constraints.txt ".[server,analytics,cloud,mcp,iceberg]"
 
 # --- 3. Slim runtime ------------------------------------------------------
 FROM python:${PYTHON_VERSION}-slim AS runtime

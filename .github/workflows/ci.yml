@@ -171,6 +171,23 @@ jobs:
           TRUSTOPS_COOKIE_SIGNING_KEY: ci-test-cookie-signing-key
         run: uv run python -m pytest -q
 
+  iceberg-interop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+          enable-cache: true
+      - name: Install (frozen)
+        run: uv sync --frozen --all-extras
+      - name: Polaris REST and independent DuckDB snapshot verification
+        run: uv run python tools/iceberg_rest_smoke.py
+
   deploy-check:
     runs-on: ubuntu-latest
     steps:
