@@ -73,7 +73,7 @@ export function PostureRing({
           style={{ color: dark ? "#ffffff" : undefined }}
           className={
             isSummary
-              ? "text-[34px] font-semibold leading-none text-ink tabular-nums"
+              ? "text-[42px] font-semibold leading-none text-ink tabular-nums"
               : isCompact
                 ? "text-[22px] font-black leading-none text-ink"
                 : "text-[52px] font-black leading-none text-ink"
