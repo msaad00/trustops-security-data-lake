@@ -65,7 +65,10 @@ test.describe("console smoke", () => {
       exact: true,
     });
     await families.click();
-    const family = page.getByRole("main").locator("details").first();
+    const family = page
+      .getByRole("tabpanel", { name: "Control families" })
+      .locator("details")
+      .first();
     await family.locator("summary").click();
     await expect(family.getByRole("link").first()).toHaveAttribute(
       "href",

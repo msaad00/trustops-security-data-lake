@@ -39,6 +39,7 @@ export function DashboardPanel({
           <Tabs.Content
             key={label}
             value={label}
+            aria-label={label}
             className="min-w-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
           >
             {content}

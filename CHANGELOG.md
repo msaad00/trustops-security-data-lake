@@ -5,6 +5,10 @@ Python package, Helm chart, and bundled web console.
 
 ## Unreleased
 
+- Compact the app header and assessment overview, with direct workspace links,
+  expandable assessment details, and an account menu available on mobile.
+- Read the versioned health response correctly so a healthy API is not shown
+  as unavailable in the console header.
 - Refresh selected workflow-node parameters when the loaded workflow changes,
   and clear test results associated with the previous parameters.
 - Replace an accepted invite's URL with sign-in so Back does not reopen the

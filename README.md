@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/trustops-readme-banner.svg" alt="TrustOps — Collect. Evaluate. Resolve. Export." width="100%">
+  <img src="docs/images/trustops-capability-header.svg" alt="TrustOps — read-only cloud, identity, code and data sources; Common Control Framework and framework packs." width="100%">
 </p>
 
 <p align="center"><strong>Open, self-hosted GRC for cloud and AI.</strong></p>
@@ -14,6 +14,7 @@
 <p align="center">
   <a href="#quick-start">Quick start</a> ·
   <a href="#how-it-works">How it works</a> ·
+  <a href="#frameworks-and-common-controls">Frameworks & CCF</a> ·
   <a href="#explore">Explore</a> ·
   <a href="#develop-and-verify">Develop & verify</a>
 </p>
@@ -78,6 +79,62 @@ security-lakehouse fixtures load --company golden --out ./lake
 The [Common Control Framework](docs/COMMON_CONTROL_FRAMEWORK.md) reuses safeguards
 across framework mappings. A mapping does not itself establish compliance.
 Models may summarize or propose actions; deterministic rules decide control results.
+
+## Frameworks and common controls
+
+<!-- BEGIN README CCF SUMMARY -->
+
+**13 framework packs · 44 reusable safeguards · 15 control families · 942 catalogued requirements.**
+
+559 requirements have safeguard mappings; **45 have reviewed mappings**. Catalog coverage and evaluated customer posture are separate measures.
+<!-- END README CCF SUMMARY -->
+
+<table>
+<tr>
+<td align="center"><img src="app/web/public/frameworks/badges/soc2.svg" width="38" alt="SOC 2"><br><strong>SOC 2</strong></td>
+<td align="center"><img src="app/web/public/frameworks/badges/iso.svg" width="38" alt="ISO framework family"><br><strong>ISO 27001 · 27017 · 42001</strong></td>
+<td align="center"><img src="app/web/public/frameworks/badges/nist-csf.svg" width="38" alt="NIST CSF"><br><strong>NIST CSF 2.0</strong></td>
+<td align="center"><img src="app/web/public/frameworks/badges/nist-ai-rmf.svg" width="38" alt="NIST AI RMF"><br><strong>NIST AI RMF</strong></td>
+</tr>
+<tr>
+<td align="center"><img src="app/web/public/frameworks/badges/cis.svg" width="38" alt="CIS AWS"><br><strong>CIS AWS</strong></td>
+<td align="center"><img src="app/web/public/frameworks/badges/cmmc.svg" width="38" alt="CMMC"><br><strong>CMMC 2.0</strong></td>
+<td align="center"><img src="app/web/public/frameworks/badges/eu-ai-act.svg" width="38" alt="European framework family"><br><strong>EU AI Act · GDPR</strong></td>
+<td align="center"><strong>FedRAMP Moderate<br>HIPAA · PCI DSS</strong></td>
+</tr>
+</table>
+
+Framework identities show catalog scope. A pack may be a limited mapping;
+see the [coverage matrix](docs/FRAMEWORK_COVERAGE.md) for the exact boundary.
+**SOC 1 and ISO 27701 are planned**, with no catalogued controls yet.
+
+| CCF layer              | What it represents                                                                                           |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Control families**   | Risk domains that organize reusable safeguards.                                                              |
+| **Safeguards**         | Evidence requirements, ownership, review frequency, and executable evaluation rules.                         |
+| **Framework mappings** | Links from safeguards to individual framework requirements, with proposed and reviewed status kept separate. |
+| **Assessment results** | Pass, fail, stale, or not-evaluated outcomes from the collected evidence.                                    |
+
+<details>
+<summary><strong>Control families and evaluation details</strong></summary>
+
+Identity & access · data protection · detection · logging · change management ·
+availability · incident response · third-party risk · vulnerability management ·
+AI governance · risk management · privacy · governance · monitoring · control operations.
+
+One safeguard can serve several frameworks. Every required mapped safeguard must
+pass for a requirement to pass; an unmapped requirement remains unmapped.
+A reviewed mapping is not certification or proof that a customer's controls pass.
+
+[CCF design and safeguards](docs/COMMON_CONTROL_FRAMEWORK.md) ·
+[Coverage by framework](docs/FRAMEWORK_COVERAGE.md) ·
+[Executable catalog](controls/catalog.json)
+
+```bash
+security-lakehouse frameworks safeguards --format table
+```
+
+</details>
 
 ## Explore
 
