@@ -3,7 +3,7 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
-## Unreleased
+## 0.2.11 - 2026-09-14
 
 - Compact the app header and assessment overview, with direct workspace links,
   expandable assessment details, and an account menu available on mobile.
@@ -14,6 +14,13 @@ Python package, Helm chart, and bundled web console.
 - Replace an accepted invite's URL with sign-in so Back does not reopen the
   consumed invite link. Preserve full session-cache reset on authentication loss.
 - Stabilize console effect dependencies and workflow keyboard handlers.
+- Restore the README cloud/vendor banner and visible framework and common-control
+  sections, with generated mapped-versus-reviewed coverage totals.
+- Update compatible console dependencies together, align React and React DOM,
+  and patch transitive JavaScript dependency vulnerabilities. Retain the MCP 1
+  compatibility bound because the MCP 2 entry point is incompatible.
+- Group routine dependency updates weekly by ecosystem, limit outstanding
+  version-update PRs, and group security fixes separately.
 
 ## 0.2.10 - 2026-09-14
 
