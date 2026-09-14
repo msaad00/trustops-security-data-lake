@@ -6,7 +6,6 @@ The caller must already have filesystem access to the single-tenant source lake.
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 import re
@@ -20,7 +19,7 @@ from security_lakehouse.generations import (
     publication_lock,
     verify_generation,
 )
-from security_lakehouse.io import iter_jsonl, read_json
+from security_lakehouse.io import file_sha256, iter_jsonl, read_json
 
 SCHEMA_VERSION = "trustops.normalized_event.v1"
 EXPORT_VERSION = "trustops.parquet_export.v1"
@@ -85,11 +84,7 @@ def _validate_row(row, tenant_id):
 
 
 def _sha256(path):
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for block in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
+    return file_sha256(path)
 
 
 def _sync(path):

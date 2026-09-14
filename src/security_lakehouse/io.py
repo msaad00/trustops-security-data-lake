@@ -19,6 +19,21 @@ def canonical_sha256(payload: Any) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+def file_sha256(path: str | Path) -> str:
+    """Hash file bytes with a reusable 1 MiB buffer; propagate read failures.
+
+    Callers supply an already scoped/pinned path. This helper does not resolve
+    paths or change generation selection, and does not snapshot mutable files.
+    """
+    digest = hashlib.sha256()
+    buffer = bytearray(1024 * 1024)
+    view = memoryview(buffer)
+    with Path(path).open("rb") as stream:
+        while count := stream.readinto(buffer):
+            digest.update(view[:count])
+    return digest.hexdigest()
+
+
 def resolve_path(path: str | Path, *, base_dir: str | Path | None = None) -> Path:
     """Return a canonical local path, optionally confined under ``base_dir``.
 

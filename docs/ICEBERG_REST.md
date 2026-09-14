@@ -116,8 +116,9 @@ permissions are for disposable test data only. CI runs this same check.
 
 S3/GCS/Azure storage, cloud credential vending, other REST catalogs, Spark/Trino
 readers, partition evolution, distributed load, and production performance have
-not been verified. Batches limit conversion work, but generation verification
-still uses the existing whole-file verifier; this is not an end-to-end memory cap.
+not been verified. Batches limit conversion work and generation artifact hashes
+use a reusable 1 MiB buffer. Manifest parsing and individual source records are
+not bounded here; this is not an end-to-end memory cap.
 See the [benchmark protocol](BENCHMARKS.md) for accuracy, scale, and cost validation.
 
 References: [PyIceberg API](https://py.iceberg.apache.org/api/),

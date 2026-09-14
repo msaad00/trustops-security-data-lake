@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import contextlib
 import fcntl
-import hashlib
 import inspect
 import json
 import os
@@ -19,6 +18,8 @@ from functools import wraps
 from pathlib import Path
 from types import MappingProxyType
 from uuid import uuid4
+
+from security_lakehouse.io import file_sha256
 
 ARTIFACTS = (
     "catalog/control_map.json",
@@ -153,8 +154,7 @@ def generation_identity(lake: str | Path) -> dict | None:
         generation = root
     if generation is None:
         return None
-    payload = (generation / "generation.json").read_bytes()
-    return {"generation_id": generation.name, "manifest_sha256": hashlib.sha256(payload).hexdigest()}
+    return {"generation_id": generation.name, "manifest_sha256": file_sha256(generation / "generation.json")}
 
 
 def new_generation(lake: Path) -> Path:
@@ -182,7 +182,7 @@ def seal_generation(generation: Path, *, legacy: bool = False) -> None:
     for relative in ARTIFACTS:
         path = generation / relative
         if path.is_file():
-            hashes[relative] = hashlib.sha256(path.read_bytes()).hexdigest()
+            hashes[relative] = file_sha256(path)
             with path.open("rb") as stream:
                 os.fsync(stream.fileno())
     write_json(
@@ -214,7 +214,7 @@ def verify_generation(generation: Path) -> None:
         path = generation / relative
         if path.resolve().parent != (generation / relative).parent or not path.is_file():
             raise ValueError("invalid generation artifact path")
-        if hashlib.sha256(path.read_bytes()).hexdigest() != expected:
+        if file_sha256(path) != expected:
             raise ValueError(f"generation artifact hash mismatch: {relative}")
 
 
