@@ -30,9 +30,14 @@ async function expectPaletteDeepLink(
       "Search controls, violations, evidence, workflows, routes…",
     )
     .fill(id);
-  const result = palette.getByRole("button").filter({ hasText: id });
-  await expect(result.first()).toBeVisible({ timeout: 15_000 });
-  await result.first().click();
+  // Indexes arrive independently. A related evidence subtitle may contain
+  // the control ID before the actual control result has loaded.
+  const result = palette.getByRole("button").filter({
+    has: page.getByText(id, { exact: true }),
+  });
+  await expect(result).toHaveCount(1, { timeout: 15_000 });
+  await expect(result).toBeVisible();
+  await result.click();
 
   await expect(page).toHaveURL(
     new RegExp(`${path.replaceAll("/", "\\/")}\\?id=${encodeURIComponent(id)}`),
