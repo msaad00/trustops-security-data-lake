@@ -72,3 +72,68 @@ test("compact app header keeps search and account actions usable on mobile", asy
     ),
   ).toBe(true);
 });
+
+test("overview leads with overall posture and distinguishes score from test pass rate", async ({
+  page,
+}) => {
+  const postureResponse = await page.request.get("/api/v1/posture/current");
+  const { data: assessment } = await postureResponse.json();
+  const ingestionResponse = await page.request.get("/api/v1/ingestion/status");
+  const { data: ingestion } = await ingestionResponse.json();
+  await page.goto("/console/dashboard/");
+  const overview = page.getByRole("region", {
+    name: "Current assessment",
+    exact: true,
+  });
+  await expect(
+    overview.getByText("Overall posture", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    overview.getByRole("img", {
+      name: `Assessment score ${Math.round(assessment.posture.score)} out of 100`,
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    overview.getByRole("progressbar", {
+      name: "Control pass rate",
+      exact: true,
+    }),
+  ).toHaveAttribute(
+    "aria-valuenow",
+    String(Math.round(ingestion.eval_accuracy.pass_rate * 100)),
+  );
+  await expect(
+    overview.getByText(
+      `${ingestion.eval_accuracy.passing} of ${ingestion.eval_accuracy.total_tests} tests passing`,
+      { exact: true },
+    ),
+  ).toBeVisible();
+});
+
+test("unevaluated controls do not appear as a zero-percent result", async ({
+  page,
+}) => {
+  await page.route("**/api/v1/ingestion/status", async (route) => {
+    const response = await route.fetch();
+    const body = await response.json();
+    body.data.eval_accuracy = {
+      has_tests: false,
+      total_tests: 0,
+      passing: 0,
+      failing: 0,
+      warning: 0,
+      pass_rate: 0,
+    };
+    await route.fulfill({ response, json: body });
+  });
+  await page.goto("/console/dashboard/");
+  const passRate = page
+    .getByRole("region", { name: "Current assessment", exact: true })
+    .getByRole("link", { name: /Control pass rate/ });
+  await expect(
+    passRate.getByText("Not evaluated", { exact: true }),
+  ).toBeVisible();
+  await expect(passRate.getByRole("progressbar")).toHaveCount(0);
+  await expect(passRate.getByText("0%", { exact: true })).toHaveCount(0);
+});

@@ -9,7 +9,7 @@ test.describe("dashboard product polish", () => {
     });
     await expect(commandCenter).toBeVisible({ timeout: 20_000 });
     await expect(
-      commandCenter.getByText("Current assessment", { exact: true }),
+      commandCenter.getByText("Overall posture", { exact: true }),
     ).toBeVisible();
     for (const metric of [
       "Control pass rate",
@@ -56,7 +56,11 @@ test.describe("dashboard product polish", () => {
     await expect(
       page.getByRole("region", { name: "Current assessment" }),
     ).toBeVisible({ timeout: 20_000 });
-    await expect(page.getByText("Critical findings open")).toBeVisible();
+    await expect(
+      page
+        .getByRole("region", { name: "Current assessment" })
+        .getByRole("heading", { name: "Needs attention" }),
+    ).toBeVisible();
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= window.innerWidth,

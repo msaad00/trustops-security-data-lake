@@ -43,10 +43,10 @@ def test_dashboard_framework_posture_uses_compact_two_row_tray() -> None:
     assert ".slice(0, 6)" not in overview
 
 
-def test_dashboard_compacts_the_score_ring_and_passes_the_framework_catalog() -> None:
+def test_dashboard_sizes_the_summary_score_and_passes_the_framework_catalog() -> None:
     dashboard = DASHBOARD.read_text(encoding="utf-8")
 
-    assert 'size="compact"' in ASSESSMENT.read_text(encoding="utf-8")
+    assert 'size="summary"' in ASSESSMENT.read_text(encoding="utf-8")
     assert "catalog={registeredFrameworks.data ?? []}" in dashboard
 
 

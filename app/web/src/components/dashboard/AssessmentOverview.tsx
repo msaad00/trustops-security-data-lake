@@ -5,7 +5,6 @@ import {
   ArrowUpRight,
   ChevronDown,
   FileCheck2,
-  ListChecks,
   ShieldAlert,
 } from "lucide-react";
 import type { Assessment, IngestionStatus } from "@/lib/api/types";
@@ -24,6 +23,17 @@ export function AssessmentOverview({
   const state = posture?.state;
   const evaluated = Boolean(ingestion?.eval_accuracy?.has_tests);
   const rate = ingestion?.eval_accuracy?.pass_rate;
+  const passPercent =
+    evaluated && rate != null && Number.isFinite(rate)
+      ? Math.round(rate * 100)
+      : null;
+  const status = !posture
+    ? "Not assessed"
+    : state === "ready"
+      ? "Ready for review"
+      : state === "critical"
+        ? "Needs attention"
+        : "Review required";
   const exportReady = Boolean(ingestion?.proof.proof_pack_exists);
   const metrics = [
     {
@@ -33,16 +43,6 @@ export function AssessmentOverview({
       href: "/violations",
       Icon: ShieldAlert,
       attention: Boolean(posture?.critical_violation_count),
-    },
-    {
-      label: "Control pass rate",
-      value: evaluated && rate != null ? `${Math.round(rate * 100)}%` : "—",
-      detail: evaluated
-        ? `${ingestion?.eval_accuracy?.failing ?? 0} failing tests`
-        : "Not evaluated",
-      href: "/controls",
-      Icon: ListChecks,
-      attention: false,
     },
     {
       label: "Assessment export",
@@ -59,63 +59,106 @@ export function AssessmentOverview({
       aria-label="Current assessment"
       className="min-w-0 overflow-hidden rounded-xl border border-line bg-surface shadow-card"
     >
-      <div className="grid lg:grid-cols-[minmax(240px,0.85fr)_minmax(0,2fr)]">
-        <div className="flex items-center gap-3 bg-[linear-gradient(115deg,#101c30,#123b48)] px-4 py-4 text-white">
-          <div className="shrink-0">
-            {posture ? (
-              <PostureRing
-                score={posture.score}
-                state={posture.state}
-                size="compact"
-                dark
-              />
-            ) : (
-              <span className="text-2xl text-slate-300">—</span>
-            )}
-          </div>
-          <div className="min-w-0">
-            <p className="text-[11px] font-medium uppercase tracking-wider text-cyan-200">
-              Current assessment
+      <div className="grid xl:grid-cols-[minmax(0,2.2fr)_minmax(260px,0.8fr)]">
+        <div className="grid bg-[linear-gradient(115deg,#101c30,#123b48)] text-white sm:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+          <div className="min-w-0 px-5 py-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-200">
+              Overall posture
             </p>
-            <h2 className="mt-1 text-base font-semibold leading-snug">
-              {state === "critical"
-                ? "Critical findings open"
-                : state === "ready"
-                  ? "Ready for review"
-                  : posture
-                    ? "Review required"
-                    : "Not assessed"}
-            </h2>
-            <Link
-              href="/frameworks"
-              className="mt-1 inline-flex items-center gap-1 text-xs text-slate-300 hover:text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
-            >
-              {assessment?.frameworks.length ?? 0}/{frameworkCount} frameworks
-              assessed
-              <ArrowUpRight aria-hidden="true" className="h-3 w-3" />
-            </Link>
+            <div className="mt-4 flex items-center gap-4">
+              <div className="shrink-0">
+                {posture ? (
+                  <PostureRing
+                    score={posture.score}
+                    state={posture.state}
+                    size="summary"
+                    dark
+                  />
+                ) : (
+                  <span className="text-4xl text-slate-300">—</span>
+                )}
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-xl font-semibold leading-snug tracking-tight">
+                  {status}
+                </h2>
+                <p className="mt-1 text-xs text-slate-300">Assessment score</p>
+                <Link
+                  href="/frameworks"
+                  className="mt-3 inline-flex items-center gap-1 text-xs text-cyan-200 hover:text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
+                >
+                  {assessment?.frameworks.length ?? 0}/{frameworkCount}{" "}
+                  frameworks assessed
+                  <ArrowUpRight aria-hidden="true" className="h-3 w-3" />
+                </Link>
+              </div>
+            </div>
           </div>
+          <Link
+            href="/controls"
+            className="group flex min-w-0 flex-col justify-center border-t border-white/15 bg-white/[0.035] px-5 py-5 transition-colors hover:bg-white/[0.08] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cyan-300 sm:border-l sm:border-t-0"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-medium text-cyan-100">
+                Control pass rate
+              </span>
+              <ArrowUpRight
+                aria-hidden="true"
+                className="h-4 w-4 text-cyan-200 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              />
+            </div>
+            <span className="mt-3 text-5xl font-semibold tracking-tight text-white tabular-nums">
+              {passPercent != null ? (
+                <>
+                  {passPercent}
+                  <span className="ml-1 text-2xl text-cyan-200">%</span>
+                </>
+              ) : (
+                "—"
+              )}
+            </span>
+            {passPercent != null && (
+              <div
+                role="progressbar"
+                aria-label="Control pass rate"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={passPercent}
+                className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/15"
+              >
+                <div
+                  className="h-full rounded-full bg-cyan-300"
+                  style={{ width: `${passPercent}%` }}
+                />
+              </div>
+            )}
+            <span className="mt-3 text-xs text-slate-200">
+              {passPercent != null
+                ? `${ingestion?.eval_accuracy?.passing ?? 0} of ${ingestion?.eval_accuracy?.total_tests ?? 0} tests passing`
+                : "Not evaluated"}
+            </span>
+          </Link>
         </div>
-        <div className="grid grid-cols-3 divide-x divide-line">
+        <div className="grid grid-cols-2 divide-x divide-line xl:grid-cols-1 xl:divide-x-0 xl:divide-y">
           {metrics.map(({ label, value, detail, href, Icon, attention }) => (
             <Link
               key={label}
               href={href}
               className="group flex min-w-0 flex-col justify-center px-3 py-4 transition-colors hover:bg-surfaceMuted focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand sm:px-5"
             >
-              <div className="mb-2 flex items-center justify-between gap-1">
+              <div className="flex items-center gap-2">
                 <Icon
                   aria-hidden="true"
                   className={`h-4 w-4 ${attention ? "text-rose-600" : "text-muted"}`}
                 />
+                <span className="flex-1 text-xs font-medium leading-4 text-muted">
+                  {label}
+                </span>
                 <ArrowUpRight
                   aria-hidden="true"
                   className="h-3.5 w-3.5 text-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                 />
               </div>
-              <span className="text-xs font-medium leading-4 text-muted">
-                {label}
-              </span>
               <span
                 className={`mt-1 text-xl font-semibold tracking-tight tabular-nums sm:text-2xl ${attention ? "text-rose-600" : "text-ink"}`}
               >

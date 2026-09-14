@@ -27,18 +27,23 @@ export function PostureRing({
 }: {
   score: number;
   state: string;
-  size?: "compact" | "default";
+  size?: "compact" | "summary" | "default";
   dark?: boolean;
 }) {
   const value = Math.round(score);
   const color = TONE[state] ?? "#f79009";
+  const isSummary = size === "summary";
   const isCompact = size === "compact";
   return (
     <div
+      role="img"
+      aria-label={`Assessment score ${value} out of 100`}
       className={
-        isCompact
-          ? "relative h-[78px] w-[78px]"
-          : "relative h-[208px] w-[208px]"
+        isSummary
+          ? "relative h-[104px] w-[104px]"
+          : isCompact
+            ? "relative h-[78px] w-[78px]"
+            : "relative h-[208px] w-[208px]"
       }
     >
       <ResponsiveContainer width="100%" height="100%">
@@ -67,9 +72,11 @@ export function PostureRing({
         <span
           style={{ color: dark ? "#ffffff" : undefined }}
           className={
-            isCompact
-              ? "text-[22px] font-black leading-none text-ink"
-              : "text-[52px] font-black leading-none text-ink"
+            isSummary
+              ? "text-[34px] font-semibold leading-none text-ink tabular-nums"
+              : isCompact
+                ? "text-[22px] font-black leading-none text-ink"
+                : "text-[52px] font-black leading-none text-ink"
           }
         >
           {value}
@@ -85,7 +92,7 @@ export function PostureRing({
             background: dark ? "#ffffff10" : "#f1f5f9",
           }}
         >
-          {LABEL[state] ?? state}
+          {isSummary ? "/ 100" : (LABEL[state] ?? state)}
         </span>
       </div>
     </div>
