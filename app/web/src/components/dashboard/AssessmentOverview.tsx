@@ -15,6 +15,9 @@ import {
 import type { Assessment, IngestionStatus } from "@/lib/api/types";
 import { PostureRing } from "./PostureRing";
 
+const METRIC_SURFACE =
+  "rounded-xl border border-slate-700 bg-[radial-gradient(ellipse_at_top_right,#164e63_0%,#142239_55%,#101b2e_100%)] p-4 text-white";
+
 export function AssessmentOverview({
   assessment,
   ingestion,
@@ -101,7 +104,9 @@ export function AssessmentOverview({
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3 p-3 min-[640px]:grid-cols-3 sm:p-4">
-        <div className="relative col-span-2 flex min-w-0 flex-col overflow-hidden rounded-xl border border-slate-700 bg-[radial-gradient(ellipse_at_top_right,#164e63_0%,#142239_55%,#101b2e_100%)] p-4 text-white min-[640px]:col-span-1">
+        <div
+          className={`relative col-span-2 flex min-w-0 flex-col overflow-hidden ${METRIC_SURFACE} min-[640px]:col-span-1`}
+        >
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs font-medium text-slate-200">
               Assessment score
@@ -145,28 +150,30 @@ export function AssessmentOverview({
         </div>
         <Link
           href="/controls"
-          className="group flex min-w-0 flex-col rounded-xl border border-indigo-100 bg-[linear-gradient(145deg,#eef2ff_0%,#ffffff_70%)] p-4 transition-shadow hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand dark:border-indigo-900 dark:bg-[linear-gradient(145deg,#20283f_0%,#172131_70%)]"
+          className={`group flex min-w-0 flex-col ${METRIC_SURFACE} transition-shadow hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300`}
         >
           <div className="flex items-center justify-between gap-2">
-            <span className="text-xs font-medium text-ink">
+            <span className="text-xs font-medium text-white">
               Control pass rate
             </span>
             <ListChecks
               aria-hidden="true"
-              className="h-4 w-4 shrink-0 text-indigo-500 dark:text-indigo-300"
+              className="h-4 w-4 shrink-0 text-cyan-300"
             />
           </div>
-          <span className="mt-5 text-[42px] font-semibold leading-none tracking-tight text-ink tabular-nums sm:text-5xl">
+          <span className="mt-5 text-[42px] font-semibold leading-none tracking-tight text-white tabular-nums sm:text-5xl">
             {passPercent != null ? (
               <>
                 {passPercent}
-                <span className="ml-1 text-xl font-medium text-muted">%</span>
+                <span className="ml-1 text-xl font-medium text-slate-300">
+                  %
+                </span>
               </>
             ) : (
               "—"
             )}
           </span>
-          <span className="mt-2 text-[11px] leading-4 text-muted">
+          <span className="mt-2 text-[11px] leading-4 text-slate-300">
             {passPercent != null
               ? `${accuracy?.passing ?? 0} of ${accuracy?.total_tests ?? 0} tests passing`
               : "Not evaluated"}
@@ -179,7 +186,7 @@ export function AssessmentOverview({
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-valuenow={passPercent}
-                className="mt-4 flex h-2 gap-0.5 overflow-hidden rounded-full bg-surfaceMuted"
+                className="mt-4 flex h-2 gap-0.5 overflow-hidden rounded-full bg-white/10"
               >
                 {outcomes.map((item) => (
                   <span
@@ -191,7 +198,7 @@ export function AssessmentOverview({
                   />
                 ))}
               </div>
-              <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-[10px] text-muted">
+              <div className="mb-4 mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-[10px] text-slate-300">
                 {outcomes.map((item) => (
                   <span
                     key={item.label}
@@ -201,7 +208,7 @@ export function AssessmentOverview({
                       aria-hidden="true"
                       className={`h-1.5 w-1.5 rounded-full ${item.color}`}
                     />
-                    <strong className="font-semibold text-ink">
+                    <strong className="font-semibold text-white">
                       {item.count}
                     </strong>{" "}
                     {item.label}
@@ -210,25 +217,27 @@ export function AssessmentOverview({
               </div>
             </>
           )}
-          <span className="mt-auto inline-flex items-center gap-1.5 border-t border-indigo-100 pt-3 text-xs font-semibold text-indigo-600 dark:border-indigo-900 dark:text-indigo-300 min-[640px]:mt-4">
+          <span className="mt-auto inline-flex items-center gap-1.5 border-t border-white/15 pt-3 text-xs font-semibold text-cyan-200">
             View controls <ArrowRight aria-hidden="true" className="h-3 w-3" />
           </span>
         </Link>
         <Link
           href="/violations"
-          className="group flex min-w-0 flex-col rounded-xl border border-rose-100 bg-[linear-gradient(145deg,#fff1f2_0%,#ffffff_70%)] p-4 transition-shadow hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand dark:border-rose-900/50 dark:bg-[linear-gradient(145deg,#322331_0%,#172131_70%)]"
+          className={`group flex min-w-0 flex-col ${METRIC_SURFACE} transition-shadow hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300`}
         >
           <div className="flex items-center justify-between gap-2">
-            <span className="text-xs font-medium text-ink">Open findings</span>
+            <span className="text-xs font-medium text-white">
+              Open findings
+            </span>
             <ShieldAlert
               aria-hidden="true"
-              className="h-4 w-4 shrink-0 text-rose-500 dark:text-rose-300"
+              className="h-4 w-4 shrink-0 text-rose-300"
             />
           </div>
-          <span className="mt-5 text-[42px] font-semibold leading-none tracking-tight text-ink tabular-nums sm:text-5xl">
+          <span className="mt-5 text-[42px] font-semibold leading-none tracking-tight text-white tabular-nums sm:text-5xl">
             {posture?.open_violation_count ?? "—"}
           </span>
-          <span className="mt-2 text-[11px] leading-4 font-medium text-rose-700 dark:text-rose-300">
+          <span className="mt-2 text-[11px] leading-4 font-medium text-rose-300">
             {posture ? `${critical} critical` : "Awaiting assessment"}
           </span>
           {posture && (
@@ -236,7 +245,7 @@ export function AssessmentOverview({
               <div
                 role="img"
                 aria-label={`Finding severity: ${severity.map((item) => `${item.count} ${item.label.toLowerCase()}`).join(", ")}`}
-                className="mt-4 flex h-2 gap-0.5 overflow-hidden rounded-full bg-surfaceMuted"
+                className="mt-4 flex h-2 gap-0.5 overflow-hidden rounded-full bg-white/10"
               >
                 {severity.map((item) => (
                   <span
@@ -248,7 +257,7 @@ export function AssessmentOverview({
                   />
                 ))}
               </div>
-              <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-[10px] text-muted">
+              <div className="mb-4 mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-[10px] text-slate-300">
                 {severity.map((item) => (
                   <span
                     key={item.label}
@@ -258,7 +267,7 @@ export function AssessmentOverview({
                       aria-hidden="true"
                       className={`h-1.5 w-1.5 rounded-full ${item.color}`}
                     />
-                    <strong className="font-semibold text-ink">
+                    <strong className="font-semibold text-white">
                       {item.count}
                     </strong>{" "}
                     {item.label}
@@ -267,7 +276,7 @@ export function AssessmentOverview({
               </div>
             </>
           )}
-          <span className="mt-auto inline-flex items-center gap-1.5 border-t border-rose-100 pt-3 text-xs font-semibold text-rose-700 dark:border-rose-900/50 dark:text-rose-300 min-[640px]:mt-4">
+          <span className="mt-auto inline-flex items-center gap-1.5 border-t border-white/15 pt-3 text-xs font-semibold text-cyan-200">
             Review findings{" "}
             <ArrowRight aria-hidden="true" className="h-3 w-3" />
           </span>
