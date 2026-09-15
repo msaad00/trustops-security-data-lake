@@ -3,11 +3,17 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
-## Unreleased
+## 0.2.12 - 2026-09-15
 
 - Lead the dashboard overview with overall posture, an assessment score out of 100,
   and a prominent control pass rate with passing-test counts. Keep findings and
   exports alongside them, and distinguish unevaluated controls from a zero pass rate.
+- Unify overview cards with matching navy surfaces, labeled test-outcome and
+  finding-severity charts, and aligned actions. Preserve compact tablet layouts
+  and mobile accessibility. Test outcomes outside pass/fail/warning remain Other.
+- Keep control-drawer status badges readable beside long control titles.
+- Refresh release-readiness documentation and align package, console, and Helm
+  versions. Assessment calculations and connector behavior are unchanged.
 
 ## 0.2.11 - 2026-09-14
 
