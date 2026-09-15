@@ -50,7 +50,12 @@ export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
             <div className="rounded-xl border border-line bg-slate-50/60 p-3">
               <div className="flex items-center justify-between gap-2">
                 <b>{test.name}</b>
-                <Badge tone={toneFor(test.result)}>{test.status}</Badge>
+                <Badge
+                  tone={toneFor(test.result)}
+                  className="shrink-0 whitespace-nowrap"
+                >
+                  {test.status}
+                </Badge>
               </div>
               <div className="mt-1 text-xs text-muted">{test.next_action}</div>
               <div className="mt-2 flex flex-wrap gap-1.5">
