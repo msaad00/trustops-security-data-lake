@@ -5,11 +5,18 @@ import {
   ArrowUpRight,
   ChevronDown,
   FileCheck2,
+  ArrowRight,
+  Clock3,
+  CircleCheck,
+  ChartNoAxesCombined,
   ListChecks,
   ShieldAlert,
 } from "lucide-react";
 import type { Assessment, IngestionStatus } from "@/lib/api/types";
 import { PostureRing } from "./PostureRing";
+
+const METRIC_SURFACE =
+  "rounded-xl border border-slate-700 bg-[radial-gradient(ellipse_at_top_right,#164e63_0%,#142239_55%,#101b2e_100%)] p-4 text-white";
 
 export function AssessmentOverview({
   assessment,
@@ -24,33 +31,60 @@ export function AssessmentOverview({
   const state = posture?.state;
   const evaluated = Boolean(ingestion?.eval_accuracy?.has_tests);
   const rate = ingestion?.eval_accuracy?.pass_rate;
+  const passPercent =
+    evaluated && rate != null && Number.isFinite(rate)
+      ? Math.round(rate * 100)
+      : null;
+  const status = !posture
+    ? "Not assessed"
+    : state === "ready"
+      ? "Ready for review"
+      : state === "critical"
+        ? "Needs attention"
+        : "Review required";
   const exportReady = Boolean(ingestion?.proof.proof_pack_exists);
-  const metrics = [
+  const critical = posture?.critical_violation_count ?? 0;
+  const StatusIcon = state === "ready" ? CircleCheck : ShieldAlert;
+  const statusTone = !posture
+    ? "text-muted"
+    : state === "ready"
+      ? "text-emerald-600 dark:text-emerald-400"
+      : state === "critical"
+        ? "text-rose-600 dark:text-rose-400"
+        : "text-amber-600 dark:text-amber-400";
+
+  const accuracy = ingestion?.eval_accuracy;
+  const outcomes = [
+    { label: "Pass", count: accuracy?.passing ?? 0, color: "bg-indigo-500" },
+    { label: "Fail", count: accuracy?.failing ?? 0, color: "bg-rose-500" },
+    { label: "Warning", count: accuracy?.warning ?? 0, color: "bg-amber-400" },
     {
-      label: "Open findings",
-      value: posture?.open_violation_count ?? "—",
-      detail: `${posture?.critical_violation_count ?? 0} critical`,
-      href: "/violations",
-      Icon: ShieldAlert,
-      attention: Boolean(posture?.critical_violation_count),
+      label: "Other",
+      count: Math.max(
+        0,
+        (accuracy?.total_tests ?? 0) -
+          (accuracy?.passing ?? 0) -
+          (accuracy?.failing ?? 0) -
+          (accuracy?.warning ?? 0),
+      ),
+      color: "bg-slate-300",
+    },
+  ];
+  const findings = posture?.open_violation_count ?? 0;
+  const severity = [
+    { label: "Critical", count: critical, color: "bg-rose-600" },
+    {
+      label: "High",
+      count: posture?.high_violation_count ?? 0,
+      color: "bg-orange-400",
     },
     {
-      label: "Control pass rate",
-      value: evaluated && rate != null ? `${Math.round(rate * 100)}%` : "—",
-      detail: evaluated
-        ? `${ingestion?.eval_accuracy?.failing ?? 0} failing tests`
-        : "Not evaluated",
-      href: "/controls",
-      Icon: ListChecks,
-      attention: false,
-    },
-    {
-      label: "Assessment export",
-      value: exportReady ? "Available" : "Pending",
-      detail: `${ingestion?.summary.evidence_count ?? 0} evidence rows`,
-      href: "/audit-room",
-      Icon: FileCheck2,
-      attention: false,
+      label: "Other",
+      count: Math.max(
+        0,
+        findings - critical - (posture?.high_violation_count ?? 0),
+      ),
+      color: "bg-slate-300",
     },
   ];
 
@@ -59,74 +93,213 @@ export function AssessmentOverview({
       aria-label="Current assessment"
       className="min-w-0 overflow-hidden rounded-xl border border-line bg-surface shadow-card"
     >
-      <div className="grid lg:grid-cols-[minmax(240px,0.85fr)_minmax(0,2fr)]">
-        <div className="flex items-center gap-3 bg-[linear-gradient(115deg,#101c30,#123b48)] px-4 py-4 text-white">
-          <div className="shrink-0">
-            {posture ? (
-              <PostureRing
-                score={posture.score}
-                state={posture.state}
-                size="compact"
-                dark
-              />
-            ) : (
-              <span className="text-2xl text-slate-300">—</span>
-            )}
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 pb-1 pt-4 sm:px-5">
+        <p className="text-sm font-semibold text-ink">Overall posture</p>
+        <div className="flex items-center gap-1.5 rounded-full border border-line bg-surfaceMuted/60 px-2.5 py-1">
+          <StatusIcon
+            aria-hidden="true"
+            className={`h-3.5 w-3.5 ${statusTone}`}
+          />
+          <h2 className="text-xs font-medium text-ink">{status}</h2>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3 p-3 min-[640px]:grid-cols-3 sm:p-4">
+        <div
+          className={`relative col-span-2 flex min-w-0 flex-col overflow-hidden ${METRIC_SURFACE} min-[640px]:col-span-1`}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-medium text-slate-200">
+              Assessment score
+            </span>
+            <ChartNoAxesCombined
+              aria-hidden="true"
+              className="h-4 w-4 text-cyan-300"
+            />
           </div>
-          <div className="min-w-0">
-            <p className="text-[11px] font-medium uppercase tracking-wider text-cyan-200">
-              Current assessment
+          <div className="my-3 flex items-center gap-3 min-[640px]:justify-center">
+            <div className="shrink-0">
+              {posture ? (
+                <PostureRing
+                  score={posture.score}
+                  state={posture.state}
+                  size="summary"
+                  dark
+                />
+              ) : (
+                <span className="text-5xl text-slate-300">—</span>
+              )}
+            </div>
+            <p className="text-xs leading-5 text-slate-300 min-[640px]:hidden">
+              Weighted framework
+              <br />
+              score out of 100
             </p>
-            <h2 className="mt-1 text-base font-semibold leading-snug">
-              {state === "critical"
-                ? "Critical findings open"
-                : state === "ready"
-                  ? "Ready for review"
-                  : posture
-                    ? "Review required"
-                    : "Not assessed"}
-            </h2>
-            <Link
-              href="/frameworks"
-              className="mt-1 inline-flex items-center gap-1 text-xs text-slate-300 hover:text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
-            >
-              {assessment?.frameworks.length ?? 0}/{frameworkCount} frameworks
-              assessed
-              <ArrowUpRight aria-hidden="true" className="h-3 w-3" />
-            </Link>
           </div>
+          <Link
+            href="/frameworks"
+            className="mt-auto flex items-center justify-between gap-2 border-t border-white/15 pt-3 text-xs text-slate-200 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
+          >
+            <span>
+              <strong className="font-semibold text-white">
+                {assessment?.frameworks.length ?? 0}/{frameworkCount}
+              </strong>{" "}
+              frameworks assessed
+            </span>
+            <ArrowUpRight aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
+          </Link>
         </div>
-        <div className="grid grid-cols-3 divide-x divide-line">
-          {metrics.map(({ label, value, detail, href, Icon, attention }) => (
-            <Link
-              key={label}
-              href={href}
-              className="group flex min-w-0 flex-col justify-center px-3 py-4 transition-colors hover:bg-surfaceMuted focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand sm:px-5"
-            >
-              <div className="mb-2 flex items-center justify-between gap-1">
-                <Icon
-                  aria-hidden="true"
-                  className={`h-4 w-4 ${attention ? "text-rose-600" : "text-muted"}`}
-                />
-                <ArrowUpRight
-                  aria-hidden="true"
-                  className="h-3.5 w-3.5 text-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                />
-              </div>
-              <span className="text-xs font-medium leading-4 text-muted">
-                {label}
-              </span>
-              <span
-                className={`mt-1 text-xl font-semibold tracking-tight tabular-nums sm:text-2xl ${attention ? "text-rose-600" : "text-ink"}`}
+        <Link
+          href="/controls"
+          className={`group flex min-w-0 flex-col ${METRIC_SURFACE} transition-shadow hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300`}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-medium text-white">
+              Control pass rate
+            </span>
+            <ListChecks
+              aria-hidden="true"
+              className="h-4 w-4 shrink-0 text-cyan-300"
+            />
+          </div>
+          <span className="mt-5 text-[42px] font-semibold leading-none tracking-tight text-white tabular-nums sm:text-5xl">
+            {passPercent != null ? (
+              <>
+                {passPercent}
+                <span className="ml-1 text-xl font-medium text-slate-300">
+                  %
+                </span>
+              </>
+            ) : (
+              "—"
+            )}
+          </span>
+          <span className="mt-2 text-[11px] leading-4 text-slate-300">
+            {passPercent != null
+              ? `${accuracy?.passing ?? 0} of ${accuracy?.total_tests ?? 0} tests passing`
+              : "Not evaluated"}
+          </span>
+          {passPercent != null && (
+            <>
+              <div
+                role="progressbar"
+                aria-label="Control pass rate"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={passPercent}
+                className="mt-4 flex h-2 gap-0.5 overflow-hidden rounded-full bg-white/10"
               >
-                {value}
-              </span>
-              <span className="mt-1 text-[11px] leading-4 text-muted">
-                {detail}
-              </span>
-            </Link>
-          ))}
-        </div>
+                {outcomes.map((item) => (
+                  <span
+                    key={item.label}
+                    className={item.color}
+                    style={{
+                      width: `${accuracy?.total_tests ? (item.count / accuracy.total_tests) * 100 : 0}%`,
+                    }}
+                  />
+                ))}
+              </div>
+              <div className="mb-4 mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-[10px] text-slate-300">
+                {outcomes.map((item) => (
+                  <span
+                    key={item.label}
+                    className="inline-flex items-center gap-1"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={`h-1.5 w-1.5 rounded-full ${item.color}`}
+                    />
+                    <strong className="font-semibold text-white">
+                      {item.count}
+                    </strong>{" "}
+                    {item.label}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+          <span className="mt-auto inline-flex items-center gap-1.5 border-t border-white/15 pt-3 text-xs font-semibold text-cyan-200">
+            View controls <ArrowRight aria-hidden="true" className="h-3 w-3" />
+          </span>
+        </Link>
+        <Link
+          href="/violations"
+          className={`group flex min-w-0 flex-col ${METRIC_SURFACE} transition-shadow hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300`}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-medium text-white">
+              Open findings
+            </span>
+            <ShieldAlert
+              aria-hidden="true"
+              className="h-4 w-4 shrink-0 text-rose-300"
+            />
+          </div>
+          <span className="mt-5 text-[42px] font-semibold leading-none tracking-tight text-white tabular-nums sm:text-5xl">
+            {posture?.open_violation_count ?? "—"}
+          </span>
+          <span className="mt-2 text-[11px] leading-4 font-medium text-rose-300">
+            {posture ? `${critical} critical` : "Awaiting assessment"}
+          </span>
+          {posture && (
+            <>
+              <div
+                role="img"
+                aria-label={`Finding severity: ${severity.map((item) => `${item.count} ${item.label.toLowerCase()}`).join(", ")}`}
+                className="mt-4 flex h-2 gap-0.5 overflow-hidden rounded-full bg-white/10"
+              >
+                {severity.map((item) => (
+                  <span
+                    key={item.label}
+                    className={item.color}
+                    style={{
+                      width: `${findings ? (item.count / findings) * 100 : 0}%`,
+                    }}
+                  />
+                ))}
+              </div>
+              <div className="mb-4 mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-[10px] text-slate-300">
+                {severity.map((item) => (
+                  <span
+                    key={item.label}
+                    className="inline-flex items-center gap-1"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={`h-1.5 w-1.5 rounded-full ${item.color}`}
+                    />
+                    <strong className="font-semibold text-white">
+                      {item.count}
+                    </strong>{" "}
+                    {item.label}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+          <span className="mt-auto inline-flex items-center gap-1.5 border-t border-white/15 pt-3 text-xs font-semibold text-cyan-200">
+            Review findings{" "}
+            <ArrowRight aria-hidden="true" className="h-3 w-3" />
+          </span>
+        </Link>
+      </div>
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-line bg-surfaceMuted/50 px-5 py-3 text-xs sm:px-6">
+        <span className="inline-flex items-center gap-2 text-muted">
+          <Clock3 aria-hidden="true" className="h-4 w-4" />
+          {posture
+            ? `${posture.stale_evidence_count} stale evidence rows`
+            : "Evidence freshness unavailable"}
+        </span>
+        <Link
+          href="/audit-room"
+          className="inline-flex items-center gap-2 text-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
+        >
+          <FileCheck2 aria-hidden="true" className="h-4 w-4" />
+          <span>Assessment export</span>
+          <span className="rounded-md border border-line bg-surface px-2 py-0.5 font-medium text-ink">
+            {exportReady ? "Available" : "Pending"}
+          </span>
+          <ArrowUpRight aria-hidden="true" className="h-3.5 w-3.5" />
+        </Link>
       </div>
       <details className="group border-t border-line">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-4 py-2 text-xs text-muted hover:bg-surfaceMuted focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand">
