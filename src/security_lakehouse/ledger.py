@@ -7,8 +7,11 @@ replay semantics for append-only operational logs.
 
 from __future__ import annotations
 
+import contextlib
+import fcntl
 import hashlib
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +23,29 @@ def canonical_record_hash(record: dict[str, Any], *, hash_field: str = "record_h
     payload = {key: value for key, value in record.items() if key != hash_field}
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+@contextlib.contextmanager
+def chain_lock(path: str | Path):
+    """Exclusive lock serializing read-then-append chain writers on ``path``.
+
+    Uses an OS-level ``flock`` on a sibling lock file, so it serializes across
+    threads, processes, and server workers -- not just within one process.
+    Without this, two concurrent writers can both read the same chain tip and
+    append with the same ``prev_hash``, forking the tamper-evident chain.
+    """
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    lock_path = target.with_name(target.name + ".lock")
+    fd = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o600)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(fd, fcntl.LOCK_UN)
+    finally:
+        os.close(fd)
 
 
 def append_chained_jsonl(
@@ -35,27 +61,31 @@ def append_chained_jsonl(
     If ``idempotency_key`` already exists in the file, the existing record is
     returned and no duplicate is written. This supports retry-safe API,
     scheduler, CLI, and agent execution without minting conflicting audit rows.
+
+    The read-decide-append sequence is serialized with :func:`chain_lock` so
+    concurrent callers can never fork the chain by reading the same tip.
     """
     target = Path(path)
     key = str(idempotency_key or "").strip() or None
-    rows = read_jsonl(target, missing_ok=True)
-    if key:
-        for row in reversed(rows):
-            if row.get("idempotency_key") == key:
-                return {**row, "idempotent_replay": True}
+    with chain_lock(target):
+        rows = read_jsonl(target, missing_ok=True)
+        if key:
+            for row in reversed(rows):
+                if row.get("idempotency_key") == key:
+                    return {**row, "idempotent_replay": True}
 
-    prev_hash = None
-    if rows:
-        prev_hash = rows[-1].get(hash_field)
-        if not isinstance(prev_hash, str) or not prev_hash:
-            prev_hash = canonical_record_hash(rows[-1], hash_field=hash_field)
+        prev_hash = None
+        if rows:
+            prev_hash = rows[-1].get(hash_field)
+            if not isinstance(prev_hash, str) or not prev_hash:
+                prev_hash = canonical_record_hash(rows[-1], hash_field=hash_field)
 
-    chained = {**record, prev_field: prev_hash}
-    if key:
-        chained["idempotency_key"] = key
-    chained[hash_field] = canonical_record_hash(chained, hash_field=hash_field)
-    append_jsonl(target, chained)
-    return chained
+        chained = {**record, prev_field: prev_hash}
+        if key:
+            chained["idempotency_key"] = key
+        chained[hash_field] = canonical_record_hash(chained, hash_field=hash_field)
+        append_jsonl(target, chained)
+        return chained
 
 
 def verify_chained_jsonl(

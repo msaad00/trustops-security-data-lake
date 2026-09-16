@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import threading
 from http import HTTPStatus
 from pathlib import Path
 
@@ -39,6 +40,27 @@ def test_snapshots_chain_and_verify_clean(tmp_path: Path) -> None:
 
     result = verify_snapshot_chain(lake)
     assert result == {"ok": True, "length": 3, "issues": []}
+
+
+def test_concurrent_snapshots_do_not_fork_the_chain(tmp_path: Path) -> None:
+    """Two writers reading the same chain tip must not both claim it."""
+    lake = _seeded_lake(tmp_path)
+    workers = 6
+    barrier = threading.Barrier(workers)
+
+    def submit(index: int) -> None:
+        barrier.wait()
+        write_assessment_snapshot(lake, reason=f"race-{index}")
+
+    threads = [threading.Thread(target=submit, args=(i,)) for i in range(workers)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+    result = verify_snapshot_chain(lake)
+    assert result["ok"] is True, result["issues"]
+    assert result["length"] == workers
 
 
 def test_verify_detects_mutated_snapshot(tmp_path: Path) -> None:
