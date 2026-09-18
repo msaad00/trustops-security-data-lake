@@ -114,6 +114,26 @@ def test_tracking_chain_detects_tamper(tmp_path: Path) -> None:
     assert any("record_hash" in issue for issue in result["issues"])
 
 
+def test_concurrent_triage_events_do_not_fork_the_chain(tmp_path: Path) -> None:
+    """Two writers reading the same tip must not both claim it as prev_hash."""
+    workers = 8
+    barrier = threading.Barrier(workers)
+
+    def submit(index: int) -> None:
+        barrier.wait()
+        append_event(tmp_path, violation_id=f"v{index}", actor="agent", state="triaged")
+
+    threads = [threading.Thread(target=submit, args=(i,)) for i in range(workers)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+    result = verify_tracking_chain(tmp_path)
+    assert result["ok"] is True, result["issues"]
+    assert result["length"] == workers
+
+
 def test_tracking_integrity_route_and_catalog(tmp_path: Path) -> None:
     append_event(tmp_path, violation_id="v1", actor="a", state="triaged")
 

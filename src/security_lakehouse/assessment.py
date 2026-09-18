@@ -27,6 +27,7 @@ from security_lakehouse.evidence_freshness import (
 )
 from security_lakehouse.generations import generation_identity, generation_reader
 from security_lakehouse.io import append_jsonl, iter_jsonl, read_json, read_jsonl, write_json
+from security_lakehouse.ledger import chain_lock
 from security_lakehouse.models import SEVERITY_SCORE, utc_iso
 
 VIOLATION_STATUSES = {"open", "failed", "blocked", "noncompliant"}
@@ -178,41 +179,46 @@ def write_assessment_snapshot(
     detectable by :func:`verify_snapshot_chain`.
     """
     lake = Path(lake_dir)
-    prev_hash = _chain_tip(lake)
-    assessment = build_current_posture(lake, freshness_days=freshness_days)
-    assessment["assessment_type"] = "point_in_time_snapshot"
-    assessment["snapshot_reason"] = reason
-    # Pin the catalog bundle (framework + control versions in force) so this
-    # audit reproduces against the exact controls it was evaluated with. The
-    # bundle is covered by assessment_hash below, so it is tamper-evident too.
-    bundle_path = lake / "catalog" / "bundle.json"
-    assessment["catalog_bundle"] = read_json(bundle_path) if bundle_path.is_file() else _catalog_bundle_for_snapshot()
-    assessment["prev_hash"] = prev_hash
-    # assessment_hash covers prev_hash, so the chain is tamper-evident.
-    assessment["assessment_hash"] = _assessment_hash(assessment)
-    if output is None:
-        ts = assessment["evaluated_at"].replace(":", "").replace("-", "")
-        # Suffix with the content hash so same-timestamp freezes never collide
-        # and an existing immutable snapshot is never silently overwritten.
-        short = assessment["assessment_hash"][:12]
-        output_path = lake / "gold" / "snapshots" / f"assessment-{ts}-{short}.json"
-        if output_path.exists():
-            raise FileExistsError(f"snapshot already exists, refusing to overwrite: {output_path}")
-    else:
-        output_path = Path(output)
-    write_json(output_path, assessment)
-    append_jsonl(
-        _ledger_path(lake),
-        {
-            "evaluated_at": assessment["evaluated_at"],
-            "snapshot": output_path.name,
-            "prev_hash": prev_hash,
-            "assessment_hash": assessment["assessment_hash"],
-            "snapshot_reason": reason,
-            "recorded_at": utc_iso(datetime.now(UTC)),
-        },
-    )
-    return output_path
+    # Concurrent snapshot requests must not read the same chain tip: serialize
+    # the tip-read through ledger-append span so the chain can never fork.
+    with chain_lock(_ledger_path(lake)):
+        prev_hash = _chain_tip(lake)
+        assessment = build_current_posture(lake, freshness_days=freshness_days)
+        assessment["assessment_type"] = "point_in_time_snapshot"
+        assessment["snapshot_reason"] = reason
+        # Pin the catalog bundle (framework + control versions in force) so this
+        # audit reproduces against the exact controls it was evaluated with. The
+        # bundle is covered by assessment_hash below, so it is tamper-evident too.
+        bundle_path = lake / "catalog" / "bundle.json"
+        assessment["catalog_bundle"] = (
+            read_json(bundle_path) if bundle_path.is_file() else _catalog_bundle_for_snapshot()
+        )
+        assessment["prev_hash"] = prev_hash
+        # assessment_hash covers prev_hash, so the chain is tamper-evident.
+        assessment["assessment_hash"] = _assessment_hash(assessment)
+        if output is None:
+            ts = assessment["evaluated_at"].replace(":", "").replace("-", "")
+            # Suffix with the content hash so same-timestamp freezes never collide
+            # and an existing immutable snapshot is never silently overwritten.
+            short = assessment["assessment_hash"][:12]
+            output_path = lake / "gold" / "snapshots" / f"assessment-{ts}-{short}.json"
+            if output_path.exists():
+                raise FileExistsError(f"snapshot already exists, refusing to overwrite: {output_path}")
+        else:
+            output_path = Path(output)
+        write_json(output_path, assessment)
+        append_jsonl(
+            _ledger_path(lake),
+            {
+                "evaluated_at": assessment["evaluated_at"],
+                "snapshot": output_path.name,
+                "prev_hash": prev_hash,
+                "assessment_hash": assessment["assessment_hash"],
+                "snapshot_reason": reason,
+                "recorded_at": utc_iso(datetime.now(UTC)),
+            },
+        )
+        return output_path
 
 
 def verify_snapshot_chain(lake_dir: str | Path) -> dict[str, Any]:
