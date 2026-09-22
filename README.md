@@ -143,11 +143,11 @@ security-lakehouse frameworks safeguards --format table
 
 The images below show the stored demo fixture, not live customer evidence.
 
-|                               Overview                                |                              Evidence                              |
-| :--------------------------------------------------------------------: | :-----------------------------------------------------------------: |
-|  ![TrustOps demo overview](docs/images/trustops-demo-dashboard.png)  | ![TrustOps demo evidence](docs/images/trustops-demo-evidence.png)  |
-|                              Frameworks                               |                                Triage                                |
-| ![TrustOps demo frameworks](docs/images/trustops-demo-frameworks.png) |     ![TrustOps demo triage](docs/images/trustops-demo-triage.png)     |
+|                               Overview                                |                             Evidence                              |
+| :-------------------------------------------------------------------: | :---------------------------------------------------------------: |
+|  ![TrustOps demo overview](docs/images/trustops-demo-dashboard.png)   | ![TrustOps demo evidence](docs/images/trustops-demo-evidence.png) |
+|                              Frameworks                               |                              Triage                               |
+| ![TrustOps demo frameworks](docs/images/trustops-demo-frameworks.png) |   ![TrustOps demo triage](docs/images/trustops-demo-triage.png)   |
 
 [Full walkthrough](docs/PRODUCT_WALKTHROUGH.md) ·
 [Connectors](docs/images/trustops-demo-connectors.png) ·
