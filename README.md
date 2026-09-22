@@ -86,7 +86,7 @@ Models may summarize or propose actions; deterministic rules decide control resu
 
 **13 framework packs · 44 reusable safeguards · 15 control families · 942 catalogued requirements.**
 
-559 requirements have safeguard mappings; **45 have reviewed mappings**. Catalog coverage and evaluated customer posture are separate measures.
+559 requirements have safeguard mappings; **117 have reviewed mappings**. Catalog coverage and evaluated customer posture are separate measures.
 <!-- END README CCF SUMMARY -->
 
 <table>
