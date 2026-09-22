@@ -1,8 +1,9 @@
 # Release readiness
 
-TrustOps **0.2.12** updates the assessment overview and release documentation.
-Assessment calculations, connector behavior, and dependency versions are
-unchanged from 0.2.11. See [the changelog](../CHANGELOG.md) for release scope.
+TrustOps **0.2.13** fixes a hash-chain concurrent-write race, resolves two
+`anyio` CVEs, opens the README product tour by default, and promotes 209
+Common Control Framework safeguard mappings from proposed to reviewed.
+See [the changelog](../CHANGELOG.md) for release scope.
 
 ## Release gates
 

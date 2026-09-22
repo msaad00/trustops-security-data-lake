@@ -3,6 +3,21 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
+## 0.2.13 - 2026-09-22
+
+- Serialize hash-chain writers with a cross-process lock so concurrent
+  violation-triage and assessment-snapshot requests can no longer fork the
+  tamper-evident audit chain.
+- Resolve two `anyio` CVEs (CVE-2026-63374, CVE-2026-64847) via a transitive
+  dependency bump; no functional changes.
+- Show the product tour screenshots by default in the README instead of
+  behind a collapsed section.
+- Promote 209 Common Control Framework safeguard mappings from proposed to
+  reviewed across CMMC 2.0, ISO 27017, FedRAMP Moderate, ISO 42001, and CIS
+  AWS, raising audit-defensible (attestable) coverage from 4.8% to 27.0%.
+- Routine web dependency updates (`@tanstack/react-query`, `framer-motion`,
+  `lucide-react`, `tailwind-merge`, `@types/node`, `autoprefixer`).
+
 ## 0.2.12 - 2026-09-15
 
 - Lead the dashboard overview with overall posture, an assessment score out of 100,
