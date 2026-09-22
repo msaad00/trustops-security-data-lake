@@ -25,7 +25,8 @@ def test_readme_header_leads_with_the_product_and_live_build_status() -> None:
     assert "Open, self-hosted GRC for cloud and AI." in header
     assert "Quick start" in header
     assert "ci.yml?branch=main&amp;label=CI" in header
-    assert readme.count("<details>") == readme.count("</details>") >= 6
+    opening_tags = readme.count("<details>") + readme.count("<details open>")
+    assert opening_tags == readme.count("</details>") >= 6
 
 
 def test_readme_hero_names_only_shipped_capabilities() -> None:
