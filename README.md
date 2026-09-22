@@ -138,20 +138,20 @@ security-lakehouse frameworks safeguards --format table
 
 ## Explore
 
-<details>
+<details open>
 <summary><strong>01 · Product tour</strong> — overview, evidence, and audit room</summary>
 
 The images below show the stored demo fixture, not live customer evidence.
 
-|                              Overview                              |                             Evidence                              |
-| :----------------------------------------------------------------: | :---------------------------------------------------------------: |
-| ![TrustOps demo overview](docs/images/trustops-demo-dashboard.png) | ![TrustOps demo evidence](docs/images/trustops-demo-evidence.png) |
+|                               Overview                                |                             Evidence                              |
+| :-------------------------------------------------------------------: | :---------------------------------------------------------------: |
+|  ![TrustOps demo overview](docs/images/trustops-demo-dashboard.png)   | ![TrustOps demo evidence](docs/images/trustops-demo-evidence.png) |
+|                              Frameworks                               |                              Triage                               |
+| ![TrustOps demo frameworks](docs/images/trustops-demo-frameworks.png) |   ![TrustOps demo triage](docs/images/trustops-demo-triage.png)   |
 
 [Full walkthrough](docs/PRODUCT_WALKTHROUGH.md) ·
 [Connectors](docs/images/trustops-demo-connectors.png) ·
-[Frameworks](docs/images/trustops-demo-frameworks.png) ·
 [Findings](docs/images/trustops-demo-findings.png) ·
-[Triage](docs/images/trustops-demo-triage.png) ·
 [Remediation](docs/images/trustops-demo-remediation.png) ·
 [Audit room](docs/images/trustops-demo-audit-room.png) ·
 [Workflows](docs/images/trustops-demo-workflows.png)
