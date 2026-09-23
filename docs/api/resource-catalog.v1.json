@@ -747,6 +747,30 @@
     {
       "kind": "collection",
       "methods": ["GET", "POST"],
+      "path": "/api/v1/webhooks",
+      "query_params": ["enabled", "event_type", "limit", "offset"],
+      "resource": "webhooks",
+      "scopes": ["read", "connector_manage"]
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET", "PATCH", "DELETE"],
+      "path": "/api/v1/webhooks/{subscription_id}",
+      "path_params": ["subscription_id"],
+      "resource": "webhooks",
+      "scopes": ["read", "connector_manage"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET"],
+      "path": "/api/v1/webhooks/{subscription_id}/deliveries",
+      "path_params": ["subscription_id"],
+      "resource": "webhooks.deliveries",
+      "scopes": ["read"]
+    },
+    {
+      "kind": "collection",
+      "methods": ["GET", "POST"],
       "path": "/api/v1/workflows",
       "query": ["limit", "offset", "sort", "<field>=<value>"],
       "resource": "workflows"

@@ -653,6 +653,52 @@
         "title": "CreateVendorAssessmentRequest",
         "type": "object"
       },
+      "CreateWebhookRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "default": "",
+            "maxLength": 255,
+            "title": "Description",
+            "type": "string"
+          },
+          "enabled": {
+            "default": true,
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "event_types": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Event Types",
+            "type": "array"
+          },
+          "secret": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "minLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Secret"
+          },
+          "url": {
+            "maxLength": 2048,
+            "minLength": 1,
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": ["url", "event_types"],
+        "title": "CreateWebhookRequest",
+        "type": "object"
+      },
       "EscalateFreshnessRequest": {
         "additionalProperties": false,
         "properties": {
@@ -1244,6 +1290,77 @@
           }
         },
         "title": "UpdateVendorAssessmentRequest",
+        "type": "object"
+      },
+      "UpdateWebhookRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          },
+          "event_types": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event Types"
+          },
+          "secret": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "minLength": 16,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Secret"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "title": "UpdateWebhookRequest",
         "type": "object"
       },
       "V1Envelope": {
@@ -6230,6 +6347,246 @@
         "tags": ["violations"]
       }
     },
+    "/api/v1/webhooks": {
+      "get": {
+        "operationId": "list_webhooks_api_v1_webhooks_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Webhooks",
+        "tags": ["webhooks"]
+      },
+      "post": {
+        "operationId": "create_webhook_api_v1_webhooks_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWebhookRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Webhook",
+        "tags": ["webhooks"]
+      }
+    },
+    "/api/v1/webhooks/{subscription_id}": {
+      "delete": {
+        "operationId": "delete_webhook_api_v1_webhooks__subscription_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "subscription_id",
+            "required": true,
+            "schema": {
+              "title": "Subscription Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete Webhook",
+        "tags": ["webhooks"]
+      },
+      "get": {
+        "operationId": "get_webhook_api_v1_webhooks__subscription_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "subscription_id",
+            "required": true,
+            "schema": {
+              "title": "Subscription Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Webhook",
+        "tags": ["webhooks"]
+      },
+      "patch": {
+        "operationId": "update_webhook_api_v1_webhooks__subscription_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "subscription_id",
+            "required": true,
+            "schema": {
+              "title": "Subscription Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWebhookRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update Webhook",
+        "tags": ["webhooks"]
+      }
+    },
+    "/api/v1/webhooks/{subscription_id}/deliveries": {
+      "get": {
+        "operationId": "list_webhook_deliveries_api_v1_webhooks__subscription_id__deliveries_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "subscription_id",
+            "required": true,
+            "schema": {
+              "title": "Subscription Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Webhook Deliveries",
+        "tags": ["webhooks"]
+      }
+    },
     "/api/v1/workflows": {
       "get": {
         "operationId": "get_workflows",
@@ -6617,6 +6974,10 @@
     {
       "description": "Cross-entity tags and saved views.",
       "name": "tags"
+    },
+    {
+      "description": "Outbound event subscriptions (findings, assessments, controls).",
+      "name": "webhooks"
     }
   ]
 }

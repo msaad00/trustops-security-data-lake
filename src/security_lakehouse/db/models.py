@@ -636,3 +636,79 @@ class VendorAssessment(Base):
         DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
     )
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+# ---------------------------------------------------------------------------
+# Outbound event webhooks
+# ---------------------------------------------------------------------------
+
+# The API is otherwise pull-only; a registered subscription lets a tenant push
+# a notification to its own SIEM/ticketing system when something happens,
+# instead of polling. Event types are intentionally small and map to concrete,
+# detectable state in the assessment engine — see assessment.py's snapshot
+# chain diffing for how ``finding.created``/``control.failed`` are derived.
+WEBHOOK_EVENT_TYPES = ("finding.created", "assessment.completed", "control.failed")
+WEBHOOK_DELIVERY_STATUSES = ("success", "failed")
+
+
+class WebhookSubscription(Base):
+    """A tenant-registered outbound webhook endpoint.
+
+    ``secret`` is stored so every delivery can be HMAC-signed; unlike an
+    ``ApiKey`` (a bearer credential we only ever need to compare by hash), a
+    webhook secret must be recoverable to sign each outbound request, so it is
+    persisted in the application database rather than hashed. It is returned to
+    the caller in full only once, at creation.
+    """
+
+    __tablename__ = "webhook_subscriptions"
+    __table_args__ = (Index("ix_webhook_subscriptions_tenant_enabled", "tenant_id", "enabled"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    url: Mapped[str] = mapped_column(String(2048), nullable=False)
+    secret: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    event_types_json: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
+    enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    created_by: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
+    last_delivery_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_delivery_status: Mapped[str | None] = mapped_column(String(16), nullable=True)
+
+
+class WebhookDelivery(Base):
+    """An audit record of one webhook delivery attempt (final outcome only).
+
+    Deliveries are logged for operator visibility (an auditor asking "did the
+    SIEM actually get notified" needs an answer), not replayed from a queue —
+    delivery itself is synchronous-with-retry at call time (see
+    ``services.webhooks``).
+    """
+
+    __tablename__ = "webhook_deliveries"
+    __table_args__ = (Index("ix_webhook_deliveries_tenant_subscription", "tenant_id", "subscription_id"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    subscription_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("webhook_subscriptions.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    event_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    event_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    status: Mapped[str] = mapped_column(String(16), nullable=False)
+    attempts: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    response_status: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    error: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )

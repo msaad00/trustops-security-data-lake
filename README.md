@@ -238,6 +238,7 @@ support are planned. See the [deployment guide](deploy/README.md).
 [TrustOps operator skill](agent-skills/trustops-operator/SKILL.md) ·
 [Specialist skills](agent-skills/FRAMEWORK_SKILLS.md) ·
 [Agent workflow catalog](docs/api/AGENT_SKILLS.md) ·
+[Webhooks](docs/WEBHOOKS.md) ·
 [AI bill of materials](docs/AIBOM.md)
 
 </details>

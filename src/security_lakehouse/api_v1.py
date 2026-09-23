@@ -21,6 +21,7 @@ from typing import Any
 
 from security_lakehouse.ai_governance import build_ai_governance_status, list_ai_inventory
 from security_lakehouse.assessment import (
+    SnapshotWrittenHook,
     build_current_posture,
     posture_as_of,
     verify_snapshot_chain,
@@ -847,6 +848,30 @@ EXTENDED_RESOURCES: list[JsonObject] = [
         "scopes": ["read"],
         "query_params": ["category", "actor", "limit", "include_requests"],
     },
+    {
+        "resource": "webhooks",
+        "path": "/api/v1/webhooks",
+        "kind": "collection",
+        "methods": ["GET", "POST"],
+        "scopes": ["read", "connector_manage"],
+        "query_params": ["enabled", "event_type", "limit", "offset"],
+    },
+    {
+        "resource": "webhooks",
+        "path": "/api/v1/webhooks/{subscription_id}",
+        "kind": "singleton",
+        "methods": ["GET", "PATCH", "DELETE"],
+        "scopes": ["read", "connector_manage"],
+        "path_params": ["subscription_id"],
+    },
+    {
+        "resource": "webhooks.deliveries",
+        "path": "/api/v1/webhooks/{subscription_id}/deliveries",
+        "kind": "collection",
+        "methods": ["GET"],
+        "scopes": ["read"],
+        "path_params": ["subscription_id"],
+    },
 ]
 
 
@@ -1463,13 +1488,27 @@ def _reject_local_only_options(options: JsonObject | None, *, resource: str) -> 
     return None
 
 
-def handle_post(path: str, body: JsonObject | None, lake_dir: str | Path) -> tuple[HTTPStatus, JsonObject]:
-    """Resolve a v1 POST into an ``(status, body)`` pair."""
+def handle_post(
+    path: str,
+    body: JsonObject | None,
+    lake_dir: str | Path,
+    *,
+    on_snapshot_written: SnapshotWrittenHook | None = None,
+) -> tuple[HTTPStatus, JsonObject]:
+    """Resolve a v1 POST into an ``(status, body)`` pair.
+
+    ``on_snapshot_written`` is passed straight through to
+    :func:`write_assessment_snapshot` for the ``/api/v1/snapshots`` route; it is
+    ``None`` for local mode (:mod:`security_lakehouse.server`), which has no
+    DB/tenant context to dispatch webhooks with, and supplied by server mode
+    (:mod:`security_lakehouse.server_app`) so the same route dispatches
+    ``assessment.completed``/``finding.created``/``control.failed`` events.
+    """
     lake = resolve_path(lake_dir)
     payload = body or {}
     if path == "/api/v1/snapshots":
         reason = str(payload.get("reason") or "api_request")
-        snapshot_path = write_assessment_snapshot(lake, reason=reason)
+        snapshot_path = write_assessment_snapshot(lake, reason=reason, on_snapshot_written=on_snapshot_written)
         return HTTPStatus.CREATED, envelope("snapshots", {"snapshot_path": str(snapshot_path), "reason": reason})
     triage = _suffix_match(path, "/api/v1/violations/", "/triage")
     if triage is not None:
