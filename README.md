@@ -234,6 +234,7 @@ support are planned. See the [deployment guide](deploy/README.md).
 | CLI                                     | Collect, evaluate, verify, export, and run the local server.     |
 | [MCP](docs/HEADLESS_GRC.md)             | Read assessments and propose actions through governed tools.     |
 | [CI](docs/playbooks/CI_POSTURE_GATE.md) | Apply posture and control-test thresholds to delivery workflows. |
+| [OSCAL export](docs/OSCAL_EXPORT.md)    | NIST OSCAL component-definition and assessment-results JSON.     |
 
 [TrustOps operator skill](agent-skills/trustops-operator/SKILL.md) ·
 [Specialist skills](agent-skills/FRAMEWORK_SKILLS.md) ·

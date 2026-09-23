@@ -386,6 +386,19 @@
     {
       "kind": "singleton",
       "methods": ["GET"],
+      "path": "/api/v1/oscal/assessment-results",
+      "query": ["snapshot_id"],
+      "resource": "oscal.assessment-results"
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
+      "path": "/api/v1/oscal/component-definition",
+      "resource": "oscal.component-definition"
+    },
+    {
+      "kind": "singleton",
+      "methods": ["GET"],
       "path": "/api/v1/platform/ai-governance",
       "resource": "platform.ai-governance",
       "scopes": ["read"]
