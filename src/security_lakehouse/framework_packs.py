@@ -4,6 +4,15 @@ Packs define every official criterion/subcategory ID with short internal titles
 (no licensed normative text). ``sync_framework_packs`` merges pack rows into the
 active control catalog and reviewed mappings without removing other frameworks
 or richer hand-authored control definitions.
+
+Each ``*_specs()`` function is manifest-driven: identifiers, titles, and the
+source citation live as data in a JSON manifest under
+``frameworks/packs/data/``, read via
+:func:`security_lakehouse.pack_manifest.pack_from_manifest`. Each function is
+a thin wrapper around that manifest plus a small, named, per-framework
+transform (ID normalization, risk-domain/owner lookups, evidence-requirement
+wording) — see ``docs/FRAMEWORK_PACKS.md`` for the schema and the "add a new
+framework" workflow.
 """
 
 from __future__ import annotations
@@ -206,7 +215,9 @@ def _nist_ai_rmf_row_transform(row: PackManifestRow) -> PackControlSpec:
         title=title,
         risk_domain=risk,
         owner="ai-security",
-        evaluation_rule="fail_when_open_violation_or_stale_evidence" if risk == "ai-risk" else "fail_when_missing_evidence",
+        evaluation_rule="fail_when_open_violation_or_stale_evidence"
+        if risk == "ai-risk"
+        else "fail_when_missing_evidence",
         evidence_requirement=(f"Current AI governance evidence supports {ref} with reviewed mappings and fresh proof."),
         asset_types=("ai_model", "ai_agent", "service", "data_store"),
         source_url=NIST_AI_RMF_SOURCE,

@@ -10,128 +10,98 @@
       "title": "Processing principles evidenced",
       "risk_domain": "privacy-engineering",
       "owner": "privacy-office",
-      "asset_types": [
-        "data_store",
-        "service"
-      ]
+      "asset_types": ["data_store", "service"]
     },
     {
       "id": "Art.6",
       "title": "Lawful basis for processing documented",
       "risk_domain": "privacy-engineering",
       "owner": "privacy-office",
-      "asset_types": [
-        "data_store"
-      ]
+      "asset_types": ["data_store"]
     },
     {
       "id": "Art.7",
       "title": "Consent conditions evidenced where used",
       "risk_domain": "privacy-engineering",
       "owner": "privacy-office",
-      "asset_types": [
-        "service"
-      ]
+      "asset_types": ["service"]
     },
     {
       "id": "Art.12",
       "title": "Transparent privacy notices published",
       "risk_domain": "privacy-engineering",
       "owner": "privacy-office",
-      "asset_types": [
-        "service"
-      ]
+      "asset_types": ["service"]
     },
     {
       "id": "Art.13",
       "title": "Collection-time privacy information provided",
       "risk_domain": "privacy-engineering",
       "owner": "privacy-office",
-      "asset_types": [
-        "service"
-      ]
+      "asset_types": ["service"]
     },
     {
       "id": "Art.14",
       "title": "Indirect collection privacy information provided",
       "risk_domain": "privacy-engineering",
       "owner": "privacy-office",
-      "asset_types": [
-        "service"
-      ]
+      "asset_types": ["service"]
     },
     {
       "id": "Art.15",
       "title": "Data subject access rights supported",
       "risk_domain": "privacy-engineering",
       "owner": "privacy-office",
-      "asset_types": [
-        "data_store"
-      ]
+      "asset_types": ["data_store"]
     },
     {
       "id": "Art.17",
       "title": "Erasure requests handled within SLA",
       "risk_domain": "privacy-engineering",
       "owner": "privacy-office",
-      "asset_types": [
-        "data_store"
-      ]
+      "asset_types": ["data_store"]
     },
     {
       "id": "Art.24",
       "title": "Controller responsibility demonstrated",
       "risk_domain": "governance",
       "owner": "privacy-office",
-      "asset_types": [
-        "service"
-      ]
+      "asset_types": ["service"]
     },
     {
       "id": "Art.34",
       "title": "Communication of breach to data subjects",
       "risk_domain": "incident-response",
       "owner": "privacy-office",
-      "asset_types": [
-        "service"
-      ]
+      "asset_types": ["service"]
     },
     {
       "id": "Art.37",
       "title": "DPO designation evidenced where required",
       "risk_domain": "governance",
       "owner": "privacy-office",
-      "asset_types": [
-        "service"
-      ]
+      "asset_types": ["service"]
     },
     {
       "id": "Art.44",
       "title": "Cross-border transfer safeguards documented",
       "risk_domain": "data-protection",
       "owner": "privacy-office",
-      "asset_types": [
-        "data_store",
-        "service"
-      ]
+      "asset_types": ["data_store", "service"]
     },
     {
       "id": "Art.45",
       "title": "Adequacy or transfer mechanism evidenced",
       "risk_domain": "data-protection",
       "owner": "privacy-office",
-      "asset_types": [
-        "data_store"
-      ]
+      "asset_types": ["data_store"]
     },
     {
       "id": "Art.46",
       "title": "Standard contractual clauses or BCRs in place",
       "risk_domain": "third-party-risk",
       "owner": "privacy-office",
-      "asset_types": [
-        "service"
-      ]
+      "asset_types": ["service"]
     }
   ]
 }

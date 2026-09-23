@@ -27,6 +27,7 @@ ISO_27017_SOURCE = "https://www.iso.org/standard/43757.html"
 ISO_42001_SOURCE = "https://www.iso.org/standard/42001"
 NIST_CSF_2_SOURCE = "https://www.nist.gov/cyberframework"
 
+
 @lru_cache(maxsize=1)
 def nist_800_53_rev5_moderate_ids() -> tuple[str, ...]:
     path = PACK_DATA_DIR / "nist_800_53_rev5_moderate.json"

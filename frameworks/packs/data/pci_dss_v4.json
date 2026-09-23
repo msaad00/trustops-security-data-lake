@@ -10,84 +10,63 @@
       "title": "Network security controls enforced",
       "risk_domain": "network-security",
       "owner": "security-operations",
-      "asset_types": [
-        "service",
-        "network"
-      ]
+      "asset_types": ["service", "network"]
     },
     {
       "id": "2",
       "title": "Secure configurations applied",
       "risk_domain": "configuration-management",
       "owner": "security-operations",
-      "asset_types": [
-        "service"
-      ]
+      "asset_types": ["service"]
     },
     {
       "id": "3",
       "title": "Stored account data protected",
       "risk_domain": "data-protection",
       "owner": "security-operations",
-      "asset_types": [
-        "data_store"
-      ]
+      "asset_types": ["data_store"]
     },
     {
       "id": "4",
       "title": "Transmission encryption enforced",
       "risk_domain": "data-protection",
       "owner": "security-operations",
-      "asset_types": [
-        "service",
-        "network"
-      ]
+      "asset_types": ["service", "network"]
     },
     {
       "id": "5",
       "title": "Malicious software protections active",
       "risk_domain": "malware-defense",
       "owner": "security-operations",
-      "asset_types": [
-        "service"
-      ]
+      "asset_types": ["service"]
     },
     {
       "id": "6",
       "title": "Secure development practices evidenced",
       "risk_domain": "change-management",
       "owner": "engineering",
-      "asset_types": [
-        "repo",
-        "service"
-      ]
+      "asset_types": ["repo", "service"]
     },
     {
       "id": "8",
       "title": "User identification and authentication enforced",
       "risk_domain": "identity",
       "owner": "security-operations",
-      "asset_types": [
-        "user"
-      ]
+      "asset_types": ["user"]
     },
     {
       "id": "9",
       "title": "Physical access to cardholder data restricted",
       "risk_domain": "physical-security",
       "owner": "security-operations",
-      "asset_types": [
-        "service"
-      ]
+      "asset_types": ["service"]
     },
     {
       "id": "12",
       "title": "Information security policy maintained",
       "risk_domain": "governance",
       "owner": "security-operations",
-      "asset_types": [
-        "service"
-      ]
+      "asset_types": ["service"]
     }
   ]
 }
