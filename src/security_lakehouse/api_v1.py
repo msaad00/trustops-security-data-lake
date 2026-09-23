@@ -59,6 +59,7 @@ from security_lakehouse.mappings import (
     build_reviewed_crosswalk,
     load_control_article_mappings,
 )
+from security_lakehouse.oscal import build_assessment_results, build_component_definition
 from security_lakehouse.readiness import build_readiness_view
 from security_lakehouse.safeguards import coverage_by_family, coverage_by_framework
 from security_lakehouse.tracking import ALLOWED_STATES, append_event, latest_state, list_events, verify_tracking_chain
@@ -149,6 +150,9 @@ SINGLETON_LOADERS: dict[str, tuple[str, Callable[[Path], Any]]] = {
         "ccf.coverage",
         lambda _lake: {"families": coverage_by_family(), "frameworks": coverage_by_framework()},
     ),
+    # Component definition is built from the CCF safeguards + control catalog,
+    # not from the lake, so it ignores the lake path like crosswalk/ccf.coverage.
+    "/api/v1/oscal/component-definition": ("oscal.component-definition", lambda _lake: build_component_definition()),
 }
 
 # Route -> (resource name, loader) for endpoints returning a row collection.
@@ -1005,6 +1009,15 @@ def resource_catalog() -> list[JsonObject]:
             "path_params": ["control_id"],
         }
     )
+    catalog.append(
+        {
+            "resource": "oscal.assessment-results",
+            "path": "/api/v1/oscal/assessment-results",
+            "kind": "singleton",
+            "methods": ["GET"],
+            "query": ["snapshot_id"],
+        }
+    )
     for path, (name, _loader) in SINGLETON_LOADERS.items():
         catalog.append({"resource": name, "path": path, "kind": "singleton", "methods": ["GET"]})
     for path, (name, _loader) in COLLECTION_LOADERS.items():
@@ -1427,6 +1440,16 @@ def _handle_get(path: str, params: Params, lake_dir: str | Path) -> tuple[HTTPSt
                 "bad_request", f"invalid 'as_of' value: {as_of!r}", resource="posture.as_of"
             )
         return HTTPStatus.OK, envelope("posture.as_of", data)
+    if path == "/api/v1/oscal/assessment-results":
+        snapshot_values = params.get("snapshot_id") or []
+        snapshot_id = snapshot_values[0] if snapshot_values else None
+        try:
+            data = build_assessment_results(lake, snapshot_id=snapshot_id)
+        except FileNotFoundError:
+            return HTTPStatus.NOT_FOUND, error_envelope(
+                "not_found", f"unknown snapshot {snapshot_id!r}", resource="oscal.assessment-results"
+            )
+        return HTTPStatus.OK, envelope("oscal.assessment-results", data)
     singleton = SINGLETON_LOADERS.get(path)
     if singleton is not None:
         resource, loader = singleton

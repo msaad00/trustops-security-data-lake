@@ -281,6 +281,30 @@ def _parser() -> argparse.ArgumentParser:
     catalog_verify = catalog_sub.add_parser("verify", help="verify the active catalog matches the committed lockfile")
     catalog_verify.set_defaults(func=_catalog_verify)
 
+    oscal = sub.add_parser("oscal", help="NIST OSCAL export commands")
+    oscal_sub = oscal.add_subparsers(dest="oscal_command", required=True)
+    oscal_export = oscal_sub.add_parser(
+        "export", help="export an OSCAL component-definition or assessment-results JSON document"
+    )
+    oscal_export.add_argument(
+        "--component-definition",
+        action="store_true",
+        help="emit an OSCAL component-definition from the CCF safeguards + control catalog",
+    )
+    oscal_export.add_argument(
+        "--assessment-results",
+        metavar="LAKE",
+        default=None,
+        help="emit OSCAL assessment-results from this security data lake's evaluated control posture",
+    )
+    oscal_export.add_argument(
+        "--snapshot",
+        default=None,
+        help="with --assessment-results, pin metadata to a point-in-time snapshot id (default: current posture)",
+    )
+    oscal_export.add_argument("--out", default=None, help="write JSON to this path (default stdout)")
+    oscal_export.set_defaults(func=_oscal_export)
+
     dashboard = sub.add_parser("dashboard", help="render static dashboard HTML")
     dashboard.add_argument("--lake", required=True, help="security data lake output directory")
     dashboard.add_argument("--out", required=True, help="dashboard HTML output path")
@@ -1123,6 +1147,28 @@ def _catalog_verify(args: argparse.Namespace) -> int:
     print(f"  actual:   {result['actual']}")
     print(f"  drifted:  {', '.join(result['drifted_components']) or '(hash mismatch)'}")
     return 1
+
+
+def _oscal_export(args: argparse.Namespace) -> int:
+    from security_lakehouse.oscal import build_assessment_results, build_component_definition
+
+    if bool(args.component_definition) == bool(args.assessment_results):
+        raise SystemExit("pass exactly one of --component-definition or --assessment-results")
+    if args.component_definition:
+        if args.snapshot:
+            raise SystemExit("--snapshot only applies to --assessment-results")
+        document = build_component_definition()
+    else:
+        document = build_assessment_results(args.assessment_results, snapshot_id=args.snapshot)
+    text = json.dumps(document, indent=2, sort_keys=True)
+    if args.out:
+        out_path = Path(args.out)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(text + "\n", encoding="utf-8")
+        print(f"wrote OSCAL export: {args.out}")
+    else:
+        print(text)
+    return 0
 
 
 def _dashboard(args: argparse.Namespace) -> int:
