@@ -1520,12 +1520,17 @@ def handle_post(
 ) -> tuple[HTTPStatus, JsonObject]:
     """Resolve a v1 POST into an ``(status, body)`` pair.
 
-    ``on_snapshot_written`` is passed straight through to
-    :func:`write_assessment_snapshot` for the ``/api/v1/snapshots`` route; it is
-    ``None`` for local mode (:mod:`security_lakehouse.server`), which has no
-    DB/tenant context to dispatch webhooks with, and supplied by server mode
-    (:mod:`security_lakehouse.server_app`) so the same route dispatches
-    ``assessment.completed``/``finding.created``/``control.failed`` events.
+    ``on_snapshot_written`` reaches every route that can write an assessment
+    snapshot: ``/api/v1/snapshots`` directly, and ``/api/v1/workflows/{id}/run``,
+    ``/api/v1/workflows/actions/run``, and ``/api/v1/scheduler/tick``
+    indirectly whenever they execute an ``action.snapshot`` workflow node (see
+    :func:`security_lakehouse.workflows.run_action`). It is ``None`` for local
+    mode (:mod:`security_lakehouse.server`), which has no DB/tenant context to
+    dispatch webhooks with, and supplied by server mode
+    (:mod:`security_lakehouse.server_app`) so all of these routes dispatch
+    ``assessment.completed``/``finding.created``/``control.failed`` events —
+    including a cron-scheduled snapshot fired via ``scheduler tick``, not only
+    an interactively-triggered one.
     """
     lake = resolve_path(lake_dir)
     payload = body or {}
@@ -1570,7 +1575,12 @@ def handle_post(
         return HTTPStatus.CREATED, envelope("workflows", record)
     if path == "/api/v1/workflows/actions/run":
         try:
-            output = run_action(lake, node_type=str(payload.get("node_type") or ""), params=payload.get("params") or {})
+            output = run_action(
+                lake,
+                node_type=str(payload.get("node_type") or ""),
+                params=payload.get("params") or {},
+                on_snapshot_written=on_snapshot_written,
+            )
         except (ValueError, TypeError):
             return HTTPStatus.BAD_REQUEST, error_envelope(
                 "bad_request", "invalid request", resource="workflows.actions"
@@ -1584,6 +1594,7 @@ def handle_post(
                 workflow_id=workflow_to_run,
                 actor=str(payload.get("actor") or "console"),
                 dry_run=bool(payload.get("dry_run")),
+                on_snapshot_written=on_snapshot_written,
             )
         except (ValueError, TypeError):
             return HTTPStatus.BAD_REQUEST, error_envelope("bad_request", "invalid request", resource="workflows.run")
@@ -1754,7 +1765,7 @@ def handle_post(
     if path == "/api/v1/scheduler/tick":
         from security_lakehouse.scheduler import tick
 
-        fired = tick(lake)
+        fired = tick(lake, on_snapshot_written=on_snapshot_written)
         return HTTPStatus.CREATED, envelope("scheduler.tick", {"fired": fired, "count": len(fired)})
     link_start = _connector_link_action(path, "start")
     if link_start is not None:

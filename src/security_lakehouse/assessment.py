@@ -178,22 +178,33 @@ def _prior_snapshot_payload(lake_dir: str | Path) -> dict[str, Any] | None:
     Read-only and additive: used only to diff violations for webhook event
     detection (see :func:`_diff_violations`), never to decide the hash chain
     itself. A missing/unreadable prior snapshot yields ``None`` rather than
-    raising, so a corrupt or pruned history never blocks a new snapshot write.
+    raising, so a corrupt or pruned history never blocks a new snapshot write
+    -- but unlike the genuine "this is the first snapshot ever" case (an empty
+    ledger, which also returns ``None``), that outcome is silent data loss for
+    the diff (every violation open since before the gap will never fire
+    ``finding.created``/``control.failed``), so it is logged at warning level
+    to make the failure observable instead of indistinguishable from "no gap."
     """
     entries = read_jsonl(_ledger_path(lake_dir), missing_ok=True)
     if not entries:
         return None
     name = entries[-1].get("snapshot")
     if not isinstance(name, str) or not name:
+        logger.warning("prior snapshot read failed for %s: ledger's last entry has no snapshot filename", lake_dir)
         return None
     path = Path(lake_dir) / "gold" / "snapshots" / name
     if not path.is_file():
+        logger.warning("prior snapshot read failed for %s: %s is missing (ledger entry points to it)", lake_dir, path)
         return None
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError) as exc:
+        logger.warning("prior snapshot read failed for %s: %s is unreadable (%s)", lake_dir, path, exc)
         return None
-    return payload if isinstance(payload, dict) else None
+    if not isinstance(payload, dict):
+        logger.warning("prior snapshot read failed for %s: %s did not contain a JSON object", lake_dir, path)
+        return None
+    return payload
 
 
 def _diff_violations(prior: dict[str, Any] | None, current: dict[str, Any]) -> tuple[list[dict[str, Any]], list[str]]:
@@ -206,29 +217,47 @@ def _diff_violations(prior: dict[str, Any] | None, current: dict[str, Any]) -> t
     point-in-time snapshots, not a fabricated one. There is no prior snapshot
     on the very first freeze of a lake, so nothing is reported as "new" then
     (everything open at that point is the starting state, not a transition).
+
+    Defensive against malformed rows (e.g. a ``violation_id``/``control_id``
+    that is not a string -- an unhashable value like a list would otherwise
+    raise ``TypeError`` on set membership and break every caller of
+    :func:`write_assessment_snapshot`, webhook-unaware ones included, since
+    this runs inside the chain lock). Only string ids are ever added to the
+    dedup sets; a violation whose id cannot be matched against the prior
+    snapshot is conservatively treated as new rather than silently dropped or
+    raising.
     """
     if prior is None:
         return [], []
     prior_violations = prior.get("violations")
-    prior_ids = (
-        {v.get("violation_id") for v in prior_violations if isinstance(v, dict)}
-        if isinstance(prior_violations, list)
-        else set()
-    )
-    prior_failing_controls = (
-        {v.get("control_id") for v in prior_violations if isinstance(v, dict)}
-        if isinstance(prior_violations, list)
-        else set()
-    )
+    prior_ids: set[str] = set()
+    prior_failing_controls: set[str] = set()
+    if isinstance(prior_violations, list):
+        for row in prior_violations:
+            if not isinstance(row, dict):
+                continue
+            violation_id = row.get("violation_id")
+            if isinstance(violation_id, str):
+                prior_ids.add(violation_id)
+            control_id = row.get("control_id")
+            if isinstance(control_id, str):
+                prior_failing_controls.add(control_id)
     current_violations = current.get("violations")
     if not isinstance(current_violations, list):
         return [], []
-    new_violations = [v for v in current_violations if isinstance(v, dict) and v.get("violation_id") not in prior_ids]
+    new_violations: list[dict[str, Any]] = []
+    for row in current_violations:
+        if not isinstance(row, dict):
+            continue
+        violation_id = row.get("violation_id")
+        if isinstance(violation_id, str) and violation_id in prior_ids:
+            continue  # present in the prior snapshot too -- not new
+        new_violations.append(row)
     newly_failing_controls = sorted(
         {
-            v["control_id"]
-            for v in new_violations
-            if isinstance(v.get("control_id"), str) and v["control_id"] not in prior_failing_controls
+            row["control_id"]
+            for row in new_violations
+            if isinstance(row.get("control_id"), str) and row["control_id"] not in prior_failing_controls
         }
     )
     return new_violations, newly_failing_controls
@@ -299,7 +328,11 @@ def write_assessment_snapshot(
                 "recorded_at": utc_iso(datetime.now(UTC)),
             },
         )
-        new_violations, newly_failing_controls = _diff_violations(prior_payload, assessment)
+        try:
+            new_violations, newly_failing_controls = _diff_violations(prior_payload, assessment)
+        except Exception:  # noqa: BLE001 - the diff is a defensive best-effort add-on, never allowed to break a snapshot write
+            logger.exception("violations diff failed for %s; webhook finding/control events will not fire", output_path)
+            new_violations, newly_failing_controls = [], []
     # Lock released above -- the hook (and any outbound webhook delivery it
     # triggers) must never hold up a concurrent writer.
     if on_snapshot_written is not None:

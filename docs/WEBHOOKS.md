@@ -40,6 +40,11 @@ chain-linked data the snapshot already produces. This means:
 - A control that is already failing does not re-fire `control.failed` on
   every subsequent violation against it — only the pass→fail transition does.
   It will, however, still produce a `finding.created` for each new violation.
+- A snapshot written by resuming a paused workflow run (`retry_workflow_run`/
+  `approve_workflow_run` after a `gate.approval` node) does not dispatch
+  webhook events yet, even if that run's DAG includes an `action.snapshot`
+  node — only a run started fresh (`run_workflow`, including a scheduler-fired
+  one) is wired today. This is a narrower, known gap, not a silent one.
 
 ## Registering a subscription
 
@@ -195,7 +200,18 @@ function verifyTrustOpsWebhook(secret, rawBody, signatureHeader) {
   this codebase uses (`security_lakehouse/netguard.py`): only `http`/`https`,
   and the _resolved_ address must be public — a registered URL that resolves
   to a private/loopback/link-local address is refused before any request is
-  attempted.
+  attempted, including on a redirect hop.
+- **Optional destination allowlist.** Set `TRUSTOPS_WEBHOOK_EGRESS_ALLOWLIST`
+  (comma-separated `host` or `host:port` entries) to additionally restrict
+  webhook deliveries to specific approved destinations — e.g. a SIEM vendor's
+  fixed IP/hostname. Unset (the default) means "any public address" is
+  allowed, same as before this variable existed: a webhook subscription is a
+  tenant registering _its own_ receiving endpoint for _its own_ events (the
+  GitHub/Stripe self-service webhook model), not an admin-authored automation
+  target, so this is deliberately **not** deny-by-default the way the
+  workflow engine's `TRUSTOPS_WORKFLOW_EGRESS_ALLOWLIST` is (see "Relationship
+  to `action.webhook`" below) — turning that one on does not, and should not,
+  make every tenant's webhook subscription stop delivering.
 - One retry on failure (non-2xx response, timeout, or connection error) with a
   short backoff — two attempts total by default. A 2xx on either attempt is a
   success; a non-2xx or network error on the last attempt is a recorded
@@ -210,9 +226,11 @@ function verifyTrustOpsWebhook(secret, rawBody, signatureHeader) {
   simultaneously-transitioning controls will serialize their deliveries one
   after another. A future PR moving this onto a real queue (so delivery is
   decoupled from the request entirely) is a reasonable next step if delivery
-  volume grows; each subscription's dispatch is capped at 200 events per
-  snapshot write in the meantime, with the remainder logged and skipped rather
-  than silently dropped.
+  volume grows; in the meantime, one snapshot write dispatches at most 200
+  `finding.created` and 200 `control.failed` events (independently), and
+  fanning one event out to subscribers is separately capped at 200
+  subscriptions — the remainder in either case is logged and skipped rather
+  than silently dropped, and `assessment.completed` always fires regardless.
 - Every delivery attempt's final outcome (success/failed, attempt count, HTTP
   status, error) is recorded and visible at
   `GET /api/v1/webhooks/{id}/deliveries` — this is the audit trail for "did

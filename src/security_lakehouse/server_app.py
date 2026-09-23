@@ -351,6 +351,13 @@ def _snapshot_written_hook(session: Session, tenant_id: str) -> SnapshotWrittenH
     never needs to know about the application-state DB or tenancy; see
     ``assessment.write_assessment_snapshot`` for why the hook fires only after
     its chain lock is released.
+
+    ``dispatch_snapshot_events``/``dispatch_event`` never commit or roll back
+    ``session`` themselves (see ``services.webhooks.dispatch_event``) -- every
+    caller of this hook must commit ``session`` itself afterward (once, atomic
+    with whatever else that caller's own transaction is doing) or the staged
+    delivery-log rows are silently discarded when the request-scoped session
+    closes.
     """
 
     def _hook(
@@ -867,10 +874,18 @@ def _legacy_error_payload(status_code: HTTPStatus) -> dict[str, str]:
     return {"error": error, "reason": _LEGACY_ERROR_REASONS.get(status_code, "internal server error")}
 
 
-def _legacy_post_response(path: str, body: dict[str, object], lake: Path, identity: Identity) -> JSONResponse:
+def _legacy_post_response(
+    path: str,
+    body: dict[str, object],
+    lake: Path,
+    identity: Identity,
+    on_snapshot_written: SnapshotWrittenHook | None = None,
+) -> JSONResponse:
     """Dispatch a legacy POST with a fail-closed server-mode error boundary."""
     try:
-        status_code, payload = api_legacy.handle_post(path, body, lake, role=identity.role)
+        status_code, payload = api_legacy.handle_post(
+            path, body, lake, role=identity.role, on_snapshot_written=on_snapshot_written
+        )
     except Exception:  # noqa: BLE001 - do not expose internal exception text at the HTTP boundary
         return JSONResponse(_legacy_error_payload(HTTPStatus.INTERNAL_SERVER_ERROR), status_code=500)
     if status_code >= HTTPStatus.BAD_REQUEST:
@@ -3293,7 +3308,10 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         # handle_post rebuilds posture and writes a snapshot; offload so it does
         # not block the event loop. on_snapshot_written is a no-op for every
         # v1_path except /api/v1/snapshots -- it dispatches webhook events
-        # after write_assessment_snapshot's chain lock is released.
+        # after write_assessment_snapshot's chain lock is released. The hook
+        # only stages delivery-log rows in savepoints on `session` (it never
+        # commits); this route has no other pending DB work, so committing
+        # once here persists them.
         _status, payload = await run_in_threadpool(
             api_v1.handle_post,
             v1_path,
@@ -3301,6 +3319,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             lake_for(identity),
             on_snapshot_written=_snapshot_written_hook(session, identity.tenant_id),
         )
+        session.commit()
         return JSONResponse(payload, status_code=int(_status))
 
     # --- legacy console surface (authenticated; same handlers as local mode) ---
@@ -3311,7 +3330,12 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         return JSONResponse(_redact_payload(body, identity), status_code=int(_status))
 
     @app.post("/api/{rest:path}")
-    async def legacy_post(rest: str, request: Request, identity: Identity = Depends(_require_read)) -> JSONResponse:
+    async def legacy_post(
+        rest: str,
+        request: Request,
+        identity: Identity = Depends(_require_read),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
         try:
             body = await request.json()
         except Exception:  # noqa: BLE001 - empty/invalid body is treated as no body
@@ -3327,7 +3351,19 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             body = {**body, "idempotency_key": request.headers["Idempotency-Key"]}
         # Legacy POSTs run workflows, connector syncs (full pipeline + network),
         # and scheduler ticks; offload so they do not block the event loop.
-        return await run_in_threadpool(_legacy_post_response, legacy_path, body, lake_for(identity), identity)
+        # on_snapshot_written mirrors v1_post: a no-op except for
+        # /api/snapshots, which also deserves webhook dispatch -- it has the
+        # same auth/tenant machinery as the versioned route.
+        response = await run_in_threadpool(
+            _legacy_post_response,
+            legacy_path,
+            body,
+            lake_for(identity),
+            identity,
+            _snapshot_written_hook(session, identity.tenant_id),
+        )
+        session.commit()
+        return response
 
     @app.get("/", response_class=HTMLResponse)
     @app.get("/console", response_class=HTMLResponse)

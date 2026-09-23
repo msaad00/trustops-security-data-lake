@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from security_lakehouse import api_v1
-from security_lakehouse.assessment import build_current_posture, write_assessment_snapshot
+from security_lakehouse.assessment import SnapshotWrittenHook, build_current_posture, write_assessment_snapshot
 from security_lakehouse.audit_log import build_audit_log
 from security_lakehouse.connector_state import (
     append_config_event,
@@ -256,15 +256,28 @@ def handle_get(path: str, query: Query, lake_dir: str | Path) -> tuple[HTTPStatu
     return HTTPStatus.NOT_FOUND, {"error": "not_found"}
 
 
-def handle_post(path: str, body: Body, lake_dir: str | Path, *, role: str = "") -> tuple[HTTPStatus, Body]:
-    """Resolve a legacy POST into ``(status, body)``."""
+def handle_post(
+    path: str,
+    body: Body,
+    lake_dir: str | Path,
+    *,
+    role: str = "",
+    on_snapshot_written: SnapshotWrittenHook | None = None,
+) -> tuple[HTTPStatus, Body]:
+    """Resolve a legacy POST into ``(status, body)``.
+
+    ``on_snapshot_written`` mirrors ``api_v1.handle_post``'s parameter of the
+    same name: forwarded to :func:`write_assessment_snapshot` for the
+    ``/api/snapshots`` route so server mode's legacy (unversioned) surface
+    dispatches webhook events too, not only ``/api/v1/snapshots``.
+    """
     lake = resolve_path(lake_dir)
     if role == AUDITOR_ROLE:
         return HTTPStatus.FORBIDDEN, {"error": "forbidden", "reason": "auditor role is read-only"}
     body = body or {}
     if path == "/api/snapshots":
         reason = str(body.get("reason") or "api_request")
-        snapshot_path = write_assessment_snapshot(lake, reason=reason)
+        snapshot_path = write_assessment_snapshot(lake, reason=reason, on_snapshot_written=on_snapshot_written)
         return HTTPStatus.CREATED, {"snapshot_path": str(snapshot_path), "reason": reason}
     triage = _suffix_match(path, "/api/violations/", "/triage")
     if triage is not None:

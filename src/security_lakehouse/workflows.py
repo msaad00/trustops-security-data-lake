@@ -65,7 +65,7 @@ from typing import Any
 from urllib.parse import urlsplit
 
 from security_lakehouse import netguard
-from security_lakehouse.assessment import write_assessment_snapshot
+from security_lakehouse.assessment import SnapshotWrittenHook, write_assessment_snapshot
 from security_lakehouse.io import read_jsonl
 from security_lakehouse.tracking import append_event as append_triage_event
 
@@ -148,7 +148,13 @@ def _check_control_pass(lake: Path, params: dict[str, Any], *, dry_run: bool = F
     }
 
 
-def _action_snapshot(lake: Path, params: dict[str, Any], *, dry_run: bool = False) -> dict[str, Any]:
+def _action_snapshot(
+    lake: Path,
+    params: dict[str, Any],
+    *,
+    dry_run: bool = False,
+    on_snapshot_written: SnapshotWrittenHook | None = None,
+) -> dict[str, Any]:
     reason = str(params.get("reason") or "workflow_run")
     if dry_run:
         return {
@@ -157,7 +163,7 @@ def _action_snapshot(lake: Path, params: dict[str, Any], *, dry_run: bool = Fals
             "snapshot_path": None,
             "reason": reason,
         }
-    path = write_assessment_snapshot(lake, reason=reason)
+    path = write_assessment_snapshot(lake, reason=reason, on_snapshot_written=on_snapshot_written)
     return {"snapshot_path": str(path), "reason": reason}
 
 
@@ -802,6 +808,7 @@ def run_action(
     node_type: str,
     params: dict[str, Any] | None = None,
     dry_run: bool = False,
+    on_snapshot_written: SnapshotWrittenHook | None = None,
 ) -> dict[str, Any]:
     """Execute a single action node against the lake and return its output.
 
@@ -810,11 +817,18 @@ def run_action(
     ``action.jira``) skip their side effect and return a ``{"dry_run": True,
     "would": ...}`` preview instead. Read-only checks and triggers run normally
     so downstream branching stays realistic.
+
+    ``on_snapshot_written`` is forwarded only to ``action.snapshot`` (every
+    other handler has a uniform, fixed signature and does not accept it) so a
+    workflow-triggered snapshot dispatches webhook events the same way an
+    API-triggered one does.
     """
     spec = ACTION_LIBRARY.get(node_type)
     if spec is None:
         raise ValueError(f"unknown node_type {node_type!r}")
     handler = spec["handler"]
+    if node_type == "action.snapshot":
+        return handler(Path(lake_dir), params or {}, dry_run=dry_run, on_snapshot_written=on_snapshot_written)
     return handler(Path(lake_dir), params or {}, dry_run=dry_run)
 
 
@@ -1238,6 +1252,7 @@ def _execute_workflow_nodes(
     initial_outputs: dict[str, dict[str, Any]] | None = None,
     initial_results: dict[str, dict[str, Any]] | None = None,
     initial_node_results: list[dict[str, Any]] | None = None,
+    on_snapshot_written: SnapshotWrittenHook | None = None,
 ) -> dict[str, Any]:
     nodes_by_id, parents, _incoming, order = _workflow_execution_state(workflow)
     node_results: list[dict[str, Any]] = list(initial_node_results or [])
@@ -1291,7 +1306,9 @@ def _execute_workflow_nodes(
             "params": params,
         }
         try:
-            output = run_action(lake_dir, node_type=node_type, params=params, dry_run=dry_run)
+            output = run_action(
+                lake_dir, node_type=node_type, params=params, dry_run=dry_run, on_snapshot_written=on_snapshot_written
+            )
             result_entry["result"] = "ok"
             result_entry["output"] = output
             outputs_by_node[node_id] = output
@@ -1335,6 +1352,7 @@ def run_workflow(
     workflow_id: str,
     actor: str = "console",
     dry_run: bool = False,
+    on_snapshot_written: SnapshotWrittenHook | None = None,
 ) -> dict[str, Any]:
     """Execute every node in a workflow (topological order) and persist the run.
 
@@ -1349,6 +1367,14 @@ def run_workflow(
     (snapshot, assign_owner, webhook, slack, jira) skip their side effect and
     return a ``{"dry_run": True, "would": ...}`` preview instead. The persisted
     run record is marked ``dry_run: true``.
+
+    ``on_snapshot_written``, when given, reaches any ``action.snapshot`` node in
+    this run (see :func:`run_action`) — this is how a scheduler-fired workflow
+    (:func:`security_lakehouse.scheduler.tick`) dispatches webhook events for a
+    snapshot the same way an API-triggered one does. Resuming a paused run
+    (``retry_workflow_run``/``approve_workflow_run``) does not thread this
+    through yet -- a snapshot node reached only via resume does not dispatch
+    webhooks in this slice.
     """
     if actor not in _RUN_ACTORS:
         actor = "console"
@@ -1356,7 +1382,7 @@ def run_workflow(
     if workflow is None:
         raise ValueError(f"unknown workflow_id {workflow_id!r}")
     started_at = _utc_now_iso()
-    execution = _execute_workflow_nodes(lake_dir, workflow, dry_run=dry_run)
+    execution = _execute_workflow_nodes(lake_dir, workflow, dry_run=dry_run, on_snapshot_written=on_snapshot_written)
     node_results = execution["node_results"]
     if execution["awaiting_approval"]:
         result = "awaiting_approval"
