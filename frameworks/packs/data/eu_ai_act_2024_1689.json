@@ -1,0 +1,72 @@
+{
+  "schema": "trustops.framework_pack_manifest.v1",
+  "source": {
+    "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689",
+    "name": "EU AI Act (Regulation (EU) 2024/1689)"
+  },
+  "rows": [
+    {
+      "id": "Art.5",
+      "title": "Prohibited AI practices not deployed",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security",
+      "asset_types": ["ai_model", "ai_agent"]
+    },
+    {
+      "id": "Art.6",
+      "title": "High-risk AI classification documented",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security",
+      "asset_types": ["ai_model"]
+    },
+    {
+      "id": "Art.11",
+      "title": "Technical documentation maintained for high-risk AI",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security",
+      "asset_types": ["ai_model"]
+    },
+    {
+      "id": "Art.17",
+      "title": "Quality management system for high-risk AI evidenced",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security",
+      "asset_types": ["ai_model", "service"]
+    },
+    {
+      "id": "Art.26",
+      "title": "Deployer obligations for high-risk AI met",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security",
+      "asset_types": ["ai_model", "service"]
+    },
+    {
+      "id": "Art.49",
+      "title": "Fundamental-rights impact assessment where required",
+      "risk_domain": "ai-governance",
+      "owner": "privacy-office",
+      "asset_types": ["ai_model"]
+    },
+    {
+      "id": "Art.51",
+      "title": "GPAI provider obligations evidenced",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security",
+      "asset_types": ["ai_model"]
+    },
+    {
+      "id": "Art.71",
+      "title": "EU database registration where applicable",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security",
+      "asset_types": ["ai_model"]
+    },
+    {
+      "id": "Art.72",
+      "title": "Post-market monitoring plan active",
+      "risk_domain": "ai-governance",
+      "owner": "ai-security",
+      "asset_types": ["ai_model", "ai_agent"]
+    }
+  ]
+}

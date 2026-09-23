@@ -3966,6 +3966,54 @@
         "tags": ["mappings"]
       }
     },
+    "/api/v1/oscal/assessment-results": {
+      "get": {
+        "operationId": "get_oscal_assessment_results",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "snapshot_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get oscal.assessment-results",
+        "tags": ["oscal"]
+      }
+    },
+    "/api/v1/oscal/component-definition": {
+      "get": {
+        "operationId": "get_oscal_component_definition",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Envelope"
+                }
+              }
+            },
+            "description": "v1 envelope"
+          }
+        },
+        "summary": "Get oscal.component-definition",
+        "tags": ["oscal"]
+      }
+    },
     "/api/v1/platform/ai-governance": {
       "get": {
         "operationId": "ai_governance_route_api_v1_platform_ai_governance_get",

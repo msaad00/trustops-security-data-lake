@@ -1,18 +1,39 @@
 # Pack source data
 
-Static identifier lists used by `security-lakehouse frameworks sync-packs`.
+Manifest data used by `security-lakehouse frameworks sync-packs`. Every
+framework pack's identifiers, titles, and source citation live here as JSON;
+`src/security_lakehouse/framework_packs.py` and `limited_packs.py` read them
+through `pack_from_manifest()` — see [../../../docs/FRAMEWORK_PACKS.md](../../../docs/FRAMEWORK_PACKS.md#manifest-schema)
+for the manifest schema and the "add a new framework" workflow.
 
-| File                             | Pack               | Count |
-| -------------------------------- | ------------------ | ----: |
-| `nist_800_53_rev5_moderate.json` | `fedramp-moderate` |   287 |
-| `cis_aws_v3.json`                | `cis-aws`          |    62 |
-| `cmmc_2_level2.json`             | `cmmc-2-level2`    |   110 |
-| `evidence_connector_hints.json`  | all packs          |     — |
-| `iso_27017_2015.json`            | `iso-27017-2015`   |    47 |
+| File                             | Pack               |                                           Count |
+| -------------------------------- | ------------------ | ----------------------------------------------: |
+| `soc2.json`                      | `soc2`             | **61** (33 common criteria + 28 TSC extensions) |
+| `nist_ai_rmf.json`               | `nist-ai-rmf`      |                                          **72** |
+| `nist_csf_2_core.json`           | `nist-csf-2.0`     |                                         **106** |
+| `nist_800_53_rev5_moderate.json` | `fedramp-moderate` |                                         **287** |
+| `cis_aws_v3.json`                | `cis-aws`          |                                          **62** |
+| `cmmc_2_level2.json`             | `cmmc-2-level2`    |                                         **110** |
+| `iso_27001_2022.json`            | `iso-27001-2022`   |                                          **93** |
+| `iso_27017_2015.json`            | `iso-27017-2015`   |                                          **47** |
+| `iso_42001_2023.json`            | `iso-42001-2023`   |                                          **38** |
+| `gdpr_2016_679.json`             | `gdpr`             |                                          **14** |
+| `hipaa_security_rule.json`       | `hipaa`            |                                          **12** |
+| `pci_dss_v4.json`                | `pci-dss`          |                                           **9** |
+| `eu_ai_act_2024_1689.json`       | `eu-ai-act`        |                                           **9** |
+| `evidence_connector_hints.json`  | all packs          |                                               — |
 
-ISO 27001 and ISO 42001 Annex A controls are generated programmatically in `src/security_lakehouse/pack_data.py`.
-
-FedRAMP pack data is the NIST SP 800-53 Rev 5 **Moderate baseline** from NIST
-OSCAL (`NIST_SP-800-53_rev5_MODERATE-baseline_profile.json`). FedRAMP Rev 5
-Moderate authorization selects 323 controls with overlays; the delta ships in a
+`nist_csf_2_core.json` is the original manifest precedent for this pattern
+(pinned to an official source digest — see `tests/test_csf_source_integrity.py`).
+FedRAMP's control identifiers (`nist_800_53_rev5_moderate.json`) come from the
+NIST SP 800-53 Rev 5 **Moderate baseline** OSCAL profile
+(`NIST_SP-800-53_rev5_MODERATE-baseline_profile.json`); FedRAMP Rev 5 Moderate
+authorization selects 323 controls with overlays — the delta ships in a
 follow-up pack.
+
+Some files (`cis_aws_v3.json`, `cmmc_2_level2.json`, `iso_27017_2015.json`,
+`nist_800_53_rev5_moderate.json`) predate the general manifest schema and use
+their own top-level row key (`requirements`/`controls`/`control_ids` instead
+of `rows`) — `pack_from_manifest(..., rows_key=...)` reads them as-is so other
+direct consumers (e.g. `sprs.py` reads `cmmc_2_level2.json` for SPRS scoring
+metadata) are unaffected.

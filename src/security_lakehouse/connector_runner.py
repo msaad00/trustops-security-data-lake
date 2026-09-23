@@ -9,6 +9,8 @@ and optionally materialize bronze/silver/gold outputs.
 from __future__ import annotations
 
 import fcntl
+import importlib.metadata
+import logging
 import os
 import sys
 import time
@@ -98,7 +100,14 @@ from security_lakehouse.repo_governance import sync_repo_governance
 from security_lakehouse.sinks import land_if_configured
 from security_lakehouse.validation import validate_raw_events
 
+logger = logging.getLogger(__name__)
+
 CONNECTOR_RAW_FILE = "raw/connector_events.jsonl"
+
+# ``entry_points`` group a third-party package registers connectors under (see
+# ``effective_registry`` below and the "Ship a connector as a package" section
+# of docs/ADDING_CONNECTORS.md).
+CONNECTOR_ENTRY_POINT_GROUP = "trustops.connectors"
 
 # Default ``token_env`` for the CLI sync entrypoint. Provider-specific
 # installation or OAuth token environment variables are used unless an operator
@@ -447,6 +456,10 @@ ConnectorBuilder = Callable[[SyncInputs], list[dict[str, Any]]]
 # Registering here wires sync dispatch. Mark the same connector_id with
 # ``is_implemented`` in ``connectors/catalog.json`` so connector probes and the
 # console can report adapter availability without importing this module.
+#
+# A separate, additive path exists for connectors shipped as an installable
+# package rather than an in-repo adapter: see ``effective_registry`` below and
+# docs/ADDING_CONNECTORS.md.
 # ---------------------------------------------------------------------------
 
 
@@ -607,9 +620,74 @@ def registered_connector_ids() -> frozenset[str]:
     """The set of connector_ids with a sync builder registered in REGISTRY.
 
     Tests compare this against the catalog's ``is_implemented`` metadata so the
-    runner dispatch table and UI/probe adapter flags cannot drift.
+    runner dispatch table and UI/probe adapter flags cannot drift. This is the
+    in-repo registry only — see :func:`effective_registry` for the dispatch
+    view that also includes installed third-party connectors.
     """
     return frozenset(REGISTRY)
+
+
+def _load_entry_point_connectors() -> dict[str, ConnectorBuilder]:
+    """Discover connectors registered by installed packages.
+
+    A third-party package declares connectors under the
+    ``trustops.connectors`` entry-point group in its own ``pyproject.toml``
+    (see docs/ADDING_CONNECTORS.md). Each entry point's name is the
+    connector_id; loading it must yield a callable implementing the
+    :data:`ConnectorBuilder` contract exactly (``Callable[[SyncInputs],
+    list[dict[str, Any]]]``).
+
+    A package that fails to import, or whose entry point does not resolve to
+    a callable, is logged and excluded rather than raised: one broken
+    third-party connector must never prevent the rest of the registry — or
+    the app — from starting.
+    """
+    discovered: dict[str, ConnectorBuilder] = {}
+    try:
+        entry_points = importlib.metadata.entry_points(group=CONNECTOR_ENTRY_POINT_GROUP)
+    except Exception:
+        logger.warning("failed to enumerate %s entry points", CONNECTOR_ENTRY_POINT_GROUP, exc_info=True)
+        return discovered
+    for entry_point in entry_points:
+        try:
+            builder = entry_point.load()
+        except Exception:
+            logger.warning(
+                "connector entry point %r (%s) failed to load; excluding it",
+                entry_point.name,
+                entry_point.value,
+                exc_info=True,
+            )
+            continue
+        if not callable(builder):
+            logger.warning(
+                "connector entry point %r (%s) did not resolve to a callable ConnectorBuilder; excluding it",
+                entry_point.name,
+                entry_point.value,
+            )
+            continue
+        discovered[entry_point.name] = builder
+    return discovered
+
+
+def effective_registry() -> dict[str, ConnectorBuilder]:
+    """The in-repo REGISTRY merged with connectors from installed packages.
+
+    Third-party connectors extend the registry with new connector_ids; they
+    can never shadow an in-repo adapter. A colliding entry-point connector_id
+    is logged as a warning and dropped in favor of the built-in — silently
+    overwriting a built-in adapter with an installed package is never safe.
+    ``REGISTRY`` itself is left untouched by this merge.
+    """
+    merged = _load_entry_point_connectors()
+    for connector_id in merged:
+        if connector_id in REGISTRY:
+            logger.warning(
+                "connector entry point %r collides with a built-in connector_id; the built-in adapter wins",
+                connector_id,
+            )
+    merged.update(REGISTRY)
+    return merged
 
 
 def _collect(
@@ -622,7 +700,7 @@ def _collect(
     credentials: dict[str, Any] | None = None,
     options: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
-    builder = REGISTRY.get(connector_id)
+    builder = effective_registry().get(connector_id)
     if builder is None:
         raise ValueError(f"no sync runner registered for connector_id {connector_id!r}")
     return builder(

@@ -1,0 +1,93 @@
+{
+  "schema": "trustops.framework_pack_manifest.v1",
+  "source": {
+    "url": "https://www.hhs.gov/hipaa/for-professionals/security/index.html",
+    "name": "HIPAA Security Rule (45 CFR Part 164 Subpart C)"
+  },
+  "rows": [
+    {
+      "id": "164.308(a)(2)",
+      "title": "Assigned security responsibility documented",
+      "risk_domain": "governance",
+      "owner": "security-operations",
+      "asset_types": ["service"]
+    },
+    {
+      "id": "164.308(a)(3)",
+      "title": "Workforce security procedures evidenced",
+      "risk_domain": "identity",
+      "owner": "security-operations",
+      "asset_types": ["user", "service"]
+    },
+    {
+      "id": "164.308(a)(5)",
+      "title": "Security awareness training completed",
+      "risk_domain": "governance",
+      "owner": "security-operations",
+      "asset_types": ["user"]
+    },
+    {
+      "id": "164.308(a)(6)",
+      "title": "Security incident procedures tested",
+      "risk_domain": "incident-response",
+      "owner": "security-operations",
+      "asset_types": ["service"]
+    },
+    {
+      "id": "164.308(a)(7)",
+      "title": "Contingency plan and backups evidenced",
+      "risk_domain": "availability",
+      "owner": "security-operations",
+      "asset_types": ["data_store"]
+    },
+    {
+      "id": "164.308(a)(8)",
+      "title": "Periodic evaluation performed",
+      "risk_domain": "risk-management",
+      "owner": "security-operations",
+      "asset_types": ["service"]
+    },
+    {
+      "id": "164.308(b)",
+      "title": "Business associate agreements current",
+      "risk_domain": "third-party-risk",
+      "owner": "security-operations",
+      "asset_types": ["service"]
+    },
+    {
+      "id": "164.310(a)",
+      "title": "Facility access controls documented",
+      "risk_domain": "physical-security",
+      "owner": "security-operations",
+      "asset_types": ["service"]
+    },
+    {
+      "id": "164.312(a)",
+      "title": "Access control mechanisms enforced",
+      "risk_domain": "identity",
+      "owner": "security-operations",
+      "asset_types": ["user", "service"]
+    },
+    {
+      "id": "164.312(c)",
+      "title": "Integrity controls for ePHI evidenced",
+      "risk_domain": "data-protection",
+      "owner": "security-operations",
+      "asset_types": ["data_store"]
+    },
+    {
+      "id": "164.314(a)",
+      "title": "Business associate requirements enforced",
+      "risk_domain": "third-party-risk",
+      "owner": "security-operations",
+      "asset_types": ["service"]
+    },
+    {
+      "id": "164.314(b)",
+      "title": "Group health plan requirements met",
+      "risk_domain": "governance",
+      "owner": "security-operations",
+      "asset_types": ["service"]
+    }
+  ]
+}

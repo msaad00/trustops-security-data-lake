@@ -107,6 +107,8 @@ agent action should be rendered back to humans with the same audit trail.
 | `POST` | `/api/v1/insights/capture`                                       | append posture metric point for trends (`write`)                                                                                   |
 | `GET`  | `/api/v1/platform/usage`                                         | hosted plan tier and usage vs limits (`admin`)                                                                                     |
 | `GET`  | `/api/v1/snapshots/{snapshot_id}/export.pdf`                     | executive PDF export for a point-in-time snapshot (`read`)                                                                         |
+| `GET`  | `/api/v1/oscal/component-definition`                             | NIST OSCAL component-definition JSON from the CCF safeguards + catalog                                                             |
+| `GET`  | `/api/v1/oscal/assessment-results`                               | NIST OSCAL assessment-results JSON from current (or `?snapshot_id=`) posture                                                       |
 
 The unversioned `/api/*` routes remain for the bundled console and local
 compatibility. Prefer **`/api/v1/*`** for agents and CI.
@@ -146,16 +148,18 @@ MCP equivalents: `get_ingestion_status`, `list_eval_runs`, `run_lake_eval`,
 
 ### Reports and exports
 
-| Output              | Route                                          | Notes                                       |
-| ------------------- | ---------------------------------------------- | ------------------------------------------- |
-| Activity / SIEM     | `GET /api/v1/audit-log`                        | `category`, `include_requests` filters      |
-| Executive PDF       | `GET /api/v1/snapshots/{id}/export.pdf`        | `Accept: application/pdf`                   |
-| SPRS score          | `GET /api/v1/gov-compliance/sprs`              | CMMC Level 2 from failing 800-171 practices |
-| Audit readiness     | `GET /api/v1/platform/audit-readiness`         | audit-room score + workflow checklist       |
-| AI governance       | `GET /api/v1/platform/ai-governance`           | model inventory, lineage, framework mapping |
-| AI inventory        | `GET /api/v1/platform/ai-governance/inventory` | paginated model/agent inventory rows        |
-| Remediation insight | `GET /api/v1/insights/remediation`             | open/overdue task analytics                 |
-| Scenario proof      | `security-lakehouse scenario run …`            | JSON report under `gold/scenario_reports/`  |
+| Output                     | Route                                          | Notes                                       |
+| -------------------------- | ---------------------------------------------- | ------------------------------------------- |
+| Activity / SIEM            | `GET /api/v1/audit-log`                        | `category`, `include_requests` filters      |
+| Executive PDF              | `GET /api/v1/snapshots/{id}/export.pdf`        | `Accept: application/pdf`                   |
+| SPRS score                 | `GET /api/v1/gov-compliance/sprs`              | CMMC Level 2 from failing 800-171 practices |
+| Audit readiness            | `GET /api/v1/platform/audit-readiness`         | audit-room score + workflow checklist       |
+| AI governance              | `GET /api/v1/platform/ai-governance`           | model inventory, lineage, framework mapping |
+| AI inventory               | `GET /api/v1/platform/ai-governance/inventory` | paginated model/agent inventory rows        |
+| Remediation insight        | `GET /api/v1/insights/remediation`             | open/overdue task analytics                 |
+| Scenario proof             | `security-lakehouse scenario run …`            | JSON report under `gold/scenario_reports/`  |
+| OSCAL component definition | `GET /api/v1/oscal/component-definition`       | see [OSCAL_EXPORT.md](../OSCAL_EXPORT.md)   |
+| OSCAL assessment results   | `GET /api/v1/oscal/assessment-results`         | see [OSCAL_EXPORT.md](../OSCAL_EXPORT.md)   |
 
 ## Agent Usage Pattern
 

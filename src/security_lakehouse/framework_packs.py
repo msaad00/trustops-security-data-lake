@@ -4,6 +4,15 @@ Packs define every official criterion/subcategory ID with short internal titles
 (no licensed normative text). ``sync_framework_packs`` merges pack rows into the
 active control catalog and reviewed mappings without removing other frameworks
 or richer hand-authored control definitions.
+
+Each ``*_specs()`` function is manifest-driven: identifiers, titles, and the
+source citation live as data in a JSON manifest under
+``frameworks/packs/data/``, read via
+:func:`security_lakehouse.pack_manifest.pack_from_manifest`. Each function is
+a thin wrapper around that manifest plus a small, named, per-framework
+transform (ID normalization, risk-domain/owner lookups, evidence-requirement
+wording) — see ``docs/FRAMEWORK_PACKS.md`` for the schema and the "add a new
+framework" workflow.
 """
 
 from __future__ import annotations
@@ -24,23 +33,19 @@ from security_lakehouse.pack_data import (
     FEDRAMP_SOURCE,
     ISO_27001_SOURCE,
     ISO_27017_SOURCE,
-    ISO_42001_CONTROLS,
     ISO_42001_SOURCE,
     NIST_CSF_2_COUNT,
     NIST_CSF_2_SOURCE,
-    cis_aws_v3_requirements,
+    PACK_DATA_DIR,
     cis_section_risk_domain,
-    cmmc_2_level2_requirements,
     cmmc_800_171_family_risk_domain,
     csf_category_risk_domain,
-    iso_27001_2022_annex_a_refs,
     iso_27001_theme_risk_domain,
-    iso_27017_2015_controls,
     iso_27017_risk_domain,
-    nist_800_53_rev5_moderate_ids,
     nist_csf_2_outcomes,
     nist_family_risk_domain,
 )
+from security_lakehouse.pack_manifest import PackManifestRow, pack_from_manifest
 from security_lakehouse.pack_spec import PackControlSpec
 
 JsonObject = dict[str, Any]
@@ -136,65 +141,8 @@ def _soc2_evaluation_rule(risk_domain: str) -> str:
     return "fail_when_missing_evidence"
 
 
-# Short internal titles — not AICPA licensed criterion text.
-_SOC2_TITLES: dict[str, str] = {
-    "CC1.1": "Control environment demonstrates integrity and ethical values",
-    "CC1.2": "Board independence and oversight of internal control",
-    "CC1.3": "Management establishes structure, authority, and responsibility",
-    "CC1.4": "Commitment to competence is demonstrated",
-    "CC1.5": "Individuals are held accountable for internal control",
-    "CC2.1": "Quality information supports internal control objectives",
-    "CC2.2": "Internal control information is communicated internally",
-    "CC2.3": "Control matters are communicated to external parties when required",
-    "CC3.1": "Objectives are specified with sufficient clarity",
-    "CC3.2": "Risk to objectives is identified and analyzed",
-    "CC3.3": "Fraud risk is considered in risk assessment",
-    "CC3.4": "Changes that affect internal control are identified and assessed",
-    "CC4.1": "Ongoing and separate monitoring activities are performed",
-    "CC4.2": "Control deficiencies are evaluated and communicated",
-    "CC5.1": "Control activities are selected and developed",
-    "CC5.2": "Technology general controls support objectives",
-    "CC5.3": "Policies are deployed through procedures",
-    "CC6.1": "Logical access controls are evaluated from identity and authorization evidence",
-    "CC6.2": "User registration and authorization are controlled",
-    "CC6.3": "Role-based access is provisioned and reviewed",
-    "CC6.4": "Access is removed or adjusted on role change",
-    "CC6.5": "Physical access to facilities and assets is restricted",
-    "CC6.6": "External party access is authorized and monitored",
-    "CC6.7": "Data transmission and movement are protected",
-    "CC6.8": "Malware and endpoint protections are in place",
-    "CC7.1": "Vulnerabilities are identified and remediated",
-    "CC7.2": "Security monitoring controls are evaluated from runtime, audit, and detection evidence",
-    "CC7.3": "Security events are analyzed to identify anomalies",
-    "CC7.4": "Security incidents are responded to and contained",
-    "CC7.5": "Recovery and continuity activities are defined and tested",
-    "CC8.1": "Changes to infrastructure and software are authorized and tested",
-    "CC9.1": "Vendor and partner risks are assessed before engagement",
-    "CC9.2": "Vendor and partner relationships are monitored over time",
-}
-
-
-def soc2_common_criteria_specs() -> list[PackControlSpec]:
-    """All 33 SOC 2 Trust Services Criteria common criteria (CC1–CC9)."""
-    order = [
-        *(f"CC1.{i}" for i in range(1, 6)),
-        *(f"CC2.{i}" for i in range(1, 4)),
-        *(f"CC3.{i}" for i in range(1, 5)),
-        *(f"CC4.{i}" for i in range(1, 3)),
-        *(f"CC5.{i}" for i in range(1, 4)),
-        *(f"CC6.{i}" for i in range(1, 9)),
-        *(f"CC7.{i}" for i in range(1, 6)),
-        "CC8.1",
-        *(f"CC9.{i}" for i in range(1, 3)),
-    ]
-    specs: list[PackControlSpec] = []
-    for cc in order:
-        title = _SOC2_TITLES[cc]
-        specs.append(_soc2_pack_spec(cc, title))
-    return specs
-
-
-def _soc2_pack_spec(article_id: str, title: str) -> PackControlSpec:
+def _soc2_row_transform(row: PackManifestRow) -> PackControlSpec:
+    article_id, title = row.id, row.title
     risk = _soc2_risk_domain(article_id)
     owner = _soc2_owner(risk)
     return PackControlSpec(
@@ -216,73 +164,29 @@ def _soc2_pack_spec(article_id: str, title: str) -> PackControlSpec:
     )
 
 
-# Short internal titles — not AICPA licensed criterion text.
-_SOC2_TSC_TITLES: dict[str, str] = {
-    "A1.1": "Capacity and performance are monitored against availability commitments",
-    "A1.2": "Environmental protections and backup processes support availability objectives",
-    "A1.3": "Recovery procedures are established, maintained, and tested",
-    "C1.1": "Confidential information is identified and protected",
-    "C1.2": "Confidential information is disposed of securely",
-    "PI1.1": "Processing specifications define complete and accurate processing objectives",
-    "PI1.2": "System inputs are complete, accurate, and authorized",
-    "PI1.3": "System processing is complete, accurate, timely, and authorized",
-    "PI1.4": "System outputs are complete, accurate, and timely",
-    "PI1.5": "Stored inputs, processing items, and outputs remain complete and accurate",
-    "P1.1": "Privacy notice communicates objectives and practices to data subjects",
-    "P2.1": "Choice, explicit consent, and documented implicit consent for personal information",
-    "P3.1": "Personal information collection is limited to identified objectives",
-    "P3.2": "Collection methods are communicated and consented where required",
-    "P4.1": "Personal information use is limited to identified objectives",
-    "P4.2": "Personal information retention aligns with objectives and legal requirements",
-    "P4.3": "Personal information disposal is secure and documented",
-    "P5.1": "Data subjects can access their personal information",
-    "P5.2": "Data subject access requests are fulfilled in a timely manner",
-    "P6.1": "Personal information disclosure is authorized and logged",
-    "P6.2": "Third-party disclosures comply with privacy commitments",
-    "P6.3": "Data subjects are notified of privacy practices and changes",
-    "P6.4": "Breach and incident notification procedures exist and are tested",
-    "P6.5": "Cross-border disclosure requirements are met",
-    "P6.6": "Government and legal disclosure requests are controlled",
-    "P6.7": "Disclosure to third parties is monitored over time",
-    "P7.1": "Personal information quality is maintained and corrected",
-    "P8.1": "Privacy compliance is monitored and enforced",
-}
+def soc2_common_criteria_specs() -> list[PackControlSpec]:
+    """All 33 SOC 2 Trust Services Criteria common criteria (CC1-CC9).
+
+    Manifest-driven: identifiers and short internal titles (not AICPA
+    licensed criterion text) come from ``soc2.json``'s ``common_criteria``
+    rows; risk-domain/owner lookups and evidence wording stay in
+    :func:`_soc2_row_transform`.
+    """
+    return pack_from_manifest(PACK_DATA_DIR / "soc2.json", rows_key="common_criteria", transform=_soc2_row_transform)
 
 
 def soc2_tsc_extension_specs() -> list[PackControlSpec]:
-    """SOC 2 supplemental TSC: Availability, Confidentiality, Processing Integrity, Privacy."""
-    order = [
-        *(f"A1.{i}" for i in range(1, 4)),
-        *(f"C1.{i}" for i in range(1, 3)),
-        *(f"PI1.{i}" for i in range(1, 6)),
-        "P1.1",
-        "P2.1",
-        *(f"P3.{i}" for i in range(1, 3)),
-        *(f"P4.{i}" for i in range(1, 4)),
-        *(f"P5.{i}" for i in range(1, 3)),
-        *(f"P6.{i}" for i in range(1, 8)),
-        "P7.1",
-        "P8.1",
-    ]
-    return [_soc2_pack_spec(article_id, _SOC2_TSC_TITLES[article_id]) for article_id in order]
+    """SOC 2 supplemental TSC: Availability, Confidentiality, Processing Integrity, Privacy.
+
+    Manifest-driven: see :func:`soc2_common_criteria_specs`; reads
+    ``soc2.json``'s ``tsc_extension`` rows instead.
+    """
+    return pack_from_manifest(PACK_DATA_DIR / "soc2.json", rows_key="tsc_extension", transform=_soc2_row_transform)
 
 
 def soc2_full_pack_specs() -> list[PackControlSpec]:
     """All 61 SOC 2 criteria: 33 common criteria plus 28 supplemental TSC extensions."""
     return soc2_common_criteria_specs() + soc2_tsc_extension_specs()
-
-
-def _nist_function_blocks() -> list[tuple[str, list[tuple[int, int]]]]:
-    return [
-        ("GOVERN", [(1, 7), (2, 3), (3, 2), (4, 3), (5, 2), (6, 2)]),
-        ("MAP", [(1, 6), (2, 3), (3, 5), (4, 2), (5, 2)]),
-        ("MEASURE", [(1, 3), (2, 13), (3, 3), (4, 3)]),
-        ("MANAGE", [(1, 4), (2, 4), (3, 2), (4, 3)]),
-    ]
-
-
-def _nist_title(func: str, category: int, sub: int) -> str:
-    return f"NIST AI RMF {func} {category}.{sub} — assessed from AI governance and operational evidence"
 
 
 def _nist_risk_domain(func: str) -> str:
@@ -294,37 +198,42 @@ def _nist_risk_domain(func: str) -> str:
     }.get(func, "ai-governance")
 
 
+def _nist_ai_rmf_row_transform(row: PackManifestRow) -> PackControlSpec:
+    """``row.id`` is the hyphenated ref, e.g. ``GOVERN-1.1``; titles are fully
+    formulaic (no distinct per-ID text exists), so the manifest carries only
+    identifiers."""
+    ref = row.id
+    func, category_sub = ref.split("-", 1)
+    risk = _nist_risk_domain(func)
+    title = f"NIST AI RMF {func} {category_sub} — assessed from AI governance and operational evidence"
+    return PackControlSpec(
+        control_id=f"NIST-AI-RMF-{ref}",
+        framework_id="nist-ai-rmf",
+        framework="NIST AI RMF",
+        framework_ref=f"NIST AI RMF {ref}",
+        article_id=ref,
+        title=title,
+        risk_domain=risk,
+        owner="ai-security",
+        evaluation_rule="fail_when_open_violation_or_stale_evidence"
+        if risk == "ai-risk"
+        else "fail_when_missing_evidence",
+        evidence_requirement=(f"Current AI governance evidence supports {ref} with reviewed mappings and fresh proof."),
+        asset_types=("ai_model", "ai_agent", "service", "data_store"),
+        source_url=NIST_AI_RMF_SOURCE,
+        official_source_ref="nist-ai-rmf",
+    )
+
+
 def nist_ai_rmf_specs() -> list[PackControlSpec]:
-    """All 72 NIST AI RMF 1.0 subcategories across GOVERN, MAP, MEASURE, MANAGE."""
-    specs: list[PackControlSpec] = []
-    for func, blocks in _nist_function_blocks():
-        risk = _nist_risk_domain(func)
-        for category, count in blocks:
-            for sub in range(1, count + 1):
-                ref = f"{func}-{category}.{sub}"
-                title = _nist_title(func, category, sub)
-                specs.append(
-                    PackControlSpec(
-                        control_id=f"NIST-AI-RMF-{ref}",
-                        framework_id="nist-ai-rmf",
-                        framework="NIST AI RMF",
-                        framework_ref=f"NIST AI RMF {ref}",
-                        article_id=ref,
-                        title=title,
-                        risk_domain=risk,
-                        owner="ai-security",
-                        evaluation_rule="fail_when_open_violation_or_stale_evidence"
-                        if risk == "ai-risk"
-                        else "fail_when_missing_evidence",
-                        evidence_requirement=(
-                            f"Current AI governance evidence supports {ref} with reviewed mappings and fresh proof."
-                        ),
-                        asset_types=("ai_model", "ai_agent", "service", "data_store"),
-                        source_url=NIST_AI_RMF_SOURCE,
-                        official_source_ref="nist-ai-rmf",
-                    )
-                )
-    return specs
+    """All 72 NIST AI RMF 1.0 subcategories across GOVERN, MAP, MEASURE, MANAGE.
+
+    Manifest-driven: identifiers come from ``nist_ai_rmf.json`` (``rows``,
+    plain ``{"id": ...}`` entries — no distinct per-ID title text exists at
+    this level); function-block risk-domain lookup and title/evidence
+    wording stay in :func:`_nist_ai_rmf_row_transform`.
+    """
+    return pack_from_manifest(PACK_DATA_DIR / "nist_ai_rmf.json", transform=_nist_ai_rmf_row_transform)
 
 
 def nist_csf_2_specs() -> list[PackControlSpec]:
@@ -357,176 +266,218 @@ def _normalize_nist_control_id(control_id: str) -> str:
     return control_id.upper()
 
 
+def _fedramp_moderate_row_transform(row: PackManifestRow) -> PackControlSpec:
+    article_id = _normalize_nist_control_id(row.id)
+    risk = nist_family_risk_domain(article_id)
+    owner = _soc2_owner(risk)
+    title = f"FedRAMP Moderate {article_id} — assessed from cloud posture and audit evidence"
+    return PackControlSpec(
+        control_id=f"FEDRAMP-{article_id}",
+        framework_id="fedramp-moderate",
+        framework="FedRAMP Moderate",
+        framework_ref=f"FedRAMP Moderate {article_id}",
+        article_id=article_id,
+        title=title,
+        risk_domain=risk,
+        owner=owner,
+        evaluation_rule=_soc2_evaluation_rule(risk),
+        evidence_requirement=(
+            f"Current evidence supports FedRAMP Moderate control {article_id} "
+            "with reviewed mappings and fresh operational proof."
+        ),
+        asset_types=_soc2_assets(risk),
+        source_url=FEDRAMP_SOURCE,
+        official_source_ref="fedramp-moderate",
+    )
+
+
 def fedramp_moderate_specs() -> list[PackControlSpec]:
-    """FedRAMP Moderate foundation: NIST SP 800-53 Rev 5 Moderate baseline (287 controls)."""
-    specs: list[PackControlSpec] = []
-    for raw_id in nist_800_53_rev5_moderate_ids():
-        article_id = _normalize_nist_control_id(raw_id)
-        risk = nist_family_risk_domain(article_id)
-        owner = _soc2_owner(risk)
-        title = f"FedRAMP Moderate {article_id} — assessed from cloud posture and audit evidence"
-        specs.append(
-            PackControlSpec(
-                control_id=f"FEDRAMP-{article_id}",
-                framework_id="fedramp-moderate",
-                framework="FedRAMP Moderate",
-                framework_ref=f"FedRAMP Moderate {article_id}",
-                article_id=article_id,
-                title=title,
-                risk_domain=risk,
-                owner=owner,
-                evaluation_rule=_soc2_evaluation_rule(risk),
-                evidence_requirement=(
-                    f"Current evidence supports FedRAMP Moderate control {article_id} "
-                    "with reviewed mappings and fresh operational proof."
-                ),
-                asset_types=_soc2_assets(risk),
-                source_url=FEDRAMP_SOURCE,
-                official_source_ref="fedramp-moderate",
-            )
-        )
-    return specs
+    """FedRAMP Moderate foundation: NIST SP 800-53 Rev 5 Moderate baseline (287 controls).
+
+    Manifest-driven: identifiers come from ``nist_800_53_rev5_moderate.json``
+    (``control_ids`` rows, plain strings — no per-ID title text exists at
+    this baseline); ID normalization, risk-domain lookup, and title/evidence
+    wording stay in :func:`_fedramp_moderate_row_transform`.
+    """
+    return pack_from_manifest(
+        PACK_DATA_DIR / "nist_800_53_rev5_moderate.json",
+        rows_key="control_ids",
+        transform=_fedramp_moderate_row_transform,
+    )
+
+
+def _cis_aws_row_transform(row: PackManifestRow) -> PackControlSpec:
+    req_id, req_title = row.id, row.title
+    section = req_id.split(".", 1)[0]
+    risk = cis_section_risk_domain(section)
+    owner = _soc2_owner(risk)
+    return PackControlSpec(
+        control_id=f"CIS-AWS-{req_id}",
+        framework_id="cis_aws",
+        framework="CIS AWS Foundations Benchmark",
+        framework_ref=f"CIS AWS Foundations {req_id}",
+        article_id=req_id,
+        title=req_title[:160],
+        risk_domain=risk,
+        owner=owner,
+        evaluation_rule=_soc2_evaluation_rule(risk),
+        evidence_requirement=(f"AWS posture evidence demonstrates CIS Foundations {req_id}: {req_title[:80]}"),
+        asset_types=("cloud_resource", "cloud_policy", "iam_role", "identity_account", "s3_bucket"),
+        source_url=CIS_AWS_SOURCE,
+        official_source_ref="cis_aws",
+    )
 
 
 def cis_aws_v3_specs() -> list[PackControlSpec]:
-    """All 62 CIS Amazon Web Services Foundations Benchmark v3.0.0 recommendations."""
-    specs: list[PackControlSpec] = []
-    for req_id, req_title in cis_aws_v3_requirements():
-        section = req_id.split(".", 1)[0]
-        risk = cis_section_risk_domain(section)
-        owner = _soc2_owner(risk)
-        specs.append(
-            PackControlSpec(
-                control_id=f"CIS-AWS-{req_id}",
-                framework_id="cis_aws",
-                framework="CIS AWS Foundations Benchmark",
-                framework_ref=f"CIS AWS Foundations {req_id}",
-                article_id=req_id,
-                title=req_title[:160],
-                risk_domain=risk,
-                owner=owner,
-                evaluation_rule=_soc2_evaluation_rule(risk),
-                evidence_requirement=(f"AWS posture evidence demonstrates CIS Foundations {req_id}: {req_title[:80]}"),
-                asset_types=("cloud_resource", "cloud_policy", "iam_role", "identity_account", "s3_bucket"),
-                source_url=CIS_AWS_SOURCE,
-                official_source_ref="cis_aws",
-            )
-        )
-    return specs
+    """All 62 CIS Amazon Web Services Foundations Benchmark v3.0.0 recommendations.
+
+    Manifest-driven: identifiers/titles come from ``cis_aws_v3.json``
+    (``requirements`` rows); risk-domain lookup and evidence wording stay in
+    :func:`_cis_aws_row_transform`.
+    """
+    return pack_from_manifest(
+        PACK_DATA_DIR / "cis_aws_v3.json", rows_key="requirements", transform=_cis_aws_row_transform
+    )
+
+
+def _iso_27001_row_transform(row: PackManifestRow) -> PackControlSpec:
+    ref = row.id
+    risk = iso_27001_theme_risk_domain(ref)
+    owner = _soc2_owner(risk)
+    title = f"ISO 27001:2022 {ref} — assessed from ISMS and security operations evidence"
+    return PackControlSpec(
+        control_id=f"ISO27001-{ref}",
+        framework_id="iso-27001-2022",
+        framework="ISO 27001:2022",
+        framework_ref=f"ISO 27001:2022 {ref}",
+        article_id=ref,
+        title=title,
+        risk_domain=risk,
+        owner=owner,
+        evaluation_rule=_soc2_evaluation_rule(risk),
+        evidence_requirement=(
+            f"Current evidence supports ISO 27001:2022 Annex A control {ref} "
+            "with reviewed mappings and operational proof."
+        ),
+        asset_types=_soc2_assets(risk),
+        source_url=ISO_27001_SOURCE,
+        official_source_ref="iso-27001-2022",
+    )
 
 
 def iso_27001_2022_specs() -> list[PackControlSpec]:
-    """All 93 ISO/IEC 27001:2022 Annex A controls."""
-    specs: list[PackControlSpec] = []
-    for ref in iso_27001_2022_annex_a_refs():
-        risk = iso_27001_theme_risk_domain(ref)
-        owner = _soc2_owner(risk)
-        title = f"ISO 27001:2022 {ref} — assessed from ISMS and security operations evidence"
-        specs.append(
-            PackControlSpec(
-                control_id=f"ISO27001-{ref}",
-                framework_id="iso-27001-2022",
-                framework="ISO 27001:2022",
-                framework_ref=f"ISO 27001:2022 {ref}",
-                article_id=ref,
-                title=title,
-                risk_domain=risk,
-                owner=owner,
-                evaluation_rule=_soc2_evaluation_rule(risk),
-                evidence_requirement=(
-                    f"Current evidence supports ISO 27001:2022 Annex A control {ref} "
-                    "with reviewed mappings and operational proof."
-                ),
-                asset_types=_soc2_assets(risk),
-                source_url=ISO_27001_SOURCE,
-                official_source_ref="iso-27001-2022",
-            )
-        )
-    return specs
+    """All 93 ISO/IEC 27001:2022 Annex A controls.
+
+    Manifest-driven: identifiers come from ``iso_27001_2022.json`` (``rows``,
+    plain ``{"id": ...}`` entries — no distinct per-ID title text exists at
+    this level, titles are fully formulaic); theme-prefix risk-domain lookup
+    and title/evidence wording stay in :func:`_iso_27001_row_transform`.
+    """
+    return pack_from_manifest(PACK_DATA_DIR / "iso_27001_2022.json", transform=_iso_27001_row_transform)
+
+
+def _cmmc_2_level2_row_transform(row: PackManifestRow) -> PackControlSpec:
+    requirement_id, short_title = row.id, row.title
+    risk = cmmc_800_171_family_risk_domain(requirement_id)
+    owner = _soc2_owner(risk)
+    return PackControlSpec(
+        control_id=f"CMMC-{requirement_id}",
+        framework_id="cmmc-2-level2",
+        framework="CMMC 2.0 Level 2",
+        framework_ref=f"NIST SP 800-171 Rev 2 {requirement_id}",
+        article_id=requirement_id,
+        title=f"CMMC L2 {requirement_id} — {short_title}",
+        risk_domain=risk,
+        owner=owner,
+        evaluation_rule=_soc2_evaluation_rule(risk),
+        evidence_requirement=(
+            f"CUI protection evidence supports NIST SP 800-171 Rev 2 requirement {requirement_id} "
+            f"({short_title}) for CMMC Level 2 assessment."
+        ),
+        asset_types=_soc2_assets(risk),
+        source_url=CMMC_2_LEVEL2_SOURCE,
+        official_source_ref="cmmc-2-level2",
+    )
 
 
 def cmmc_2_level2_specs() -> list[PackControlSpec]:
-    """All 110 CMMC 2.0 Level 2 practices (NIST SP 800-171 Rev 2 requirements)."""
-    specs: list[PackControlSpec] = []
-    for requirement_id, short_title in cmmc_2_level2_requirements():
-        risk = cmmc_800_171_family_risk_domain(requirement_id)
-        owner = _soc2_owner(risk)
-        specs.append(
-            PackControlSpec(
-                control_id=f"CMMC-{requirement_id}",
-                framework_id="cmmc-2-level2",
-                framework="CMMC 2.0 Level 2",
-                framework_ref=f"NIST SP 800-171 Rev 2 {requirement_id}",
-                article_id=requirement_id,
-                title=f"CMMC L2 {requirement_id} — {short_title}",
-                risk_domain=risk,
-                owner=owner,
-                evaluation_rule=_soc2_evaluation_rule(risk),
-                evidence_requirement=(
-                    f"CUI protection evidence supports NIST SP 800-171 Rev 2 requirement {requirement_id} "
-                    f"({short_title}) for CMMC Level 2 assessment."
-                ),
-                asset_types=_soc2_assets(risk),
-                source_url=CMMC_2_LEVEL2_SOURCE,
-                official_source_ref="cmmc-2-level2",
-            )
-        )
-    return specs
+    """All 110 CMMC 2.0 Level 2 practices (NIST SP 800-171 Rev 2 requirements).
+
+    Manifest-driven: identifiers/titles come from ``cmmc_2_level2.json``
+    (``requirements`` rows, also read directly by ``sprs.py`` for SPRS
+    scoring metadata); risk-domain lookup and title/evidence wording stay in
+    :func:`_cmmc_2_level2_row_transform`.
+    """
+    return pack_from_manifest(
+        PACK_DATA_DIR / "cmmc_2_level2.json", rows_key="requirements", transform=_cmmc_2_level2_row_transform
+    )
+
+
+def _iso_27017_row_transform(row: PackManifestRow) -> PackControlSpec:
+    article_id, short_title = row.id, row.title
+    risk = iso_27017_risk_domain(article_id)
+    owner = _soc2_owner(risk)
+    return PackControlSpec(
+        control_id=f"ISO27017-{article_id}",
+        framework_id="iso-27017-2015",
+        framework="ISO 27017:2015",
+        framework_ref=f"ISO 27017:2015 {article_id}",
+        article_id=article_id,
+        title=f"ISO 27017:2015 {article_id} — {short_title}",
+        risk_domain=risk,
+        owner=owner,
+        evaluation_rule=_soc2_evaluation_rule(risk),
+        evidence_requirement=(
+            f"Cloud security evidence supports ISO 27017:2015 clause {article_id} "
+            f"({short_title}) for shared CSP/CSC responsibilities."
+        ),
+        asset_types=_soc2_assets(risk),
+        source_url=ISO_27017_SOURCE,
+        official_source_ref="iso-27017-2015",
+    )
 
 
 def iso_27017_2015_specs() -> list[PackControlSpec]:
-    """All 47 ISO/IEC 27017:2015 cloud security clause IDs (40 ISO 27002 + 7 CLD)."""
-    specs: list[PackControlSpec] = []
-    for article_id, short_title in iso_27017_2015_controls():
-        risk = iso_27017_risk_domain(article_id)
-        owner = _soc2_owner(risk)
-        control_suffix = article_id
-        specs.append(
-            PackControlSpec(
-                control_id=f"ISO27017-{control_suffix}",
-                framework_id="iso-27017-2015",
-                framework="ISO 27017:2015",
-                framework_ref=f"ISO 27017:2015 {article_id}",
-                article_id=article_id,
-                title=f"ISO 27017:2015 {article_id} — {short_title}",
-                risk_domain=risk,
-                owner=owner,
-                evaluation_rule=_soc2_evaluation_rule(risk),
-                evidence_requirement=(
-                    f"Cloud security evidence supports ISO 27017:2015 clause {article_id} "
-                    f"({short_title}) for shared CSP/CSC responsibilities."
-                ),
-                asset_types=_soc2_assets(risk),
-                source_url=ISO_27017_SOURCE,
-                official_source_ref="iso-27017-2015",
-            )
-        )
-    return specs
+    """All 47 ISO/IEC 27017:2015 cloud security clause IDs (40 ISO 27002 + 7 CLD).
+
+    Manifest-driven: identifiers/titles come from ``iso_27017_2015.json``
+    (``controls`` rows); risk-domain lookup and title/evidence wording stay
+    in :func:`_iso_27017_row_transform`.
+    """
+    return pack_from_manifest(
+        PACK_DATA_DIR / "iso_27017_2015.json", rows_key="controls", transform=_iso_27017_row_transform
+    )
+
+
+def _iso_42001_row_transform(row: PackManifestRow) -> PackControlSpec:
+    ref, short_title = row.id, row.title
+    article_id = ref.removeprefix("A.")
+    return PackControlSpec(
+        control_id=f"ISO42001-{article_id}",
+        framework_id="iso-42001-2023",
+        framework="ISO 42001:2023",
+        framework_ref=f"ISO 42001:2023 {ref}",
+        article_id=article_id,
+        title=short_title,
+        risk_domain="ai-governance",
+        owner="ai-security",
+        evaluation_rule="fail_when_open_violation_or_stale_evidence",
+        evidence_requirement=(f"AI governance evidence supports ISO 42001:2023 control {ref} ({short_title})."),
+        asset_types=("ai_model", "ai_agent", "service", "data_store", "audit_log"),
+        source_url=ISO_42001_SOURCE,
+        official_source_ref="iso-42001-2023",
+    )
 
 
 def iso_42001_2023_specs() -> list[PackControlSpec]:
-    """All 38 ISO/IEC 42001:2023 Annex A AI management controls."""
-    specs: list[PackControlSpec] = []
-    for ref, short_title in ISO_42001_CONTROLS:
-        article_id = ref.removeprefix("A.")
-        specs.append(
-            PackControlSpec(
-                control_id=f"ISO42001-{article_id}",
-                framework_id="iso-42001-2023",
-                framework="ISO 42001:2023",
-                framework_ref=f"ISO 42001:2023 {ref}",
-                article_id=article_id,
-                title=short_title,
-                risk_domain="ai-governance",
-                owner="ai-security",
-                evaluation_rule="fail_when_open_violation_or_stale_evidence",
-                evidence_requirement=(f"AI governance evidence supports ISO 42001:2023 control {ref} ({short_title})."),
-                asset_types=("ai_model", "ai_agent", "service", "data_store", "audit_log"),
-                source_url=ISO_42001_SOURCE,
-                official_source_ref="iso-42001-2023",
-            )
-        )
-    return specs
+    """All 38 ISO/IEC 42001:2023 Annex A AI management controls.
+
+    Manifest-driven: identifiers/titles come from ``iso_42001_2023.json``
+    (moved out of the ``ISO_42001_CONTROLS`` Python tuple); the "A." prefix
+    strip for ``article_id``/``control_id`` stays in
+    :func:`_iso_42001_row_transform`.
+    """
+    return pack_from_manifest(PACK_DATA_DIR / "iso_42001_2023.json", transform=_iso_42001_row_transform)
 
 
 PACK_BUILDERS = {
