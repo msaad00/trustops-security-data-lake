@@ -15,7 +15,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from security_lakehouse.db.base import apply_pagination
+from security_lakehouse.db.base import apply_pagination, clamp_limit
 from security_lakehouse.db.models import (
     WEBHOOK_DELIVERY_STATUSES,
     WEBHOOK_EVENT_TYPES,
@@ -90,14 +90,30 @@ def list_subscriptions(
     limit: int | None = None,
     offset: int | None = None,
 ) -> list[WebhookSubscription]:
-    stmt = select(WebhookSubscription).where(WebhookSubscription.tenant_id == tenant_id)
+    stmt = (
+        select(WebhookSubscription)
+        .where(WebhookSubscription.tenant_id == tenant_id)
+        .order_by(WebhookSubscription.created_at.desc())
+    )
     if enabled is not None:
         stmt = stmt.where(WebhookSubscription.enabled == enabled)
-    stmt = apply_pagination(stmt.order_by(WebhookSubscription.created_at.desc()), limit=limit, offset=offset)
-    rows = list(session.scalars(stmt))
     if event_type:
-        rows = [row for row in rows if event_type in json.loads(row.event_types_json or "[]")]
-    return rows
+        # event_types_json is a JSON-encoded array in a Text column, so this
+        # filter can only run in Python -- there is no portable SQL
+        # array-membership operator for it across SQLite/Postgres without
+        # widening the column type. Pagination MUST therefore also happen in
+        # Python, after this filter, not via SQL LIMIT/OFFSET before it: a
+        # SQL-level page fetched first would return an arbitrary,
+        # already-truncated set of rows, which this filter would then narrow
+        # further -- silently losing matches beyond that page even when more
+        # exist, and undercounting or returning [] for a tenant that does
+        # have matches.
+        rows = [row for row in session.scalars(stmt) if event_type in json.loads(row.event_types_json or "[]")]
+        start = max(0, int(offset)) if offset else 0
+        end = start + clamp_limit(limit) if limit is not None else None
+        return rows[start:end]
+    stmt = apply_pagination(stmt, limit=limit, offset=offset)
+    return list(session.scalars(stmt))
 
 
 def list_subscriptions_for_event(session: Session, *, tenant_id: str, event_type: str) -> list[WebhookSubscription]:
@@ -118,24 +134,39 @@ def update_subscription(
     changes: dict[str, Any],
     now: datetime | None = None,
 ) -> WebhookSubscription | None:
+    """Apply a partial update. ``changes`` distinguishes an omitted key (leave the
+    field alone) from a key present with ``None`` (an explicit clear request) --
+    callers pass ``model_dump(exclude_unset=True)`` so ``"field" in changes`` means
+    the client's request body actually included that key. Every field on this model
+    is non-nullable, so an explicit ``None`` maps to that field's "cleared" value
+    (empty string for ``description``) or, where no such value exists (``url``,
+    ``secret``, ``event_types`` must never be empty; ``enabled`` has no null state),
+    to a validation error -- never a silent no-op indistinguishable from omission.
+    """
     subscription = get_subscription(session, tenant_id=tenant_id, subscription_id=subscription_id)
     if subscription is None:
         return None
-    if "url" in changes and changes["url"] is not None:
+    if "url" in changes:
+        if changes["url"] is None:
+            raise ValueError("webhook requires a url")
         url = str(changes["url"]).strip()
         if not url:
             raise ValueError("webhook requires a url")
         subscription.url = url
-    if "secret" in changes and changes["secret"] is not None:
+    if "secret" in changes:
+        if changes["secret"] is None:
+            raise ValueError("webhook requires a secret")
         secret = str(changes["secret"])
         if not secret.strip():
             raise ValueError("webhook requires a secret")
         subscription.secret = secret
-    if "event_types" in changes and changes["event_types"] is not None:
-        subscription.event_types_json = json.dumps(_validate_event_types(list(changes["event_types"])))
-    if "description" in changes and changes["description"] is not None:
-        subscription.description = str(changes["description"])
-    if "enabled" in changes and changes["enabled"] is not None:
+    if "event_types" in changes:
+        subscription.event_types_json = json.dumps(_validate_event_types(list(changes["event_types"] or [])))
+    if "description" in changes:
+        subscription.description = str(changes["description"] or "")
+    if "enabled" in changes:
+        if changes["enabled"] is None:
+            raise ValueError("enabled cannot be null")
         subscription.enabled = bool(changes["enabled"])
     subscription.updated_at = _now(now)
     session.flush()

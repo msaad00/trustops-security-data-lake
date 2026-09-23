@@ -38,6 +38,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+from security_lakehouse.assessment import SnapshotWrittenHook
 from security_lakehouse.connector_runner import run_connector_sync
 from security_lakehouse.connector_state import build_catalog_view
 from security_lakehouse.lake_eval import run_lake_eval
@@ -248,12 +249,19 @@ def tick(
     now: datetime | None = None,
     runner: Any | None = None,
     connector_runner: Any | None = None,
+    on_snapshot_written: SnapshotWrittenHook | None = None,
 ) -> list[dict[str, Any]]:
     """Fire every due workflow and connector once.
 
     Returns one record per attempted run. ``runner`` remains the workflow
     runner override used by tests; ``connector_runner`` is the equivalent
-    override for scheduled connector syncs.
+    override for scheduled connector syncs. ``on_snapshot_written`` reaches
+    every fired workflow's ``action.snapshot`` node (if any) via
+    :func:`security_lakehouse.workflows.run_workflow` -- this is how a
+    cron-scheduled snapshot dispatches webhook events, not only an
+    API-triggered one. It is applied only to the real ``run_workflow``, never
+    to a test-supplied ``runner`` override (whose narrower signature tests
+    already rely on).
 
     The read-state -> fire -> write-state critical section is guarded by a
     non-blocking advisory file lock (``gold/.scheduler.lock``) so two
@@ -276,6 +284,7 @@ def tick(
                 now=now,
                 runner=runner,
                 connector_runner=connector_runner,
+                on_snapshot_written=on_snapshot_written,
             )
         finally:
             fcntl.flock(lock_fd.fileno(), fcntl.LOCK_UN)
@@ -289,6 +298,7 @@ def _tick_locked(
     now: datetime | None = None,
     runner: Any | None = None,
     connector_runner: Any | None = None,
+    on_snapshot_written: SnapshotWrittenHook | None = None,
 ) -> list[dict[str, Any]]:
     moment = (now or _utc_now()).astimezone(UTC)
     scheduled = _scheduled_from_workflows(list_workflows(lake_dir))
@@ -300,7 +310,12 @@ def _tick_locked(
         if last_fired is not None and moment < due_at:
             continue
         try:
-            run = (runner or run_workflow)(lake_dir, workflow_id=entry.workflow_id, actor="scheduler")
+            if runner is None:
+                run = run_workflow(
+                    lake_dir, workflow_id=entry.workflow_id, actor="scheduler", on_snapshot_written=on_snapshot_written
+                )
+            else:
+                run = runner(lake_dir, workflow_id=entry.workflow_id, actor="scheduler")
             outcome = run.get("result") if isinstance(run, dict) else "ok"
             _write_state(lake_dir, target_kind="workflow", target_id=entry.workflow_id, fired_at=moment)
             results.append(

@@ -26,11 +26,13 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import os
 import time
 import urllib.error
 import urllib.request
 import uuid
 from typing import Any
+from urllib.parse import urlsplit
 
 from security_lakehouse import netguard
 
@@ -42,11 +44,66 @@ SIGNATURE_HEADER = "X-TrustOps-Signature"
 EVENT_HEADER = "X-TrustOps-Event"
 DELIVERY_HEADER = "X-TrustOps-Delivery"
 
+# Optional, opt-in destination allowlist for webhook subscription deliveries.
+#
+# This is deliberately a *separate* control from the workflow engine's
+# TRUSTOPS_WORKFLOW_EGRESS_ALLOWLIST (see workflows.py's action.webhook), and
+# deliberately NOT deny-by-default the way that one is. That allowlist gates
+# an admin-authored automation step POSTing to an admin-chosen target; this
+# gates a *tenant's own* subscription registered to receive that tenant's own
+# compliance events -- the GitHub/Stripe self-service webhook model, where a
+# customer registers any endpoint they control without needing a platform
+# operator to allowlist it first. Coupling the two (or defaulting this one to
+# deny-all) would make every webhook subscription undeliverable out of the box
+# for any operator who has not also configured workflow egress, for an
+# unrelated feature. The SSRF guard (assert_url_is_public, below) already
+# blocks the classic internal-metadata-service target regardless of this
+# allowlist's state; this allowlist is an *additional*, opt-in restriction for
+# operators who want to cap egress to specific approved destinations (e.g. an
+# approved SIEM vendor's IP range) even among public addresses.
+EGRESS_ALLOWLIST_ENV = "TRUSTOPS_WEBHOOK_EGRESS_ALLOWLIST"
+
 
 def _backoff_sleep(seconds: float) -> None:
     """Indirection point so tests can monkeypatch the retry sleep to a no-op."""
     if seconds > 0:
         time.sleep(seconds)
+
+
+def _load_egress_allowlist() -> set[str]:
+    """Parse ``TRUSTOPS_WEBHOOK_EGRESS_ALLOWLIST`` into normalized host[:port] entries."""
+    raw = os.environ.get(EGRESS_ALLOWLIST_ENV, "")
+    entries: set[str] = set()
+    for chunk in raw.split(","):
+        entry = chunk.strip().lower()
+        if entry:
+            entries.add(entry)
+    return entries
+
+
+def _host_is_allowlisted(host: str, port: int, allowlist: set[str]) -> bool:
+    """A target matches if its bare host or its explicit ``host:port`` is listed."""
+    host = host.lower()
+    return host in allowlist or f"{host}:{port}" in allowlist
+
+
+def _assert_egress_allowed(url: str) -> None:
+    """SSRF guard, plus ``TRUSTOPS_WEBHOOK_EGRESS_ALLOWLIST`` when an operator has set one.
+
+    Always enforces the public-IP SSRF guard. The allowlist is opt-in: an
+    unset/empty value applies no further restriction (see the module docstring
+    for why this differs from the workflow engine's deny-by-default egress
+    control). Raises ``ValueError`` on any violation.
+    """
+    netguard.assert_url_is_public(url, label="webhook")
+    allowlist = _load_egress_allowlist()
+    if not allowlist:
+        return
+    parsed = urlsplit(url)
+    host = parsed.hostname or ""
+    port = parsed.port or (443 if parsed.scheme == "https" else 80)
+    if not _host_is_allowlisted(host, port, allowlist):
+        raise ValueError(f"webhook target host {host!r} is not in {EGRESS_ALLOWLIST_ENV}")
 
 
 def sign_payload(secret: str, body: bytes) -> str:
@@ -86,8 +143,9 @@ def deliver_webhook(
 
     Returns ``{"ok", "status_code", "attempts", "error"}``. A non-2xx response
     or a network/timeout error is retried up to ``max_retries`` additional
-    times with a short backoff; an SSRF-blocked or malformed URL fails
-    immediately without an attempt (there is nothing safe to retry).
+    times with a short backoff; a target that fails the SSRF guard or the
+    optional ``TRUSTOPS_WEBHOOK_EGRESS_ALLOWLIST`` (see :func:`_assert_egress_allowed`)
+    fails immediately without an attempt (there is nothing safe to retry).
     """
     body = json.dumps(envelope, separators=(",", ":"), sort_keys=True).encode("utf-8")
     headers = {
@@ -98,7 +156,7 @@ def deliver_webhook(
     }
 
     try:
-        netguard.assert_url_is_public(url, label="webhook")
+        _assert_egress_allowed(url)
     except ValueError as exc:
         return {"ok": False, "status_code": None, "attempts": 0, "error": str(exc)}
 
@@ -108,12 +166,14 @@ def deliver_webhook(
     max_retries = max(0, int(max_retries))
     for attempt in range(max_retries + 1):
         attempts = attempt + 1
-        request = urllib.request.Request(url, data=body, headers=headers, method="POST")  # noqa: S310 (scheme + SSRF guarded above)
+        request = urllib.request.Request(url, data=body, headers=headers, method="POST")  # noqa: S310 (scheme + egress guarded above)
         try:
+            # Re-validated on every redirect hop too, so an allowlisted target
+            # cannot 302 a delivery to a non-allowlisted or non-public one.
             with netguard.open_guarded(
                 request,
                 timeout=timeout,
-                validate=lambda target: netguard.assert_url_is_public(target, label="webhook"),
+                validate=_assert_egress_allowed,
             ) as response:
                 status_code = int(getattr(response, "status", 0) or 0)
                 if 200 <= status_code < 300:
@@ -133,6 +193,7 @@ def deliver_webhook(
 
 __all__ = [
     "DELIVERY_HEADER",
+    "EGRESS_ALLOWLIST_ENV",
     "EVENT_HEADER",
     "SIGNATURE_HEADER",
     "build_envelope",

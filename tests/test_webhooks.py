@@ -26,8 +26,10 @@ from security_lakehouse.db import migrate  # noqa: E402
 from security_lakehouse.db import webhooks as webhooks_db  # noqa: E402
 from security_lakehouse.db.base import create_engine_for, session_scope  # noqa: E402
 from security_lakehouse.db.repository import create_api_key, create_tenant, create_user  # noqa: E402
+from security_lakehouse.scheduler import tick  # noqa: E402
 from security_lakehouse.server_app import create_app  # noqa: E402
 from security_lakehouse.services import webhooks as webhook_services  # noqa: E402
+from security_lakehouse.workflows import save_workflow  # noqa: E402
 from test_api_v1 import _seed_lake  # noqa: E402
 
 
@@ -286,6 +288,50 @@ def test_deliver_webhook_ssrf_blocked_url_fails_without_an_attempt(monkeypatch: 
     assert "SSRF" in (result["error"] or "")
 
 
+# --- optional destination allowlist (review finding #9) ----------------------
+
+
+def test_deliver_webhook_allows_any_public_url_when_allowlist_unset(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Default behavior (no TRUSTOPS_WEBHOOK_EGRESS_ALLOWLIST set) is unchanged:
+    any public URL is deliverable -- the self-service webhook model."""
+    monkeypatch.delenv(webhook_delivery.EGRESS_ALLOWLIST_ENV, raising=False)
+    monkeypatch.setattr(
+        webhook_delivery.netguard, "open_guarded", lambda request, *, timeout=None, validate=None: _FakeResponse(200)
+    )
+    envelope = webhook_delivery.build_envelope(event_type="x", tenant_id="t", occurred_at="now", data={})
+    result = webhook_delivery.deliver_webhook(
+        "https://anywhere-public.example.com/x", secret="s", event_type="x", envelope=envelope
+    )
+    assert result["ok"] is True
+
+
+def test_deliver_webhook_rejects_non_allowlisted_host_when_allowlist_set(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv(webhook_delivery.EGRESS_ALLOWLIST_ENV, "siem.example.com")
+    envelope = webhook_delivery.build_envelope(event_type="x", tenant_id="t", occurred_at="now", data={})
+    result = webhook_delivery.deliver_webhook(
+        "https://not-siem.example.com/x", secret="s", event_type="x", envelope=envelope
+    )
+    assert result["ok"] is False
+    assert result["attempts"] == 0
+    assert "TRUSTOPS_WEBHOOK_EGRESS_ALLOWLIST" in (result["error"] or "")
+
+
+def test_deliver_webhook_allows_allowlisted_host_when_allowlist_set(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv(webhook_delivery.EGRESS_ALLOWLIST_ENV, "siem.example.com")
+    monkeypatch.setattr(
+        webhook_delivery.netguard, "open_guarded", lambda request, *, timeout=None, validate=None: _FakeResponse(200)
+    )
+    envelope = webhook_delivery.build_envelope(event_type="x", tenant_id="t", occurred_at="now", data={})
+    result = webhook_delivery.deliver_webhook(
+        "https://siem.example.com/ingest", secret="s", event_type="x", envelope=envelope
+    )
+    assert result["ok"] is True
+
+
 # --- dispatch orchestration ---------------------------------------------------
 
 
@@ -432,6 +478,26 @@ def test_snapshot_hook_failure_does_not_break_the_write(tmp_path: Path) -> None:
     assert path.exists()
     result = verify_snapshot_chain(tmp_path)
     assert result["ok"] is True
+
+
+def test_snapshot_write_survives_a_malformed_prior_snapshot_violation_id(tmp_path: Path) -> None:
+    """A prior snapshot with a non-string (unhashable) violation_id must not
+    raise TypeError inside the chain lock and break every caller of
+    write_assessment_snapshot -- CLI, scheduler, and MCP included, not only
+    webhook-aware ones (review finding #6).
+    """
+    _seed_lake(tmp_path)
+    first = write_assessment_snapshot(tmp_path, reason="baseline")
+    payload = json.loads(first.read_text(encoding="utf-8"))
+    assert payload["violations"], "fixture must produce at least one violation to corrupt"
+    payload["violations"][0]["violation_id"] = ["not", "a", "string"]  # malformed on purpose
+    first.write_text(json.dumps(payload, sort_keys=True), encoding="utf-8")
+
+    calls: list[tuple] = []
+    second = write_assessment_snapshot(tmp_path, reason="second", on_snapshot_written=lambda *a: calls.append(a))
+
+    assert second.exists()
+    assert len(calls) == 1  # the hook still fires -- the diff failure was swallowed, not fatal
 
 
 def test_write_assessment_snapshot_succeeds_even_when_every_webhook_delivery_fails(tmp_path: Path) -> None:
@@ -660,3 +726,316 @@ def test_snapshot_creation_via_api_does_not_fail_when_webhook_delivery_fails(
 
     deliveries = client.get(f"/api/v1/webhooks/{subscription_id}/deliveries", headers=_bearer(admin_token))
     assert deliveries.json()["data"][0]["status"] == "failed"
+
+
+# --- scheduler/workflow-triggered snapshots also dispatch webhooks (review finding #4) ---
+
+
+def _save_cron_snapshot_workflow(lake: Path, *, schedule: str = "every 1m") -> str:
+    workflow = save_workflow(
+        lake,
+        workflow_id="cron-snapshot",
+        name="cron-snapshot",
+        description="",
+        nodes=[
+            {"id": "n1", "node_type": "trigger.cron", "params": {"schedule": schedule}},
+            {"id": "n2", "node_type": "action.snapshot", "params": {"reason": "scheduled"}},
+        ],
+        edges=[{"source": "n1", "target": "n2"}],
+    )
+    return workflow["workflow_id"]
+
+
+def test_scheduler_tick_threads_on_snapshot_written_through_run_workflow(tmp_path: Path) -> None:
+    """scheduler.tick's REAL run_workflow (no test-injected runner) must reach
+    action.snapshot's write_assessment_snapshot call with on_snapshot_written --
+    a cron-scheduled snapshot is at least as common a trigger as an interactive
+    one, and previously silently skipped webhook dispatch entirely.
+    """
+    _seed_lake(tmp_path)
+    _save_cron_snapshot_workflow(tmp_path)
+
+    calls: list[tuple] = []
+    result = tick(tmp_path, on_snapshot_written=lambda *a: calls.append(a))
+
+    assert len(result) == 1
+    assert result[0]["result"] == "ok"
+    assert len(calls) == 1
+    _path, _assessment, _new_violations, _newly_failing = calls[0]
+
+
+def test_scheduler_tick_with_test_runner_override_does_not_receive_the_hook(tmp_path: Path) -> None:
+    """A test-supplied runner= keeps its existing narrow signature -- tick must
+    not pass on_snapshot_written to it (that would break every existing
+    scheduler test that stubs runner with (lake, *, workflow_id, actor))."""
+    _seed_lake(tmp_path)
+    workflow_id = _save_cron_snapshot_workflow(tmp_path)
+    calls: list[str] = []
+
+    def runner(_lake, *, workflow_id: str, actor: str) -> dict:
+        calls.append(workflow_id)
+        return {"workflow_id": workflow_id, "actor": actor, "result": "ok"}
+
+    result = tick(tmp_path, runner=runner, on_snapshot_written=lambda *a: None)
+
+    assert calls == [workflow_id]
+    assert result[0]["result"] == "ok"
+
+
+def test_scheduler_tick_via_api_dispatches_assessment_completed(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """POST /api/v1/scheduler/tick end-to-end: firing a due cron workflow whose
+    DAG contains action.snapshot dispatches a signed webhook delivery, exactly
+    like an interactively-triggered POST /api/v1/snapshots does.
+    """
+    _seed_lake(tmp_path)
+    _save_cron_snapshot_workflow(tmp_path)
+    app = create_app(tmp_path)
+    client = TestClient(app)
+    _tenant_id, admin_token = _provision(app, "acme", role="security_admin")
+
+    calls: list[dict] = []
+
+    def _fake_deliver(url, *, secret, event_type, envelope):  # noqa: ANN001, ARG001
+        calls.append({"event_type": event_type, "envelope": envelope})
+        return {"ok": True, "status_code": 200, "attempts": 1, "error": None}
+
+    monkeypatch.setattr(webhook_services, "deliver_webhook", _fake_deliver)
+
+    created = client.post(
+        "/api/v1/webhooks",
+        json={"url": "https://hooks.example.com/scheduler-sink", "event_types": ["assessment.completed"]},
+        headers=_bearer(admin_token),
+    )
+    assert created.status_code == HTTPStatus.CREATED
+
+    tick_response = client.post("/api/v1/scheduler/tick", headers=_bearer(admin_token))
+    assert tick_response.status_code == HTTPStatus.CREATED
+    fired = tick_response.json()["data"]["fired"]
+    assert len(fired) == 1
+    assert fired[0]["result"] == "ok"
+
+    assert len(calls) == 1
+    assert calls[0]["event_type"] == "assessment.completed"
+
+
+# --- pagination must apply after the event_type filter, not before (review finding #7) ---
+
+
+def test_list_subscriptions_event_type_filter_applies_before_pagination(tmp_path: Path) -> None:
+    """A matching subscription that is not among the N most-recently-created
+    rows must still be found -- filtering the SQL-paginated page (rather than
+    paginating the filtered set) silently drops or undercounts real matches.
+    """
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path)
+    with session_scope(app.state.sessionmaker) as session:
+        tenant = create_tenant(session, slug="acme", name="Acme")
+        # Oldest, and the ONLY control.failed subscriber.
+        only_match = webhooks_db.create_subscription(
+            session,
+            tenant_id=tenant.id,
+            url="https://hooks.example.com/only-match",
+            secret="s3cr3t-value-1234",
+            event_types=["control.failed"],
+        )
+        # Four more recent, non-matching subscriptions -- these fill up any
+        # SQL-level LIMIT before a Python-side filter would ever run.
+        for i in range(4):
+            webhooks_db.create_subscription(
+                session,
+                tenant_id=tenant.id,
+                url=f"https://hooks.example.com/noise-{i}",
+                secret="s3cr3t-value-1234",
+                event_types=["assessment.completed"],
+            )
+
+        # Newest-first order puts every non-matching row ahead of the match;
+        # a limit=2 SQL page would contain zero control.failed subscribers.
+        results = webhooks_db.list_subscriptions(session, tenant_id=tenant.id, event_type="control.failed", limit=2)
+        assert [row.id for row in results] == [only_match.id]
+
+
+# --- explicit null vs omitted field on PATCH (review finding #8) -------------------
+
+
+def test_update_subscription_explicit_null_description_clears_it(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path)
+    with session_scope(app.state.sessionmaker) as session:
+        tenant = create_tenant(session, slug="acme", name="Acme")
+        sub = webhooks_db.create_subscription(
+            session,
+            tenant_id=tenant.id,
+            url="https://hooks.example.com/x",
+            secret="s3cr3t-value-1234",
+            event_types=["assessment.completed"],
+            description="will be cleared",
+        )
+        updated = webhooks_db.update_subscription(
+            session, tenant_id=tenant.id, subscription_id=sub.id, changes={"description": None}
+        )
+        assert updated is not None
+        assert updated.description == ""
+
+
+def test_update_subscription_omitted_description_leaves_it_unchanged(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path)
+    with session_scope(app.state.sessionmaker) as session:
+        tenant = create_tenant(session, slug="acme", name="Acme")
+        sub = webhooks_db.create_subscription(
+            session,
+            tenant_id=tenant.id,
+            url="https://hooks.example.com/x",
+            secret="s3cr3t-value-1234",
+            event_types=["assessment.completed"],
+            description="keep me",
+        )
+        updated = webhooks_db.update_subscription(
+            session, tenant_id=tenant.id, subscription_id=sub.id, changes={"enabled": False}
+        )
+        assert updated is not None
+        assert updated.description == "keep me"
+
+
+def test_update_subscription_explicit_null_event_types_or_enabled_is_rejected(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path)
+    with session_scope(app.state.sessionmaker) as session:
+        tenant = create_tenant(session, slug="acme", name="Acme")
+        sub = webhooks_db.create_subscription(
+            session,
+            tenant_id=tenant.id,
+            url="https://hooks.example.com/x",
+            secret="s3cr3t-value-1234",
+            event_types=["assessment.completed"],
+        )
+        with pytest.raises(ValueError, match="event_types"):
+            webhooks_db.update_subscription(
+                session, tenant_id=tenant.id, subscription_id=sub.id, changes={"event_types": None}
+            )
+        with pytest.raises(ValueError, match="enabled"):
+            webhooks_db.update_subscription(
+                session, tenant_id=tenant.id, subscription_id=sub.id, changes={"enabled": None}
+            )
+
+
+def test_webhook_patch_explicit_null_description_via_api(env) -> None:
+    """The API's exclude_unset=True model_dump correctly distinguishes an
+    explicit JSON null from an omitted key end-to-end."""
+    _app, client, tokens, _tenant_id = env
+    created = client.post(
+        "/api/v1/webhooks",
+        json={
+            "url": "https://hooks.example.com/x",
+            "event_types": ["assessment.completed"],
+            "description": "will be cleared",
+        },
+        headers=_bearer(tokens["security_admin"]),
+    )
+    subscription_id = created.json()["data"]["id"]
+
+    patched = client.patch(
+        f"/api/v1/webhooks/{subscription_id}",
+        json={"description": None},
+        headers=_bearer(tokens["security_admin"]),
+    )
+    assert patched.status_code == HTTPStatus.OK
+    assert patched.json()["data"]["description"] == ""
+
+    omitted = client.patch(
+        f"/api/v1/webhooks/{subscription_id}",
+        json={"enabled": False},
+        headers=_bearer(tokens["security_admin"]),
+    )
+    assert omitted.status_code == HTTPStatus.OK
+    assert omitted.json()["data"]["description"] == ""  # unrelated PATCH left it alone
+
+
+# --- session ownership: dispatch_event never commits/rolls back the caller's
+# transaction (review findings #1/#2) ---------------------------------------
+
+
+def test_dispatch_event_does_not_commit_the_callers_session(tmp_path: Path) -> None:
+    """dispatch_event must not finalize the caller's own not-yet-committed work.
+
+    Simulates the approve_agent_decision shape: the caller has other pending
+    work on the same session (an unsaved risk) when it calls dispatch_event;
+    if dispatch_event committed the session, that unrelated pending work would
+    be durably persisted too, before the caller ever decided to commit it.
+    """
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path)
+    from security_lakehouse.db import risks as risks_db
+
+    with session_scope(app.state.sessionmaker) as outer_session:
+        tenant = create_tenant(outer_session, slug="acme", name="Acme")
+        webhooks_db.create_subscription(
+            outer_session,
+            tenant_id=tenant.id,
+            url="https://hooks.example.com/x",
+            secret="s3cr3t-value-1234",
+            event_types=["assessment.completed"],
+        )
+        outer_session.commit()
+
+    # A fresh session simulating one request: register unrelated pending work,
+    # then dispatch an event on the SAME session, without committing either.
+    factory = app.state.sessionmaker
+    session = factory()
+    try:
+        risks_db.create_risk(session, tenant_id=tenant.id, title="unrelated pending work")
+        webhook_services.dispatch_event(
+            session,
+            tenant.id,
+            event_type="assessment.completed",
+            data={},
+            deliver=lambda *a, **k: {"ok": True, "status_code": 200, "attempts": 1, "error": None},  # noqa: ARG005
+        )
+        # Neither the risk nor the delivery has been committed by dispatch_event.
+        session.rollback()
+    finally:
+        session.close()
+
+    with session_scope(app.state.sessionmaker) as verify_session:
+        assert risks_db.list_risks(verify_session, tenant_id=tenant.id) == []
+        assert webhook_services.list_deliveries(verify_session, tenant.id) == []
+
+
+def test_dispatch_event_failed_subscription_lookup_does_not_poison_the_session(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A failure listing subscriptions must not leave the caller's session in a
+    state where the caller's own later commit fails too (review finding #2).
+    """
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path)
+    with session_scope(app.state.sessionmaker) as session:
+        tenant = create_tenant(session, slug="acme", name="Acme")
+        session.commit()
+
+    from security_lakehouse.db import risks as risks_db
+
+    def _boom(session, *, tenant_id, event_type):  # noqa: ANN001, ARG001
+        raise RuntimeError("subscription lookup exploded")
+
+    monkeypatch.setattr(webhooks_db, "list_subscriptions_for_event", _boom)
+
+    factory = app.state.sessionmaker
+    session = factory()
+    try:
+        risks_db.create_risk(session, tenant_id=tenant.id, title="pending before the failure")
+        results = webhook_services.dispatch_event(session, tenant.id, event_type="assessment.completed", data={})
+        assert results == []
+
+        # The caller's own pending work must still be committable -- the
+        # savepoint rollback around the failed lookup must not have poisoned
+        # the outer transaction.
+        session.commit()
+    finally:
+        session.close()
+
+    with session_scope(app.state.sessionmaker) as verify_session:
+        assert len(risks_db.list_risks(verify_session, tenant_id=tenant.id)) == 1
