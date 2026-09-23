@@ -761,7 +761,7 @@ def test_scheduler_tick_threads_on_snapshot_written_through_run_workflow(tmp_pat
     assert len(result) == 1
     assert result[0]["result"] == "ok"
     assert len(calls) == 1
-    _path, _assessment, _new_violations, _newly_failing = calls[0]
+    _path, _assessment, _unused_new_violations, _newly_failing = calls[0]
 
 
 def test_scheduler_tick_with_test_runner_override_does_not_receive_the_hook(tmp_path: Path) -> None:
