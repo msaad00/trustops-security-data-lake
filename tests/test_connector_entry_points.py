@@ -69,9 +69,7 @@ def test_entry_point_connector_appears_in_effective_registry_and_is_callable(
 
     # And directly, the way a builder is invoked internally.
     builder = registry["demo-vendor-evidence"]
-    direct_rows = builder(
-        SyncInputs(repo=None, fixture_dir=None, token_env=DEFAULT_TOKEN_ENV, env={})
-    )
+    direct_rows = builder(SyncInputs(repo=None, fixture_dir=None, token_env=DEFAULT_TOKEN_ENV, env={}))
     assert direct_rows[0]["event_id"] == rows[0]["event_id"]
     assert direct_rows[0]["source"] == rows[0]["source"]
 
