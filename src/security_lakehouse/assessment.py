@@ -13,9 +13,10 @@ from __future__ import annotations
 import hashlib
 import heapq
 import json
+import logging
 import re
 from collections import defaultdict
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -29,6 +30,13 @@ from security_lakehouse.generations import generation_identity, generation_reade
 from security_lakehouse.io import append_jsonl, iter_jsonl, read_json, read_jsonl, write_json
 from security_lakehouse.ledger import chain_lock
 from security_lakehouse.models import SEVERITY_SCORE, utc_iso
+
+logger = logging.getLogger(__name__)
+
+# Called after a snapshot is written (and the chain lock released) with
+# ``(snapshot_path, assessment, new_violations, newly_failing_controls)``. See
+# ``write_assessment_snapshot`` for how the diff arguments are derived.
+SnapshotWrittenHook = Callable[[Path, dict[str, Any], list[dict[str, Any]], list[str]], None]
 
 VIOLATION_STATUSES = {"open", "failed", "blocked", "noncompliant"}
 
@@ -164,6 +172,68 @@ def _chain_tip(lake_dir: str | Path) -> str | None:
     return entries[-1].get("assessment_hash") if entries else None
 
 
+def _prior_snapshot_payload(lake_dir: str | Path) -> dict[str, Any] | None:
+    """Best-effort load of the most recently ledgered snapshot's full payload.
+
+    Read-only and additive: used only to diff violations for webhook event
+    detection (see :func:`_diff_violations`), never to decide the hash chain
+    itself. A missing/unreadable prior snapshot yields ``None`` rather than
+    raising, so a corrupt or pruned history never blocks a new snapshot write.
+    """
+    entries = read_jsonl(_ledger_path(lake_dir), missing_ok=True)
+    if not entries:
+        return None
+    name = entries[-1].get("snapshot")
+    if not isinstance(name, str) or not name:
+        return None
+    path = Path(lake_dir) / "gold" / "snapshots" / name
+    if not path.is_file():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def _diff_violations(prior: dict[str, Any] | None, current: dict[str, Any]) -> tuple[list[dict[str, Any]], list[str]]:
+    """Return ``(new_violations, newly_failing_control_ids)`` between two snapshots.
+
+    A violation is "new" when its ``violation_id`` is not present in the prior
+    snapshot's open-violations list. A control is "newly failing" when it had
+    zero open violations in the prior snapshot but at least one new violation
+    in this one — a real transition derived from the two most recent
+    point-in-time snapshots, not a fabricated one. There is no prior snapshot
+    on the very first freeze of a lake, so nothing is reported as "new" then
+    (everything open at that point is the starting state, not a transition).
+    """
+    if prior is None:
+        return [], []
+    prior_violations = prior.get("violations")
+    prior_ids = (
+        {v.get("violation_id") for v in prior_violations if isinstance(v, dict)}
+        if isinstance(prior_violations, list)
+        else set()
+    )
+    prior_failing_controls = (
+        {v.get("control_id") for v in prior_violations if isinstance(v, dict)}
+        if isinstance(prior_violations, list)
+        else set()
+    )
+    current_violations = current.get("violations")
+    if not isinstance(current_violations, list):
+        return [], []
+    new_violations = [v for v in current_violations if isinstance(v, dict) and v.get("violation_id") not in prior_ids]
+    newly_failing_controls = sorted(
+        {
+            v["control_id"]
+            for v in new_violations
+            if isinstance(v.get("control_id"), str) and v["control_id"] not in prior_failing_controls
+        }
+    )
+    return new_violations, newly_failing_controls
+
+
 @generation_reader
 def write_assessment_snapshot(
     lake_dir: str | Path,
@@ -171,18 +241,29 @@ def write_assessment_snapshot(
     output: str | Path | None = None,
     freshness_days: int = 7,
     reason: str = "manual",
+    on_snapshot_written: SnapshotWrittenHook | None = None,
 ) -> Path:
     """Write a point-in-time assessment snapshot for audit/JIT review.
 
     Each snapshot is linked to its predecessor via ``prev_hash`` and recorded
     in an append-only ledger, so a snapshot that is later mutated or deleted is
     detectable by :func:`verify_snapshot_chain`.
+
+    ``on_snapshot_written``, when given, is invoked *after* the chain lock is
+    released with the new snapshot plus a violations diff against the prior
+    snapshot (see :func:`_diff_violations`) — the hook point event-driven
+    callers (e.g. the webhook dispatcher) use to push ``assessment.completed``,
+    ``finding.created``, and ``control.failed`` notifications without this
+    module taking on any DB/tenant/transport dependency itself. A failing hook
+    is logged and swallowed, never allowed to turn a successful snapshot write
+    into a caller-visible error.
     """
     lake = Path(lake_dir)
     # Concurrent snapshot requests must not read the same chain tip: serialize
     # the tip-read through ledger-append span so the chain can never fork.
     with chain_lock(_ledger_path(lake)):
         prev_hash = _chain_tip(lake)
+        prior_payload = _prior_snapshot_payload(lake)
         assessment = build_current_posture(lake, freshness_days=freshness_days)
         assessment["assessment_type"] = "point_in_time_snapshot"
         assessment["snapshot_reason"] = reason
@@ -218,7 +299,15 @@ def write_assessment_snapshot(
                 "recorded_at": utc_iso(datetime.now(UTC)),
             },
         )
-        return output_path
+        new_violations, newly_failing_controls = _diff_violations(prior_payload, assessment)
+    # Lock released above -- the hook (and any outbound webhook delivery it
+    # triggers) must never hold up a concurrent writer.
+    if on_snapshot_written is not None:
+        try:
+            on_snapshot_written(output_path, assessment, new_violations, newly_failing_controls)
+        except Exception:  # noqa: BLE001 - a hook failure must never fail a successful snapshot write
+            logger.exception("on_snapshot_written hook failed for %s", output_path)
+    return output_path
 
 
 def verify_snapshot_chain(lake_dir: str | Path) -> dict[str, Any]:

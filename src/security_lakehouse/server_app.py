@@ -21,6 +21,7 @@ import json
 import logging
 import math
 import os
+import secrets
 import uuid
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime, timedelta
@@ -39,7 +40,7 @@ from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from security_lakehouse import api_legacy, api_v1, remediation_guidance, tenancy, trust_share
-from security_lakehouse.assessment import build_current_posture, write_assessment_snapshot
+from security_lakehouse.assessment import SnapshotWrittenHook, build_current_posture, write_assessment_snapshot
 from security_lakehouse.auth.api_key_session import ApiKeySessionError, exchange_api_key_for_browser_session
 from security_lakehouse.auth.dependencies import get_session, require_scope
 from security_lakehouse.auth.oidc import OIDCLoginError, build_oauth, complete_oidc_login, load_oidc_config
@@ -82,6 +83,7 @@ from security_lakehouse.services import access_reviews as access_review_services
 from security_lakehouse.services import grc as grc_services
 from security_lakehouse.services import policy_documents as policy_document_services
 from security_lakehouse.services import vendor_risk as vendor_risk_services
+from security_lakehouse.services import webhooks as webhook_services
 from security_lakehouse.web import web_dist_dir, web_dist_index
 
 _COOKIE_SECURE = os.environ.get("TRUSTOPS_COOKIE_SECURE", "true").lower() in {"1", "true", "yes", "on"}
@@ -120,6 +122,11 @@ _require_write = require_scope("write")
 _require_admin = require_scope("auth_admin")
 _require_evidence_request = require_scope("evidence_request")
 _require_control_manage = require_scope("control_manage")
+# Webhook subscriptions carry a signing secret and an outbound destination for
+# compliance events, so mutating them takes the same scope as managing an
+# inbound connector (admin/security_admin only) — reading the (secret-free)
+# list/detail is ordinary `read`.
+_require_connector_manage = require_scope("connector_manage")
 
 
 class CreateKeyRequest(_StrictModel):
@@ -228,6 +235,22 @@ class UpdateRiskRequest(_StrictModel):
     due_at: str | None = None
 
 
+class CreateWebhookRequest(_StrictModel):
+    url: str = Field(min_length=1, max_length=2048)
+    event_types: list[str] = Field(min_length=1)
+    secret: str | None = Field(default=None, min_length=16, max_length=255)
+    description: str = Field(default="", max_length=255)
+    enabled: bool = True
+
+
+class UpdateWebhookRequest(_StrictModel):
+    url: str | None = Field(default=None, min_length=1, max_length=2048)
+    event_types: list[str] | None = Field(default=None, min_length=1)
+    secret: str | None = Field(default=None, min_length=16, max_length=255)
+    description: str | None = Field(default=None, max_length=255)
+    enabled: bool | None = None
+
+
 class AdoptPolicyTemplateRequest(_StrictModel):
     template_id: str
     variables: dict[str, Any] = {}
@@ -319,6 +342,33 @@ class CreateAgentRunRequest(_StrictModel):
 
 class ApproveAgentDecisionRequest(_StrictModel):
     note: str = ""
+
+
+def _snapshot_written_hook(session: Session, tenant_id: str) -> SnapshotWrittenHook:
+    """Build the ``write_assessment_snapshot`` hook that dispatches webhook events.
+
+    Captures ``session``/``tenant_id`` by closure so ``assessment.py`` itself
+    never needs to know about the application-state DB or tenancy; see
+    ``assessment.write_assessment_snapshot`` for why the hook fires only after
+    its chain lock is released.
+    """
+
+    def _hook(
+        snapshot_path: Path,
+        assessment: dict[str, Any],
+        new_violations: list[dict[str, Any]],
+        newly_failing_controls: list[str],
+    ) -> None:
+        webhook_services.dispatch_snapshot_events(
+            session,
+            tenant_id,
+            snapshot_path=snapshot_path,
+            assessment=assessment,
+            new_violations=new_violations,
+            newly_failing_controls=newly_failing_controls,
+        )
+
+    return _hook
 
 
 def _parse_dt(value: str | None) -> datetime | None:
@@ -514,7 +564,9 @@ def _execute_agent_decision(
     if action == "freeze_snapshot":
         if not identity.has_scope("snapshot"):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="snapshot scope required")
-        snapshot_path = write_assessment_snapshot(lake, reason=reason)
+        snapshot_path = write_assessment_snapshot(
+            lake, reason=reason, on_snapshot_written=_snapshot_written_hook(session, identity.tenant_id)
+        )
         return {"type": "snapshot", "snapshot_path": str(snapshot_path)}
 
     raise HTTPException(
@@ -921,6 +973,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             {"name": "gov-compliance", "description": "POA&M tracking and SPRS scoring for CMMC programs."},
             {"name": "insights", "description": "Posture time-series and remediation metrics."},
             {"name": "tags", "description": "Cross-entity tags and saved views."},
+            {"name": "webhooks", "description": "Outbound event subscriptions (findings, assessments, controls)."},
         ],
     )
     app.state.sessionmaker = session_factory(engine)
@@ -2385,6 +2438,106 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
         return JSONResponse(api_v1.envelope("risks", result))
 
+    # --- webhook subscriptions (outbound event push) ---
+    @app.get("/api/v1/webhooks", tags=["webhooks"])
+    def list_webhooks(
+        request: Request, identity: Identity = Depends(_require_read), session: Session = Depends(get_session)
+    ) -> JSONResponse:
+        params = _params(request)
+        limit, offset = _pagination(params)
+        enabled_raw = (params.get("enabled") or [None])[0]
+        enabled = {"true": True, "false": False}.get((enabled_raw or "").lower())
+        data = webhook_services.list_subscriptions(
+            session,
+            identity.tenant_id,
+            enabled=enabled,
+            event_type=(params.get("event_type") or [None])[0],
+            limit=limit,
+            offset=offset,
+        )
+        return JSONResponse(api_v1.envelope("webhooks", data, meta=_page_meta(limit, offset, len(data))))
+
+    @app.post("/api/v1/webhooks", status_code=status.HTTP_201_CREATED, tags=["webhooks"])
+    def create_webhook(
+        body: CreateWebhookRequest,
+        identity: Identity = Depends(_require_connector_manage),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        secret = body.secret or secrets.token_urlsafe(32)
+        try:
+            subscription = webhook_services.create_subscription(
+                session,
+                identity.tenant_id,
+                url=body.url,
+                secret=secret,
+                event_types=body.event_types,
+                description=body.description,
+                enabled=body.enabled,
+                created_by=identity.email,
+            )
+        except ValidationError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        # The secret is included here, in full, exactly once -- the caller must
+        # store it now; every later read of this subscription omits it.
+        return JSONResponse(api_v1.envelope("webhooks", subscription), status_code=status.HTTP_201_CREATED)
+
+    @app.get("/api/v1/webhooks/{subscription_id}", tags=["webhooks"])
+    def get_webhook(
+        subscription_id: str,
+        identity: Identity = Depends(_require_read),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        try:
+            data = webhook_services.get_subscription(session, identity.tenant_id, subscription_id)
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("webhooks", data))
+
+    @app.patch("/api/v1/webhooks/{subscription_id}", tags=["webhooks"])
+    def update_webhook(
+        subscription_id: str,
+        body: UpdateWebhookRequest,
+        identity: Identity = Depends(_require_connector_manage),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        changes = body.model_dump(exclude_unset=True)
+        try:
+            data = webhook_services.update_subscription(session, identity.tenant_id, subscription_id, changes=changes)
+        except ValidationError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("webhooks", data))
+
+    @app.delete("/api/v1/webhooks/{subscription_id}", tags=["webhooks"])
+    def delete_webhook(
+        subscription_id: str,
+        identity: Identity = Depends(_require_connector_manage),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        try:
+            result = webhook_services.delete_subscription(session, identity.tenant_id, subscription_id)
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        return JSONResponse(api_v1.envelope("webhooks", result))
+
+    @app.get("/api/v1/webhooks/{subscription_id}/deliveries", tags=["webhooks"])
+    def list_webhook_deliveries(
+        subscription_id: str,
+        request: Request,
+        identity: Identity = Depends(_require_read),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        try:
+            webhook_services.get_subscription(session, identity.tenant_id, subscription_id)
+        except NotFound as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        limit, offset = _pagination(_params(request))
+        data = webhook_services.list_deliveries(
+            session, identity.tenant_id, subscription_id=subscription_id, limit=limit, offset=offset
+        )
+        return JSONResponse(api_v1.envelope("webhooks.deliveries", data, meta=_page_meta(limit, offset, len(data))))
+
     # --- policy templates + documents (GRC) ---
     @app.get("/api/v1/policy-templates")
     def list_policy_templates(identity: Identity = Depends(_require_read)) -> JSONResponse:
@@ -3118,7 +3271,12 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         return JSONResponse(_redact_payload(body, identity), status_code=int(_status))
 
     @app.post("/api/v1/{rest:path}")
-    async def v1_post(rest: str, request: Request, identity: Identity = Depends(_require_read)) -> JSONResponse:
+    async def v1_post(
+        rest: str,
+        request: Request,
+        identity: Identity = Depends(_require_read),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
         try:
             body = await request.json()
         except Exception:  # noqa: BLE001 - empty/invalid body is treated as no body
@@ -3133,8 +3291,16 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
                 detail=f"requires scope: {required_scope}",
             )
         # handle_post rebuilds posture and writes a snapshot; offload so it does
-        # not block the event loop.
-        _status, payload = await run_in_threadpool(api_v1.handle_post, v1_path, body, lake_for(identity))
+        # not block the event loop. on_snapshot_written is a no-op for every
+        # v1_path except /api/v1/snapshots -- it dispatches webhook events
+        # after write_assessment_snapshot's chain lock is released.
+        _status, payload = await run_in_threadpool(
+            api_v1.handle_post,
+            v1_path,
+            body,
+            lake_for(identity),
+            on_snapshot_written=_snapshot_written_hook(session, identity.tenant_id),
+        )
         return JSONResponse(payload, status_code=int(_status))
 
     # --- legacy console surface (authenticated; same handlers as local mode) ---
