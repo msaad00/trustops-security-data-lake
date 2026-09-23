@@ -1,0 +1,225 @@
+{
+  "schema": "trustops.framework_pack_manifest.v1",
+  "source": {
+    "url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
+    "name": "NIST AI RMF 1.0"
+  },
+  "rows": [
+    {
+      "id": "GOVERN-1.1"
+    },
+    {
+      "id": "GOVERN-1.2"
+    },
+    {
+      "id": "GOVERN-1.3"
+    },
+    {
+      "id": "GOVERN-1.4"
+    },
+    {
+      "id": "GOVERN-1.5"
+    },
+    {
+      "id": "GOVERN-1.6"
+    },
+    {
+      "id": "GOVERN-1.7"
+    },
+    {
+      "id": "GOVERN-2.1"
+    },
+    {
+      "id": "GOVERN-2.2"
+    },
+    {
+      "id": "GOVERN-2.3"
+    },
+    {
+      "id": "GOVERN-3.1"
+    },
+    {
+      "id": "GOVERN-3.2"
+    },
+    {
+      "id": "GOVERN-4.1"
+    },
+    {
+      "id": "GOVERN-4.2"
+    },
+    {
+      "id": "GOVERN-4.3"
+    },
+    {
+      "id": "GOVERN-5.1"
+    },
+    {
+      "id": "GOVERN-5.2"
+    },
+    {
+      "id": "GOVERN-6.1"
+    },
+    {
+      "id": "GOVERN-6.2"
+    },
+    {
+      "id": "MAP-1.1"
+    },
+    {
+      "id": "MAP-1.2"
+    },
+    {
+      "id": "MAP-1.3"
+    },
+    {
+      "id": "MAP-1.4"
+    },
+    {
+      "id": "MAP-1.5"
+    },
+    {
+      "id": "MAP-1.6"
+    },
+    {
+      "id": "MAP-2.1"
+    },
+    {
+      "id": "MAP-2.2"
+    },
+    {
+      "id": "MAP-2.3"
+    },
+    {
+      "id": "MAP-3.1"
+    },
+    {
+      "id": "MAP-3.2"
+    },
+    {
+      "id": "MAP-3.3"
+    },
+    {
+      "id": "MAP-3.4"
+    },
+    {
+      "id": "MAP-3.5"
+    },
+    {
+      "id": "MAP-4.1"
+    },
+    {
+      "id": "MAP-4.2"
+    },
+    {
+      "id": "MAP-5.1"
+    },
+    {
+      "id": "MAP-5.2"
+    },
+    {
+      "id": "MEASURE-1.1"
+    },
+    {
+      "id": "MEASURE-1.2"
+    },
+    {
+      "id": "MEASURE-1.3"
+    },
+    {
+      "id": "MEASURE-2.1"
+    },
+    {
+      "id": "MEASURE-2.2"
+    },
+    {
+      "id": "MEASURE-2.3"
+    },
+    {
+      "id": "MEASURE-2.4"
+    },
+    {
+      "id": "MEASURE-2.5"
+    },
+    {
+      "id": "MEASURE-2.6"
+    },
+    {
+      "id": "MEASURE-2.7"
+    },
+    {
+      "id": "MEASURE-2.8"
+    },
+    {
+      "id": "MEASURE-2.9"
+    },
+    {
+      "id": "MEASURE-2.10"
+    },
+    {
+      "id": "MEASURE-2.11"
+    },
+    {
+      "id": "MEASURE-2.12"
+    },
+    {
+      "id": "MEASURE-2.13"
+    },
+    {
+      "id": "MEASURE-3.1"
+    },
+    {
+      "id": "MEASURE-3.2"
+    },
+    {
+      "id": "MEASURE-3.3"
+    },
+    {
+      "id": "MEASURE-4.1"
+    },
+    {
+      "id": "MEASURE-4.2"
+    },
+    {
+      "id": "MEASURE-4.3"
+    },
+    {
+      "id": "MANAGE-1.1"
+    },
+    {
+      "id": "MANAGE-1.2"
+    },
+    {
+      "id": "MANAGE-1.3"
+    },
+    {
+      "id": "MANAGE-1.4"
+    },
+    {
+      "id": "MANAGE-2.1"
+    },
+    {
+      "id": "MANAGE-2.2"
+    },
+    {
+      "id": "MANAGE-2.3"
+    },
+    {
+      "id": "MANAGE-2.4"
+    },
+    {
+      "id": "MANAGE-3.1"
+    },
+    {
+      "id": "MANAGE-3.2"
+    },
+    {
+      "id": "MANAGE-4.1"
+    },
+    {
+      "id": "MANAGE-4.2"
+    },
+    {
+      "id": "MANAGE-4.3"
+    }
+  ]
+}

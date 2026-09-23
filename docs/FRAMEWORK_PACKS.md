@@ -56,9 +56,64 @@ This merges pack rows into:
 Hand-authored controls (e.g. richer `SOC2-CC6.1` evidence text) are **preserved**
 when the `control_id` already exists.
 
-Pack source data for FedRAMP, CIS, CMMC, and connector hints lives under
-`frameworks/packs/data/`. Connector hints power framework drill-down
-recommendations (`evidence_hints.py`).
+Pack source data for every full and limited pack, plus connector hints, lives
+under `frameworks/packs/data/` (see that directory's `README.md` for the file
+list). Connector hints power framework drill-down recommendations
+(`evidence_hints.py`).
+
+## Manifest schema
+
+Every framework pack is **manifest-driven**: a framework's control
+identifiers, titles, and source citation are data in a JSON file under
+`frameworks/packs/data/`, not a bespoke Python function. Each pack's
+`*_specs()` function (in `framework_packs.py` or `limited_packs.py`) is a
+thin wrapper: it calls
+`pack_from_manifest(manifest_path, transform=...)` — see
+`src/security_lakehouse/pack_manifest.py` — passing a small, named,
+per-framework **transform** function that handles whatever logic doesn't
+belong in data (ID normalization, risk-domain/owner lookups, evidence
+wording).
+
+A manifest is a JSON object with:
+
+- `schema` (optional) — `"trustops.framework_pack_manifest.v1"`.
+- `source` — the pinned citation: at minimum a `url`; the `nist_csf_2_core.json`
+  precedent also pins a `sha256` digest and a `locator` for source-integrity
+  testing (see `tests/test_csf_source_integrity.py`).
+- a rows key (`"rows"` by default; `pack_from_manifest(..., rows_key=...)`
+  can point at another key, e.g. pre-existing files' `"requirements"` or
+  `"controls"`) holding either:
+  - an array of objects, `[{"id": "1.1", "title": "..."}, ...]` — the
+    default new-manifest shape, and the shape already used by
+    `cis_aws_v3.json`, `cmmc_2_level2.json`, and `iso_27017_2015.json`.
+    Extra per-row fields (e.g. a limited pack's `risk_domain`/`owner`/
+    `asset_types`) pass through to the transform via `row.extra`.
+  - an object mapping identifier -> title, `{"GV.OC-01": "...", ...}` — the
+    `nist_csf_2_core.json` precedent's `"outcomes"` shape.
+  - an array of plain identifier strings, `["AC-1", "AC-2", ...]` — for
+    frameworks with no distinct per-ID title text (e.g.
+    `nist_800_53_rev5_moderate.json`'s `"control_ids"`).
+
+### Add a new framework
+
+1. Add `frameworks/packs/data/<framework>.json` with the framework's official
+   identifiers (and titles, where distinct per-ID text exists — never
+   transcribe licensed normative text, short internal titles only).
+2. Write a small transform function, e.g. `_<framework>_row_transform(row:
+PackManifestRow) -> PackControlSpec`, covering whatever isn't flat data:
+   ID normalization, a risk-domain/owner lookup, `evidence_requirement`
+   wording. Reuse `_soc2_owner`/`_soc2_assets`/`_soc2_evaluation_rule` where
+   the framework's evaluation shape matches the existing ones.
+3. Add `<framework>_specs() -> list[PackControlSpec]` that calls
+   `pack_from_manifest(PACK_DATA_DIR / "<framework>.json", transform=...)`,
+   and register it in `PACK_BUILDERS` (or `LIMITED_PACK_BUILDERS` for a
+   partial-coverage pack).
+4. Write a row-level identity test if converting an existing framework, or a
+   coverage test (count + identifier set) for a new one — see
+   `tests/test_framework_packs.py` and `tests/test_pack_manifest.py`.
+5. Run `security-lakehouse frameworks sync-packs --pack <framework>` then
+   `security-lakehouse catalog verify` (regenerate the lockfile per the
+   command above if it reports stale).
 
 ## Verify coverage
 
