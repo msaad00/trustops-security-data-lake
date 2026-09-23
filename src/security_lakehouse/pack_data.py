@@ -55,15 +55,6 @@ def cis_aws_v3_requirements() -> tuple[tuple[str, str], ...]:
     return tuple((str(row["id"]), str(row["title"])) for row in payload["requirements"])
 
 
-def iso_27001_2022_annex_a_refs() -> list[str]:
-    refs: list[str] = []
-    refs.extend(f"A.5.{index}" for index in range(1, 38))
-    refs.extend(f"A.6.{index}" for index in range(1, 9))
-    refs.extend(f"A.7.{index}" for index in range(1, 15))
-    refs.extend(f"A.8.{index}" for index in range(1, 35))
-    return refs
-
-
 def nist_family_risk_domain(control_id: str) -> str:
     family = control_id.split("-")[0].upper()
     return {
