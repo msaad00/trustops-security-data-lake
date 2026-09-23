@@ -28,19 +28,17 @@ from security_lakehouse.pack_data import (
     ISO_42001_SOURCE,
     NIST_CSF_2_COUNT,
     NIST_CSF_2_SOURCE,
-    cis_aws_v3_requirements,
+    PACK_DATA_DIR,
     cis_section_risk_domain,
-    cmmc_2_level2_requirements,
     cmmc_800_171_family_risk_domain,
     csf_category_risk_domain,
     iso_27001_2022_annex_a_refs,
     iso_27001_theme_risk_domain,
-    iso_27017_2015_controls,
     iso_27017_risk_domain,
-    nist_800_53_rev5_moderate_ids,
     nist_csf_2_outcomes,
     nist_family_risk_domain,
 )
+from security_lakehouse.pack_manifest import PackManifestRow, pack_from_manifest
 from security_lakehouse.pack_spec import PackControlSpec
 
 JsonObject = dict[str, Any]
@@ -357,62 +355,78 @@ def _normalize_nist_control_id(control_id: str) -> str:
     return control_id.upper()
 
 
+def _fedramp_moderate_row_transform(row: PackManifestRow) -> PackControlSpec:
+    article_id = _normalize_nist_control_id(row.id)
+    risk = nist_family_risk_domain(article_id)
+    owner = _soc2_owner(risk)
+    title = f"FedRAMP Moderate {article_id} — assessed from cloud posture and audit evidence"
+    return PackControlSpec(
+        control_id=f"FEDRAMP-{article_id}",
+        framework_id="fedramp-moderate",
+        framework="FedRAMP Moderate",
+        framework_ref=f"FedRAMP Moderate {article_id}",
+        article_id=article_id,
+        title=title,
+        risk_domain=risk,
+        owner=owner,
+        evaluation_rule=_soc2_evaluation_rule(risk),
+        evidence_requirement=(
+            f"Current evidence supports FedRAMP Moderate control {article_id} "
+            "with reviewed mappings and fresh operational proof."
+        ),
+        asset_types=_soc2_assets(risk),
+        source_url=FEDRAMP_SOURCE,
+        official_source_ref="fedramp-moderate",
+    )
+
+
 def fedramp_moderate_specs() -> list[PackControlSpec]:
-    """FedRAMP Moderate foundation: NIST SP 800-53 Rev 5 Moderate baseline (287 controls)."""
-    specs: list[PackControlSpec] = []
-    for raw_id in nist_800_53_rev5_moderate_ids():
-        article_id = _normalize_nist_control_id(raw_id)
-        risk = nist_family_risk_domain(article_id)
-        owner = _soc2_owner(risk)
-        title = f"FedRAMP Moderate {article_id} — assessed from cloud posture and audit evidence"
-        specs.append(
-            PackControlSpec(
-                control_id=f"FEDRAMP-{article_id}",
-                framework_id="fedramp-moderate",
-                framework="FedRAMP Moderate",
-                framework_ref=f"FedRAMP Moderate {article_id}",
-                article_id=article_id,
-                title=title,
-                risk_domain=risk,
-                owner=owner,
-                evaluation_rule=_soc2_evaluation_rule(risk),
-                evidence_requirement=(
-                    f"Current evidence supports FedRAMP Moderate control {article_id} "
-                    "with reviewed mappings and fresh operational proof."
-                ),
-                asset_types=_soc2_assets(risk),
-                source_url=FEDRAMP_SOURCE,
-                official_source_ref="fedramp-moderate",
-            )
-        )
-    return specs
+    """FedRAMP Moderate foundation: NIST SP 800-53 Rev 5 Moderate baseline (287 controls).
+
+    Manifest-driven: identifiers come from ``nist_800_53_rev5_moderate.json``
+    (``control_ids`` rows, plain strings — no per-ID title text exists at
+    this baseline); ID normalization, risk-domain lookup, and title/evidence
+    wording stay in :func:`_fedramp_moderate_row_transform`.
+    """
+    return pack_from_manifest(
+        PACK_DATA_DIR / "nist_800_53_rev5_moderate.json",
+        rows_key="control_ids",
+        transform=_fedramp_moderate_row_transform,
+    )
+
+
+def _cis_aws_row_transform(row: PackManifestRow) -> PackControlSpec:
+    req_id, req_title = row.id, row.title
+    section = req_id.split(".", 1)[0]
+    risk = cis_section_risk_domain(section)
+    owner = _soc2_owner(risk)
+    return PackControlSpec(
+        control_id=f"CIS-AWS-{req_id}",
+        framework_id="cis_aws",
+        framework="CIS AWS Foundations Benchmark",
+        framework_ref=f"CIS AWS Foundations {req_id}",
+        article_id=req_id,
+        title=req_title[:160],
+        risk_domain=risk,
+        owner=owner,
+        evaluation_rule=_soc2_evaluation_rule(risk),
+        evidence_requirement=(f"AWS posture evidence demonstrates CIS Foundations {req_id}: {req_title[:80]}"),
+        asset_types=("cloud_resource", "cloud_policy", "iam_role", "identity_account", "s3_bucket"),
+        source_url=CIS_AWS_SOURCE,
+        official_source_ref="cis_aws",
+    )
 
 
 def cis_aws_v3_specs() -> list[PackControlSpec]:
-    """All 62 CIS Amazon Web Services Foundations Benchmark v3.0.0 recommendations."""
-    specs: list[PackControlSpec] = []
-    for req_id, req_title in cis_aws_v3_requirements():
-        section = req_id.split(".", 1)[0]
-        risk = cis_section_risk_domain(section)
-        owner = _soc2_owner(risk)
-        specs.append(
-            PackControlSpec(
-                control_id=f"CIS-AWS-{req_id}",
-                framework_id="cis_aws",
-                framework="CIS AWS Foundations Benchmark",
-                framework_ref=f"CIS AWS Foundations {req_id}",
-                article_id=req_id,
-                title=req_title[:160],
-                risk_domain=risk,
-                owner=owner,
-                evaluation_rule=_soc2_evaluation_rule(risk),
-                evidence_requirement=(f"AWS posture evidence demonstrates CIS Foundations {req_id}: {req_title[:80]}"),
-                asset_types=("cloud_resource", "cloud_policy", "iam_role", "identity_account", "s3_bucket"),
-                source_url=CIS_AWS_SOURCE,
-                official_source_ref="cis_aws",
-            )
-        )
-    return specs
+    """All 62 CIS Amazon Web Services Foundations Benchmark v3.0.0 recommendations.
+
+    Manifest-driven: identifiers/titles come from ``cis_aws_v3.json``
+    (``requirements`` rows); risk-domain lookup and evidence wording stay in
+    :func:`_cis_aws_row_transform`.
+    """
+    return pack_from_manifest(
+        PACK_DATA_DIR / "cis_aws_v3.json", rows_key="requirements", transform=_cis_aws_row_transform
+    )
 
 
 def iso_27001_2022_specs() -> list[PackControlSpec]:
@@ -445,63 +459,77 @@ def iso_27001_2022_specs() -> list[PackControlSpec]:
     return specs
 
 
+def _cmmc_2_level2_row_transform(row: PackManifestRow) -> PackControlSpec:
+    requirement_id, short_title = row.id, row.title
+    risk = cmmc_800_171_family_risk_domain(requirement_id)
+    owner = _soc2_owner(risk)
+    return PackControlSpec(
+        control_id=f"CMMC-{requirement_id}",
+        framework_id="cmmc-2-level2",
+        framework="CMMC 2.0 Level 2",
+        framework_ref=f"NIST SP 800-171 Rev 2 {requirement_id}",
+        article_id=requirement_id,
+        title=f"CMMC L2 {requirement_id} — {short_title}",
+        risk_domain=risk,
+        owner=owner,
+        evaluation_rule=_soc2_evaluation_rule(risk),
+        evidence_requirement=(
+            f"CUI protection evidence supports NIST SP 800-171 Rev 2 requirement {requirement_id} "
+            f"({short_title}) for CMMC Level 2 assessment."
+        ),
+        asset_types=_soc2_assets(risk),
+        source_url=CMMC_2_LEVEL2_SOURCE,
+        official_source_ref="cmmc-2-level2",
+    )
+
+
 def cmmc_2_level2_specs() -> list[PackControlSpec]:
-    """All 110 CMMC 2.0 Level 2 practices (NIST SP 800-171 Rev 2 requirements)."""
-    specs: list[PackControlSpec] = []
-    for requirement_id, short_title in cmmc_2_level2_requirements():
-        risk = cmmc_800_171_family_risk_domain(requirement_id)
-        owner = _soc2_owner(risk)
-        specs.append(
-            PackControlSpec(
-                control_id=f"CMMC-{requirement_id}",
-                framework_id="cmmc-2-level2",
-                framework="CMMC 2.0 Level 2",
-                framework_ref=f"NIST SP 800-171 Rev 2 {requirement_id}",
-                article_id=requirement_id,
-                title=f"CMMC L2 {requirement_id} — {short_title}",
-                risk_domain=risk,
-                owner=owner,
-                evaluation_rule=_soc2_evaluation_rule(risk),
-                evidence_requirement=(
-                    f"CUI protection evidence supports NIST SP 800-171 Rev 2 requirement {requirement_id} "
-                    f"({short_title}) for CMMC Level 2 assessment."
-                ),
-                asset_types=_soc2_assets(risk),
-                source_url=CMMC_2_LEVEL2_SOURCE,
-                official_source_ref="cmmc-2-level2",
-            )
-        )
-    return specs
+    """All 110 CMMC 2.0 Level 2 practices (NIST SP 800-171 Rev 2 requirements).
+
+    Manifest-driven: identifiers/titles come from ``cmmc_2_level2.json``
+    (``requirements`` rows, also read directly by ``sprs.py`` for SPRS
+    scoring metadata); risk-domain lookup and title/evidence wording stay in
+    :func:`_cmmc_2_level2_row_transform`.
+    """
+    return pack_from_manifest(
+        PACK_DATA_DIR / "cmmc_2_level2.json", rows_key="requirements", transform=_cmmc_2_level2_row_transform
+    )
+
+
+def _iso_27017_row_transform(row: PackManifestRow) -> PackControlSpec:
+    article_id, short_title = row.id, row.title
+    risk = iso_27017_risk_domain(article_id)
+    owner = _soc2_owner(risk)
+    return PackControlSpec(
+        control_id=f"ISO27017-{article_id}",
+        framework_id="iso-27017-2015",
+        framework="ISO 27017:2015",
+        framework_ref=f"ISO 27017:2015 {article_id}",
+        article_id=article_id,
+        title=f"ISO 27017:2015 {article_id} — {short_title}",
+        risk_domain=risk,
+        owner=owner,
+        evaluation_rule=_soc2_evaluation_rule(risk),
+        evidence_requirement=(
+            f"Cloud security evidence supports ISO 27017:2015 clause {article_id} "
+            f"({short_title}) for shared CSP/CSC responsibilities."
+        ),
+        asset_types=_soc2_assets(risk),
+        source_url=ISO_27017_SOURCE,
+        official_source_ref="iso-27017-2015",
+    )
 
 
 def iso_27017_2015_specs() -> list[PackControlSpec]:
-    """All 47 ISO/IEC 27017:2015 cloud security clause IDs (40 ISO 27002 + 7 CLD)."""
-    specs: list[PackControlSpec] = []
-    for article_id, short_title in iso_27017_2015_controls():
-        risk = iso_27017_risk_domain(article_id)
-        owner = _soc2_owner(risk)
-        control_suffix = article_id
-        specs.append(
-            PackControlSpec(
-                control_id=f"ISO27017-{control_suffix}",
-                framework_id="iso-27017-2015",
-                framework="ISO 27017:2015",
-                framework_ref=f"ISO 27017:2015 {article_id}",
-                article_id=article_id,
-                title=f"ISO 27017:2015 {article_id} — {short_title}",
-                risk_domain=risk,
-                owner=owner,
-                evaluation_rule=_soc2_evaluation_rule(risk),
-                evidence_requirement=(
-                    f"Cloud security evidence supports ISO 27017:2015 clause {article_id} "
-                    f"({short_title}) for shared CSP/CSC responsibilities."
-                ),
-                asset_types=_soc2_assets(risk),
-                source_url=ISO_27017_SOURCE,
-                official_source_ref="iso-27017-2015",
-            )
-        )
-    return specs
+    """All 47 ISO/IEC 27017:2015 cloud security clause IDs (40 ISO 27002 + 7 CLD).
+
+    Manifest-driven: identifiers/titles come from ``iso_27017_2015.json``
+    (``controls`` rows); risk-domain lookup and title/evidence wording stay
+    in :func:`_iso_27017_row_transform`.
+    """
+    return pack_from_manifest(
+        PACK_DATA_DIR / "iso_27017_2015.json", rows_key="controls", transform=_iso_27017_row_transform
+    )
 
 
 def iso_42001_2023_specs() -> list[PackControlSpec]:
