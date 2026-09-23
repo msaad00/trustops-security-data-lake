@@ -1,8 +1,11 @@
 # Adding a connector adapter (code registry)
 
-TrustOps does not ship a runtime plugin marketplace. Connectors are **in-repo
-adapters** registered in `connector_runner.REGISTRY` and
-`connectors/catalog.json`.
+Most connectors are **in-repo adapters** registered in
+`connector_runner.REGISTRY` and `connectors/catalog.json` — that path is
+below. A connector can also ship as a **separate installable package** that
+registers itself at runtime via a Python entry point, without editing this
+repo's source tree — see [Shipping a connector as a package](#shipping-a-connector-as-a-package)
+further down.
 
 ## Quick start
 
@@ -40,6 +43,68 @@ Append connectors receive `SyncInputs.since` from `gold/watermarks.jsonl`.
 
 Registered connectors can be synced from workflows via `action.connector_sync`
 (see `security_lakehouse/workflows.py` action catalog).
+
+## Shipping a connector as a package
+
+The registration mechanism the in-repo registry uses is also open to
+third-party packages, so a connector does not have to live in this repo's
+source tree. On first access, `connector_runner.effective_registry()` scans
+installed packages for connectors registered under the `trustops.connectors`
+[entry-point group](https://packaging.python.org/en/latest/specifications/entry-points/)
+and merges them with the in-repo `REGISTRY`.
+
+An entry point's name is the `connector_id`; it must resolve to a callable
+implementing the same `ConnectorBuilder` contract an in-repo adapter uses —
+`Callable[[SyncInputs], list[dict[str, Any]]]`. A minimal package looks like:
+
+```
+my-trustops-connector/
+├── pyproject.toml
+└── my_trustops_connector.py
+```
+
+```python
+# my_trustops_connector.py
+from security_lakehouse.connector_runner import SyncInputs
+
+
+def build(inputs: SyncInputs) -> list[dict]:
+    # Branch on inputs.fixture_dir for a fixture client, inputs.env /
+    # inputs.credentials for a live one — exactly like an in-repo adapter.
+    ...
+    return rows  # raw evidence rows; see validate_raw_events for the schema
+```
+
+```toml
+# pyproject.toml
+[project]
+name = "my-trustops-connector"
+version = "0.1.0"
+dependencies = ["trustops-security-data-lake"]
+
+[project.entry-points."trustops.connectors"]
+my-vendor-evidence = "my_trustops_connector:build"
+```
+
+Once the package is installed (`pip install my-trustops-connector`), its
+`my-vendor-evidence` builder is dispatched through the same sync path as any
+in-repo connector.
+
+**Collision resolution.** An in-repo adapter always wins on a `connector_id`
+collision — an installed package can never override or shadow a built-in
+connector. A colliding entry point is logged as a warning and dropped, never
+raised and never silently applied.
+
+**Failure isolation.** An entry point that fails to import, or that does not
+resolve to a callable, is logged and excluded. A bug in one third-party
+package never breaks the rest of the registry or the app.
+
+**What this path does not give you.** Registering a builder wires sync
+_dispatch_ only. `connectors/catalog.json` — the curated, validated set of
+connector metadata (permissions, access boundary, evidence types) that gates
+`run_connector_sync` and drives the console — is still in-repo only; an
+entry-point connector is not automatically configurable/enable-able through
+that catalog today.
 
 ## Related docs
 
