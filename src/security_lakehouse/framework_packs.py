@@ -24,7 +24,6 @@ from security_lakehouse.pack_data import (
     FEDRAMP_SOURCE,
     ISO_27001_SOURCE,
     ISO_27017_SOURCE,
-    ISO_42001_CONTROLS,
     ISO_42001_SOURCE,
     NIST_CSF_2_COUNT,
     NIST_CSF_2_SOURCE,
@@ -532,29 +531,35 @@ def iso_27017_2015_specs() -> list[PackControlSpec]:
     )
 
 
+def _iso_42001_row_transform(row: PackManifestRow) -> PackControlSpec:
+    ref, short_title = row.id, row.title
+    article_id = ref.removeprefix("A.")
+    return PackControlSpec(
+        control_id=f"ISO42001-{article_id}",
+        framework_id="iso-42001-2023",
+        framework="ISO 42001:2023",
+        framework_ref=f"ISO 42001:2023 {ref}",
+        article_id=article_id,
+        title=short_title,
+        risk_domain="ai-governance",
+        owner="ai-security",
+        evaluation_rule="fail_when_open_violation_or_stale_evidence",
+        evidence_requirement=(f"AI governance evidence supports ISO 42001:2023 control {ref} ({short_title})."),
+        asset_types=("ai_model", "ai_agent", "service", "data_store", "audit_log"),
+        source_url=ISO_42001_SOURCE,
+        official_source_ref="iso-42001-2023",
+    )
+
+
 def iso_42001_2023_specs() -> list[PackControlSpec]:
-    """All 38 ISO/IEC 42001:2023 Annex A AI management controls."""
-    specs: list[PackControlSpec] = []
-    for ref, short_title in ISO_42001_CONTROLS:
-        article_id = ref.removeprefix("A.")
-        specs.append(
-            PackControlSpec(
-                control_id=f"ISO42001-{article_id}",
-                framework_id="iso-42001-2023",
-                framework="ISO 42001:2023",
-                framework_ref=f"ISO 42001:2023 {ref}",
-                article_id=article_id,
-                title=short_title,
-                risk_domain="ai-governance",
-                owner="ai-security",
-                evaluation_rule="fail_when_open_violation_or_stale_evidence",
-                evidence_requirement=(f"AI governance evidence supports ISO 42001:2023 control {ref} ({short_title})."),
-                asset_types=("ai_model", "ai_agent", "service", "data_store", "audit_log"),
-                source_url=ISO_42001_SOURCE,
-                official_source_ref="iso-42001-2023",
-            )
-        )
-    return specs
+    """All 38 ISO/IEC 42001:2023 Annex A AI management controls.
+
+    Manifest-driven: identifiers/titles come from ``iso_42001_2023.json``
+    (moved out of the ``ISO_42001_CONTROLS`` Python tuple); the "A." prefix
+    strip for ``article_id``/``control_id`` stays in
+    :func:`_iso_42001_row_transform`.
+    """
+    return pack_from_manifest(PACK_DATA_DIR / "iso_42001_2023.json", transform=_iso_42001_row_transform)
 
 
 PACK_BUILDERS = {
