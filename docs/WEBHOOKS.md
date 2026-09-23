@@ -14,11 +14,11 @@ dispatch webhooks with and does not deliver them.
 
 ## Event types
 
-| Event                 | Fires when                                                                          |
-| ---------------------- | ------------------------------------------------------------------------------------ |
-| `assessment.completed` | A point-in-time snapshot is written (`POST /api/v1/snapshots`, a scheduled workflow, or an approved agent decision that freezes one). |
+| Event                  | Fires when                                                                                                                                                             |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `assessment.completed` | A point-in-time snapshot is written (`POST /api/v1/snapshots`, a scheduled workflow, or an approved agent decision that freezes one).                                  |
 | `finding.created`      | A violation present in a new snapshot was not present in the immediately prior snapshot — a real open/failed/blocked control result that is new since the last freeze. |
-| `control.failed`       | A control had zero open violations in the prior snapshot and at least one in the new one — a detected pass→fail transition. |
+| `control.failed`       | A control had zero open violations in the prior snapshot and at least one in the new one — a detected pass→fail transition.                                            |
 
 **How the transition is detected.** TrustOps snapshots are hash-chained
 point-in-time exports (`docs/ARCHITECTURE.md`, `assessment.py`). Each snapshot
@@ -65,14 +65,14 @@ only requires `read`, and never includes the secret.
 way it is returned **in full exactly once**, in the create response — store it
 now. Every later `GET`/list omits it.
 
-| Method   | Path                                    | Scope              | Purpose                                  |
-| -------- | ---------------------------------------- | ------------------ | ----------------------------------------- |
-| `GET`    | `/api/v1/webhooks`                       | `read`              | List subscriptions (secret omitted)       |
-| `POST`   | `/api/v1/webhooks`                       | `connector_manage`  | Register a subscription; secret shown once |
-| `GET`    | `/api/v1/webhooks/{id}`                  | `read`              | Get one subscription (secret omitted)     |
-| `PATCH`  | `/api/v1/webhooks/{id}`                  | `connector_manage`  | Update url/secret/event_types/enabled     |
-| `DELETE` | `/api/v1/webhooks/{id}`                  | `connector_manage`  | Remove a subscription                     |
-| `GET`    | `/api/v1/webhooks/{id}/deliveries`       | `read`              | Delivery attempt history (audit trail)    |
+| Method   | Path                               | Scope              | Purpose                                    |
+| -------- | ---------------------------------- | ------------------ | ------------------------------------------ |
+| `GET`    | `/api/v1/webhooks`                 | `read`             | List subscriptions (secret omitted)        |
+| `POST`   | `/api/v1/webhooks`                 | `connector_manage` | Register a subscription; secret shown once |
+| `GET`    | `/api/v1/webhooks/{id}`            | `read`             | Get one subscription (secret omitted)      |
+| `PATCH`  | `/api/v1/webhooks/{id}`            | `connector_manage` | Update url/secret/event_types/enabled      |
+| `DELETE` | `/api/v1/webhooks/{id}`            | `connector_manage` | Remove a subscription                      |
+| `GET`    | `/api/v1/webhooks/{id}/deliveries` | `read`             | Delivery attempt history (audit trail)     |
 
 ## Payload shape
 
@@ -132,6 +132,7 @@ more than this summary.
   "evidence_ref": "s3://evidence/evt-001.json"
 }
 ```
+
 </details>
 
 <details>
@@ -144,17 +145,18 @@ more than this summary.
   "evaluated_at": "2026-09-22T14:03:11+00:00"
 }
 ```
+
 </details>
 
 ## Signature verification
 
 Every delivery carries:
 
-| Header                  | Value                                             |
-| ------------------------ | -------------------------------------------------- |
-| `X-TrustOps-Signature`   | `sha256=<hex hmac-sha256 of the raw request body>` |
-| `X-TrustOps-Event`       | the event type, e.g. `finding.created`             |
-| `X-TrustOps-Delivery`    | the delivery's `event_id`                          |
+| Header                 | Value                                              |
+| ---------------------- | -------------------------------------------------- |
+| `X-TrustOps-Signature` | `sha256=<hex hmac-sha256 of the raw request body>` |
+| `X-TrustOps-Event`     | the event type, e.g. `finding.created`             |
+| `X-TrustOps-Delivery`  | the delivery's `event_id`                          |
 
 Recompute the HMAC over the **raw bytes** of the body (before any JSON
 re-parsing/re-serialization, which can reorder keys or change whitespace) and
@@ -179,7 +181,10 @@ const crypto = require("crypto");
 function verifyTrustOpsWebhook(secret, rawBody, signatureHeader) {
   const [algo, digest] = signatureHeader.split("=");
   if (algo !== "sha256") return false;
-  const expected = crypto.createHmac("sha256", secret).update(rawBody).digest("hex");
+  const expected = crypto
+    .createHmac("sha256", secret)
+    .update(rawBody)
+    .digest("hex");
   return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(digest));
 }
 ```
@@ -188,7 +193,7 @@ function verifyTrustOpsWebhook(secret, rawBody, signatureHeader) {
 
 - Outbound requests go through the same SSRF guard every other egress path in
   this codebase uses (`security_lakehouse/netguard.py`): only `http`/`https`,
-  and the *resolved* address must be public — a registered URL that resolves
+  and the _resolved_ address must be public — a registered URL that resolves
   to a private/loopback/link-local address is refused before any request is
   attempted.
 - One retry on failure (non-2xx response, timeout, or connection error) with a
@@ -215,7 +220,7 @@ function verifyTrustOpsWebhook(secret, rawBody, signatureHeader) {
 
 ## Relationship to `action.webhook` (workflows)
 
-TrustOps already has an *outbound* webhook primitive inside the workflow
+TrustOps already has an _outbound_ webhook primitive inside the workflow
 engine — `action.webhook`, a DAG node an operator wires up explicitly to POST
 to an allowlisted URL as one step of a workflow (see the "Action library"
 section of `workflows.py`). That is a different mechanism: it is one-shot,

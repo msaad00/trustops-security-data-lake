@@ -569,18 +569,12 @@ def test_webhook_tenant_isolation(tmp_path: Path) -> None:
 
     b_list = client.get("/api/v1/webhooks", headers=_bearer(token_b)).json()["data"]
     assert b_list == []
-    assert client.get(f"/api/v1/webhooks/{subscription_id}", headers=_bearer(token_b)).status_code == (
-        HTTPStatus.NOT_FOUND
-    )
-    assert (
-        client.patch(
-            f"/api/v1/webhooks/{subscription_id}", json={"enabled": False}, headers=_bearer(token_b)
-        ).status_code
-        == HTTPStatus.NOT_FOUND
-    )
-    assert client.delete(f"/api/v1/webhooks/{subscription_id}", headers=_bearer(token_b)).status_code == (
-        HTTPStatus.NOT_FOUND
-    )
+    b_get = client.get(f"/api/v1/webhooks/{subscription_id}", headers=_bearer(token_b))
+    assert b_get.status_code == HTTPStatus.NOT_FOUND
+    b_patch = client.patch(f"/api/v1/webhooks/{subscription_id}", json={"enabled": False}, headers=_bearer(token_b))
+    assert b_patch.status_code == HTTPStatus.NOT_FOUND
+    b_delete = client.delete(f"/api/v1/webhooks/{subscription_id}", headers=_bearer(token_b))
+    assert b_delete.status_code == HTTPStatus.NOT_FOUND
 
     a_list = client.get("/api/v1/webhooks", headers=_bearer(token_a)).json()["data"]
     assert [w["url"] for w in a_list] == ["https://hooks.example.com/a-only"]
