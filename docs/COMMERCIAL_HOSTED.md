@@ -21,13 +21,18 @@ export TRUSTOPS_SELF_SERVE_SIGNUP=1
 export TRUSTOPS_SIGNUP_SECRET=<optional-abuse-guard>
 ```
 
-Optional SCIM bearer provisioning (Enterprise tier; soft-deletes users on `DELETE`):
+Optional SCIM 2.0 provisioning (Enterprise tier). Enable it, then have a tenant
+admin issue a SCIM token (see [SCIM](#scim)):
 
 ```bash
 export TRUSTOPS_SCIM_ENABLED=1
-export TRUSTOPS_SCIM_BEARER_TOKEN=<operator-issued-secret>
-export TRUSTOPS_SCIM_TENANT_SLUG=<tenant-slug>   # defaults to TRUSTOPS_OIDC_TENANT_SLUG or "default"
+# Optional: map IdP groups to TrustOps roles (highest privilege wins).
+export TRUSTOPS_SCIM_ROLE_MAP='{"TrustOps Admins": "admin", "TrustOps Auditors": "auditor"}'
+export TRUSTOPS_SCIM_DEFAULT_ROLE=read_only   # role for users in no mapped group
 ```
+
+`TRUSTOPS_SCIM_BEARER_TOKEN` + `TRUSTOPS_SCIM_TENANT_SLUG` still authenticate as a
+deprecated single-tenant fallback; prefer per-tenant tokens.
 
 ## Invite API
 
@@ -72,22 +77,48 @@ OSS repository or console.
 
 ## SCIM
 
-| Method   | Path                                    | When disabled | When enabled                                       |
-| -------- | --------------------------------------- | ------------- | -------------------------------------------------- |
-| `GET`    | `/api/v1/platform/scim`                 | config stub   | `enabled: true`                                    |
-| `GET`    | `/api/v1/scim/v2/ServiceProviderConfig` | **501**       | patch supported; bearer auth                       |
-| `GET`    | `/api/v1/scim/v2/Users`                 | **501**       | list tenant users (paginated)                      |
-| `POST`   | `/api/v1/scim/v2/Users`                 | **501**       | create user (`userName`, `trustopsRole`, `active`) |
-| `GET`    | `/api/v1/scim/v2/Users/{user_id}`       | **501**       | fetch single user                                  |
-| `PATCH`  | `/api/v1/scim/v2/Users/{user_id}`       | **501**       | update `active` / `trustopsRole`                   |
-| `DELETE` | `/api/v1/scim/v2/Users/{user_id}`       | **501**       | soft offboard (`is_active=false`, **204**)         |
+SCIM endpoints return raw SCIM JSON (`application/scim+json`, no TrustOps
+envelope) and SCIM error objects (`urn:ietf:params:scim:api:messages:2.0:Error`
+with `status` and, where relevant, `scimType`), which is what Okta and Entra ID
+parse. Every `/api/v1/scim/v2/*` call except `ServiceProviderConfig` needs
+`Authorization: Bearer <tenant SCIM token>`; the token selects the tenant, so a
+token can never read or change another tenant's users or groups.
 
-All `/api/v1/scim/v2/*` routes require `Authorization: Bearer <TRUSTOPS_SCIM_BEARER_TOKEN>`.
+### Tokens (tenant admin, TrustOps API)
+
+| Method   | Path                                | Description                                                 |
+| -------- | ----------------------------------- | ----------------------------------------------------------- |
+| `POST`   | `/api/v1/platform/scim/tokens`      | Issue a token (`{"name": "okta"}`); plaintext returned once |
+| `GET`    | `/api/v1/platform/scim/tokens`      | List tokens: name, prefix, created, last used, revoked      |
+| `DELETE` | `/api/v1/platform/scim/tokens/{id}` | Revoke                                                      |
+
+Only a SHA-256 hash of each token is stored. Rotate by issuing a new token,
+updating the IdP, then revoking the old one; both work until the revoke.
+
+### Users and groups
+
+| Method                       | Path                                    | Notes                                                                               |
+| ---------------------------- | --------------------------------------- | ----------------------------------------------------------------------------------- |
+| `GET`                        | `/api/v1/scim/v2/ServiceProviderConfig` | patch + filter supported; bulk, sort, etag, changePassword not                      |
+| `GET`                        | `/api/v1/scim/v2/Users`                 | `filter=userName eq "…"` or `externalId eq "…"`; `startIndex`/`count` (max 200)     |
+| `POST`                       | `/api/v1/scim/v2/Users`                 | `409 uniqueness` for an existing userName; re-creating a deleted user restores it   |
+| `GET`/`PUT`/`PATCH`          | `/api/v1/scim/v2/Users/{id}`            | PATCH accepts path and path-less operations (Okta and Entra ID shapes)              |
+| `DELETE`                     | `/api/v1/scim/v2/Users/{id}`            | Soft delete: deactivated, removed from groups, then 404 to SCIM; row kept for audit |
+| `GET`/`POST`                 | `/api/v1/scim/v2/Groups`                | `filter=displayName eq "…"`; members must be users of the same tenant               |
+| `GET`/`PUT`/`PATCH`/`DELETE` | `/api/v1/scim/v2/Groups/{id}`           | PATCH add/remove/replace `members`, including `members[value eq "…"]`               |
+
+With `TRUSTOPS_SCIM_ROLE_MAP` set, every membership change recomputes the
+affected users' roles: the highest-privilege mapped group wins, and a user in no
+mapped group gets `TRUSTOPS_SCIM_DEFAULT_ROLE`. Without a role map, groups are
+stored but never change roles. This has been tested against the RFC 7644 shapes
+Okta and Entra ID send, not yet against a live IdP tenant.
 
 ## Database
 
 Migration `0012_tenant_invites` adds the `tenant_invites` table.
 Migration `0013_tenant_plan_tier` adds `tenants.plan_tier` for hosted limits.
+Migration `0017_scim` adds `scim_tokens`, `scim_groups`, `scim_group_members`, and
+`users.scim_external_id` / `users.scim_deleted_at`.
 
 ```bash
 security-lakehouse db upgrade --lake build/lakehouse

@@ -4162,6 +4162,91 @@
         "tags": ["commercial"]
       }
     },
+    "/api/v1/platform/scim/tokens": {
+      "get": {
+        "operationId": "list_tokens_api_v1_platform_scim_tokens_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Tokens",
+        "tags": ["commercial"]
+      },
+      "post": {
+        "operationId": "create_token_api_v1_platform_scim_tokens_post",
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Token",
+        "tags": ["commercial"]
+      }
+    },
+    "/api/v1/platform/scim/tokens/{token_id}": {
+      "delete": {
+        "operationId": "revoke_token_api_v1_platform_scim_tokens__token_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token_id",
+            "required": true,
+            "schema": {
+              "title": "Token Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Revoke Token",
+        "tags": ["commercial"]
+      }
+    },
     "/api/v1/platform/usage": {
       "get": {
         "operationId": "platform_usage_api_v1_platform_usage_get",
@@ -5327,9 +5412,9 @@
         "tags": ["scheduler"]
       }
     },
-    "/api/v1/scim/v2/ServiceProviderConfig": {
+    "/api/v1/scim/v2/Groups": {
       "get": {
-        "operationId": "scim_service_provider_config_api_v1_scim_v2_ServiceProviderConfig_get",
+        "operationId": "list_groups_api_v1_scim_v2_Groups_get",
         "responses": {
           "200": {
             "content": {
@@ -5340,13 +5425,191 @@
             "description": "Successful Response"
           }
         },
-        "summary": "Scim Service Provider Config",
+        "summary": "List Groups",
+        "tags": ["commercial"]
+      },
+      "post": {
+        "operationId": "create_group_api_v1_scim_v2_Groups_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Create Group",
+        "tags": ["commercial"]
+      }
+    },
+    "/api/v1/scim/v2/Groups/{group_id}": {
+      "delete": {
+        "operationId": "delete_group_api_v1_scim_v2_Groups__group_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "group_id",
+            "required": true,
+            "schema": {
+              "title": "Group Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Group",
+        "tags": ["commercial"]
+      },
+      "get": {
+        "operationId": "get_group_api_v1_scim_v2_Groups__group_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "group_id",
+            "required": true,
+            "schema": {
+              "title": "Group Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Group",
+        "tags": ["commercial"]
+      },
+      "patch": {
+        "operationId": "patch_group_api_v1_scim_v2_Groups__group_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "group_id",
+            "required": true,
+            "schema": {
+              "title": "Group Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Patch Group",
+        "tags": ["commercial"]
+      },
+      "put": {
+        "operationId": "replace_group_api_v1_scim_v2_Groups__group_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "group_id",
+            "required": true,
+            "schema": {
+              "title": "Group Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Replace Group",
+        "tags": ["commercial"]
+      }
+    },
+    "/api/v1/scim/v2/ServiceProviderConfig": {
+      "get": {
+        "operationId": "service_provider_config_api_v1_scim_v2_ServiceProviderConfig_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Service Provider Config",
         "tags": ["commercial"]
       }
     },
     "/api/v1/scim/v2/Users": {
       "get": {
-        "operationId": "scim_list_users_api_v1_scim_v2_Users_get",
+        "operationId": "list_users_api_v1_scim_v2_Users_get",
         "responses": {
           "200": {
             "content": {
@@ -5357,13 +5620,13 @@
             "description": "Successful Response"
           }
         },
-        "summary": "Scim List Users",
+        "summary": "List Users",
         "tags": ["commercial"]
       },
       "post": {
-        "operationId": "scim_create_user_api_v1_scim_v2_Users_post",
+        "operationId": "create_user_api_v1_scim_v2_Users_post",
         "responses": {
-          "201": {
+          "200": {
             "content": {
               "application/json": {
                 "schema": {}
@@ -5372,13 +5635,13 @@
             "description": "Successful Response"
           }
         },
-        "summary": "Scim Create User",
+        "summary": "Create User",
         "tags": ["commercial"]
       }
     },
     "/api/v1/scim/v2/Users/{user_id}": {
       "delete": {
-        "operationId": "scim_delete_user_api_v1_scim_v2_Users__user_id__delete",
+        "operationId": "delete_user_api_v1_scim_v2_Users__user_id__delete",
         "parameters": [
           {
             "in": "path",
@@ -5391,7 +5654,12 @@
           }
         ],
         "responses": {
-          "204": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
             "description": "Successful Response"
           },
           "422": {
@@ -5405,11 +5673,11 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Scim Delete User",
+        "summary": "Delete User",
         "tags": ["commercial"]
       },
       "get": {
-        "operationId": "scim_get_user_api_v1_scim_v2_Users__user_id__get",
+        "operationId": "get_user_api_v1_scim_v2_Users__user_id__get",
         "parameters": [
           {
             "in": "path",
@@ -5441,11 +5709,11 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Scim Get User",
+        "summary": "Get User",
         "tags": ["commercial"]
       },
       "patch": {
-        "operationId": "scim_patch_user_api_v1_scim_v2_Users__user_id__patch",
+        "operationId": "patch_user_api_v1_scim_v2_Users__user_id__patch",
         "parameters": [
           {
             "in": "path",
@@ -5477,7 +5745,43 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Scim Patch User",
+        "summary": "Patch User",
+        "tags": ["commercial"]
+      },
+      "put": {
+        "operationId": "replace_user_api_v1_scim_v2_Users__user_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "title": "User Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Replace User",
         "tags": ["commercial"]
       }
     },
