@@ -129,7 +129,7 @@ Rough comparison vs mature managed GRC SaaS on capability + UX reality:
 | Framework drill-down       | Good            | **Shipped** — control → rule → evidence → source                    |
 | Live SSE updates           | Good            | **Shipped** — posture + audit-readiness stream                      |
 | Integrations long tail     | Behind          | AWS/Azure/GCP/Snowflake/GitHub/GitLab/Okta live; #22/#23 repo graph |
-| HRIS / devices / personnel | Partial         | Intune + BambooHR; no HR↔IdP offboarding correlation yet            |
+| HRIS / devices / personnel | Partial         | Intune + BambooHR; HR↔IdP offboarding check (Okta, Google)          |
 | Billing / full SCIM        | Behind          | P5 hosted scaffold                                                  |
 | Premium onboarding polish  | Behind          | Wizard shipped; polish incremental                                  |
 
@@ -180,7 +180,7 @@ Mature SaaS: HRIS, device MDM, ticketing, training — hundreds of pre-built che
 
 TrustOps: strong AWS / Azure / GCP / Snowflake / GitHub / Okta paths with vendor
 marks in-console; open connector catalog; read-only posture. Intune (MDM) and BambooHR
-(HRIS) ship; gaps: Workday/Rippling, HR↔IdP offboarding correlation, pen-test coordination ([#22](https://github.com/msaad00/trustops-security-data-lake/issues/22), [#23](https://github.com/msaad00/trustops-security-data-lake/issues/23)).
+(HRIS) ship; gaps: Workday/Rippling HRIS, pen-test coordination ([#22](https://github.com/msaad00/trustops-security-data-lake/issues/22), [#23](https://github.com/msaad00/trustops-security-data-lake/issues/23)).
 
 ### 3. Compliance OS convenience
 

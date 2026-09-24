@@ -1,6 +1,6 @@
 # HRIS personnel audit playbook
 
-The `bamboohr-personnel` connector brings employment records (status, hire and termination dates) into the lake ([CONNECTORS.md](../CONNECTORS.md#bamboohr-employment-records)). TrustOps does not yet correlate HR terminations with identity-provider accounts, so for termination-timeliness evidence keep using this **IdP + access reviews** workflow. Device posture comes from the `intune-devices` MDM connector ([CONNECTORS.md](../CONNECTORS.md#microsoft-intune-device-posture)).
+The `bamboohr-personnel` connector brings employment records (status, hire and termination dates) into the lake ([CONNECTORS.md](../CONNECTORS.md#bamboohr-employment-records)). With Okta or Google Workspace also connected, the [offboarding check](../CONNECTORS.md#offboarding-check-hr-terminations--idp-accounts) flags any terminated employee whose account can still sign in. Use this playbook for identity providers TrustOps does not read yet and for access-review evidence. Device posture comes from the `intune-devices` MDM connector ([CONNECTORS.md](../CONNECTORS.md#microsoft-intune-device-posture)).
 
 ## When to use this playbook
 
@@ -76,6 +76,6 @@ list_evidence_freshness?status=stale
 
 ## Roadmap
 
-BambooHR ships; Workday and Rippling connectors and an automated HR-termination ↔ IdP-account check are **planned**. Until that check lands, do not claim automated offboarding-timeliness coverage in customer-facing materials.
+BambooHR and the HR ↔ IdP offboarding check (Okta, Google Workspace) ship; Workday and Rippling connectors are **planned**. Offboarding coverage is only as complete as the connected identity providers — do not claim it for systems TrustOps does not read.
 
 See also [AUDIT_READINESS.md](../AUDIT_READINESS.md) and [PRODUCT_SHAPE.md](../PRODUCT_SHAPE.md).
