@@ -690,7 +690,11 @@
           "control_id": "NIST-800-53-AC-2",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AC-2",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AC-12",
@@ -738,43 +742,71 @@
           "control_id": "NIST-800-53-AC-3",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AC-3",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AC-6",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AC-6",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AC-6.1",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AC-6.1",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AC-6.10",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AC-6.10",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AC-6.2",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AC-6.2",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AC-6.5",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AC-6.5",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AC-6.7",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AC-6.7",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AC-6.9",
@@ -810,37 +842,61 @@
           "control_id": "NIST-800-53-IA-11",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-IA-11",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-IA-2",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-IA-2",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-IA-2.1",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-IA-2.1",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-IA-2.12",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-IA-2.12",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-IA-2.2",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-IA-2.2",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-IA-2.8",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-IA-2.8",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-IA-3",
@@ -852,61 +908,101 @@
           "control_id": "NIST-800-53-IA-4",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-IA-4",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-IA-4.4",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-IA-4.4",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-IA-5",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-IA-5",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-IA-5.1",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-IA-5.1",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-IA-5.2",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-IA-5.2",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-IA-5.6",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-IA-5.6",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-IA-6",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-IA-6",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-IA-8",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-IA-8",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-IA-8.1",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-IA-8.1",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-IA-8.2",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-IA-8.2",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-PE-5",
@@ -1081,13 +1177,21 @@
           "control_id": "NIST-800-53-AC-2.1",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AC-2.1",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AC-2.2",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AC-2.2",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "ISO27001-A.5.18",
@@ -1348,25 +1452,41 @@
           "control_id": "NIST-800-53-AC-17.2",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AC-17.2",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AC-18.1",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AC-18.1",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AC-19.5",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AC-19.5",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-CP-9.8",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-CP-9.8",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-IA-7",
@@ -1378,31 +1498,51 @@
           "control_id": "NIST-800-53-SC-12",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SC-12",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SC-13",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SC-13",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SC-28",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SC-28",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SC-28.1",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SC-28.1",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SC-8.1",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SC-8.1",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-CSF-PR.DS-01",
@@ -1690,31 +1830,51 @@
           "control_id": "NIST-800-53-AU-6",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AU-6",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AC-17.1",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AC-17.1",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-CA-7",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-CA-7",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-CA-7.4",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-CA-7.4",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-CM-8.3",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-CM-8.3",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-PE-13.1",
@@ -1732,25 +1892,41 @@
           "control_id": "NIST-800-53-SI-4",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SI-4",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SI-4.5",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SI-4.5",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SI-5",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SI-5",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SI-7.7",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SI-7.7",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "ISO27001-A.5.25",
@@ -2085,49 +2261,81 @@
           "control_id": "NIST-800-53-AU-2",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AU-2",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AU-12",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AU-12",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AU-3",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AU-3",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AU-4",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AU-4",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AU-5",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AU-5",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AU-6.3",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AU-6.3",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AU-7",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AU-7",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AU-8",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AU-8",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-CSF-PR.PS-04",
@@ -2345,7 +2553,11 @@
           "control_id": "NIST-800-53-CM-3",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-CM-3",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-CA-3",
@@ -2363,19 +2575,31 @@
           "control_id": "NIST-800-53-CM-3.2",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-CM-3.2",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-CM-5",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-CM-5",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-CM-6",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-CM-6",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-CM-7",
@@ -2387,7 +2611,11 @@
           "control_id": "NIST-800-53-CM-9",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-CM-9",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-PL-10",
@@ -2559,25 +2787,41 @@
           "control_id": "NIST-800-53-RA-5",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-RA-5",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-RA-5.2",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-RA-5.2",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SI-2",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SI-2",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SI-2.2",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SI-2.2",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SI-3",
@@ -2727,19 +2971,31 @@
           "control_id": "NIST-800-53-SA-4",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SA-4",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SR-5",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SR-5",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SR-6",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SR-6",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "ISO27001-A.5.20",
@@ -2949,13 +3205,21 @@
           "control_id": "NIST-800-53-RA-3",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-RA-3",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-RA-3.1",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-RA-3.1",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SR-2",
@@ -3075,31 +3339,51 @@
           "control_id": "NIST-800-53-CP-10",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-CP-10",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-CP-10.2",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-CP-10.2",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-CP-6",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-CP-6",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-CP-7",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-CP-7",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-CP-9",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-CP-9",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "ISO27001-A.5.29",
@@ -4351,7 +4635,11 @@
           "control_id": "NIST-800-53-AT-4",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AT-4",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-CP-3",
@@ -4575,67 +4863,111 @@
           "control_id": "NIST-800-53-MP-2",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-MP-2",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-MP-3",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-MP-3",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-MP-4",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-MP-4",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-MP-5",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-MP-5",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-MP-6",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-MP-6",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-PE-14",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-PE-14",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-PE-16",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-PE-16",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-PE-2",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-PE-2",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-PE-3",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-PE-3",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-PE-6",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-PE-6",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-PE-8",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-PE-8",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "ISO27001-A.7.1",
@@ -4735,19 +5067,31 @@
           "control_id": "NIST-800-53-SA-10",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SA-10",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SA-11",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SA-11",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SA-15",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SA-15",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SA-22",
@@ -4759,7 +5103,11 @@
           "control_id": "NIST-800-53-SA-3",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SA-3",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "ISO27001-A.8.25",
@@ -4929,13 +5277,21 @@
           "control_id": "NIST-800-53-AC-18",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AC-18",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-AC-18.3",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AC-18.3",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-PE-4",
@@ -4947,7 +5303,11 @@
           "control_id": "NIST-800-53-SC-10",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SC-10",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SC-23",
@@ -4959,13 +5319,21 @@
           "control_id": "NIST-800-53-SC-5",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SC-5",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SC-7",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SC-7",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SC-8",
@@ -5415,25 +5783,41 @@
           "control_id": "NIST-800-53-AU-11",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-AU-11",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-CM-2.3",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-CM-2.3",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SI-12",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SI-12",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "NIST-800-53-SR-12",
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
-          "review_status": "proposed"
+          "review_status": "reviewed",
+          "review_basis": {
+            "inherited_from": "FEDRAMP-SR-12",
+            "reason": "identical NIST SP 800-53 Rev 5 control"
+          }
         },
         {
           "control_id": "ISO27001-A.8.10",

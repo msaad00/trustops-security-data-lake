@@ -213,13 +213,12 @@ def _nist_risk_domain(func: str) -> str:
 
 
 def _nist_ai_rmf_row_transform(row: PackManifestRow) -> PackControlSpec:
-    """``row.id`` is the hyphenated ref, e.g. ``GOVERN-1.1``; titles are fully
-    formulaic (no distinct per-ID text exists), so the manifest carries only
-    identifiers."""
+    """``row.id`` is the hyphenated ref, e.g. ``GOVERN-1.1``; ``row.title`` is the
+    first sentence of the official subcategory statement (NIST AI 100-1)."""
     ref = row.id
     func, category_sub = ref.split("-", 1)
     risk = _nist_risk_domain(func)
-    title = f"NIST AI RMF {func} {category_sub} — assessed from AI governance and operational evidence"
+    title = f"{func} {category_sub} — {row.title}"
     return PackControlSpec(
         control_id=f"NIST-AI-RMF-{ref}",
         framework_id="nist-ai-rmf",

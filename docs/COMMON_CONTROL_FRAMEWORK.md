@@ -100,7 +100,7 @@ family ledger.
 
 ```
 $ security-lakehouse frameworks safeguards --format table
-44 safeguards map 813 of 2021 requirements (40.2%) — 254 reviewed (12.6%), 559 proposed
+44 safeguards map 813 of 2021 requirements (40.2%) — 350 reviewed (17.3%), 463 proposed
 ```
 
 A mapping is **reviewed** once a human has confirmed the requirements are the
@@ -154,10 +154,17 @@ drifting as curation moves.
 
 ## The real ceiling is the catalog, not the curation
 
-156 of 2021 titles still contain identifier-only or boilerplate descriptions:
-90 ISO 27001 entries and 66 NIST AI RMF entries. Licensed standards need short
-internal summaries or licensed access; their text must not be copied into this
-public repository.
+90 of 2021 titles still contain identifier-only or boilerplate descriptions,
+all ISO 27001 Annex A entries. ISO text is licensed: those need short internal
+summaries or licensed access, and must not be copied into this public
+repository. The NIST AI RMF titles now use the official subcategory statements
+from the pinned NIST AI 100-1 PDF (prior formulaic titles remain in control
+history).
+
+NIST SP 800-53 mappings that duplicate a human-reviewed FedRAMP Moderate
+mapping inherit that review, because a FedRAMP Moderate control is the 800-53
+control of the same identifier. Each inherited mapping records
+`review_basis.inherited_from`, and a test keeps the two in lockstep.
 
 The CSF 2.0 catalog now uses the 106 identifiers and outcomes from the pinned
 [NIST publication](https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf).

@@ -25163,7 +25163,7 @@
       "articles": [
         {
           "article_id": "GOVERN-1.1",
-          "title": "Legal, regulatory, and policy requirements are understood",
+          "title": "Legal and regulatory requirements involving AI are understood, managed, and documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-26T00:00:00Z",
@@ -25177,7 +25177,7 @@
       "articles": [
         {
           "article_id": "GOVERN-1.2",
-          "title": "NIST AI RMF GOVERN 1.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "The characteristics of trustworthy AI are integrated into organizational policies, processes, procedures, and practices.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25191,7 +25191,7 @@
       "articles": [
         {
           "article_id": "GOVERN-1.3",
-          "title": "NIST AI RMF GOVERN 1.3 \u2014 assessed from AI governance and operational evidence",
+          "title": "Processes, procedures, and practices are in place to determine the needed level of risk management activities based on the organization\u2019s risk tolerance.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25205,7 +25205,7 @@
       "articles": [
         {
           "article_id": "GOVERN-1.4",
-          "title": "NIST AI RMF GOVERN 1.4 \u2014 assessed from AI governance and operational evidence",
+          "title": "The risk management process and its outcomes are established through transparent policies, procedures, and other controls based on organizational risk priorities.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25219,7 +25219,7 @@
       "articles": [
         {
           "article_id": "GOVERN-1.5",
-          "title": "NIST AI RMF GOVERN 1.5 \u2014 assessed from AI governance and operational evidence",
+          "title": "Ongoing monitoring and periodic review of the risk management process and its outcomes are planned and organizational roles and responsibilities clearly defined, including determining the frequency of periodic review.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25233,7 +25233,7 @@
       "articles": [
         {
           "article_id": "GOVERN-1.6",
-          "title": "AI system inventory and risk prioritization are defined",
+          "title": "Mechanisms are in place to inventory AI systems and are resourced according to organizational risk priorities.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-26T00:00:00Z",
@@ -25247,7 +25247,7 @@
       "articles": [
         {
           "article_id": "GOVERN-1.7",
-          "title": "NIST AI RMF GOVERN 1.7 \u2014 assessed from AI governance and operational evidence",
+          "title": "Processes and procedures are in place for decommissioning and phasing out AI systems safely and in a manner that does not increase risks or decrease the organization\u2019s trustworthiness.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25261,7 +25261,7 @@
       "articles": [
         {
           "article_id": "GOVERN-2.1",
-          "title": "NIST AI RMF GOVERN 2.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "Roles and responsibilities and lines of communication related to mapping, measuring, and managing AI risks are documented and are clear to individuals and teams throughout the organization.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25275,7 +25275,7 @@
       "articles": [
         {
           "article_id": "GOVERN-2.2",
-          "title": "NIST AI RMF GOVERN 2.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "The organization\u2019s personnel and partners receive AI risk management training to enable them to perform their duties and responsibilities consistent with related policies, procedures, and agreements.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25289,7 +25289,7 @@
       "articles": [
         {
           "article_id": "GOVERN-2.3",
-          "title": "NIST AI RMF GOVERN 2.3 \u2014 assessed from AI governance and operational evidence",
+          "title": "Executive leadership of the organization takes responsibility for decisions about risks associated with AI system development and deployment.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25303,7 +25303,7 @@
       "articles": [
         {
           "article_id": "GOVERN-3.1",
-          "title": "NIST AI RMF GOVERN 3.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "Decision-making related to mapping, measuring, and managing AI risks throughout the lifecycle is informed by a diverse team (e.g., diversity of demographics, disciplines, experience, expertise, and backgrounds).",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25317,7 +25317,7 @@
       "articles": [
         {
           "article_id": "GOVERN-3.2",
-          "title": "NIST AI RMF GOVERN 3.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "Policies and procedures are in place to define and differentiate roles and responsibilities for human-AI configurations and oversight of AI systems.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25331,7 +25331,7 @@
       "articles": [
         {
           "article_id": "GOVERN-4.1",
-          "title": "NIST AI RMF GOVERN 4.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "Organizational policies and practices are in place to foster a critical thinking and safety-first mindset in the design, development, deployment, and uses of AI systems to minimize potential negative impacts.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25345,7 +25345,7 @@
       "articles": [
         {
           "article_id": "GOVERN-4.2",
-          "title": "NIST AI RMF GOVERN 4.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "Organizational teams document the risks and potential impacts of the AI technology they design, develop, deploy, evaluate, and use, and they communicate about the impacts more broadly.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25359,7 +25359,7 @@
       "articles": [
         {
           "article_id": "GOVERN-4.3",
-          "title": "NIST AI RMF GOVERN 4.3 \u2014 assessed from AI governance and operational evidence",
+          "title": "Organizational practices are in place to enable AI testing, identification of incidents, and information sharing.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25373,7 +25373,7 @@
       "articles": [
         {
           "article_id": "GOVERN-5.1",
-          "title": "NIST AI RMF GOVERN 5.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "Organizational policies and practices are in place to collect, consider, prioritize, and integrate feedback from those external to the team that developed or deployed the AI system regarding the potential individual and societal impacts rel",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25387,7 +25387,7 @@
       "articles": [
         {
           "article_id": "GOVERN-5.2",
-          "title": "NIST AI RMF GOVERN 5.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "Mechanisms are established to enable the team that developed or deployed AI systems to regularly incorporate adjudicated feedback from relevant AI actors into system design and implementation.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25401,7 +25401,7 @@
       "articles": [
         {
           "article_id": "GOVERN-6.1",
-          "title": "NIST AI RMF GOVERN 6.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "Policies and procedures are in place that address AI risks associated with third-party entities, including risks of infringement of a third-party\u2019s intellectual property or other rights.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25415,7 +25415,7 @@
       "articles": [
         {
           "article_id": "GOVERN-6.2",
-          "title": "NIST AI RMF GOVERN 6.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "Contingency processes are in place to handle failures or incidents in third-party data or AI systems deemed to be high-risk.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25429,7 +25429,7 @@
       "articles": [
         {
           "article_id": "MANAGE-1.1",
-          "title": "NIST AI RMF MANAGE 1.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "A determination is made as to whether the AI system achieves its intended purposes and stated objectives and whether its development or deployment should proceed.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25443,7 +25443,7 @@
       "articles": [
         {
           "article_id": "MANAGE-1.2",
-          "title": "NIST AI RMF MANAGE 1.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "Treatment of documented AI risks is prioritized based on impact, likelihood, and available resources or methods.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25457,7 +25457,7 @@
       "articles": [
         {
           "article_id": "MANAGE-1.3",
-          "title": "NIST AI RMF MANAGE 1.3 \u2014 assessed from AI governance and operational evidence",
+          "title": "Responses to the AI risks deemed high priority, as identified by the MAP function, are developed, planned, and documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25471,7 +25471,7 @@
       "articles": [
         {
           "article_id": "MANAGE-1.4",
-          "title": "NIST AI RMF MANAGE 1.4 \u2014 assessed from AI governance and operational evidence",
+          "title": "Negative residual risks (defined as the sum of all unmitigated risks) to both downstream acquirers of AI systems and end users are documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25485,7 +25485,7 @@
       "articles": [
         {
           "article_id": "MANAGE-2.1",
-          "title": "NIST AI RMF MANAGE 2.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "Resources required to manage AI risks are taken into account \u2013 along with viable non-AI alternative systems, approaches, or methods \u2013 to reduce the magnitude or likelihood of potential impacts.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25499,7 +25499,7 @@
       "articles": [
         {
           "article_id": "MANAGE-2.2",
-          "title": "NIST AI RMF MANAGE 2.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "Mechanisms are in place and applied to sustain the value of deployed AI systems.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25513,7 +25513,7 @@
       "articles": [
         {
           "article_id": "MANAGE-2.3",
-          "title": "NIST AI RMF MANAGE 2.3 \u2014 assessed from AI governance and operational evidence",
+          "title": "Procedures are followed to respond to and recover from a previously unknown risk when it is identified.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25527,7 +25527,7 @@
       "articles": [
         {
           "article_id": "MANAGE-2.4",
-          "title": "NIST AI RMF MANAGE 2.4 \u2014 assessed from AI governance and operational evidence",
+          "title": "Mechanisms are in place and applied, and responsibilities are assigned and understood, to supersede, disengage, or deactivate AI systems that demonstrate performance or outcomes inconsistent with intended use.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25541,7 +25541,7 @@
       "articles": [
         {
           "article_id": "MANAGE-3.1",
-          "title": "NIST AI RMF MANAGE 3.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "AI risks and benefits from third-party resources are regularly monitored, and risk controls are applied and documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25555,7 +25555,7 @@
       "articles": [
         {
           "article_id": "MANAGE-3.2",
-          "title": "NIST AI RMF MANAGE 3.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "Pre-trained models which are used for development are monitored as part of AI system regular monitoring and maintenance.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25569,7 +25569,7 @@
       "articles": [
         {
           "article_id": "MANAGE-4.1",
-          "title": "NIST AI RMF MANAGE 4.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "Post-deployment AI system monitoring plans are implemented, including mechanisms for capturing and evaluating input from users and other relevant AI actors, appeal and override, decommissioning, incident response, recovery, and change manag",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25583,7 +25583,7 @@
       "articles": [
         {
           "article_id": "MANAGE-4.2",
-          "title": "NIST AI RMF MANAGE 4.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "Measurable activities for continual improvements are integrated into AI system updates and include regular engagement with interested parties, including relevant AI actors.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25597,7 +25597,7 @@
       "articles": [
         {
           "article_id": "MANAGE-4.3",
-          "title": "AI incidents, errors, and risks are managed",
+          "title": "Incidents and errors are communicated to relevant AI actors, including affected communities.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-26T00:00:00Z",
@@ -25611,7 +25611,7 @@
       "articles": [
         {
           "article_id": "MAP-1.1",
-          "title": "NIST AI RMF MAP 1.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "Intended purposes, potentially beneficial uses, context-specific laws, norms and expectations, and prospective settings in which the AI system will be deployed are understood and documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25625,7 +25625,7 @@
       "articles": [
         {
           "article_id": "MAP-1.2",
-          "title": "NIST AI RMF MAP 1.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "Interdisciplinary AI actors, competencies, skills, and capacities for establishing context reflect demographic diversity and broad domain and user experience expertise, and their participation is documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25639,7 +25639,7 @@
       "articles": [
         {
           "article_id": "MAP-1.3",
-          "title": "NIST AI RMF MAP 1.3 \u2014 assessed from AI governance and operational evidence",
+          "title": "The organization\u2019s mission and relevant goals for AI technology are understood and documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25653,7 +25653,7 @@
       "articles": [
         {
           "article_id": "MAP-1.4",
-          "title": "NIST AI RMF MAP 1.4 \u2014 assessed from AI governance and operational evidence",
+          "title": "The business value or context of business use has been clearly defined or \u2013 in the case of assessing existing AI systems \u2013 re-evaluated.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25667,7 +25667,7 @@
       "articles": [
         {
           "article_id": "MAP-1.5",
-          "title": "Organizational risk tolerance and AI system risks documented",
+          "title": "Organizational risk tolerances are determined and documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-23T00:00:00Z",
@@ -25681,7 +25681,7 @@
       "articles": [
         {
           "article_id": "MAP-1.6",
-          "title": "NIST AI RMF MAP 1.6 \u2014 assessed from AI governance and operational evidence",
+          "title": "System requirements (e.g., \u201cthe system shall respect the privacy of its users\u201d) are elicited from and understood by relevant AI actors.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25695,7 +25695,7 @@
       "articles": [
         {
           "article_id": "MAP-2.1",
-          "title": "NIST AI RMF MAP 2.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "The specific tasks and methods used to implement the tasks that the AI system will support are defined (e.g., classifiers, generative models, recommenders).",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25709,7 +25709,7 @@
       "articles": [
         {
           "article_id": "MAP-2.2",
-          "title": "NIST AI RMF MAP 2.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "Information about the AI system\u2019s knowledge limits and how system output may be utilized and overseen by humans is documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25723,7 +25723,7 @@
       "articles": [
         {
           "article_id": "MAP-2.3",
-          "title": "NIST AI RMF MAP 2.3 \u2014 assessed from AI governance and operational evidence",
+          "title": "Scientific integrity and TEVV considerations are identified and documented, including those related to experimental design, data collection and selection (e.g., availability, representativeness, suitability), system trustworthiness, and con",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25737,7 +25737,7 @@
       "articles": [
         {
           "article_id": "MAP-3.1",
-          "title": "NIST AI RMF MAP 3.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "Potential benefits of intended AI system functionality and performance are examined and documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25751,7 +25751,7 @@
       "articles": [
         {
           "article_id": "MAP-3.2",
-          "title": "NIST AI RMF MAP 3.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "Potential costs, including non-monetary costs, which result from expected or realized AI errors or system functionality and trustworthiness \u2013 as connected to organizational risk tolerance \u2013 are examined and documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25765,7 +25765,7 @@
       "articles": [
         {
           "article_id": "MAP-3.3",
-          "title": "NIST AI RMF MAP 3.3 \u2014 assessed from AI governance and operational evidence",
+          "title": "Targeted application scope is specified and documented based on the system\u2019s capability, established context, and AI system categorization.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25779,7 +25779,7 @@
       "articles": [
         {
           "article_id": "MAP-3.4",
-          "title": "NIST AI RMF MAP 3.4 \u2014 assessed from AI governance and operational evidence",
+          "title": "Processes for operator and practitioner proficiency with AI system performance and trustworthiness \u2013 and relevant technical standards and certifications \u2013 are defined, assessed, and documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25793,7 +25793,7 @@
       "articles": [
         {
           "article_id": "MAP-3.5",
-          "title": "NIST AI RMF MAP 3.5 \u2014 assessed from AI governance and operational evidence",
+          "title": "Processes for human oversight are defined, assessed, and documented in accordance with organizational policies from the GOVERN function.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25807,7 +25807,7 @@
       "articles": [
         {
           "article_id": "MAP-4.1",
-          "title": "NIST AI RMF MAP 4.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "Approaches for mapping AI technology and legal risks of its components \u2013 including the use of third-party data or software \u2013 are in place, followed, and documented, as are risks of infringement of a third party\u2019s intellectual property or ot",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25821,7 +25821,7 @@
       "articles": [
         {
           "article_id": "MAP-4.2",
-          "title": "NIST AI RMF MAP 4.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "Internal risk controls for components of the AI system, including third-party AI technologies, are identified and documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25835,7 +25835,7 @@
       "articles": [
         {
           "article_id": "MAP-5.1",
-          "title": "NIST AI RMF MAP 5.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "Likelihood and magnitude of each identified impact (both potentially beneficial and harmful) based on expected use, past uses of AI systems in similar contexts, public incident reports, feedback from those external to the team that develope",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25849,7 +25849,7 @@
       "articles": [
         {
           "article_id": "MAP-5.2",
-          "title": "NIST AI RMF MAP 5.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "Practices and personnel for supporting regular engagement with relevant AI actors and integrating feedback about positive, negative, and unanticipated impacts are in place and documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25863,7 +25863,7 @@
       "articles": [
         {
           "article_id": "MEASURE-1.1",
-          "title": "NIST AI RMF MEASURE 1.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "Approaches and metrics for measurement of AI risks enumerated during the MAP function are selected for implementation starting with the most significant AI risks.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25877,7 +25877,7 @@
       "articles": [
         {
           "article_id": "MEASURE-1.2",
-          "title": "NIST AI RMF MEASURE 1.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "Appropriateness of AI metrics and effectiveness of existing controls are regularly assessed and updated, including reports of errors and potential impacts on affected communities.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25891,7 +25891,7 @@
       "articles": [
         {
           "article_id": "MEASURE-1.3",
-          "title": "NIST AI RMF MEASURE 1.3 \u2014 assessed from AI governance and operational evidence",
+          "title": "Internal experts who did not serve as front-line developers for the system and/or independent assessors are involved in regular assessments and updates.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25905,7 +25905,7 @@
       "articles": [
         {
           "article_id": "MEASURE-2.1",
-          "title": "NIST AI RMF MEASURE 2.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "Test sets, metrics, and details about the tools used during TEVV are documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25919,7 +25919,7 @@
       "articles": [
         {
           "article_id": "MEASURE-2.10",
-          "title": "NIST AI RMF MEASURE 2.10 \u2014 assessed from AI governance and operational evidence",
+          "title": "Privacy risk of the AI system \u2013 as identified in the MAP function \u2013 is examined and documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25933,7 +25933,7 @@
       "articles": [
         {
           "article_id": "MEASURE-2.11",
-          "title": "NIST AI RMF MEASURE 2.11 \u2014 assessed from AI governance and operational evidence",
+          "title": "Fairness and bias \u2013 as identified in the MAP function \u2013 are evaluated and results are documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25947,7 +25947,7 @@
       "articles": [
         {
           "article_id": "MEASURE-2.12",
-          "title": "NIST AI RMF MEASURE 2.12 \u2014 assessed from AI governance and operational evidence",
+          "title": "Environmental impact and sustainability of AI model training and management activities \u2013 as identified in the MAP function \u2013 are assessed and documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25961,7 +25961,7 @@
       "articles": [
         {
           "article_id": "MEASURE-2.13",
-          "title": "NIST AI RMF MEASURE 2.13 \u2014 assessed from AI governance and operational evidence",
+          "title": "Effectiveness of the employed TEVV metrics and processes in the MEASURE function are evaluated and documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25975,7 +25975,7 @@
       "articles": [
         {
           "article_id": "MEASURE-2.2",
-          "title": "NIST AI RMF MEASURE 2.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "Evaluations involving human subjects meet applicable requirements (including human subject protection) and are representative of the relevant population.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -25989,7 +25989,7 @@
       "articles": [
         {
           "article_id": "MEASURE-2.3",
-          "title": "NIST AI RMF MEASURE 2.3 \u2014 assessed from AI governance and operational evidence",
+          "title": "AI system performance or assurance criteria are measured qualitatively or quantitatively and demonstrated for conditions similar to deployment setting(s).",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -26003,7 +26003,7 @@
       "articles": [
         {
           "article_id": "MEASURE-2.4",
-          "title": "AI system monitoring and measurement are performed",
+          "title": "The functionality and behavior of the AI system and its components \u2013 as identified in the MAP function \u2013 are monitored when in production.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-26T00:00:00Z",
@@ -26017,7 +26017,7 @@
       "articles": [
         {
           "article_id": "MEASURE-2.5",
-          "title": "NIST AI RMF MEASURE 2.5 \u2014 assessed from AI governance and operational evidence",
+          "title": "The AI system to be deployed is demonstrated to be valid and reliable.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -26031,7 +26031,7 @@
       "articles": [
         {
           "article_id": "MEASURE-2.6",
-          "title": "NIST AI RMF MEASURE 2.6 \u2014 assessed from AI governance and operational evidence",
+          "title": "The AI system is evaluated regularly for safety risks \u2013 as identified in the MAP function.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -26045,7 +26045,7 @@
       "articles": [
         {
           "article_id": "MEASURE-2.7",
-          "title": "AI system security and resilience measured (incl. runtime policy)",
+          "title": "AI system security and resilience \u2013 as identified in the MAP function \u2013 are evaluated and documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-05-23T00:00:00Z",
@@ -26059,7 +26059,7 @@
       "articles": [
         {
           "article_id": "MEASURE-2.8",
-          "title": "NIST AI RMF MEASURE 2.8 \u2014 assessed from AI governance and operational evidence",
+          "title": "Risks associated with transparency and accountability \u2013 as identified in the MAP function \u2013 are examined and documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -26073,7 +26073,7 @@
       "articles": [
         {
           "article_id": "MEASURE-2.9",
-          "title": "NIST AI RMF MEASURE 2.9 \u2014 assessed from AI governance and operational evidence",
+          "title": "The AI model is explained, validated, and documented, and AI system output is interpreted within its context \u2013 as identified in the MAP function \u2013 to inform responsible use and governance.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -26087,7 +26087,7 @@
       "articles": [
         {
           "article_id": "MEASURE-3.1",
-          "title": "NIST AI RMF MEASURE 3.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "Approaches, personnel, and documentation are in place to regularly identify and track existing, unanticipated, and emergent AI risks based on factors such as intended and actual performance in deployed contexts.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -26101,7 +26101,7 @@
       "articles": [
         {
           "article_id": "MEASURE-3.2",
-          "title": "NIST AI RMF MEASURE 3.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "Risk tracking approaches are considered for settings where AI risks are difficult to assess using currently available measurement techniques or where metrics are not yet available.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -26115,7 +26115,7 @@
       "articles": [
         {
           "article_id": "MEASURE-3.3",
-          "title": "NIST AI RMF MEASURE 3.3 \u2014 assessed from AI governance and operational evidence",
+          "title": "Feedback processes for end users and impacted communities to report problems and appeal system outcomes are established and integrated into AI system evaluation metrics.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -26129,7 +26129,7 @@
       "articles": [
         {
           "article_id": "MEASURE-4.1",
-          "title": "NIST AI RMF MEASURE 4.1 \u2014 assessed from AI governance and operational evidence",
+          "title": "Measurement approaches for identifying AI risks are connected to deployment context(s) and informed through consultation with domain experts and other end users.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -26143,7 +26143,7 @@
       "articles": [
         {
           "article_id": "MEASURE-4.2",
-          "title": "NIST AI RMF MEASURE 4.2 \u2014 assessed from AI governance and operational evidence",
+          "title": "Measurement results regarding AI system trustworthiness in deployment context(s) and across the AI lifecycle are informed by input from domain experts and relevant AI actors to validate whether the system is performing consistently as inten",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
@@ -26157,7 +26157,7 @@
       "articles": [
         {
           "article_id": "MEASURE-4.3",
-          "title": "NIST AI RMF MEASURE 4.3 \u2014 assessed from AI governance and operational evidence",
+          "title": "Measurable performance improvements or declines based on consultations with relevant AI actors, including affected communities, and field data about context-relevant risks and trustworthiness characteristics are identified and documented.",
           "official_source_url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10",
           "reviewed_by": "internal-trust-team",
           "reviewed_at": "2026-06-30T00:00:00Z",
