@@ -1,9 +1,9 @@
 # Release readiness
 
-TrustOps **0.2.13** fixes a hash-chain concurrent-write race, resolves two
-`anyio` CVEs, opens the README product tour by default, and promotes 209
-Common Control Framework safeguard mappings from proposed to reviewed.
-See [the changelog](../CHANGELOG.md) for release scope.
+TrustOps **0.2.14** adds OSCAL export, third-party connector registration via
+Python entry points, outbound event webhooks, and converts most framework
+packs to a data-driven manifest format. See [the changelog](../CHANGELOG.md)
+for release scope.
 
 ## Release gates
 
