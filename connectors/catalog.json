@@ -437,6 +437,28 @@
       "vendor": "Microsoft Intune",
       "description": "Managed-device disk encryption, compliance state, and jailbreak/root detection.",
       "setup_hint": "Entra app or managed identity with the Graph application permission DeviceManagementManagedDevices.Read.All."
+    },
+    {
+      "connector_id": "bamboohr-personnel",
+      "name": "BambooHR Personnel",
+      "category": "personnel",
+      "collection_mode": "direct_api_read",
+      "access_boundary": "scoped_token",
+      "credential_type": "bamboohr_api_token",
+      "minimum_permissions": [
+        "employee dataset read via a dedicated read-only BambooHR user"
+      ],
+      "evidence_types": ["personnel", "employment"],
+      "default_route": "dual",
+      "freshness_slo_minutes": 1440,
+      "is_implemented": true,
+      "production_status": "supported_connector",
+      "velocity": "low_current_state",
+      "native_connector": false,
+      "data_shape": "current_state",
+      "vendor": "BambooHR",
+      "description": "Employment status, hire and termination dates, department, and manager — no names or sensitive HR fields.",
+      "setup_hint": "API key of a dedicated user whose access level can only view the employment fields TrustOps requests."
     }
   ]
 }

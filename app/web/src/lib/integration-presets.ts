@@ -76,6 +76,22 @@ const PRESETS: Record<string, IntegrationPreset> = {
       "Hardware identifiers (IMEI, serial, MAC), phone numbers, and admin notes are never requested.",
     ],
   },
+  "bamboohr-personnel": {
+    connectorId: "bamboohr-personnel",
+    title: "BambooHR employees",
+    authLabel: "Dedicated read-only user",
+    badges: ["Minimal HR fields", "Secret reference only"],
+    summary:
+      "Create a BambooHR user whose access level can view only employment fields, store its API key as a secret, then enter the company domain. Sync reads status, hire and termination dates, department, and manager.",
+    providerSetup:
+      "A BambooHR admin creates a dedicated user with a custom access level limited to the employment fields, then generates its API key.",
+    trustOpsInput: "Company domain and the API key secret reference.",
+    advancedTitle: "What is collected",
+    advancedDetails: [
+      "Employee ID and number, work email, employment status, hire and termination dates, department, and manager ID.",
+      "Names, dates of birth, government IDs, compensation, addresses, and personal contact details are never requested.",
+    ],
+  },
   "snowflake-evidence-lake": {
     connectorId: "snowflake-evidence-lake",
     title: "Snowflake evidence lake",

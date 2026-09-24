@@ -491,6 +491,12 @@ def _missing_required_config(
             missing.append("stream")
         return missing
 
+    if connector_id == "bamboohr-personnel":
+        missing = [] if _has_value(credentials, "company_domain") else ["company_domain"]
+        if not (_has_value(credentials, "credential_ref") or _has_value(credentials, "token")):
+            missing.append("credential_ref")
+        return missing
+
     if connector_id == "jira-ticketing":
         missing = []
         for field in ("base_url", "email"):

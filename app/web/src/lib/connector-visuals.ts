@@ -143,6 +143,13 @@ export const CONNECTOR_VISUALS: Record<string, ConnectorVisual> = {
     bg: "#eff6ff",
     categoryLabel: "Device posture",
   },
+  "bamboohr-personnel": {
+    vendor: "BambooHR",
+    mark: "HR",
+    accent: "#73C41D",
+    bg: "#f0fdf4",
+    categoryLabel: "Personnel",
+  },
   "jira-ticketing": {
     vendor: "Atlassian Jira",
     mark: "Jira",
