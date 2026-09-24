@@ -132,10 +132,20 @@ to merge expanded honest subsets (20 GDPR articles, 18 HIPAA sections, 12 PCI
 requirements, 15 EU AI Act articles as of v0.2.x). These are **not** full
 official catalogs — see [Framework Coverage](FRAMEWORK_COVERAGE.md) for counts.
 
+PCI DSS cites **v4.0.1** and seeds all 12 principal requirements at the
+requirement level (`Req-1` … `Req-12`). It stays `implemented_limited_mapping`:
+the x.y / x.y.z sub-requirements are not seeded, because the PCI SSC standard
+is distributed under a license click-through and there is no official
+machine-readable identifier source to pin them to. The v4.0-citing control
+versions (1.0.0) remain in `controls/history.jsonl`, so as-of views of audits
+before 2026-09-23 still show the v4.0 citation.
+
 ## Other frameworks (add as you go)
 
 ISO 27701 and SOC 1 remain **planned** in the registry. Expand additional
-frameworks incrementally using the same control schema.
+frameworks incrementally using the same control schema. SOC 1 has no official
+control catalog to seed from (see
+[Framework expansion plan](FRAMEWORK_EXPANSION_PLAN.md#soc-1-why-it-stays-planned)).
 
 ## Custom frameworks
 

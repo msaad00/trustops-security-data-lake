@@ -5,10 +5,10 @@
   "control_count": 942,
   "crosswalk_count": 942,
   "components": {
-    "frameworks": "e7c82c3545946da70273d5c2accda41c93f83a9b29b5ff973eac3483972f9067",
-    "controls": "05082971c18787eed2720e1050d8665f7316471a194121fe198153a230c122c4",
-    "crosswalk": "c48213882c4bfa1dec81208da9775066fdbeb0ac7548faca2c255167706507cd",
-    "safeguards": "6555a92de4ebe4f8f53dd6607dfa0eede5691cabb28684a6a72a855e55d29545"
+    "frameworks": "53ec48d4cdb5c7c5029b2ae6694facc2d908e86b53a00d6fafba9edcb102543d",
+    "controls": "5f952c753ebdb082d5d5a59d4aa9045421026a77cdc51e730f5ed0fdeacb47ea",
+    "crosswalk": "edf10f663c64ec95e33879d66d4ee94d84478c97d8f569990e6e4d87c8363767",
+    "safeguards": "56ca39ce6d22237d677f5fc5067d4d6e33ca4f4c6e56994e83e08bdb6a938122"
   },
   "framework_versions": [
     {
@@ -97,8 +97,8 @@
     },
     {
       "framework_id": "pci-dss-v4",
-      "version": "v4.0",
-      "effective_date": "2022-03-31",
+      "version": "v4.0.1",
+      "effective_date": "2024-06-11",
       "superseded_by": null,
       "source_sha256": null
     },
@@ -6204,85 +6204,85 @@
     {
       "control_id": "PCI-DSS-1",
       "framework_id": "pci-dss-v4",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-23",
       "lifecycle_status": "active"
     },
     {
       "control_id": "PCI-DSS-10",
       "framework_id": "pci-dss-v4",
-      "version": "1.0.0",
-      "valid_from": "2026-05-24",
+      "version": "1.1.0",
+      "valid_from": "2026-09-23",
       "lifecycle_status": "active"
     },
     {
       "control_id": "PCI-DSS-11",
       "framework_id": "pci-dss-v4",
-      "version": "1.0.0",
-      "valid_from": "2026-05-24",
+      "version": "1.1.0",
+      "valid_from": "2026-09-23",
       "lifecycle_status": "active"
     },
     {
       "control_id": "PCI-DSS-12",
       "framework_id": "pci-dss-v4",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-23",
       "lifecycle_status": "active"
     },
     {
       "control_id": "PCI-DSS-2",
       "framework_id": "pci-dss-v4",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-23",
       "lifecycle_status": "active"
     },
     {
       "control_id": "PCI-DSS-3",
       "framework_id": "pci-dss-v4",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-23",
       "lifecycle_status": "active"
     },
     {
       "control_id": "PCI-DSS-4",
       "framework_id": "pci-dss-v4",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-23",
       "lifecycle_status": "active"
     },
     {
       "control_id": "PCI-DSS-5",
       "framework_id": "pci-dss-v4",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-23",
       "lifecycle_status": "active"
     },
     {
       "control_id": "PCI-DSS-6",
       "framework_id": "pci-dss-v4",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-23",
       "lifecycle_status": "active"
     },
     {
       "control_id": "PCI-DSS-7",
       "framework_id": "pci-dss-v4",
-      "version": "1.0.0",
-      "valid_from": "2026-05-24",
+      "version": "1.1.0",
+      "valid_from": "2026-09-23",
       "lifecycle_status": "active"
     },
     {
       "control_id": "PCI-DSS-8",
       "framework_id": "pci-dss-v4",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-23",
       "lifecycle_status": "active"
     },
     {
       "control_id": "PCI-DSS-9",
       "framework_id": "pci-dss-v4",
-      "version": "1.0.0",
-      "valid_from": "2026-06-30",
+      "version": "1.1.0",
+      "valid_from": "2026-09-23",
       "lifecycle_status": "active"
     },
     {
@@ -6713,5 +6713,5 @@
       "lifecycle_status": "active"
     }
   ],
-  "bundle_sha256": "5cd4bef6ea0a7d91b9391c95c5f4e88d19f99e24dd79ff8d54ecb43cc74a9dc4"
+  "bundle_sha256": "40ca227ff5f334868feeab6e2581be86e40c45c3cf4a9faf1a997b72b4c02420"
 }

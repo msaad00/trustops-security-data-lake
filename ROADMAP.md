@@ -71,7 +71,7 @@ The four gaps with no shipped implementation, each scoped in its own issue:
 
 | Epic                                                                      | Area       | Gap it closes                                                              |
 | ------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------- |
-| [#611](https://github.com/msaad00/trustops-security-data-lake/issues/611) | Frameworks | ISO 27701 + SOC 1 packs, PCI DSS v4 full mapping — rules already written   |
+| [#611](https://github.com/msaad00/trustops-security-data-lake/issues/611) | Frameworks | ISO 27701 pack (license review); SOC 1 stays planned (no official catalog) |
 | [#608](https://github.com/msaad00/trustops-security-data-lake/issues/608) | Connectors | HRIS + MDM personnel connectors — no native employment or device source    |
 | [#609](https://github.com/msaad00/trustops-security-data-lake/issues/609) | Connectors | Databricks adapter — `docs/HERO_DATA_LAKES.md` sets its own acceptance bar |
 | [#610](https://github.com/msaad00/trustops-security-data-lake/issues/610) | Platform   | Stripe billing + production SCIM — the last unchecked P5 box               |

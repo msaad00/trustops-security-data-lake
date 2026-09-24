@@ -43,7 +43,7 @@
       "restriction": "No official HIPAA compliance logo exists; HHS logos and seals are restricted to official use."
     },
     "pci-dss-v4": {
-      "official_name": "PCI DSS v4.0",
+      "official_name": "PCI DSS v4.0.1",
       "official_source_url": "https://www.pcisecuritystandards.org/standards/pci-dss/",
       "display_mode": "neutral_icon",
       "asset_path": null,

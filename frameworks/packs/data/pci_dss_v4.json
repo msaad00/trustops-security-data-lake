@@ -2,7 +2,7 @@
   "schema": "trustops.framework_pack_manifest.v1",
   "source": {
     "url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
-    "name": "PCI DSS v4.0"
+    "name": "PCI DSS v4.0.1"
   },
   "rows": [
     {
@@ -48,6 +48,18 @@
       "asset_types": ["repo", "service"]
     },
     {
+      "id": "7",
+      "title": "Access to cardholder data is restricted by business need to know",
+      "risk_domain": "identity",
+      "owner": "security-platform",
+      "asset_types": [
+        "iam_role",
+        "identity_group",
+        "identity_user",
+        "okta_user"
+      ]
+    },
+    {
       "id": "8",
       "title": "User identification and authentication enforced",
       "risk_domain": "identity",
@@ -60,6 +72,20 @@
       "risk_domain": "physical-security",
       "owner": "security-operations",
       "asset_types": ["service"]
+    },
+    {
+      "id": "10",
+      "title": "All access to cardholder data is logged and monitored",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering",
+      "asset_types": ["audit_log", "service", "host"]
+    },
+    {
+      "id": "11",
+      "title": "Security of systems and networks is regularly tested",
+      "risk_domain": "vulnerability",
+      "owner": "appsec",
+      "asset_types": ["container_image", "host", "service"]
     },
     {
       "id": "12",
