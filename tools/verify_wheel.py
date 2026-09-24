@@ -27,6 +27,8 @@ REQUIRED: dict[str, str] = {
     "controls/catalog.json": "the control catalog (nothing to evaluate)",
     "frameworks/registry.json": "the framework registry",
     "connectors/catalog.json": "the connector catalog",
+    "controls/safeguards.json": "the CCF safeguards (framework coverage and review queue)",
+    "controls/families.json": "the CCF family taxonomy (safeguard validation and family ledger)",
 }
 
 

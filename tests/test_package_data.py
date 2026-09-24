@@ -52,3 +52,25 @@ def test_mcp_dependency_excludes_incompatible_major_version() -> None:
     mcp = next(requirement for requirement in dependencies if requirement.name == "mcp")
     assert "2.0.0" not in mcp.specifier, "FastMCP entry point is incompatible with the MCP 2 API"
     assert "1.26.0" in mcp.specifier
+
+
+def test_every_runtime_data_path_is_packaged() -> None:
+    """A data file read through ROOT/_data_root() must ship in the wheel.
+
+    controls/families.json was added to runtime code without a data-files entry,
+    so an installed package crashed in `frameworks safeguards`.
+    """
+    import re
+
+    pyproject = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    shipped = {path for files in pyproject["tool"]["setuptools"]["data-files"].values() for path in files}
+    pattern = re.compile(r'(?:\bROOT|_data_root\(\))((?:\s*/\s*"[^"]+")+)')
+    referenced: set[str] = set()
+    for source in (REPO_ROOT / "src" / "security_lakehouse").rglob("*.py"):
+        for match in pattern.finditer(source.read_text(encoding="utf-8")):
+            parts = re.findall(r'"([^"]+)"', match.group(1))
+            if parts and "." in parts[-1]:
+                referenced.add("/".join(parts))
+    assert referenced, "pattern found no runtime data paths"
+    missing = sorted(path for path in referenced if (REPO_ROOT / path).is_file() and path not in shipped)
+    assert missing == [], f"runtime data files missing from [tool.setuptools.data-files]: {missing}"

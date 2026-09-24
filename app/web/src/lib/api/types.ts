@@ -940,6 +940,9 @@ export interface FrameworkCoverageSummary {
   implemented_framework_count: number;
   planned_framework_count: number;
   seeded_control_count: number;
+  /** Every seeded requirement with an official-source identifier mapping. */
+  source_cited_mapping_count?: number;
+  /** Identifier mappings a human has reviewed (excludes proposed). */
   reviewed_mapping_count: number;
   missing_mapping_count: number;
   seeded_mapping_coverage_pct: number;
@@ -964,6 +967,9 @@ export interface FrameworkCoverageRow {
   pulled_at: string | null;
   freshness_state: FrameworkFreshness;
   seeded_control_count: number;
+  /** Every seeded requirement with an official-source identifier mapping. */
+  source_cited_mapping_count?: number;
+  /** Identifier mappings a human has reviewed (excludes proposed). */
   reviewed_mapping_count: number;
   missing_mapping_count: number;
   missing_mapping_control_ids: string[];

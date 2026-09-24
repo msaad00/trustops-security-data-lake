@@ -86,6 +86,7 @@ def build_framework_coverage(
         mapped = mappings_by_framework.get(framework_id, [])
         seeded_count = len(seeded_controls)
         mapped_count = len(mapped)
+        reviewed_count = sum(1 for mapping in mapped if _reviewed_mapping(mapping))
         missing = sorted(
             str(control.get("control_id") or "")
             for control in seeded_controls
@@ -104,7 +105,8 @@ def build_framework_coverage(
                 "pulled_at": framework.get("pulled_at"),
                 "freshness_state": source.get("freshness_state", "never_pulled"),
                 "seeded_control_count": seeded_count,
-                "reviewed_mapping_count": mapped_count,
+                "source_cited_mapping_count": mapped_count,
+                "reviewed_mapping_count": reviewed_count,
                 "missing_mapping_count": len(missing),
                 "missing_mapping_control_ids": missing,
                 "seeded_mapping_coverage_pct": round(mapped_count / seeded_count * 100, 1) if seeded_count else 0.0,
@@ -127,12 +129,19 @@ def build_framework_coverage(
     return sorted(rows, key=lambda row: str(row["framework_id"]))
 
 
+def _reviewed_mapping(mapping: JsonObject) -> bool:
+    """An identifier mapping is reviewed unless any of its articles is ``proposed``."""
+    articles = mapping.get("articles") or []
+    return bool(articles) and all(str(a.get("review_status") or "reviewed") != "proposed" for a in articles)
+
+
 def framework_coverage_summary(
     rows: list[JsonObject],
     applicability_rows: list[JsonObject] | None = None,
 ) -> JsonObject:
     seeded = sum(int(row["seeded_control_count"]) for row in rows)
-    mapped = sum(int(row["reviewed_mapping_count"]) for row in rows)
+    mapped = sum(int(row["source_cited_mapping_count"]) for row in rows)
+    reviewed = sum(int(row["reviewed_mapping_count"]) for row in rows)
     missing = sum(int(row["missing_mapping_count"]) for row in rows)
     evaluatable = sum(int(row.get("evaluatable_requirement_count", 0)) for row in rows)
     attestable = sum(int(row.get("attestable_requirement_count", 0)) for row in rows)
@@ -144,7 +153,8 @@ def framework_coverage_summary(
         "implemented_framework_count": len(implemented),
         "planned_framework_count": len(planned),
         "seeded_control_count": seeded,
-        "reviewed_mapping_count": mapped,
+        "source_cited_mapping_count": mapped,
+        "reviewed_mapping_count": reviewed,
         "missing_mapping_count": missing,
         "seeded_mapping_coverage_pct": round(mapped / seeded * 100, 1) if seeded else 0.0,
         "evaluatable_requirement_count": evaluatable,
@@ -211,7 +221,7 @@ def render_framework_coverage_markdown(
                 url=_markdown_text(row["official_source_url"]),
                 status=_markdown_text(row.get("implementation_status") or "unknown"),
                 controls=row["seeded_control_count"],
-                mappings=row["reviewed_mapping_count"],
+                mappings=row["source_cited_mapping_count"],
                 evaluatable=row.get("evaluatable_requirement_count", 0),
                 attestable=row.get("attestable_requirement_count", 0),
                 attestable_pct=row.get("attestable_coverage_pct", 0.0),

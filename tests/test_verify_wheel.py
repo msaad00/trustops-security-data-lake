@@ -26,6 +26,8 @@ COMPLETE = {
     "trustops-0.2.0.data/data/controls/catalog.json": "{}",
     "trustops-0.2.0.data/data/frameworks/registry.json": "{}",
     "trustops-0.2.0.data/data/connectors/catalog.json": "{}",
+    "trustops-0.2.0.data/data/controls/safeguards.json": "{}",
+    "trustops-0.2.0.data/data/controls/families.json": "{}",
 }
 
 
