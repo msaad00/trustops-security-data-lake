@@ -183,6 +183,22 @@
       "sync_cadence_days": 90
     },
     {
+      "framework_id": "cis-controls-v8.1",
+      "family": "security",
+      "name": "CIS Critical Security Controls v8.1",
+      "version": "v8.1",
+      "effective_date": "2024-06-25",
+      "superseded_by": null,
+      "official_source_name": "Center for Internet Security \u2014 CIS Controls v8.1",
+      "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+      "source_sha256": null,
+      "pulled_at": null,
+      "implementation_status": "implemented_limited_mapping",
+      "copyright_guardrail": "CIS Controls are published by the Center for Internet Security under CIS terms. Pack stores the 18 control numbers and names only and links the official source; safeguard text is not reproduced.",
+      "sync_cadence_days": 180,
+      "coverage_boundary": "All 18 CIS Controls are catalogued at the control level. The 153 v8.1 safeguards (x.y) are not seeded because CIS distributes them only in the registration-gated download."
+    },
+    {
       "framework_id": "nist-csf-2.0",
       "family": "security",
       "name": "NIST Cybersecurity Framework (CSF) 2.0",

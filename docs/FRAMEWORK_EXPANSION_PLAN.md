@@ -13,13 +13,13 @@ TrustOps ships **source-linked** framework packs: local control IDs, short inter
 
 Validation lives in `validate_catalog()` (`src/security_lakehouse/catalog.py`) and `tests/test_framework_implementation_status.py`.
 
-## Shipped today (15 implemented)
+## Shipped today (16 implemented)
 
 See [FRAMEWORK_COVERAGE.md](./FRAMEWORK_COVERAGE.md) for the live matrix. Current implemented frameworks:
 
 - SOC 2, NIST AI RMF, ISO 27001, ISO 27017, ISO 42001, NIST CSF 2.0
 - NIST SP 800-53 Rev 5 (full catalog, baseline-tagged), NIST RMF (SP 800-37 Rev 2)
-- FedRAMP Moderate, CMMC 2 Level 2, CIS AWS Foundations
+- FedRAMP Moderate, CMMC 2 Level 2, CIS AWS Foundations, CIS Controls v8.1 (all 18 controls)
 - GDPR, HIPAA Security Rule, EU AI Act, PCI DSS v4.0.1 (limited mapping: all 12 principal requirements)
 
 ## Planned next (registry only)
@@ -28,6 +28,21 @@ See [FRAMEWORK_COVERAGE.md](./FRAMEWORK_COVERAGE.md) for the live matrix. Curren
 | ---------------- | ------------------------------------------------------------------------------------------------------ | ------------------- | --------------------------------------------------------------------------------------------------------------- |
 | `iso-27701-2019` | [ISO/IEC 27701:2019](https://www.iso.org/standard/71670.html)                                          | Privacy pack        | Planned boundary is explicit in the registry; license review is required before seeding controls                |
 | `soc1`           | [AICPA SOC 1](https://www.aicpa-cima.com/topic/audit-assurance/audit-and-assurance-greater-than-soc-2) | Financial reporting | Planned boundary is explicit in the registry; requires service-specific ICFR objectives before seeding controls |
+
+### ISO/IEC 27001 clauses 4–10
+
+The pack seeds the 93 Annex A controls. The ISMS requirements in clauses 4–10
+(context, leadership, planning, support, operation, performance evaluation,
+improvement) are not seeded yet: the official clause list is only in the
+licensed standard, and ISO's online browsing platform is not an open source
+this repository can pin. Seed them once a licensed copy is available to verify
+identifiers against.
+
+### CIS benchmarks beyond AWS
+
+CIS Microsoft Azure and Google Cloud Platform Foundations Benchmarks are not
+catalogued. Like CIS AWS, their recommendation IDs come from registration-gated
+PDFs; add them when those are available to verify against.
 
 ### SOC 1: why it stays planned
 

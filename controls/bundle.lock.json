@@ -1,16 +1,23 @@
 {
   "schema_version": "trustops.catalog_bundle.v1",
   "as_of": null,
-  "framework_count": 17,
-  "control_count": 2003,
-  "crosswalk_count": 2003,
+  "framework_count": 18,
+  "control_count": 2021,
+  "crosswalk_count": 2021,
   "components": {
-    "frameworks": "b675df0c795dbcb8e43cf0875e17703d01e0691b487d492d1d21dc51dbd17d6d",
-    "controls": "45b416ffd3d9a89841e0c49b7cad8fb569f84e748309e3cc5b3ae3d1e33da0cf",
-    "crosswalk": "2c78edbc66ac54919f4e371e84277b6987b7161dd72f4783f340cd816a70f25b",
-    "safeguards": "a5c4510dbfcf3eb999c8b6e95027ddc55ef1d5dbcce4ce08e069374d1714bce0"
+    "frameworks": "4225d52be22a8f04e55b3ab8d1c9b97a8a0810e34ff5bd22d303cf435ee3b0ed",
+    "controls": "daa12032c26fd65be8d6186f7fb0eb5d6c526dd147ae20ba9380452b7ee15baf",
+    "crosswalk": "e98bbe662fe7ed3cb78b5463fa05c3e9ff9b33a43cd85d73cabacc61761dcc1c",
+    "safeguards": "a87c52117e4ac0a1ff5cda28f4a1236508f6c26860eb9c95e05acb32024481c5"
   },
   "framework_versions": [
+    {
+      "framework_id": "cis-controls-v8.1",
+      "version": "v8.1",
+      "effective_date": "2024-06-25",
+      "superseded_by": null,
+      "source_sha256": null
+    },
     {
       "framework_id": "cis_aws",
       "version": "v3.0.0",
@@ -564,6 +571,132 @@
       "framework_id": "cis_aws",
       "version": "1.0.0",
       "valid_from": "2026-06-30",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-1",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-10",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-11",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-12",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-13",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-14",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-15",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-16",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-17",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-18",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-2",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-3",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-4",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-5",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-6",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-7",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-8",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
+      "lifecycle_status": "active"
+    },
+    {
+      "control_id": "CIS-CONTROLS-9",
+      "framework_id": "cis-controls-v8.1",
+      "version": "1.0.0",
+      "valid_from": "2026-09-24",
       "lifecycle_status": "active"
     },
     {
@@ -14154,5 +14287,5 @@
       "lifecycle_status": "active"
     }
   ],
-  "bundle_sha256": "58ff6c25773925bf2947fb2762dff1470faf8ac1fb1afd18b79fc8e7c7467292"
+  "bundle_sha256": "6a0ad68b380c7b6fd8a27526197fd9644992214a6c003ee91f7a4bb91cdf4f58"
 }
