@@ -125,7 +125,7 @@ def test_scim_users_when_enabled(env, monkeypatch: pytest.MonkeyPatch) -> None:
 
     listed = client.get("/api/v1/scim/v2/Users", headers=scim_auth)
     assert listed.status_code == HTTPStatus.OK
-    assert listed.json()["data"]["totalResults"] >= 2
+    assert listed.json()["totalResults"] >= 2
 
     created = client.post(
         "/api/v1/scim/v2/Users",
@@ -138,13 +138,13 @@ def test_scim_users_when_enabled(env, monkeypatch: pytest.MonkeyPatch) -> None:
         },
     )
     assert created.status_code == HTTPStatus.CREATED
-    assert created.json()["data"]["userName"] == "scim-new@acme.test"
+    assert created.json()["userName"] == "scim-new@acme.test"
 
-    user_id = created.json()["data"]["id"]
+    user_id = created.json()["id"]
     fetched = client.get(f"/api/v1/scim/v2/Users/{user_id}", headers=scim_auth)
     assert fetched.status_code == HTTPStatus.OK
-    assert fetched.json()["data"]["userName"] == "scim-new@acme.test"
-    assert fetched.json()["data"]["active"] is True
+    assert fetched.json()["userName"] == "scim-new@acme.test"
+    assert fetched.json()["active"] is True
 
     patched = client.patch(
         f"/api/v1/scim/v2/Users/{user_id}",
@@ -155,14 +155,14 @@ def test_scim_users_when_enabled(env, monkeypatch: pytest.MonkeyPatch) -> None:
         },
     )
     assert patched.status_code == HTTPStatus.OK
-    assert patched.json()["data"]["active"] is False
+    assert patched.json()["active"] is False
 
     deleted = client.delete(f"/api/v1/scim/v2/Users/{user_id}", headers=scim_auth)
     assert deleted.status_code == HTTPStatus.NO_CONTENT
 
+    # RFC 7644 3.6: a deleted resource is gone from SCIM (the row is kept, deactivated).
     after_delete = client.get(f"/api/v1/scim/v2/Users/{user_id}", headers=scim_auth)
-    assert after_delete.status_code == HTTPStatus.OK
-    assert after_delete.json()["data"]["active"] is False
+    assert after_delete.status_code == HTTPStatus.NOT_FOUND
 
     missing = client.get("/api/v1/scim/v2/Users/does-not-exist", headers=scim_auth)
     assert missing.status_code == HTTPStatus.NOT_FOUND

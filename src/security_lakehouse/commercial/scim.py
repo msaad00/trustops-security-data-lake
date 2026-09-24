@@ -1,7 +1,8 @@
-"""SCIM 2.0 provisioning scaffold for commercial hosted tenants.
+"""SCIM 2.0 settings for commercial hosted tenants.
 
-Full User/Group provisioning is not implemented in OSS builds. This module
-documents the contract and exposes configuration helpers for managed SaaS.
+Provisioning lives in :mod:`security_lakehouse.commercial.scim_provision` and
+the routes in :mod:`security_lakehouse.server_routes.routers.scim`; both return
+501 unless the commercial hosted build enables SCIM.
 """
 
 from __future__ import annotations
@@ -23,7 +24,7 @@ def scim_config() -> dict[str, Any]:
         "base_path": "/api/v1/scim/v2",
         "supported": scim_enabled(),
         "note": (
-            "SCIM bearer auth uses TRUSTOPS_SCIM_BEARER_TOKEN (hashed at rest in managed SaaS). "
+            "SCIM uses per-tenant bearer tokens issued at /api/v1/platform/scim/tokens (SHA-256 hashed at rest). "
             "OSS/self-hosted returns 501 until TRUSTOPS_COMMERCIAL_HOSTED=1 and TRUSTOPS_SCIM_ENABLED=1."
         ),
     }

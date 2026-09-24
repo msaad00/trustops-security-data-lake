@@ -95,6 +95,10 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
     )
+    # SCIM: the IdP's identifier for this user, and a soft-delete marker. A SCIM
+    # DELETE hides the user from SCIM but keeps the row for the audit trail.
+    scim_external_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    scim_deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     tenant: Mapped[Tenant] = relationship(back_populates="users")
     api_keys: Mapped[list[ApiKey]] = relationship(back_populates="user", cascade="all, delete-orphan")
@@ -125,6 +129,55 @@ class TenantInvite(Base):
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     accepted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     accepted_user_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+
+
+class ScimToken(Base):
+    """A per-tenant SCIM bearer token. Only the SHA-256 hash is stored."""
+
+    __tablename__ = "scim_tokens"
+    __table_args__ = (Index("ix_scim_tokens_token_hash", "token_hash", unique=True),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    token_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    token_prefix: Mapped[str] = mapped_column(String(16), nullable=False)
+    created_by: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
+    last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class ScimGroup(Base):
+    """An IdP group pushed over SCIM; membership drives TrustOps roles via a role map."""
+
+    __tablename__ = "scim_groups"
+    __table_args__ = (UniqueConstraint("tenant_id", "display_name", name="uq_scim_groups_tenant_name"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    display_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    external_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
+    )
+
+
+class ScimGroupMember(Base):
+    """Membership of a user in a SCIM group (both within one tenant)."""
+
+    __tablename__ = "scim_group_members"
+
+    group_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("scim_groups.id", ondelete="CASCADE"), primary_key=True
+    )
+    user_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
 
 
 class ApiKey(Base):
