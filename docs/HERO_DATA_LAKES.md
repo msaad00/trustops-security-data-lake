@@ -2,11 +2,11 @@
 
 This project tells a customer-owned security data lake story:
 
-| Backend    | Best fit                             | Security value                                                             | Status                        |
-| ---------- | ------------------------------------ | -------------------------------------------------------------------------- | ----------------------------- |
-| Snowflake  | governed enterprise evidence lake    | audit shares, retention, RBAC, rollups, query history, Iceberg option      | executable read-only runner   |
-| ClickHouse | high-volume telemetry analytics lake | runtime event windows, fast detection analytics, TTL, materialized rollups | schema and telemetry contract |
-| Databricks | governed lakehouse / AI estates      | Delta/Unity-Catalog-style governance and lineage for future adapters       | coming soon                   |
+| Backend    | Best fit                             | Security value                                                             | Status                                      |
+| ---------- | ------------------------------------ | -------------------------------------------------------------------------- | ------------------------------------------- |
+| Snowflake  | governed enterprise evidence lake    | audit shares, retention, RBAC, rollups, query history, Iceberg option      | executable read-only runner                 |
+| ClickHouse | high-volume telemetry analytics lake | runtime event windows, fast detection analytics, TTL, materialized rollups | schema and telemetry contract               |
+| Databricks | governed lakehouse / AI estates      | Unity Catalog evidence views, workspace audit log, service-principal reads | read-only runner, live verification pending |
 
 The local pipeline remains the source of truth for the demo. It writes replayable
 bronze/silver/gold artifacts and a SQLite mart so the project can run anywhere.
@@ -119,17 +119,25 @@ Primary artifacts:
 - [Local ClickHouse compose file](../deploy/clickhouse/docker-compose.yml)
 - [Dual-lakehouse diagram](diagrams/dual-lakehouse.md)
 
-## Databricks Story (Coming Soon)
+## Databricks Story (Preview)
 
-Databricks is the planned lakehouse path for teams that already govern data and
-AI assets there. TrustOps should eventually read governed evidence tables,
-lineage, model/runtime facts, and audit streams through a least-privilege
-workspace boundary, then evaluate the same controls-as-code model without
-copying evidence out of the customer environment.
+`databricks-evidence-lake` reads the same four TrustOps evidence views as
+Snowflake (`TRUSTOPS_AUDIT_EVENTS`, `TRUSTOPS_CONTROL_POSTURE`,
+`TRUSTOPS_ASSET_RISK`, `TRUSTOPS_EVIDENCE_BUNDLES`) from a Unity Catalog schema,
+through a SQL warehouse, without copying evidence out of the workspace.
 
-The current repo does not ship a Databricks adapter. Databricks stays marked
-coming soon until there is a connector contract, schema artifact, tests, and a
-verified demo path.
+| Bar                | Status                                                                                        |
+| ------------------ | --------------------------------------------------------------------------------------------- |
+| Connector contract | Done: `connectors/catalog.json` row, OAuth M2M service principal, enablement validation       |
+| Schema artifact    | Done: [`deploy/databricks/bootstrap_poc.sql`](../deploy/databricks/bootstrap_poc.sql)         |
+| Tests              | Done: fixtures plus a fake Statement Execution API (token, polling, chunks, host pinning)     |
+| Verified demo path | **Pending**: not yet run against a live workspace; treat the connector as preview until it is |
+
+Least privilege is `CAN USE` on one SQL warehouse plus `USE CATALOG`,
+`USE SCHEMA`, and `SELECT` on the evidence views. On SQL warehouses, Unity
+Catalog checks the view owner's permissions on `system.access.audit`, so the
+service principal never needs access to system tables. Setup steps are in
+[CONNECTORS.md](CONNECTORS.md#databricks-evidence-lake-preview).
 
 Official Databricks references:
 
@@ -159,5 +167,5 @@ raw JSONL evidence
   -> gold control_posture + asset_risk + metrics
   -> Snowflake governed evidence lake
   -> ClickHouse high-volume telemetry lake
-  -> Databricks governed lakehouse adapter (planned)
+  -> Databricks governed lakehouse (preview, Unity Catalog views)
 ```

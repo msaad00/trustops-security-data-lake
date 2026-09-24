@@ -92,29 +92,30 @@ entries are read-only access contracts or managed evidence boundaries — probes
 validate configuration but **sync is not available** until a collection adapter
 ships.
 
-| Connector ID                | Source                  | Runner status                 |
-| --------------------------- | ----------------------- | ----------------------------- |
-| `github-security`           | GitHub repo security    | executable                    |
-| `gitlab-security`           | GitLab repo security    | executable                    |
-| `aws-posture`               | AWS IAM/posture         | executable                    |
-| `okta-identity`             | Okta identity/MFA       | executable                    |
-| `google-workspace-identity` | Google Workspace users  | executable                    |
-| `gcp-posture`               | GCP IAM/posture         | executable                    |
-| `azure-posture`             | Azure IAM/posture       | executable                    |
-| `jira-ticketing`            | Jira tickets/workflows  | executable                    |
-| `intune-devices`            | Intune device posture   | executable                    |
-| `bamboohr-personnel`        | BambooHR employment     | executable                    |
-| `rippling-personnel`        | Rippling employment     | executable                    |
-| `workday-personnel`         | Workday employment      | executable (RaaS report)      |
-| `snowflake-evidence-lake`   | governed evidence lake  | executable existing-lake read |
-| `clickhouse-telemetry-lake` | telemetry analytics     | executable existing-lake read |
-| `object-storage-evidence`   | object evidence store   | executable existing-lake read |
-| `okta-system-log`           | Okta System Log API     | **implemented** (incremental) |
-| `siem-alerts`               | SIEM/detection exports  | executable existing-lake read |
-| `runtime-gateway`           | runtime policy events   | executable existing-lake read |
-| `identity-provider`         | generic identity source | **contract only** (no sync)   |
-| `ticketing`                 | generic ticketing       | **contract only** (no sync)   |
-| `managed-local-evidence`    | local starter evidence  | managed evidence object       |
+| Connector ID                | Source                  | Runner status                           |
+| --------------------------- | ----------------------- | --------------------------------------- |
+| `github-security`           | GitHub repo security    | executable                              |
+| `gitlab-security`           | GitLab repo security    | executable                              |
+| `aws-posture`               | AWS IAM/posture         | executable                              |
+| `okta-identity`             | Okta identity/MFA       | executable                              |
+| `google-workspace-identity` | Google Workspace users  | executable                              |
+| `gcp-posture`               | GCP IAM/posture         | executable                              |
+| `azure-posture`             | Azure IAM/posture       | executable                              |
+| `jira-ticketing`            | Jira tickets/workflows  | executable                              |
+| `intune-devices`            | Intune device posture   | executable                              |
+| `bamboohr-personnel`        | BambooHR employment     | executable                              |
+| `rippling-personnel`        | Rippling employment     | executable                              |
+| `workday-personnel`         | Workday employment      | executable (RaaS report)                |
+| `databricks-evidence-lake`  | Databricks UC evidence  | executable existing-lake read (preview) |
+| `snowflake-evidence-lake`   | governed evidence lake  | executable existing-lake read           |
+| `clickhouse-telemetry-lake` | telemetry analytics     | executable existing-lake read           |
+| `object-storage-evidence`   | object evidence store   | executable existing-lake read           |
+| `okta-system-log`           | Okta System Log API     | **implemented** (incremental)           |
+| `siem-alerts`               | SIEM/detection exports  | executable existing-lake read           |
+| `runtime-gateway`           | runtime policy events   | executable existing-lake read           |
+| `identity-provider`         | generic identity source | **contract only** (no sync)             |
+| `ticketing`                 | generic ticketing       | **contract only** (no sync)             |
+| `managed-local-evidence`    | local starter evidence  | managed evidence object                 |
 
 Every executable runner writes valid raw evidence into:
 
@@ -614,6 +615,34 @@ the ISU password as a secret reference (`credential_ref`, default
 `Report_Entry` list; other columns are ignored and never stored. The same
 PII boundary and `data_sensitivity: confidential` marking apply to all three HRIS
 connectors, and all three feed the offboarding check below.
+
+## Databricks evidence lake (preview)
+
+`databricks-evidence-lake` is an existing-lake reader. It runs
+`SELECT * FROM` each of the four TrustOps evidence views in a Unity Catalog
+schema through the SQL Statement Execution API (`POST /api/2.0/sql/statements`,
+`INLINE` + `JSON_ARRAY`, polling while `PENDING`/`RUNNING`, following
+`next_chunk_internal_link`). No Databricks SDK or driver is installed.
+
+Setup:
+
+1. Run [`deploy/databricks/bootstrap_poc.sql`](../deploy/databricks/bootstrap_poc.sql)
+   as a user who can create a catalog and read `system.access.audit`, replacing
+   `<trustops-sp-application-id>` with a service principal's application id.
+2. Grant that service principal `CAN USE` on one SQL warehouse.
+3. Create an OAuth secret for the service principal and store it as a secret
+   reference (`client_secret_ref`, default `DATABRICKS_CLIENT_SECRET`).
+4. Configure `host`, `warehouse_id`, `catalog`, `schema`, and `client_id`, then
+   probe and enable.
+
+TrustOps mints a one-hour token at `https://<host>/oidc/v1/token`
+(`client_credentials`, `scope=all-apis`) per sync and keeps it in memory. The
+host must be a Databricks workspace domain (`*.cloud.databricks.com`,
+`*.azuredatabricks.net`, `*.gcp.databricks.com`); result chunk links may not
+leave it; catalog, schema, and view names are strict identifiers quoted with
+backticks. The bootstrap views keep the latest 10,000 audit events so a read
+stays under the 25 MiB inline result limit. This connector has not yet been
+verified against a live workspace.
 
 ## Offboarding check: HR terminations ↔ IdP accounts
 

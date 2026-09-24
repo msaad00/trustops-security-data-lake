@@ -125,6 +125,23 @@ const PRESETS: Record<string, IntegrationPreset> = {
       "Any other report column is ignored and never stored.",
     ],
   },
+  "databricks-evidence-lake": {
+    connectorId: "databricks-evidence-lake",
+    title: "Databricks evidence lake",
+    authLabel: "Service principal (OAuth M2M)",
+    badges: ["Unity Catalog SELECT only", "Short-lived tokens"],
+    summary:
+      "Run the Unity Catalog bootstrap to create the four TrustOps evidence views, grant a service principal CAN USE on one SQL warehouse and SELECT on the views, then enter the workspace, warehouse, and schema.",
+    providerSetup:
+      "deploy/databricks/bootstrap_poc.sql creates the views over system.access.audit and the read grants; a workspace admin grants CAN USE on the SQL warehouse.",
+    trustOpsInput:
+      "Workspace host, SQL warehouse ID, catalog, schema, and the service principal's application ID and secret reference.",
+    advancedTitle: "How reads work",
+    advancedDetails: [
+      "Reads use the SQL Statement Execution API; no driver or SDK is installed.",
+      "OAuth tokens last one hour and are minted per sync; nothing is written to the workspace.",
+    ],
+  },
   "snowflake-evidence-lake": {
     connectorId: "snowflake-evidence-lake",
     title: "Snowflake evidence lake",

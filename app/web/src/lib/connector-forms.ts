@@ -147,6 +147,46 @@ export const CONNECTOR_CREDENTIAL_FIELDS: Record<string, ConnectorFieldDef[]> =
         required: true,
       },
     ],
+    "databricks-evidence-lake": [
+      {
+        name: "host",
+        label: "Workspace host",
+        placeholder: "dbc-a1b2345c-d6e7.cloud.databricks.com",
+        required: true,
+        hint: "Bare workspace hostname (AWS, Azure, or GCP Databricks).",
+      },
+      {
+        name: "warehouse_id",
+        label: "SQL warehouse ID",
+        placeholder: "1234567890abcdef",
+        required: true,
+      },
+      {
+        name: "catalog",
+        label: "Evidence catalog",
+        placeholder: "trustops",
+        required: true,
+      },
+      {
+        name: "schema",
+        label: "Evidence schema",
+        placeholder: "evidence",
+        required: true,
+      },
+      {
+        name: "client_id",
+        label: "Service principal application ID",
+        placeholder: "00000000-0000-0000-0000-000000000000",
+        required: true,
+      },
+      {
+        name: "client_secret_ref",
+        label: "OAuth secret env var",
+        placeholder: "DATABRICKS_CLIENT_SECRET",
+        required: true,
+        hint: "Service principal OAuth secret, stored as a secret reference. TrustOps mints one-hour tokens from it.",
+      },
+    ],
     "gcp-posture": [
       {
         name: "project_id",

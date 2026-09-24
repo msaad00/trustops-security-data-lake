@@ -165,7 +165,7 @@ In the console, open **Connectors → choose a source → Discover → Test → 
 No pre-existing data lake is required. For automation, use the
 [headless setup playbook](docs/playbooks/HEADLESS_CONNECTOR_SETUP.md).
 
-Sources include AWS, Azure, GCP, GitHub, GitLab, Okta, Microsoft Intune, BambooHR, Rippling, Workday, Snowflake, and ClickHouse.
+Sources include AWS, Azure, GCP, GitHub, GitLab, Okta, Microsoft Intune, BambooHR, Rippling, Workday, Snowflake, Databricks (preview), and ClickHouse.
 Check the [connector catalog](docs/CONNECTORS.md) for each integration's scope and status.
 A connector can also ship as a separately installed Python package that
 registers its sync builder and catalog row through entry points; see

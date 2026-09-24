@@ -164,6 +164,13 @@ export const CONNECTOR_VISUALS: Record<string, ConnectorVisual> = {
     bg: "#eff6ff",
     categoryLabel: "Personnel",
   },
+  "databricks-evidence-lake": {
+    vendor: "Databricks",
+    mark: "DB",
+    accent: "#FF3621",
+    bg: "#fff1ee",
+    categoryLabel: "Evidence lake",
+  },
   "jira-ticketing": {
     vendor: "Atlassian Jira",
     mark: "Jira",

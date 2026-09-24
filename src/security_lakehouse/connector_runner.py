@@ -51,6 +51,11 @@ from security_lakehouse.connectors_clickhouse import (
     ClickHouseFixtureClient,
     collect_clickhouse_evidence,
 )
+from security_lakehouse.connectors_databricks import (
+    DatabricksClient,
+    DatabricksFixtureClient,
+    collect_databricks_evidence,
+)
 from security_lakehouse.connectors_gcp import (
     GCPClient,
     GCPFixtureClient,
@@ -588,6 +593,10 @@ def _build_workday(inputs: SyncInputs) -> list[dict[str, Any]]:
     return _collect_workday(fixture_dir=inputs.fixture_dir, env=inputs.env, credentials=inputs.credentials)
 
 
+def _build_databricks(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_databricks(fixture_dir=inputs.fixture_dir, env=inputs.env, credentials=inputs.credentials)
+
+
 def _build_jira(inputs: SyncInputs) -> list[dict[str, Any]]:
     return _collect_jira(
         fixture_dir=inputs.fixture_dir,
@@ -665,6 +674,7 @@ REGISTRY: dict[str, ConnectorBuilder] = {
     "bamboohr-personnel": _build_bamboohr,
     "rippling-personnel": _build_rippling,
     "workday-personnel": _build_workday,
+    "databricks-evidence-lake": _build_databricks,
 }
 
 
@@ -1054,6 +1064,27 @@ def _collect_workday(
             "integration system user's password (credential_ref naming the secret, or WORKDAY_ISU_PASSWORD)"
         )
     return collect_workday_evidence(WorkdayReportClient(report_url, username=username, password=password))
+
+
+def _collect_databricks(
+    *,
+    fixture_dir: str | Path | None,
+    env: dict[str, str],
+    credentials: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    creds = credentials or {}
+    host = str(creds.get("host") or env.get("DATABRICKS_HOST") or "").strip()
+    if fixture_dir:
+        return collect_databricks_evidence(DatabricksFixtureClient(fixture_dir, host=host))
+    fields = {name: str(creds.get(name) or "").strip() for name in ("warehouse_id", "catalog", "schema", "client_id")}
+    secret = _resolve_provider_secret(str(creds.get("client_secret_ref") or ""), "DATABRICKS_CLIENT_SECRET", env)
+    if not host or not secret or not all(fields.values()):
+        raise ValueError(
+            "databricks-evidence-lake sync requires --fixture-dir, or a configured host, warehouse_id, catalog, "
+            "schema, and service-principal client_id plus its OAuth secret (client_secret_ref or "
+            "DATABRICKS_CLIENT_SECRET)"
+        )
+    return collect_databricks_evidence(DatabricksClient(host, client_secret=secret, **fields))
 
 
 def _collect_jira(
