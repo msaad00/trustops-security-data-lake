@@ -99,12 +99,54 @@ raised and never silently applied.
 resolve to a callable, is logged and excluded. A bug in one third-party
 package never breaks the rest of the registry or the app.
 
-**What this path does not give you.** Registering a builder wires sync
-_dispatch_ only. `connectors/catalog.json` — the curated, validated set of
-connector metadata (permissions, access boundary, evidence types) that gates
-`run_connector_sync` and drives the console — is still in-repo only; an
-entry-point connector is not automatically configurable/enable-able through
-that catalog today.
+### Catalog metadata
+
+A builder alone wires sync _dispatch_. To make the connector configurable,
+enable-able, and visible in the console and `/api/v1/connectors`, the package
+also registers its catalog row under `trustops.connector_catalog`, using the
+same entry-point name:
+
+```python
+# my_trustops_connector.py
+CATALOG_ENTRY = {
+    "connector_id": "my-vendor-evidence",
+    "name": "My Vendor Evidence",
+    "category": "evidence",
+    "collection_mode": "direct_api_read",
+    "access_boundary": "scoped_token",
+    "credential_type": "my_vendor_api_token",
+    "minimum_permissions": ["evidence.read"],
+    "evidence_types": ["policy"],
+    "default_route": "local",
+    "freshness_slo_minutes": 1440,
+    "production_status": "supported_connector",
+    "data_shape": "current_state",
+}
+```
+
+```toml
+[project.entry-points."trustops.connector_catalog"]
+my-vendor-evidence = "my_trustops_connector:CATALOG_ENTRY"
+```
+
+The value may be the row itself or a zero-argument callable returning it.
+`load_connector_catalog()` merges the row after the in-repo catalog only if:
+
+- it passes the same validation as an in-repo row (`validate_connector_row`:
+  required fields, collection mode ↔ access boundary pairing, no over-broad
+  permissions, no secret-like fields or values);
+- its `connector_id` matches the entry-point name and does not collide with a
+  built-in connector;
+- a callable builder with the same name is registered under
+  `trustops.connectors` — the catalog never lists a connector that cannot sync;
+- it does not claim `production_status: primary_lake`.
+
+A rejected row is logged and excluded, never raised. Admitted rows get
+`is_implemented: true` and a `provenance` field naming the entry point; the
+console marks them **Installed package**. Credential fields in the console come
+from the generic `credential_type` fallback (a `*token*` type asks for a
+`credential_ref`), and there are no connector-specific scope fields.
+`make validate` checks the in-repo catalog file only.
 
 ## Related docs
 

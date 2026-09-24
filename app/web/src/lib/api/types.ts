@@ -675,6 +675,8 @@ export interface ConnectorView {
     "primary_lake" | "supported_connector" | "local_demo" | string;
   /** Access contract only when false — sync is unavailable. */
   is_implemented?: boolean;
+  /** Present when the row came from an installed package, not the in-repo catalog. */
+  provenance?: { source: "entry_point"; entry_point: string };
   state: ConnectorState;
   configured_at: string | null;
   credential_fingerprint: string | null;
