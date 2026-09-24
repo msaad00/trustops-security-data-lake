@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterator
+from dataclasses import replace
 from datetime import UTC, datetime
 
 from fastapi import Depends, HTTPException, Request, status
@@ -68,6 +69,7 @@ def get_identity(
             workspace_id=key.workspace_id,
             api_key_id=key.id,
         )
+        identity = _apply_billing_state(session, identity)
         request.state.identity = identity
         return identity
 
@@ -90,6 +92,7 @@ def get_identity(
             scopes=scopes_for_role(sess.user.role),
             workspace_id=sess.tenant_id,
         )
+        identity = _apply_billing_state(session, identity)
         request.state.identity = identity
         return identity
 
@@ -100,15 +103,27 @@ def get_identity(
     )
 
 
+def _apply_billing_state(session: Session, identity: Identity) -> Identity:
+    """Narrow a lapsed commercial workspace to read scopes (no-op unless billing is enabled)."""
+    from security_lakehouse.commercial.billing import billing_access, billing_enabled
+
+    if not billing_enabled() or billing_access(session, tenant_id=identity.tenant_id) != "read_only":
+        return identity
+    return replace(identity, scopes=identity.scopes & frozenset({"read"}), billing_read_only=True)
+
+
 def require_scope(scope: str) -> Callable[..., Identity]:
     """Build a dependency that enforces ``scope`` on top of authentication."""
 
     def dependency(identity: Identity = Depends(get_identity)) -> Identity:
         if not identity.has_scope(scope):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"requires scope: {scope}",
-            )
+            detail = f"requires scope: {scope}"
+            if identity.billing_read_only:
+                detail = (
+                    "this workspace is read-only until billing is resolved; "
+                    "an admin can update payment at /api/v1/billing/portal"
+                )
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=detail)
         return identity
 
     return dependency

@@ -57,7 +57,7 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 - [x] Self-serve signup and tenant lifecycle
 - [x] Usage limits enforcement scaffold
 - [x] SCIM 2.0 provisioning (per-tenant tokens, users, groups → roles)
-- [ ] Billing (Stripe)
+- [x] Billing (Stripe Checkout + portal, webhook-driven plan state, past-due grace → read-only)
 
 ## P6 — Headless GRC
 
@@ -75,7 +75,7 @@ The four gaps with no shipped implementation, each scoped in its own issue:
 | [#611](https://github.com/msaad00/trustops-security-data-lake/issues/611) | Frameworks | ISO 27701 pack (license review); SOC 1 stays planned (no official catalog) |
 | [#608](https://github.com/msaad00/trustops-security-data-lake/issues/608) | Connectors | CIS Azure/GCP benchmarks, ISO 27001 clauses 4–10 (HRIS/MDM shipped)        |
 | [#609](https://github.com/msaad00/trustops-security-data-lake/issues/609) | Connectors | Databricks adapter — `docs/HERO_DATA_LAKES.md` sets its own acceptance bar |
-| [#610](https://github.com/msaad00/trustops-security-data-lake/issues/610) | Platform   | Stripe billing (SCIM shipped) — the last unchecked P5 box                  |
+| [#610](https://github.com/msaad00/trustops-security-data-lake/issues/610) | Platform   | Live Stripe + IdP verification of the P5 billing/SCIM paths                |
 
 #611 is the cheapest to start: `docs/FRAMEWORK_EXPANSION_PLAN.md` already carries the
 rules and the contributor checklist, so it is execution rather than design.

@@ -2504,6 +2504,89 @@
         "summary": "Whoami"
       }
     },
+    "/api/v1/billing": {
+      "get": {
+        "operationId": "billing_status_api_v1_billing_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Billing Status",
+        "tags": ["commercial"]
+      }
+    },
+    "/api/v1/billing/checkout": {
+      "post": {
+        "operationId": "checkout_api_v1_billing_checkout_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Checkout",
+        "tags": ["commercial"]
+      }
+    },
+    "/api/v1/billing/portal": {
+      "post": {
+        "operationId": "portal_api_v1_billing_portal_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Portal",
+        "tags": ["commercial"]
+      }
+    },
+    "/api/v1/billing/stripe/webhook": {
+      "post": {
+        "operationId": "stripe_webhook_api_v1_billing_stripe_webhook_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Stripe Webhook",
+        "tags": ["commercial"]
+      }
+    },
     "/api/v1/catalog/bundle": {
       "get": {
         "operationId": "get_catalog_bundle",
