@@ -1,9 +1,8 @@
 # Release readiness
 
-TrustOps **0.2.15** adds the full NIST SP 800-53 Rev 5 catalog and NIST RMF
-tasks, CIS Controls v8.1 with a governed CCF family taxonomy, deeper proposed
-framework mappings, PCI DSS v4.0.1, and HRIS/MDM connectors (Intune, BambooHR,
-Rippling, Workday) with an HR ↔ identity-provider offboarding check. See [the
+TrustOps **0.2.16** adds production SCIM 2.0 and Stripe billing for commercial
+hosted tenants, a Databricks evidence-lake reader (preview), inherited NIST SP
+800-53 reviews, and official NIST AI RMF titles. See [the
 changelog](../CHANGELOG.md) for release scope.
 
 ## Release gates
