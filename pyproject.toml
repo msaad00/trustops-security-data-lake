@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "trustops-security-data-lake"
-version = "0.2.14"
+version = "0.2.15"
 description = "Open-source, self-hosted trust operations — SOC 2, NIST AI RMF, FedRAMP, ISO, HIPAA, PCI DSS. Read-only evidence collection, deterministic control tests, and audit-ready proof with an API-first, MCP-native design."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -122,7 +122,7 @@ agents = [
 # validate every commit message format.
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.2.14"
+version = "0.2.15"
 version_files = ["pyproject.toml:version"]
 tag_format = "v$version"
 
@@ -151,7 +151,7 @@ where = ["src"]
 "mockup_companies/healthcare/raw" = ["mockup_companies/healthcare/raw/security_events.jsonl"]
 "mockup_companies/saas/raw" = ["mockup_companies/saas/raw/security_events.jsonl"]
 "connectors" = ["connectors/catalog.json"]
-"controls" = ["controls/bundle.lock.json", "controls/catalog.json", "controls/safeguards.json", "controls/history.jsonl"]
+"controls" = ["controls/bundle.lock.json", "controls/catalog.json", "controls/safeguards.json", "controls/history.jsonl", "controls/families.json"]
 "frameworks" = ["frameworks/registry.json", "frameworks/verified_article_ids.json"]
 "mappings" = ["mappings/control_articles.json", "mappings/control_map.json", "mappings/remediation_guidance.json", "mappings/framework_equivalence.json"]
 "programs" = ["programs/catalog.json", "programs/vendor_questionnaires.json"]

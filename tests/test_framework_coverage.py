@@ -25,7 +25,13 @@ def test_framework_coverage_ledger_counts_seeded_mappings(capsys) -> None:
     assert summary["planned_framework_count"] == len(planned)
     assert summary["seeded_control_count"] == len(seeded_controls)
     assert summary["seeded_control_count"] >= 741
-    assert summary["reviewed_mapping_count"] == len(seeded_controls)
+    assert summary["source_cited_mapping_count"] == len(seeded_controls)
+    # Source-reconciled identifier mappings (CSF 2.0, NIST 800-53, RMF, CIS
+    # Controls) are proposed, so they are cited but not reviewed.
+    assert 0 < summary["reviewed_mapping_count"] < summary["source_cited_mapping_count"]
+    rows_by_id = {row["framework_id"]: row for row in rows}
+    assert rows_by_id["nist-800-53-rev5"]["reviewed_mapping_count"] == 0
+    assert rows_by_id["soc2"]["reviewed_mapping_count"] == rows_by_id["soc2"]["seeded_control_count"]
     assert summary["missing_mapping_count"] == 0
     assert summary["seeded_mapping_coverage_pct"] == 100.0
     assert summary["asset_type_count"] == 20
@@ -68,7 +74,7 @@ def test_attestable_coverage_is_honest_and_bounded() -> None:
 
     It must never exceed evaluatable (touched by any safeguard), which must
     never exceed the seeded requirement count. Source-citation coverage
-    (`reviewed_mapping_count`, always 100%) is a different, weaker claim and must
+    (`source_cited_mapping_count`, always 100%) is a different, weaker claim and must
     not be conflated with attestable coverage.
     """
     from security_lakehouse.framework_coverage import build_framework_coverage, framework_coverage_summary
