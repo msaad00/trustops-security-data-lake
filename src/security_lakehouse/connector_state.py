@@ -429,6 +429,9 @@ def _missing_required_config(
     if connector_id == "azure-posture":
         return ["subscription_id"] if not _has_value(credentials, "subscription_id") else []
 
+    if connector_id == "intune-devices":
+        return ["tenant_id"] if not _has_value(credentials, "tenant_id") else []
+
     if connector_id == "gcp-posture":
         # Credentials resolve through Application Default Credentials, so only
         # the project scope is required — no stored credential reference, the

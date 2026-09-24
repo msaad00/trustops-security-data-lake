@@ -136,6 +136,13 @@ export const CONNECTOR_VISUALS: Record<string, ConnectorVisual> = {
     bg: "#eff6ff",
     categoryLabel: "Cloud posture",
   },
+  "intune-devices": {
+    vendor: "Microsoft Intune",
+    mark: "IN",
+    accent: "#0078D4",
+    bg: "#eff6ff",
+    categoryLabel: "Device posture",
+  },
   "jira-ticketing": {
     vendor: "Atlassian Jira",
     mark: "Jira",

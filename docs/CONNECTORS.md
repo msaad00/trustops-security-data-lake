@@ -102,6 +102,7 @@ ships.
 | `gcp-posture`               | GCP IAM/posture         | executable                    |
 | `azure-posture`             | Azure IAM/posture       | executable                    |
 | `jira-ticketing`            | Jira tickets/workflows  | executable                    |
+| `intune-devices`            | Intune device posture   | executable                    |
 | `snowflake-evidence-lake`   | governed evidence lake  | executable existing-lake read |
 | `clickhouse-telemetry-lake` | telemetry analytics     | executable existing-lake read |
 | `object-storage-evidence`   | object evidence store   | executable existing-lake read |
@@ -506,3 +507,29 @@ security-lakehouse connectors probe \
 Supplying part of the refresh triple is rejected at probe and enable time with the
 specific missing fields, because a partial triple silently falls back to the
 static-token path at sync time.
+
+## Microsoft Intune: device posture
+
+`intune-devices` reads `GET /v1.0/deviceManagement/managedDevices` from Microsoft
+Graph and emits two current-state events per managed device:
+
+| Event                      | Pass when                                           | Controls                                               |
+| -------------------------- | --------------------------------------------------- | ------------------------------------------------------ |
+| `intune.device.encryption` | `isEncrypted` is true                               | FEDRAMP-AC-19.5, CMMC-3.1.19, ISO27001-A.8.1           |
+| `intune.device.compliance` | `complianceState` is `compliant` and not jailbroken | FEDRAMP-AC-19, CMMC-3.1.18, SOC2-CC6.8, ISO27001-A.8.1 |
+
+`noncompliant`, `conflict`, `error`, or a jailbroken/rooted device is a high-severity
+open finding; `inGracePeriod` is low; `unknown` and `configManager` are medium,
+because Intune has no verdict to rely on.
+
+**Identity.** The same `DefaultAzureCredential` model as `azure-posture`: an Entra
+app registration (workload identity federation or managed identity) with the Graph
+**application** permission `DeviceManagementManagedDevices.Read.All` and admin
+consent. The only stored field is `tenant_id` (`AZURE_TENANT_ID` overrides it); no
+client secret is stored in TrustOps. The tenant needs an active Intune license.
+
+**Data minimization.** The list call uses `$select` for posture fields only.
+IMEI, serial number, MAC addresses, phone number, user display name, and admin
+notes are never requested. `userPrincipalName` is kept as the join key to
+identity-provider users. Pagination follows `@odata.nextLink` only while it stays on
+`https://graph.microsoft.com`, so the bearer token is never sent elsewhere.

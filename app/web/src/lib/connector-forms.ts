@@ -91,6 +91,15 @@ export const CONNECTOR_CREDENTIAL_FIELDS: Record<string, ConnectorFieldDef[]> =
         hint: "Confirm the subscription after granting Reader to the TrustOps app or workload identity.",
       },
     ],
+    "intune-devices": [
+      {
+        name: "tenant_id",
+        label: "Microsoft Entra tenant ID",
+        placeholder: "00000000-0000-0000-0000-000000000000",
+        required: true,
+        hint: "Tenant whose Intune devices TrustOps reads. The TrustOps app or managed identity needs the Graph application permission DeviceManagementManagedDevices.Read.All.",
+      },
+    ],
     "gcp-posture": [
       {
         name: "project_id",

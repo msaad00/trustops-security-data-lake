@@ -1,6 +1,6 @@
 # HRIS personnel audit playbook
 
-TrustOps does **not** ship a native HRIS connector today. For ISO 27001 and SOC 2 personnel controls, use this **IdP + access reviews** workflow until HRIS/MDM connectors land on the roadmap.
+TrustOps does **not** ship a native HRIS connector today. For ISO 27001 and SOC 2 personnel controls, use this **IdP + access reviews** workflow until HRIS connectors land. Device posture comes from the `intune-devices` MDM connector ([CONNECTORS.md](../CONNECTORS.md#microsoft-intune-device-posture)).
 
 ## When to use this playbook
 

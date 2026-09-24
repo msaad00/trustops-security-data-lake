@@ -56,6 +56,11 @@ from security_lakehouse.connectors_google_workspace import (
     GoogleWorkspaceFixtureClient,
     collect_google_workspace_evidence,
 )
+from security_lakehouse.connectors_intune import (
+    IntuneClient,
+    IntuneFixtureClient,
+    collect_intune_evidence,
+)
 from security_lakehouse.connectors_jira import (
     JiraClient,
     JiraFixtureClient,
@@ -205,6 +210,9 @@ GCP_PROJECT_ID_ENV = "GCP_PROJECT_ID"
 # Credentials resolve through DefaultAzureCredential (service-principal env vars
 # AZURE_CLIENT_ID/AZURE_TENANT_ID/AZURE_CLIENT_SECRET, managed identity, CLI).
 AZURE_SUBSCRIPTION_ID_ENV = "AZURE_SUBSCRIPTION_ID"
+# DefaultAzureCredential's own tenant variable; intune-devices reuses it as the
+# operator override for the configured tenant_id.
+AZURE_TENANT_ID_ENV = "AZURE_TENANT_ID"
 
 # Environment variables carrying the Jira Cloud site base URL and the account
 # email used for HTTP Basic read auth. The read-only API token is read from
@@ -540,6 +548,10 @@ def _build_azure(inputs: SyncInputs) -> list[dict[str, Any]]:
     return _collect_azure(fixture_dir=inputs.fixture_dir, env=inputs.env, credentials=inputs.credentials)
 
 
+def _build_intune(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_intune(fixture_dir=inputs.fixture_dir, env=inputs.env, credentials=inputs.credentials)
+
+
 def _build_jira(inputs: SyncInputs) -> list[dict[str, Any]]:
     return _collect_jira(
         fixture_dir=inputs.fixture_dir,
@@ -613,6 +625,7 @@ REGISTRY: dict[str, ConnectorBuilder] = {
     "gcp-posture": _build_gcp,
     "azure-posture": _build_azure,
     "jira-ticketing": _build_jira,
+    "intune-devices": _build_intune,
 }
 
 
@@ -925,6 +938,26 @@ def _collect_azure(
     except RuntimeError:
         client = AzureCliClient(subscription_id)
     return collect_azure_evidence(client)
+
+
+def _collect_intune(
+    *,
+    fixture_dir: str | Path | None,
+    env: dict[str, str],
+    credentials: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    tenant_id = env.get(AZURE_TENANT_ID_ENV) or str((credentials or {}).get("tenant_id") or "").strip()
+    if fixture_dir:
+        return collect_intune_evidence(
+            IntuneFixtureClient(fixture_dir, tenant_id=tenant_id or "00000000-0000-0000-0000-000000000000")
+        )
+    if not tenant_id:
+        raise ValueError(
+            "intune-devices sync requires --fixture-dir, a configured tenant_id, or "
+            f"{AZURE_TENANT_ID_ENV}, plus a DefaultAzureCredential identity granted the Microsoft Graph "
+            "application permission DeviceManagementManagedDevices.Read.All"
+        )
+    return collect_intune_evidence(IntuneClient(tenant_id))
 
 
 def _collect_jira(

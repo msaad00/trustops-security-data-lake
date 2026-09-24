@@ -85,7 +85,7 @@ Connect → Sync → Evaluate → Remediate → Review → Share → Prove
 | Remediate           | **Good**    | Tasks, evidence requests, workflow canvas with approvals      |
 | Audit review        | **Good**    | Audit room, readiness API, access reviews, executive PDF      |
 | Share & prove       | **Good**    | Trust-center shares, snapshots, hash chain, auditor redaction |
-| Personnel / devices | **Partial** | IdP + access reviews audit strip; no native HRIS/MDM          |
+| Personnel / devices | **Partial** | Intune device posture; IdP + access reviews; no native HRIS   |
 | Policy program      | **Good**    | Template library + employee attestation MVP shipped           |
 | SaaS polish         | **Good**    | Trust Home, audit room SSE, saved views, tags, drill-down     |
 

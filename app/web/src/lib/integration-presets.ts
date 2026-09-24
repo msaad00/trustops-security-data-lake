@@ -60,6 +60,22 @@ const PRESETS: Record<string, IntegrationPreset> = {
       "No Azure password or client secret is stored in TrustOps.",
     ],
   },
+  "intune-devices": {
+    connectorId: "intune-devices",
+    title: "Intune devices",
+    authLabel: "Graph read-only permission",
+    badges: ["DeviceManagementManagedDevices.Read.All", "No long-lived keys"],
+    summary:
+      "Grant the TrustOps Entra app or managed identity the Graph application permission DeviceManagementManagedDevices.Read.All, then confirm the tenant. Sync reads encryption, compliance, and jailbreak state only.",
+    providerSetup:
+      "An Entra admin grants admin consent for DeviceManagementManagedDevices.Read.All on the TrustOps app registration.",
+    trustOpsInput: "Microsoft Entra tenant ID.",
+    advancedTitle: "What is collected",
+    advancedDetails: [
+      "Device ID and name, user principal name, OS and version, ownership, encryption, compliance, and jailbreak state.",
+      "Hardware identifiers (IMEI, serial, MAC), phone numbers, and admin notes are never requested.",
+    ],
+  },
   "snowflake-evidence-lake": {
     connectorId: "snowflake-evidence-lake",
     title: "Snowflake evidence lake",
