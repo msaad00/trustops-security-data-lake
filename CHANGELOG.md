@@ -3,6 +3,24 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
+## 0.2.16 - 2026-09-24
+
+- Add production SCIM 2.0 for commercial hosted tenants: per-tenant hashed
+  bearer tokens with rotation, raw `application/scim+json` responses, user
+  filters, PUT/PATCH in the shapes Okta and Entra ID send, soft delete that
+  keeps the audit trail, and Groups whose membership maps to TrustOps roles
+  through `TRUSTOPS_SCIM_ROLE_MAP`.
+- Add Stripe billing for commercial hosted tenants: Stripe Checkout and the
+  customer portal, signature-verified and idempotent webhooks that re-read the
+  current subscription, plan tier driven by the subscription price, and a
+  past-due grace period followed by read-only access (data and reads kept).
+- Add a Databricks evidence-lake reader (preview) over Unity Catalog views via
+  the SQL Statement Execution API with OAuth M2M, plus a bootstrap SQL script;
+  live-workspace verification is pending.
+- NIST SP 800-53 mappings that duplicate a human-reviewed FedRAMP Moderate
+  mapping now inherit that review (attestable 254 -> 350 of 2,021), and NIST AI
+  RMF titles use the official NIST AI 100-1 subcategory statements.
+
 ## 0.2.15 - 2026-09-24
 
 - Add the full NIST SP 800-53 Rev 5.2.0 catalog (1,014 active controls and
