@@ -3,6 +3,34 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
+## 0.2.15 - 2026-09-24
+
+- Add the full NIST SP 800-53 Rev 5.2.0 catalog (1,014 active controls and
+  enhancements, 20 families) generated from a pinned official OSCAL commit,
+  with LOW/MODERATE/HIGH/PRIVACY baseline tags, and the NIST Risk Management
+  Framework (SP 800-37 Rev 2, all 47 tasks). Both are source-reconciled and
+  proposed, not human-reviewed.
+- Add CIS Controls v8.1 at the control level (all 18 controls) and a governed
+  CCF family taxonomy (`controls/families.json`, 21 families with NIST 800-53
+  and CIS crosswalks) replacing a catch-all family.
+- Add proposed CCF mappings that raise evaluatable coverage for ISO 27001
+  Annex A (11 → 43 of 93), NIST AI RMF (10 → 20), and NIST CSF 2.0 (29 → 46);
+  attestable (reviewed) coverage is unchanged.
+- Cite PCI DSS v4.0.1 across all 12 principal requirements via versioned
+  control successors; document why SOC 1 stays planned (no official control
+  catalog).
+- Add Microsoft Intune device-posture and BambooHR, Rippling, and Workday
+  (RaaS) employment-record connectors with a minimal PII boundary, and an
+  offboarding check that flags terminated employees whose Okta or Google
+  Workspace account can still sign in.
+- Let installed packages register connector catalog metadata through a
+  `trustops.connector_catalog` entry-point group.
+- Fix: readiness no longer treats proposed mappings as reviewed; framework
+  coverage reports reviewed identifier mappings separately from
+  source-cited ones; the review queue no longer lends a crosswalk citation to
+  title-theme mappings; OAuth connectors (including `identity-provider`) can be
+  enabled from the console; `controls/families.json` ships in the wheel.
+
 ## 0.2.14 - 2026-09-23
 
 - Export OSCAL Component Definition and Assessment Results (NIST's

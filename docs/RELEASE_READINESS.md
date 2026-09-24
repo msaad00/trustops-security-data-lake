@@ -1,9 +1,10 @@
 # Release readiness
 
-TrustOps **0.2.14** adds OSCAL export, third-party connector registration via
-Python entry points, outbound event webhooks, and converts most framework
-packs to a data-driven manifest format. See [the changelog](../CHANGELOG.md)
-for release scope.
+TrustOps **0.2.15** adds the full NIST SP 800-53 Rev 5 catalog and NIST RMF
+tasks, CIS Controls v8.1 with a governed CCF family taxonomy, deeper proposed
+framework mappings, PCI DSS v4.0.1, and HRIS/MDM connectors (Intune, BambooHR,
+Rippling, Workday) with an HR ↔ identity-provider offboarding check. See [the
+changelog](../CHANGELOG.md) for release scope.
 
 ## Release gates
 
