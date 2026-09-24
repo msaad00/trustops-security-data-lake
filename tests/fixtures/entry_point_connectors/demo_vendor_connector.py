@@ -22,6 +22,18 @@ from typing import Any
 
 from security_lakehouse.connector_runner import SyncInputs
 
+# Tests load these by entry-point string ("demo_vendor_connector:NAME"), which
+# static analysis cannot see; __all__ declares them as the module's API.
+__all__ = [
+    "CATALOG_ENTRY",
+    "CONNECTOR_ID",
+    "OVERBROAD_CATALOG_ENTRY",
+    "PRIMARY_LAKE_CATALOG_ENTRY",
+    "build_demo_vendor",
+    "catalog_entry",
+    "raising_catalog_entry",
+]
+
 CONNECTOR_ID = "demo-vendor-evidence"
 
 
