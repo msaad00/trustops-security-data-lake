@@ -20,3 +20,6 @@ class PackControlSpec:
     asset_types: tuple[str, ...]
     source_url: str
     official_source_ref: str
+    # NIST SP 800-53 baseline membership (low/moderate/high/privacy); empty for
+    # frameworks without baselines.
+    baselines: tuple[str, ...] = ()

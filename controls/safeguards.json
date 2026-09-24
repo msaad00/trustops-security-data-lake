@@ -685,6 +685,270 @@
           "framework_id": "cmmc-2-level2",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-12",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-14",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-17",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-17.3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-17.4",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-19",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-22",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-6",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-6.1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-6.10",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-6.2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-6.5",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-6.7",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-6.9",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AU-9.4",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CP-2.8",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CP-6.3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CP-7.2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-11",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-2.1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-2.12",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-2.2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-2.8",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-4",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-4.4",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-5",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-5.1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-5.2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-5.6",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-6",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-8",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-8.1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-8.2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PE-5",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PS-6",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-RA-5.5",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SA-9.2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SC-7.3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SC-7.7",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SC-7.8",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -772,6 +1036,18 @@
           "framework_id": "fedramp-moderate",
           "role": "equivalent",
           "review_status": "reviewed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-2.1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-2.2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -1009,6 +1285,66 @@
         {
           "control_id": "PCI-DSS-3",
           "framework_id": "pci-dss-v4",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-17.2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-18.1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-19.5",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CP-9.8",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-7",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SC-12",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SC-13",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SC-28",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SC-28.1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SC-8.1",
+          "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
         }
@@ -1262,6 +1598,72 @@
           "framework_id": "fedramp-moderate",
           "role": "equivalent",
           "review_status": "reviewed"
+        },
+        {
+          "control_id": "NIST-800-53-AU-6",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-17.1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CA-7",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CA-7.4",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CM-8.3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PE-13.1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PE-6.1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SI-4",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SI-4.5",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SI-5",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SI-7.7",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -1540,6 +1942,54 @@
           "framework_id": "hipaa-security-rule",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AU-2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AU-12",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AU-3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AU-4",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AU-5",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AU-6.3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AU-7",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AU-8",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -1733,6 +2183,72 @@
           "framework_id": "fedramp-moderate",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CM-3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CA-3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CM-10",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CM-3.2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CM-5",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CM-6",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CM-7",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CM-9",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PL-10",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PL-11",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SR-11.2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -1869,6 +2385,36 @@
           "framework_id": "pci-dss-v4",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-RA-5",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-RA-5.2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SI-2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SI-2.2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SI-3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -1988,6 +2534,24 @@
           "framework_id": "hipaa-security-rule",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SA-4",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SR-5",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SR-6",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -2103,6 +2667,30 @@
           "framework_id": "fedramp-moderate",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-RA-2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-RA-3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-RA-3.1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SR-2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -2211,6 +2799,36 @@
           "framework_id": "fedramp-moderate",
           "role": "equivalent",
           "review_status": "reviewed"
+        },
+        {
+          "control_id": "NIST-800-53-CP-10",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CP-10.2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CP-6",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CP-7",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CP-9",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -2543,6 +3161,54 @@
         {
           "control_id": "FEDRAMP-IR-8",
           "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IR-2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IR-3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IR-4",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IR-4.1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IR-5",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IR-6",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IR-7",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IR-8",
+          "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
         }
@@ -3000,6 +3666,126 @@
           "framework_id": "soc2",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AT-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AU-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CA-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CA-6",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CM-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CP-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IA-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-IR-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-MA-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-MP-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PE-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PL-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PL-4",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PS-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-RA-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SA-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SC-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SI-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SR-1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -3118,6 +3904,48 @@
         {
           "control_id": "FEDRAMP-SR-11.1",
           "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AT-2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST SP 800-171 Rev. 2",
+            "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf",
+            "sha256": "298bdbfcf6a4890a564b225c893230a0b32b2e69e3b98dd898aaeb1d544c5e12",
+            "locator": "Appendix D, Table D-2, requirement 3.2.1 maps to AT-2"
+          }
+        },
+        {
+          "control_id": "NIST-800-53-AT-3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST SP 800-171 Rev. 2",
+            "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf",
+            "sha256": "298bdbfcf6a4890a564b225c893230a0b32b2e69e3b98dd898aaeb1d544c5e12",
+            "locator": "Appendix D, Table D-2, requirement 3.2.2 maps to AT-3"
+          }
+        },
+        {
+          "control_id": "NIST-800-53-AT-4",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CP-3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SR-11.1",
+          "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
         }
@@ -3274,6 +4102,72 @@
           "framework_id": "iso-27017-2015",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-MP-2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-MP-3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-MP-4",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-MP-5",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-MP-6",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PE-14",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PE-16",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PE-2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PE-3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PE-6",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PE-8",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -3335,6 +4229,36 @@
           "framework_id": "fedramp-moderate",
           "role": "equivalent",
           "review_status": "reviewed"
+        },
+        {
+          "control_id": "NIST-800-53-SA-10",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SA-11",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SA-15",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SA-22",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SA-3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": ["cloud_policy", "cloud_resource", "repo", "service"]
@@ -3444,6 +4368,54 @@
         {
           "control_id": "ISO27017-9.1.2",
           "framework_id": "iso-27017-2015",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-18",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-18.3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PE-4",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SC-10",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SC-23",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SC-5",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SC-7",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SC-8",
+          "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
         }
@@ -3691,6 +4663,24 @@
             "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
             "locator": "NIST CSF 2.0 Core, Appendix A, ID.AM (Asset Management): ID.AM-01 through ID.AM-05 and ID.AM-07"
           }
+        },
+        {
+          "control_id": "NIST-800-53-CM-2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CM-8",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SA-5",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -3770,6 +4760,30 @@
           "framework_id": "fedramp-moderate",
           "role": "equivalent",
           "review_status": "reviewed"
+        },
+        {
+          "control_id": "NIST-800-53-AU-11",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CM-2.3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SI-12",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SR-12",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -3859,6 +4873,12 @@
           "framework_id": "fedramp-moderate",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-5",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -3895,6 +4915,12 @@
         {
           "control_id": "FEDRAMP-MA-2",
           "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-MA-2",
+          "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
         }
@@ -3936,6 +4962,12 @@
           "framework_id": "fedramp-moderate",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-7",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": [
@@ -3972,6 +5004,12 @@
         {
           "control_id": "FEDRAMP-MA-3",
           "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-MA-3",
+          "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
         }
@@ -4013,6 +5051,12 @@
           "framework_id": "fedramp-moderate",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SA-8",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": ["cloud_policy", "cloud_resource", "service"]
@@ -4044,6 +5088,12 @@
         {
           "control_id": "FEDRAMP-AC-8",
           "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-AC-8",
+          "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
         }
@@ -4082,6 +5132,12 @@
         {
           "control_id": "FEDRAMP-PE-17",
           "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PE-17",
+          "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
         }
@@ -4123,6 +5179,18 @@
           "framework_id": "fedramp-moderate",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PS-4",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-PS-5",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": ["audit_log", "service"]
@@ -4154,6 +5222,12 @@
         {
           "control_id": "FEDRAMP-CA-2",
           "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CA-2",
+          "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
         }
@@ -4189,6 +5263,12 @@
           "framework_id": "fedramp-moderate",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SC-4",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": ["cloud_policy", "cloud_resource", "service"]
@@ -4220,6 +5300,12 @@
         {
           "control_id": "FEDRAMP-SC-2",
           "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SC-2",
+          "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
         }
@@ -4261,6 +5347,18 @@
           "framework_id": "fedramp-moderate",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CM-7.1",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CM-7.2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": ["cloud_policy", "cloud_resource", "service"]
@@ -4294,6 +5392,12 @@
           "framework_id": "fedramp-moderate",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-RA-3",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed"
         }
       ],
       "asset_types": ["audit_log", "service"]
@@ -4325,6 +5429,12 @@
         {
           "control_id": "FEDRAMP-SI-3",
           "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-SI-3",
+          "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
         }
@@ -4366,6 +5476,18 @@
             "sha256": "fc63bcd61715d0181dd8e85998b1e6201ae3515fc6626102101cab1841e11ec6",
             "locator": "Chapter 3, AU-2(e), review and update the event types selected for logging"
           }
+        },
+        {
+          "control_id": "NIST-800-53-AU-2",
+          "framework_id": "nist-800-53-rev5",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST SP 800-53 Rev. 5",
+            "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-53r5.pdf",
+            "sha256": "fc63bcd61715d0181dd8e85998b1e6201ae3515fc6626102101cab1841e11ec6",
+            "locator": "Chapter 3, AU-2(e), review and update the event types selected for logging"
+          }
         }
       ],
       "asset_types": ["audit_log", "host", "service"]
@@ -4397,6 +5519,12 @@
         {
           "control_id": "FEDRAMP-CM-7.5",
           "framework_id": "fedramp-moderate",
+          "role": "equivalent",
+          "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-800-53-CM-7.5",
+          "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
         }

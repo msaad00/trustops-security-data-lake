@@ -5,10 +5,10 @@ Regenerate with `make coverage-doc`. `Attestable` is the auditor-defensible
 coverage (reviewed safeguard mappings); the gap to `Evaluatable` is the
 review backlog.
 
-Frameworks: 15 (13 implemented, 2 planned)
-Requirements catalogued: 942 (all source-cited)
-Evaluatable (touched by a safeguard): 559 (59.3%)
-**Attestable (reviewed safeguard mapping — what an auditor accepts): 254 (27.0%)**
+Frameworks: 17 (15 implemented, 2 planned)
+Requirements catalogued: 2003 (all source-cited)
+Evaluatable (touched by a safeguard): 741 (37.0%)
+**Attestable (reviewed safeguard mapping — what an auditor accepts): 254 (12.7%)**
 Asset types modeled: 20
 
 > `Source-cited` = the requirement has an official source link (always 100%). `Evaluatable` = a safeguard claims it (reviewed or proposed). `Attestable` = a human has confirmed the safeguard→requirement mapping — the only coverage an audit accepts. The gap between Evaluatable and Attestable is the review backlog.
@@ -25,8 +25,10 @@ Asset types modeled: 20
 | ISO/IEC 27017:2015 Cloud security controls | [ISO/IEC 27017:2015](https://www.iso.org/standard/43757.html) | implemented_full_pack | 47 | 47 | 24 | 18 | 38.3% | never pulled |
 | ISO/IEC 27701:2019 Privacy information management | [ISO/IEC 27701:2019](https://www.iso.org/standard/71670.html) | planned | 0 | 0 | 0 | 0 | 0.0% | never pulled |
 | ISO/IEC 42001:2023 AI management system | [ISO/IEC 42001:2023](https://www.iso.org/standard/42001) | implemented_full_pack | 39 | 39 | 26 | 9 | 23.1% | never pulled |
+| NIST SP 800-53 Rev 5 Security and Privacy Controls | [NIST SP 800-53 Rev 5 (OSCAL catalog, usnistgov/oscal-content)](https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final) | implemented_limited_mapping | 1014 | 1014 | 182 | 0 | 0.0% | fresh |
 | NIST AI Risk Management Framework | [NIST Artificial Intelligence Risk Management Framework (AI RMF 1.0)](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10) | implemented_full_pack | 72 | 72 | 10 | 1 | 1.4% | never pulled |
 | NIST Cybersecurity Framework (CSF) 2.0 | [NIST Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework) | implemented_limited_mapping | 106 | 106 | 29 | 6 | 5.7% | never pulled |
+| NIST Risk Management Framework (SP 800-37 Rev 2) | [NIST SP 800-37 Rev. 2](https://csrc.nist.gov/pubs/sp/800/37/r2/final) | implemented_limited_mapping | 47 | 47 | 0 | 0 | 0.0% | fresh |
 | PCI DSS v4.0.1 Payment Card Industry Data Security Standard | [PCI Security Standards Council - PCI DSS v4.0.1](https://www.pcisecuritystandards.org/document_library/?category=pcidss) | implemented_limited_mapping | 12 | 12 | 12 | 3 | 25.0% | never pulled |
 | SOC 1 Type II (ICFR) | [AICPA SOC 1 Reporting on Controls at a Service Organization](https://www.aicpa-cima.com/topic/audit-assurance/audit-and-assurance-greater-than-soc-2) | planned | 0 | 0 | 0 | 0 | 0.0% | never pulled |
 | SOC 2 Trust Services Criteria | [AICPA & CIMA 2017 Trust Services Criteria (With Revised Points of Focus - 2022)](https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022) | implemented_full_pack | 61 | 61 | 61 | 10 | 16.4% | never pulled |
@@ -37,20 +39,20 @@ Every seeded control declares the asset types it applies to. The pipeline joins 
 
 | Asset type | Applicable controls |
 | --- | ---: |
-| `service` | 719 |
-| `audit_log` | 325 |
-| `cloud_resource` | 248 |
-| `cloud_policy` | 243 |
-| `iam_role` | 186 |
-| `data_store` | 175 |
-| `identity_user` | 146 |
+| `service` | 1590 |
+| `audit_log` | 716 |
+| `cloud_resource` | 601 |
+| `cloud_policy` | 596 |
+| `iam_role` | 376 |
+| `identity_user` | 336 |
+| `host` | 318 |
+| `identity_group` | 316 |
+| `okta_user` | 316 |
+| `data_store` | 202 |
+| `container_image` | 189 |
+| `repo` | 188 |
 | `ai_model` | 126 |
-| `identity_group` | 126 |
-| `okta_user` | 126 |
 | `ai_agent` | 119 |
-| `host` | 113 |
-| `container_image` | 89 |
-| `repo` | 88 |
 | `s3_bucket` | 66 |
 | `identity_account` | 61 |
 | `user` | 4 |

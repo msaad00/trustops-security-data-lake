@@ -13,11 +13,12 @@ TrustOps ships **source-linked** framework packs: local control IDs, short inter
 
 Validation lives in `validate_catalog()` (`src/security_lakehouse/catalog.py`) and `tests/test_framework_implementation_status.py`.
 
-## Shipped today (13 implemented)
+## Shipped today (15 implemented)
 
 See [FRAMEWORK_COVERAGE.md](./FRAMEWORK_COVERAGE.md) for the live matrix. Current implemented frameworks:
 
 - SOC 2, NIST AI RMF, ISO 27001, ISO 27017, ISO 42001, NIST CSF 2.0
+- NIST SP 800-53 Rev 5 (full catalog, baseline-tagged), NIST RMF (SP 800-37 Rev 2)
 - FedRAMP Moderate, CMMC 2 Level 2, CIS AWS Foundations
 - GDPR, HIPAA Security Rule, EU AI Act, PCI DSS v4.0.1 (limited mapping: all 12 principal requirements)
 

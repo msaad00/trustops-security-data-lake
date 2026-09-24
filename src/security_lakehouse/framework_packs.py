@@ -56,6 +56,20 @@ PACK_SCOPE = "framework_packs_full_soc2_nist_fedramp_cis_iso_plus_seed"
 
 REVIEWED_BY = "internal-trust-team"
 REVIEWED_DATE = "2026-06-30"
+# Packs whose identifier mappings are generated from a pinned official source
+# and have not been human-reviewed; rows stay ``proposed`` until promoted.
+PROPOSED_SOURCE_FRAMEWORKS = frozenset({"nist-csf-2.0", "nist-800-53-rev5", "nist-rmf-800-37r2"})
+NIST_800_53_SOURCE = "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final"
+NIST_RMF_SOURCE = "https://csrc.nist.gov/pubs/sp/800/37/r2/final"
+RMF_STEP_RISK_DOMAIN = {
+    "P": "governance",
+    "C": "risk-management",
+    "S": "governance",
+    "I": "controls-operations",
+    "A": "risk-management",
+    "R": "risk-management",
+    "M": "monitoring",
+}
 
 SOC2_SOURCE = (
     "https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022"
@@ -480,6 +494,66 @@ def iso_42001_2023_specs() -> list[PackControlSpec]:
     return pack_from_manifest(PACK_DATA_DIR / "iso_42001_2023.json", transform=_iso_42001_row_transform)
 
 
+def _nist_800_53_row_transform(row: PackManifestRow) -> PackControlSpec:
+    article_id = row.id
+    risk = nist_family_risk_domain(article_id)
+    return PackControlSpec(
+        control_id=f"NIST-800-53-{article_id}",
+        framework_id="nist-800-53-rev5",
+        framework="NIST SP 800-53 Rev 5",
+        framework_ref=f"NIST SP 800-53 Rev 5 {article_id}",
+        article_id=article_id,
+        title=f"{article_id} — {row.title}",
+        risk_domain=risk,
+        owner=_soc2_owner(risk),
+        evaluation_rule=_soc2_evaluation_rule(risk),
+        evidence_requirement=(
+            f"Current evidence supports NIST SP 800-53 Rev 5 control {article_id} "
+            "with reviewed mappings and fresh operational proof."
+        ),
+        asset_types=_soc2_assets(risk),
+        source_url=NIST_800_53_SOURCE,
+        official_source_ref="nist-800-53-rev5",
+        baselines=tuple(row.extra.get("baselines") or ()),
+    )
+
+
+def nist_800_53_rev5_specs() -> list[PackControlSpec]:
+    """Every active NIST SP 800-53 Rev 5 control and enhancement (1,014 at 5.2.0).
+
+    Generated from the pinned official OSCAL catalog by
+    ``tools/sync_nist_800_53.py``; each row carries its LOW/MODERATE/HIGH/PRIVACY
+    baseline membership.
+    """
+    return pack_from_manifest(PACK_DATA_DIR / "nist_800_53_rev5_catalog.json", transform=_nist_800_53_row_transform)
+
+
+def _nist_rmf_row_transform(row: PackManifestRow) -> PackControlSpec:
+    task_id = row.id
+    risk = RMF_STEP_RISK_DOMAIN[task_id[0]]
+    step = str(row.extra.get("step") or "")
+    return PackControlSpec(
+        control_id=f"NIST-RMF-{task_id}",
+        framework_id="nist-rmf-800-37r2",
+        framework="NIST RMF (SP 800-37 Rev 2)",
+        framework_ref=f"NIST SP 800-37 Rev 2 Task {task_id}",
+        article_id=task_id,
+        title=f"{step} {task_id} — {row.title}"[:240],
+        risk_domain=risk,
+        owner=_soc2_owner(risk),
+        evaluation_rule=_soc2_evaluation_rule(risk),
+        evidence_requirement=f"Current evidence shows RMF task {task_id} ({step} step) is performed and recorded.",
+        asset_types=_soc2_assets(risk),
+        source_url=NIST_RMF_SOURCE,
+        official_source_ref="nist-rmf-800-37r2",
+    )
+
+
+def nist_rmf_800_37r2_specs() -> list[PackControlSpec]:
+    """All 47 NIST Risk Management Framework tasks (SP 800-37 Rev 2), by step."""
+    return pack_from_manifest(PACK_DATA_DIR / "nist_rmf_800_37r2.json", transform=_nist_rmf_row_transform)
+
+
 PACK_BUILDERS = {
     "soc2": soc2_full_pack_specs,
     "nist-ai-rmf": nist_ai_rmf_specs,
@@ -490,6 +564,8 @@ PACK_BUILDERS = {
     "iso-27001-2022": iso_27001_2022_specs,
     "iso-27017-2015": iso_27017_2015_specs,
     "iso-42001-2023": iso_42001_2023_specs,
+    "nist-800-53-rev5": nist_800_53_rev5_specs,
+    "nist-rmf-800-37r2": nist_rmf_800_37r2_specs,
 }
 
 from security_lakehouse.limited_packs import LIMITED_PACK_BUILDERS  # noqa: E402
@@ -509,7 +585,7 @@ def pack_control_row(spec: PackControlSpec) -> JsonObject:
         "evaluation_rule": spec.evaluation_rule,
         "frequency": "continuous",
         "implementation_status": "implemented_limited_mapping"
-        if spec.framework_id == "nist-csf-2.0"
+        if spec.framework_id in PROPOSED_SOURCE_FRAMEWORKS
         else "implemented",
         "version": "1.0.0",
         "valid_from": REVIEWED_DATE,
@@ -522,11 +598,12 @@ def pack_control_row(spec: PackControlSpec) -> JsonObject:
         "framework_ref": spec.framework_ref,
         "source_url": spec.source_url,
         "mapping_rationale": f"Pack mapping: control identifier matches {spec.framework_ref} verbatim.",
-        "reviewed_by": None if spec.framework_id == "nist-csf-2.0" else REVIEWED_BY,
-        "review_status": "proposed" if spec.framework_id == "nist-csf-2.0" else "reviewed",
-        "reviewed_date": None if spec.framework_id == "nist-csf-2.0" else REVIEWED_DATE,
+        "reviewed_by": None if spec.framework_id in PROPOSED_SOURCE_FRAMEWORKS else REVIEWED_BY,
+        "review_status": "proposed" if spec.framework_id in PROPOSED_SOURCE_FRAMEWORKS else "reviewed",
+        "reviewed_date": None if spec.framework_id in PROPOSED_SOURCE_FRAMEWORKS else REVIEWED_DATE,
         "signal_source": "silver/normalized_events.jsonl",
         "asset_types": list(spec.asset_types),
+        **({"nist_baselines": list(spec.baselines)} if spec.framework_id == "nist-800-53-rev5" else {}),
     }
 
 
@@ -539,9 +616,11 @@ def pack_mapping_row(spec: PackControlSpec) -> JsonObject:
                 "article_id": spec.article_id,
                 "title": spec.title[:120],
                 "official_source_url": spec.source_url,
-                "reviewed_by": None if spec.framework_id == "nist-csf-2.0" else REVIEWED_BY,
-                "review_status": "proposed" if spec.framework_id == "nist-csf-2.0" else "reviewed",
-                "reviewed_at": None if spec.framework_id == "nist-csf-2.0" else f"{REVIEWED_DATE}T00:00:00Z",
+                "reviewed_by": None if spec.framework_id in PROPOSED_SOURCE_FRAMEWORKS else REVIEWED_BY,
+                "review_status": "proposed" if spec.framework_id in PROPOSED_SOURCE_FRAMEWORKS else "reviewed",
+                "reviewed_at": None
+                if spec.framework_id in PROPOSED_SOURCE_FRAMEWORKS
+                else f"{REVIEWED_DATE}T00:00:00Z",
                 "rationale": f"Pack mapping to {spec.framework_ref}.",
             }
         ],

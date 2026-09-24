@@ -291,10 +291,26 @@ def test_readiness_view_has_one_row_per_framework() -> None:
 
 
 def test_readiness_blocks_on_missing_source_pulled() -> None:
-    # The shipped registry has source_sha256=null, so every framework should
-    # report source_pulled=False as the earliest unmet gate.
-    view = build_readiness_view()
+    # Frameworks without a pinned source digest report source_pulled=False as
+    # the earliest unmet gate.
+    from security_lakehouse.catalog import load_framework_registry
+
+    unpinned = {fid for fid, fw in load_framework_registry().items() if not fw.get("source_sha256")}
+    view = [row for row in build_readiness_view() if row["framework_id"] in unpinned]
+    assert view
     for row in view:
         assert row["gates"]["source_pulled"] is False
         assert row["stage"] == "source_pulled"
+        assert row["is_ready"] is False
+
+
+def test_proposed_mappings_do_not_close_the_mapped_gate() -> None:
+    # nist-800-53-rev5 has a pinned source but only proposed (unreviewed)
+    # mappings, so it must stop at "mapped", never reach coverage_verified.
+    rows = {row["framework_id"]: row for row in build_readiness_view()}
+    for framework_id in ("nist-800-53-rev5", "nist-rmf-800-37r2"):
+        row = rows[framework_id]
+        assert row["gates"]["source_pulled"] is True
+        assert row["gates"]["mapped"] is False
+        assert row["stage"] == "mapped"
         assert row["is_ready"] is False

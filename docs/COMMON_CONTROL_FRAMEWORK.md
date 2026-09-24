@@ -14,9 +14,9 @@ between them is the mapping-review backlog.
 
 ## Why the catalog alone is not a CCF
 
-`controls/catalog.json` is framework-first: 942 requirements, each carrying its
-own `framework_id` **and its own `evidence_requirement`** — 942 distinct evidence
-statements for 942 controls, none shared.
+`controls/catalog.json` is framework-first: 2003 requirements, each carrying its
+own `framework_id` **and its own `evidence_requirement`** — 2003 distinct evidence
+statements for 2003 controls, none shared.
 
 That last number is the whole problem. Because no two requirements share an
 evidence statement, answering SOC 2, ISO 27001, and FedRAMP means answering the
@@ -68,7 +68,7 @@ collapsing them would overstate both coverage and failure.
 
 ```
 $ security-lakehouse frameworks safeguards --format table
-44 safeguards map 559 of 942 requirements (59.3%) — 45 reviewed (4.8%), 514 proposed
+44 safeguards map 741 of 2003 requirements (37.0%) — 254 reviewed (12.7%), 487 proposed
 ```
 
 A mapping is **reviewed** once a human has confirmed the requirements are the
@@ -90,24 +90,26 @@ cannot become a false certification claim.
 
 | Framework           | Requirements | Mapped |    Pct |
 | ------------------- | -----------: | -----: | -----: |
+| cmmc-2-level2       |          110 |    110 | 100.0% |
 | eu-ai-act-2024-1689 |           15 |     15 | 100.0% |
 | hipaa-security-rule |           18 |     18 | 100.0% |
 | pci-dss-v4          |           12 |     12 | 100.0% |
 | soc2                |           61 |     61 | 100.0% |
-| cmmc-2-level2       |          110 |    110 | 100.0% |
 | cis_aws             |           62 |     49 |  79.0% |
 | iso-42001-2023      |           39 |     26 |  66.7% |
-| gdpr-2016-679       |           20 |     12 |  60.0% |
 | fedramp-moderate    |          287 |    182 |  63.4% |
+| gdpr-2016-679       |           20 |     12 |  60.0% |
 | iso-27017-2015      |           47 |     24 |  51.1% |
-| iso-27001-2022      |           93 |     11 |  11.8% |
-| nist-ai-rmf         |           72 |     10 |  13.9% |
 | nist-csf-2.0        |          106 |     29 |  27.4% |
+| nist-800-53-rev5    |         1014 |    182 |  17.9% |
+| nist-ai-rmf         |           72 |     10 |  13.9% |
+| iso-27001-2022      |           93 |     11 |  11.8% |
+| nist-rmf-800-37r2   |           47 |      0 |   0.0% |
 
 ### What a safeguard applies to
 
 Evaluation targets resources, not frameworks. The catalog already records
-`asset_types` on all 942 requirements — `iam_role`, `data_store`, `ai_model`,
+`asset_types` on all 2003 requirements — `iam_role`, `data_store`, `ai_model`,
 `audit_log`, `cloud_resource` and 15 more — and a safeguard carries the union of
 what its members apply to. `safeguards_for_asset_type("iam_role")` returns the
 11 safeguards that bear on IAM roles.
@@ -119,7 +121,7 @@ drifting as curation moves.
 
 ## The real ceiling is the catalog, not the curation
 
-156 of 942 titles still contain identifier-only or boilerplate descriptions:
+156 of 2003 titles still contain identifier-only or boilerplate descriptions:
 90 ISO 27001 entries and 66 NIST AI RMF entries. Licensed standards need short
 internal summaries or licensed access; their text must not be copied into this
 public repository.

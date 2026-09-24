@@ -7,18 +7,20 @@ frameworks stay seed-and-expand.
 
 ## Full packs (100% ID coverage)
 
-| Pack                        | Framework ID          | Controls                                                | Official source                                                                                                                                    |
-| --------------------------- | --------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| SOC 2 Common Criteria       | `soc2`                | **33** (CC1.1–CC9.2)                                    | [AICPA TSC 2017/2022](https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022)                |
-| SOC 2 TSC extensions        | `soc2`                | **28** supplemental (A1, C1, PI1, P1–P8) — **61 total** | same                                                                                                                                               |
-| NIST AI RMF 1.0             | `nist-ai-rmf`         | **72** (all GOVERN/MAP/MEASURE/MANAGE subcategories)    | [NIST AI RMF 1.0](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10)                                   |
-| NIST CSF 2.0 Core           | `nist-csf-2.0`        | **106** subcategories (GOVERN through RECOVER)          | [NIST Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework)                                                                            |
-| FedRAMP Moderate foundation | `fedramp-moderate`    | **287** (NIST SP 800-53 Rev 5 Moderate baseline)        | [NIST SP 800-53B](https://csrc.nist.gov/publications/detail/sp/800-53b/final)                                                                      |
-| CIS AWS Foundations v3.0    | `cis-aws` / `cis_aws` | **62** recommendations                                  | [CIS AWS Benchmark](https://www.cisecurity.org/benchmark/amazon_web_services)                                                                      |
-| CMMC 2.0 Level 2            | `cmmc-2-level2`       | **110** practices (NIST SP 800-171 Rev 2)               | [NIST SP 800-171 Rev 2](https://csrc.nist.gov/publications/detail/sp/800-171/rev-2/final) / [CMMC](https://dodcio.defense.gov/CMMC/Documentation/) |
-| ISO/IEC 27001:2022 Annex A  | `iso-27001-2022`      | **93** controls                                         | [ISO/IEC 27001:2022](https://www.iso.org/standard/27001)                                                                                           |
-| ISO/IEC 27017:2015 Cloud    | `iso-27017-2015`      | **47** clauses (40 ISO 27002 + 7 CLD)                   | [ISO/IEC 27017:2015](https://www.iso.org/standard/43757.html)                                                                                      |
-| ISO/IEC 42001:2023 Annex A  | `iso-42001-2023`      | **38** AI controls                                      | [ISO/IEC 42001:2023](https://www.iso.org/standard/42001)                                                                                           |
+| Pack                         | Framework ID          | Controls                                                                              | Official source                                                                                                                                    |
+| ---------------------------- | --------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SOC 2 Common Criteria        | `soc2`                | **33** (CC1.1–CC9.2)                                                                  | [AICPA TSC 2017/2022](https://www.aicpa-cima.com/resources/download/2017-trust-services-criteria-with-revised-points-of-focus-2022)                |
+| SOC 2 TSC extensions         | `soc2`                | **28** supplemental (A1, C1, PI1, P1–P8) — **61 total**                               | same                                                                                                                                               |
+| NIST AI RMF 1.0              | `nist-ai-rmf`         | **72** (all GOVERN/MAP/MEASURE/MANAGE subcategories)                                  | [NIST AI RMF 1.0](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10)                                   |
+| NIST CSF 2.0 Core            | `nist-csf-2.0`        | **106** subcategories (GOVERN through RECOVER)                                        | [NIST Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework)                                                                            |
+| FedRAMP Moderate foundation  | `fedramp-moderate`    | **287** (NIST SP 800-53 Rev 5 Moderate baseline)                                      | [NIST SP 800-53B](https://csrc.nist.gov/publications/detail/sp/800-53b/final)                                                                      |
+| NIST SP 800-53 Rev 5 (5.2.0) | `nist-800-53-rev5`    | **1,014** active controls + enhancements, 20 families, LOW/MODERATE/HIGH/PRIVACY tags | [NIST SP 800-53 Rev 5](https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final) (pinned OSCAL catalog)                                                  |
+| NIST RMF (SP 800-37 Rev 2)   | `nist-rmf-800-37r2`   | **47** tasks (Prepare → Monitor)                                                      | [NIST SP 800-37 Rev 2](https://csrc.nist.gov/pubs/sp/800/37/r2/final)                                                                              |
+| CIS AWS Foundations v3.0     | `cis-aws` / `cis_aws` | **62** recommendations                                                                | [CIS AWS Benchmark](https://www.cisecurity.org/benchmark/amazon_web_services)                                                                      |
+| CMMC 2.0 Level 2             | `cmmc-2-level2`       | **110** practices (NIST SP 800-171 Rev 2)                                             | [NIST SP 800-171 Rev 2](https://csrc.nist.gov/publications/detail/sp/800-171/rev-2/final) / [CMMC](https://dodcio.defense.gov/CMMC/Documentation/) |
+| ISO/IEC 27001:2022 Annex A   | `iso-27001-2022`      | **93** controls                                                                       | [ISO/IEC 27001:2022](https://www.iso.org/standard/27001)                                                                                           |
+| ISO/IEC 27017:2015 Cloud     | `iso-27017-2015`      | **47** clauses (40 ISO 27002 + 7 CLD)                                                 | [ISO/IEC 27017:2015](https://www.iso.org/standard/43757.html)                                                                                      |
+| ISO/IEC 42001:2023 Annex A   | `iso-42001-2023`      | **38** AI controls                                                                    | [ISO/IEC 42001:2023](https://www.iso.org/standard/42001)                                                                                           |
 
 **Important:** 100% here means **every official criterion ID is seeded, mapped,
 and evaluable in TrustOps**. It does not mean certification, audit opinion, or
@@ -29,6 +31,16 @@ from NIST SP 800-53 Rev 5 with FedRAMP overlays. This pack seeds the **NIST
 Moderate baseline (287 controls)** — the authoritative OSCAL control set that
 forms the FedRAMP Moderate foundation. FedRAMP-specific parameter overlays ship
 in a follow-up.
+
+**NIST SP 800-53 note:** `nist-800-53-rev5` is the full Rev 5.2.0 catalog (every
+active control and enhancement; 182 withdrawn are excluded), generated from a
+pinned commit of `usnistgov/oscal-content` by `tools/sync_nist_800_53.py`. Each row
+carries `nist_baselines` (LOW 149, MODERATE 287, HIGH 370, PRIVACY 96), and the
+MODERATE set is test-pinned to equal the `fedramp-moderate` pack. Every CCF
+safeguard mapped to a FedRAMP control is also mapped to the identical 800-53
+control, as **proposed**. Identifier mappings are source-reconciled, not
+human-reviewed, so the framework stays `implemented_limited_mapping` and the
+readiness view stops it at the `mapped` gate until review.
 
 ## Sync packs into the catalog
 

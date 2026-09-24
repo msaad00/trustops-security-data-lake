@@ -17,6 +17,7 @@ def test_alternate_work_site_safeguards_use_the_nist_800_171_crosswalk() -> None
     } == {
         ("CMMC-3.10.6", "cmmc-2-level2", "proposed"),
         ("FEDRAMP-PE-17", "fedramp-moderate", "proposed"),
+        ("NIST-800-53-PE-17", "nist-800-53-rev5", "proposed"),
     }
     assert safeguard["mapping_source"] == {
         "name": "NIST SP 800-171 Rev. 2",
@@ -40,10 +41,10 @@ def test_alternate_work_site_safeguards_close_two_gaps_without_overstating_attes
     coverage = coverage_by_framework()
 
     assert coverage["safeguards"] == without_crosswalk["safeguards"] + 1
-    assert coverage["covered"] == without_crosswalk["covered"] + 2
-    assert coverage["uncovered"] == without_crosswalk["uncovered"] - 2
+    assert coverage["covered"] == without_crosswalk["covered"] + 3
+    assert coverage["uncovered"] == without_crosswalk["uncovered"] - 3
     assert coverage["reviewed"] == without_crosswalk["reviewed"]
-    assert coverage["proposed"] == without_crosswalk["proposed"] + 2
+    assert coverage["proposed"] == without_crosswalk["proposed"] + 3
     assert (
         coverage["frameworks"]["cmmc-2-level2"]["covered"]
         == without_crosswalk["frameworks"]["cmmc-2-level2"]["covered"] + 1

@@ -214,6 +214,7 @@ def test_review_report_groups_frameworks_categories_and_source_gaps() -> None:
     assert set(report["source_backed_by_framework"]) == {
         "cmmc-2-level2",
         "fedramp-moderate",
+        "nist-800-53-rev5",
         "nist-csf-2.0",
         "nist-ai-rmf",
     }

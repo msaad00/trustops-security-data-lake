@@ -61,6 +61,38 @@
       "sync_cadence_days": 90
     },
     {
+      "framework_id": "nist-800-53-rev5",
+      "family": "security",
+      "name": "NIST SP 800-53 Rev 5 Security and Privacy Controls",
+      "version": "Release 5.2.0",
+      "effective_date": "2025-08-27",
+      "superseded_by": null,
+      "official_source_name": "NIST SP 800-53 Rev 5 (OSCAL catalog, usnistgov/oscal-content)",
+      "official_source_url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final",
+      "source_sha256": "01f37cf90ea99d92242c936cbfbdebcc338eef1f71454e2acac36cc56e9bc062",
+      "pulled_at": "2026-09-24",
+      "implementation_status": "implemented_limited_mapping",
+      "copyright_guardrail": "NIST SP 800-53 is a U.S. Government work not subject to copyright in the United States. Pack stores control IDs, official control titles, and baseline membership from the pinned OSCAL catalog.",
+      "sync_cadence_days": 90,
+      "coverage_boundary": "All 1,014 active controls and enhancements (20 families) are catalogued with LOW/MODERATE/HIGH/PRIVACY baseline tags. Identifier mappings and safeguard mappings are proposed until reviewed; this is catalog coverage, not an authorization."
+    },
+    {
+      "framework_id": "nist-rmf-800-37r2",
+      "family": "security",
+      "name": "NIST Risk Management Framework (SP 800-37 Rev 2)",
+      "version": "Revision 2",
+      "effective_date": "2018-12-20",
+      "superseded_by": null,
+      "official_source_name": "NIST SP 800-37 Rev. 2",
+      "official_source_url": "https://csrc.nist.gov/pubs/sp/800/37/r2/final",
+      "source_sha256": "4f75e1136bb905a654f1bcd9eefefb4108f47597276ee5eec0688f6d96f6a01d",
+      "pulled_at": "2026-09-24",
+      "implementation_status": "implemented_limited_mapping",
+      "copyright_guardrail": "NIST SP 800-37 is a U.S. Government work not subject to copyright in the United States. Pack stores the 47 RMF task identifiers and task statements.",
+      "sync_cadence_days": 180,
+      "coverage_boundary": "All 47 RMF tasks across the Prepare, Categorize, Select, Implement, Assess, Authorize, and Monitor steps are catalogued. RMF tasks are process evidence; mappings are proposed until reviewed."
+    },
+    {
       "framework_id": "hipaa-security-rule",
       "family": "sector",
       "name": "HIPAA Security Rule (45 CFR Parts 160, 162, 164)",

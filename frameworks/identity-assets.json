@@ -35,6 +35,20 @@
       "asset_path": null,
       "restriction": "The FedRAMP name and logo are permission-gated GSA marks and are not bundled."
     },
+    "nist-800-53-rev5": {
+      "official_name": "NIST SP 800-53 Rev. 5",
+      "official_source_url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final",
+      "display_mode": "neutral_icon",
+      "asset_path": null,
+      "restriction": "NIST publishes no mark for SP 800-53; NIST does not endorse TrustOps or its control evaluations."
+    },
+    "nist-rmf-800-37r2": {
+      "official_name": "NIST Risk Management Framework (SP 800-37 Rev. 2)",
+      "official_source_url": "https://csrc.nist.gov/pubs/sp/800/37/r2/final",
+      "display_mode": "neutral_icon",
+      "asset_path": null,
+      "restriction": "NIST publishes no mark for the RMF; NIST does not endorse TrustOps or its control evaluations."
+    },
     "hipaa-security-rule": {
       "official_name": "HIPAA Security Rule",
       "official_source_url": "https://www.hhs.gov/hipaa/for-professionals/security/index.html",
