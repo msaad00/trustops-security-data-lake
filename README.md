@@ -165,7 +165,7 @@ In the console, open **Connectors → choose a source → Discover → Test → 
 No pre-existing data lake is required. For automation, use the
 [headless setup playbook](docs/playbooks/HEADLESS_CONNECTOR_SETUP.md).
 
-Sources include AWS, Azure, GCP, GitHub, GitLab, Okta, Microsoft Intune, Snowflake, and ClickHouse.
+Sources include AWS, Azure, GCP, GitHub, GitLab, Okta, Microsoft Intune, BambooHR, Snowflake, and ClickHouse.
 Check the [connector catalog](docs/CONNECTORS.md) for each integration's scope and status.
 
 No connector requires pasted long-lived cloud keys.

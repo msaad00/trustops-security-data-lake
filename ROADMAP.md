@@ -69,12 +69,12 @@ Prioritized enhancements from product audit (v0.2.0). Track in GitHub issues as 
 
 The four gaps with no shipped implementation, each scoped in its own issue:
 
-| Epic                                                                      | Area       | Gap it closes                                                              |
-| ------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------- |
-| [#611](https://github.com/msaad00/trustops-security-data-lake/issues/611) | Frameworks | ISO 27701 pack (license review); SOC 1 stays planned (no official catalog) |
-| [#608](https://github.com/msaad00/trustops-security-data-lake/issues/608) | Connectors | HRIS personnel connectors (MDM shipped as `intune-devices`)                |
-| [#609](https://github.com/msaad00/trustops-security-data-lake/issues/609) | Connectors | Databricks adapter — `docs/HERO_DATA_LAKES.md` sets its own acceptance bar |
-| [#610](https://github.com/msaad00/trustops-security-data-lake/issues/610) | Platform   | Stripe billing + production SCIM — the last unchecked P5 box               |
+| Epic                                                                      | Area       | Gap it closes                                                                |
+| ------------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------- |
+| [#611](https://github.com/msaad00/trustops-security-data-lake/issues/611) | Frameworks | ISO 27701 pack (license review); SOC 1 stays planned (no official catalog)   |
+| [#608](https://github.com/msaad00/trustops-security-data-lake/issues/608) | Connectors | Workday + Rippling HRIS, HR↔IdP offboarding check (Intune, BambooHR shipped) |
+| [#609](https://github.com/msaad00/trustops-security-data-lake/issues/609) | Connectors | Databricks adapter — `docs/HERO_DATA_LAKES.md` sets its own acceptance bar   |
+| [#610](https://github.com/msaad00/trustops-security-data-lake/issues/610) | Platform   | Stripe billing + production SCIM — the last unchecked P5 box                 |
 
 #611 is the cheapest to start: `docs/FRAMEWORK_EXPANSION_PLAN.md` already carries the
 rules and the contributor checklist, so it is execution rather than design.

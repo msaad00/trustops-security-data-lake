@@ -103,6 +103,7 @@ ships.
 | `azure-posture`             | Azure IAM/posture       | executable                    |
 | `jira-ticketing`            | Jira tickets/workflows  | executable                    |
 | `intune-devices`            | Intune device posture   | executable                    |
+| `bamboohr-personnel`        | BambooHR employment     | executable                    |
 | `snowflake-evidence-lake`   | governed evidence lake  | executable existing-lake read |
 | `clickhouse-telemetry-lake` | telemetry analytics     | executable existing-lake read |
 | `object-storage-evidence`   | object evidence store   | executable existing-lake read |
@@ -533,3 +534,40 @@ IMEI, serial number, MAC addresses, phone number, user display name, and admin
 notes are never requested. `userPrincipalName` is kept as the join key to
 identity-provider users. Pagination follows `@odata.nextLink` only while it stays on
 `https://graph.microsoft.com`, so the bearer token is never sent elsewhere.
+
+## BambooHR: employment records
+
+`bamboohr-personnel` reads BambooHR's `employee` dataset
+(`POST https://{company_domain}.bamboohr.com/api/v2/datasets/employee/data`,
+paged 500 rows at a time) and emits one current-state
+`hris.personnel.employment` event per employee. The event shape is vendor-neutral
+(`security_lakehouse/hris.py`), so later HRIS connectors emit the same record.
+
+| Requested field            | Lands as            |
+| -------------------------- | ------------------- |
+| `eeid`                     | `employee_id`       |
+| `employeeNumber`           | `employee_number`   |
+| `email` (work email)       | `work_email`        |
+| `employmentStatus`         | `employment_status` |
+| `hireDate`                 | `hire_date`         |
+| `terminationDate`          | `termination_date`  |
+| `jobInformationDepartment` | `department`        |
+| `supervisorEid`            | `manager_id`        |
+
+`is_terminated` is true when the termination date is on or before the collection
+date. Events feed FEDRAMP-PS-4, FEDRAMP-PS-5, ISO27001-A.6.5, CMMC-3.9.2, and
+HIPAA-164.308(a)(3) as personnel-lifecycle evidence. They do not yet prove that
+access was removed on termination; that needs the planned HR ↔ IdP correlation.
+
+**PII boundary.** Only the fields above are requested. Names, dates of birth,
+government IDs, compensation, addresses, and personal contact details are never
+requested. Personnel attributes stay in raw/bronze (silver and gold carry ids and
+status only) and are marked `data_sensitivity: confidential`, so auditor and
+public-share roles see them redacted.
+
+**Credentials.** BambooHR API keys inherit the permissions of the user who created
+them. Create a dedicated user whose access level can view only these fields, and
+store its key as a secret reference (`credential_ref`, default
+`BAMBOOHR_API_KEY`; a `<NAME>_FILE` variant is preferred). `company_domain` must be
+the bare subdomain (`acme` for `acme.bamboohr.com`); anything else is rejected, so
+the authenticated request can never be pointed at another host.

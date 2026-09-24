@@ -34,6 +34,11 @@ from security_lakehouse.connectors_azure import (
     AzureFixtureClient,
     collect_azure_evidence,
 )
+from security_lakehouse.connectors_bamboohr import (
+    BambooHRClient,
+    BambooHRFixtureClient,
+    collect_bamboohr_evidence,
+)
 from security_lakehouse.connectors_clickhouse import (
     DEFAULT_DATABASE as CLICKHOUSE_DEFAULT_DATABASE,
 )
@@ -552,6 +557,10 @@ def _build_intune(inputs: SyncInputs) -> list[dict[str, Any]]:
     return _collect_intune(fixture_dir=inputs.fixture_dir, env=inputs.env, credentials=inputs.credentials)
 
 
+def _build_bamboohr(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_bamboohr(fixture_dir=inputs.fixture_dir, env=inputs.env, credentials=inputs.credentials)
+
+
 def _build_jira(inputs: SyncInputs) -> list[dict[str, Any]]:
     return _collect_jira(
         fixture_dir=inputs.fixture_dir,
@@ -626,6 +635,7 @@ REGISTRY: dict[str, ConnectorBuilder] = {
     "azure-posture": _build_azure,
     "jira-ticketing": _build_jira,
     "intune-devices": _build_intune,
+    "bamboohr-personnel": _build_bamboohr,
 }
 
 
@@ -958,6 +968,25 @@ def _collect_intune(
             "application permission DeviceManagementManagedDevices.Read.All"
         )
     return collect_intune_evidence(IntuneClient(tenant_id))
+
+
+def _collect_bamboohr(
+    *,
+    fixture_dir: str | Path | None,
+    env: dict[str, str],
+    credentials: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    creds = credentials or {}
+    company_domain = str(creds.get("company_domain") or "").strip()
+    if fixture_dir:
+        return collect_bamboohr_evidence(BambooHRFixtureClient(fixture_dir, company_domain=company_domain or "fixture"))
+    api_key = _resolve_provider_secret(str(creds.get("credential_ref") or ""), "BAMBOOHR_API_KEY", env)
+    if not company_domain or not api_key:
+        raise ValueError(
+            "bamboohr-personnel sync requires --fixture-dir, or a configured company_domain plus an API key "
+            "for a dedicated read-only BambooHR user (credential_ref naming the secret, or BAMBOOHR_API_KEY)"
+        )
+    return collect_bamboohr_evidence(BambooHRClient(company_domain, api_key=api_key))
 
 
 def _collect_jira(
