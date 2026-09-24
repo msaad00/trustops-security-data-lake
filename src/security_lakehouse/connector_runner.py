@@ -16,6 +16,7 @@ import sys
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -105,6 +106,12 @@ from security_lakehouse.ingestion.merge import dedupe_by_key
 from security_lakehouse.ingestion.watermark import read_watermark, write_watermark
 from security_lakehouse.io import read_jsonl, write_jsonl
 from security_lakehouse.lake_scale import resolve_materialize_strategy, write_lake_scale_state
+from security_lakehouse.offboarding import (
+    OFFBOARDING_CONNECTOR_ID,
+    correlate_offboarding,
+    grace_days_from_env,
+    is_offboarding_input,
+)
 from security_lakehouse.pipeline import normalize_raw_events
 from security_lakehouse.repo_governance import sync_repo_governance
 from security_lakehouse.sinks import land_if_configured
@@ -296,6 +303,8 @@ def run_connector_sync(
         )
         raw_path = lake / CONNECTOR_RAW_FILE
         _upsert_raw_events(raw_path, rows, connector_id=connector_id, write_mode=write_mode)
+        if any(is_offboarding_input(row) for row in rows):
+            _refresh_offboarding(raw_path, env=dict(os.environ))
         cursor = _advance_watermark(lake, connector_id, rows, write_mode=write_mode)
         if materialize:
             _materialize_after_sync(lake, raw_path, connector_id=connector_id)
@@ -1275,6 +1284,32 @@ def _upsert_raw_events(
             raise ValueError("connector raw evidence validation failed:\n" + "\n".join(errors))
         write_jsonl(raw_path, merged)
     return merged
+
+
+def _refresh_offboarding(raw_path: Path, *, env: dict[str, str]) -> None:
+    """Rebuild the HR-termination ↔ IdP-account rows as a snapshot.
+
+    Read and write happen under the same lock as ``_upsert_raw_events`` so two
+    concurrent HR/IdP syncs cannot each derive from a view missing the other.
+    """
+    lock_path = raw_path.with_suffix(".lock")
+    with open(lock_path, "a") as lock_fd:
+        fcntl.flock(lock_fd.fileno(), fcntl.LOCK_EX)
+        existing = read_jsonl(raw_path) if raw_path.exists() else []
+        now = datetime.now(UTC)
+        derived = correlate_offboarding(
+            (row for row in existing if row.get("connector_id") != OFFBOARDING_CONNECTOR_ID),
+            as_of=now.date(),
+            collected_at=now,
+            grace_days=grace_days_from_env(env),
+        )
+        for row in derived:
+            row["connector_id"] = OFFBOARDING_CONNECTOR_ID
+        merged = [row for row in existing if row.get("connector_id") != OFFBOARDING_CONNECTOR_ID] + derived
+        errors = validate_raw_events(merged)
+        if errors:
+            raise ValueError("offboarding evidence validation failed:\n" + "\n".join(errors))
+        write_jsonl(raw_path, merged)
 
 
 def _duration_ms(start: float) -> int:
