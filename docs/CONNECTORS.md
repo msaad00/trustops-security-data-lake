@@ -556,8 +556,8 @@ paged 500 rows at a time) and emits one current-state
 
 `is_terminated` is true when the termination date is on or before the collection
 date. Events feed FEDRAMP-PS-4, FEDRAMP-PS-5, ISO27001-A.6.5, CMMC-3.9.2, and
-HIPAA-164.308(a)(3) as personnel-lifecycle evidence. They do not yet prove that
-access was removed on termination; that needs the planned HR ↔ IdP correlation.
+HIPAA-164.308(a)(3) as personnel-lifecycle evidence. Whether access was actually
+removed is answered by the [offboarding check](#offboarding-check-hr-terminations--idp-accounts).
 
 **PII boundary.** Only the fields above are requested. Names, dates of birth,
 government IDs, compensation, addresses, and personal contact details are never
@@ -571,3 +571,28 @@ store its key as a secret reference (`credential_ref`, default
 `BAMBOOHR_API_KEY`; a `<NAME>_FILE` variant is preferred). `company_domain` must be
 the bare subdomain (`acme` for `acme.bamboohr.com`); anything else is rejected, so
 the authenticated request can never be pointed at another host.
+
+## Offboarding check: HR terminations ↔ IdP accounts
+
+After any sync that writes HR employment rows (`hris.personnel.employment`, from
+any HRIS connector) or identity-provider user rows (`okta-identity`,
+`google-workspace-identity`), TrustOps rebuilds one derived row per terminated
+employee. It joins HR records to IdP accounts on the lower-cased work email and
+writes the result as a snapshot under the derived id `hris-idp-offboarding`
+(source `trustops-correlation`), so a fixed account clears on the next sync.
+
+| Outcome                    | Meaning                                                        | Status     |
+| -------------------------- | -------------------------------------------------------------- | ---------- |
+| `active_after_termination` | An account can still sign in after the grace period            | open, high |
+| `within_grace_period`      | Still active, but inside the grace period                      | observed   |
+| `deprovisioned`            | Every matched account is disabled                              | pass       |
+| `no_idp_account_matched`   | No IdP account shares the work email (never counted as a pass) | observed   |
+
+Rows map to SOC2-CC6.2, FEDRAMP-PS-4, FEDRAMP-AC-2.3, ISO27001-A.5.18,
+ISO27001-A.6.5, and CMMC-3.9.2, each of which fails on an open violation. Nothing
+is produced until both HR and IdP evidence exist, and future-dated terminations are
+ignored. The grace period defaults to 1 day; set
+`TRUSTOPS_OFFBOARDING_GRACE_DAYS` (0–365) to change it. Attributes (including the
+work email and matched account ids) are marked `data_sensitivity: confidential`.
+The derive step runs under the same raw-file lock as connector writes, so
+concurrent HR and IdP syncs cannot each derive from a partial view.
