@@ -69,12 +69,8 @@ def _create_user(client: TestClient, token: str, email: str, **extra: object) ->
 
 def test_admin_manages_hashed_per_tenant_tokens(env) -> None:
     client, keys, _app = env
-    assert (
-        client.post(
-            "/api/v1/platform/scim/tokens", json={"name": "x"}, headers=_bearer(keys["acme:read_only"])
-        ).status_code
-        == HTTPStatus.FORBIDDEN
-    )
+    resp = client.post("/api/v1/platform/scim/tokens", json={"name": "x"}, headers=_bearer(keys["acme:read_only"]))
+    assert resp.status_code == HTTPStatus.FORBIDDEN
     created = client.post("/api/v1/platform/scim/tokens", json={"name": "okta"}, headers=_bearer(keys["acme:admin"]))
     body = created.json()["data"]
     assert body["token"].startswith("tscim_")
@@ -108,7 +104,8 @@ def test_token_scopes_every_operation_to_its_own_tenant(env) -> None:
     listed = client.get(f"{SCIM}/Users", headers=_bearer(globex)).json()
     assert all(r["userName"].endswith("@globex.test") for r in listed["Resources"])
     assert client.get(f"{SCIM}/Users/{user['id']}", headers=_bearer(globex)).status_code == HTTPStatus.NOT_FOUND
-    assert client.delete(f"{SCIM}/Users/{user['id']}", headers=_bearer(globex)).status_code == HTTPStatus.NOT_FOUND
+    resp = client.delete(f"{SCIM}/Users/{user['id']}", headers=_bearer(globex))
+    assert resp.status_code == HTTPStatus.NOT_FOUND
     # The same userName can exist independently in another tenant.
     _create_user(client, globex, "shared@example.com")
 
@@ -118,10 +115,8 @@ def test_admin_token_management_is_tenant_scoped(env) -> None:
     acme = client.post("/api/v1/platform/scim/tokens", json={"name": "a"}, headers=_bearer(keys["acme:admin"]))
     token_id = acme.json()["data"]["id"]
     assert client.get("/api/v1/platform/scim/tokens", headers=_bearer(keys["globex:admin"])).json()["data"] == []
-    assert (
-        client.delete(f"/api/v1/platform/scim/tokens/{token_id}", headers=_bearer(keys["globex:admin"])).status_code
-        == HTTPStatus.NOT_FOUND
-    )
+    resp = client.delete(f"/api/v1/platform/scim/tokens/{token_id}", headers=_bearer(keys["globex:admin"]))
+    assert resp.status_code == HTTPStatus.NOT_FOUND
 
 
 def test_bad_or_missing_bearer_is_a_scim_401(env) -> None:
@@ -223,7 +218,9 @@ def test_delete_is_a_soft_delete_that_hides_the_user_and_can_be_reprovisioned(en
     token = _scim_token(client, keys["acme:admin"])
     user = _create_user(client, token, "leaver@acme.test")
 
-    assert client.delete(f"{SCIM}/Users/{user['id']}", headers=_bearer(token)).status_code == HTTPStatus.NO_CONTENT
+    resp = client.delete(f"{SCIM}/Users/{user['id']}", headers=_bearer(token))
+
+    assert resp.status_code == HTTPStatus.NO_CONTENT
     assert client.get(f"{SCIM}/Users/{user['id']}", headers=_bearer(token)).status_code == HTTPStatus.NOT_FOUND
     listed = client.get(f'{SCIM}/Users?filter=userName eq "leaver@acme.test"', headers=_bearer(token)).json()
     assert listed["totalResults"] == 0
@@ -281,7 +278,8 @@ def test_group_membership_drives_role_through_the_role_map(env, monkeypatch: pyt
         },
     )
     assert client.get(f"{SCIM}/Users/{user['id']}", headers=_bearer(token)).json()["trustopsRole"] == "admin"
-    assert client.delete(f"{SCIM}/Groups/{group_id}", headers=_bearer(token)).status_code == HTTPStatus.NO_CONTENT
+    resp = client.delete(f"{SCIM}/Groups/{group_id}", headers=_bearer(token))
+    assert resp.status_code == HTTPStatus.NO_CONTENT
     with session_scope(app.state.sessionmaker) as session:
         assert session.scalars(select(User.role).where(User.id == user["id"])).one() == "read_only"
 
@@ -314,10 +312,8 @@ def test_disabled_returns_501(env, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("TRUSTOPS_SCIM_ENABLED", "0")
     assert client.get(f"{SCIM}/Users", headers=_bearer("x")).status_code == HTTPStatus.NOT_IMPLEMENTED
     assert client.get(f"{SCIM}/Groups", headers=_bearer("x")).status_code == HTTPStatus.NOT_IMPLEMENTED
-    assert (
-        client.post("/api/v1/platform/scim/tokens", json={"name": "x"}, headers=_bearer(keys["acme:admin"])).status_code
-        == HTTPStatus.NOT_IMPLEMENTED
-    )
+    resp = client.post("/api/v1/platform/scim/tokens", json={"name": "x"}, headers=_bearer(keys["acme:admin"]))
+    assert resp.status_code == HTTPStatus.NOT_IMPLEMENTED
 
 
 def test_scim_migration_round_trips(tmp_path: Path) -> None:

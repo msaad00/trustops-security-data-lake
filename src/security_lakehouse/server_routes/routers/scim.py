@@ -21,6 +21,7 @@ from security_lakehouse.auth.dependencies import get_session, require_scope
 from security_lakehouse.auth.rbac import Identity
 from security_lakehouse.commercial import scim as scim_settings
 from security_lakehouse.commercial import scim_provision as scim
+from security_lakehouse.commercial.limits import UsageLimitError
 
 SCIM_MEDIA_TYPE = "application/scim+json"
 ERROR_SCHEMA = "urn:ietf:params:scim:api:messages:2.0:Error"
@@ -78,9 +79,9 @@ def _handle(
     except scim.ScimError as exc:
         session.rollback()
         return _scim_error(exc.status, exc.detail, exc.scim_type)
-    except ValueError as exc:  # e.g. plan user limit
+    except UsageLimitError:
         session.rollback()
-        return _scim_error(status.HTTP_400_BAD_REQUEST, str(exc), "invalidValue")
+        return _scim_error(status.HTTP_403_FORBIDDEN, "the tenant's plan user limit has been reached")
     session.commit()
     if result is None:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -261,12 +262,17 @@ def build_scim_router() -> APIRouter:
             )
         try:
             body = await request.json()
-            name = str(body.get("name") or "") if isinstance(body, dict) else ""
-            row, plaintext = scim.create_scim_token(
-                session, tenant_id=identity.tenant_id, name=name, created_by=identity.email
+        except ValueError:
+            body = None
+        name = str(body.get("name") or "") if isinstance(body, dict) else ""
+        if not name.strip():
+            return JSONResponse(
+                api_v1.error_envelope("bad_request", "token name is required"),
+                status_code=status.HTTP_400_BAD_REQUEST,
             )
-        except (ValueError, scim.ScimError) as exc:
-            return JSONResponse(api_v1.error_envelope("bad_request", str(exc)), status_code=status.HTTP_400_BAD_REQUEST)
+        row, plaintext = scim.create_scim_token(
+            session, tenant_id=identity.tenant_id, name=name, created_by=identity.email
+        )
         session.commit()
         # The plaintext token is returned exactly once and never stored.
         return JSONResponse(
