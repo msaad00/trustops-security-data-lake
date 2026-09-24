@@ -76,11 +76,28 @@ def test_new_packs_are_honest_about_review_state() -> None:
     assert registry["nist-rmf-800-37r2"]["source_sha256"] == RMF["source"]["pdf_sha256"]
 
 
-def test_fedramp_safeguard_mappings_carry_to_the_same_800_53_control_as_proposed() -> None:
+def test_800_53_twins_share_the_review_state_of_the_identical_fedramp_mapping() -> None:
+    """A FedRAMP Moderate control *is* the NIST SP 800-53 control of the same id.
+
+    A human review of the FedRAMP mapping therefore reviews the identical
+    800-53 requirement. The twin inherits that review, records where it came
+    from, and must follow the original if it is ever demoted.
+    """
+    inherited = 0
     for safeguard in load_safeguards()["safeguards"]:
         satisfies = {m["control_id"]: m for m in safeguard["satisfies"]}
         for control_id in [c for c in satisfies if c.startswith("FEDRAMP-")]:
+            original = satisfies[control_id]
             twin = satisfies.get("NIST-800-53-" + control_id.removeprefix("FEDRAMP-"))
             assert twin is not None, f"{safeguard['safeguard_id']} maps {control_id} but not its 800-53 twin"
             assert twin["framework_id"] == "nist-800-53-rev5"
-            assert twin["review_status"] == "proposed"
+            assert twin["review_status"] == original["review_status"], control_id
+            if twin["review_status"] == "reviewed":
+                assert twin["review_basis"] == {
+                    "inherited_from": control_id,
+                    "reason": "identical NIST SP 800-53 Rev 5 control",
+                }
+                inherited += 1
+            else:
+                assert "review_basis" not in twin
+    assert inherited == 96
