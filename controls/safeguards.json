@@ -3293,7 +3293,7 @@
       "title": "Secure development",
       "risk_domain": "change-management",
       "objective": "Secure development practices and separation of environments are assessed apart from change control.",
-      "evidence_requirement": "Evidence for PCI DSS v4 Req 6 exists within freshness SLA.",
+      "evidence_requirement": "Evidence for PCI DSS v4.0.1 Req 6 exists within freshness SLA.",
       "evaluation_rule": "fail_when_stale_evidence",
       "frequency": "continuous",
       "owner": "engineering",

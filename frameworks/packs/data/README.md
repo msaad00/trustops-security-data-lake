@@ -19,7 +19,7 @@ for the manifest schema and the "add a new framework" workflow.
 | `iso_42001_2023.json`            | `iso-42001-2023`   |                                          **38** |
 | `gdpr_2016_679.json`             | `gdpr`             |                                          **14** |
 | `hipaa_security_rule.json`       | `hipaa`            |                                          **12** |
-| `pci_dss_v4.json`                | `pci-dss`          |                                           **9** |
+| `pci_dss_v4.json`                | `pci-dss`          |                                          **12** |
 | `eu_ai_act_2024_1689.json`       | `eu-ai-act`        |                                           **9** |
 | `evidence_connector_hints.json`  | all packs          |                                               — |
 

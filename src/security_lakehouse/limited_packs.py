@@ -91,7 +91,7 @@ def pci_dss_limited_pack_specs() -> Iterable[PackControlSpec]:
             framework_id="pci-dss-v4",
             framework="PCI DSS",
             control_id_prefix="PCI-DSS",
-            framework_ref=lambda ref: f"PCI DSS v4 Req {ref}",
+            framework_ref=lambda ref: f"PCI DSS v4.0.1 Req {ref}",
             source_url=PCI_SOURCE,
             article_id=lambda ref: f"Req-{ref}",
         ),

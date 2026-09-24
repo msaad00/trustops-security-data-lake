@@ -19,7 +19,7 @@ See [FRAMEWORK_COVERAGE.md](./FRAMEWORK_COVERAGE.md) for the live matrix. Curren
 
 - SOC 2, NIST AI RMF, ISO 27001, ISO 27017, ISO 42001, NIST CSF 2.0
 - FedRAMP Moderate, CMMC 2 Level 2, CIS AWS Foundations
-- GDPR, HIPAA Security Rule, EU AI Act, PCI DSS v4 (limited mapping)
+- GDPR, HIPAA Security Rule, EU AI Act, PCI DSS v4.0.1 (limited mapping: all 12 principal requirements)
 
 ## Planned next (registry only)
 
@@ -27,6 +27,17 @@ See [FRAMEWORK_COVERAGE.md](./FRAMEWORK_COVERAGE.md) for the live matrix. Curren
 | ---------------- | ------------------------------------------------------------------------------------------------------ | ------------------- | --------------------------------------------------------------------------------------------------------------- |
 | `iso-27701-2019` | [ISO/IEC 27701:2019](https://www.iso.org/standard/71670.html)                                          | Privacy pack        | Planned boundary is explicit in the registry; license review is required before seeding controls                |
 | `soc1`           | [AICPA SOC 1](https://www.aicpa-cima.com/topic/audit-assurance/audit-and-assurance-greater-than-soc-2) | Financial reporting | Planned boundary is explicit in the registry; requires service-specific ICFR objectives before seeding controls |
+
+### SOC 1: why it stays planned
+
+SOC 1 (SSAE 18 / AT-C 320) reports test **control objectives the service
+organization writes for its own services**; AICPA publishes no numbered SOC 1
+control catalog. Seeding one would break rule 1 below, so `soc1` stays
+`planned` with zero controls. The ICFR-relevant general controls it would test
+(control environment, logical access, change management) are already covered
+through SOC 2 common criteria CC1–CC8, which map to the COSO 2013 principles.
+A future SOC 1 surface would let a tenant author its own objectives rather
+than ship a seeded pack.
 
 ## Expansion rules (do not skip)
 
@@ -40,7 +51,7 @@ See [FRAMEWORK_COVERAGE.md](./FRAMEWORK_COVERAGE.md) for the live matrix. Curren
 
 1. Add registry row with `implementation_status` and `official_source_url`.
 2. Add pack JSON under `frameworks/packs/data/` (or extend existing pack).
-3. Run `uv run security-lakehouse frameworks validate` and refresh `docs/FRAMEWORK_COVERAGE.md`.
+3. Run `make coverage-doc`, `uv run security-lakehouse catalog lock`, then `make validate` (catalog validation + bundle-lock verify).
 4. Add `tests/test_framework_packs.py` coverage for the new pack slug.
 5. Update `docs/FRAMEWORK_PACKS.md` with evidence connector hints.
 

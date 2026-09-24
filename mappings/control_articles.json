@@ -12284,8 +12284,8 @@
           "title": "Network security controls enforced",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to PCI DSS v4 Req 1."
+          "reviewed_at": "2026-09-23T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4.0.1 Req 1."
         }
       ]
     },
@@ -12298,8 +12298,8 @@
           "title": "Log and monitor all access to system components and cardholder data",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "PCI DSS v4.0 Requirement 10 \u2014 Log and monitor all access (sub-requirements 10.1\u201310.7)."
+          "reviewed_at": "2026-09-23T00:00:00Z",
+          "rationale": "PCI DSS v4.0.1 Requirement 10 \u2014 Log and monitor all access (sub-requirements 10.1\u201310.7)."
         }
       ]
     },
@@ -12312,8 +12312,8 @@
           "title": "Test security of systems and networks regularly",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "PCI DSS v4.0 Requirement 11 \u2014 Regular testing (sub-requirements 11.1\u201311.6, vulnerability scans + pen tests)."
+          "reviewed_at": "2026-09-23T00:00:00Z",
+          "rationale": "PCI DSS v4.0.1 Requirement 11 \u2014 Regular testing (sub-requirements 11.1\u201311.6, vulnerability scans + pen tests)."
         }
       ]
     },
@@ -12326,8 +12326,8 @@
           "title": "Information security policy maintained",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to PCI DSS v4 Req 12."
+          "reviewed_at": "2026-09-23T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4.0.1 Req 12."
         }
       ]
     },
@@ -12340,8 +12340,8 @@
           "title": "Secure configurations applied",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to PCI DSS v4 Req 2."
+          "reviewed_at": "2026-09-23T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4.0.1 Req 2."
         }
       ]
     },
@@ -12354,8 +12354,8 @@
           "title": "Stored account data protected",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to PCI DSS v4 Req 3."
+          "reviewed_at": "2026-09-23T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4.0.1 Req 3."
         }
       ]
     },
@@ -12368,8 +12368,8 @@
           "title": "Transmission encryption enforced",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to PCI DSS v4 Req 4."
+          "reviewed_at": "2026-09-23T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4.0.1 Req 4."
         }
       ]
     },
@@ -12382,8 +12382,8 @@
           "title": "Malicious software protections active",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to PCI DSS v4 Req 5."
+          "reviewed_at": "2026-09-23T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4.0.1 Req 5."
         }
       ]
     },
@@ -12396,8 +12396,8 @@
           "title": "Secure development practices evidenced",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to PCI DSS v4 Req 6."
+          "reviewed_at": "2026-09-23T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4.0.1 Req 6."
         }
       ]
     },
@@ -12410,8 +12410,8 @@
           "title": "Restrict access to system components and cardholder data by business need to know",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-05-24T00:00:00Z",
-          "rationale": "PCI DSS v4.0 Requirement 7 \u2014 Restrict access by business need to know (sub-requirements 7.1\u20137.3)."
+          "reviewed_at": "2026-09-23T00:00:00Z",
+          "rationale": "PCI DSS v4.0.1 Requirement 7 \u2014 Restrict access by business need to know (sub-requirements 7.1\u20137.3)."
         }
       ]
     },
@@ -12424,8 +12424,8 @@
           "title": "User identification and authentication enforced",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to PCI DSS v4 Req 8."
+          "reviewed_at": "2026-09-23T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4.0.1 Req 8."
         }
       ]
     },
@@ -12438,8 +12438,8 @@
           "title": "Physical access to cardholder data restricted",
           "official_source_url": "https://www.pcisecuritystandards.org/document_library/?category=pcidss",
           "reviewed_by": "internal-trust-team",
-          "reviewed_at": "2026-06-30T00:00:00Z",
-          "rationale": "Pack mapping to PCI DSS v4 Req 9."
+          "reviewed_at": "2026-09-23T00:00:00Z",
+          "rationale": "Pack mapping to PCI DSS v4.0.1 Req 9."
         }
       ]
     },
