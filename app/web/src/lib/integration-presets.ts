@@ -92,6 +92,39 @@ const PRESETS: Record<string, IntegrationPreset> = {
       "Names, dates of birth, government IDs, compensation, addresses, and personal contact details are never requested.",
     ],
   },
+  "rippling-personnel": {
+    connectorId: "rippling-personnel",
+    title: "Rippling workers",
+    authLabel: "workers.read token",
+    badges: ["workers.read only", "Secret reference only"],
+    summary:
+      "Create a Rippling API token limited to the workers.read scope and store it as a secret. Sync keeps worker status, start and end dates, department, and manager; every other field is discarded before anything is stored.",
+    providerSetup:
+      "A Rippling admin creates an API token with only the workers.read scope.",
+    trustOpsInput: "The API token secret reference.",
+    advancedTitle: "What is collected",
+    advancedDetails: [
+      "Worker ID and number, work email, status, start and end dates, department ID, and manager ID.",
+      "Date of birth, gender, compensation, personal email, and all other worker fields are never stored.",
+    ],
+  },
+  "workday-personnel": {
+    connectorId: "workday-personnel",
+    title: "Workday employment report",
+    authLabel: "Integration system user",
+    badges: ["RaaS report", "Secret reference only"],
+    summary:
+      "Build a Workday custom report with the TrustOps column contract, share it with a read-only integration system user, and enter its JSON URL. Only the contract columns are stored.",
+    providerSetup:
+      "A Workday admin creates the custom report, enables it as a web service, and grants the integration system user view access.",
+    trustOpsInput:
+      "Report JSON URL, integration system user, and its password secret reference.",
+    advancedTitle: "Report column contract",
+    advancedDetails: [
+      "Employee_ID, Work_Email, Worker_Status, Hire_Date, Termination_Date, Department, Manager_ID.",
+      "Any other report column is ignored and never stored.",
+    ],
+  },
   "snowflake-evidence-lake": {
     connectorId: "snowflake-evidence-lake",
     title: "Snowflake evidence lake",

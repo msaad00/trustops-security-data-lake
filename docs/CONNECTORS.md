@@ -104,6 +104,8 @@ ships.
 | `jira-ticketing`            | Jira tickets/workflows  | executable                    |
 | `intune-devices`            | Intune device posture   | executable                    |
 | `bamboohr-personnel`        | BambooHR employment     | executable                    |
+| `rippling-personnel`        | Rippling employment     | executable                    |
+| `workday-personnel`         | Workday employment      | executable (RaaS report)      |
 | `snowflake-evidence-lake`   | governed evidence lake  | executable existing-lake read |
 | `clickhouse-telemetry-lake` | telemetry analytics     | executable existing-lake read |
 | `object-storage-evidence`   | object evidence store   | executable existing-lake read |
@@ -571,6 +573,47 @@ store its key as a secret reference (`credential_ref`, default
 `BAMBOOHR_API_KEY`; a `<NAME>_FILE` variant is preferred). `company_domain` must be
 the bare subdomain (`acme` for `acme.bamboohr.com`); anything else is rejected, so
 the authenticated request can never be pointed at another host.
+
+## Rippling: employment records
+
+`rippling-personnel` reads `GET https://rest.ripplingapis.com/workers/` (Rippling
+REST API, scope `workers.read`, cursor pages of 100 via `next_link`) and emits the
+same `hris.personnel.employment` event as BambooHR: `id` → `employee_id`, `number`,
+`work_email`, `status`, `start_date` → `hire_date`, `end_date` →
+`termination_date`, `department_id`, and `manager_id`.
+
+The workers endpoint cannot select fields, so its response can include date of
+birth, gender, compensation ids, and personal email. The connector copies only
+the fields above and discards the rest before anything is written. `next_link` is
+followed only while it stays on `https://rest.ripplingapis.com`. Store the token as
+a secret reference (`credential_ref`, default `RIPPLING_API_TOKEN`).
+
+## Workday: employment records (RaaS)
+
+Workday's public Staffing REST worker resource has no termination date or work
+email, so `workday-personnel` reads a tenant-defined custom report published as a
+web service (RaaS). Build an advanced report on workers (include terminated
+workers) with exactly these column aliases:
+
+| Column             | Content                                 |
+| ------------------ | --------------------------------------- |
+| `Employee_ID`      | Employee or contingent worker ID        |
+| `Work_Email`       | Primary work email                      |
+| `Worker_Status`    | Active / terminated status              |
+| `Hire_Date`        | Hire date (`YYYY-MM-DD`)                |
+| `Termination_Date` | Termination date, empty if none         |
+| `Department`       | Supervisory organization or cost center |
+| `Manager_ID`       | Manager's employee ID                   |
+
+Enable it as a web service, share it with a read-only integration system user,
+and configure `report_url` (the report's `…?format=json` URL), `username`, and
+the ISU password as a secret reference (`credential_ref`, default
+`WORKDAY_ISU_PASSWORD`). The URL must be https on a Workday domain
+(`*.workday.com`, `*.myworkday.com`, `*.myworkdaygov.com`), request
+`format=json`, and carry no embedded credentials. Rows are read from the
+`Report_Entry` list; other columns are ignored and never stored. The same
+PII boundary and `data_sensitivity: confidential` marking apply to all three HRIS
+connectors, and all three feed the offboarding check below.
 
 ## Offboarding check: HR terminations ↔ IdP accounts
 

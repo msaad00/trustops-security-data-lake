@@ -497,6 +497,19 @@ def _missing_required_config(
             missing.append("credential_ref")
         return missing
 
+    if connector_id == "rippling-personnel":
+        return (
+            []
+            if (_has_value(credentials, "credential_ref") or _has_value(credentials, "token"))
+            else ["credential_ref"]
+        )
+
+    if connector_id == "workday-personnel":
+        missing = [field for field in ("report_url", "username") if not _has_value(credentials, field)]
+        if not (_has_value(credentials, "credential_ref") or _has_value(credentials, "token")):
+            missing.append("credential_ref")
+        return missing
+
     if connector_id == "jira-ticketing":
         missing = []
         for field in ("base_url", "email"):
@@ -506,6 +519,13 @@ def _missing_required_config(
             missing.append("credential_ref")
         return missing
 
+    if "oauth" in credential_type:
+        # Mirrors fallbackCredentialFields in the console: client credentials
+        # have no refresh token; other OAuth shapes need one.
+        fields = ["client_id", "client_secret_ref"]
+        if "client_credentials" not in credential_type:
+            fields.append("refresh_token_ref")
+        return [field for field in fields if not _has_value(credentials, field)]
     if "token" in credential_type:
         return (
             ["credential_ref"]

@@ -459,6 +459,48 @@
       "vendor": "BambooHR",
       "description": "Employment status, hire and termination dates, department, and manager — no names or sensitive HR fields.",
       "setup_hint": "API key of a dedicated user whose access level can only view the employment fields TrustOps requests."
+    },
+    {
+      "category": "personnel",
+      "collection_mode": "direct_api_read",
+      "access_boundary": "scoped_token",
+      "evidence_types": ["personnel", "employment"],
+      "default_route": "dual",
+      "freshness_slo_minutes": 1440,
+      "is_implemented": true,
+      "production_status": "supported_connector",
+      "velocity": "low_current_state",
+      "native_connector": false,
+      "data_shape": "current_state",
+      "connector_id": "rippling-personnel",
+      "name": "Rippling Personnel",
+      "credential_type": "rippling_api_token",
+      "minimum_permissions": ["workers.read"],
+      "vendor": "Rippling",
+      "description": "Worker status, start and end dates, department, and manager; other worker fields are dropped before anything is stored.",
+      "setup_hint": "Rippling API token limited to the workers.read scope."
+    },
+    {
+      "category": "personnel",
+      "collection_mode": "direct_api_read",
+      "access_boundary": "scoped_token",
+      "evidence_types": ["personnel", "employment"],
+      "default_route": "dual",
+      "freshness_slo_minutes": 1440,
+      "is_implemented": true,
+      "production_status": "supported_connector",
+      "velocity": "low_current_state",
+      "native_connector": false,
+      "data_shape": "current_state",
+      "connector_id": "workday-personnel",
+      "name": "Workday Personnel",
+      "credential_type": "workday_isu_basic",
+      "minimum_permissions": [
+        "Get access to a TrustOps employment custom report (RaaS) via an integration system user"
+      ],
+      "vendor": "Workday",
+      "description": "Employment status, hire and termination dates, department, and manager from a tenant-defined RaaS report.",
+      "setup_hint": "Custom report with the TrustOps column contract, shared with a read-only integration system user."
     }
   ]
 }

@@ -78,16 +78,16 @@ Connect → Sync → Evaluate → Remediate → Review → Share → Prove
    └─ AWS/Azure/GCP/Snowflake/GitHub/Okta + catalog long tail
 ```
 
-| Loop stage          | Maturity    | Notes                                                           |
-| ------------------- | ----------- | --------------------------------------------------------------- |
-| Connect & sync      | **Strong**  | Executable runners for core cloud/IdP; catalog for long tail    |
-| Evaluate            | **Strong**  | Lake-backed tests, not connector pass/fail widgets only         |
-| Remediate           | **Good**    | Tasks, evidence requests, workflow canvas with approvals        |
-| Audit review        | **Good**    | Audit room, readiness API, access reviews, executive PDF        |
-| Share & prove       | **Good**    | Trust-center shares, snapshots, hash chain, auditor redaction   |
-| Personnel / devices | **Partial** | Intune device posture; BambooHR employment records; IdP reviews |
-| Policy program      | **Good**    | Template library + employee attestation MVP shipped             |
-| SaaS polish         | **Good**    | Trust Home, audit room SSE, saved views, tags, drill-down       |
+| Loop stage          | Maturity    | Notes                                                                            |
+| ------------------- | ----------- | -------------------------------------------------------------------------------- |
+| Connect & sync      | **Strong**  | Executable runners for core cloud/IdP; catalog for long tail                     |
+| Evaluate            | **Strong**  | Lake-backed tests, not connector pass/fail widgets only                          |
+| Remediate           | **Good**    | Tasks, evidence requests, workflow canvas with approvals                         |
+| Audit review        | **Good**    | Audit room, readiness API, access reviews, executive PDF                         |
+| Share & prove       | **Good**    | Trust-center shares, snapshots, hash chain, auditor redaction                    |
+| Personnel / devices | **Partial** | Intune device posture; BambooHR/Rippling/Workday employment records; IdP reviews |
+| Policy program      | **Good**    | Template library + employee attestation MVP shipped                              |
+| SaaS polish         | **Good**    | Trust Home, audit room SSE, saved views, tags, drill-down                        |
 
 ## Console surface (28 routes)
 
@@ -129,7 +129,7 @@ Rough comparison vs mature managed GRC SaaS on capability + UX reality:
 | Framework drill-down       | Good            | **Shipped** — control → rule → evidence → source                    |
 | Live SSE updates           | Good            | **Shipped** — posture + audit-readiness stream                      |
 | Integrations long tail     | Behind          | AWS/Azure/GCP/Snowflake/GitHub/GitLab/Okta live; #22/#23 repo graph |
-| HRIS / devices / personnel | Partial         | Intune + BambooHR; HR↔IdP offboarding check (Okta, Google)          |
+| HRIS / devices / personnel | Partial         | Intune + BambooHR/Rippling/Workday; HR↔IdP offboarding check        |
 | Billing / full SCIM        | Behind          | P5 hosted scaffold                                                  |
 | Premium onboarding polish  | Behind          | Wizard shipped; polish incremental                                  |
 
@@ -184,14 +184,14 @@ marks in-console; open connector catalog; read-only posture. Intune (MDM) and Ba
 
 ### 3. Compliance OS convenience
 
-| Feature                   | Mature SaaS  | TrustOps                                            |
-| ------------------------- | ------------ | --------------------------------------------------- |
-| Policy employee sign-off  | Native       | **MVP shipped** — publish + acknowledgment tracking |
-| Personnel tracking        | Native       | **BambooHR employment records** + IdP reviews       |
-| Auditor marketplace       | Yes          | BYO auditor + trust share                           |
-| Device inventory          | Integrations | **Intune** encryption + compliance per device       |
-| Billing / self-serve SaaS | Native       | Pricing/signup scaffold; Stripe not shipped         |
-| SCIM lifecycle            | Full         | Scaffold + env bearer (PR #345)                     |
+| Feature                   | Mature SaaS  | TrustOps                                                               |
+| ------------------------- | ------------ | ---------------------------------------------------------------------- |
+| Policy employee sign-off  | Native       | **MVP shipped** — publish + acknowledgment tracking                    |
+| Personnel tracking        | Native       | **HRIS records (BambooHR, Rippling, Workday)** + IdP offboarding check |
+| Auditor marketplace       | Yes          | BYO auditor + trust share                                              |
+| Device inventory          | Integrations | **Intune** encryption + compliance per device                          |
+| Billing / self-serve SaaS | Native       | Pricing/signup scaffold; Stripe not shipped                            |
+| SCIM lifecycle            | Full         | Scaffold + env bearer (PR #345)                                        |
 
 ### 4. Visual analytics ([#18](https://github.com/msaad00/trustops-security-data-lake/issues/18))
 

@@ -78,6 +78,11 @@ from security_lakehouse.connectors_okta import (
     collect_okta_evidence,
     collect_okta_system_log_evidence,
 )
+from security_lakehouse.connectors_rippling import (
+    RipplingClient,
+    RipplingFixtureClient,
+    collect_rippling_evidence,
+)
 from security_lakehouse.connectors_runtime import (
     RuntimeGatewayClient,
     RuntimeGatewayFixtureClient,
@@ -101,6 +106,11 @@ from security_lakehouse.connectors_snowflake import (
     SnowflakeFixtureClient,
     _probe_query_params,
     collect_snowflake_evidence,
+)
+from security_lakehouse.connectors_workday import (
+    WorkdayReportClient,
+    WorkdayReportFixtureClient,
+    collect_workday_evidence,
 )
 from security_lakehouse.ingestion.merge import dedupe_by_key
 from security_lakehouse.ingestion.watermark import read_watermark, write_watermark
@@ -570,6 +580,14 @@ def _build_bamboohr(inputs: SyncInputs) -> list[dict[str, Any]]:
     return _collect_bamboohr(fixture_dir=inputs.fixture_dir, env=inputs.env, credentials=inputs.credentials)
 
 
+def _build_rippling(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_rippling(fixture_dir=inputs.fixture_dir, env=inputs.env, credentials=inputs.credentials)
+
+
+def _build_workday(inputs: SyncInputs) -> list[dict[str, Any]]:
+    return _collect_workday(fixture_dir=inputs.fixture_dir, env=inputs.env, credentials=inputs.credentials)
+
+
 def _build_jira(inputs: SyncInputs) -> list[dict[str, Any]]:
     return _collect_jira(
         fixture_dir=inputs.fixture_dir,
@@ -645,6 +663,8 @@ REGISTRY: dict[str, ConnectorBuilder] = {
     "jira-ticketing": _build_jira,
     "intune-devices": _build_intune,
     "bamboohr-personnel": _build_bamboohr,
+    "rippling-personnel": _build_rippling,
+    "workday-personnel": _build_workday,
 }
 
 
@@ -996,6 +1016,44 @@ def _collect_bamboohr(
             "for a dedicated read-only BambooHR user (credential_ref naming the secret, or BAMBOOHR_API_KEY)"
         )
     return collect_bamboohr_evidence(BambooHRClient(company_domain, api_key=api_key))
+
+
+def _collect_rippling(
+    *,
+    fixture_dir: str | Path | None,
+    env: dict[str, str],
+    credentials: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    if fixture_dir:
+        return collect_rippling_evidence(RipplingFixtureClient(fixture_dir))
+    creds = credentials or {}
+    token = _resolve_provider_secret(str(creds.get("credential_ref") or ""), "RIPPLING_API_TOKEN", env)
+    if not token:
+        raise ValueError(
+            "rippling-personnel sync requires --fixture-dir, or a Rippling API token with the workers.read scope "
+            "(credential_ref naming the secret, or RIPPLING_API_TOKEN)"
+        )
+    return collect_rippling_evidence(RipplingClient(token=token))
+
+
+def _collect_workday(
+    *,
+    fixture_dir: str | Path | None,
+    env: dict[str, str],
+    credentials: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    creds = credentials or {}
+    report_url = str(creds.get("report_url") or "").strip()
+    if fixture_dir:
+        return collect_workday_evidence(WorkdayReportFixtureClient(fixture_dir, report_url=report_url))
+    username = str(creds.get("username") or "").strip()
+    password = _resolve_provider_secret(str(creds.get("credential_ref") or ""), "WORKDAY_ISU_PASSWORD", env)
+    if not report_url or not username or not password:
+        raise ValueError(
+            "workday-personnel sync requires --fixture-dir, or a configured report_url and username plus the "
+            "integration system user's password (credential_ref naming the secret, or WORKDAY_ISU_PASSWORD)"
+        )
+    return collect_workday_evidence(WorkdayReportClient(report_url, username=username, password=password))
 
 
 def _collect_jira(
