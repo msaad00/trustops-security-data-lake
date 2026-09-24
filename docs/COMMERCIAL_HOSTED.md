@@ -1,10 +1,9 @@
 # Commercial Hosted Features
 
-TrustOps OSS/self-hosted builds include **scaffolding** for managed SaaS capabilities:
-tenant email invites, outbound mail adapters, and SCIM 2.0 provisioning hooks.
-
-Full Stripe/invoicing billing is operator-managed in v0.2.x; this doc covers
-pricing tiers, self-serve signup scaffold, usage limits, invites, email, and SCIM hooks.
+Commercial hosted builds add managed-SaaS capabilities on top of OSS: pricing
+tiers, self-serve signup, usage limits, tenant email invites, outbound mail
+adapters, SCIM 2.0 provisioning, and Stripe billing. All of it stays off unless
+`TRUSTOPS_COMMERCIAL_HOSTED=1`.
 
 ## Enable hosted mode
 
@@ -113,12 +112,65 @@ mapped group gets `TRUSTOPS_SCIM_DEFAULT_ROLE`. Without a role map, groups are
 stored but never change roles. This has been tested against the RFC 7644 shapes
 Okta and Entra ID send, not yet against a live IdP tenant.
 
+## Billing (Stripe)
+
+Self-serve plans are bought through Stripe Checkout and managed in the Stripe
+customer portal, so card data never reaches TrustOps. TrustOps calls the Stripe
+REST API directly (no SDK) and keeps no card or bank data.
+
+```bash
+export TRUSTOPS_BILLING_ENABLED=1
+export TRUSTOPS_STRIPE_SECRET_KEY_FILE=/run/secrets/stripe_secret_key   # or TRUSTOPS_STRIPE_SECRET_KEY
+export TRUSTOPS_STRIPE_WEBHOOK_SECRET_FILE=/run/secrets/stripe_whsec     # comma-separated while rolling
+export TRUSTOPS_STRIPE_PRICE_STARTER=price_...
+export TRUSTOPS_STRIPE_PRICE_TEAM=price_...
+export TRUSTOPS_STRIPE_PRICE_BUSINESS=price_...
+export TRUSTOPS_PUBLIC_URL=https://trustops.example.com                 # Checkout/portal return URLs
+export TRUSTOPS_BILLING_GRACE_DAYS=7                                     # past-due grace before read-only
+```
+
+Enterprise stays sales-led: it has no self-serve price, and tenants that never
+subscribed (for example invoiced contracts) are not restricted.
+
+| Method | Path                             | Auth        | Description                                                  |
+| ------ | -------------------------------- | ----------- | ------------------------------------------------------------ |
+| `GET`  | `/api/v1/billing`                | any member  | Plan, subscription status, access state, period end          |
+| `POST` | `/api/v1/billing/checkout`       | admin       | `{"plan": "team"}` → Stripe Checkout URL (subscription mode) |
+| `POST` | `/api/v1/billing/portal`         | admin       | Stripe customer portal URL (payment method, plan, cancel)    |
+| `POST` | `/api/v1/billing/stripe/webhook` | Stripe sig. | Register in Stripe for the events below                      |
+
+Webhook events handled: `checkout.session.completed`,
+`customer.subscription.created`/`updated`/`deleted`/`paused`/`resumed`,
+`invoice.paid`, `invoice.payment_failed`.
+
+- **Verification.** `Stripe-Signature` is checked with HMAC-SHA256 over
+  `timestamp.body` (`v1` only, constant-time, 5-minute tolerance).
+- **Idempotency.** Event ids are recorded after successful processing, so
+  redeliveries apply once; a processing failure answers 5xx and Stripe retries.
+- **Ordering.** Stripe does not guarantee event order, so each event re-reads
+  the customer's latest subscription from the API and applies that, never the
+  event snapshot.
+- **Plan state.** The subscription's price sets the tenant's `plan_tier`, which
+  the usage limits above enforce.
+
+| Subscription status                                  | Access                                                 |
+| ---------------------------------------------------- | ------------------------------------------------------ |
+| `active`, `trialing`, none                           | full                                                   |
+| `past_due`, `incomplete`                             | full for `TRUSTOPS_BILLING_GRACE_DAYS`, then read-only |
+| `canceled`, `unpaid`, `incomplete_expired`, `paused` | read-only                                              |
+
+Read-only keeps every record and all reads; write scopes are removed at
+authentication, so every write endpoint answers 403 with a pointer to the
+billing portal. Admins can always reach `/api/v1/billing/*`, and SCIM keeps
+working so identity-provider offboarding never stops.
+
 ## Database
 
 Migration `0012_tenant_invites` adds the `tenant_invites` table.
 Migration `0013_tenant_plan_tier` adds `tenants.plan_tier` for hosted limits.
 Migration `0017_scim` adds `scim_tokens`, `scim_groups`, `scim_group_members`, and
 `users.scim_external_id` / `users.scim_deleted_at`.
+Migration `0018_billing` adds `tenant_billing` and `stripe_events`.
 
 ```bash
 security-lakehouse db upgrade --lake build/lakehouse

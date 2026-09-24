@@ -58,7 +58,7 @@ flowchart TB
 | **Console**         | Security, GRC, auditors     | Connect sources, review posture, fix gaps, share trust |
 | **API / CLI / MCP** | Engineers, CI, agents       | Sync, query, automate without the UI                   |
 | **Agent harness**   | Optional AI or rules runner | Summarize gaps; approval-gated writes only             |
-| **Hosted scaffold** | Teams wanting a live URL    | Signup, invites, usage limits, SCIM — billing pending  |
+| **Hosted scaffold** | Teams wanting a live URL    | Signup, invites, usage limits, SCIM, Stripe billing    |
 
 The assessment engine stays **model-independent**. LLMs orchestrate around
 redacted facts; the engine owns normalization, control evaluation, snapshots,
@@ -130,7 +130,7 @@ Rough comparison vs mature managed GRC SaaS on capability + UX reality:
 | Live SSE updates           | Good            | **Shipped** — posture + audit-readiness stream                      |
 | Integrations long tail     | Behind          | AWS/Azure/GCP/Snowflake/GitHub/GitLab/Okta live; #22/#23 repo graph |
 | HRIS / devices / personnel | Partial         | Intune + BambooHR/Rippling/Workday; HR↔IdP offboarding check        |
-| Billing / full SCIM        | Partial         | SCIM 2.0 shipped (users, groups, tokens); Stripe billing pending    |
+| Billing / full SCIM        | Good            | SCIM 2.0 + Stripe billing shipped; live account/IdP runs pending    |
 | Premium onboarding polish  | Behind          | Wizard shipped; polish incremental                                  |
 
 ## Parity scorecard (detailed)

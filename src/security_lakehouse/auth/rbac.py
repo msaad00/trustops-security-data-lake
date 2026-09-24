@@ -42,6 +42,9 @@ class Identity:
     scopes: frozenset[str]
     workspace_id: str | None = None
     api_key_id: str | None = None
+    # Set when a commercial workspace's subscription has lapsed: scopes are
+    # narrowed to reads until billing is fixed.
+    billing_read_only: bool = False
 
     def has_scope(self, scope: str) -> bool:
         return scope in self.scopes

@@ -1109,6 +1109,10 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
 
     app.include_router(build_scim_router())
 
+    from security_lakehouse.server_routes.routers.billing import build_billing_router
+
+    app.include_router(build_billing_router())
+
     # --- open health checks (registered before the authenticated catch-all) ---
     @app.get("/api/healthz")
     def healthz() -> dict[str, object]:
