@@ -3,6 +3,23 @@
 All notable TrustOps changes are summarized here. Versions follow semver for the
 Python package, Helm chart, and bundled web console.
 
+## 0.2.14 - 2026-09-23
+
+- Export OSCAL Component Definition and Assessment Results (NIST's
+  control/assessment interchange format) via a new CLI command and API
+  endpoints, so auditor tooling and other GRC platforms can consume TrustOps
+  assessment data without a bespoke adapter. Only reviewed (human-confirmed)
+  safeguard mappings are represented as implemented requirements.
+- Let third-party packages register connectors via a `trustops.connectors`
+  Python entry-point group, alongside the existing in-repo adapters, without
+  forking the repository.
+- Add outbound event webhooks (`finding.created`, `assessment.completed`,
+  `control.failed`) with HMAC-signed, retried delivery and a dedicated,
+  opt-in destination allowlist separate from workflow-automation egress.
+- Convert 12 of 13 framework packs from bespoke Python functions to
+  JSON manifests read by a shared builder, verified row-identical
+  (including every control id) against the prior generated output.
+
 ## 0.2.13 - 2026-09-22
 
 - Serialize hash-chain writers with a cross-process lock so concurrent
