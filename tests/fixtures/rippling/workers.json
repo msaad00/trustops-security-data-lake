@@ -1,0 +1,40 @@
+[
+  {
+    "id": "w-201",
+    "number": 201,
+    "work_email": "ada@example.com",
+    "personal_email": "ada.home@example.net",
+    "status": "ACTIVE",
+    "start_date": "2024-03-01",
+    "end_date": null,
+    "department_id": "dept-eng",
+    "manager_id": "w-200",
+    "date_of_birth": "1990-01-01",
+    "gender": "FEMALE",
+    "race": "NOT_INFORMED",
+    "compensation_id": "comp-1",
+    "title": "Engineer"
+  },
+  {
+    "id": "w-202",
+    "number": 202,
+    "work_email": "grace@example.com",
+    "status": "TERMINATED",
+    "start_date": "2023-01-09",
+    "end_date": "2026-05-15",
+    "department_id": "dept-fin",
+    "manager_id": "w-200",
+    "date_of_birth": "1985-06-01"
+  },
+  {
+    "id": "w-203",
+    "number": 203,
+    "work_email": "alan@example.com",
+    "status": "ACTIVE",
+    "start_date": "2022-07-18",
+    "end_date": "2026-12-31",
+    "department_id": "dept-eng",
+    "manager_id": "w-201"
+  },
+  { "number": 999, "work_email": "no-id@example.com" }
+]

@@ -1,0 +1,25 @@
+{
+  "Report_Entry": [
+    {
+      "Employee_ID": "301",
+      "Work_Email": "ada@example.com",
+      "Worker_Status": "Active",
+      "Hire_Date": "2024-03-01",
+      "Termination_Date": "",
+      "Department": "Engineering",
+      "Manager_ID": "300",
+      "Legal_Name": "Ada L",
+      "Date_of_Birth": "1990-01-01"
+    },
+    {
+      "Employee_ID": "302",
+      "Work_Email": "grace@example.com",
+      "Worker_Status": "Terminated",
+      "Hire_Date": "2023-01-09",
+      "Termination_Date": "2026-05-15",
+      "Department": "Finance",
+      "Manager_ID": "300"
+    },
+    { "Work_Email": "no-id@example.com" }
+  ]
+}

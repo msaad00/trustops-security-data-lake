@@ -36,6 +36,8 @@ REAL_ADAPTERS = {
     "jira-ticketing",
     "intune-devices",
     "bamboohr-personnel",
+    "rippling-personnel",
+    "workday-personnel",
 }
 FIXTURES = Path(__file__).parent / "fixtures"
 REPO_ROOT = Path(__file__).resolve().parents[1]

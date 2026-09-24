@@ -116,6 +116,37 @@ export const CONNECTOR_CREDENTIAL_FIELDS: Record<string, ConnectorFieldDef[]> =
         hint: "API key of a dedicated BambooHR user whose access level can view only the employment fields TrustOps reads.",
       },
     ],
+    "rippling-personnel": [
+      {
+        name: "credential_ref",
+        label: "API token env var",
+        placeholder: "RIPPLING_API_TOKEN",
+        required: true,
+        hint: "Rippling API token limited to the workers.read scope.",
+      },
+    ],
+    "workday-personnel": [
+      {
+        name: "report_url",
+        label: "RaaS report URL",
+        placeholder:
+          "https://wd5-services1.myworkday.com/ccx/service/customreport2/<tenant>/<owner>/<report>?format=json",
+        required: true,
+        hint: "JSON URL of the custom report with the TrustOps column contract (see docs/CONNECTORS.md).",
+      },
+      {
+        name: "username",
+        label: "Integration system user",
+        placeholder: "isu_trustops",
+        required: true,
+      },
+      {
+        name: "credential_ref",
+        label: "ISU password env var",
+        placeholder: "WORKDAY_ISU_PASSWORD",
+        required: true,
+      },
+    ],
     "gcp-posture": [
       {
         name: "project_id",
@@ -419,8 +450,8 @@ export function schedulerFieldsFor(isRunnable: boolean): ConnectorFieldDef[] {
 export function fallbackCredentialFields(
   credentialType: string,
 ): ConnectorFieldDef[] {
-  if (credentialType.includes("oauth"))
-    return [
+  if (credentialType.includes("oauth")) {
+    const fields: ConnectorFieldDef[] = [
       {
         name: "client_id",
         label: "Client ID",
@@ -433,13 +464,18 @@ export function fallbackCredentialFields(
         placeholder: "TRUSTOPS_CLIENT_SECRET",
         required: true,
       },
-      {
+    ];
+    // Client-credentials grants have no refresh token; must match
+    // _missing_required_config in connector_state.py.
+    if (!credentialType.includes("client_credentials"))
+      fields.push({
         name: "refresh_token_ref",
         label: "Refresh token reference",
         placeholder: "TRUSTOPS_REFRESH_TOKEN",
         required: true,
-      },
-    ];
+      });
+    return fields;
+  }
   if (credentialType.includes("key_pair"))
     return [
       {

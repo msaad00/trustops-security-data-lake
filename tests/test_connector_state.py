@@ -1069,3 +1069,21 @@ def test_google_workspace_probe_accepts_refresh_only_config(tmp_path: Path) -> N
     )
     assert rec["result"] == "ok"
     assert rec["metadata"]["probe_mode"] == "config_only"
+
+
+def test_oauth_client_credentials_fallback_matches_the_console_form() -> None:
+    from security_lakehouse.connector_state import _missing_required_config
+
+    assert (
+        _missing_required_config(
+            "identity-provider", "oauth_client_credentials", {"client_id": "a", "client_secret_ref": "B"}, {}
+        )
+        == []
+    )
+    assert _missing_required_config("identity-provider", "oauth_client_credentials", {}, {}) == [
+        "client_id",
+        "client_secret_ref",
+    ]
+    assert _missing_required_config("vendor-x", "vendor_oauth", {"client_id": "a", "client_secret_ref": "B"}, {}) == [
+        "refresh_token_ref"
+    ]

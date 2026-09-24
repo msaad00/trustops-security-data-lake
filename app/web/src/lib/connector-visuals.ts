@@ -150,6 +150,20 @@ export const CONNECTOR_VISUALS: Record<string, ConnectorVisual> = {
     bg: "#f0fdf4",
     categoryLabel: "Personnel",
   },
+  "rippling-personnel": {
+    vendor: "Rippling",
+    mark: "RP",
+    accent: "#7a3f00",
+    bg: "#fff7ed",
+    categoryLabel: "Personnel",
+  },
+  "workday-personnel": {
+    vendor: "Workday",
+    mark: "WD",
+    accent: "#0875e1",
+    bg: "#eff6ff",
+    categoryLabel: "Personnel",
+  },
   "jira-ticketing": {
     vendor: "Atlassian Jira",
     mark: "Jira",
