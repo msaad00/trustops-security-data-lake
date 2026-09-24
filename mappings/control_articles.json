@@ -872,6 +872,276 @@
       ]
     },
     {
+      "control_id": "CIS-CONTROLS-1",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-1",
+          "title": "Inventory and Control of Enterprise Assets",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-CONTROLS-10",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-10",
+          "title": "Malware Defenses",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-CONTROLS-11",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-11",
+          "title": "Data Recovery",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-CONTROLS-12",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-12",
+          "title": "Network Infrastructure Management",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-CONTROLS-13",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-13",
+          "title": "Network Monitoring and Defense",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-CONTROLS-14",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-14",
+          "title": "Security Awareness and Skills Training",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-CONTROLS-15",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-15",
+          "title": "Service Provider Management",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-CONTROLS-16",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-16",
+          "title": "Application Software Security",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-CONTROLS-17",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-17",
+          "title": "Incident Response Management",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-CONTROLS-18",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-18",
+          "title": "Penetration Testing",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-CONTROLS-2",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-2",
+          "title": "Inventory and Control of Software Assets",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-CONTROLS-3",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-3",
+          "title": "Data Protection",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-CONTROLS-4",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-4",
+          "title": "Secure Configuration of Enterprise Assets and Software",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-CONTROLS-5",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-5",
+          "title": "Account Management",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-CONTROLS-6",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-6",
+          "title": "Access Control Management",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-CONTROLS-7",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-7",
+          "title": "Continuous Vulnerability Management",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-CONTROLS-8",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-8",
+          "title": "Audit Log Management",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
+      "control_id": "CIS-CONTROLS-9",
+      "framework_id": "cis-controls-v8.1",
+      "articles": [
+        {
+          "article_id": "Control-9",
+          "title": "Email and Web Browser Protections",
+          "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+          "reviewed_by": "automated-source-reconciliation",
+          "review_status": "proposed",
+          "reviewed_at": "2026-09-24",
+          "rationale": "Direct control number and name from the public CIS Controls v8.1 list; source verification does not attest equivalence."
+        }
+      ]
+    },
+    {
       "control_id": "CMMC-3.1.1",
       "framework_id": "cmmc-2-level2",
       "articles": [

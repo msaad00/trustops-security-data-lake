@@ -137,7 +137,7 @@ security-lakehouse catalog verify
 Full packs should show **100% seeded mapping coverage** with `seeded_control_count`
 equal to the pack sizes above.
 
-## Limited-mapping packs (GDPR, HIPAA, PCI, EU AI Act)
+## Limited-mapping packs (GDPR, HIPAA, PCI, EU AI Act, CIS Controls)
 
 Run `frameworks sync-packs --pack gdpr --pack hipaa --pack pci-dss --pack eu-ai-act`
 to merge expanded honest subsets (20 GDPR articles, 18 HIPAA sections, 12 PCI
@@ -151,6 +151,12 @@ is distributed under a license click-through and there is no official
 machine-readable identifier source to pin them to. The v4.0-citing control
 versions (1.0.0) remain in `controls/history.jsonl`, so as-of views of audits
 before 2026-09-23 still show the v4.0 citation.
+
+CIS Controls v8.1 (`cis-controls-v8.1`, `--pack cis-controls`) seeds all 18
+controls from the public [CIS Controls list](https://www.cisecurity.org/controls/cis-controls-list).
+The 153 safeguards are not seeded: CIS distributes them only in a
+registration-gated download, so there is no open source to verify identifiers
+against. Rows are source-reconciled and `proposed`.
 
 ## Other frameworks (add as you go)
 

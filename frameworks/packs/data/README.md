@@ -14,6 +14,7 @@ for the manifest schema and the "add a new framework" workflow.
 | `nist_800_53_rev5_moderate.json` | `fedramp-moderate`  |                                         **287** |
 | `nist_800_53_rev5_catalog.json`  | `nist-800-53-rev5`  |                                        **1014** |
 | `nist_rmf_800_37r2.json`         | `nist-rmf-800-37r2` |                                          **47** |
+| `cis_controls_v8_1.json`         | `cis-controls`      |                                          **18** |
 | `cis_aws_v3.json`                | `cis-aws`           |                                          **62** |
 | `cmmc_2_level2.json`             | `cmmc-2-level2`     |                                         **110** |
 | `iso_27001_2022.json`            | `iso-27001-2022`    |                                          **93** |

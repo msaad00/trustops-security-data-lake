@@ -949,6 +949,46 @@
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27001-A.5.16",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.5.17",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.8.5",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "NIST-CSF-PR.AA-03",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, PR.AA-03"
+          }
+        },
+        {
+          "control_id": "CIS-CONTROLS-6",
+          "framework_id": "cis-controls-v8.1",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
         }
       ],
       "asset_types": [
@@ -1048,12 +1088,28 @@
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27001-A.5.18",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "CIS-CONTROLS-5",
+          "framework_id": "cis-controls-v8.1",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
         }
       ],
       "asset_types": [
+        "audit_log",
         "cloud_policy",
         "cloud_resource",
         "iam_role",
+        "identity_account",
         "identity_group",
         "identity_user",
         "okta_user",
@@ -1347,6 +1403,37 @@
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-CSF-PR.DS-01",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, PR.DS-01"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-PR.DS-02",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, PR.DS-02"
+          }
+        },
+        {
+          "control_id": "CIS-CONTROLS-3",
+          "framework_id": "cis-controls-v8.1",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
         }
       ],
       "asset_types": [
@@ -1664,6 +1751,56 @@
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27001-A.5.25",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "NIST-CSF-DE.CM-01",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, DE.CM-01"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-DE.CM-03",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, DE.CM-03"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-DE.AE-03",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, DE.AE-03"
+          }
+        },
+        {
+          "control_id": "CIS-CONTROLS-13",
+          "framework_id": "cis-controls-v8.1",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
         }
       ],
       "asset_types": [
@@ -1679,6 +1816,7 @@
         "identity_account",
         "identity_group",
         "identity_user",
+        "network",
         "okta_user",
         "repo",
         "s3_bucket",
@@ -1990,6 +2128,25 @@
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-CSF-PR.PS-04",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, PR.PS-04"
+          }
+        },
+        {
+          "control_id": "CIS-CONTROLS-8",
+          "framework_id": "cis-controls-v8.1",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
         }
       ],
       "asset_types": [
@@ -2249,6 +2406,18 @@
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-CSF-PR.PS-01",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, PR.PS-01"
+          }
         }
       ],
       "asset_types": [
@@ -2415,6 +2584,25 @@
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-CSF-PR.PS-02",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, PR.PS-02"
+          }
+        },
+        {
+          "control_id": "CIS-CONTROLS-7",
+          "framework_id": "cis-controls-v8.1",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
         }
       ],
       "asset_types": [
@@ -2552,6 +2740,89 @@
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27001-A.5.20",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.5.21",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.5.22",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.5.23",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "NIST-CSF-GV.SC-06",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, GV.SC-06"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-GV.SC-07",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, GV.SC-07"
+          }
+        },
+        {
+          "control_id": "NIST-AI-RMF-GOVERN-6.1",
+          "framework_id": "nist-ai-rmf",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST AI 100-1, Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
+            "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+            "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+            "locator": "AI RMF Core, GOVERN 6.1"
+          }
+        },
+        {
+          "control_id": "NIST-AI-RMF-MANAGE-3.1",
+          "framework_id": "nist-ai-rmf",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST AI 100-1, Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
+            "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+            "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+            "locator": "AI RMF Core, MANAGE 3.1"
+          }
+        },
+        {
+          "control_id": "CIS-CONTROLS-15",
+          "framework_id": "cis-controls-v8.1",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
         }
       ],
       "asset_types": [
@@ -2829,6 +3100,39 @@
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27001-A.5.29",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.8.14",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "NIST-CSF-PR.DS-11",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, PR.DS-11"
+          }
+        },
+        {
+          "control_id": "CIS-CONTROLS-11",
+          "framework_id": "cis-controls-v8.1",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
         }
       ],
       "asset_types": [
@@ -3027,6 +3331,78 @@
           "framework_id": "nist-ai-rmf",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "NIST-AI-RMF-GOVERN-1.2",
+          "framework_id": "nist-ai-rmf",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST AI 100-1, Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
+            "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+            "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+            "locator": "AI RMF Core, GOVERN 1.2"
+          }
+        },
+        {
+          "control_id": "NIST-AI-RMF-GOVERN-1.4",
+          "framework_id": "nist-ai-rmf",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST AI 100-1, Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
+            "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+            "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+            "locator": "AI RMF Core, GOVERN 1.4"
+          }
+        },
+        {
+          "control_id": "NIST-AI-RMF-GOVERN-2.1",
+          "framework_id": "nist-ai-rmf",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST AI 100-1, Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
+            "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+            "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+            "locator": "AI RMF Core, GOVERN 2.1"
+          }
+        },
+        {
+          "control_id": "NIST-AI-RMF-GOVERN-2.3",
+          "framework_id": "nist-ai-rmf",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST AI 100-1, Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
+            "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+            "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+            "locator": "AI RMF Core, GOVERN 2.3"
+          }
+        },
+        {
+          "control_id": "NIST-AI-RMF-MAP-1.3",
+          "framework_id": "nist-ai-rmf",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST AI 100-1, Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
+            "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+            "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+            "locator": "AI RMF Core, MAP 1.3"
+          }
+        },
+        {
+          "control_id": "NIST-AI-RMF-MAP-1.4",
+          "framework_id": "nist-ai-rmf",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST AI 100-1, Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
+            "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+            "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+            "locator": "AI RMF Core, MAP 1.4"
+          }
         }
       ],
       "asset_types": [
@@ -3211,6 +3587,25 @@
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27001-A.5.26",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "NIST-CSF-RS.CO-02",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, RS.CO-02"
+          }
         }
       ],
       "asset_types": [
@@ -3786,6 +4181,27 @@
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27001-A.5.1",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.5.2",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.5.4",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
         }
       ],
       "asset_types": [
@@ -3808,7 +4224,7 @@
     {
       "safeguard_id": "SG-TRAINING-001",
       "title": "Security awareness and training",
-      "risk_domain": "governance",
+      "risk_domain": "people-security",
       "objective": "Workforce awareness, role-based training, and insider-threat recognition are distinct obligations from access control and are assessed as one operated training program.",
       "evidence_requirement": "Current training evidence demonstrates baseline security awareness, role-appropriate security training before authorization and after relevant system changes, and recognition and reporting of potential insider-threat indicators.",
       "evaluation_rule": "fail_when_missing_evidence",
@@ -3948,9 +4364,61 @@
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27001-A.6.3",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "NIST-CSF-PR.AT-01",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, PR.AT-01"
+          }
+        },
+        {
+          "control_id": "NIST-CSF-PR.AT-02",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, PR.AT-02"
+          }
+        },
+        {
+          "control_id": "NIST-AI-RMF-GOVERN-2.2",
+          "framework_id": "nist-ai-rmf",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST AI 100-1, Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
+            "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+            "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+            "locator": "AI RMF Core, GOVERN 2.2"
+          }
+        },
+        {
+          "control_id": "CIS-CONTROLS-14",
+          "framework_id": "cis-controls-v8.1",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
         }
       ],
       "asset_types": [
+        "ai_agent",
+        "ai_model",
         "audit_log",
         "container_image",
         "data_store",
@@ -3962,7 +4430,7 @@
     {
       "safeguard_id": "SG-PHYSICAL-001",
       "title": "Physical and environmental security",
-      "risk_domain": "controls-operations",
+      "risk_domain": "physical-security",
       "objective": "Physical access to systems and media is a separate boundary from logical access.",
       "evidence_requirement": "CUI protection evidence supports NIST SP 800-171 Rev 2 requirement 3.10.1 (Limit physical access to organizational systems, equipment, and the respective operating environments to authorized individuals) for CMMC Level 2 assessment.",
       "evaluation_rule": "fail_when_missing_evidence",
@@ -4168,6 +4636,39 @@
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27001-A.7.1",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.7.2",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.7.4",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "NIST-CSF-PR.AA-06",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, PR.AA-06"
+          }
         }
       ],
       "asset_types": [
@@ -4185,7 +4686,7 @@
     {
       "safeguard_id": "SG-SECUREDEV-001",
       "title": "Secure development",
-      "risk_domain": "change-management",
+      "risk_domain": "secure-development",
       "objective": "Secure development practices and separation of environments are assessed apart from change control.",
       "evidence_requirement": "Evidence for PCI DSS v4.0.1 Req 6 exists within freshness SLA.",
       "evaluation_rule": "fail_when_stale_evidence",
@@ -4259,14 +4760,67 @@
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27001-A.8.25",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.8.28",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.8.29",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.8.31",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "NIST-CSF-PR.PS-06",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, PR.PS-06"
+          }
+        },
+        {
+          "control_id": "CIS-CONTROLS-16",
+          "framework_id": "cis-controls-v8.1",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
         }
       ],
-      "asset_types": ["cloud_policy", "cloud_resource", "repo", "service"]
+      "asset_types": [
+        "cloud_policy",
+        "cloud_resource",
+        "container_image",
+        "repo",
+        "service"
+      ]
     },
     {
       "safeguard_id": "SG-NETWORK-001",
       "title": "Network security controls",
-      "risk_domain": "controls-operations",
+      "risk_domain": "network-security",
       "objective": "Network segmentation and boundary protection is its own safeguard, distinct from identity.",
       "evidence_requirement": "CUI protection evidence supports NIST SP 800-171 Rev 2 requirement 3.13.6 (Deny network communications traffic by default and allow network communications traffic by exception (i.e., deny all, permit by exception)) for CMMC Level 2 assessment.",
       "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
@@ -4418,6 +4972,46 @@
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27001-A.8.20",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.8.21",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.8.22",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "NIST-CSF-PR.IR-01",
+          "framework_id": "nist-csf-2.0",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST Cybersecurity Framework (CSF) 2.0",
+            "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+            "sha256": "3c31f46fee98cac0c4323453e5109291a213b4de7fef8c058af9bf67f717433c",
+            "locator": "NIST CSF 2.0 Core, Appendix A, PR.IR-01"
+          }
+        },
+        {
+          "control_id": "CIS-CONTROLS-12",
+          "framework_id": "cis-controls-v8.1",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
         }
       ],
       "asset_types": [
@@ -4534,9 +5128,35 @@
           "framework_id": "soc2",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27001-A.5.34",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "NIST-AI-RMF-MEASURE-2.10",
+          "framework_id": "nist-ai-rmf",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_source": {
+            "name": "NIST AI 100-1, Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
+            "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+            "sha256": "7576edb531d9848825814ee88e28b1795d3a84b435b4b797d3670eafdc4a89f1",
+            "locator": "AI RMF Core, MEASURE 2.10"
+          }
         }
       ],
-      "asset_types": ["audit_log", "data_store", "identity_user", "service"]
+      "asset_types": [
+        "ai_agent",
+        "ai_model",
+        "audit_log",
+        "data_store",
+        "identity_user",
+        "service"
+      ]
     },
     {
       "safeguard_id": "SG-DATAINVENTORY-001",
@@ -4681,6 +5301,34 @@
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27001-A.5.9",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.5.12",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "CIS-CONTROLS-1",
+          "framework_id": "cis-controls-v8.1",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "CIS-CONTROLS-2",
+          "framework_id": "cis-controls-v8.1",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
         }
       ],
       "asset_types": [
@@ -4689,7 +5337,9 @@
         "audit_log",
         "cloud_policy",
         "cloud_resource",
+        "container_image",
         "data_store",
+        "host",
         "repo",
         "s3_bucket",
         "service"
@@ -4784,6 +5434,27 @@
           "framework_id": "nist-800-53-rev5",
           "role": "equivalent",
           "review_status": "proposed"
+        },
+        {
+          "control_id": "ISO27001-A.8.10",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.7.14",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
+        },
+        {
+          "control_id": "ISO27001-A.5.33",
+          "framework_id": "iso-27001-2022",
+          "role": "equivalent",
+          "review_status": "proposed",
+          "mapping_basis": "title_theme"
         }
       ],
       "asset_types": [
@@ -4802,7 +5473,7 @@
     {
       "safeguard_id": "SG-PROCESSINGINTEGRITY-001",
       "title": "Processing integrity",
-      "risk_domain": "controls-operations",
+      "risk_domain": "processing-integrity",
       "objective": "Inputs, processing, and outputs are complete, accurate, timely, and authorized \u2014 SOC 2's Processing Integrity criterion, which no confidentiality or availability safeguard covers.",
       "evidence_requirement": "Current evidence demonstrates processing specifications define complete and accurate processing objectives with no open high-risk failure or stale proof.",
       "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
@@ -4891,7 +5562,7 @@
     {
       "safeguard_id": "SG-MAINTENANCE-001",
       "title": "Controlled system maintenance",
-      "risk_domain": "controls-operations",
+      "risk_domain": "system-maintenance",
       "objective": "Authorize, schedule, record, and review maintenance on organizational systems and components.",
       "evidence_requirement": "Current maintenance records identify the system or component, authorized personnel, work performed, completion time, and review outcome with no open high-risk failure or stale proof.",
       "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
@@ -4980,7 +5651,7 @@
     {
       "safeguard_id": "SG-MAINTENANCE-002",
       "title": "Maintenance tool controls",
-      "risk_domain": "controls-operations",
+      "risk_domain": "system-maintenance",
       "objective": "Control the tools, techniques, mechanisms, and personnel used for system maintenance.",
       "evidence_requirement": "Current maintenance procedures, tool inventories, access records, and activity logs demonstrate that maintenance tools and personnel are authorized and controlled with no open high-risk failure or stale proof.",
       "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
@@ -5025,7 +5696,7 @@
     {
       "safeguard_id": "SG-SECURITYENGINEERING-001",
       "title": "Security engineering principles",
-      "risk_domain": "controls-operations",
+      "risk_domain": "secure-architecture",
       "objective": "Apply security engineering principles throughout system architecture, software development, and systems engineering activities.",
       "evidence_requirement": "Current architecture decisions, engineering standards, and design-review evidence demonstrate that security principles are applied throughout the system lifecycle with no open high-risk failure or stale proof.",
       "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
@@ -5108,7 +5779,7 @@
     {
       "safeguard_id": "SG-CHANGEMANAGEMENT-002",
       "title": "Alternate work site safeguards",
-      "risk_domain": "change-management",
+      "risk_domain": "physical-security",
       "objective": "Enforce safeguards for CUI that is accessed, processed, or stored at alternate work sites.",
       "evidence_requirement": "Current alternate-work-site policies, configurations, asset inventories, and access records demonstrate that required CUI safeguards are enforced with no open high-risk failure or stale proof.",
       "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
@@ -5147,7 +5818,7 @@
     {
       "safeguard_id": "SG-PERSONNELSECURITY-001",
       "title": "Personnel termination and transfer safeguards",
-      "risk_domain": "governance",
+      "risk_domain": "people-security",
       "objective": "Protect organizational systems and CUI during and after personnel terminations and transfers.",
       "evidence_requirement": "Current personnel action records, access changes, asset-return records, and completion approvals demonstrate that system and CUI protections are enforced during and after terminations and transfers with no open high-risk failure or stale proof.",
       "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
@@ -5237,7 +5908,7 @@
     {
       "safeguard_id": "SG-SHAREDRESOURCEISOLATION-001",
       "title": "Shared-resource information isolation",
-      "risk_domain": "controls-operations",
+      "risk_domain": "secure-architecture",
       "objective": "Prevent unauthorized or unintended information transfer through shared system resources.",
       "evidence_requirement": "Current resource-isolation, reuse, and boundary evidence demonstrates that shared system resources do not expose residual or cross-context information with no open high-risk failure or stale proof.",
       "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
@@ -5276,7 +5947,7 @@
     {
       "safeguard_id": "SG-FUNCTIONSEPARATION-001",
       "title": "User and management function separation",
-      "risk_domain": "controls-operations",
+      "risk_domain": "secure-architecture",
       "objective": "Separate user-facing functionality from system management functionality to reduce unauthorized administrative access and actions.",
       "evidence_requirement": "Current architecture, access-path, interface, and role evidence demonstrates that user functionality is separated from system management functionality with no open high-risk failure or stale proof.",
       "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
@@ -5315,7 +5986,7 @@
     {
       "safeguard_id": "SG-LEASTFUNCTIONALITY-001",
       "title": "Least functionality and program execution",
-      "risk_domain": "controls-operations",
+      "risk_domain": "configuration-management",
       "objective": "Restrict nonessential programs, functions, ports, protocols, and services, and prevent unauthorized program execution.",
       "evidence_requirement": "Current allowlists, denylists, service and port inventories, execution policies, and exception records demonstrate that nonessential capabilities are restricted and unauthorized program execution is prevented with no open high-risk failure or stale proof.",
       "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
@@ -5405,7 +6076,7 @@
     {
       "safeguard_id": "SG-MALWARESCANNING-001",
       "title": "Periodic and real-time malware scanning",
-      "risk_domain": "monitoring",
+      "risk_domain": "detection",
       "objective": "Scan organizational systems periodically and scan externally sourced files when they are downloaded, opened, or executed.",
       "evidence_requirement": "Current anti-malware configuration, scheduled scan results, real-time file scanning records, coverage inventories, and tracked exceptions demonstrate that systems and externally sourced files are scanned.",
       "evaluation_rule": "fail_when_open_violation_or_stale_evidence",
@@ -5444,7 +6115,7 @@
     {
       "safeguard_id": "SG-AUDITEVENTREVIEW-001",
       "title": "Audit event review and updates",
-      "risk_domain": "monitoring",
+      "risk_domain": "logging",
       "objective": "Review and update the events selected for logging so audit records remain relevant to monitoring and investigations.",
       "evidence_requirement": "Current logged-event inventories, review records, selection rationale, approvals, and configuration changes demonstrate that logged events are reviewed and updated at the defined frequency.",
       "evaluation_rule": "fail_when_missing_evidence",
@@ -5495,7 +6166,7 @@
     {
       "safeguard_id": "SG-SOFTWAREAUTHORIZATION-001",
       "title": "Software execution authorization",
-      "risk_domain": "controls-operations",
+      "risk_domain": "configuration-management",
       "objective": "Prevent unauthorized software execution and allow only explicitly authorized software where allow-by-exception controls are used.",
       "evidence_requirement": "Current software inventories, execution-control policies, allowlists or denylists, enforcement results, and approved exceptions demonstrate that unauthorized software is prevented from executing.",
       "evaluation_rule": "fail_when_open_violation_or_stale_evidence",

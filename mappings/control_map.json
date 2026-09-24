@@ -435,6 +435,132 @@
       "owner": "security-platform"
     },
     {
+      "control_id": "CIS-CONTROLS-1",
+      "framework": "CIS Controls",
+      "title": "Inventory and Control of Enterprise Assets",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-CONTROLS-10",
+      "framework": "CIS Controls",
+      "title": "Malware Defenses",
+      "risk_domain": "malware-defense",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "CIS-CONTROLS-11",
+      "framework": "CIS Controls",
+      "title": "Data Recovery",
+      "risk_domain": "availability",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "CIS-CONTROLS-12",
+      "framework": "CIS Controls",
+      "title": "Network Infrastructure Management",
+      "risk_domain": "network-security",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-CONTROLS-13",
+      "framework": "CIS Controls",
+      "title": "Network Monitoring and Defense",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-CONTROLS-14",
+      "framework": "CIS Controls",
+      "title": "Security Awareness and Skills Training",
+      "risk_domain": "governance",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "CIS-CONTROLS-15",
+      "framework": "CIS Controls",
+      "title": "Service Provider Management",
+      "risk_domain": "third-party-risk",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "CIS-CONTROLS-16",
+      "framework": "CIS Controls",
+      "title": "Application Software Security",
+      "risk_domain": "change-management",
+      "owner": "engineering"
+    },
+    {
+      "control_id": "CIS-CONTROLS-17",
+      "framework": "CIS Controls",
+      "title": "Incident Response Management",
+      "risk_domain": "incident-response",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "CIS-CONTROLS-18",
+      "framework": "CIS Controls",
+      "title": "Penetration Testing",
+      "risk_domain": "risk-management",
+      "owner": "appsec"
+    },
+    {
+      "control_id": "CIS-CONTROLS-2",
+      "framework": "CIS Controls",
+      "title": "Inventory and Control of Software Assets",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-CONTROLS-3",
+      "framework": "CIS Controls",
+      "title": "Data Protection",
+      "risk_domain": "data-protection",
+      "owner": "security-operations"
+    },
+    {
+      "control_id": "CIS-CONTROLS-4",
+      "framework": "CIS Controls",
+      "title": "Secure Configuration of Enterprise Assets and Software",
+      "risk_domain": "configuration-management",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-CONTROLS-5",
+      "framework": "CIS Controls",
+      "title": "Account Management",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-CONTROLS-6",
+      "framework": "CIS Controls",
+      "title": "Access Control Management",
+      "risk_domain": "identity",
+      "owner": "security-platform"
+    },
+    {
+      "control_id": "CIS-CONTROLS-7",
+      "framework": "CIS Controls",
+      "title": "Continuous Vulnerability Management",
+      "risk_domain": "vulnerability",
+      "owner": "appsec"
+    },
+    {
+      "control_id": "CIS-CONTROLS-8",
+      "framework": "CIS Controls",
+      "title": "Audit Log Management",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering"
+    },
+    {
+      "control_id": "CIS-CONTROLS-9",
+      "framework": "CIS Controls",
+      "title": "Email and Web Browser Protections",
+      "risk_domain": "controls-operations",
+      "owner": "security-operations"
+    },
+    {
       "control_id": "CMMC-3.1.1",
       "framework": "CMMC 2.0 Level 2",
       "title": "CMMC L2 3.1.1 \u2014 Limit system access to authorized users, processes acting on behalf of authorized users, and devices (in",

@@ -582,6 +582,7 @@ def _framework_from_control(control_id: str) -> str | None:
         ("NIST-RMF-", "nist-rmf-800-37r2"),
         ("FEDRAMP-", "fedramp-moderate"),
         ("CIS-AWS-", "cis_aws"),
+        ("CIS-CONTROLS-", "cis-controls-v8.1"),
         ("CMMC-", "cmmc-2-level2"),
         ("GDPR-", "gdpr-2016-679"),
         ("EU-AI-ACT-", "eu-ai-act-2024-1689"),

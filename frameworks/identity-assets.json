@@ -91,6 +91,13 @@
       "asset_path": null,
       "restriction": "CIS Benchmarks® artwork requires authorization for this product use and is not bundled."
     },
+    "cis-controls-v8.1": {
+      "official_name": "CIS Critical Security Controls® v8.1",
+      "official_source_url": "https://www.cisecurity.org/controls/v8-1",
+      "display_mode": "neutral_icon",
+      "asset_path": null,
+      "restriction": "CIS Benchmarks® artwork requires authorization for this product use and is not bundled."
+    },
     "nist-csf-2.0": {
       "official_name": "NIST Cybersecurity Framework (CSF) 2.0",
       "official_source_url": "https://www.nist.gov/cyberframework",
