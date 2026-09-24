@@ -167,6 +167,9 @@ No pre-existing data lake is required. For automation, use the
 
 Sources include AWS, Azure, GCP, GitHub, GitLab, Okta, Microsoft Intune, Snowflake, and ClickHouse.
 Check the [connector catalog](docs/CONNECTORS.md) for each integration's scope and status.
+A connector can also ship as a separately installed Python package that
+registers its sync builder and catalog row through entry points; see
+[Shipping a connector as a package](docs/ADDING_CONNECTORS.md#shipping-a-connector-as-a-package).
 
 No connector requires pasted long-lived cloud keys.
 

@@ -1053,9 +1053,16 @@ export function ConnectorDrawer({
                       {setupSteps[Math.min(onboardingStep, 4) - 1]?.label}
                     </span>
                   </div>
-                  <Badge tone={isEnabled ? "ready" : "default"}>
-                    {connector.state}
-                  </Badge>
+                  <span className="flex items-center gap-1">
+                    {connector.provenance?.source === "entry_point" ? (
+                      <Badge title={connector.provenance.entry_point}>
+                        Installed package
+                      </Badge>
+                    ) : null}
+                    <Badge tone={isEnabled ? "ready" : "default"}>
+                      {connector.state}
+                    </Badge>
+                  </span>
                 </div>
                 <div
                   className="mt-2 grid grid-cols-4 gap-1"

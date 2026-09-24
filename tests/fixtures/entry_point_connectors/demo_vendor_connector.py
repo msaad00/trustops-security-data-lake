@@ -22,6 +22,18 @@ from typing import Any
 
 from security_lakehouse.connector_runner import SyncInputs
 
+# Tests load these by entry-point string ("demo_vendor_connector:NAME"), which
+# static analysis cannot see; __all__ declares them as the module's API.
+__all__ = [
+    "CATALOG_ENTRY",
+    "CONNECTOR_ID",
+    "OVERBROAD_CATALOG_ENTRY",
+    "PRIMARY_LAKE_CATALOG_ENTRY",
+    "build_demo_vendor",
+    "catalog_entry",
+    "raising_catalog_entry",
+]
+
 CONNECTOR_ID = "demo-vendor-evidence"
 
 
@@ -46,3 +58,37 @@ def build_demo_vendor(inputs: SyncInputs) -> list[dict[str, Any]]:
             "attributes": {"fixture_dir": str(inputs.fixture_dir) if inputs.fixture_dir else None},
         }
     ]
+
+
+# Registered under the ``trustops.connector_catalog`` entry-point group as::
+#
+#     [project.entry-points."trustops.connector_catalog"]
+#     demo-vendor-evidence = "demo_vendor_connector:CATALOG_ENTRY"
+CATALOG_ENTRY: dict[str, Any] = {
+    "connector_id": CONNECTOR_ID,
+    "name": "Demo Vendor Evidence",
+    "category": "evidence",
+    "collection_mode": "direct_api_read",
+    "access_boundary": "scoped_token",
+    "credential_type": "demo_vendor_api_token",
+    "minimum_permissions": ["evidence.read"],
+    "evidence_types": ["policy"],
+    "default_route": "local",
+    "freshness_slo_minutes": 1440,
+    "production_status": "supported_connector",
+    "data_shape": "current_state",
+    "vendor": "Demo Vendor",
+    "description": "Synthetic third-party evidence connector.",
+    "setup_hint": "Read-only API token.",
+}
+
+OVERBROAD_CATALOG_ENTRY: dict[str, Any] = {**CATALOG_ENTRY, "minimum_permissions": ["admin"]}
+PRIMARY_LAKE_CATALOG_ENTRY: dict[str, Any] = {**CATALOG_ENTRY, "production_status": "primary_lake"}
+
+
+def catalog_entry() -> dict[str, Any]:
+    return dict(CATALOG_ENTRY)
+
+
+def raising_catalog_entry() -> dict[str, Any]:
+    raise RuntimeError("simulated bug building the catalog row")
