@@ -84,9 +84,9 @@ Models may summarize or propose actions; deterministic rules decide control resu
 
 <!-- BEGIN README CCF SUMMARY -->
 
-**13 framework packs · 44 reusable safeguards · 15 control families · 942 catalogued requirements.**
+**16 framework packs · 44 reusable safeguards · 21 control families · 2021 catalogued requirements.**
 
-559 requirements have safeguard mappings; **254 have reviewed mappings**. Catalog coverage and evaluated customer posture are separate measures.
+813 requirements have safeguard mappings; **254 have reviewed mappings**. Catalog coverage and evaluated customer posture are separate measures.
 <!-- END README CCF SUMMARY -->
 
 <table>
@@ -97,10 +97,10 @@ Models may summarize or propose actions; deterministic rules decide control resu
 <td align="center"><img src="app/web/public/frameworks/badges/nist-ai-rmf.svg" width="38" alt="NIST AI RMF"><br><strong>NIST AI RMF</strong></td>
 </tr>
 <tr>
-<td align="center"><img src="app/web/public/frameworks/badges/cis.svg" width="38" alt="CIS AWS"><br><strong>CIS AWS</strong></td>
+<td align="center"><img src="app/web/public/frameworks/badges/cis.svg" width="38" alt="CIS"><br><strong>CIS Controls · CIS AWS</strong></td>
 <td align="center"><img src="app/web/public/frameworks/badges/cmmc.svg" width="38" alt="CMMC"><br><strong>CMMC 2.0</strong></td>
 <td align="center"><img src="app/web/public/frameworks/badges/eu-ai-act.svg" width="38" alt="European framework family"><br><strong>EU AI Act · GDPR</strong></td>
-<td align="center"><strong>FedRAMP Moderate<br>HIPAA · PCI DSS</strong></td>
+<td align="center"><strong>NIST 800-53 · NIST RMF<br>FedRAMP · HIPAA · PCI DSS</strong></td>
 </tr>
 </table>
 

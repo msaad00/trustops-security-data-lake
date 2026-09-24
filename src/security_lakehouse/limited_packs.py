@@ -1,4 +1,4 @@
-"""Limited-mapping framework packs: GDPR, HIPAA, PCI DSS, EU AI Act.
+"""Limited-mapping framework packs: GDPR, HIPAA, PCI DSS, EU AI Act, CIS Controls.
 
 Expands honest seed subsets toward managed-GRC breadth without claiming
 full official catalog coverage. Each control maps to a single official article
@@ -23,6 +23,7 @@ GDPR_SOURCE = "https://eur-lex.europa.eu/eli/reg/2016/679/oj"
 HIPAA_SOURCE = "https://www.hhs.gov/hipaa/for-professionals/security/index.html"
 PCI_SOURCE = "https://www.pcisecuritystandards.org/document_library/?category=pcidss"
 EU_AI_ACT_SOURCE = "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689"
+CIS_CONTROLS_SOURCE = "https://www.cisecurity.org/controls/v8-1"
 
 
 def _limited_row_transform(
@@ -112,11 +113,27 @@ def eu_ai_act_limited_pack_specs() -> Iterable[PackControlSpec]:
     )
 
 
+def cis_controls_v8_1_limited_pack_specs() -> Iterable[PackControlSpec]:
+    return pack_from_manifest(
+        PACK_DATA_DIR / "cis_controls_v8_1.json",
+        transform=lambda row: _limited_row_transform(
+            row,
+            framework_id="cis-controls-v8.1",
+            framework="CIS Controls",
+            control_id_prefix="CIS-CONTROLS",
+            framework_ref=lambda ref: f"CIS Controls v8.1 Control {ref}",
+            source_url=CIS_CONTROLS_SOURCE,
+            article_id=lambda ref: f"Control-{ref}",
+        ),
+    )
+
+
 LIMITED_PACK_BUILDERS = {
     "gdpr": gdpr_limited_pack_specs,
     "hipaa": hipaa_limited_pack_specs,
     "pci-dss": pci_dss_limited_pack_specs,
     "eu-ai-act": eu_ai_act_limited_pack_specs,
+    "cis-controls": cis_controls_v8_1_limited_pack_specs,
 }
 
 # Expected minimum seeded counts after limited pack sync (existing + new).
@@ -125,4 +142,5 @@ LIMITED_PACK_MINIMUMS = {
     "hipaa-security-rule": 18,
     "pci-dss-v4": 12,
     "eu-ai-act-2024-1689": 15,
+    "cis-controls-v8.1": 18,
 }

@@ -6,22 +6,25 @@ framework pack's identifiers, titles, and source citation live here as JSON;
 through `pack_from_manifest()` — see [../../../docs/FRAMEWORK_PACKS.md](../../../docs/FRAMEWORK_PACKS.md#manifest-schema)
 for the manifest schema and the "add a new framework" workflow.
 
-| File                             | Pack               |                                           Count |
-| -------------------------------- | ------------------ | ----------------------------------------------: |
-| `soc2.json`                      | `soc2`             | **61** (33 common criteria + 28 TSC extensions) |
-| `nist_ai_rmf.json`               | `nist-ai-rmf`      |                                          **72** |
-| `nist_csf_2_core.json`           | `nist-csf-2.0`     |                                         **106** |
-| `nist_800_53_rev5_moderate.json` | `fedramp-moderate` |                                         **287** |
-| `cis_aws_v3.json`                | `cis-aws`          |                                          **62** |
-| `cmmc_2_level2.json`             | `cmmc-2-level2`    |                                         **110** |
-| `iso_27001_2022.json`            | `iso-27001-2022`   |                                          **93** |
-| `iso_27017_2015.json`            | `iso-27017-2015`   |                                          **47** |
-| `iso_42001_2023.json`            | `iso-42001-2023`   |                                          **38** |
-| `gdpr_2016_679.json`             | `gdpr`             |                                          **14** |
-| `hipaa_security_rule.json`       | `hipaa`            |                                          **12** |
-| `pci_dss_v4.json`                | `pci-dss`          |                                          **12** |
-| `eu_ai_act_2024_1689.json`       | `eu-ai-act`        |                                           **9** |
-| `evidence_connector_hints.json`  | all packs          |                                               — |
+| File                             | Pack                |                                           Count |
+| -------------------------------- | ------------------- | ----------------------------------------------: |
+| `soc2.json`                      | `soc2`              | **61** (33 common criteria + 28 TSC extensions) |
+| `nist_ai_rmf.json`               | `nist-ai-rmf`       |                                          **72** |
+| `nist_csf_2_core.json`           | `nist-csf-2.0`      |                                         **106** |
+| `nist_800_53_rev5_moderate.json` | `fedramp-moderate`  |                                         **287** |
+| `nist_800_53_rev5_catalog.json`  | `nist-800-53-rev5`  |                                        **1014** |
+| `nist_rmf_800_37r2.json`         | `nist-rmf-800-37r2` |                                          **47** |
+| `cis_controls_v8_1.json`         | `cis-controls`      |                                          **18** |
+| `cis_aws_v3.json`                | `cis-aws`           |                                          **62** |
+| `cmmc_2_level2.json`             | `cmmc-2-level2`     |                                         **110** |
+| `iso_27001_2022.json`            | `iso-27001-2022`    |                                          **93** |
+| `iso_27017_2015.json`            | `iso-27017-2015`    |                                          **47** |
+| `iso_42001_2023.json`            | `iso-42001-2023`    |                                          **38** |
+| `gdpr_2016_679.json`             | `gdpr`              |                                          **14** |
+| `hipaa_security_rule.json`       | `hipaa`             |                                          **12** |
+| `pci_dss_v4.json`                | `pci-dss`           |                                          **12** |
+| `eu_ai_act_2024_1689.json`       | `eu-ai-act`         |                                           **9** |
+| `evidence_connector_hints.json`  | all packs           |                                               — |
 
 `nist_csf_2_core.json` is the original manifest precedent for this pattern
 (pinned to an official source digest — see `tests/test_csf_source_integrity.py`).

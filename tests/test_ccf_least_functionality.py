@@ -17,7 +17,9 @@ def test_least_functionality_uses_the_nist_800_171_crosswalk() -> None:
     } == {
         ("CMMC-3.4.7", "cmmc-2-level2", "proposed"),
         ("FEDRAMP-CM-7.1", "fedramp-moderate", "proposed"),
+        ("NIST-800-53-CM-7.1", "nist-800-53-rev5", "proposed"),
         ("FEDRAMP-CM-7.2", "fedramp-moderate", "proposed"),
+        ("NIST-800-53-CM-7.2", "nist-800-53-rev5", "proposed"),
     }
     assert safeguard["mapping_source"] == {
         "name": "NIST SP 800-171 Rev. 2",
@@ -41,10 +43,10 @@ def test_least_functionality_closes_three_gaps_without_overstating_attestation()
     coverage = coverage_by_framework()
 
     assert coverage["safeguards"] == without_crosswalk["safeguards"] + 1
-    assert coverage["covered"] == without_crosswalk["covered"] + 3
-    assert coverage["uncovered"] == without_crosswalk["uncovered"] - 3
+    assert coverage["covered"] == without_crosswalk["covered"] + 5
+    assert coverage["uncovered"] == without_crosswalk["uncovered"] - 5
     assert coverage["reviewed"] == without_crosswalk["reviewed"]
-    assert coverage["proposed"] == without_crosswalk["proposed"] + 3
+    assert coverage["proposed"] == without_crosswalk["proposed"] + 5
     assert (
         coverage["frameworks"]["cmmc-2-level2"]["covered"]
         == without_crosswalk["frameworks"]["cmmc-2-level2"]["covered"] + 1

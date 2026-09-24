@@ -23,6 +23,7 @@ def test_risk_and_integrity_safeguards_use_the_published_nist_crosswalk() -> Non
     } == {
         ("CMMC-3.11.1", "cmmc-2-level2", "proposed"),
         ("FEDRAMP-RA-3", "fedramp-moderate", "proposed"),
+        ("NIST-800-53-RA-3", "nist-800-53-rev5", "proposed"),
     }
     assert risk["mapping_source"] == {
         **SOURCE,
@@ -36,6 +37,7 @@ def test_risk_and_integrity_safeguards_use_the_published_nist_crosswalk() -> Non
     } == {
         ("CMMC-3.14.5", "cmmc-2-level2", "proposed"),
         ("FEDRAMP-SI-3", "fedramp-moderate", "proposed"),
+        ("NIST-800-53-SI-3", "nist-800-53-rev5", "proposed"),
     }
     assert scanning["mapping_source"] == {
         **SOURCE,
