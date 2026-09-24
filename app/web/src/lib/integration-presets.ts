@@ -60,6 +60,38 @@ const PRESETS: Record<string, IntegrationPreset> = {
       "No Azure password or client secret is stored in TrustOps.",
     ],
   },
+  "intune-devices": {
+    connectorId: "intune-devices",
+    title: "Intune devices",
+    authLabel: "Graph read-only permission",
+    badges: ["DeviceManagementManagedDevices.Read.All", "No long-lived keys"],
+    summary:
+      "Grant the TrustOps Entra app or managed identity the Graph application permission DeviceManagementManagedDevices.Read.All, then confirm the tenant. Sync reads encryption, compliance, and jailbreak state only.",
+    providerSetup:
+      "An Entra admin grants admin consent for DeviceManagementManagedDevices.Read.All on the TrustOps app registration.",
+    trustOpsInput: "Microsoft Entra tenant ID.",
+    advancedTitle: "What is collected",
+    advancedDetails: [
+      "Device ID and name, user principal name, OS and version, ownership, encryption, compliance, and jailbreak state.",
+      "Hardware identifiers (IMEI, serial, MAC), phone numbers, and admin notes are never requested.",
+    ],
+  },
+  "bamboohr-personnel": {
+    connectorId: "bamboohr-personnel",
+    title: "BambooHR employees",
+    authLabel: "Dedicated read-only user",
+    badges: ["Minimal HR fields", "Secret reference only"],
+    summary:
+      "Create a BambooHR user whose access level can view only employment fields, store its API key as a secret, then enter the company domain. Sync reads status, hire and termination dates, department, and manager.",
+    providerSetup:
+      "A BambooHR admin creates a dedicated user with a custom access level limited to the employment fields, then generates its API key.",
+    trustOpsInput: "Company domain and the API key secret reference.",
+    advancedTitle: "What is collected",
+    advancedDetails: [
+      "Employee ID and number, work email, employment status, hire and termination dates, department, and manager ID.",
+      "Names, dates of birth, government IDs, compensation, addresses, and personal contact details are never requested.",
+    ],
+  },
   "snowflake-evidence-lake": {
     connectorId: "snowflake-evidence-lake",
     title: "Snowflake evidence lake",

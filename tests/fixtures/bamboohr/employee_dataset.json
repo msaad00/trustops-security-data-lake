@@ -1,0 +1,56 @@
+[
+  {
+    "fields": {
+      "eeid": "101",
+      "employeeNumber": "E-101",
+      "email": "ada@example.com",
+      "employmentStatus": "Full-Time",
+      "hireDate": "2024-03-01",
+      "terminationDate": null,
+      "jobInformationDepartment": "Engineering",
+      "supervisorEid": "100"
+    }
+  },
+  {
+    "fields": {
+      "eeid": "102",
+      "employeeNumber": "E-102",
+      "email": "grace@example.com",
+      "employmentStatus": "Terminated",
+      "hireDate": "2023-01-09",
+      "terminationDate": "2026-05-15",
+      "jobInformationDepartment": "Finance",
+      "supervisorEid": "100"
+    }
+  },
+  {
+    "fields": {
+      "eeid": "103",
+      "employeeNumber": "E-103",
+      "email": "alan@example.com",
+      "employmentStatus": "Full-Time",
+      "hireDate": "2022-07-18",
+      "terminationDate": "2026-12-31",
+      "jobInformationDepartment": "Engineering",
+      "supervisorEid": "101"
+    }
+  },
+  {
+    "fields": {
+      "eeid": "104",
+      "employeeNumber": "E-104",
+      "email": "linus@example.com",
+      "employmentStatus": "Contractor",
+      "hireDate": "2026-04-01",
+      "terminationDate": "0000-00-00",
+      "jobInformationDepartment": "Security",
+      "supervisorEid": "101"
+    }
+  },
+  {
+    "fields": {
+      "employeeNumber": "E-999",
+      "email": "no-id@example.com"
+    }
+  }
+]

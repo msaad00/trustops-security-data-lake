@@ -91,6 +91,31 @@ export const CONNECTOR_CREDENTIAL_FIELDS: Record<string, ConnectorFieldDef[]> =
         hint: "Confirm the subscription after granting Reader to the TrustOps app or workload identity.",
       },
     ],
+    "intune-devices": [
+      {
+        name: "tenant_id",
+        label: "Microsoft Entra tenant ID",
+        placeholder: "00000000-0000-0000-0000-000000000000",
+        required: true,
+        hint: "Tenant whose Intune devices TrustOps reads. The TrustOps app or managed identity needs the Graph application permission DeviceManagementManagedDevices.Read.All.",
+      },
+    ],
+    "bamboohr-personnel": [
+      {
+        name: "company_domain",
+        label: "BambooHR company domain",
+        placeholder: "acme",
+        required: true,
+        hint: "The subdomain only: acme for acme.bamboohr.com.",
+      },
+      {
+        name: "credential_ref",
+        label: "API key env var",
+        placeholder: "BAMBOOHR_API_KEY",
+        required: true,
+        hint: "API key of a dedicated BambooHR user whose access level can view only the employment fields TrustOps reads.",
+      },
+    ],
     "gcp-posture": [
       {
         name: "project_id",

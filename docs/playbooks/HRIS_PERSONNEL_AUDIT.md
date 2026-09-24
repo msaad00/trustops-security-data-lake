@@ -1,6 +1,6 @@
 # HRIS personnel audit playbook
 
-TrustOps does **not** ship a native HRIS connector today. For ISO 27001 and SOC 2 personnel controls, use this **IdP + access reviews** workflow until HRIS/MDM connectors land on the roadmap.
+The `bamboohr-personnel` connector brings employment records (status, hire and termination dates) into the lake ([CONNECTORS.md](../CONNECTORS.md#bamboohr-employment-records)). TrustOps does not yet correlate HR terminations with identity-provider accounts, so for termination-timeliness evidence keep using this **IdP + access reviews** workflow. Device posture comes from the `intune-devices` MDM connector ([CONNECTORS.md](../CONNECTORS.md#microsoft-intune-device-posture)).
 
 ## When to use this playbook
 
@@ -76,6 +76,6 @@ list_evidence_freshness?status=stale
 
 ## Roadmap
 
-Native HRIS connectors (Workday, BambooHR, Rippling) are **planned**. Until then this playbook is the supported path — do not claim automated HRIS coverage in customer-facing materials.
+BambooHR ships; Workday and Rippling connectors and an automated HR-termination ↔ IdP-account check are **planned**. Until that check lands, do not claim automated offboarding-timeliness coverage in customer-facing materials.
 
 See also [AUDIT_READINESS.md](../AUDIT_READINESS.md) and [PRODUCT_SHAPE.md](../PRODUCT_SHAPE.md).

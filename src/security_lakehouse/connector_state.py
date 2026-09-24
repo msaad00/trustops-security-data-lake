@@ -429,6 +429,9 @@ def _missing_required_config(
     if connector_id == "azure-posture":
         return ["subscription_id"] if not _has_value(credentials, "subscription_id") else []
 
+    if connector_id == "intune-devices":
+        return ["tenant_id"] if not _has_value(credentials, "tenant_id") else []
+
     if connector_id == "gcp-posture":
         # Credentials resolve through Application Default Credentials, so only
         # the project scope is required — no stored credential reference, the
@@ -486,6 +489,12 @@ def _missing_required_config(
             missing.append("credential_ref")
         if not _has_value(options, "stream"):
             missing.append("stream")
+        return missing
+
+    if connector_id == "bamboohr-personnel":
+        missing = [] if _has_value(credentials, "company_domain") else ["company_domain"]
+        if not (_has_value(credentials, "credential_ref") or _has_value(credentials, "token")):
+            missing.append("credential_ref")
         return missing
 
     if connector_id == "jira-ticketing":

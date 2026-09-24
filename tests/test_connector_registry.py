@@ -34,6 +34,8 @@ REAL_ADAPTERS = {
     "gcp-posture",
     "azure-posture",
     "jira-ticketing",
+    "intune-devices",
+    "bamboohr-personnel",
 }
 FIXTURES = Path(__file__).parent / "fixtures"
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -235,6 +237,8 @@ def test_unknown_connector_id_raises_no_runner_registered(tmp_path: Path) -> Non
         ("gcp-posture", "gcp", {}),
         ("azure-posture", "azure", {}),
         ("jira-ticketing", "jira", {}),
+        ("intune-devices", "intune", {}),
+        ("bamboohr-personnel", "bamboohr", {}),
     ],
 )
 def test_fixture_sync_flows_through_registry(

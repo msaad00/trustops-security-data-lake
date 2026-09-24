@@ -102,6 +102,8 @@ ships.
 | `gcp-posture`               | GCP IAM/posture         | executable                    |
 | `azure-posture`             | Azure IAM/posture       | executable                    |
 | `jira-ticketing`            | Jira tickets/workflows  | executable                    |
+| `intune-devices`            | Intune device posture   | executable                    |
+| `bamboohr-personnel`        | BambooHR employment     | executable                    |
 | `snowflake-evidence-lake`   | governed evidence lake  | executable existing-lake read |
 | `clickhouse-telemetry-lake` | telemetry analytics     | executable existing-lake read |
 | `object-storage-evidence`   | object evidence store   | executable existing-lake read |
@@ -506,3 +508,66 @@ security-lakehouse connectors probe \
 Supplying part of the refresh triple is rejected at probe and enable time with the
 specific missing fields, because a partial triple silently falls back to the
 static-token path at sync time.
+
+## Microsoft Intune: device posture
+
+`intune-devices` reads `GET /v1.0/deviceManagement/managedDevices` from Microsoft
+Graph and emits two current-state events per managed device:
+
+| Event                      | Pass when                                           | Controls                                               |
+| -------------------------- | --------------------------------------------------- | ------------------------------------------------------ |
+| `intune.device.encryption` | `isEncrypted` is true                               | FEDRAMP-AC-19.5, CMMC-3.1.19, ISO27001-A.8.1           |
+| `intune.device.compliance` | `complianceState` is `compliant` and not jailbroken | FEDRAMP-AC-19, CMMC-3.1.18, SOC2-CC6.8, ISO27001-A.8.1 |
+
+`noncompliant`, `conflict`, `error`, or a jailbroken/rooted device is a high-severity
+open finding; `inGracePeriod` is low; `unknown` and `configManager` are medium,
+because Intune has no verdict to rely on.
+
+**Identity.** The same `DefaultAzureCredential` model as `azure-posture`: an Entra
+app registration (workload identity federation or managed identity) with the Graph
+**application** permission `DeviceManagementManagedDevices.Read.All` and admin
+consent. The only stored field is `tenant_id` (`AZURE_TENANT_ID` overrides it); no
+client secret is stored in TrustOps. The tenant needs an active Intune license.
+
+**Data minimization.** The list call uses `$select` for posture fields only.
+IMEI, serial number, MAC addresses, phone number, user display name, and admin
+notes are never requested. `userPrincipalName` is kept as the join key to
+identity-provider users. Pagination follows `@odata.nextLink` only while it stays on
+`https://graph.microsoft.com`, so the bearer token is never sent elsewhere.
+
+## BambooHR: employment records
+
+`bamboohr-personnel` reads BambooHR's `employee` dataset
+(`POST https://{company_domain}.bamboohr.com/api/v2/datasets/employee/data`,
+paged 500 rows at a time) and emits one current-state
+`hris.personnel.employment` event per employee. The event shape is vendor-neutral
+(`security_lakehouse/hris.py`), so later HRIS connectors emit the same record.
+
+| Requested field            | Lands as            |
+| -------------------------- | ------------------- |
+| `eeid`                     | `employee_id`       |
+| `employeeNumber`           | `employee_number`   |
+| `email` (work email)       | `work_email`        |
+| `employmentStatus`         | `employment_status` |
+| `hireDate`                 | `hire_date`         |
+| `terminationDate`          | `termination_date`  |
+| `jobInformationDepartment` | `department`        |
+| `supervisorEid`            | `manager_id`        |
+
+`is_terminated` is true when the termination date is on or before the collection
+date. Events feed FEDRAMP-PS-4, FEDRAMP-PS-5, ISO27001-A.6.5, CMMC-3.9.2, and
+HIPAA-164.308(a)(3) as personnel-lifecycle evidence. They do not yet prove that
+access was removed on termination; that needs the planned HR ↔ IdP correlation.
+
+**PII boundary.** Only the fields above are requested. Names, dates of birth,
+government IDs, compensation, addresses, and personal contact details are never
+requested. Personnel attributes stay in raw/bronze (silver and gold carry ids and
+status only) and are marked `data_sensitivity: confidential`, so auditor and
+public-share roles see them redacted.
+
+**Credentials.** BambooHR API keys inherit the permissions of the user who created
+them. Create a dedicated user whose access level can view only these fields, and
+store its key as a secret reference (`credential_ref`, default
+`BAMBOOHR_API_KEY`; a `<NAME>_FILE` variant is preferred). `company_domain` must be
+the bare subdomain (`acme` for `acme.bamboohr.com`); anything else is rejected, so
+the authenticated request can never be pointed at another host.
