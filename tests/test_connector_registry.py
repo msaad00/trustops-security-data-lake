@@ -38,6 +38,7 @@ REAL_ADAPTERS = {
     "bamboohr-personnel",
     "rippling-personnel",
     "workday-personnel",
+    "databricks-evidence-lake",
 }
 FIXTURES = Path(__file__).parent / "fixtures"
 REPO_ROOT = Path(__file__).resolve().parents[1]

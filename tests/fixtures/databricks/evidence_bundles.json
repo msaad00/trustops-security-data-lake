@@ -1,0 +1,16 @@
+[
+  {
+    "bundle_id": "bundle-access-review-q2",
+    "object_uri": "s3://trustops-evidence/access-review-q2.json",
+    "hash_sha256": "f0f3b2d52a0c6d8f3f33f620f7826c67e331ab4899d66f5d6fd27a8b05d705ee",
+    "status": "passed",
+    "controls": ["SOC2-CC6.1", "ISO27001-A.5.15"]
+  },
+  {
+    "bundle_id": "bundle-runtime-monitoring",
+    "object_uri": "s3://trustops-evidence/runtime-monitoring.json",
+    "hash_sha256": "4314c4fe7aa825f1d40af401b4109b4cc37f8f01a399ed6785711a1fbe49b90b",
+    "status": "observed",
+    "controls": ["SOC2-CC7.2", "ISO27001-A.8.16"]
+  }
+]

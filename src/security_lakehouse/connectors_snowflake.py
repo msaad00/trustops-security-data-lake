@@ -179,31 +179,36 @@ class SnowflakeFixtureClient:
 
 
 def collect_snowflake_evidence(
-    client: SnowflakeClient | SnowflakeFixtureClient,
+    client: Any,
     *,
     account: str | None = None,
     collected_at: datetime | None = None,
     tenant_id: str = "customer-managed",
+    source: str = SOURCE,
 ) -> list[dict[str, Any]]:
-    """Collect canonical raw evidence from Snowflake evidence views."""
+    """Collect canonical raw evidence from the four TrustOps evidence views.
+
+    ``source`` labels the lake the views live in; the Databricks connector
+    reuses this contract with ``source="databricks"``.
+    """
     now = collected_at or datetime.now(UTC)
-    account_slug = _slug(account or getattr(client, "account", None) or "snowflake")
+    account_slug = _slug(account or getattr(client, "account", None) or source)
     rows: list[dict[str, Any]] = []
 
     for row in client.audit_events():
-        event = _audit_event(account_slug, row, now, tenant_id)
+        event = _audit_event(account_slug, row, now, tenant_id, source)
         if event:
             rows.append(event)
     for row in client.control_posture():
-        event = _control_posture_event(account_slug, row, now, tenant_id)
+        event = _control_posture_event(account_slug, row, now, tenant_id, source)
         if event:
             rows.append(event)
     for row in client.asset_risk():
-        event = _asset_risk_event(account_slug, row, now, tenant_id)
+        event = _asset_risk_event(account_slug, row, now, tenant_id, source)
         if event:
             rows.append(event)
     for row in client.evidence_bundles():
-        event = _evidence_bundle_event(account_slug, row, now, tenant_id)
+        event = _evidence_bundle_event(account_slug, row, now, tenant_id, source)
         if event:
             rows.append(event)
     return rows
@@ -330,28 +335,35 @@ def _probe_query_params(
     return params
 
 
-def _audit_event(account: str, row: dict[str, Any], collected_at: datetime, tenant_id: str) -> dict[str, Any] | None:
+def _audit_event(
+    account: str,
+    row: dict[str, Any],
+    collected_at: datetime,
+    tenant_id: str,
+    source: str = SOURCE,
+) -> dict[str, Any] | None:
     audit_id = _first(row, "audit_id", "event_id", "id")
     if not audit_id:
         return None
     actor = _first(row, "actor", "user_name", "principal") or "unknown"
-    object_name = _first(row, "object_name", "target", "asset_id") or "snowflake:audit"
+    object_name = _first(row, "object_name", "target", "asset_id") or f"{source}:audit"
     status = _status(row.get("status") or row.get("result") or "observed")
     severity = _severity(row.get("severity") or ("medium" if status == "open" else "info"))
     evidence_ref = _first(row, "evidence_ref", "query_id", "event_id") or str(audit_id)
     return _event(
+        source=source,
         account=account,
         collected_at=collected_at,
         tenant_id=tenant_id,
         signal="audit_event",
         dedupe_key=str(audit_id),
-        event_type="snowflake.audit.event",
-        asset_id=f"snowflake:audit:{_slug(object_name)}",
+        event_type=f"{source}.audit.event",
+        asset_id=f"{source}:audit:{_slug(object_name)}",
         asset_type="audit_event",
         controls=_controls(row, AUDIT_CONTROLS),
         status=status,
         severity=severity,
-        evidence_ref=f"snowflake://audit/{evidence_ref}",
+        evidence_ref=f"{source}://audit/{evidence_ref}",
         attributes={
             "audit_id": audit_id,
             "actor": actor,
@@ -368,6 +380,7 @@ def _control_posture_event(
     row: dict[str, Any],
     collected_at: datetime,
     tenant_id: str,
+    source: str = SOURCE,
 ) -> dict[str, Any] | None:
     control_id = _first(row, "control_id", "control")
     if not control_id:
@@ -377,18 +390,19 @@ def _control_posture_event(
     severity = _severity(row.get("severity") or _severity_from_risk(risk, status))
     evidence_ref = _first(row, "evidence_ref", "snapshot_id") or str(control_id)
     return _event(
+        source=source,
         account=account,
         collected_at=collected_at,
         tenant_id=tenant_id,
         signal="control_posture",
         dedupe_key=str(control_id),
-        event_type="snowflake.control.posture",
-        asset_id=f"snowflake:control:{_slug(control_id)}",
+        event_type=f"{source}.control.posture",
+        asset_id=f"{source}:control:{_slug(control_id)}",
         asset_type="control_posture",
         controls=_controls(row, [str(control_id), *CONTROL_POSTURE_CONTROLS]),
         status=status,
         severity=severity,
-        evidence_ref=f"snowflake://control_posture/{evidence_ref}",
+        evidence_ref=f"{source}://control_posture/{evidence_ref}",
         attributes={
             "control_id": control_id,
             "framework_id": row.get("framework_id"),
@@ -400,7 +414,11 @@ def _control_posture_event(
 
 
 def _asset_risk_event(
-    account: str, row: dict[str, Any], collected_at: datetime, tenant_id: str
+    account: str,
+    row: dict[str, Any],
+    collected_at: datetime,
+    tenant_id: str,
+    source: str = SOURCE,
 ) -> dict[str, Any] | None:
     asset_id = _first(row, "asset_id", "asset")
     if not asset_id:
@@ -410,18 +428,19 @@ def _asset_risk_event(
     severity = _severity(row.get("severity") or _severity_from_risk(risk, status))
     evidence_ref = _first(row, "evidence_ref", "asset_id") or str(asset_id)
     return _event(
+        source=source,
         account=account,
         collected_at=collected_at,
         tenant_id=tenant_id,
         signal="asset_risk",
         dedupe_key=str(asset_id),
-        event_type="snowflake.asset.risk",
+        event_type=f"{source}.asset.risk",
         asset_id=str(asset_id),
         asset_type=str(row.get("asset_type") or "asset"),
         controls=_controls(row, ASSET_RISK_CONTROLS),
         status=status,
         severity=severity,
-        evidence_ref=f"snowflake://asset_risk/{evidence_ref}",
+        evidence_ref=f"{source}://asset_risk/{evidence_ref}",
         attributes={
             "asset_id": asset_id,
             "asset_type": row.get("asset_type"),
@@ -438,6 +457,7 @@ def _evidence_bundle_event(
     row: dict[str, Any],
     collected_at: datetime,
     tenant_id: str,
+    source: str = SOURCE,
 ) -> dict[str, Any] | None:
     bundle_id = _first(row, "bundle_id", "evidence_id", "id")
     if not bundle_id:
@@ -446,13 +466,14 @@ def _evidence_bundle_event(
     status = _status(row.get("status") or "observed")
     severity = _severity(row.get("severity") or "info")
     return _event(
+        source=source,
         account=account,
         collected_at=collected_at,
         tenant_id=tenant_id,
         signal="evidence_bundle",
         dedupe_key=str(bundle_id),
-        event_type="snowflake.evidence.bundle",
-        asset_id=f"snowflake:evidence_bundle:{_slug(bundle_id)}",
+        event_type=f"{source}.evidence.bundle",
+        asset_id=f"{source}:evidence_bundle:{_slug(bundle_id)}",
         asset_type="evidence_bundle",
         controls=_controls(row, BUNDLE_CONTROLS),
         status=status,
@@ -482,16 +503,17 @@ def _event(
     evidence_ref: str,
     attributes: dict[str, Any],
     dedupe_key: str | None = None,
+    source: str = SOURCE,
 ) -> dict[str, Any]:
     stable = _stable_suffix(account=account, signal=signal, asset_id=asset_id, dedupe_key=dedupe_key)
     owner = str(attributes.get("owner") or attributes.get("actor") or account)
     environment = str(attributes.get("environment") or "prod")
     return {
-        "event_id": f"snowflake-{stable}",
+        "event_id": f"{source}-{stable}",
         "tenant_id": tenant_id,
         "workspace_id": "default",
         "event_time": utc_iso(collected_at),
-        "source": SOURCE,
+        "source": source,
         "event_type": event_type,
         "entity": {
             "asset_id": asset_id,

@@ -497,6 +497,13 @@ def _missing_required_config(
             missing.append("credential_ref")
         return missing
 
+    if connector_id == "databricks-evidence-lake":
+        return [
+            field
+            for field in ("host", "warehouse_id", "catalog", "schema", "client_id", "client_secret_ref")
+            if not _has_value(credentials, field)
+        ]
+
     if connector_id == "rippling-personnel":
         return (
             []
