@@ -13,6 +13,7 @@ def test_unsuccessful_logon_limits_use_the_nist_800_171_crosswalk() -> None:
     } == {
         ("CMMC-3.1.8", "cmmc-2-level2", "proposed"),
         ("FEDRAMP-AC-7", "fedramp-moderate", "proposed"),
+        ("NIST-800-53-AC-7", "nist-800-53-rev5", "proposed"),
     }
     assert safeguard["mapping_source"] == {
         "name": "NIST SP 800-171 Rev. 2",

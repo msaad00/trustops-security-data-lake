@@ -1,0 +1,7118 @@
+{
+  "schema": "trustops.framework_pack_manifest.v1",
+  "source": {
+    "name": "Electronic (OSCAL) Version of NIST SP 800-53 Rev 5.2.0 Controls and SP 800-53A Rev 5.2.0 Assessment Procedures",
+    "version": "5.2.0",
+    "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final",
+    "oscal_repository": "https://github.com/usnistgov/oscal-content",
+    "oscal_commit": "78650f02ad9321bb7b817846f8fbd4f2bcd620de",
+    "catalog_file": "NIST_SP-800-53_rev5_catalog.json",
+    "catalog_sha256": "01f37cf90ea99d92242c936cbfbdebcc338eef1f71454e2acac36cc56e9bc062",
+    "baseline_counts": {
+      "low": 149,
+      "moderate": 287,
+      "high": 370,
+      "privacy": 96
+    }
+  },
+  "rows": [
+    {
+      "id": "AC-1",
+      "title": "Policy and Procedures",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "AC-2",
+      "title": "Account Management",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AC-2.1",
+      "title": "Automated System Account Management",
+      "family": "AC",
+      "parent": "AC-2",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-2.2",
+      "title": "Automated Temporary and Emergency Account Management",
+      "family": "AC",
+      "parent": "AC-2",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-2.3",
+      "title": "Disable Accounts",
+      "family": "AC",
+      "parent": "AC-2",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-2.4",
+      "title": "Automated Audit Actions",
+      "family": "AC",
+      "parent": "AC-2",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-2.5",
+      "title": "Inactivity Logout",
+      "family": "AC",
+      "parent": "AC-2",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-2.6",
+      "title": "Dynamic Privilege Management",
+      "family": "AC",
+      "parent": "AC-2",
+      "baselines": []
+    },
+    {
+      "id": "AC-2.7",
+      "title": "Privileged User Accounts",
+      "family": "AC",
+      "parent": "AC-2",
+      "baselines": []
+    },
+    {
+      "id": "AC-2.8",
+      "title": "Dynamic Account Management",
+      "family": "AC",
+      "parent": "AC-2",
+      "baselines": []
+    },
+    {
+      "id": "AC-2.9",
+      "title": "Restrictions on Use of Shared and Group Accounts",
+      "family": "AC",
+      "parent": "AC-2",
+      "baselines": []
+    },
+    {
+      "id": "AC-2.11",
+      "title": "Usage Conditions",
+      "family": "AC",
+      "parent": "AC-2",
+      "baselines": ["high"]
+    },
+    {
+      "id": "AC-2.12",
+      "title": "Account Monitoring for Atypical Usage",
+      "family": "AC",
+      "parent": "AC-2",
+      "baselines": ["high"]
+    },
+    {
+      "id": "AC-2.13",
+      "title": "Disable Accounts for High-risk Individuals",
+      "family": "AC",
+      "parent": "AC-2",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-3",
+      "title": "Access Enforcement",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AC-3.2",
+      "title": "Dual Authorization",
+      "family": "AC",
+      "parent": "AC-3",
+      "baselines": []
+    },
+    {
+      "id": "AC-3.3",
+      "title": "Mandatory Access Control",
+      "family": "AC",
+      "parent": "AC-3",
+      "baselines": []
+    },
+    {
+      "id": "AC-3.4",
+      "title": "Discretionary Access Control",
+      "family": "AC",
+      "parent": "AC-3",
+      "baselines": []
+    },
+    {
+      "id": "AC-3.5",
+      "title": "Security-relevant Information",
+      "family": "AC",
+      "parent": "AC-3",
+      "baselines": []
+    },
+    {
+      "id": "AC-3.7",
+      "title": "Role-based Access Control",
+      "family": "AC",
+      "parent": "AC-3",
+      "baselines": []
+    },
+    {
+      "id": "AC-3.8",
+      "title": "Revocation of Access Authorizations",
+      "family": "AC",
+      "parent": "AC-3",
+      "baselines": []
+    },
+    {
+      "id": "AC-3.9",
+      "title": "Controlled Release",
+      "family": "AC",
+      "parent": "AC-3",
+      "baselines": []
+    },
+    {
+      "id": "AC-3.10",
+      "title": "Audited Override of Access Control Mechanisms",
+      "family": "AC",
+      "parent": "AC-3",
+      "baselines": []
+    },
+    {
+      "id": "AC-3.11",
+      "title": "Restrict Access to Specific Information Types",
+      "family": "AC",
+      "parent": "AC-3",
+      "baselines": []
+    },
+    {
+      "id": "AC-3.12",
+      "title": "Assert and Enforce Application Access",
+      "family": "AC",
+      "parent": "AC-3",
+      "baselines": []
+    },
+    {
+      "id": "AC-3.13",
+      "title": "Attribute-based Access Control",
+      "family": "AC",
+      "parent": "AC-3",
+      "baselines": []
+    },
+    {
+      "id": "AC-3.14",
+      "title": "Individual Access",
+      "family": "AC",
+      "parent": "AC-3",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "AC-3.15",
+      "title": "Discretionary and Mandatory Access Control",
+      "family": "AC",
+      "parent": "AC-3",
+      "baselines": []
+    },
+    {
+      "id": "AC-4",
+      "title": "Information Flow Enforcement",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-4.1",
+      "title": "Object Security and Privacy Attributes",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.2",
+      "title": "Processing Domains",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.3",
+      "title": "Dynamic Information Flow Control",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.4",
+      "title": "Flow Control of Encrypted Information",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": ["high"]
+    },
+    {
+      "id": "AC-4.5",
+      "title": "Embedded Data Types",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.6",
+      "title": "Metadata",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.7",
+      "title": "One-way Flow Mechanisms",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.8",
+      "title": "Security and Privacy Policy Filters",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.9",
+      "title": "Human Reviews",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.10",
+      "title": "Enable and Disable Security or Privacy Policy Filters",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.11",
+      "title": "Configuration of Security or Privacy Policy Filters",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.12",
+      "title": "Data Type Identifiers",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.13",
+      "title": "Decomposition into Policy-relevant Subcomponents",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.14",
+      "title": "Security or Privacy Policy Filter Constraints",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.15",
+      "title": "Detection of Unsanctioned Information",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.17",
+      "title": "Domain Authentication",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.19",
+      "title": "Validation of Metadata",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.20",
+      "title": "Approved Solutions",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.21",
+      "title": "Physical or Logical Separation of Information Flows",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.22",
+      "title": "Access Only",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.23",
+      "title": "Modify Non-releasable Information",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.24",
+      "title": "Internal Normalized Format",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.25",
+      "title": "Data Sanitization",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.26",
+      "title": "Audit Filtering Actions",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.27",
+      "title": "Redundant/Independent Filtering Mechanisms",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.28",
+      "title": "Linear Filter Pipelines",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.29",
+      "title": "Filter Orchestration Engines",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.30",
+      "title": "Filter Mechanisms Using Multiple Processes",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.31",
+      "title": "Failed Content Transfer Prevention",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-4.32",
+      "title": "Process Requirements for Information Transfer",
+      "family": "AC",
+      "parent": "AC-4",
+      "baselines": []
+    },
+    {
+      "id": "AC-5",
+      "title": "Separation of Duties",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-6",
+      "title": "Least Privilege",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-6.1",
+      "title": "Authorize Access to Security Functions",
+      "family": "AC",
+      "parent": "AC-6",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-6.2",
+      "title": "Non-privileged Access for Nonsecurity Functions",
+      "family": "AC",
+      "parent": "AC-6",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-6.3",
+      "title": "Network Access to Privileged Commands",
+      "family": "AC",
+      "parent": "AC-6",
+      "baselines": ["high"]
+    },
+    {
+      "id": "AC-6.4",
+      "title": "Separate Processing Domains",
+      "family": "AC",
+      "parent": "AC-6",
+      "baselines": []
+    },
+    {
+      "id": "AC-6.5",
+      "title": "Privileged Accounts",
+      "family": "AC",
+      "parent": "AC-6",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-6.6",
+      "title": "Privileged Access by Non-organizational Users",
+      "family": "AC",
+      "parent": "AC-6",
+      "baselines": []
+    },
+    {
+      "id": "AC-6.7",
+      "title": "Review of User Privileges",
+      "family": "AC",
+      "parent": "AC-6",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-6.8",
+      "title": "Privilege Levels for Code Execution",
+      "family": "AC",
+      "parent": "AC-6",
+      "baselines": []
+    },
+    {
+      "id": "AC-6.9",
+      "title": "Log Use of Privileged Functions",
+      "family": "AC",
+      "parent": "AC-6",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-6.10",
+      "title": "Prohibit Non-privileged Users from Executing Privileged Functions",
+      "family": "AC",
+      "parent": "AC-6",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-7",
+      "title": "Unsuccessful Logon Attempts",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AC-7.2",
+      "title": "Purge or Wipe Mobile Device",
+      "family": "AC",
+      "parent": "AC-7",
+      "baselines": []
+    },
+    {
+      "id": "AC-7.3",
+      "title": "Biometric Attempt Limiting",
+      "family": "AC",
+      "parent": "AC-7",
+      "baselines": []
+    },
+    {
+      "id": "AC-7.4",
+      "title": "Use of Alternate Authentication Factor",
+      "family": "AC",
+      "parent": "AC-7",
+      "baselines": []
+    },
+    {
+      "id": "AC-8",
+      "title": "System Use Notification",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AC-9",
+      "title": "Previous Logon Notification",
+      "family": "AC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "AC-9.1",
+      "title": "Unsuccessful Logons",
+      "family": "AC",
+      "parent": "AC-9",
+      "baselines": []
+    },
+    {
+      "id": "AC-9.2",
+      "title": "Successful and Unsuccessful Logons",
+      "family": "AC",
+      "parent": "AC-9",
+      "baselines": []
+    },
+    {
+      "id": "AC-9.3",
+      "title": "Notification of Account Changes",
+      "family": "AC",
+      "parent": "AC-9",
+      "baselines": []
+    },
+    {
+      "id": "AC-9.4",
+      "title": "Additional Logon Information",
+      "family": "AC",
+      "parent": "AC-9",
+      "baselines": []
+    },
+    {
+      "id": "AC-10",
+      "title": "Concurrent Session Control",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["high"]
+    },
+    {
+      "id": "AC-11",
+      "title": "Device Lock",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-11.1",
+      "title": "Pattern-hiding Displays",
+      "family": "AC",
+      "parent": "AC-11",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-12",
+      "title": "Session Termination",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-12.1",
+      "title": "User-initiated Logouts",
+      "family": "AC",
+      "parent": "AC-12",
+      "baselines": []
+    },
+    {
+      "id": "AC-12.2",
+      "title": "Termination Message",
+      "family": "AC",
+      "parent": "AC-12",
+      "baselines": []
+    },
+    {
+      "id": "AC-12.3",
+      "title": "Timeout Warning Message",
+      "family": "AC",
+      "parent": "AC-12",
+      "baselines": []
+    },
+    {
+      "id": "AC-14",
+      "title": "Permitted Actions Without Identification or Authentication",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AC-16",
+      "title": "Security and Privacy Attributes",
+      "family": "AC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "AC-16.1",
+      "title": "Dynamic Attribute Association",
+      "family": "AC",
+      "parent": "AC-16",
+      "baselines": []
+    },
+    {
+      "id": "AC-16.2",
+      "title": "Attribute Value Changes by Authorized Individuals",
+      "family": "AC",
+      "parent": "AC-16",
+      "baselines": []
+    },
+    {
+      "id": "AC-16.3",
+      "title": "Maintenance of Attribute Associations by System",
+      "family": "AC",
+      "parent": "AC-16",
+      "baselines": []
+    },
+    {
+      "id": "AC-16.4",
+      "title": "Association of Attributes by Authorized Individuals",
+      "family": "AC",
+      "parent": "AC-16",
+      "baselines": []
+    },
+    {
+      "id": "AC-16.5",
+      "title": "Attribute Displays on Objects to Be Output",
+      "family": "AC",
+      "parent": "AC-16",
+      "baselines": []
+    },
+    {
+      "id": "AC-16.6",
+      "title": "Maintenance of Attribute Association",
+      "family": "AC",
+      "parent": "AC-16",
+      "baselines": []
+    },
+    {
+      "id": "AC-16.7",
+      "title": "Consistent Attribute Interpretation",
+      "family": "AC",
+      "parent": "AC-16",
+      "baselines": []
+    },
+    {
+      "id": "AC-16.8",
+      "title": "Association Techniques and Technologies",
+      "family": "AC",
+      "parent": "AC-16",
+      "baselines": []
+    },
+    {
+      "id": "AC-16.9",
+      "title": "Attribute Reassignment \u2014 Regrading Mechanisms",
+      "family": "AC",
+      "parent": "AC-16",
+      "baselines": []
+    },
+    {
+      "id": "AC-16.10",
+      "title": "Attribute Configuration by Authorized Individuals",
+      "family": "AC",
+      "parent": "AC-16",
+      "baselines": []
+    },
+    {
+      "id": "AC-17",
+      "title": "Remote Access",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AC-17.1",
+      "title": "Monitoring and Control",
+      "family": "AC",
+      "parent": "AC-17",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-17.2",
+      "title": "Protection of Confidentiality and Integrity Using Encryption",
+      "family": "AC",
+      "parent": "AC-17",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-17.3",
+      "title": "Managed Access Control Points",
+      "family": "AC",
+      "parent": "AC-17",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-17.4",
+      "title": "Privileged Commands and Access",
+      "family": "AC",
+      "parent": "AC-17",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-17.6",
+      "title": "Protection of Mechanism Information",
+      "family": "AC",
+      "parent": "AC-17",
+      "baselines": []
+    },
+    {
+      "id": "AC-17.9",
+      "title": "Disconnect or Disable Access",
+      "family": "AC",
+      "parent": "AC-17",
+      "baselines": []
+    },
+    {
+      "id": "AC-17.10",
+      "title": "Authenticate Remote Commands",
+      "family": "AC",
+      "parent": "AC-17",
+      "baselines": []
+    },
+    {
+      "id": "AC-18",
+      "title": "Wireless Access",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AC-18.1",
+      "title": "Authentication and Encryption",
+      "family": "AC",
+      "parent": "AC-18",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-18.3",
+      "title": "Disable Wireless Networking",
+      "family": "AC",
+      "parent": "AC-18",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-18.4",
+      "title": "Restrict Configurations by Users",
+      "family": "AC",
+      "parent": "AC-18",
+      "baselines": ["high"]
+    },
+    {
+      "id": "AC-18.5",
+      "title": "Antennas and Transmission Power Levels",
+      "family": "AC",
+      "parent": "AC-18",
+      "baselines": ["high"]
+    },
+    {
+      "id": "AC-19",
+      "title": "Access Control for Mobile Devices",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AC-19.4",
+      "title": "Restrictions for Classified Information",
+      "family": "AC",
+      "parent": "AC-19",
+      "baselines": []
+    },
+    {
+      "id": "AC-19.5",
+      "title": "Full Device or Container-based Encryption",
+      "family": "AC",
+      "parent": "AC-19",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-20",
+      "title": "Use of External Systems",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AC-20.1",
+      "title": "Limits on Authorized Use",
+      "family": "AC",
+      "parent": "AC-20",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-20.2",
+      "title": "Portable Storage Devices \u2014 Restricted Use",
+      "family": "AC",
+      "parent": "AC-20",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-20.3",
+      "title": "Non-organizationally Owned Systems \u2014 Restricted Use",
+      "family": "AC",
+      "parent": "AC-20",
+      "baselines": []
+    },
+    {
+      "id": "AC-20.4",
+      "title": "Network Accessible Storage Devices \u2014 Prohibited Use",
+      "family": "AC",
+      "parent": "AC-20",
+      "baselines": []
+    },
+    {
+      "id": "AC-20.5",
+      "title": "Portable Storage Devices \u2014 Prohibited Use",
+      "family": "AC",
+      "parent": "AC-20",
+      "baselines": []
+    },
+    {
+      "id": "AC-21",
+      "title": "Information Sharing",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AC-21.1",
+      "title": "Automated Decision Support",
+      "family": "AC",
+      "parent": "AC-21",
+      "baselines": []
+    },
+    {
+      "id": "AC-21.2",
+      "title": "Information Search and Retrieval",
+      "family": "AC",
+      "parent": "AC-21",
+      "baselines": []
+    },
+    {
+      "id": "AC-22",
+      "title": "Publicly Accessible Content",
+      "family": "AC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AC-23",
+      "title": "Data Mining Protection",
+      "family": "AC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "AC-24",
+      "title": "Access Control Decisions",
+      "family": "AC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "AC-24.1",
+      "title": "Transmit Access Authorization Information",
+      "family": "AC",
+      "parent": "AC-24",
+      "baselines": []
+    },
+    {
+      "id": "AC-24.2",
+      "title": "No User or Process Identity",
+      "family": "AC",
+      "parent": "AC-24",
+      "baselines": []
+    },
+    {
+      "id": "AC-25",
+      "title": "Reference Monitor",
+      "family": "AC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "AT-1",
+      "title": "Policy and Procedures",
+      "family": "AT",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "AT-2",
+      "title": "Literacy Training and Awareness",
+      "family": "AT",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "AT-2.1",
+      "title": "Practical Exercises",
+      "family": "AT",
+      "parent": "AT-2",
+      "baselines": []
+    },
+    {
+      "id": "AT-2.2",
+      "title": "Insider Threat",
+      "family": "AT",
+      "parent": "AT-2",
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AT-2.3",
+      "title": "Social Engineering and Mining",
+      "family": "AT",
+      "parent": "AT-2",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AT-2.4",
+      "title": "Suspicious Communications and Anomalous System Behavior",
+      "family": "AT",
+      "parent": "AT-2",
+      "baselines": []
+    },
+    {
+      "id": "AT-2.5",
+      "title": "Advanced Persistent Threat",
+      "family": "AT",
+      "parent": "AT-2",
+      "baselines": []
+    },
+    {
+      "id": "AT-2.6",
+      "title": "Cyber Threat Environment",
+      "family": "AT",
+      "parent": "AT-2",
+      "baselines": []
+    },
+    {
+      "id": "AT-3",
+      "title": "Role-based Training",
+      "family": "AT",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "AT-3.1",
+      "title": "Environmental Controls",
+      "family": "AT",
+      "parent": "AT-3",
+      "baselines": []
+    },
+    {
+      "id": "AT-3.2",
+      "title": "Physical Security Controls",
+      "family": "AT",
+      "parent": "AT-3",
+      "baselines": []
+    },
+    {
+      "id": "AT-3.3",
+      "title": "Practical Exercises",
+      "family": "AT",
+      "parent": "AT-3",
+      "baselines": []
+    },
+    {
+      "id": "AT-3.5",
+      "title": "Processing Personally Identifiable Information",
+      "family": "AT",
+      "parent": "AT-3",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "AT-4",
+      "title": "Training Records",
+      "family": "AT",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "AT-6",
+      "title": "Training Feedback",
+      "family": "AT",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "AU-1",
+      "title": "Policy and Procedures",
+      "family": "AU",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "AU-2",
+      "title": "Event Logging",
+      "family": "AU",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "AU-3",
+      "title": "Content of Audit Records",
+      "family": "AU",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AU-3.1",
+      "title": "Additional Audit Information",
+      "family": "AU",
+      "parent": "AU-3",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AU-3.3",
+      "title": "Limit Personally Identifiable Information Elements",
+      "family": "AU",
+      "parent": "AU-3",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "AU-4",
+      "title": "Audit Log Storage Capacity",
+      "family": "AU",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AU-4.1",
+      "title": "Transfer to Alternate Storage",
+      "family": "AU",
+      "parent": "AU-4",
+      "baselines": []
+    },
+    {
+      "id": "AU-5",
+      "title": "Response to Audit Logging Process Failures",
+      "family": "AU",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AU-5.1",
+      "title": "Storage Capacity Warning",
+      "family": "AU",
+      "parent": "AU-5",
+      "baselines": ["high"]
+    },
+    {
+      "id": "AU-5.2",
+      "title": "Real-time Alerts",
+      "family": "AU",
+      "parent": "AU-5",
+      "baselines": ["high"]
+    },
+    {
+      "id": "AU-5.3",
+      "title": "Configurable Traffic Volume Thresholds",
+      "family": "AU",
+      "parent": "AU-5",
+      "baselines": []
+    },
+    {
+      "id": "AU-5.4",
+      "title": "Shutdown on Failure",
+      "family": "AU",
+      "parent": "AU-5",
+      "baselines": []
+    },
+    {
+      "id": "AU-5.5",
+      "title": "Alternate Audit Logging Capability",
+      "family": "AU",
+      "parent": "AU-5",
+      "baselines": []
+    },
+    {
+      "id": "AU-6",
+      "title": "Audit Record Review, Analysis, and Reporting",
+      "family": "AU",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AU-6.1",
+      "title": "Automated Process Integration",
+      "family": "AU",
+      "parent": "AU-6",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AU-6.3",
+      "title": "Correlate Audit Record Repositories",
+      "family": "AU",
+      "parent": "AU-6",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AU-6.4",
+      "title": "Central Review and Analysis",
+      "family": "AU",
+      "parent": "AU-6",
+      "baselines": []
+    },
+    {
+      "id": "AU-6.5",
+      "title": "Integrated Analysis of Audit Records",
+      "family": "AU",
+      "parent": "AU-6",
+      "baselines": ["high"]
+    },
+    {
+      "id": "AU-6.6",
+      "title": "Correlation with Physical Monitoring",
+      "family": "AU",
+      "parent": "AU-6",
+      "baselines": ["high"]
+    },
+    {
+      "id": "AU-6.7",
+      "title": "Permitted Actions",
+      "family": "AU",
+      "parent": "AU-6",
+      "baselines": []
+    },
+    {
+      "id": "AU-6.8",
+      "title": "Full Text Analysis of Privileged Commands",
+      "family": "AU",
+      "parent": "AU-6",
+      "baselines": []
+    },
+    {
+      "id": "AU-6.9",
+      "title": "Correlation with Information from Nontechnical Sources",
+      "family": "AU",
+      "parent": "AU-6",
+      "baselines": []
+    },
+    {
+      "id": "AU-7",
+      "title": "Audit Record Reduction and Report Generation",
+      "family": "AU",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AU-7.1",
+      "title": "Automatic Processing",
+      "family": "AU",
+      "parent": "AU-7",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AU-8",
+      "title": "Time Stamps",
+      "family": "AU",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AU-9",
+      "title": "Protection of Audit Information",
+      "family": "AU",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AU-9.1",
+      "title": "Hardware Write-once Media",
+      "family": "AU",
+      "parent": "AU-9",
+      "baselines": []
+    },
+    {
+      "id": "AU-9.2",
+      "title": "Store on Separate Physical Systems or Components",
+      "family": "AU",
+      "parent": "AU-9",
+      "baselines": ["high"]
+    },
+    {
+      "id": "AU-9.3",
+      "title": "Cryptographic Protection",
+      "family": "AU",
+      "parent": "AU-9",
+      "baselines": ["high"]
+    },
+    {
+      "id": "AU-9.4",
+      "title": "Access by Subset of Privileged Users",
+      "family": "AU",
+      "parent": "AU-9",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "AU-9.5",
+      "title": "Dual Authorization",
+      "family": "AU",
+      "parent": "AU-9",
+      "baselines": []
+    },
+    {
+      "id": "AU-9.6",
+      "title": "Read-only Access",
+      "family": "AU",
+      "parent": "AU-9",
+      "baselines": []
+    },
+    {
+      "id": "AU-9.7",
+      "title": "Store on Component with Different Operating System",
+      "family": "AU",
+      "parent": "AU-9",
+      "baselines": []
+    },
+    {
+      "id": "AU-10",
+      "title": "Non-repudiation",
+      "family": "AU",
+      "parent": null,
+      "baselines": ["high"]
+    },
+    {
+      "id": "AU-10.1",
+      "title": "Association of Identities",
+      "family": "AU",
+      "parent": "AU-10",
+      "baselines": []
+    },
+    {
+      "id": "AU-10.2",
+      "title": "Validate Binding of Information Producer Identity",
+      "family": "AU",
+      "parent": "AU-10",
+      "baselines": []
+    },
+    {
+      "id": "AU-10.3",
+      "title": "Chain of Custody",
+      "family": "AU",
+      "parent": "AU-10",
+      "baselines": []
+    },
+    {
+      "id": "AU-10.4",
+      "title": "Validate Binding of Information Reviewer Identity",
+      "family": "AU",
+      "parent": "AU-10",
+      "baselines": []
+    },
+    {
+      "id": "AU-11",
+      "title": "Audit Record Retention",
+      "family": "AU",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "AU-11.1",
+      "title": "Long-term Retrieval Capability",
+      "family": "AU",
+      "parent": "AU-11",
+      "baselines": []
+    },
+    {
+      "id": "AU-12",
+      "title": "Audit Record Generation",
+      "family": "AU",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "AU-12.1",
+      "title": "System-wide and Time-correlated Audit Trail",
+      "family": "AU",
+      "parent": "AU-12",
+      "baselines": ["high"]
+    },
+    {
+      "id": "AU-12.2",
+      "title": "Standardized Formats",
+      "family": "AU",
+      "parent": "AU-12",
+      "baselines": []
+    },
+    {
+      "id": "AU-12.3",
+      "title": "Changes by Authorized Individuals",
+      "family": "AU",
+      "parent": "AU-12",
+      "baselines": ["high"]
+    },
+    {
+      "id": "AU-12.4",
+      "title": "Query Parameter Audits of Personally Identifiable Information",
+      "family": "AU",
+      "parent": "AU-12",
+      "baselines": []
+    },
+    {
+      "id": "AU-13",
+      "title": "Monitoring for Information Disclosure",
+      "family": "AU",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "AU-13.1",
+      "title": "Use of Automated Tools",
+      "family": "AU",
+      "parent": "AU-13",
+      "baselines": []
+    },
+    {
+      "id": "AU-13.2",
+      "title": "Review of Monitored Sites",
+      "family": "AU",
+      "parent": "AU-13",
+      "baselines": []
+    },
+    {
+      "id": "AU-13.3",
+      "title": "Unauthorized Replication of Information",
+      "family": "AU",
+      "parent": "AU-13",
+      "baselines": []
+    },
+    {
+      "id": "AU-14",
+      "title": "Session Audit",
+      "family": "AU",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "AU-14.1",
+      "title": "System Start-up",
+      "family": "AU",
+      "parent": "AU-14",
+      "baselines": []
+    },
+    {
+      "id": "AU-14.3",
+      "title": "Remote Viewing and Listening",
+      "family": "AU",
+      "parent": "AU-14",
+      "baselines": []
+    },
+    {
+      "id": "AU-16",
+      "title": "Cross-organizational Audit Logging",
+      "family": "AU",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "AU-16.1",
+      "title": "Identity Preservation",
+      "family": "AU",
+      "parent": "AU-16",
+      "baselines": []
+    },
+    {
+      "id": "AU-16.2",
+      "title": "Sharing of Audit Information",
+      "family": "AU",
+      "parent": "AU-16",
+      "baselines": []
+    },
+    {
+      "id": "AU-16.3",
+      "title": "Disassociability",
+      "family": "AU",
+      "parent": "AU-16",
+      "baselines": []
+    },
+    {
+      "id": "CA-1",
+      "title": "Policy and Procedures",
+      "family": "CA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "CA-2",
+      "title": "Control Assessments",
+      "family": "CA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "CA-2.1",
+      "title": "Independent Assessors",
+      "family": "CA",
+      "parent": "CA-2",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CA-2.2",
+      "title": "Specialized Assessments",
+      "family": "CA",
+      "parent": "CA-2",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CA-2.3",
+      "title": "Leveraging Results from External Organizations",
+      "family": "CA",
+      "parent": "CA-2",
+      "baselines": []
+    },
+    {
+      "id": "CA-3",
+      "title": "Information Exchange",
+      "family": "CA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "CA-3.6",
+      "title": "Transfer Authorizations",
+      "family": "CA",
+      "parent": "CA-3",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CA-3.7",
+      "title": "Transitive Information Exchanges",
+      "family": "CA",
+      "parent": "CA-3",
+      "baselines": []
+    },
+    {
+      "id": "CA-5",
+      "title": "Plan of Action and Milestones",
+      "family": "CA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "CA-5.1",
+      "title": "Automation Support for Accuracy and Currency",
+      "family": "CA",
+      "parent": "CA-5",
+      "baselines": []
+    },
+    {
+      "id": "CA-6",
+      "title": "Authorization",
+      "family": "CA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "CA-6.1",
+      "title": "Joint Authorization \u2014 Intra-organization",
+      "family": "CA",
+      "parent": "CA-6",
+      "baselines": []
+    },
+    {
+      "id": "CA-6.2",
+      "title": "Joint Authorization \u2014 Inter-organization",
+      "family": "CA",
+      "parent": "CA-6",
+      "baselines": []
+    },
+    {
+      "id": "CA-7",
+      "title": "Continuous Monitoring",
+      "family": "CA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "CA-7.1",
+      "title": "Independent Assessment",
+      "family": "CA",
+      "parent": "CA-7",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CA-7.3",
+      "title": "Trend Analyses",
+      "family": "CA",
+      "parent": "CA-7",
+      "baselines": []
+    },
+    {
+      "id": "CA-7.4",
+      "title": "Risk Monitoring",
+      "family": "CA",
+      "parent": "CA-7",
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "CA-7.5",
+      "title": "Consistency Analysis",
+      "family": "CA",
+      "parent": "CA-7",
+      "baselines": []
+    },
+    {
+      "id": "CA-7.6",
+      "title": "Automation Support for Monitoring",
+      "family": "CA",
+      "parent": "CA-7",
+      "baselines": []
+    },
+    {
+      "id": "CA-8",
+      "title": "Penetration Testing",
+      "family": "CA",
+      "parent": null,
+      "baselines": ["high"]
+    },
+    {
+      "id": "CA-8.1",
+      "title": "Independent Penetration Testing Agent or Team",
+      "family": "CA",
+      "parent": "CA-8",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CA-8.2",
+      "title": "Red Team Exercises",
+      "family": "CA",
+      "parent": "CA-8",
+      "baselines": []
+    },
+    {
+      "id": "CA-8.3",
+      "title": "Facility Penetration Testing",
+      "family": "CA",
+      "parent": "CA-8",
+      "baselines": []
+    },
+    {
+      "id": "CA-9",
+      "title": "Internal System Connections",
+      "family": "CA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "CA-9.1",
+      "title": "Compliance Checks",
+      "family": "CA",
+      "parent": "CA-9",
+      "baselines": []
+    },
+    {
+      "id": "CM-1",
+      "title": "Policy and Procedures",
+      "family": "CM",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "CM-2",
+      "title": "Baseline Configuration",
+      "family": "CM",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "CM-2.2",
+      "title": "Automation Support for Accuracy and Currency",
+      "family": "CM",
+      "parent": "CM-2",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CM-2.3",
+      "title": "Retention of Previous Configurations",
+      "family": "CM",
+      "parent": "CM-2",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CM-2.6",
+      "title": "Development and Test Environments",
+      "family": "CM",
+      "parent": "CM-2",
+      "baselines": []
+    },
+    {
+      "id": "CM-2.7",
+      "title": "Configure Systems and Components for High-risk Areas",
+      "family": "CM",
+      "parent": "CM-2",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CM-3",
+      "title": "Configuration Change Control",
+      "family": "CM",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CM-3.1",
+      "title": "Automated Documentation, Notification, and Prohibition of Changes",
+      "family": "CM",
+      "parent": "CM-3",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CM-3.2",
+      "title": "Testing, Validation, and Documentation of Changes",
+      "family": "CM",
+      "parent": "CM-3",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CM-3.3",
+      "title": "Automated Change Implementation",
+      "family": "CM",
+      "parent": "CM-3",
+      "baselines": []
+    },
+    {
+      "id": "CM-3.4",
+      "title": "Security and Privacy Representatives",
+      "family": "CM",
+      "parent": "CM-3",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CM-3.5",
+      "title": "Automated Security Response",
+      "family": "CM",
+      "parent": "CM-3",
+      "baselines": []
+    },
+    {
+      "id": "CM-3.6",
+      "title": "Cryptography Management",
+      "family": "CM",
+      "parent": "CM-3",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CM-3.7",
+      "title": "Review System Changes",
+      "family": "CM",
+      "parent": "CM-3",
+      "baselines": []
+    },
+    {
+      "id": "CM-3.8",
+      "title": "Prevent or Restrict Configuration Changes",
+      "family": "CM",
+      "parent": "CM-3",
+      "baselines": []
+    },
+    {
+      "id": "CM-4",
+      "title": "Impact Analyses",
+      "family": "CM",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "CM-4.1",
+      "title": "Separate Test Environments",
+      "family": "CM",
+      "parent": "CM-4",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CM-4.2",
+      "title": "Verification of Controls",
+      "family": "CM",
+      "parent": "CM-4",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CM-5",
+      "title": "Access Restrictions for Change",
+      "family": "CM",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "CM-5.1",
+      "title": "Automated Access Enforcement and Audit Records",
+      "family": "CM",
+      "parent": "CM-5",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CM-5.4",
+      "title": "Dual Authorization",
+      "family": "CM",
+      "parent": "CM-5",
+      "baselines": []
+    },
+    {
+      "id": "CM-5.5",
+      "title": "Privilege Limitation for Production and Operation",
+      "family": "CM",
+      "parent": "CM-5",
+      "baselines": []
+    },
+    {
+      "id": "CM-5.6",
+      "title": "Limit Library Privileges",
+      "family": "CM",
+      "parent": "CM-5",
+      "baselines": []
+    },
+    {
+      "id": "CM-6",
+      "title": "Configuration Settings",
+      "family": "CM",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "CM-6.1",
+      "title": "Automated Management, Application, and Verification",
+      "family": "CM",
+      "parent": "CM-6",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CM-6.2",
+      "title": "Respond to Unauthorized Changes",
+      "family": "CM",
+      "parent": "CM-6",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CM-7",
+      "title": "Least Functionality",
+      "family": "CM",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "CM-7.1",
+      "title": "Periodic Review",
+      "family": "CM",
+      "parent": "CM-7",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CM-7.2",
+      "title": "Prevent Program Execution",
+      "family": "CM",
+      "parent": "CM-7",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CM-7.3",
+      "title": "Registration Compliance",
+      "family": "CM",
+      "parent": "CM-7",
+      "baselines": []
+    },
+    {
+      "id": "CM-7.4",
+      "title": "Unauthorized Software \u2014 Deny-by-exception",
+      "family": "CM",
+      "parent": "CM-7",
+      "baselines": []
+    },
+    {
+      "id": "CM-7.5",
+      "title": "Authorized Software \u2014 Allow-by-exception",
+      "family": "CM",
+      "parent": "CM-7",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CM-7.6",
+      "title": "Confined Environments with Limited Privileges",
+      "family": "CM",
+      "parent": "CM-7",
+      "baselines": []
+    },
+    {
+      "id": "CM-7.7",
+      "title": "Code Execution in Protected Environments",
+      "family": "CM",
+      "parent": "CM-7",
+      "baselines": []
+    },
+    {
+      "id": "CM-7.8",
+      "title": "Binary or Machine Executable Code",
+      "family": "CM",
+      "parent": "CM-7",
+      "baselines": []
+    },
+    {
+      "id": "CM-7.9",
+      "title": "Prohibiting The Use of Unauthorized Hardware",
+      "family": "CM",
+      "parent": "CM-7",
+      "baselines": []
+    },
+    {
+      "id": "CM-8",
+      "title": "System Component Inventory",
+      "family": "CM",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "CM-8.1",
+      "title": "Updates During Installation and Removal",
+      "family": "CM",
+      "parent": "CM-8",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CM-8.2",
+      "title": "Automated Maintenance",
+      "family": "CM",
+      "parent": "CM-8",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CM-8.3",
+      "title": "Automated Unauthorized Component Detection",
+      "family": "CM",
+      "parent": "CM-8",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CM-8.4",
+      "title": "Accountability Information",
+      "family": "CM",
+      "parent": "CM-8",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CM-8.6",
+      "title": "Assessed Configurations and Approved Deviations",
+      "family": "CM",
+      "parent": "CM-8",
+      "baselines": []
+    },
+    {
+      "id": "CM-8.7",
+      "title": "Centralized Repository",
+      "family": "CM",
+      "parent": "CM-8",
+      "baselines": []
+    },
+    {
+      "id": "CM-8.8",
+      "title": "Automated Location Tracking",
+      "family": "CM",
+      "parent": "CM-8",
+      "baselines": []
+    },
+    {
+      "id": "CM-8.9",
+      "title": "Assignment of Components to Systems",
+      "family": "CM",
+      "parent": "CM-8",
+      "baselines": []
+    },
+    {
+      "id": "CM-9",
+      "title": "Configuration Management Plan",
+      "family": "CM",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CM-9.1",
+      "title": "Assignment of Responsibility",
+      "family": "CM",
+      "parent": "CM-9",
+      "baselines": []
+    },
+    {
+      "id": "CM-10",
+      "title": "Software Usage Restrictions",
+      "family": "CM",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "CM-10.1",
+      "title": "Open-source Software",
+      "family": "CM",
+      "parent": "CM-10",
+      "baselines": []
+    },
+    {
+      "id": "CM-11",
+      "title": "User-installed Software",
+      "family": "CM",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "CM-11.2",
+      "title": "Software Installation with Privileged Status",
+      "family": "CM",
+      "parent": "CM-11",
+      "baselines": []
+    },
+    {
+      "id": "CM-11.3",
+      "title": "Automated Enforcement and Monitoring",
+      "family": "CM",
+      "parent": "CM-11",
+      "baselines": []
+    },
+    {
+      "id": "CM-12",
+      "title": "Information Location",
+      "family": "CM",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CM-12.1",
+      "title": "Automated Tools to Support Information Location",
+      "family": "CM",
+      "parent": "CM-12",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CM-13",
+      "title": "Data Action Mapping",
+      "family": "CM",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "CM-14",
+      "title": "Signed Components",
+      "family": "CM",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "CP-1",
+      "title": "Policy and Procedures",
+      "family": "CP",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "CP-2",
+      "title": "Contingency Plan",
+      "family": "CP",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "CP-2.1",
+      "title": "Coordinate with Related Plans",
+      "family": "CP",
+      "parent": "CP-2",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CP-2.2",
+      "title": "Capacity Planning",
+      "family": "CP",
+      "parent": "CP-2",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CP-2.3",
+      "title": "Resume Mission and Business Functions",
+      "family": "CP",
+      "parent": "CP-2",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CP-2.5",
+      "title": "Continue Mission and Business Functions",
+      "family": "CP",
+      "parent": "CP-2",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CP-2.6",
+      "title": "Alternate Processing and Storage Sites",
+      "family": "CP",
+      "parent": "CP-2",
+      "baselines": []
+    },
+    {
+      "id": "CP-2.7",
+      "title": "Coordinate with External Service Providers",
+      "family": "CP",
+      "parent": "CP-2",
+      "baselines": []
+    },
+    {
+      "id": "CP-2.8",
+      "title": "Identify Critical Assets",
+      "family": "CP",
+      "parent": "CP-2",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CP-3",
+      "title": "Contingency Training",
+      "family": "CP",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "CP-3.1",
+      "title": "Simulated Events",
+      "family": "CP",
+      "parent": "CP-3",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CP-3.2",
+      "title": "Mechanisms Used in Training Environments",
+      "family": "CP",
+      "parent": "CP-3",
+      "baselines": []
+    },
+    {
+      "id": "CP-4",
+      "title": "Contingency Plan Testing",
+      "family": "CP",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "CP-4.1",
+      "title": "Coordinate with Related Plans",
+      "family": "CP",
+      "parent": "CP-4",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CP-4.2",
+      "title": "Alternate Processing Site",
+      "family": "CP",
+      "parent": "CP-4",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CP-4.3",
+      "title": "Automated Testing",
+      "family": "CP",
+      "parent": "CP-4",
+      "baselines": []
+    },
+    {
+      "id": "CP-4.4",
+      "title": "Full Recovery and Reconstitution",
+      "family": "CP",
+      "parent": "CP-4",
+      "baselines": []
+    },
+    {
+      "id": "CP-4.5",
+      "title": "Self-challenge",
+      "family": "CP",
+      "parent": "CP-4",
+      "baselines": []
+    },
+    {
+      "id": "CP-6",
+      "title": "Alternate Storage Site",
+      "family": "CP",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CP-6.1",
+      "title": "Separation from Primary Site",
+      "family": "CP",
+      "parent": "CP-6",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CP-6.2",
+      "title": "Recovery Time and Recovery Point Objectives",
+      "family": "CP",
+      "parent": "CP-6",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CP-6.3",
+      "title": "Accessibility",
+      "family": "CP",
+      "parent": "CP-6",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CP-7",
+      "title": "Alternate Processing Site",
+      "family": "CP",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CP-7.1",
+      "title": "Separation from Primary Site",
+      "family": "CP",
+      "parent": "CP-7",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CP-7.2",
+      "title": "Accessibility",
+      "family": "CP",
+      "parent": "CP-7",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CP-7.3",
+      "title": "Priority of Service",
+      "family": "CP",
+      "parent": "CP-7",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CP-7.4",
+      "title": "Preparation for Use",
+      "family": "CP",
+      "parent": "CP-7",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CP-7.6",
+      "title": "Inability to Return to Primary Site",
+      "family": "CP",
+      "parent": "CP-7",
+      "baselines": []
+    },
+    {
+      "id": "CP-8",
+      "title": "Telecommunications Services",
+      "family": "CP",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CP-8.1",
+      "title": "Priority of Service Provisions",
+      "family": "CP",
+      "parent": "CP-8",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CP-8.2",
+      "title": "Single Points of Failure",
+      "family": "CP",
+      "parent": "CP-8",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CP-8.3",
+      "title": "Separation of Primary and Alternate Providers",
+      "family": "CP",
+      "parent": "CP-8",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CP-8.4",
+      "title": "Provider Contingency Plan",
+      "family": "CP",
+      "parent": "CP-8",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CP-8.5",
+      "title": "Alternate Telecommunication Service Testing",
+      "family": "CP",
+      "parent": "CP-8",
+      "baselines": []
+    },
+    {
+      "id": "CP-9",
+      "title": "System Backup",
+      "family": "CP",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "CP-9.1",
+      "title": "Testing for Reliability and Integrity",
+      "family": "CP",
+      "parent": "CP-9",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CP-9.2",
+      "title": "Test Restoration Using Sampling",
+      "family": "CP",
+      "parent": "CP-9",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CP-9.3",
+      "title": "Separate Storage for Critical Information",
+      "family": "CP",
+      "parent": "CP-9",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CP-9.5",
+      "title": "Transfer to Alternate Storage Site",
+      "family": "CP",
+      "parent": "CP-9",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CP-9.6",
+      "title": "Redundant Secondary System",
+      "family": "CP",
+      "parent": "CP-9",
+      "baselines": []
+    },
+    {
+      "id": "CP-9.7",
+      "title": "Dual Authorization for Deletion or Destruction",
+      "family": "CP",
+      "parent": "CP-9",
+      "baselines": []
+    },
+    {
+      "id": "CP-9.8",
+      "title": "Cryptographic Protection",
+      "family": "CP",
+      "parent": "CP-9",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CP-10",
+      "title": "System Recovery and Reconstitution",
+      "family": "CP",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "CP-10.2",
+      "title": "Transaction Recovery",
+      "family": "CP",
+      "parent": "CP-10",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "CP-10.4",
+      "title": "Restore Within Time Period",
+      "family": "CP",
+      "parent": "CP-10",
+      "baselines": ["high"]
+    },
+    {
+      "id": "CP-10.6",
+      "title": "Component Protection",
+      "family": "CP",
+      "parent": "CP-10",
+      "baselines": []
+    },
+    {
+      "id": "CP-11",
+      "title": "Alternate Communications Protocols",
+      "family": "CP",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "CP-12",
+      "title": "Safe Mode",
+      "family": "CP",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "CP-13",
+      "title": "Alternative Security Mechanisms",
+      "family": "CP",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "IA-1",
+      "title": "Policy and Procedures",
+      "family": "IA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "IA-2",
+      "title": "Identification and Authentication (Organizational Users)",
+      "family": "IA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "IA-2.1",
+      "title": "Multi-factor Authentication to Privileged Accounts",
+      "family": "IA",
+      "parent": "IA-2",
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "IA-2.2",
+      "title": "Multi-factor Authentication to Non-privileged Accounts",
+      "family": "IA",
+      "parent": "IA-2",
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "IA-2.5",
+      "title": "Individual Authentication with Group Authentication",
+      "family": "IA",
+      "parent": "IA-2",
+      "baselines": ["high"]
+    },
+    {
+      "id": "IA-2.6",
+      "title": "Access to Accounts \u2014separate Device",
+      "family": "IA",
+      "parent": "IA-2",
+      "baselines": []
+    },
+    {
+      "id": "IA-2.8",
+      "title": "Access to Accounts \u2014 Replay Resistant",
+      "family": "IA",
+      "parent": "IA-2",
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "IA-2.10",
+      "title": "Single Sign-on",
+      "family": "IA",
+      "parent": "IA-2",
+      "baselines": []
+    },
+    {
+      "id": "IA-2.12",
+      "title": "Acceptance of PIV Credentials",
+      "family": "IA",
+      "parent": "IA-2",
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "IA-2.13",
+      "title": "Out-of-band Authentication",
+      "family": "IA",
+      "parent": "IA-2",
+      "baselines": []
+    },
+    {
+      "id": "IA-3",
+      "title": "Device Identification and Authentication",
+      "family": "IA",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "IA-3.1",
+      "title": "Cryptographic Bidirectional Authentication",
+      "family": "IA",
+      "parent": "IA-3",
+      "baselines": []
+    },
+    {
+      "id": "IA-3.3",
+      "title": "Dynamic Address Allocation",
+      "family": "IA",
+      "parent": "IA-3",
+      "baselines": []
+    },
+    {
+      "id": "IA-3.4",
+      "title": "Device Attestation",
+      "family": "IA",
+      "parent": "IA-3",
+      "baselines": []
+    },
+    {
+      "id": "IA-4",
+      "title": "Identifier Management",
+      "family": "IA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "IA-4.1",
+      "title": "Prohibit Account Identifiers as Public Identifiers",
+      "family": "IA",
+      "parent": "IA-4",
+      "baselines": []
+    },
+    {
+      "id": "IA-4.4",
+      "title": "Identify User Status",
+      "family": "IA",
+      "parent": "IA-4",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "IA-4.5",
+      "title": "Dynamic Management",
+      "family": "IA",
+      "parent": "IA-4",
+      "baselines": []
+    },
+    {
+      "id": "IA-4.6",
+      "title": "Cross-organization Management",
+      "family": "IA",
+      "parent": "IA-4",
+      "baselines": []
+    },
+    {
+      "id": "IA-4.8",
+      "title": "Pairwise Pseudonymous Identifiers",
+      "family": "IA",
+      "parent": "IA-4",
+      "baselines": []
+    },
+    {
+      "id": "IA-4.9",
+      "title": "Attribute Maintenance and Protection",
+      "family": "IA",
+      "parent": "IA-4",
+      "baselines": []
+    },
+    {
+      "id": "IA-5",
+      "title": "Authenticator Management",
+      "family": "IA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "IA-5.1",
+      "title": "Password-based Authentication",
+      "family": "IA",
+      "parent": "IA-5",
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "IA-5.2",
+      "title": "Public Key-based Authentication",
+      "family": "IA",
+      "parent": "IA-5",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "IA-5.5",
+      "title": "Change Authenticators Prior to Delivery",
+      "family": "IA",
+      "parent": "IA-5",
+      "baselines": []
+    },
+    {
+      "id": "IA-5.6",
+      "title": "Protection of Authenticators",
+      "family": "IA",
+      "parent": "IA-5",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "IA-5.7",
+      "title": "No Embedded Unencrypted Static Authenticators",
+      "family": "IA",
+      "parent": "IA-5",
+      "baselines": []
+    },
+    {
+      "id": "IA-5.8",
+      "title": "Multiple System Accounts",
+      "family": "IA",
+      "parent": "IA-5",
+      "baselines": []
+    },
+    {
+      "id": "IA-5.9",
+      "title": "Federated Credential Management",
+      "family": "IA",
+      "parent": "IA-5",
+      "baselines": []
+    },
+    {
+      "id": "IA-5.10",
+      "title": "Dynamic Credential Binding",
+      "family": "IA",
+      "parent": "IA-5",
+      "baselines": []
+    },
+    {
+      "id": "IA-5.12",
+      "title": "Biometric Authentication Performance",
+      "family": "IA",
+      "parent": "IA-5",
+      "baselines": []
+    },
+    {
+      "id": "IA-5.13",
+      "title": "Expiration of Cached Authenticators",
+      "family": "IA",
+      "parent": "IA-5",
+      "baselines": []
+    },
+    {
+      "id": "IA-5.14",
+      "title": "Managing Content of PKI Trust Stores",
+      "family": "IA",
+      "parent": "IA-5",
+      "baselines": []
+    },
+    {
+      "id": "IA-5.15",
+      "title": "GSA-approved Products and Services",
+      "family": "IA",
+      "parent": "IA-5",
+      "baselines": []
+    },
+    {
+      "id": "IA-5.16",
+      "title": "In-person or Trusted External Party Authenticator Issuance",
+      "family": "IA",
+      "parent": "IA-5",
+      "baselines": []
+    },
+    {
+      "id": "IA-5.17",
+      "title": "Presentation Attack Detection for Biometric Authenticators",
+      "family": "IA",
+      "parent": "IA-5",
+      "baselines": []
+    },
+    {
+      "id": "IA-5.18",
+      "title": "Password Managers",
+      "family": "IA",
+      "parent": "IA-5",
+      "baselines": []
+    },
+    {
+      "id": "IA-6",
+      "title": "Authentication Feedback",
+      "family": "IA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "IA-7",
+      "title": "Cryptographic Module Authentication",
+      "family": "IA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "IA-8",
+      "title": "Identification and Authentication (Non-organizational Users)",
+      "family": "IA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "IA-8.1",
+      "title": "Acceptance of PIV Credentials from Other Agencies",
+      "family": "IA",
+      "parent": "IA-8",
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "IA-8.2",
+      "title": "Acceptance of External Authenticators",
+      "family": "IA",
+      "parent": "IA-8",
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "IA-8.4",
+      "title": "Use of Defined Profiles",
+      "family": "IA",
+      "parent": "IA-8",
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "IA-8.5",
+      "title": "Acceptance of PIV-I Credentials",
+      "family": "IA",
+      "parent": "IA-8",
+      "baselines": []
+    },
+    {
+      "id": "IA-8.6",
+      "title": "Disassociability",
+      "family": "IA",
+      "parent": "IA-8",
+      "baselines": []
+    },
+    {
+      "id": "IA-9",
+      "title": "Service Identification and Authentication",
+      "family": "IA",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "IA-10",
+      "title": "Adaptive Authentication",
+      "family": "IA",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "IA-11",
+      "title": "Re-authentication",
+      "family": "IA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "IA-12",
+      "title": "Identity Proofing",
+      "family": "IA",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "IA-12.1",
+      "title": "Supervisor Authorization",
+      "family": "IA",
+      "parent": "IA-12",
+      "baselines": []
+    },
+    {
+      "id": "IA-12.2",
+      "title": "Identity Evidence",
+      "family": "IA",
+      "parent": "IA-12",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "IA-12.3",
+      "title": "Identity Evidence Validation and Verification",
+      "family": "IA",
+      "parent": "IA-12",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "IA-12.4",
+      "title": "In-person Validation and Verification",
+      "family": "IA",
+      "parent": "IA-12",
+      "baselines": ["high"]
+    },
+    {
+      "id": "IA-12.5",
+      "title": "Address Confirmation",
+      "family": "IA",
+      "parent": "IA-12",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "IA-12.6",
+      "title": "Accept Externally-proofed Identities",
+      "family": "IA",
+      "parent": "IA-12",
+      "baselines": []
+    },
+    {
+      "id": "IA-13",
+      "title": "Identity Providers and Authorization Servers",
+      "family": "IA",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "IA-13.1",
+      "title": "Protection of Cryptographic Keys",
+      "family": "IA",
+      "parent": "IA-13",
+      "baselines": []
+    },
+    {
+      "id": "IA-13.2",
+      "title": "Verification of Identity Assertions and Access Tokens",
+      "family": "IA",
+      "parent": "IA-13",
+      "baselines": []
+    },
+    {
+      "id": "IA-13.3",
+      "title": "Token Management",
+      "family": "IA",
+      "parent": "IA-13",
+      "baselines": []
+    },
+    {
+      "id": "IR-1",
+      "title": "Policy and Procedures",
+      "family": "IR",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "IR-2",
+      "title": "Incident Response Training",
+      "family": "IR",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "IR-2.1",
+      "title": "Simulated Events",
+      "family": "IR",
+      "parent": "IR-2",
+      "baselines": ["high"]
+    },
+    {
+      "id": "IR-2.2",
+      "title": "Automated Training Environments",
+      "family": "IR",
+      "parent": "IR-2",
+      "baselines": ["high"]
+    },
+    {
+      "id": "IR-2.3",
+      "title": "Breach",
+      "family": "IR",
+      "parent": "IR-2",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "IR-3",
+      "title": "Incident Response Testing",
+      "family": "IR",
+      "parent": null,
+      "baselines": ["moderate", "high", "privacy"]
+    },
+    {
+      "id": "IR-3.1",
+      "title": "Automated Testing",
+      "family": "IR",
+      "parent": "IR-3",
+      "baselines": []
+    },
+    {
+      "id": "IR-3.2",
+      "title": "Coordination with Related Plans",
+      "family": "IR",
+      "parent": "IR-3",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "IR-3.3",
+      "title": "Continuous Improvement",
+      "family": "IR",
+      "parent": "IR-3",
+      "baselines": []
+    },
+    {
+      "id": "IR-4",
+      "title": "Incident Handling",
+      "family": "IR",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "IR-4.1",
+      "title": "Automated Incident Handling Processes",
+      "family": "IR",
+      "parent": "IR-4",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "IR-4.2",
+      "title": "Dynamic Reconfiguration",
+      "family": "IR",
+      "parent": "IR-4",
+      "baselines": []
+    },
+    {
+      "id": "IR-4.3",
+      "title": "Continuity of Operations",
+      "family": "IR",
+      "parent": "IR-4",
+      "baselines": []
+    },
+    {
+      "id": "IR-4.4",
+      "title": "Information Correlation",
+      "family": "IR",
+      "parent": "IR-4",
+      "baselines": ["high"]
+    },
+    {
+      "id": "IR-4.5",
+      "title": "Automatic Disabling of System",
+      "family": "IR",
+      "parent": "IR-4",
+      "baselines": []
+    },
+    {
+      "id": "IR-4.6",
+      "title": "Insider Threats",
+      "family": "IR",
+      "parent": "IR-4",
+      "baselines": []
+    },
+    {
+      "id": "IR-4.7",
+      "title": "Insider Threats \u2014 Intra-organization Coordination",
+      "family": "IR",
+      "parent": "IR-4",
+      "baselines": []
+    },
+    {
+      "id": "IR-4.8",
+      "title": "Correlation with External Organizations",
+      "family": "IR",
+      "parent": "IR-4",
+      "baselines": []
+    },
+    {
+      "id": "IR-4.9",
+      "title": "Dynamic Response Capability",
+      "family": "IR",
+      "parent": "IR-4",
+      "baselines": []
+    },
+    {
+      "id": "IR-4.10",
+      "title": "Supply Chain Coordination",
+      "family": "IR",
+      "parent": "IR-4",
+      "baselines": []
+    },
+    {
+      "id": "IR-4.11",
+      "title": "Integrated Incident Response Team",
+      "family": "IR",
+      "parent": "IR-4",
+      "baselines": ["high"]
+    },
+    {
+      "id": "IR-4.12",
+      "title": "Malicious Code and Forensic Analysis",
+      "family": "IR",
+      "parent": "IR-4",
+      "baselines": []
+    },
+    {
+      "id": "IR-4.13",
+      "title": "Behavior Analysis",
+      "family": "IR",
+      "parent": "IR-4",
+      "baselines": []
+    },
+    {
+      "id": "IR-4.14",
+      "title": "Security Operations Center",
+      "family": "IR",
+      "parent": "IR-4",
+      "baselines": []
+    },
+    {
+      "id": "IR-4.15",
+      "title": "Public Relations and Reputation Repair",
+      "family": "IR",
+      "parent": "IR-4",
+      "baselines": []
+    },
+    {
+      "id": "IR-5",
+      "title": "Incident Monitoring",
+      "family": "IR",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "IR-5.1",
+      "title": "Automated Tracking, Data Collection, and Analysis",
+      "family": "IR",
+      "parent": "IR-5",
+      "baselines": ["high"]
+    },
+    {
+      "id": "IR-6",
+      "title": "Incident Reporting",
+      "family": "IR",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "IR-6.1",
+      "title": "Automated Reporting",
+      "family": "IR",
+      "parent": "IR-6",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "IR-6.2",
+      "title": "Vulnerabilities Related to Incidents",
+      "family": "IR",
+      "parent": "IR-6",
+      "baselines": []
+    },
+    {
+      "id": "IR-6.3",
+      "title": "Supply Chain Coordination",
+      "family": "IR",
+      "parent": "IR-6",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "IR-7",
+      "title": "Incident Response Assistance",
+      "family": "IR",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "IR-7.1",
+      "title": "Automation Support for Availability of Information and Support",
+      "family": "IR",
+      "parent": "IR-7",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "IR-7.2",
+      "title": "Coordination with External Providers",
+      "family": "IR",
+      "parent": "IR-7",
+      "baselines": []
+    },
+    {
+      "id": "IR-8",
+      "title": "Incident Response Plan",
+      "family": "IR",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "IR-8.1",
+      "title": "Breaches",
+      "family": "IR",
+      "parent": "IR-8",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "IR-9",
+      "title": "Information Spillage Response",
+      "family": "IR",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "IR-9.2",
+      "title": "Training",
+      "family": "IR",
+      "parent": "IR-9",
+      "baselines": []
+    },
+    {
+      "id": "IR-9.3",
+      "title": "Post-spill Operations",
+      "family": "IR",
+      "parent": "IR-9",
+      "baselines": []
+    },
+    {
+      "id": "IR-9.4",
+      "title": "Exposure to Unauthorized Personnel",
+      "family": "IR",
+      "parent": "IR-9",
+      "baselines": []
+    },
+    {
+      "id": "MA-1",
+      "title": "Policy and Procedures",
+      "family": "MA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "MA-2",
+      "title": "Controlled Maintenance",
+      "family": "MA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "MA-2.2",
+      "title": "Automated Maintenance Activities",
+      "family": "MA",
+      "parent": "MA-2",
+      "baselines": ["high"]
+    },
+    {
+      "id": "MA-3",
+      "title": "Maintenance Tools",
+      "family": "MA",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "MA-3.1",
+      "title": "Inspect Tools",
+      "family": "MA",
+      "parent": "MA-3",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "MA-3.2",
+      "title": "Inspect Media",
+      "family": "MA",
+      "parent": "MA-3",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "MA-3.3",
+      "title": "Prevent Unauthorized Removal",
+      "family": "MA",
+      "parent": "MA-3",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "MA-3.4",
+      "title": "Restricted Tool Use",
+      "family": "MA",
+      "parent": "MA-3",
+      "baselines": []
+    },
+    {
+      "id": "MA-3.5",
+      "title": "Execution with Privilege",
+      "family": "MA",
+      "parent": "MA-3",
+      "baselines": []
+    },
+    {
+      "id": "MA-3.6",
+      "title": "Software Updates and Patches",
+      "family": "MA",
+      "parent": "MA-3",
+      "baselines": []
+    },
+    {
+      "id": "MA-4",
+      "title": "Nonlocal Maintenance",
+      "family": "MA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "MA-4.1",
+      "title": "Logging and Review",
+      "family": "MA",
+      "parent": "MA-4",
+      "baselines": []
+    },
+    {
+      "id": "MA-4.3",
+      "title": "Comparable Security and Sanitization",
+      "family": "MA",
+      "parent": "MA-4",
+      "baselines": ["high"]
+    },
+    {
+      "id": "MA-4.4",
+      "title": "Authentication and Separation of Maintenance Sessions",
+      "family": "MA",
+      "parent": "MA-4",
+      "baselines": []
+    },
+    {
+      "id": "MA-4.5",
+      "title": "Approvals and Notifications",
+      "family": "MA",
+      "parent": "MA-4",
+      "baselines": []
+    },
+    {
+      "id": "MA-4.6",
+      "title": "Cryptographic Protection",
+      "family": "MA",
+      "parent": "MA-4",
+      "baselines": []
+    },
+    {
+      "id": "MA-4.7",
+      "title": "Disconnect Verification",
+      "family": "MA",
+      "parent": "MA-4",
+      "baselines": []
+    },
+    {
+      "id": "MA-5",
+      "title": "Maintenance Personnel",
+      "family": "MA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "MA-5.1",
+      "title": "Individuals Without Appropriate Access",
+      "family": "MA",
+      "parent": "MA-5",
+      "baselines": ["high"]
+    },
+    {
+      "id": "MA-5.2",
+      "title": "Security Clearances for Classified Systems",
+      "family": "MA",
+      "parent": "MA-5",
+      "baselines": []
+    },
+    {
+      "id": "MA-5.3",
+      "title": "Citizenship Requirements for Classified Systems",
+      "family": "MA",
+      "parent": "MA-5",
+      "baselines": []
+    },
+    {
+      "id": "MA-5.4",
+      "title": "Foreign Nationals",
+      "family": "MA",
+      "parent": "MA-5",
+      "baselines": []
+    },
+    {
+      "id": "MA-5.5",
+      "title": "Non-system Maintenance",
+      "family": "MA",
+      "parent": "MA-5",
+      "baselines": []
+    },
+    {
+      "id": "MA-6",
+      "title": "Timely Maintenance",
+      "family": "MA",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "MA-6.1",
+      "title": "Preventive Maintenance",
+      "family": "MA",
+      "parent": "MA-6",
+      "baselines": []
+    },
+    {
+      "id": "MA-6.2",
+      "title": "Predictive Maintenance",
+      "family": "MA",
+      "parent": "MA-6",
+      "baselines": []
+    },
+    {
+      "id": "MA-6.3",
+      "title": "Automated Support for Predictive Maintenance",
+      "family": "MA",
+      "parent": "MA-6",
+      "baselines": []
+    },
+    {
+      "id": "MA-7",
+      "title": "Field Maintenance",
+      "family": "MA",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "MP-1",
+      "title": "Policy and Procedures",
+      "family": "MP",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "MP-2",
+      "title": "Media Access",
+      "family": "MP",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "MP-3",
+      "title": "Media Marking",
+      "family": "MP",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "MP-4",
+      "title": "Media Storage",
+      "family": "MP",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "MP-4.2",
+      "title": "Automated Restricted Access",
+      "family": "MP",
+      "parent": "MP-4",
+      "baselines": []
+    },
+    {
+      "id": "MP-5",
+      "title": "Media Transport",
+      "family": "MP",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "MP-5.3",
+      "title": "Custodians",
+      "family": "MP",
+      "parent": "MP-5",
+      "baselines": []
+    },
+    {
+      "id": "MP-6",
+      "title": "Media Sanitization",
+      "family": "MP",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "MP-6.1",
+      "title": "Review, Approve, Track, Document, and Verify",
+      "family": "MP",
+      "parent": "MP-6",
+      "baselines": ["high"]
+    },
+    {
+      "id": "MP-6.2",
+      "title": "Equipment Testing",
+      "family": "MP",
+      "parent": "MP-6",
+      "baselines": ["high"]
+    },
+    {
+      "id": "MP-6.3",
+      "title": "Nondestructive Techniques",
+      "family": "MP",
+      "parent": "MP-6",
+      "baselines": ["high"]
+    },
+    {
+      "id": "MP-6.7",
+      "title": "Dual Authorization",
+      "family": "MP",
+      "parent": "MP-6",
+      "baselines": []
+    },
+    {
+      "id": "MP-6.8",
+      "title": "Remote Purging or Wiping of Information",
+      "family": "MP",
+      "parent": "MP-6",
+      "baselines": []
+    },
+    {
+      "id": "MP-7",
+      "title": "Media Use",
+      "family": "MP",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "MP-7.2",
+      "title": "Prohibit Use of Sanitization-resistant Media",
+      "family": "MP",
+      "parent": "MP-7",
+      "baselines": []
+    },
+    {
+      "id": "MP-8",
+      "title": "Media Downgrading",
+      "family": "MP",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "MP-8.1",
+      "title": "Documentation of Process",
+      "family": "MP",
+      "parent": "MP-8",
+      "baselines": []
+    },
+    {
+      "id": "MP-8.2",
+      "title": "Equipment Testing",
+      "family": "MP",
+      "parent": "MP-8",
+      "baselines": []
+    },
+    {
+      "id": "MP-8.3",
+      "title": "Controlled Unclassified Information",
+      "family": "MP",
+      "parent": "MP-8",
+      "baselines": []
+    },
+    {
+      "id": "MP-8.4",
+      "title": "Classified Information",
+      "family": "MP",
+      "parent": "MP-8",
+      "baselines": []
+    },
+    {
+      "id": "PE-1",
+      "title": "Policy and Procedures",
+      "family": "PE",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PE-2",
+      "title": "Physical Access Authorizations",
+      "family": "PE",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PE-2.1",
+      "title": "Access by Position or Role",
+      "family": "PE",
+      "parent": "PE-2",
+      "baselines": []
+    },
+    {
+      "id": "PE-2.2",
+      "title": "Two Forms of Identification",
+      "family": "PE",
+      "parent": "PE-2",
+      "baselines": []
+    },
+    {
+      "id": "PE-2.3",
+      "title": "Restrict Unescorted Access",
+      "family": "PE",
+      "parent": "PE-2",
+      "baselines": []
+    },
+    {
+      "id": "PE-3",
+      "title": "Physical Access Control",
+      "family": "PE",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PE-3.1",
+      "title": "System Access",
+      "family": "PE",
+      "parent": "PE-3",
+      "baselines": ["high"]
+    },
+    {
+      "id": "PE-3.2",
+      "title": "Facility and Systems",
+      "family": "PE",
+      "parent": "PE-3",
+      "baselines": []
+    },
+    {
+      "id": "PE-3.3",
+      "title": "Continuous Guards",
+      "family": "PE",
+      "parent": "PE-3",
+      "baselines": []
+    },
+    {
+      "id": "PE-3.4",
+      "title": "Lockable Casings",
+      "family": "PE",
+      "parent": "PE-3",
+      "baselines": []
+    },
+    {
+      "id": "PE-3.5",
+      "title": "Tamper Protection",
+      "family": "PE",
+      "parent": "PE-3",
+      "baselines": []
+    },
+    {
+      "id": "PE-3.7",
+      "title": "Physical Barriers",
+      "family": "PE",
+      "parent": "PE-3",
+      "baselines": []
+    },
+    {
+      "id": "PE-3.8",
+      "title": "Access Control Vestibules",
+      "family": "PE",
+      "parent": "PE-3",
+      "baselines": []
+    },
+    {
+      "id": "PE-4",
+      "title": "Access Control for Transmission",
+      "family": "PE",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "PE-5",
+      "title": "Access Control for Output Devices",
+      "family": "PE",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "PE-5.2",
+      "title": "Link to Individual Identity",
+      "family": "PE",
+      "parent": "PE-5",
+      "baselines": []
+    },
+    {
+      "id": "PE-6",
+      "title": "Monitoring Physical Access",
+      "family": "PE",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PE-6.1",
+      "title": "Intrusion Alarms and Surveillance Equipment",
+      "family": "PE",
+      "parent": "PE-6",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "PE-6.2",
+      "title": "Automated Intrusion Recognition and Responses",
+      "family": "PE",
+      "parent": "PE-6",
+      "baselines": []
+    },
+    {
+      "id": "PE-6.3",
+      "title": "Video Surveillance",
+      "family": "PE",
+      "parent": "PE-6",
+      "baselines": []
+    },
+    {
+      "id": "PE-6.4",
+      "title": "Monitoring Physical Access to Systems",
+      "family": "PE",
+      "parent": "PE-6",
+      "baselines": ["high"]
+    },
+    {
+      "id": "PE-8",
+      "title": "Visitor Access Records",
+      "family": "PE",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PE-8.1",
+      "title": "Automated Records Maintenance and Review",
+      "family": "PE",
+      "parent": "PE-8",
+      "baselines": ["high"]
+    },
+    {
+      "id": "PE-8.3",
+      "title": "Limit Personally Identifiable Information Elements",
+      "family": "PE",
+      "parent": "PE-8",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PE-9",
+      "title": "Power Equipment and Cabling",
+      "family": "PE",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "PE-9.1",
+      "title": "Redundant Cabling",
+      "family": "PE",
+      "parent": "PE-9",
+      "baselines": []
+    },
+    {
+      "id": "PE-9.2",
+      "title": "Automatic Voltage Controls",
+      "family": "PE",
+      "parent": "PE-9",
+      "baselines": []
+    },
+    {
+      "id": "PE-10",
+      "title": "Emergency Shutoff",
+      "family": "PE",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "PE-11",
+      "title": "Emergency Power",
+      "family": "PE",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "PE-11.1",
+      "title": "Alternate Power Supply \u2014 Minimal Operational Capability",
+      "family": "PE",
+      "parent": "PE-11",
+      "baselines": ["high"]
+    },
+    {
+      "id": "PE-11.2",
+      "title": "Alternate Power Supply \u2014 Self-contained",
+      "family": "PE",
+      "parent": "PE-11",
+      "baselines": []
+    },
+    {
+      "id": "PE-12",
+      "title": "Emergency Lighting",
+      "family": "PE",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PE-12.1",
+      "title": "Essential Mission and Business Functions",
+      "family": "PE",
+      "parent": "PE-12",
+      "baselines": []
+    },
+    {
+      "id": "PE-13",
+      "title": "Fire Protection",
+      "family": "PE",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PE-13.1",
+      "title": "Detection Systems \u2014 Automatic Activation and Notification",
+      "family": "PE",
+      "parent": "PE-13",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "PE-13.2",
+      "title": "Suppression Systems \u2014 Automatic Activation and Notification",
+      "family": "PE",
+      "parent": "PE-13",
+      "baselines": ["high"]
+    },
+    {
+      "id": "PE-13.4",
+      "title": "Inspections",
+      "family": "PE",
+      "parent": "PE-13",
+      "baselines": []
+    },
+    {
+      "id": "PE-14",
+      "title": "Environmental Controls",
+      "family": "PE",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PE-14.1",
+      "title": "Automatic Controls",
+      "family": "PE",
+      "parent": "PE-14",
+      "baselines": []
+    },
+    {
+      "id": "PE-14.2",
+      "title": "Monitoring with Alarms and Notifications",
+      "family": "PE",
+      "parent": "PE-14",
+      "baselines": []
+    },
+    {
+      "id": "PE-15",
+      "title": "Water Damage Protection",
+      "family": "PE",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PE-15.1",
+      "title": "Automation Support",
+      "family": "PE",
+      "parent": "PE-15",
+      "baselines": ["high"]
+    },
+    {
+      "id": "PE-16",
+      "title": "Delivery and Removal",
+      "family": "PE",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PE-17",
+      "title": "Alternate Work Site",
+      "family": "PE",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "PE-18",
+      "title": "Location of System Components",
+      "family": "PE",
+      "parent": null,
+      "baselines": ["high"]
+    },
+    {
+      "id": "PE-19",
+      "title": "Information Leakage",
+      "family": "PE",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "PE-19.1",
+      "title": "National Emissions Policies and Procedures",
+      "family": "PE",
+      "parent": "PE-19",
+      "baselines": []
+    },
+    {
+      "id": "PE-20",
+      "title": "Asset Monitoring and Tracking",
+      "family": "PE",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "PE-21",
+      "title": "Electromagnetic Pulse Protection",
+      "family": "PE",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "PE-22",
+      "title": "Component Marking",
+      "family": "PE",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "PE-23",
+      "title": "Facility Location",
+      "family": "PE",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "PL-1",
+      "title": "Policy and Procedures",
+      "family": "PL",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "PL-2",
+      "title": "System Security and Privacy Plans",
+      "family": "PL",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "PL-4",
+      "title": "Rules of Behavior",
+      "family": "PL",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "PL-4.1",
+      "title": "Social Media and External Site/Application Usage Restrictions",
+      "family": "PL",
+      "parent": "PL-4",
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "PL-7",
+      "title": "Concept of Operations",
+      "family": "PL",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "PL-8",
+      "title": "Security and Privacy Architectures",
+      "family": "PL",
+      "parent": null,
+      "baselines": ["moderate", "high", "privacy"]
+    },
+    {
+      "id": "PL-8.1",
+      "title": "Defense in Depth",
+      "family": "PL",
+      "parent": "PL-8",
+      "baselines": []
+    },
+    {
+      "id": "PL-8.2",
+      "title": "Supplier Diversity",
+      "family": "PL",
+      "parent": "PL-8",
+      "baselines": []
+    },
+    {
+      "id": "PL-9",
+      "title": "Central Management",
+      "family": "PL",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PL-10",
+      "title": "Baseline Selection",
+      "family": "PL",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PL-11",
+      "title": "Baseline Tailoring",
+      "family": "PL",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PM-1",
+      "title": "Information Security Program Plan",
+      "family": "PM",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "PM-2",
+      "title": "Information Security Program Leadership Role",
+      "family": "PM",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "PM-3",
+      "title": "Information Security and Privacy Resources",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-4",
+      "title": "Plan of Action and Milestones Process",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-5",
+      "title": "System Inventory",
+      "family": "PM",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "PM-5.1",
+      "title": "Inventory of Personally Identifiable Information",
+      "family": "PM",
+      "parent": "PM-5",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-6",
+      "title": "Measures of Performance",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-7",
+      "title": "Enterprise Architecture",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-7.1",
+      "title": "Offloading",
+      "family": "PM",
+      "parent": "PM-7",
+      "baselines": []
+    },
+    {
+      "id": "PM-8",
+      "title": "Critical Infrastructure Plan",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-9",
+      "title": "Risk Management Strategy",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-10",
+      "title": "Authorization Process",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-11",
+      "title": "Mission and Business Process Definition",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-12",
+      "title": "Insider Threat Program",
+      "family": "PM",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "PM-13",
+      "title": "Security and Privacy Workforce",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-14",
+      "title": "Testing, Training, and Monitoring",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-15",
+      "title": "Security and Privacy Groups and Associations",
+      "family": "PM",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "PM-16",
+      "title": "Threat Awareness Program",
+      "family": "PM",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "PM-16.1",
+      "title": "Automated Means for Sharing Threat Intelligence",
+      "family": "PM",
+      "parent": "PM-16",
+      "baselines": []
+    },
+    {
+      "id": "PM-17",
+      "title": "Protecting Controlled Unclassified Information on External Systems",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-18",
+      "title": "Privacy Program Plan",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-19",
+      "title": "Privacy Program Leadership Role",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-20",
+      "title": "Dissemination of Privacy Program Information",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-20.1",
+      "title": "Privacy Policies on Websites, Applications, and Digital Services",
+      "family": "PM",
+      "parent": "PM-20",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-21",
+      "title": "Accounting of Disclosures",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-22",
+      "title": "Personally Identifiable Information Quality Management",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-23",
+      "title": "Data Governance Body",
+      "family": "PM",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "PM-24",
+      "title": "Data Integrity Board",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-25",
+      "title": "Minimization of Personally Identifiable Information Used in Testing, Training, and Research",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-26",
+      "title": "Complaint Management",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-27",
+      "title": "Privacy Reporting",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-28",
+      "title": "Risk Framing",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-29",
+      "title": "Risk Management Program Leadership Roles",
+      "family": "PM",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "PM-30",
+      "title": "Supply Chain Risk Management Strategy",
+      "family": "PM",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "PM-30.1",
+      "title": "Suppliers of Critical or Mission-essential Items",
+      "family": "PM",
+      "parent": "PM-30",
+      "baselines": []
+    },
+    {
+      "id": "PM-31",
+      "title": "Continuous Monitoring Strategy",
+      "family": "PM",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PM-32",
+      "title": "Purposing",
+      "family": "PM",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "PS-1",
+      "title": "Policy and Procedures",
+      "family": "PS",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PS-2",
+      "title": "Position Risk Designation",
+      "family": "PS",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PS-3",
+      "title": "Personnel Screening",
+      "family": "PS",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PS-3.1",
+      "title": "Classified Information",
+      "family": "PS",
+      "parent": "PS-3",
+      "baselines": []
+    },
+    {
+      "id": "PS-3.2",
+      "title": "Formal Indoctrination",
+      "family": "PS",
+      "parent": "PS-3",
+      "baselines": []
+    },
+    {
+      "id": "PS-3.3",
+      "title": "Information Requiring Special Protective Measures",
+      "family": "PS",
+      "parent": "PS-3",
+      "baselines": []
+    },
+    {
+      "id": "PS-3.4",
+      "title": "Citizenship Requirements",
+      "family": "PS",
+      "parent": "PS-3",
+      "baselines": []
+    },
+    {
+      "id": "PS-4",
+      "title": "Personnel Termination",
+      "family": "PS",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PS-4.1",
+      "title": "Post-employment Requirements",
+      "family": "PS",
+      "parent": "PS-4",
+      "baselines": []
+    },
+    {
+      "id": "PS-4.2",
+      "title": "Automated Actions",
+      "family": "PS",
+      "parent": "PS-4",
+      "baselines": ["high"]
+    },
+    {
+      "id": "PS-5",
+      "title": "Personnel Transfer",
+      "family": "PS",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PS-6",
+      "title": "Access Agreements",
+      "family": "PS",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "PS-6.2",
+      "title": "Classified Information Requiring Special Protection",
+      "family": "PS",
+      "parent": "PS-6",
+      "baselines": []
+    },
+    {
+      "id": "PS-6.3",
+      "title": "Post-employment Requirements",
+      "family": "PS",
+      "parent": "PS-6",
+      "baselines": []
+    },
+    {
+      "id": "PS-7",
+      "title": "External Personnel Security",
+      "family": "PS",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PS-8",
+      "title": "Personnel Sanctions",
+      "family": "PS",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PS-9",
+      "title": "Position Descriptions",
+      "family": "PS",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "PT-1",
+      "title": "Policy and Procedures",
+      "family": "PT",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PT-2",
+      "title": "Authority to Process Personally Identifiable Information",
+      "family": "PT",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PT-2.1",
+      "title": "Data Tagging",
+      "family": "PT",
+      "parent": "PT-2",
+      "baselines": []
+    },
+    {
+      "id": "PT-2.2",
+      "title": "Automation",
+      "family": "PT",
+      "parent": "PT-2",
+      "baselines": []
+    },
+    {
+      "id": "PT-3",
+      "title": "Personally Identifiable Information Processing Purposes",
+      "family": "PT",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PT-3.1",
+      "title": "Data Tagging",
+      "family": "PT",
+      "parent": "PT-3",
+      "baselines": []
+    },
+    {
+      "id": "PT-3.2",
+      "title": "Automation",
+      "family": "PT",
+      "parent": "PT-3",
+      "baselines": []
+    },
+    {
+      "id": "PT-4",
+      "title": "Consent",
+      "family": "PT",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PT-4.1",
+      "title": "Tailored Consent",
+      "family": "PT",
+      "parent": "PT-4",
+      "baselines": []
+    },
+    {
+      "id": "PT-4.2",
+      "title": "Just-in-time Consent",
+      "family": "PT",
+      "parent": "PT-4",
+      "baselines": []
+    },
+    {
+      "id": "PT-4.3",
+      "title": "Revocation",
+      "family": "PT",
+      "parent": "PT-4",
+      "baselines": []
+    },
+    {
+      "id": "PT-5",
+      "title": "Privacy Notice",
+      "family": "PT",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PT-5.1",
+      "title": "Just-in-time Notice",
+      "family": "PT",
+      "parent": "PT-5",
+      "baselines": []
+    },
+    {
+      "id": "PT-5.2",
+      "title": "Privacy Act Statements",
+      "family": "PT",
+      "parent": "PT-5",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PT-6",
+      "title": "System of Records Notice",
+      "family": "PT",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PT-6.1",
+      "title": "Routine Uses",
+      "family": "PT",
+      "parent": "PT-6",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PT-6.2",
+      "title": "Exemption Rules",
+      "family": "PT",
+      "parent": "PT-6",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PT-7",
+      "title": "Specific Categories of Personally Identifiable Information",
+      "family": "PT",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PT-7.1",
+      "title": "Social Security Numbers",
+      "family": "PT",
+      "parent": "PT-7",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PT-7.2",
+      "title": "First Amendment Information",
+      "family": "PT",
+      "parent": "PT-7",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "PT-8",
+      "title": "Computer Matching Requirements",
+      "family": "PT",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "RA-1",
+      "title": "Policy and Procedures",
+      "family": "RA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "RA-2",
+      "title": "Security Categorization",
+      "family": "RA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "RA-2.1",
+      "title": "Impact-level Prioritization",
+      "family": "RA",
+      "parent": "RA-2",
+      "baselines": []
+    },
+    {
+      "id": "RA-3",
+      "title": "Risk Assessment",
+      "family": "RA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "RA-3.1",
+      "title": "Supply Chain Risk Assessment",
+      "family": "RA",
+      "parent": "RA-3",
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "RA-3.2",
+      "title": "Use of All-source Intelligence",
+      "family": "RA",
+      "parent": "RA-3",
+      "baselines": []
+    },
+    {
+      "id": "RA-3.3",
+      "title": "Dynamic Threat Awareness",
+      "family": "RA",
+      "parent": "RA-3",
+      "baselines": []
+    },
+    {
+      "id": "RA-3.4",
+      "title": "Predictive Cyber Analytics",
+      "family": "RA",
+      "parent": "RA-3",
+      "baselines": []
+    },
+    {
+      "id": "RA-5",
+      "title": "Vulnerability Monitoring and Scanning",
+      "family": "RA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "RA-5.2",
+      "title": "Update Vulnerabilities to Be Scanned",
+      "family": "RA",
+      "parent": "RA-5",
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "RA-5.3",
+      "title": "Breadth and Depth of Coverage",
+      "family": "RA",
+      "parent": "RA-5",
+      "baselines": []
+    },
+    {
+      "id": "RA-5.4",
+      "title": "Discoverable Information",
+      "family": "RA",
+      "parent": "RA-5",
+      "baselines": ["high"]
+    },
+    {
+      "id": "RA-5.5",
+      "title": "Privileged Access",
+      "family": "RA",
+      "parent": "RA-5",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "RA-5.6",
+      "title": "Automated Trend Analyses",
+      "family": "RA",
+      "parent": "RA-5",
+      "baselines": []
+    },
+    {
+      "id": "RA-5.8",
+      "title": "Review Historic Audit Logs",
+      "family": "RA",
+      "parent": "RA-5",
+      "baselines": []
+    },
+    {
+      "id": "RA-5.10",
+      "title": "Correlate Scanning Information",
+      "family": "RA",
+      "parent": "RA-5",
+      "baselines": []
+    },
+    {
+      "id": "RA-5.11",
+      "title": "Public Disclosure Program",
+      "family": "RA",
+      "parent": "RA-5",
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "RA-6",
+      "title": "Technical Surveillance Countermeasures Survey",
+      "family": "RA",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "RA-7",
+      "title": "Risk Response",
+      "family": "RA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "RA-8",
+      "title": "Privacy Impact Assessments",
+      "family": "RA",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "RA-9",
+      "title": "Criticality Analysis",
+      "family": "RA",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "RA-10",
+      "title": "Threat Hunting",
+      "family": "RA",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SA-1",
+      "title": "Policy and Procedures",
+      "family": "SA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "SA-2",
+      "title": "Allocation of Resources",
+      "family": "SA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "SA-3",
+      "title": "System Development Life Cycle",
+      "family": "SA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "SA-3.1",
+      "title": "Manage Preproduction Environment",
+      "family": "SA",
+      "parent": "SA-3",
+      "baselines": []
+    },
+    {
+      "id": "SA-3.2",
+      "title": "Use of Live or Operational Data",
+      "family": "SA",
+      "parent": "SA-3",
+      "baselines": []
+    },
+    {
+      "id": "SA-3.3",
+      "title": "Technology Refresh",
+      "family": "SA",
+      "parent": "SA-3",
+      "baselines": []
+    },
+    {
+      "id": "SA-4",
+      "title": "Acquisition Process",
+      "family": "SA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "SA-4.1",
+      "title": "Functional Properties of Controls",
+      "family": "SA",
+      "parent": "SA-4",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SA-4.2",
+      "title": "Design and Implementation Information for Controls",
+      "family": "SA",
+      "parent": "SA-4",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SA-4.3",
+      "title": "Development Methods, Techniques, and Practices",
+      "family": "SA",
+      "parent": "SA-4",
+      "baselines": []
+    },
+    {
+      "id": "SA-4.5",
+      "title": "System, Component, and Service Configurations",
+      "family": "SA",
+      "parent": "SA-4",
+      "baselines": ["high"]
+    },
+    {
+      "id": "SA-4.6",
+      "title": "Use of Information Assurance Products",
+      "family": "SA",
+      "parent": "SA-4",
+      "baselines": []
+    },
+    {
+      "id": "SA-4.7",
+      "title": "NIAP-approved Protection Profiles ",
+      "family": "SA",
+      "parent": "SA-4",
+      "baselines": []
+    },
+    {
+      "id": "SA-4.8",
+      "title": "Continuous Monitoring Plan for Controls",
+      "family": "SA",
+      "parent": "SA-4",
+      "baselines": []
+    },
+    {
+      "id": "SA-4.9",
+      "title": "Functions, Ports, Protocols, and Services in Use",
+      "family": "SA",
+      "parent": "SA-4",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SA-4.10",
+      "title": "Use of Approved PIV Products",
+      "family": "SA",
+      "parent": "SA-4",
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SA-4.11",
+      "title": "System of Records",
+      "family": "SA",
+      "parent": "SA-4",
+      "baselines": []
+    },
+    {
+      "id": "SA-4.12",
+      "title": "Data Ownership",
+      "family": "SA",
+      "parent": "SA-4",
+      "baselines": []
+    },
+    {
+      "id": "SA-5",
+      "title": "System Documentation",
+      "family": "SA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SA-8",
+      "title": "Security and Privacy Engineering Principles",
+      "family": "SA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SA-8.1",
+      "title": "Clear Abstractions",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.2",
+      "title": "Least Common Mechanism",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.3",
+      "title": "Modularity and Layering",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.4",
+      "title": "Partially Ordered Dependencies",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.5",
+      "title": "Efficiently Mediated Access",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.6",
+      "title": "Minimized Sharing",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.7",
+      "title": "Reduced Complexity",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.8",
+      "title": "Secure Evolvability",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.9",
+      "title": "Trusted Components",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.10",
+      "title": "Hierarchical Trust",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.11",
+      "title": "Inverse Modification Threshold",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.12",
+      "title": "Hierarchical Protection",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.13",
+      "title": "Minimized Security Elements",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.14",
+      "title": "Least Privilege",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.15",
+      "title": "Predicate Permission",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.16",
+      "title": "Self-reliant Trustworthiness",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.17",
+      "title": "Secure Distributed Composition",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.18",
+      "title": "Trusted Communications Channels",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.19",
+      "title": "Continuous Protection",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.20",
+      "title": "Secure Metadata Management",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.21",
+      "title": "Self-analysis",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.22",
+      "title": "Accountability and Traceability",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.23",
+      "title": "Secure Defaults",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.24",
+      "title": "Secure Failure and Recovery",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.25",
+      "title": "Economic Security",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.26",
+      "title": "Performance Security",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.27",
+      "title": "Human Factored Security",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.28",
+      "title": "Acceptable Security",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.29",
+      "title": "Repeatable and Documented Procedures",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.30",
+      "title": "Procedural Rigor",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.31",
+      "title": "Secure System Modification",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.32",
+      "title": "Sufficient Documentation",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": []
+    },
+    {
+      "id": "SA-8.33",
+      "title": "Minimization",
+      "family": "SA",
+      "parent": "SA-8",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "SA-9",
+      "title": "External System Services",
+      "family": "SA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "SA-9.1",
+      "title": "Risk Assessments and Organizational Approvals",
+      "family": "SA",
+      "parent": "SA-9",
+      "baselines": []
+    },
+    {
+      "id": "SA-9.2",
+      "title": "Identification of Functions, Ports, Protocols, and Services",
+      "family": "SA",
+      "parent": "SA-9",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SA-9.3",
+      "title": "Establish and Maintain Trust Relationship with Providers",
+      "family": "SA",
+      "parent": "SA-9",
+      "baselines": []
+    },
+    {
+      "id": "SA-9.4",
+      "title": "Consistent Interests of Consumers and Providers",
+      "family": "SA",
+      "parent": "SA-9",
+      "baselines": []
+    },
+    {
+      "id": "SA-9.5",
+      "title": "Processing, Storage, and Service Location",
+      "family": "SA",
+      "parent": "SA-9",
+      "baselines": []
+    },
+    {
+      "id": "SA-9.6",
+      "title": "Organization-controlled Cryptographic Keys",
+      "family": "SA",
+      "parent": "SA-9",
+      "baselines": []
+    },
+    {
+      "id": "SA-9.7",
+      "title": "Organization-controlled Integrity Checking",
+      "family": "SA",
+      "parent": "SA-9",
+      "baselines": []
+    },
+    {
+      "id": "SA-9.8",
+      "title": "Processing and Storage Location \u2014 U.S. Jurisdiction",
+      "family": "SA",
+      "parent": "SA-9",
+      "baselines": []
+    },
+    {
+      "id": "SA-10",
+      "title": "Developer Configuration Management",
+      "family": "SA",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SA-10.1",
+      "title": "Software and Firmware Integrity Verification",
+      "family": "SA",
+      "parent": "SA-10",
+      "baselines": []
+    },
+    {
+      "id": "SA-10.2",
+      "title": "Alternative Configuration Management Processes",
+      "family": "SA",
+      "parent": "SA-10",
+      "baselines": []
+    },
+    {
+      "id": "SA-10.3",
+      "title": "Hardware Integrity Verification",
+      "family": "SA",
+      "parent": "SA-10",
+      "baselines": []
+    },
+    {
+      "id": "SA-10.4",
+      "title": "Trusted Generation",
+      "family": "SA",
+      "parent": "SA-10",
+      "baselines": []
+    },
+    {
+      "id": "SA-10.5",
+      "title": "Mapping Integrity for Version Control",
+      "family": "SA",
+      "parent": "SA-10",
+      "baselines": []
+    },
+    {
+      "id": "SA-10.6",
+      "title": "Trusted Distribution",
+      "family": "SA",
+      "parent": "SA-10",
+      "baselines": []
+    },
+    {
+      "id": "SA-10.7",
+      "title": "Security and Privacy Representatives",
+      "family": "SA",
+      "parent": "SA-10",
+      "baselines": []
+    },
+    {
+      "id": "SA-11",
+      "title": "Developer Testing and Evaluation",
+      "family": "SA",
+      "parent": null,
+      "baselines": ["moderate", "high", "privacy"]
+    },
+    {
+      "id": "SA-11.1",
+      "title": "Static Code Analysis",
+      "family": "SA",
+      "parent": "SA-11",
+      "baselines": []
+    },
+    {
+      "id": "SA-11.2",
+      "title": "Threat Modeling and Vulnerability Analyses",
+      "family": "SA",
+      "parent": "SA-11",
+      "baselines": []
+    },
+    {
+      "id": "SA-11.3",
+      "title": "Independent Verification of Assessment Plans and Evidence",
+      "family": "SA",
+      "parent": "SA-11",
+      "baselines": []
+    },
+    {
+      "id": "SA-11.4",
+      "title": "Manual Code Reviews",
+      "family": "SA",
+      "parent": "SA-11",
+      "baselines": []
+    },
+    {
+      "id": "SA-11.5",
+      "title": "Penetration Testing",
+      "family": "SA",
+      "parent": "SA-11",
+      "baselines": []
+    },
+    {
+      "id": "SA-11.6",
+      "title": "Attack Surface Reviews",
+      "family": "SA",
+      "parent": "SA-11",
+      "baselines": []
+    },
+    {
+      "id": "SA-11.7",
+      "title": "Verify Scope of Testing and Evaluation",
+      "family": "SA",
+      "parent": "SA-11",
+      "baselines": []
+    },
+    {
+      "id": "SA-11.8",
+      "title": "Dynamic Code Analysis",
+      "family": "SA",
+      "parent": "SA-11",
+      "baselines": []
+    },
+    {
+      "id": "SA-11.9",
+      "title": "Interactive Application Security Testing",
+      "family": "SA",
+      "parent": "SA-11",
+      "baselines": []
+    },
+    {
+      "id": "SA-15",
+      "title": "Development Process, Standards, and Tools",
+      "family": "SA",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SA-15.1",
+      "title": "Quality Metrics",
+      "family": "SA",
+      "parent": "SA-15",
+      "baselines": []
+    },
+    {
+      "id": "SA-15.2",
+      "title": "Security and Privacy Tracking Tools",
+      "family": "SA",
+      "parent": "SA-15",
+      "baselines": []
+    },
+    {
+      "id": "SA-15.3",
+      "title": "Criticality Analysis",
+      "family": "SA",
+      "parent": "SA-15",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SA-15.5",
+      "title": "Attack Surface Reduction",
+      "family": "SA",
+      "parent": "SA-15",
+      "baselines": []
+    },
+    {
+      "id": "SA-15.6",
+      "title": "Continuous Improvement",
+      "family": "SA",
+      "parent": "SA-15",
+      "baselines": []
+    },
+    {
+      "id": "SA-15.7",
+      "title": "Automated Vulnerability Analysis",
+      "family": "SA",
+      "parent": "SA-15",
+      "baselines": []
+    },
+    {
+      "id": "SA-15.8",
+      "title": "Reuse of Threat and Vulnerability Information",
+      "family": "SA",
+      "parent": "SA-15",
+      "baselines": []
+    },
+    {
+      "id": "SA-15.10",
+      "title": "Incident Response Plan",
+      "family": "SA",
+      "parent": "SA-15",
+      "baselines": []
+    },
+    {
+      "id": "SA-15.11",
+      "title": "Archive System or Component",
+      "family": "SA",
+      "parent": "SA-15",
+      "baselines": []
+    },
+    {
+      "id": "SA-15.12",
+      "title": "Minimize Personally Identifiable Information",
+      "family": "SA",
+      "parent": "SA-15",
+      "baselines": []
+    },
+    {
+      "id": "SA-15.13",
+      "title": "Logging Syntax",
+      "family": "SA",
+      "parent": "SA-15",
+      "baselines": []
+    },
+    {
+      "id": "SA-16",
+      "title": "Developer-provided Training",
+      "family": "SA",
+      "parent": null,
+      "baselines": ["high"]
+    },
+    {
+      "id": "SA-17",
+      "title": "Developer Security and Privacy Architecture and Design",
+      "family": "SA",
+      "parent": null,
+      "baselines": ["high"]
+    },
+    {
+      "id": "SA-17.1",
+      "title": "Formal Policy Model",
+      "family": "SA",
+      "parent": "SA-17",
+      "baselines": []
+    },
+    {
+      "id": "SA-17.2",
+      "title": "Security-relevant Components",
+      "family": "SA",
+      "parent": "SA-17",
+      "baselines": []
+    },
+    {
+      "id": "SA-17.3",
+      "title": "Formal Correspondence",
+      "family": "SA",
+      "parent": "SA-17",
+      "baselines": []
+    },
+    {
+      "id": "SA-17.4",
+      "title": "Informal Correspondence",
+      "family": "SA",
+      "parent": "SA-17",
+      "baselines": []
+    },
+    {
+      "id": "SA-17.5",
+      "title": "Conceptually Simple Design",
+      "family": "SA",
+      "parent": "SA-17",
+      "baselines": []
+    },
+    {
+      "id": "SA-17.6",
+      "title": "Structure for Testing",
+      "family": "SA",
+      "parent": "SA-17",
+      "baselines": []
+    },
+    {
+      "id": "SA-17.7",
+      "title": "Structure for Least Privilege",
+      "family": "SA",
+      "parent": "SA-17",
+      "baselines": []
+    },
+    {
+      "id": "SA-17.8",
+      "title": "Orchestration",
+      "family": "SA",
+      "parent": "SA-17",
+      "baselines": []
+    },
+    {
+      "id": "SA-17.9",
+      "title": "Design Diversity",
+      "family": "SA",
+      "parent": "SA-17",
+      "baselines": []
+    },
+    {
+      "id": "SA-20",
+      "title": "Customized Development of Critical Components",
+      "family": "SA",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SA-21",
+      "title": "Developer Screening",
+      "family": "SA",
+      "parent": null,
+      "baselines": ["high"]
+    },
+    {
+      "id": "SA-22",
+      "title": "Unsupported System Components",
+      "family": "SA",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SA-23",
+      "title": "Specialization",
+      "family": "SA",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SA-24",
+      "title": "Design For Cyber Resiliency",
+      "family": "SA",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-1",
+      "title": "Policy and Procedures",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SC-2",
+      "title": "Separation of System and User Functionality",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SC-2.1",
+      "title": "Interfaces for Non-privileged Users",
+      "family": "SC",
+      "parent": "SC-2",
+      "baselines": []
+    },
+    {
+      "id": "SC-2.2",
+      "title": "Disassociability",
+      "family": "SC",
+      "parent": "SC-2",
+      "baselines": []
+    },
+    {
+      "id": "SC-3",
+      "title": "Security Function Isolation",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["high"]
+    },
+    {
+      "id": "SC-3.1",
+      "title": "Hardware Separation",
+      "family": "SC",
+      "parent": "SC-3",
+      "baselines": []
+    },
+    {
+      "id": "SC-3.2",
+      "title": "Access and Flow Control Functions",
+      "family": "SC",
+      "parent": "SC-3",
+      "baselines": []
+    },
+    {
+      "id": "SC-3.3",
+      "title": "Minimize Nonsecurity Functionality",
+      "family": "SC",
+      "parent": "SC-3",
+      "baselines": []
+    },
+    {
+      "id": "SC-3.4",
+      "title": "Module Coupling and Cohesiveness",
+      "family": "SC",
+      "parent": "SC-3",
+      "baselines": []
+    },
+    {
+      "id": "SC-3.5",
+      "title": "Layered Structures",
+      "family": "SC",
+      "parent": "SC-3",
+      "baselines": []
+    },
+    {
+      "id": "SC-4",
+      "title": "Information in Shared System Resources",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SC-4.2",
+      "title": "Multilevel or Periods Processing",
+      "family": "SC",
+      "parent": "SC-4",
+      "baselines": []
+    },
+    {
+      "id": "SC-5",
+      "title": "Denial-of-service Protection",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SC-5.1",
+      "title": "Restrict Ability to Attack Other Systems",
+      "family": "SC",
+      "parent": "SC-5",
+      "baselines": []
+    },
+    {
+      "id": "SC-5.2",
+      "title": "Capacity, Bandwidth, and Redundancy",
+      "family": "SC",
+      "parent": "SC-5",
+      "baselines": []
+    },
+    {
+      "id": "SC-5.3",
+      "title": "Detection and Monitoring",
+      "family": "SC",
+      "parent": "SC-5",
+      "baselines": []
+    },
+    {
+      "id": "SC-6",
+      "title": "Resource Availability",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-7",
+      "title": "Boundary Protection",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SC-7.3",
+      "title": "Access Points",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SC-7.4",
+      "title": "External Telecommunications Services",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SC-7.5",
+      "title": "Deny by Default \u2014 Allow by Exception",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SC-7.7",
+      "title": "Split Tunneling for Remote Devices",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SC-7.8",
+      "title": "Route Traffic to Authenticated Proxy Servers",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SC-7.9",
+      "title": "Restrict Threatening Outgoing Communications Traffic",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-7.10",
+      "title": "Prevent Exfiltration",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-7.11",
+      "title": "Restrict Incoming Communications Traffic",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-7.12",
+      "title": "Host-based Protection",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-7.13",
+      "title": "Isolation of Security Tools, Mechanisms, and Support Components",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-7.14",
+      "title": "Protect Against Unauthorized Physical Connections",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-7.15",
+      "title": "Networked Privileged Accesses",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-7.16",
+      "title": "Prevent Discovery of System Components",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-7.17",
+      "title": "Automated Enforcement of Protocol Formats",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-7.18",
+      "title": "Fail Secure",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": ["high"]
+    },
+    {
+      "id": "SC-7.19",
+      "title": "Block Communication from Non-organizationally Configured Hosts",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-7.20",
+      "title": "Dynamic Isolation and Segregation",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-7.21",
+      "title": "Isolation of System Components",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": ["high"]
+    },
+    {
+      "id": "SC-7.22",
+      "title": "Separate Subnets for Connecting to Different Security Domains",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-7.23",
+      "title": "Disable Sender Feedback on Protocol Validation Failure",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-7.24",
+      "title": "Personally Identifiable Information",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "SC-7.25",
+      "title": "Unclassified National Security System Connections",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-7.26",
+      "title": "Classified National Security System Connections",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-7.27",
+      "title": "Unclassified Non-national Security System Connections",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-7.28",
+      "title": "Connections to Public Networks",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-7.29",
+      "title": "Separate Subnets to Isolate Functions",
+      "family": "SC",
+      "parent": "SC-7",
+      "baselines": []
+    },
+    {
+      "id": "SC-8",
+      "title": "Transmission Confidentiality and Integrity",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SC-8.1",
+      "title": "Cryptographic Protection",
+      "family": "SC",
+      "parent": "SC-8",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SC-8.2",
+      "title": "Pre- and Post-transmission Handling",
+      "family": "SC",
+      "parent": "SC-8",
+      "baselines": []
+    },
+    {
+      "id": "SC-8.3",
+      "title": "Cryptographic Protection for Message Externals",
+      "family": "SC",
+      "parent": "SC-8",
+      "baselines": []
+    },
+    {
+      "id": "SC-8.4",
+      "title": "Conceal or Randomize Communications",
+      "family": "SC",
+      "parent": "SC-8",
+      "baselines": []
+    },
+    {
+      "id": "SC-8.5",
+      "title": "Protected Distribution System",
+      "family": "SC",
+      "parent": "SC-8",
+      "baselines": []
+    },
+    {
+      "id": "SC-10",
+      "title": "Network Disconnect",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SC-11",
+      "title": "Trusted Path",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-11.1",
+      "title": "Irrefutable Communications Path",
+      "family": "SC",
+      "parent": "SC-11",
+      "baselines": []
+    },
+    {
+      "id": "SC-12",
+      "title": "Cryptographic Key Establishment and Management",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SC-12.1",
+      "title": "Availability",
+      "family": "SC",
+      "parent": "SC-12",
+      "baselines": ["high"]
+    },
+    {
+      "id": "SC-12.2",
+      "title": "Symmetric Keys",
+      "family": "SC",
+      "parent": "SC-12",
+      "baselines": []
+    },
+    {
+      "id": "SC-12.3",
+      "title": "Asymmetric Keys",
+      "family": "SC",
+      "parent": "SC-12",
+      "baselines": []
+    },
+    {
+      "id": "SC-12.6",
+      "title": "Physical Control of Keys",
+      "family": "SC",
+      "parent": "SC-12",
+      "baselines": []
+    },
+    {
+      "id": "SC-13",
+      "title": "Cryptographic Protection",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SC-15",
+      "title": "Collaborative Computing Devices and Applications",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SC-15.1",
+      "title": "Physical or Logical Disconnect",
+      "family": "SC",
+      "parent": "SC-15",
+      "baselines": []
+    },
+    {
+      "id": "SC-15.3",
+      "title": "Disabling and Removal in Secure Work Areas",
+      "family": "SC",
+      "parent": "SC-15",
+      "baselines": []
+    },
+    {
+      "id": "SC-15.4",
+      "title": "Explicitly Indicate Current Participants",
+      "family": "SC",
+      "parent": "SC-15",
+      "baselines": []
+    },
+    {
+      "id": "SC-16",
+      "title": "Transmission of Security and Privacy Attributes",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-16.1",
+      "title": "Integrity Verification",
+      "family": "SC",
+      "parent": "SC-16",
+      "baselines": []
+    },
+    {
+      "id": "SC-16.2",
+      "title": "Anti-spoofing Mechanisms",
+      "family": "SC",
+      "parent": "SC-16",
+      "baselines": []
+    },
+    {
+      "id": "SC-16.3",
+      "title": "Cryptographic Binding",
+      "family": "SC",
+      "parent": "SC-16",
+      "baselines": []
+    },
+    {
+      "id": "SC-17",
+      "title": "Public Key Infrastructure Certificates",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SC-18",
+      "title": "Mobile Code",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SC-18.1",
+      "title": "Identify Unacceptable Code and Take Corrective Actions",
+      "family": "SC",
+      "parent": "SC-18",
+      "baselines": []
+    },
+    {
+      "id": "SC-18.2",
+      "title": "Acquisition, Development, and Use",
+      "family": "SC",
+      "parent": "SC-18",
+      "baselines": []
+    },
+    {
+      "id": "SC-18.3",
+      "title": "Prevent Downloading and Execution",
+      "family": "SC",
+      "parent": "SC-18",
+      "baselines": []
+    },
+    {
+      "id": "SC-18.4",
+      "title": "Prevent Automatic Execution",
+      "family": "SC",
+      "parent": "SC-18",
+      "baselines": []
+    },
+    {
+      "id": "SC-18.5",
+      "title": "Allow Execution Only in Confined Environments",
+      "family": "SC",
+      "parent": "SC-18",
+      "baselines": []
+    },
+    {
+      "id": "SC-20",
+      "title": "Secure Name/Address Resolution Service (Authoritative Source)",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SC-20.2",
+      "title": "Data Origin and Integrity",
+      "family": "SC",
+      "parent": "SC-20",
+      "baselines": []
+    },
+    {
+      "id": "SC-21",
+      "title": "Secure Name/Address Resolution Service (Recursive or Caching Resolver)",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SC-22",
+      "title": "Architecture and Provisioning for Name/Address Resolution Service",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SC-23",
+      "title": "Session Authenticity",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SC-23.1",
+      "title": "Invalidate Session Identifiers at Logout",
+      "family": "SC",
+      "parent": "SC-23",
+      "baselines": []
+    },
+    {
+      "id": "SC-23.3",
+      "title": "Unique System-generated Session Identifiers",
+      "family": "SC",
+      "parent": "SC-23",
+      "baselines": []
+    },
+    {
+      "id": "SC-23.5",
+      "title": "Allowed Certificate Authorities",
+      "family": "SC",
+      "parent": "SC-23",
+      "baselines": []
+    },
+    {
+      "id": "SC-24",
+      "title": "Fail in Known State",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["high"]
+    },
+    {
+      "id": "SC-25",
+      "title": "Thin Nodes",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-26",
+      "title": "Decoys",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-27",
+      "title": "Platform-independent Applications",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-28",
+      "title": "Protection of Information at Rest",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SC-28.1",
+      "title": "Cryptographic Protection",
+      "family": "SC",
+      "parent": "SC-28",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SC-28.2",
+      "title": "Offline Storage",
+      "family": "SC",
+      "parent": "SC-28",
+      "baselines": []
+    },
+    {
+      "id": "SC-28.3",
+      "title": "Cryptographic Keys",
+      "family": "SC",
+      "parent": "SC-28",
+      "baselines": []
+    },
+    {
+      "id": "SC-29",
+      "title": "Heterogeneity",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-29.1",
+      "title": "Virtualization Techniques",
+      "family": "SC",
+      "parent": "SC-29",
+      "baselines": []
+    },
+    {
+      "id": "SC-30",
+      "title": "Concealment and Misdirection",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-30.2",
+      "title": "Randomness",
+      "family": "SC",
+      "parent": "SC-30",
+      "baselines": []
+    },
+    {
+      "id": "SC-30.3",
+      "title": "Change Processing and Storage Locations",
+      "family": "SC",
+      "parent": "SC-30",
+      "baselines": []
+    },
+    {
+      "id": "SC-30.4",
+      "title": "Misleading Information",
+      "family": "SC",
+      "parent": "SC-30",
+      "baselines": []
+    },
+    {
+      "id": "SC-30.5",
+      "title": "Concealment of System Components",
+      "family": "SC",
+      "parent": "SC-30",
+      "baselines": []
+    },
+    {
+      "id": "SC-31",
+      "title": "Covert Channel Analysis",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-31.1",
+      "title": "Test Covert Channels for Exploitability",
+      "family": "SC",
+      "parent": "SC-31",
+      "baselines": []
+    },
+    {
+      "id": "SC-31.2",
+      "title": "Maximum Bandwidth",
+      "family": "SC",
+      "parent": "SC-31",
+      "baselines": []
+    },
+    {
+      "id": "SC-31.3",
+      "title": "Measure Bandwidth in Operational Environments",
+      "family": "SC",
+      "parent": "SC-31",
+      "baselines": []
+    },
+    {
+      "id": "SC-32",
+      "title": "System Partitioning",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-32.1",
+      "title": "Separate Physical Domains for Privileged Functions",
+      "family": "SC",
+      "parent": "SC-32",
+      "baselines": []
+    },
+    {
+      "id": "SC-34",
+      "title": "Non-modifiable Executable Programs",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-34.1",
+      "title": "No Writable Storage",
+      "family": "SC",
+      "parent": "SC-34",
+      "baselines": []
+    },
+    {
+      "id": "SC-34.2",
+      "title": "Integrity Protection on Read-only Media",
+      "family": "SC",
+      "parent": "SC-34",
+      "baselines": []
+    },
+    {
+      "id": "SC-35",
+      "title": "External Malicious Code Identification",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-36",
+      "title": "Distributed Processing and Storage",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-36.1",
+      "title": "Polling Techniques",
+      "family": "SC",
+      "parent": "SC-36",
+      "baselines": []
+    },
+    {
+      "id": "SC-36.2",
+      "title": "Synchronization",
+      "family": "SC",
+      "parent": "SC-36",
+      "baselines": []
+    },
+    {
+      "id": "SC-37",
+      "title": "Out-of-band Channels",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-37.1",
+      "title": "Ensure Delivery and Transmission",
+      "family": "SC",
+      "parent": "SC-37",
+      "baselines": []
+    },
+    {
+      "id": "SC-38",
+      "title": "Operations Security",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-39",
+      "title": "Process Isolation",
+      "family": "SC",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SC-39.1",
+      "title": "Hardware Separation",
+      "family": "SC",
+      "parent": "SC-39",
+      "baselines": []
+    },
+    {
+      "id": "SC-39.2",
+      "title": "Separate Execution Domain Per Thread",
+      "family": "SC",
+      "parent": "SC-39",
+      "baselines": []
+    },
+    {
+      "id": "SC-40",
+      "title": "Wireless Link Protection",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-40.1",
+      "title": "Electromagnetic Interference",
+      "family": "SC",
+      "parent": "SC-40",
+      "baselines": []
+    },
+    {
+      "id": "SC-40.2",
+      "title": "Reduce Detection Potential",
+      "family": "SC",
+      "parent": "SC-40",
+      "baselines": []
+    },
+    {
+      "id": "SC-40.3",
+      "title": "Imitative or Manipulative Communications Deception",
+      "family": "SC",
+      "parent": "SC-40",
+      "baselines": []
+    },
+    {
+      "id": "SC-40.4",
+      "title": "Signal Parameter Identification",
+      "family": "SC",
+      "parent": "SC-40",
+      "baselines": []
+    },
+    {
+      "id": "SC-41",
+      "title": "Port and I/O Device Access",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-42",
+      "title": "Sensor Capability and Data",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-42.1",
+      "title": "Reporting to Authorized Individuals or Roles",
+      "family": "SC",
+      "parent": "SC-42",
+      "baselines": []
+    },
+    {
+      "id": "SC-42.2",
+      "title": "Authorized Use",
+      "family": "SC",
+      "parent": "SC-42",
+      "baselines": []
+    },
+    {
+      "id": "SC-42.4",
+      "title": "Notice of Collection",
+      "family": "SC",
+      "parent": "SC-42",
+      "baselines": []
+    },
+    {
+      "id": "SC-42.5",
+      "title": "Collection Minimization",
+      "family": "SC",
+      "parent": "SC-42",
+      "baselines": []
+    },
+    {
+      "id": "SC-43",
+      "title": "Usage Restrictions",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-44",
+      "title": "Detonation Chambers",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-45",
+      "title": "System Time Synchronization",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-45.1",
+      "title": "Synchronization with Authoritative Time Source",
+      "family": "SC",
+      "parent": "SC-45",
+      "baselines": []
+    },
+    {
+      "id": "SC-45.2",
+      "title": "Secondary Authoritative Time Source",
+      "family": "SC",
+      "parent": "SC-45",
+      "baselines": []
+    },
+    {
+      "id": "SC-46",
+      "title": "Cross Domain Policy Enforcement",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-47",
+      "title": "Alternate Communications Paths",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-48",
+      "title": "Sensor Relocation",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-48.1",
+      "title": "Dynamic Relocation of Sensors or Monitoring Capabilities",
+      "family": "SC",
+      "parent": "SC-48",
+      "baselines": []
+    },
+    {
+      "id": "SC-49",
+      "title": "Hardware-enforced Separation and Policy Enforcement",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-50",
+      "title": "Software-enforced Separation and Policy Enforcement",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SC-51",
+      "title": "Hardware-based Protection",
+      "family": "SC",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SI-1",
+      "title": "Policy and Procedures",
+      "family": "SI",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "SI-2",
+      "title": "Flaw Remediation",
+      "family": "SI",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SI-2.2",
+      "title": "Automated Flaw Remediation Status",
+      "family": "SI",
+      "parent": "SI-2",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SI-2.3",
+      "title": "Time to Remediate Flaws and Benchmarks for Corrective Actions",
+      "family": "SI",
+      "parent": "SI-2",
+      "baselines": []
+    },
+    {
+      "id": "SI-2.4",
+      "title": "Automated Patch Management Tools",
+      "family": "SI",
+      "parent": "SI-2",
+      "baselines": []
+    },
+    {
+      "id": "SI-2.5",
+      "title": "Automatic Software and Firmware Updates",
+      "family": "SI",
+      "parent": "SI-2",
+      "baselines": []
+    },
+    {
+      "id": "SI-2.6",
+      "title": "Removal of Previous Versions of Software and Firmware",
+      "family": "SI",
+      "parent": "SI-2",
+      "baselines": []
+    },
+    {
+      "id": "SI-2.7",
+      "title": "Root Cause Analysis",
+      "family": "SI",
+      "parent": "SI-2",
+      "baselines": []
+    },
+    {
+      "id": "SI-3",
+      "title": "Malicious Code Protection",
+      "family": "SI",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SI-3.4",
+      "title": "Updates Only by Privileged Users",
+      "family": "SI",
+      "parent": "SI-3",
+      "baselines": []
+    },
+    {
+      "id": "SI-3.6",
+      "title": "Testing and Verification",
+      "family": "SI",
+      "parent": "SI-3",
+      "baselines": []
+    },
+    {
+      "id": "SI-3.8",
+      "title": "Detect Unauthorized Commands",
+      "family": "SI",
+      "parent": "SI-3",
+      "baselines": []
+    },
+    {
+      "id": "SI-3.10",
+      "title": "Malicious Code Analysis",
+      "family": "SI",
+      "parent": "SI-3",
+      "baselines": []
+    },
+    {
+      "id": "SI-4",
+      "title": "System Monitoring",
+      "family": "SI",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SI-4.1",
+      "title": "System-wide Intrusion Detection System",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": []
+    },
+    {
+      "id": "SI-4.2",
+      "title": "Automated Tools and Mechanisms for Real-time Analysis",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SI-4.3",
+      "title": "Automated Tool and Mechanism Integration",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": []
+    },
+    {
+      "id": "SI-4.4",
+      "title": "Inbound and Outbound Communications Traffic",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SI-4.5",
+      "title": "System-generated Alerts",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SI-4.7",
+      "title": "Automated Response to Suspicious Events",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": []
+    },
+    {
+      "id": "SI-4.9",
+      "title": "Testing of Monitoring Tools and Mechanisms",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": []
+    },
+    {
+      "id": "SI-4.10",
+      "title": "Visibility of Encrypted Communications",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": ["high"]
+    },
+    {
+      "id": "SI-4.11",
+      "title": "Analyze Communications Traffic Anomalies",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": []
+    },
+    {
+      "id": "SI-4.12",
+      "title": "Automated Organization-generated Alerts",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": ["high"]
+    },
+    {
+      "id": "SI-4.13",
+      "title": "Analyze Traffic and Event Patterns",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": []
+    },
+    {
+      "id": "SI-4.14",
+      "title": "Wireless Intrusion Detection",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": ["high"]
+    },
+    {
+      "id": "SI-4.15",
+      "title": "Wireless to Wireline Communications",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": []
+    },
+    {
+      "id": "SI-4.16",
+      "title": "Correlate Monitoring Information",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": []
+    },
+    {
+      "id": "SI-4.17",
+      "title": "Integrated Situational Awareness",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": []
+    },
+    {
+      "id": "SI-4.18",
+      "title": "Analyze Traffic and Covert Exfiltration",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": []
+    },
+    {
+      "id": "SI-4.19",
+      "title": "Risk for Individuals",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": []
+    },
+    {
+      "id": "SI-4.20",
+      "title": "Privileged Users",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": ["high"]
+    },
+    {
+      "id": "SI-4.21",
+      "title": "Probationary Periods",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": []
+    },
+    {
+      "id": "SI-4.22",
+      "title": "Unauthorized Network Services",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": ["high"]
+    },
+    {
+      "id": "SI-4.23",
+      "title": "Host-based Devices",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": []
+    },
+    {
+      "id": "SI-4.24",
+      "title": "Indicators of Compromise",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": []
+    },
+    {
+      "id": "SI-4.25",
+      "title": "Optimize Network Traffic Analysis",
+      "family": "SI",
+      "parent": "SI-4",
+      "baselines": []
+    },
+    {
+      "id": "SI-5",
+      "title": "Security Alerts, Advisories, and Directives",
+      "family": "SI",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SI-5.1",
+      "title": "Automated Alerts and Advisories",
+      "family": "SI",
+      "parent": "SI-5",
+      "baselines": ["high"]
+    },
+    {
+      "id": "SI-6",
+      "title": "Security and Privacy Function Verification",
+      "family": "SI",
+      "parent": null,
+      "baselines": ["high"]
+    },
+    {
+      "id": "SI-6.2",
+      "title": "Automation Support for Distributed Testing",
+      "family": "SI",
+      "parent": "SI-6",
+      "baselines": []
+    },
+    {
+      "id": "SI-6.3",
+      "title": "Report Verification Results",
+      "family": "SI",
+      "parent": "SI-6",
+      "baselines": []
+    },
+    {
+      "id": "SI-7",
+      "title": "Software, Firmware, and Information Integrity",
+      "family": "SI",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SI-7.1",
+      "title": "Integrity Checks",
+      "family": "SI",
+      "parent": "SI-7",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SI-7.2",
+      "title": "Automated Notifications of Integrity Violations",
+      "family": "SI",
+      "parent": "SI-7",
+      "baselines": ["high"]
+    },
+    {
+      "id": "SI-7.3",
+      "title": "Centrally Managed Integrity Tools",
+      "family": "SI",
+      "parent": "SI-7",
+      "baselines": []
+    },
+    {
+      "id": "SI-7.5",
+      "title": "Automated Response to Integrity Violations",
+      "family": "SI",
+      "parent": "SI-7",
+      "baselines": ["high"]
+    },
+    {
+      "id": "SI-7.6",
+      "title": "Cryptographic Protection",
+      "family": "SI",
+      "parent": "SI-7",
+      "baselines": []
+    },
+    {
+      "id": "SI-7.7",
+      "title": "Integration of Detection and Response",
+      "family": "SI",
+      "parent": "SI-7",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SI-7.8",
+      "title": "Auditing Capability for Significant Events",
+      "family": "SI",
+      "parent": "SI-7",
+      "baselines": []
+    },
+    {
+      "id": "SI-7.9",
+      "title": "Verify Boot Process",
+      "family": "SI",
+      "parent": "SI-7",
+      "baselines": []
+    },
+    {
+      "id": "SI-7.10",
+      "title": "Protection of Boot Firmware",
+      "family": "SI",
+      "parent": "SI-7",
+      "baselines": []
+    },
+    {
+      "id": "SI-7.12",
+      "title": "Integrity Verification",
+      "family": "SI",
+      "parent": "SI-7",
+      "baselines": []
+    },
+    {
+      "id": "SI-7.15",
+      "title": "Code Authentication",
+      "family": "SI",
+      "parent": "SI-7",
+      "baselines": ["high"]
+    },
+    {
+      "id": "SI-7.16",
+      "title": "Time Limit on Process Execution Without Supervision",
+      "family": "SI",
+      "parent": "SI-7",
+      "baselines": []
+    },
+    {
+      "id": "SI-7.17",
+      "title": "Runtime Application Self-protection",
+      "family": "SI",
+      "parent": "SI-7",
+      "baselines": []
+    },
+    {
+      "id": "SI-8",
+      "title": "Spam Protection",
+      "family": "SI",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SI-8.2",
+      "title": "Automatic Updates",
+      "family": "SI",
+      "parent": "SI-8",
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SI-8.3",
+      "title": "Continuous Learning Capability",
+      "family": "SI",
+      "parent": "SI-8",
+      "baselines": []
+    },
+    {
+      "id": "SI-10",
+      "title": "Information Input Validation",
+      "family": "SI",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SI-10.1",
+      "title": "Manual Override Capability",
+      "family": "SI",
+      "parent": "SI-10",
+      "baselines": []
+    },
+    {
+      "id": "SI-10.2",
+      "title": "Review and Resolve Errors",
+      "family": "SI",
+      "parent": "SI-10",
+      "baselines": []
+    },
+    {
+      "id": "SI-10.3",
+      "title": "Predictable Behavior",
+      "family": "SI",
+      "parent": "SI-10",
+      "baselines": []
+    },
+    {
+      "id": "SI-10.4",
+      "title": "Timing Interactions",
+      "family": "SI",
+      "parent": "SI-10",
+      "baselines": []
+    },
+    {
+      "id": "SI-10.5",
+      "title": "Restrict Inputs to Trusted Sources and Approved Formats",
+      "family": "SI",
+      "parent": "SI-10",
+      "baselines": []
+    },
+    {
+      "id": "SI-10.6",
+      "title": "Injection Prevention",
+      "family": "SI",
+      "parent": "SI-10",
+      "baselines": []
+    },
+    {
+      "id": "SI-11",
+      "title": "Error Handling",
+      "family": "SI",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SI-12",
+      "title": "Information Management and Retention",
+      "family": "SI",
+      "parent": null,
+      "baselines": ["low", "moderate", "high", "privacy"]
+    },
+    {
+      "id": "SI-12.1",
+      "title": "Limit Personally Identifiable Information Elements",
+      "family": "SI",
+      "parent": "SI-12",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "SI-12.2",
+      "title": "Minimize Personally Identifiable Information in Testing, Training, and Research",
+      "family": "SI",
+      "parent": "SI-12",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "SI-12.3",
+      "title": "Information Disposal",
+      "family": "SI",
+      "parent": "SI-12",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "SI-13",
+      "title": "Predictable Failure Prevention",
+      "family": "SI",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SI-13.1",
+      "title": "Transferring Component Responsibilities",
+      "family": "SI",
+      "parent": "SI-13",
+      "baselines": []
+    },
+    {
+      "id": "SI-13.3",
+      "title": "Manual Transfer Between Components",
+      "family": "SI",
+      "parent": "SI-13",
+      "baselines": []
+    },
+    {
+      "id": "SI-13.4",
+      "title": "Standby Component Installation and Notification",
+      "family": "SI",
+      "parent": "SI-13",
+      "baselines": []
+    },
+    {
+      "id": "SI-13.5",
+      "title": "Failover Capability",
+      "family": "SI",
+      "parent": "SI-13",
+      "baselines": []
+    },
+    {
+      "id": "SI-14",
+      "title": "Non-persistence",
+      "family": "SI",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SI-14.1",
+      "title": "Refresh from Trusted Sources",
+      "family": "SI",
+      "parent": "SI-14",
+      "baselines": []
+    },
+    {
+      "id": "SI-14.2",
+      "title": "Non-persistent Information",
+      "family": "SI",
+      "parent": "SI-14",
+      "baselines": []
+    },
+    {
+      "id": "SI-14.3",
+      "title": "Non-persistent Connectivity",
+      "family": "SI",
+      "parent": "SI-14",
+      "baselines": []
+    },
+    {
+      "id": "SI-15",
+      "title": "Information Output Filtering",
+      "family": "SI",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SI-16",
+      "title": "Memory Protection",
+      "family": "SI",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SI-17",
+      "title": "Fail-safe Procedures",
+      "family": "SI",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SI-18",
+      "title": "Personally Identifiable Information Quality Operations",
+      "family": "SI",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "SI-18.1",
+      "title": "Automation Support",
+      "family": "SI",
+      "parent": "SI-18",
+      "baselines": []
+    },
+    {
+      "id": "SI-18.2",
+      "title": "Data Tags",
+      "family": "SI",
+      "parent": "SI-18",
+      "baselines": []
+    },
+    {
+      "id": "SI-18.3",
+      "title": "Collection",
+      "family": "SI",
+      "parent": "SI-18",
+      "baselines": []
+    },
+    {
+      "id": "SI-18.4",
+      "title": "Individual Requests",
+      "family": "SI",
+      "parent": "SI-18",
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "SI-18.5",
+      "title": "Notice of Correction or Deletion",
+      "family": "SI",
+      "parent": "SI-18",
+      "baselines": []
+    },
+    {
+      "id": "SI-19",
+      "title": "De-identification",
+      "family": "SI",
+      "parent": null,
+      "baselines": ["privacy"]
+    },
+    {
+      "id": "SI-19.1",
+      "title": "Collection",
+      "family": "SI",
+      "parent": "SI-19",
+      "baselines": []
+    },
+    {
+      "id": "SI-19.2",
+      "title": "Archiving",
+      "family": "SI",
+      "parent": "SI-19",
+      "baselines": []
+    },
+    {
+      "id": "SI-19.3",
+      "title": "Release",
+      "family": "SI",
+      "parent": "SI-19",
+      "baselines": []
+    },
+    {
+      "id": "SI-19.4",
+      "title": "Removal, Masking, Encryption, Hashing, or Replacement of Direct Identifiers",
+      "family": "SI",
+      "parent": "SI-19",
+      "baselines": []
+    },
+    {
+      "id": "SI-19.5",
+      "title": "Statistical Disclosure Control",
+      "family": "SI",
+      "parent": "SI-19",
+      "baselines": []
+    },
+    {
+      "id": "SI-19.6",
+      "title": "Differential Privacy",
+      "family": "SI",
+      "parent": "SI-19",
+      "baselines": []
+    },
+    {
+      "id": "SI-19.7",
+      "title": "Validated Algorithms and Software",
+      "family": "SI",
+      "parent": "SI-19",
+      "baselines": []
+    },
+    {
+      "id": "SI-19.8",
+      "title": "Motivated Intruder",
+      "family": "SI",
+      "parent": "SI-19",
+      "baselines": []
+    },
+    {
+      "id": "SI-20",
+      "title": "Tainting",
+      "family": "SI",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SI-21",
+      "title": "Information Refresh",
+      "family": "SI",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SI-22",
+      "title": "Information Diversity",
+      "family": "SI",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SI-23",
+      "title": "Information Fragmentation",
+      "family": "SI",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SR-1",
+      "title": "Policy and Procedures",
+      "family": "SR",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SR-2",
+      "title": "Supply Chain Risk Management Plan",
+      "family": "SR",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SR-2.1",
+      "title": "Establish SCRM Team",
+      "family": "SR",
+      "parent": "SR-2",
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SR-3",
+      "title": "Supply Chain Controls and Processes",
+      "family": "SR",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SR-3.1",
+      "title": "Diverse Supply Base",
+      "family": "SR",
+      "parent": "SR-3",
+      "baselines": []
+    },
+    {
+      "id": "SR-3.2",
+      "title": "Limitation of Harm",
+      "family": "SR",
+      "parent": "SR-3",
+      "baselines": []
+    },
+    {
+      "id": "SR-3.3",
+      "title": "Sub-tier Flow Down",
+      "family": "SR",
+      "parent": "SR-3",
+      "baselines": []
+    },
+    {
+      "id": "SR-4",
+      "title": "Provenance",
+      "family": "SR",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SR-4.1",
+      "title": "Identity",
+      "family": "SR",
+      "parent": "SR-4",
+      "baselines": []
+    },
+    {
+      "id": "SR-4.2",
+      "title": "Track and Trace",
+      "family": "SR",
+      "parent": "SR-4",
+      "baselines": []
+    },
+    {
+      "id": "SR-4.3",
+      "title": "Validate as Genuine and Not Altered",
+      "family": "SR",
+      "parent": "SR-4",
+      "baselines": []
+    },
+    {
+      "id": "SR-4.4",
+      "title": "Supply Chain Integrity \u2014 Pedigree",
+      "family": "SR",
+      "parent": "SR-4",
+      "baselines": []
+    },
+    {
+      "id": "SR-5",
+      "title": "Acquisition Strategies, Tools, and Methods",
+      "family": "SR",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SR-5.1",
+      "title": "Adequate Supply",
+      "family": "SR",
+      "parent": "SR-5",
+      "baselines": []
+    },
+    {
+      "id": "SR-5.2",
+      "title": "Assessments Prior to Selection, Acceptance, Modification, or Update",
+      "family": "SR",
+      "parent": "SR-5",
+      "baselines": []
+    },
+    {
+      "id": "SR-6",
+      "title": "Supplier Assessments and Reviews",
+      "family": "SR",
+      "parent": null,
+      "baselines": ["moderate", "high"]
+    },
+    {
+      "id": "SR-6.1",
+      "title": "Testing and Analysis",
+      "family": "SR",
+      "parent": "SR-6",
+      "baselines": []
+    },
+    {
+      "id": "SR-7",
+      "title": "Supply Chain Operations Security",
+      "family": "SR",
+      "parent": null,
+      "baselines": []
+    },
+    {
+      "id": "SR-8",
+      "title": "Notification Agreements",
+      "family": "SR",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SR-9",
+      "title": "Tamper Resistance and Detection",
+      "family": "SR",
+      "parent": null,
+      "baselines": ["high"]
+    },
+    {
+      "id": "SR-9.1",
+      "title": "Multiple Stages of System Development Life Cycle",
+      "family": "SR",
+      "parent": "SR-9",
+      "baselines": ["high"]
+    },
+    {
+      "id": "SR-10",
+      "title": "Inspection of Systems or Components",
+      "family": "SR",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SR-11",
+      "title": "Component Authenticity",
+      "family": "SR",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SR-11.1",
+      "title": "Anti-counterfeit Training",
+      "family": "SR",
+      "parent": "SR-11",
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SR-11.2",
+      "title": "Configuration Control for Component Service and Repair",
+      "family": "SR",
+      "parent": "SR-11",
+      "baselines": ["low", "moderate", "high"]
+    },
+    {
+      "id": "SR-11.3",
+      "title": "Anti-counterfeit Scanning",
+      "family": "SR",
+      "parent": "SR-11",
+      "baselines": []
+    },
+    {
+      "id": "SR-12",
+      "title": "Component Disposal",
+      "family": "SR",
+      "parent": null,
+      "baselines": ["low", "moderate", "high"]
+    }
+  ]
+}

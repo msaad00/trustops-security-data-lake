@@ -1,0 +1,248 @@
+{
+  "schema": "trustops.framework_pack_manifest.v1",
+  "source": {
+    "name": "NIST SP 800-37 Rev. 2, Risk Management Framework for Information Systems and Organizations",
+    "version": "Revision 2 (December 2018)",
+    "url": "https://csrc.nist.gov/pubs/sp/800/37/r2/final",
+    "pdf": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-37r2.pdf",
+    "pdf_sha256": "4f75e1136bb905a654f1bcd9eefefb4108f47597276ee5eec0688f6d96f6a01d",
+    "note": "Task statements are reproduced from the RMF task headings; NIST publications are U.S. Government works not subject to copyright in the United States."
+  },
+  "rows": [
+    {
+      "id": "P-1",
+      "title": "Identify and assign individuals to specific roles associated with security and privacy risk management.",
+      "step": "Prepare"
+    },
+    {
+      "id": "P-2",
+      "title": "Establish a risk management strategy for the organization that includes a determination of risk tolerance.",
+      "step": "Prepare"
+    },
+    {
+      "id": "P-3",
+      "title": "Assess organization-wide security and privacy risk and update the risk assessment results on an ongoing basis.",
+      "step": "Prepare"
+    },
+    {
+      "id": "P-4",
+      "title": "Establish, document, and publish organizationally-tailored control baselines and/or Cybersecurity Framework Profiles.",
+      "step": "Prepare"
+    },
+    {
+      "id": "P-5",
+      "title": "Identify, document, and publish organization-wide common controls that are available for inheritance by organizational systems.",
+      "step": "Prepare"
+    },
+    {
+      "id": "P-6",
+      "title": "Prioritize organizational systems with the same impact level.",
+      "step": "Prepare"
+    },
+    {
+      "id": "P-7",
+      "title": "Develop and implement an organization-wide strategy for continuously monitoring control effectiveness.",
+      "step": "Prepare"
+    },
+    {
+      "id": "P-8",
+      "title": "Identify the missions, business functions, and mission/business processes that the system is intended to support.",
+      "step": "Prepare"
+    },
+    {
+      "id": "P-9",
+      "title": "Identify stakeholders who have an interest in the design, development, implementation, assessment, operation, maintenance, or disposal of the system.",
+      "step": "Prepare"
+    },
+    {
+      "id": "P-10",
+      "title": "Identify assets that require protection.",
+      "step": "Prepare"
+    },
+    {
+      "id": "P-11",
+      "title": "Determine the authorization boundary of the system.",
+      "step": "Prepare"
+    },
+    {
+      "id": "P-12",
+      "title": "Identify the types of information to be processed, stored, and transmitted by the system.",
+      "step": "Prepare"
+    },
+    {
+      "id": "P-13",
+      "title": "Identify and understand all stages of the information life cycle for each information type processed, stored, or transmitted by the system.",
+      "step": "Prepare"
+    },
+    {
+      "id": "P-14",
+      "title": "Conduct a system-level risk assessment and update the risk assessment results on an ongoing basis.",
+      "step": "Prepare"
+    },
+    {
+      "id": "P-15",
+      "title": "Define the security and privacy requirements for the system and the environment of operation.",
+      "step": "Prepare"
+    },
+    {
+      "id": "P-16",
+      "title": "Determine the placement of the system within the enterprise architecture.",
+      "step": "Prepare"
+    },
+    {
+      "id": "P-17",
+      "title": "Allocate security and privacy requirements to the system and to the environment of operation.",
+      "step": "Prepare"
+    },
+    {
+      "id": "P-18",
+      "title": "Register the system with organizational program or management offices.",
+      "step": "Prepare"
+    },
+    {
+      "id": "C-1",
+      "title": "Document the characteristics of the system.",
+      "step": "Categorize"
+    },
+    {
+      "id": "C-2",
+      "title": "Categorize the system and document the security categorization results.",
+      "step": "Categorize"
+    },
+    {
+      "id": "C-3",
+      "title": "Review and approve the security categorization results and decision.",
+      "step": "Categorize"
+    },
+    {
+      "id": "S-1",
+      "title": "Select the controls for the system and the environment of operation.",
+      "step": "Select"
+    },
+    {
+      "id": "S-2",
+      "title": "Tailor the controls selected for the system and the environment of operation.",
+      "step": "Select"
+    },
+    {
+      "id": "S-3",
+      "title": "Allocate security and privacy controls to the system and to the environment of operation.",
+      "step": "Select"
+    },
+    {
+      "id": "S-4",
+      "title": "Document the controls for the system and environment of operation in security and privacy plans.",
+      "step": "Select"
+    },
+    {
+      "id": "S-5",
+      "title": "Develop and implement a system-level strategy for monitoring control effectiveness that is consistent with and supplements the organizational continuous monitoring strategy.",
+      "step": "Select"
+    },
+    {
+      "id": "S-6",
+      "title": "Review and approve the security and privacy plans for the system and the environment of operation.",
+      "step": "Select"
+    },
+    {
+      "id": "I-1",
+      "title": "Implement the controls in the security and privacy plans.",
+      "step": "Implement"
+    },
+    {
+      "id": "I-2",
+      "title": "Document changes to planned control implementations based on the \u201cas-implemented\u201d state of controls.",
+      "step": "Implement"
+    },
+    {
+      "id": "A-1",
+      "title": "Select the appropriate assessor or assessment team for the type of control assessment to be conducted.",
+      "step": "Assess"
+    },
+    {
+      "id": "A-2",
+      "title": "Develop, review, and approve plans to assess implemented controls.",
+      "step": "Assess"
+    },
+    {
+      "id": "A-3",
+      "title": "Assess the controls in accordance with the assessment procedures described in assessment plans.",
+      "step": "Assess"
+    },
+    {
+      "id": "A-4",
+      "title": "Prepare the assessment reports documenting the findings and recommendations from the control assessments.",
+      "step": "Assess"
+    },
+    {
+      "id": "A-5",
+      "title": "Conduct initial remediation actions on the controls and reassess remediated controls.",
+      "step": "Assess"
+    },
+    {
+      "id": "A-6",
+      "title": "Prepare the plan of action and milestones based on the findings and recommendations of the assessment reports.",
+      "step": "Assess"
+    },
+    {
+      "id": "R-1",
+      "title": "Assemble the authorization package and submit the package to the authorizing official for an authorization decision.",
+      "step": "Authorize"
+    },
+    {
+      "id": "R-2",
+      "title": "Analyze and determine the risk from the operation or use of the system or the provision of common controls.",
+      "step": "Authorize"
+    },
+    {
+      "id": "R-3",
+      "title": "Identify and implement a preferred course of action in response to the risk determined.",
+      "step": "Authorize"
+    },
+    {
+      "id": "R-4",
+      "title": "Determine if the risk from the operation or use of the information system or the provision or use of common controls is acceptable.",
+      "step": "Authorize"
+    },
+    {
+      "id": "R-5",
+      "title": "Report the authorization decision and any deficiencies in controls that represent significant security or privacy risk.",
+      "step": "Authorize"
+    },
+    {
+      "id": "M-1",
+      "title": "Monitor the information system and its environment of operation for changes that impact the security and privacy posture of the system.",
+      "step": "Monitor"
+    },
+    {
+      "id": "M-2",
+      "title": "Assess the controls implemented within and inherited by the system in accordance with the continuous monitoring strategy.",
+      "step": "Monitor"
+    },
+    {
+      "id": "M-3",
+      "title": "Respond to risk based on the results of ongoing monitoring activities, risk assessments, and outstanding items in plans of action and milestones.",
+      "step": "Monitor"
+    },
+    {
+      "id": "M-4",
+      "title": "Update plans, assessment reports, and plans of action and milestones based on the results of the continuous monitoring process.",
+      "step": "Monitor"
+    },
+    {
+      "id": "M-5",
+      "title": "Report the security and privacy posture of the system to the authorizing official and other organizational officials on an ongoing basis in accordance with the organizational continuous monitoring strategy.",
+      "step": "Monitor"
+    },
+    {
+      "id": "M-6",
+      "title": "Review the security and privacy posture of the system on an ongoing basis to determine whether the risk remains acceptable.",
+      "step": "Monitor"
+    },
+    {
+      "id": "M-7",
+      "title": "Implement a system disposal strategy and execute required actions when a system is removed from operation.",
+      "step": "Monitor"
+    }
+  ]
+}

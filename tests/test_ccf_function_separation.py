@@ -17,6 +17,7 @@ def test_function_separation_uses_the_nist_800_171_crosswalk() -> None:
     } == {
         ("CMMC-3.13.3", "cmmc-2-level2", "proposed"),
         ("FEDRAMP-SC-2", "fedramp-moderate", "proposed"),
+        ("NIST-800-53-SC-2", "nist-800-53-rev5", "proposed"),
     }
     assert safeguard["mapping_source"] == {
         "name": "NIST SP 800-171 Rev. 2",
@@ -40,10 +41,10 @@ def test_function_separation_closes_two_gaps_without_overstating_attestation() -
     coverage = coverage_by_framework()
 
     assert coverage["safeguards"] == without_crosswalk["safeguards"] + 1
-    assert coverage["covered"] == without_crosswalk["covered"] + 2
-    assert coverage["uncovered"] == without_crosswalk["uncovered"] - 2
+    assert coverage["covered"] == without_crosswalk["covered"] + 3
+    assert coverage["uncovered"] == without_crosswalk["uncovered"] - 3
     assert coverage["reviewed"] == without_crosswalk["reviewed"]
-    assert coverage["proposed"] == without_crosswalk["proposed"] + 2
+    assert coverage["proposed"] == without_crosswalk["proposed"] + 3
     assert (
         coverage["frameworks"]["cmmc-2-level2"]["covered"]
         == without_crosswalk["frameworks"]["cmmc-2-level2"]["covered"] + 1

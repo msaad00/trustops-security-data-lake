@@ -1,0 +1,136 @@
+{
+  "schema": "trustops.framework_pack_manifest.v1",
+  "source": {
+    "url": "https://www.cisecurity.org/controls/v8-1",
+    "name": "CIS Critical Security Controls v8.1",
+    "list_url": "https://www.cisecurity.org/controls/cis-controls-list"
+  },
+  "rows": [
+    {
+      "id": "1",
+      "title": "Inventory and Control of Enterprise Assets",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform",
+      "asset_types": ["host", "service", "cloud_resource"]
+    },
+    {
+      "id": "2",
+      "title": "Inventory and Control of Software Assets",
+      "risk_domain": "controls-operations",
+      "owner": "security-platform",
+      "asset_types": ["container_image", "repo", "service"]
+    },
+    {
+      "id": "3",
+      "title": "Data Protection",
+      "risk_domain": "data-protection",
+      "owner": "security-operations",
+      "asset_types": ["data_store", "s3_bucket"]
+    },
+    {
+      "id": "4",
+      "title": "Secure Configuration of Enterprise Assets and Software",
+      "risk_domain": "configuration-management",
+      "owner": "security-platform",
+      "asset_types": ["cloud_resource", "cloud_policy", "host"]
+    },
+    {
+      "id": "5",
+      "title": "Account Management",
+      "risk_domain": "identity",
+      "owner": "security-platform",
+      "asset_types": ["identity_user", "identity_account", "okta_user"]
+    },
+    {
+      "id": "6",
+      "title": "Access Control Management",
+      "risk_domain": "identity",
+      "owner": "security-platform",
+      "asset_types": ["iam_role", "identity_group", "identity_user"]
+    },
+    {
+      "id": "7",
+      "title": "Continuous Vulnerability Management",
+      "risk_domain": "vulnerability",
+      "owner": "appsec",
+      "asset_types": ["container_image", "host", "repo"]
+    },
+    {
+      "id": "8",
+      "title": "Audit Log Management",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering",
+      "asset_types": ["audit_log", "service"]
+    },
+    {
+      "id": "9",
+      "title": "Email and Web Browser Protections",
+      "risk_domain": "controls-operations",
+      "owner": "security-operations",
+      "asset_types": ["service"]
+    },
+    {
+      "id": "10",
+      "title": "Malware Defenses",
+      "risk_domain": "malware-defense",
+      "owner": "security-operations",
+      "asset_types": ["host", "container_image"]
+    },
+    {
+      "id": "11",
+      "title": "Data Recovery",
+      "risk_domain": "availability",
+      "owner": "security-operations",
+      "asset_types": ["data_store", "service"]
+    },
+    {
+      "id": "12",
+      "title": "Network Infrastructure Management",
+      "risk_domain": "network-security",
+      "owner": "security-platform",
+      "asset_types": ["network", "cloud_resource"]
+    },
+    {
+      "id": "13",
+      "title": "Network Monitoring and Defense",
+      "risk_domain": "monitoring",
+      "owner": "detection-engineering",
+      "asset_types": ["network", "audit_log"]
+    },
+    {
+      "id": "14",
+      "title": "Security Awareness and Skills Training",
+      "risk_domain": "governance",
+      "owner": "security-operations",
+      "asset_types": ["service"]
+    },
+    {
+      "id": "15",
+      "title": "Service Provider Management",
+      "risk_domain": "third-party-risk",
+      "owner": "security-operations",
+      "asset_types": ["service"]
+    },
+    {
+      "id": "16",
+      "title": "Application Software Security",
+      "risk_domain": "change-management",
+      "owner": "engineering",
+      "asset_types": ["repo", "service", "container_image"]
+    },
+    {
+      "id": "17",
+      "title": "Incident Response Management",
+      "risk_domain": "incident-response",
+      "owner": "security-operations",
+      "asset_types": ["service", "audit_log"]
+    },
+    {
+      "id": "18",
+      "title": "Penetration Testing",
+      "risk_domain": "risk-management",
+      "owner": "appsec",
+      "asset_types": ["service", "host"]
+    }
+  ]
+}

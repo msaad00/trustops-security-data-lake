@@ -13,6 +13,7 @@ def test_controlled_maintenance_uses_the_nist_800_171_crosswalk() -> None:
     } == {
         ("CMMC-3.7.1", "cmmc-2-level2", "proposed"),
         ("FEDRAMP-MA-2", "fedramp-moderate", "proposed"),
+        ("NIST-800-53-MA-2", "nist-800-53-rev5", "proposed"),
     }
     assert safeguard["mapping_source"] == {
         "name": "NIST SP 800-171 Rev. 2",

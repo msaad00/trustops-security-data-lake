@@ -38,27 +38,14 @@ VALID_REVIEW_STATES = {"reviewed", "proposed"}
 # These labels describe the operated CCF safeguard families, not official
 # framework names. Keep the ids stable so the CLI, API, and console can join on
 # the same family even when a safeguard title changes.
-CCF_FAMILY_LABELS = {
-    "identity": "Identity and access",
-    "data-protection": "Data protection",
-    "detection": "Detection",
-    "logging": "Audit logging",
-    "change-management": "Change management",
-    "vulnerability-management": "Vulnerability management",
-    "third-party-risk": "Third-party risk",
-    "risk-management": "Risk management",
-    "availability": "Availability and recovery",
-    "ai-governance": "AI governance",
-    "incident-response": "Incident response",
-    "training": "Security awareness",
-    "physical": "Physical security",
-    "secure-development": "Secure development",
-    "network": "Network security",
-    "privacy-rights": "Privacy rights",
-    "data-inventory": "Data inventory",
-    "data-retention": "Data retention",
-    "processing-integrity": "Processing integrity",
-}
+DEFAULT_FAMILIES = ROOT / "controls" / "families.json"
+
+
+def load_ccf_families(path: str | Path | None = None) -> dict[str, JsonObject]:
+    """Return the canonical CCF control families keyed by ``family_id``."""
+    payload = json.loads(Path(path or DEFAULT_FAMILIES).read_text(encoding="utf-8"))
+    return {str(row["family_id"]): row for row in payload["families"]}
+
 
 JsonObject = dict[str, Any]
 
@@ -102,6 +89,7 @@ def validate_safeguards(payload: JsonObject, *, catalog: dict[str, Any] | None =
         problems.append(f"schema must be {SCHEMA!r}, got {payload.get('schema')!r}")
 
     known = set(catalog if catalog is not None else load_control_catalog())
+    families = load_ccf_families()
     seen_ids: set[str] = set()
 
     for entry in payload.get("safeguards", []):
@@ -112,6 +100,8 @@ def validate_safeguards(payload: JsonObject, *, catalog: dict[str, Any] | None =
         if sid in seen_ids:
             problems.append(f"{sid}: duplicate safeguard_id")
         seen_ids.add(sid)
+        if entry.get("risk_domain") not in families:
+            problems.append(f"{sid}: unknown CCF family {entry.get('risk_domain')!r}")
 
         if not entry.get("asset_types"):
             problems.append(f"{sid}: missing asset_types — a safeguard must say what it applies to")
@@ -205,7 +195,15 @@ def mapping_review_queue(
                 "role": member.get("role"),
                 "reviewed_anchors": anchors,
             }
-            source = member.get("mapping_source") if "mapping_source" in member else entry.get("mapping_source")
+            # A member proposed by title theme has no citation of its own and must
+            # not inherit the safeguard's crosswalk citation, which covers other
+            # frameworks' members.
+            if "mapping_source" in member:
+                source = member.get("mapping_source")
+            elif member.get("mapping_basis") == "title_theme":
+                source = None
+            else:
+                source = entry.get("mapping_source")
             if source is not None:
                 item["mapping_source"] = source
             items.append(item)
@@ -284,14 +282,19 @@ def coverage_by_family(payload: JsonObject | None = None) -> list[JsonObject]:
     overstating assurance.
     """
     data = payload or load_safeguards()
+    families = load_ccf_families()
     grouped: dict[str, dict[str, Any]] = {}
     for entry in data["safeguards"]:
         family_id = str(entry.get("risk_domain") or "uncategorized")
+        definition = families.get(family_id, {})
         row = grouped.setdefault(
             family_id,
             {
                 "family_id": family_id,
-                "label": CCF_FAMILY_LABELS.get(family_id, family_id.replace("-", " ").title()),
+                "label": definition.get("label", family_id.replace("-", " ").title()),
+                "description": definition.get("description", ""),
+                "nist_800_53_families": list(definition.get("nist_800_53_families", [])),
+                "cis_controls": list(definition.get("cis_controls", [])),
                 "safeguard_count": 0,
                 "frameworks": set(),
                 "control_ids": set(),
@@ -319,6 +322,9 @@ def coverage_by_family(payload: JsonObject | None = None) -> list[JsonObject]:
             {
                 "family_id": family_id,
                 "label": row["label"],
+                "description": row["description"],
+                "nist_800_53_families": row["nist_800_53_families"],
+                "cis_controls": row["cis_controls"],
                 "safeguard_count": row["safeguard_count"],
                 "framework_count": len(row["frameworks"]),
                 "frameworks": sorted(row["frameworks"]),

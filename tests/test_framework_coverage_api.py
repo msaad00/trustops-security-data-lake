@@ -5,6 +5,7 @@ import pytest
 pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient  # noqa: E402
 
+from security_lakehouse.catalog import load_control_catalog  # noqa: E402
 from security_lakehouse.server_app import create_app  # noqa: E402
 
 
@@ -17,7 +18,7 @@ def test_framework_coverage_api_separates_proof_states(tmp_path) -> None:
     body = response.json()
     assert body["meta"]["resource"] == "frameworks.coverage"
     summary = body["data"]["summary"]
-    assert summary["seeded_control_count"] == 942
+    assert summary["seeded_control_count"] == len(load_control_catalog())
     assert (
         summary["attestable_requirement_count"]
         <= summary["evaluatable_requirement_count"]

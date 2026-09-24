@@ -23,6 +23,7 @@ def test_audit_and_software_safeguards_use_published_nist_sources() -> None:
     } == {
         ("CMMC-3.3.3", "cmmc-2-level2", "proposed"),
         ("FEDRAMP-AU-2", "fedramp-moderate", "proposed"),
+        ("NIST-800-53-AU-2", "nist-800-53-rev5", "proposed"),
     }
     assert audit["mapping_source"] == {
         **CROSSWALK_SOURCE,
@@ -43,6 +44,7 @@ def test_audit_and_software_safeguards_use_published_nist_sources() -> None:
     } == {
         ("CMMC-3.4.8", "cmmc-2-level2", "proposed"),
         ("FEDRAMP-CM-7.5", "fedramp-moderate", "proposed"),
+        ("NIST-800-53-CM-7.5", "nist-800-53-rev5", "proposed"),
     }
     assert software["mapping_source"] == {
         **CROSSWALK_SOURCE,
@@ -65,10 +67,10 @@ def test_audit_and_software_lane_closes_three_gaps_without_attestation() -> None
     coverage = coverage_by_framework()
 
     assert coverage["safeguards"] == without_lane["safeguards"] + 2
-    assert coverage["covered"] == without_lane["covered"] + 3
-    assert coverage["uncovered"] == without_lane["uncovered"] - 3
+    assert coverage["covered"] == without_lane["covered"] + 4
+    assert coverage["uncovered"] == without_lane["uncovered"] - 4
     assert coverage["reviewed"] == without_lane["reviewed"]
-    assert coverage["proposed"] == without_lane["proposed"] + 3
+    assert coverage["proposed"] == without_lane["proposed"] + 4
     assert (
         coverage["frameworks"]["cmmc-2-level2"]["covered"] == without_lane["frameworks"]["cmmc-2-level2"]["covered"] + 2
     )

@@ -40,6 +40,9 @@ _FORMAT_PATTERNS: dict[str, str] = {
     "cis_aws": r"^\d+(\.\d+)*$",
     "cmmc-2-level2": r"^3\.\d+\.\d+$",
     "fedramp-moderate": r"^[A-Z]{2}-\d",
+    "nist-800-53-rev5": r"^[A-Z]{2}-\d+(\.\d+)?$",
+    "nist-rmf-800-37r2": r"^[PCSIARM]-\d+$",
+    "cis-controls-v8.1": r"^Control-\d+$",
 }
 
 _FRAMEWORK_FAMILIES = {"assurance", "security", "privacy", "ai-governance", "cloud", "sector"}
