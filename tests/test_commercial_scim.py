@@ -314,6 +314,8 @@ def test_disabled_returns_501(env, monkeypatch: pytest.MonkeyPatch) -> None:
     assert client.get(f"{SCIM}/Groups", headers=_bearer("x")).status_code == HTTPStatus.NOT_IMPLEMENTED
     resp = client.post("/api/v1/platform/scim/tokens", json={"name": "x"}, headers=_bearer(keys["acme:admin"]))
     assert resp.status_code == HTTPStatus.NOT_IMPLEMENTED
+    listed = client.get("/api/v1/platform/scim/tokens", headers=_bearer(keys["acme:admin"]))
+    assert listed.status_code == HTTPStatus.NOT_IMPLEMENTED
 
 
 def test_scim_migration_round_trips(tmp_path: Path) -> None:

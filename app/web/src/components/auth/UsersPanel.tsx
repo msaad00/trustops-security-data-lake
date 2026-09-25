@@ -20,6 +20,7 @@ import {
 } from "@/lib/api/hooks";
 import type { AuthUser } from "@/lib/api/types";
 import { notify } from "@/lib/toast";
+import { formatWhen } from "@/lib/utils";
 
 const ROLES = [
   "admin",
@@ -28,15 +29,6 @@ const ROLES = [
   "auditor",
   "read_only",
 ] as const;
-
-function formatWhen(iso: string | null): string {
-  if (!iso) return "—";
-  try {
-    return new Date(iso).toLocaleString();
-  } catch {
-    return iso;
-  }
-}
 
 function UserRow({
   row,

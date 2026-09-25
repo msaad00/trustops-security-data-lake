@@ -284,6 +284,11 @@ def build_scim_router() -> APIRouter:
     def list_tokens(
         identity: Identity = Depends(_require_admin), session: Session = Depends(get_session)
     ) -> JSONResponse:
+        if not scim_settings.scim_enabled():
+            return JSONResponse(
+                api_v1.error_envelope("not_implemented", scim_settings.scim_not_implemented_detail()),
+                status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            )
         rows = scim.list_scim_tokens(session, tenant_id=identity.tenant_id)
         return JSONResponse(api_v1.envelope("platform.scim.tokens", [scim.scim_token_view(row) for row in rows]))
 
