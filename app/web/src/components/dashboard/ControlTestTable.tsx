@@ -28,7 +28,17 @@ const helper = createColumnHelper<typeof sortableTableFeatures, ControlTest>();
 const toneFor = (result: string) =>
   result === "pass" ? "ready" : result === "fail" ? "critical" : "attention";
 
-export function ControlTestTable({ rows }: { rows: ControlTest[] }) {
+export function ControlTestTable({
+  rows,
+  onSelect,
+  emptyLabel = "No control tests reported by the assessment engine.",
+  description = "Sorted by result, freshness, and confidence for reviewer-ready triage.",
+}: {
+  rows: ControlTest[];
+  onSelect?: (controlId: string) => void;
+  emptyLabel?: string;
+  description?: string;
+}) {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "result", desc: false },
   ]);
@@ -105,11 +115,14 @@ export function ControlTestTable({ rows }: { rows: ControlTest[] }) {
     <Card className="overflow-hidden">
       <CardHeader>
         <CardTitle>Live control test queue</CardTitle>
-        <CardDescription>
-          Sorted by result, freshness, and confidence for reviewer-ready triage.
-        </CardDescription>
+        <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <div className="overflow-x-auto">
+      <div
+        className="overflow-x-auto"
+        role="region"
+        aria-label="Live control test queue"
+        tabIndex={0}
+      >
         <table className="min-w-[820px] w-full text-sm">
           <thead>
             {table.getHeaderGroups().map((hg) => (
@@ -133,7 +146,21 @@ export function ControlTestTable({ rows }: { rows: ControlTest[] }) {
             {table.getRowModel().rows.map((r) => (
               <tr
                 key={r.id}
-                className="border-b border-line last:border-0 hover:bg-blue-50/40 dark:hover:bg-blue-500/10"
+                {...(onSelect
+                  ? {
+                      tabIndex: 0,
+                      "aria-label": `Open control ${r.original.control_id}: ${r.original.name}`,
+                      onClick: () => onSelect(r.original.control_id),
+                      onKeyDown: (event: React.KeyboardEvent) => {
+                        if (event.target !== event.currentTarget) return;
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          onSelect(r.original.control_id);
+                        }
+                      },
+                    }
+                  : {})}
+                className={`border-b border-line last:border-0 hover:bg-blue-50/40 dark:hover:bg-blue-500/10 ${onSelect ? "cursor-pointer focus-visible:bg-blue-50/40 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand dark:focus-visible:bg-blue-500/10" : ""}`}
               >
                 {r.getVisibleCells().map((c) => (
                   <td key={c.id} className="px-4 py-3 align-top">
@@ -146,9 +173,9 @@ export function ControlTestTable({ rows }: { rows: ControlTest[] }) {
               <tr>
                 <td
                   className="px-4 py-6 text-center text-sm text-muted"
-                  colSpan={5}
+                  colSpan={columns.length}
                 >
-                  No control tests reported by the assessment engine.
+                  {emptyLabel}
                 </td>
               </tr>
             )}

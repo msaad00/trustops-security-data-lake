@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   createColumnHelper,
   flexRender,
@@ -106,6 +106,15 @@ function EvidencePageContent() {
     { id: "event_time", desc: true },
   ]);
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const controlFilter = searchParams.get("control") ?? "";
+  const clearControlFilter = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("control");
+    router.replace(`/evidence/${params.size ? `?${params}` : ""}`, {
+      scroll: false,
+    });
+  };
   const [selected, setSelected] = useState<EvidenceRow | null>(null);
   const [activeTagId, setActiveTagId] = useState<string | null>(null);
   const taggedEvidence = useTagEntityIds(activeTagId, "evidence");
@@ -160,6 +169,7 @@ function EvidencePageContent() {
     const freshnessFilter = filters.freshness ?? "all";
     return rows.filter((e) => {
       if (activeTagId && !taggedIds.has(e.event_id)) return false;
+      if (controlFilter && !e.control_ids.includes(controlFilter)) return false;
       if (filters.framework !== "all") {
         const hit = e.control_ids.some(
           (cid) => controlFramework.get(cid) === filters.framework,
@@ -172,7 +182,7 @@ function EvidencePageContent() {
         return false;
       return matchesQuery(e, filters.query);
     });
-  }, [rows, filters, controlFramework, activeTagId, taggedIds]);
+  }, [rows, filters, controlFramework, activeTagId, taggedIds, controlFilter]);
 
   const columns: SortableColumnDefs<EvidenceRow> = [
     helper.accessor("event_time", {
@@ -333,6 +343,22 @@ function EvidencePageContent() {
         placeholder="Search by source, asset, evidence ref, control…"
         showFreshness
       />
+      {controlFilter && (
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="inline-flex max-w-full items-center gap-2 rounded-full border border-line bg-surfaceMuted px-3 py-1 text-ink">
+            <span className="[overflow-wrap:anywhere]">
+              Control: {controlFilter}
+            </span>
+            <button
+              type="button"
+              onClick={clearControlFilter}
+              className="font-semibold text-brand hover:underline"
+            >
+              Show all evidence
+            </button>
+          </span>
+        </div>
+      )}
       <QueryState queries={[evidence, freshness]} label="evidence freshness">
         <Card className="overflow-hidden">
           <CardHeader>
