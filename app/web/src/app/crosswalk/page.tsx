@@ -9,6 +9,7 @@ import {
   Search,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -26,6 +27,31 @@ import {
   useReviewedCrosswalk,
 } from "@/lib/api/hooks";
 
+const PAGE_SIZE = 25;
+const CHIP_LIMIT = 6;
+
+function CappedChips({
+  items,
+  tone,
+}: {
+  items: string[];
+  tone?: "info" | "ready";
+}) {
+  const hidden = items.length - CHIP_LIMIT;
+  return (
+    <>
+      {items.slice(0, CHIP_LIMIT).map((item) => (
+        <Badge tone={tone} key={item}>
+          {item}
+        </Badge>
+      ))}
+      {hidden > 0 ? (
+        <Badge title={items.slice(CHIP_LIMIT).join(", ")}>+{hidden} more</Badge>
+      ) : null}
+    </>
+  );
+}
+
 export default function CrosswalkPage() {
   const heuristic = useCrosswalk();
   const reviewed = useReviewedCrosswalk();
@@ -33,6 +59,7 @@ export default function CrosswalkPage() {
   const mappings = useMappings();
   const [query, setQuery] = useState("");
   const [framework, setFramework] = useState("all");
+  const [page, setPage] = useState(0);
 
   const heuristicFrameworks = heuristic.data?.frameworks ?? [];
   const heuristicMatrix = heuristic.data?.matrix ?? [];
@@ -72,6 +99,12 @@ export default function CrosswalkPage() {
         .includes(needle);
     });
   }, [mappingRows, framework, query]);
+  const pageCount = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount - 1);
+  const pageRows = filteredRows.slice(
+    currentPage * PAGE_SIZE,
+    (currentPage + 1) * PAGE_SIZE,
+  );
   const reviewedControlCount = new Set(mappingRows.map((row) => row.control_id))
     .size;
   const reviewedArticleCount = new Set(
@@ -80,7 +113,7 @@ export default function CrosswalkPage() {
   const equivalenceGroups = equivalence.data?.groups ?? [];
 
   return (
-    <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
+    <div className="page-shell grid gap-5">
       <PageHeader
         eyebrow="Crosswalk"
         title="Control mapping coverage"
@@ -168,7 +201,10 @@ export default function CrosswalkPage() {
               <Search className="h-4 w-4 text-muted" />
               <input
                 value={query}
-                onChange={(event) => setQuery(event.target.value)}
+                onChange={(event) => {
+                  setQuery(event.target.value);
+                  setPage(0);
+                }}
                 placeholder="Search control, article, rationale, reviewer"
                 className="min-w-0 flex-1 bg-transparent text-ink outline-none placeholder:text-muted"
               />
@@ -176,7 +212,10 @@ export default function CrosswalkPage() {
             <select
               aria-label="Filter crosswalk by framework"
               value={framework}
-              onChange={(event) => setFramework(event.target.value)}
+              onChange={(event) => {
+                setFramework(event.target.value);
+                setPage(0);
+              }}
               className="h-10 rounded-lg border border-line bg-surface px-3 text-sm font-bold text-ink outline-none"
             >
               <option value="all">All frameworks</option>
@@ -215,7 +254,7 @@ export default function CrosswalkPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredRows.map((row) => (
+                  {pageRows.map((row) => (
                     <tr
                       key={`${row.framework_id}-${row.control_id}-${row.article_id}`}
                       className="border-b border-line last:border-0"
@@ -262,6 +301,36 @@ export default function CrosswalkPage() {
                   ))}
                 </tbody>
               </table>
+              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line bg-surfaceMuted px-3 py-2 text-xs text-muted">
+                <span>
+                  Showing {currentPage * PAGE_SIZE + 1}–
+                  {currentPage * PAGE_SIZE + pageRows.length} of{" "}
+                  {filteredRows.length} mappings
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="default"
+                    aria-label="Previous page"
+                    disabled={currentPage === 0}
+                    onClick={() => setPage(currentPage - 1)}
+                  >
+                    Previous
+                  </Button>
+                  <span>
+                    Page {currentPage + 1} of {pageCount}
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="default"
+                    aria-label="Next page"
+                    disabled={currentPage >= pageCount - 1}
+                    onClick={() => setPage(currentPage + 1)}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
             </div>
           )}
         </CardContent>
@@ -326,19 +395,15 @@ export default function CrosswalkPage() {
                       ) : (
                         <div className="grid gap-2">
                           <div className="flex flex-wrap gap-1">
-                            {cell.shared_domains.map((d) => (
-                              <Badge tone="info" key={d}>
-                                {d}
-                              </Badge>
-                            ))}
-                            {cell.shared_articles.map((a) => (
-                              <Badge key={a}>{a}</Badge>
-                            ))}
-                            {cell.shared_controls.map((c) => (
-                              <Badge tone="ready" key={c}>
-                                {c}
-                              </Badge>
-                            ))}
+                            <CappedChips
+                              items={cell.shared_domains}
+                              tone="info"
+                            />
+                            <CappedChips items={cell.shared_articles} />
+                            <CappedChips
+                              items={cell.shared_controls}
+                              tone="ready"
+                            />
                             {cell.shared_domains.length === 0 &&
                               cell.shared_articles.length === 0 &&
                               cell.shared_controls.length === 0 && (
@@ -414,9 +479,7 @@ export default function CrosswalkPage() {
                         </span>
                       ) : (
                         <div className="flex flex-wrap gap-1">
-                          {cell.shared_risk_domains.map((d) => (
-                            <Badge key={d}>{d}</Badge>
-                          ))}
+                          <CappedChips items={cell.shared_risk_domains} />
                         </div>
                       )}
                     </td>

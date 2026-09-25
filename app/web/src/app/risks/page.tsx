@@ -221,7 +221,7 @@ export default function RisksPage() {
   const rows = risks.data ?? [];
 
   return (
-    <div className="mx-auto w-full max-w-[1500px] min-w-0 space-y-6 px-3 py-3 sm:px-4 lg:px-5">
+    <div className="page-shell space-y-6">
       <PageHeader
         eyebrow="Operate"
         title="Risk register"

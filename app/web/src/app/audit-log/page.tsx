@@ -94,7 +94,7 @@ export default function AuditLogPage() {
   }, {});
 
   return (
-    <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
+    <div className="page-shell grid gap-5">
       <PageHeader
         eyebrow="Audit log"
         title="Console activity"

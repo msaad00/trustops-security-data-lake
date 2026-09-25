@@ -509,7 +509,7 @@ function FrameworksPageContent() {
   }
 
   return (
-    <div className="ui-page-canvas grid min-h-full min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
+    <div className="page-shell ui-page-canvas grid min-h-full gap-5">
       <PageHeader
         eyebrow="Frameworks"
         title="Framework coverage"

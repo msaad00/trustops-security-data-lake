@@ -50,7 +50,7 @@ export default function AuditRoomPage() {
     useState<AuditRoomTab>("Freshness");
 
   return (
-    <div className="mx-auto grid w-full max-w-[1600px] gap-2 px-3 py-2 sm:px-4 lg:px-5">
+    <div className="page-shell grid gap-2">
       <PageHeader
         eyebrow="Audit center"
         title="Audit readiness room"
