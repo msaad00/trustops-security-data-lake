@@ -58,7 +58,7 @@ test("crosswalk counts only reviewed mappings and badges proposed rows", async (
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/console/crosswalk/");
 
-  await expect(page.getByText("1 reviewed · 2 proposed")).toBeVisible({
+  await expect(page.getByText("Links: 1 reviewed · 2 proposed")).toBeVisible({
     timeout: 20_000,
   });
   await expect(page.getByText(/\d+ reviewed mappings/)).toHaveCount(0);
