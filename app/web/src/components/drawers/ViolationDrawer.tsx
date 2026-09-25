@@ -1,13 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CheckCircle2, History, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Drawer } from "@/components/ui/drawer";
 import { EntityTagsEditor } from "@/components/EntityTagsEditor";
-import { useTracking, useTriageMutation } from "@/lib/api/hooks";
+import { RemediationGuidance } from "@/components/remediation/RemediationGuidance";
+import { useControls, useTracking, useTriageMutation } from "@/lib/api/hooks";
+import {
+  controlGraphFocusHref,
+  taskFromFindingHref,
+} from "@/lib/finding-links";
+import { formatDateTime } from "@/lib/format";
 import { useAuditorMode } from "@/lib/state/auditor";
 import type { TrackingState, Violation } from "@/lib/api/types";
 
@@ -29,6 +35,7 @@ const STATE_TONE: Record<
 };
 
 const STATES: TrackingState[] = [
+  "open",
   "triaged",
   "in_progress",
   "resolved",
@@ -39,7 +46,9 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
   const auditor = useAuditorMode();
   const tracking = useTracking(violation?.violation_id ?? null);
   const triage = useTriageMutation();
-  const [state, setState] = useState<TrackingState>("triaged");
+  const controls = useControls();
+  const [state, setState] = useState<TrackingState>("open");
+  const stateTouched = useRef(false);
   const [actor, setActor] = useState("trust-admin");
   const [assignee, setAssignee] = useState("");
   const [note, setNote] = useState("");
@@ -49,7 +58,7 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
   useEffect(() => {
     if (!violation) return;
     setSaveError(false);
-    setState("triaged");
+    stateTouched.current = false;
     setActor("trust-admin");
     setAssignee(violation.asset_owner ?? "");
     setNote("");
@@ -61,6 +70,15 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
     tracking.data?.current_state ??
     (violation?.state as TrackingState | undefined) ??
     "open";
+
+  useEffect(() => {
+    if (!stateTouched.current) setState(currentState as TrackingState);
+  }, [currentState, violation]);
+
+  const controlTitle = violation
+    ? (controls.data ?? []).find((c) => c.control_id === violation.control_id)
+        ?.title
+    : undefined;
 
   const submit = async () => {
     if (!violation) return;
@@ -96,8 +114,12 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
     <Drawer
       open={Boolean(violation)}
       onOpenChange={(o) => !o && onClose()}
-      title={violation?.control_id ?? "Finding"}
-      description={violation ? violation.event_type : undefined}
+      title={controlTitle ?? violation?.event_type ?? "Finding"}
+      description={
+        violation
+          ? `${violation.control_id} · ${violation.event_type}`
+          : undefined
+      }
       width="lg"
       footer={
         !auditor && (
@@ -149,27 +171,34 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
               </dd>
               <dt className="text-muted">Environment</dt>
               <dd>{violation.environment?.trim() || "Unknown"}</dd>
-              <dt className="text-muted">Business impact</dt>
-              <dd>Not recorded</dd>
               <dt className="text-muted">Source</dt>
               <dd className="font-extrabold">{violation.source}</dd>
               <dt className="text-muted">Detected</dt>
-              <dd className="font-extrabold">{violation.detected_at}</dd>
+              <dd className="font-extrabold" title={violation.detected_at}>
+                {formatDateTime(violation.detected_at)}
+              </dd>
             </dl>
           </div>
 
           <div className="flex flex-wrap gap-3 text-sm font-semibold text-brand">
             <Link
+              href={taskFromFindingHref(
+                violation,
+                controlTitle ?? violation.event_type,
+              )}
+            >
+              Create task →
+            </Link>
+            <Link
               href={`/controls?id=${encodeURIComponent(violation.control_id)}`}
             >
               Review control →
             </Link>
-            <Link
-              href={`/remediation?tab=tasks&control=${encodeURIComponent(violation.control_id)}`}
-            >
-              Create task →
+            <Link href={controlGraphFocusHref(violation.control_id)}>
+              Trace in graph →
             </Link>
           </div>
+          <RemediationGuidance controlId={violation.control_id} />
           {saveError && (
             <p
               role="alert"
@@ -189,7 +218,10 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
                   State
                   <select
                     value={state}
-                    onChange={(e) => setState(e.target.value as TrackingState)}
+                    onChange={(e) => {
+                      stateTouched.current = true;
+                      setState(e.target.value as TrackingState);
+                    }}
                     className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-extrabold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
                   >
                     {stateOptions}

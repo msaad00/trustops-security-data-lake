@@ -7,6 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { QueryState } from "@/components/QueryState";
 import { KpiTile } from "@/components/ui/KpiTile";
 import { useAiGovernance, useAiInventory } from "@/lib/api/hooks";
+import type { AiInventoryItem } from "@/lib/api/types";
+import { plural } from "@/lib/format";
 
 const STATE_COPY: Record<
   string,
@@ -21,14 +23,42 @@ function loopTone(active: boolean): "ready" | "attention" {
   return active ? "ready" : "attention";
 }
 
+const GAP_COPY: Record<string, string> = {
+  model_inventory: "No model inventory connected",
+  model_lineage: "No model lineage recorded yet",
+  model_cards: "No model cards or AI repo artifacts found",
+  agent_governance: "No AI agent activity recorded yet",
+};
+
+// Event types that actually describe an AI model or agent. Assets typed as a
+// model with none of these signals are unverified and kept out of the sample.
+const AI_SIGNAL_EVENTS = new Set([
+  "ai.model_inventory",
+  "model.inventory",
+  "model.lineage",
+  "runtime.tool_call",
+  "repository.ai_artifact",
+  "aibom.inventory",
+]);
+
+function hasAiSignal(item: AiInventoryItem): boolean {
+  return (
+    item.model_card ||
+    item.lineage_complete ||
+    item.event_types.some((type) => AI_SIGNAL_EVENTS.has(type))
+  );
+}
+
 export function AiGovernanceStrip() {
   const governance = useAiGovernance();
   const inventory = useAiInventory(6);
+  const sample = (inventory.data ?? []).filter(hasAiSignal);
+  const unverified = (inventory.data ?? []).length - sample.length;
 
   return (
     <QueryState queries={[governance, inventory]} label="AI governance">
       {governance.data && (
-        <Card>
+        <Card data-testid="ai-governance-strip">
           <CardContent className="grid gap-4 p-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
@@ -47,10 +77,8 @@ export function AiGovernanceStrip() {
                   </Badge>
                 </div>
                 <p className="mt-1 text-xs leading-5 text-muted">
-                  Model inventory, lineage events, model cards, and agent
-                  runtime signals mapped to NIST AI RMF, ISO 42001, and EU AI
-                  Act — same evidence bucket as managed GRC AI programs (not
-                  formal AIBOM files).
+                  Model inventory, lineage, model cards, and agent activity
+                  mapped to NIST AI RMF, ISO 42001, and the EU AI Act.
                 </p>
               </div>
               <Link
@@ -86,7 +114,10 @@ export function AiGovernanceStrip() {
               <KpiTile
                 label="AI agents"
                 value={String(governance.data.inventory.agents)}
-                detail={`${governance.data.events.agent_runtime} runtime event(s)`}
+                detail={plural(
+                  governance.data.events.agent_runtime,
+                  "runtime event",
+                )}
                 tone={
                   governance.data.inventory.agents > 0 ? "default" : "attention"
                 }
@@ -94,13 +125,16 @@ export function AiGovernanceStrip() {
               <KpiTile
                 label="Lineage signals"
                 value={String(governance.data.events.model_lineage)}
-                detail={`${governance.data.inventory.with_lineage} asset(s) lineage-complete`}
+                detail={`${plural(governance.data.inventory.with_lineage, "asset")} with full lineage`}
                 tone={loopTone(governance.data.evidence_loops.lineage_events)}
               />
               <KpiTile
                 label="Model cards / repo artifacts"
                 value={String(governance.data.artifacts.model_cards)}
-                detail={`${governance.data.events.repo_artifacts} repo ai_artifact signal(s)`}
+                detail={plural(
+                  governance.data.events.repo_artifacts,
+                  "AI repo artifact",
+                )}
                 tone={loopTone(governance.data.evidence_loops.model_cards)}
               />
             </div>
@@ -127,17 +161,17 @@ export function AiGovernanceStrip() {
               ))}
             </div>
 
-            {inventory.data && inventory.data.length > 0 ? (
+            {sample.length > 0 ? (
               <div className="grid gap-2">
                 <span className="text-xs font-bold uppercase tracking-wide text-muted">
                   Inventory sample
                 </span>
-                {inventory.data.map((item) => (
+                {sample.map((item) => (
                   <div
                     key={item.asset_id}
                     className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-line bg-surfaceMuted px-3 py-2 text-xs"
                   >
-                    <div className="min-w-0">
+                    <div className="min-w-0 [overflow-wrap:anywhere]">
                       <span className="font-bold text-ink">
                         {item.asset_id}
                       </span>
@@ -162,6 +196,14 @@ export function AiGovernanceStrip() {
               </div>
             ) : null}
 
+            {unverified > 0 ? (
+              <p className="text-xs text-muted">
+                {plural(unverified, "asset")} typed as AI{" "}
+                {unverified === 1 ? "has" : "have"} no AI inventory signals yet
+                and {unverified === 1 ? "is" : "are"} not shown here.
+              </p>
+            ) : null}
+
             {governance.data.gaps.length > 0 ? (
               <div className="grid gap-2">
                 {governance.data.gaps.map((gap) => (
@@ -175,7 +217,9 @@ export function AiGovernanceStrip() {
                     className="flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 text-xs hover:bg-surfaceMuted"
                   >
                     <CircleAlert className="h-3.5 w-3.5 shrink-0 text-brand-orange" />
-                    <span className="font-bold text-ink">{gap.label}</span>
+                    <span className="font-bold text-ink">
+                      {GAP_COPY[gap.id] ?? gap.label}
+                    </span>
                   </Link>
                 ))}
               </div>

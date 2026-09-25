@@ -1408,6 +1408,7 @@ export interface RemediationTask {
   created_at: string | null;
   updated_at: string | null;
   resolved_at: string | null;
+  resolution_note: string;
 }
 
 export interface SprsReport {

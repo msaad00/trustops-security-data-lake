@@ -66,7 +66,7 @@ from security_lakehouse.auth.sessions import (
 )
 from security_lakehouse.catalog import load_control_catalog
 from security_lakehouse.dashboard import render_dashboard
-from security_lakehouse.data_policy import redact_payload
+from security_lakehouse.data_policy import normalize_sensitivity, redact_payload
 from security_lakehouse.db import agent_runs as agent_runs_db
 from security_lakehouse.db import metrics as metrics_db
 from security_lakehouse.db import migrate, remediation, repository
@@ -185,6 +185,7 @@ class UpdateTaskRequest(_StrictModel):
     status: str | None = None
     priority: str | None = None
     due_at: str | None = None
+    resolution_note: str | None = None
 
 
 class CreateEvidenceRequestRequest(_StrictModel):
@@ -590,7 +591,13 @@ def _public_trust_summary(lake: Path, share: dict[str, object]) -> dict[str, obj
     trims to a public summary: posture score/state and per-framework readiness
     with control counts only. Raw violations, asset/evidence internals, and any
     owner fields never reach the wire — only this summary leaves the lake.
+
+    A share at the ``public`` sensitivity ceiling (customer-facing) also drops
+    violation and stale-control counts; those appear only for shares issued
+    above ``public`` (auditor review). Unknown ceilings fail closed to public.
     """
+    ceiling = normalize_sensitivity(share.get("sensitivity_ceiling"), default="public")
+    detailed = ceiling != "public"
     posture = build_current_posture(lake)
     auditor = Identity(
         user_id="public-trust-share",
@@ -610,16 +617,30 @@ def _public_trust_summary(lake: Path, share: dict[str, object]) -> dict[str, obj
         for row in frameworks_raw:
             if not isinstance(row, dict):
                 continue
-            frameworks.append(
-                {
-                    "framework": row.get("framework"),
-                    "score": row.get("score"),
-                    "state": row.get("state"),
-                    "control_count": row.get("control_count"),
-                    "failing_control_count": row.get("failing_control_count"),
-                    "stale_control_count": row.get("stale_control_count"),
-                }
-            )
+            framework_row: dict[str, object] = {
+                "framework": row.get("framework"),
+                "score": row.get("score"),
+                "state": row.get("state"),
+                "control_count": row.get("control_count"),
+            }
+            if detailed:
+                framework_row["failing_control_count"] = row.get("failing_control_count")
+                framework_row["stale_control_count"] = row.get("stale_control_count")
+            frameworks.append(framework_row)
+    posture_summary: dict[str, object] = {
+        "score": posture_block.get("score"),
+        "state": posture_block.get("state"),
+        "framework_count": posture_block.get("framework_count"),
+        "control_count": posture_block.get("control_count"),
+    }
+    if detailed:
+        for key in (
+            "open_violation_count",
+            "critical_violation_count",
+            "high_violation_count",
+            "stale_control_count",
+        ):
+            posture_summary[key] = posture_block.get(key)
     return {
         "schema_version": "trustops.public_trust.v1",
         "sensitivity": "public",
@@ -629,19 +650,11 @@ def _public_trust_summary(lake: Path, share: dict[str, object]) -> dict[str, obj
         "issued_by": share.get("created_by"),
         "scope": share.get("scope"),
         "role": share.get("role"),
-        "sensitivity_ceiling": share.get("sensitivity_ceiling", "public"),
+        "sensitivity_ceiling": ceiling,
+        "detail_level": "detailed" if detailed else "summary",
         "expires_at": share.get("expires_at"),
         "evaluated_at": redacted.get("evaluated_at"),
-        "posture": {
-            "score": posture_block.get("score"),
-            "state": posture_block.get("state"),
-            "framework_count": posture_block.get("framework_count"),
-            "control_count": posture_block.get("control_count"),
-            "open_violation_count": posture_block.get("open_violation_count"),
-            "critical_violation_count": posture_block.get("critical_violation_count"),
-            "high_violation_count": posture_block.get("high_violation_count"),
-            "stale_control_count": posture_block.get("stale_control_count"),
-        },
+        "posture": posture_summary,
         "frameworks": frameworks,
     }
 
@@ -2021,6 +2034,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             identity.tenant_id,
             status=(params.get("status") or [None])[0],
             owner=(params.get("owner") or [None])[0],
+            control_id=next(iter(params.get("control_id") or []), None),
             overdue=overdue,
             limit=limit,
             offset=offset,

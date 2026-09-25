@@ -38,7 +38,17 @@ _EVENT_TYPES = (
     "runtime.inference",
 )
 _SOURCES = ("aws_config", "okta", "github", "audit_log", "siem", "model_registry", "runtime_gateway")
-_ASSET_TYPES = ("iam_role", "repository", "audit_trail", "database", "model", "agent", "data_store")
+# Asset type follows the event so the demo never shows, say, a branch-protection check on a "model".
+_ASSET_TYPE_BY_EVENT = {
+    "cloud.config": "data_store",
+    "iam.access_review": "iam_role",
+    "monitoring.audit": "audit_trail",
+    "monitoring.detection": "audit_trail",
+    "scm.branch_protection": "repository",
+    "scanner.dependency": "repository",
+    "model.lineage": "model",
+    "runtime.inference": "agent",
+}
 _STATUSES = ("passed", "open", "passed", "open", "blocked", "passed", "open", "passed")
 
 
@@ -67,13 +77,14 @@ def build_golden_events(
         )
         event_time = base + timedelta(minutes=index)
         collected = event_time + timedelta(minutes=1)
-        asset_type = _ASSET_TYPES[index % len(_ASSET_TYPES)]
+        event_type = _EVENT_TYPES[index % len(_EVENT_TYPES)]
+        asset_type = _ASSET_TYPE_BY_EVENT[event_type]
         rows.append(
             {
                 "tenant_id": tenant_id,
                 "event_id": f"golden-{index + 1:03d}",
                 "event_time": event_time.isoformat().replace("+00:00", "Z"),
-                "event_type": _EVENT_TYPES[index % len(_EVENT_TYPES)],
+                "event_type": event_type,
                 "source": _SOURCES[index % len(_SOURCES)],
                 "severity": severity,
                 "status": status,

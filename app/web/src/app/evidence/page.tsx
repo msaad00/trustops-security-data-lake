@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   createColumnHelper,
   flexRender,
@@ -57,9 +57,10 @@ type EvidenceRow = NormalizedEvent & { freshness?: EvidenceFreshness };
 const helper = createColumnHelper<typeof sortableTableFeatures, EvidenceRow>();
 const handoffCards = [
   {
-    title: "Security data lake layers",
-    detail: "Bronze raw -> Silver facts -> Gold posture.",
-    note: "This page shows Silver facts.",
+    title: "How evidence flows",
+    detail:
+      "Raw records are collected, normalized into facts, then scored as posture.",
+    note: "This page shows the normalized facts.",
     Icon: Database,
   },
   {
@@ -72,7 +73,7 @@ const handoffCards = [
   },
   {
     title: "Reports and proof packs",
-    detail: "Audit room exports PDF/proof packs from gold posture.",
+    detail: "Audit room exports PDF and proof packs from scored posture.",
     note: "Use these for auditor review.",
     href: "/audit-room",
     action: "Open audit room",
@@ -106,6 +107,15 @@ function EvidencePageContent() {
     { id: "event_time", desc: true },
   ]);
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const controlFilter = searchParams.get("control") ?? "";
+  const clearControlFilter = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("control");
+    router.replace(`/evidence/${params.size ? `?${params}` : ""}`, {
+      scroll: false,
+    });
+  };
   const [selected, setSelected] = useState<EvidenceRow | null>(null);
   const [activeTagId, setActiveTagId] = useState<string | null>(null);
   const taggedEvidence = useTagEntityIds(activeTagId, "evidence");
@@ -160,6 +170,7 @@ function EvidencePageContent() {
     const freshnessFilter = filters.freshness ?? "all";
     return rows.filter((e) => {
       if (activeTagId && !taggedIds.has(e.event_id)) return false;
+      if (controlFilter && !e.control_ids.includes(controlFilter)) return false;
       if (filters.framework !== "all") {
         const hit = e.control_ids.some(
           (cid) => controlFramework.get(cid) === filters.framework,
@@ -172,7 +183,7 @@ function EvidencePageContent() {
         return false;
       return matchesQuery(e, filters.query);
     });
-  }, [rows, filters, controlFramework, activeTagId, taggedIds]);
+  }, [rows, filters, controlFramework, activeTagId, taggedIds, controlFilter]);
 
   const columns: SortableColumnDefs<EvidenceRow> = [
     helper.accessor("event_time", {
@@ -262,7 +273,7 @@ function EvidencePageContent() {
       <PageHeader
         eyebrow="Evidence room"
         title="Normalized evidence facts"
-        description="These rows are evidence facts, not reports. Click a row to verify its SHA-256 hash against the immutable bronze record server-side."
+        description="These rows are evidence facts, not reports. Click a row to verify its SHA-256 hash against the original, unaltered record."
         actions={
           <span className="rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-black text-muted">
             {staleCount > 0 ? (
@@ -333,14 +344,30 @@ function EvidencePageContent() {
         placeholder="Search by source, asset, evidence ref, control…"
         showFreshness
       />
+      {controlFilter && (
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="inline-flex max-w-full items-center gap-2 rounded-full border border-line bg-surfaceMuted px-3 py-1 text-ink">
+            <span className="[overflow-wrap:anywhere]">
+              Control: {controlFilter}
+            </span>
+            <button
+              type="button"
+              onClick={clearControlFilter}
+              className="font-semibold text-brand hover:underline"
+            >
+              Show all evidence
+            </button>
+          </span>
+        </div>
+      )}
       <QueryState queries={[evidence, freshness]} label="evidence freshness">
         <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle>{filtered.length} matching records</CardTitle>
             <CardDescription>
-              All rows are append-only silver facts written from immutable
-              bronze evidence. Freshness comes from the gold freshness SLA
-              artifact agents can query directly.
+              Every row is an append-only fact normalized from the original,
+              unaltered evidence record. Freshness is checked against each
+              source&apos;s refresh target.
             </CardDescription>
           </CardHeader>
           {/* tabIndex makes the horizontal scroll reachable by keyboard;

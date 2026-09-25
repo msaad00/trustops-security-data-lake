@@ -3,11 +3,9 @@
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Drawer } from "@/components/ui/drawer";
-import {
-  useControlRemediation,
-  useControlTests,
-  usePosture,
-} from "@/lib/api/hooks";
+import { useControlTests, usePosture } from "@/lib/api/hooks";
+import { RemediationGuidance } from "@/components/remediation/RemediationGuidance";
+import { controlGraphFocusHref } from "@/lib/finding-links";
 import { FrameworkBadge } from "@/components/framework/FrameworkBadge";
 import { EntityTagsEditor } from "@/components/EntityTagsEditor";
 import { resolveFrameworkId } from "@/lib/framework-visuals";
@@ -25,7 +23,6 @@ const toneFor = (s: string) =>
 export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
   const tests = useControlTests();
   const posture = usePosture();
-  const remediation = useControlRemediation(control?.control_id ?? null);
 
   const test = control
     ? (tests.data ?? []).find((t) => t.control_id === control.control_id)
@@ -87,7 +84,13 @@ export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
             <dd className="font-extrabold">{control.risk_score}</dd>
             <dt className="text-muted">Evidence</dt>
             <dd className="font-extrabold">
-              {control.evidence_count}/{control.event_count}
+              <Link
+                href={`/evidence/?control=${encodeURIComponent(control.control_id)}`}
+                aria-label={`Evidence ${control.evidence_count}/${control.event_count} records`}
+                className="text-brand hover:underline"
+              >
+                {control.evidence_count}/{control.event_count} records →
+              </Link>
             </dd>
           </dl>
           <div>
@@ -107,8 +110,14 @@ export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
                   onClick={() => onOpenViolation(v.violation_id)}
                   className="rounded-lg border border-line p-3 text-left hover:border-brand hover:bg-blue-50/40 dark:hover:bg-blue-500/10"
                 >
-                  <code className="text-xs text-ink">{v.event_id}</code>
-                  <div className="mt-1 text-xs text-muted">{v.asset_id}</div>
+                  <div className="text-sm font-semibold text-ink">
+                    {v.asset_id || "Unknown asset"}
+                  </div>
+                  <div className="mt-1 text-xs text-muted">
+                    {v.event_type.replaceAll(/[._]/g, " ")}
+                    {v.environment?.trim() ? ` · ${v.environment}` : ""} ·
+                    detected {v.detected_at.slice(0, 10)}
+                  </div>
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     <Badge
                       tone={
@@ -117,38 +126,14 @@ export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
                     >
                       {v.severity}
                     </Badge>
-                    <Badge>{v.asset_owner}</Badge>
+                    <Badge>{v.asset_owner?.trim() || "Unassigned"}</Badge>
                     <Badge tone="info">open triage →</Badge>
                   </div>
                 </button>
               ))}
             </div>
           </div>
-          {remediation.data && (
-            <div className="rounded-xl border border-line bg-blue-50/40 p-3 dark:bg-blue-500/10">
-              <div className="mb-1 text-xs font-black uppercase tracking-wide text-muted">
-                Suggested remediation
-                {!remediation.data.matched && (
-                  <Badge tone="default" className="ml-2 normal-case">
-                    general guidance
-                  </Badge>
-                )}
-              </div>
-              <p className="text-sm text-ink">{remediation.data.summary}</p>
-              {remediation.data.steps.length > 0 && (
-                <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-ink">
-                  {remediation.data.steps.map((step, i) => (
-                    <li key={i}>{step}</li>
-                  ))}
-                </ol>
-              )}
-              {remediation.data.references.length > 0 && (
-                <div className="mt-2 text-xs text-muted">
-                  {remediation.data.references.join(" · ")}
-                </div>
-              )}
-            </div>
-          )}
+          <RemediationGuidance controlId={control.control_id} />
           <EntityTagsEditor
             entityType="control"
             entityId={control.control_id}
@@ -162,9 +147,15 @@ export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
             </Link>
             <Link
               className="rounded-lg border border-line px-3 py-2 text-sm font-semibold text-brand hover:bg-surfaceMuted"
-              href={`/remediation?tab=tasks&control=${encodeURIComponent(control.control_id)}`}
+              href={`/remediation/?${new URLSearchParams({ tab: "tasks", control: control.control_id, title: control.title, assignee: control.owner })}`}
             >
               Create task
+            </Link>
+            <Link
+              className="rounded-lg border border-line px-3 py-2 text-sm font-semibold text-brand hover:bg-surfaceMuted"
+              href={controlGraphFocusHref(control.control_id)}
+            >
+              Trace in graph
             </Link>
           </div>
         </div>

@@ -11,7 +11,9 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import Any
 
 from security_lakehouse.catalog import _data_root
 
@@ -76,3 +78,60 @@ def find_fixture(company: str, root: Path | None = None) -> Fixture | None:
         if fixture.company == company:
             return fixture
     return None
+
+
+def _is_timestamp_key(key: str) -> bool:
+    return key.endswith("_time") or key.endswith("_at")
+
+
+def _parse_timestamp(value: Any) -> datetime | None:
+    if not isinstance(value, str) or "T" not in value:
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def _timestamps(node: Any) -> list[datetime]:
+    found: list[datetime] = []
+    if isinstance(node, dict):
+        for key, value in node.items():
+            parsed = _parse_timestamp(value) if _is_timestamp_key(key) else None
+            if parsed is not None:
+                found.append(parsed)
+            else:
+                found.extend(_timestamps(value))
+    elif isinstance(node, list):
+        for item in node:
+            found.extend(_timestamps(item))
+    return found
+
+
+def _shift(node: Any, delta: timedelta) -> Any:
+    if isinstance(node, dict):
+        out: dict[str, Any] = {}
+        for key, value in node.items():
+            parsed = _parse_timestamp(value) if _is_timestamp_key(key) else None
+            if parsed is not None:
+                out[key] = (parsed + delta).astimezone(UTC).isoformat().replace("+00:00", "Z")
+            else:
+                out[key] = _shift(value, delta)
+        return out
+    if isinstance(node, list):
+        return [_shift(item, delta) for item in node]
+    return node
+
+
+def rebase_fixture_times(rows: list[dict[str, Any]], *, now: datetime | None = None) -> list[dict[str, Any]]:
+    """Shift every ``*_time``/``*_at`` timestamp so the newest is one hour before ``now``.
+
+    Demo fixtures are dated when they were authored; without this their evidence
+    ages past every freshness SLA and the demo reads as fully expired.
+    """
+    stamps = _timestamps(rows)
+    if not stamps:
+        return [dict(row) for row in rows]
+    target = (now or datetime.now(UTC)) - timedelta(hours=1)
+    delta = target - max(stamps)
+    return [_shift(row, delta) for row in rows]

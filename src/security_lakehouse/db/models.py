@@ -309,6 +309,7 @@ class RemediationTask(Base):
         DateTime(timezone=True), nullable=False, default=_utcnow, server_default=func.now()
     )
     resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    resolution_note: Mapped[str] = mapped_column(Text, nullable=False, default="", server_default="")
 
     @property
     def is_open(self) -> bool:

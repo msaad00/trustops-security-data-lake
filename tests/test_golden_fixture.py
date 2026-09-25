@@ -54,3 +54,26 @@ def test_golden_fixture_ships_and_populates_dashboard(tmp_path: Path) -> None:
     assert posture["posture"]["framework_count"] == 3
     frameworks = {row["framework"] for row in posture["frameworks"]}
     assert frameworks == {"SOC 2", "NIST AI RMF", "ISO 27001:2022"}
+
+
+def test_golden_asset_types_match_their_event_types() -> None:
+    from security_lakehouse.golden_fixture import build_golden_events
+
+    ai_asset_types = {"model", "agent", "ai_model", "ai_agent"}
+    ai_event_types = {"model.lineage", "runtime.inference"}
+    for row in build_golden_events():
+        is_ai_asset = row["entity"]["asset_type"] in ai_asset_types
+        assert is_ai_asset == (row["event_type"] in ai_event_types), row["event_id"]
+
+
+def test_committed_golden_fixture_asset_types_match_event_types() -> None:
+    from security_lakehouse.golden_fixture import golden_fixture_path
+
+    ai_asset_types = {"model", "agent", "ai_model", "ai_agent"}
+    ai_event_types = {"model.lineage", "runtime.inference", "ai.model_inventory", "model.inventory"}
+    for line in golden_fixture_path().read_text(encoding="utf-8").splitlines():
+        row = json.loads(line)
+        is_ai_asset = row["entity"]["asset_type"] in ai_asset_types
+        assert is_ai_asset == (row["event_type"] in ai_event_types), row["event_id"]
+        if is_ai_asset:
+            assert not row["entity"]["asset_id"].startswith("golden:asset:soc2-"), row["event_id"]

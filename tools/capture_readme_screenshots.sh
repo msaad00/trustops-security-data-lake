@@ -10,7 +10,7 @@ BASE="http://127.0.0.1:${PORT}"
 LAKE="${TRUSTOPS_LAKE:-build/lakehouse}"
 
 echo "==> Load golden fixture into ${LAKE}"
-uv run security-lakehouse fixtures load --company golden --out "$LAKE"
+uv run security-lakehouse fixtures load --company golden --out "$LAKE" --rebase-times
 uv run security-lakehouse db upgrade --lake "$LAKE"
 
 echo "==> Build console static export"
@@ -41,5 +41,8 @@ done
 
 echo "==> Capture screenshots to docs/images/"
 TRUSTOPS_SCREENSHOT_URL="$BASE" npm --prefix app/web run demo-screenshots
+
+echo "==> Optimize PNGs"
+uv run python tools/optimize_screenshots.py
 
 echo "==> Done. PNGs in docs/images/trustops-demo-*.png"

@@ -34,6 +34,8 @@ import { ControlTestTable } from "@/components/dashboard/ControlTestTable";
 import type { ControlPosture, Violation } from "@/lib/api/types";
 
 const SURFACE = "controls";
+const selectClass =
+  "max-w-[12rem] rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand";
 
 const toneForStatus = (status: string) =>
   status === "pass" ? "ready" : status === "fail" ? "critical" : "attention";
@@ -96,6 +98,10 @@ function ControlsPageContent() {
   const [selected, setSelected] = useState<ControlPosture | null>(null);
   const [violation, setViolation] = useState<Violation | null>(null);
   const [activeTagId, setActiveTagId] = useState<string | null>(null);
+  const [resultFilter, setResultFilter] = useState("all");
+  const [ownerFilter, setOwnerFilter] = useState("all");
+  const [view, setView] = useState<"queue" | "grid">("queue");
+  const [pendingControlId, setPendingControlId] = useState<string | null>(null);
 
   const deepLinkId = searchParams.get("id");
   useEffect(() => {
@@ -115,17 +121,93 @@ function ControlsPageContent() {
     [controls.data],
   );
 
+  const testsByControl = useMemo(
+    () => new Map((tests.data ?? []).map((t) => [t.control_id, t])),
+    [tests.data],
+  );
+  const controlsById = useMemo(
+    () => new Map((controls.data ?? []).map((c) => [c.control_id, c])),
+    [controls.data],
+  );
+  useEffect(() => {
+    if (!pendingControlId) return;
+    const match = controlsById.get(pendingControlId);
+    if (!match) return;
+    setSelected(match);
+    setPendingControlId(null);
+  }, [pendingControlId, controlsById]);
+  const results = useMemo(
+    () => [...new Set((tests.data ?? []).map((t) => t.result))].sort(),
+    [tests.data],
+  );
+  const owners = useMemo(
+    () =>
+      [
+        ...new Set(
+          [...(controls.data ?? []), ...(tests.data ?? [])]
+            .map((row) => row.owner?.trim())
+            .filter((value): value is string => Boolean(value)),
+        ),
+      ].sort(),
+    [controls.data, tests.data],
+  );
+
   const filtered = useMemo(
     () =>
       (controls.data ?? []).filter((c) => {
         if (activeTagId && !taggedIds.has(c.control_id)) return false;
+        if (ownerFilter !== "all" && c.owner !== ownerFilter) return false;
+        if (
+          resultFilter !== "all" &&
+          testsByControl.get(c.control_id)?.result !== resultFilter
+        )
+          return false;
         return (
           (filters.framework === "all" || c.framework === filters.framework) &&
           matchesQuery(c, filters.query)
         );
       }),
-    [controls.data, filters, activeTagId, taggedIds],
+    [
+      controls.data,
+      filters,
+      activeTagId,
+      taggedIds,
+      ownerFilter,
+      resultFilter,
+      testsByControl,
+    ],
   );
+
+  const filteredTests = useMemo(
+    () =>
+      (tests.data ?? []).filter((t) => {
+        const control = controlsById.get(t.control_id);
+        if (activeTagId && !taggedIds.has(t.control_id)) return false;
+        if (ownerFilter !== "all" && t.owner !== ownerFilter) return false;
+        if (resultFilter !== "all" && t.result !== resultFilter) return false;
+        if (
+          filters.framework !== "all" &&
+          control?.framework !== filters.framework
+        )
+          return false;
+        return matchesQuery({ ...t, title: control?.title }, filters.query);
+      }),
+    [
+      tests.data,
+      controlsById,
+      activeTagId,
+      taggedIds,
+      ownerFilter,
+      resultFilter,
+      filters,
+    ],
+  );
+  const filtersActive =
+    Boolean(activeTagId) ||
+    ownerFilter !== "all" ||
+    resultFilter !== "all" ||
+    filters.framework !== "all" ||
+    Boolean(filters.query.trim());
 
   const openViolation = (violationId: string) => {
     const v = (posture.data?.violations ?? []).find(
@@ -142,12 +224,6 @@ function ControlsPageContent() {
         description="Results, evidence, and owners."
       />
       <TrustPipelineStrip activeStage="controls" />
-      <QueryState queries={[tests]} label="control tests">
-        <ControlMonitoringSummary rows={tests.data ?? []} />
-        {(tests.data ?? []).some((t) => t.result !== "pass") ? (
-          <ControlTestTable rows={tests.data ?? []} />
-        ) : null}
-      </QueryState>
       <TagFilterBar
         tags={tags}
         activeTagId={activeTagId}
@@ -159,14 +235,18 @@ function ControlsPageContent() {
         filters={{
           framework: filters.framework,
           query: filters.query,
+          result: resultFilter,
+          owner: ownerFilter,
         }}
-        onApply={(viewFilters) =>
+        onApply={(viewFilters) => {
           setFilters({
             ...filters,
             framework: (viewFilters.framework as string) ?? "all",
             query: (viewFilters.query as string) ?? "",
-          })
-        }
+          });
+          setResultFilter((viewFilters.result as string) ?? "all");
+          setOwnerFilter((viewFilters.owner as string) ?? "all");
+        }}
       />
       <Toolbar
         filters={filters}
@@ -174,37 +254,118 @@ function ControlsPageContent() {
         onChange={setFilters}
         placeholder="Search by control id, title, framework, owner…"
       />
-      <QueryState queries={controls} label="controls">
-        <Card className="overflow-hidden">
-          <CardHeader>
-            <CardTitle>{filtered.length} controls</CardTitle>
-            <CardDescription>
-              Click a control to inspect evidence, violations, owner, and
-              API-safe facts.
-            </CardDescription>
-          </CardHeader>
-          <div className="grid gap-2 p-5 pt-0 lg:grid-cols-2">
-            {filtered.length === 0 && (
-              <div className="col-span-full rounded-lg border border-dashed border-line p-4 text-sm text-muted">
-                No controls match the current filters.
-              </div>
-            )}
-            {filtered.map((c) => {
-              const t = (tests.data ?? []).find(
-                (x) => x.control_id === c.control_id,
-              );
-              return (
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="flex items-center gap-2 text-xs font-medium text-muted">
+            Result
+            <select
+              aria-label="Filter by result"
+              value={resultFilter}
+              onChange={(e) => setResultFilter(e.target.value)}
+              className={selectClass}
+            >
+              <option value="all">All results</option>
+              {results.map((value) => (
+                <option key={value} value={value}>
+                  {value.replaceAll("_", " ")}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex items-center gap-2 text-xs font-medium text-muted">
+            Owner
+            <select
+              aria-label="Filter by owner"
+              value={ownerFilter}
+              onChange={(e) => setOwnerFilter(e.target.value)}
+              className={selectClass}
+            >
+              <option value="all">All owners</option>
+              {owners.map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <div
+          role="group"
+          aria-label="Control view"
+          className="inline-flex rounded-lg border border-line bg-surface p-0.5"
+        >
+          {(
+            [
+              ["queue", "Test queue"],
+              ["grid", "Card grid"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              aria-pressed={view === id}
+              onClick={() => setView(id)}
+              className={cn(
+                "rounded-md px-3 py-1.5 text-xs font-black",
+                view === id
+                  ? "bg-ink text-surface"
+                  : "text-muted hover:bg-surfaceMuted",
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <QueryState queries={[tests]} label="control tests">
+        <ControlMonitoringSummary rows={tests.data ?? []} />
+        {view === "queue" && (
+          <ControlTestTable
+            rows={filteredTests}
+            description={
+              filtersActive
+                ? `${filteredTests.length} of ${(tests.data ?? []).length} control tests match the filters. Select a row to open the control.`
+                : "Sorted by result, freshness, and confidence. Select a row to open the control."
+            }
+            emptyLabel={
+              filtersActive
+                ? "No control tests match the current filters."
+                : undefined
+            }
+            onSelect={setPendingControlId}
+          />
+        )}
+      </QueryState>
+      {view === "grid" && (
+        <QueryState queries={controls} label="controls">
+          <Card className="overflow-hidden" data-testid="control-card-grid">
+            <CardHeader>
+              <CardTitle>{filtered.length} controls</CardTitle>
+              <CardDescription>
+                Click a control to inspect evidence, violations, owner, and
+                API-safe facts.
+              </CardDescription>
+            </CardHeader>
+            <div className="grid gap-2 p-5 pt-0 lg:grid-cols-2">
+              {filtered.length === 0 && (
+                <div className="col-span-full rounded-lg border border-dashed border-line p-4 text-sm text-muted">
+                  No controls match the current filters.
+                </div>
+              )}
+              {filtered.map((c) => (
                 <ControlRow
                   key={c.control_id}
                   control={c}
                   onSelect={() => setSelected(c)}
-                  confidence={t?.confidence_score}
+                  confidence={
+                    testsByControl.get(c.control_id)?.confidence_score
+                  }
                 />
-              );
-            })}
-          </div>
-        </Card>
-      </QueryState>
+              ))}
+            </div>
+          </Card>
+        </QueryState>
+      )}
       <ControlDrawer
         control={selected}
         onClose={() => setSelected(null)}

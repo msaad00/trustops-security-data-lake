@@ -50,7 +50,7 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev,server]"
 make web-install web-build
-security-lakehouse fixtures load --company golden --out build/lakehouse
+security-lakehouse fixtures load --company golden --out build/lakehouse --rebase-times
 security-lakehouse db upgrade --lake build/lakehouse
 security-lakehouse serve --lake build/lakehouse --server --allow-insecure-no-auth --port 8787
 ```
@@ -59,7 +59,7 @@ For the CLI and local lake only:
 
 ```bash
 pip install trustops-security-data-lake
-security-lakehouse fixtures load --company golden --out ./lake
+security-lakehouse fixtures load --company golden --out ./lake --rebase-times
 ```
 
 [Docker, Helm, and production configuration](deploy/README.md) ·
@@ -139,22 +139,35 @@ security-lakehouse frameworks safeguards --format table
 ## Explore
 
 <details open>
-<summary><strong>01 · Product tour</strong> — overview, evidence, and audit room</summary>
+<summary><strong>01 · Product tour</strong> — posture, evidence, frameworks, and triage</summary>
 
-The images below show the stored demo fixture, not live customer evidence.
+The images show the bundled demo fixture, not live customer evidence. They follow
+your GitHub light or dark theme.
 
-|                               Overview                                |                             Evidence                              |
-| :-------------------------------------------------------------------: | :---------------------------------------------------------------: |
-|  ![TrustOps demo overview](docs/images/trustops-demo-dashboard.png)   | ![TrustOps demo evidence](docs/images/trustops-demo-evidence.png) |
-|                              Frameworks                               |                              Triage                               |
-| ![TrustOps demo frameworks](docs/images/trustops-demo-frameworks.png) |   ![TrustOps demo triage](docs/images/trustops-demo-triage.png)   |
+<p align="center">
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/trustops-demo-dashboard-dark.png"><img src="docs/images/trustops-demo-dashboard.png" alt="TrustOps overview: assessment score, control pass rate, and open findings" width="100%"></picture>
+  <br><sub><strong>Overview</strong> — posture, pass rate, and open findings in one read, drilling into frameworks and findings.</sub>
+</p>
+
+<p align="center">
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/trustops-demo-frameworks-dark.png"><img src="docs/images/trustops-demo-frameworks.png" alt="Framework coverage with catalogued, mapped, and reviewed requirements" width="49%"></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/trustops-demo-evidence-dark.png"><img src="docs/images/trustops-demo-evidence.png" alt="Normalized evidence facts with source, freshness, and provenance" width="49%"></picture>
+  <br><sub><strong>Frameworks</strong> — honest coverage: catalogued, mapped, and reviewed are counted separately. &nbsp;·&nbsp; <strong>Evidence</strong> — every fact carries its source, freshness, and hash.</sub>
+</p>
+
+<p align="center">
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/trustops-demo-triage-dark.png"><img src="docs/images/trustops-demo-triage.png" alt="Finding triage drawer with owner, due date, and evidence provenance" width="49%"></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/trustops-demo-graph-dark.png"><img src="docs/images/trustops-demo-graph.png" alt="Compliance mapping graph from framework to control, evidence, and asset" width="49%"></picture>
+  <br><sub><strong>Triage</strong> — assign, set due dates, and keep a history. &nbsp;·&nbsp; <strong>Graph</strong> — trace a framework to its controls, evidence, and assets.</sub>
+</p>
 
 [Full walkthrough](docs/PRODUCT_WALKTHROUGH.md) ·
-[Connectors](docs/images/trustops-demo-connectors.png) ·
+[Connections](docs/images/trustops-demo-connectors.png) ·
 [Findings](docs/images/trustops-demo-findings.png) ·
 [Remediation](docs/images/trustops-demo-remediation.png) ·
 [Audit room](docs/images/trustops-demo-audit-room.png) ·
-[Workflows](docs/images/trustops-demo-workflows.png)
+[Workflows](docs/images/trustops-demo-workflows.png) ·
+[Trust center](docs/images/trustops-demo-trust-center.png)
 
 </details>
 

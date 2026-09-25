@@ -1151,6 +1151,17 @@
             ],
             "title": "Priority"
           },
+          "resolution_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution Note"
+          },
           "status": {
             "anyOf": [
               {

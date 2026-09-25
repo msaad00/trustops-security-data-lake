@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Download, FileJson, Loader2 } from "lucide-react";
+import { Camera, Download, FileJson, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +13,13 @@ import {
 } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
 import { QueryState } from "@/components/QueryState";
-import { useSnapshotDetail, useSnapshots } from "@/lib/api/hooks";
+import {
+  useSnapshotDetail,
+  useSnapshotMutation,
+  useSnapshots,
+} from "@/lib/api/hooks";
+import { useAuditorMode } from "@/lib/state/auditor";
+import { notify } from "@/lib/toast";
 import { shortDate } from "@/lib/utils";
 
 function exportPdf(snapshotId: string) {
@@ -127,6 +133,16 @@ function SnapshotDetailDrawer({
 
 export function AuditSnapshotTimeline() {
   const snapshots = useSnapshots();
+  const createSnapshot = useSnapshotMutation();
+  const auditor = useAuditorMode();
+  const takeSnapshot = async () => {
+    try {
+      await createSnapshot.mutateAsync("audit_request");
+      notify.success("Snapshot saved.");
+    } catch (err) {
+      notify.error(`Snapshot failed: ${(err as Error).message}`);
+    }
+  };
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const rows = [...(snapshots.data ?? [])].sort(
     (a, b) =>
@@ -146,14 +162,28 @@ export function AuditSnapshotTimeline() {
         <CardContent>
           <QueryState queries={snapshots} label="snapshots">
             {rows.length === 0 ? (
-              <p className="text-sm text-muted">
-                No snapshots in the lake yet. Freeze one from the header
-                Snapshot action or run{" "}
-                <code className="rounded bg-surfaceMuted px-1 text-xs">
-                  assessment snapshot --reason audit
-                </code>
-                .
-              </p>
+              <div className="grid gap-3 rounded-lg border border-dashed border-line p-4 text-sm">
+                <p className="text-muted">
+                  No snapshots yet. A snapshot freezes today&apos;s posture,
+                  frameworks, and evidence references so auditors can review a
+                  fixed point in time.
+                </p>
+                <div>
+                  <Button
+                    size="sm"
+                    variant="primary"
+                    disabled={createSnapshot.isPending || auditor}
+                    onClick={takeSnapshot}
+                  >
+                    {createSnapshot.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Camera className="h-4 w-4" />
+                    )}
+                    Take a snapshot
+                  </Button>
+                </div>
+              </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[640px] text-left text-sm">

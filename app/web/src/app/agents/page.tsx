@@ -601,16 +601,8 @@ function AgentsPageContent() {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">Agent skills</CardTitle>
           <CardDescription className="text-xs">
-            Headless-first bundles — same routes as MCP and CI. See{" "}
-            <a
-              href="https://github.com/msaad00/trustops-security-data-lake/blob/main/docs/api/AGENT_SKILLS.md"
-              className="font-bold text-brand hover:underline"
-              target="_blank"
-              rel="noreferrer"
-            >
-              AGENT_SKILLS.md
-            </a>
-            .
+            Ready-made bundles that use the same routes as MCP and CI. Pick one
+            to load its route in the API runner below.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">

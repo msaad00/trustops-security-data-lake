@@ -395,6 +395,11 @@ def _parser() -> argparse.ArgumentParser:
     fixtures_load = fixtures_sub.add_parser("load", help="pipe a mockup company fixture through the pipeline")
     fixtures_load.add_argument("--company", required=True, help="company directory under mockup_companies/")
     fixtures_load.add_argument("--out", required=True, help="security data lake output directory")
+    fixtures_load.add_argument(
+        "--rebase-times",
+        action="store_true",
+        help="shift fixture timestamps so the newest event is one hour old (demo data reads as current)",
+    )
     fixtures_load.set_defaults(func=_fixtures_load)
     fixtures_write_golden = fixtures_sub.add_parser(
         "write-golden",
@@ -1588,7 +1593,18 @@ def _fixtures_load(args: argparse.Namespace) -> int:
     fixture = find_fixture(args.company)
     if fixture is None:
         raise ValueError(f"unknown fixture {args.company!r}; run `security-lakehouse fixtures list` to see the options")
-    result = run_pipeline(fixture.raw_path, args.out)
+    raw_path = fixture.raw_path
+    if getattr(args, "rebase_times", False):
+        from security_lakehouse.fixtures import rebase_fixture_times
+
+        rows = [json.loads(line) for line in raw_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+        raw_path = Path(args.out) / "_fixture_rebased" / raw_path.name
+        raw_path.parent.mkdir(parents=True, exist_ok=True)
+        raw_path.write_text(
+            "\n".join(json.dumps(row, separators=(",", ":")) for row in rebase_fixture_times(rows)) + "\n",
+            encoding="utf-8",
+        )
+    result = run_pipeline(raw_path, args.out)
     print(
         json.dumps(
             {

@@ -30,3 +30,14 @@ test("wide framework graphs fit at a readable zoom", async ({ page }) => {
   );
   expect(overlapping).toHaveLength(0);
 });
+
+test("choosing All frameworks keeps the wide map", async ({ page }) => {
+  await page.goto("/console/graph/");
+  const framework = page.getByRole("combobox", {
+    name: "Filter graph by framework",
+  });
+  await expect(framework).not.toHaveValue("");
+  await framework.selectOption("");
+  await page.waitForTimeout(500);
+  await expect(framework).toHaveValue("");
+});

@@ -77,11 +77,16 @@ test.describe("record deep links", () => {
     expect(exitPosition).toBeGreaterThan(openPosition);
     await expect(controlDialog).toHaveCount(0);
 
+    const controls = (await (await request.get("/api/v1/controls")).json())
+      .data as Array<Record<string, unknown>>;
+    const violationControl = controls.find(
+      (row) => row.control_id === violation.control_id,
+    );
     await expectPaletteDeepLink(
       page,
       "/console/violations/",
       String(violation.violation_id),
-      String(violation.control_id),
+      String(violationControl?.title ?? violation.event_type),
     );
     await page
       .getByRole("dialog")
