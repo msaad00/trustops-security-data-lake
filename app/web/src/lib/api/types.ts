@@ -1018,6 +1018,8 @@ export interface FrameworkControlArticle {
   reviewed_by: string;
   reviewed_at: string;
   rationale: string;
+  /** Absent on legacy human-reviewed rows; "proposed" = not yet reviewed. */
+  review_status?: string;
 }
 
 export interface FrameworkSourceRollup {
@@ -1307,6 +1309,8 @@ export interface ReviewedArticle {
   reviewed_by: string;
   reviewed_at: string;
   rationale: string;
+  /** Absent on legacy human-reviewed rows; "proposed" = not yet reviewed. */
+  review_status?: string;
 }
 
 export interface ControlArticleMapping {

@@ -27,7 +27,15 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { CollapsibleCard } from "@/components/ui/collapsible-card";
 import { QueryState } from "@/components/QueryState";
-import { shortDate } from "@/lib/utils";
+import { formatWhen } from "@/lib/utils";
+
+// The API stamps UTC; the chip should show the viewer's calendar day.
+function localDate(iso: string): string {
+  const parsed = new Date(iso);
+  if (Number.isNaN(parsed.getTime())) return "—";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${parsed.getFullYear()}-${pad(parsed.getMonth() + 1)}-${pad(parsed.getDate())}`;
+}
 
 export default function DashboardPage() {
   const posture = usePosture();
@@ -66,8 +74,11 @@ export default function DashboardPage() {
             {connected ? "Updates connected" : "Polling updates"}
           </span>
           {data?.evaluated_at ? (
-            <span className="rounded-md border border-line bg-surface px-2 py-1 text-xs text-muted">
-              {shortDate(data.evaluated_at)}
+            <span
+              className="rounded-md border border-line bg-surface px-2 py-1 text-xs text-muted"
+              title={`Evaluated ${formatWhen(data.evaluated_at)}`}
+            >
+              {localDate(data.evaluated_at)}
             </span>
           ) : null}
         </div>
