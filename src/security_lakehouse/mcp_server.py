@@ -546,6 +546,20 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
             {"note": note},
         )
 
+    @trustops_tool(title="Reject Agent Decision")
+    def reject_agent_decision(run_id: str, decision_index: int, reason: str) -> JsonObject:
+        """Reject one stored harness decision so it is never executed.
+
+        A reason is required and recorded with the rejecting identity. Rejecting
+        an already executed decision fails; repeating a rejection is a no-op.
+        """
+        encoded_run = urllib.parse.quote(run_id, safe="")
+        return _server_api_request(
+            "POST",
+            f"/api/v1/agent-runs/{encoded_run}/decisions/{decision_index}/reject",
+            {"reason": reason},
+        )
+
     @trustops_tool(title="Audit Readiness")
     def get_audit_readiness() -> JsonObject:
         """Return audit score, per-framework coverage, and blocking gaps.

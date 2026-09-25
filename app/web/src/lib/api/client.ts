@@ -755,6 +755,11 @@ export const api = {
       `/v1/agent-runs/${encodeURIComponent(runId)}/decisions/${decisionIndex}/approve`,
       { note },
     ).then((b) => b.data),
+  rejectAgentDecision: (runId: string, decisionIndex: number, reason: string) =>
+    post<{ data: AgentRun }>(
+      `/v1/agent-runs/${encodeURIComponent(runId)}/decisions/${decisionIndex}/reject`,
+      { reason },
+    ).then((b) => b.data),
   accessReviews: (query = "") =>
     getAllV1<AccessReviewCampaign>(`/v1/access-reviews${query}`).then(
       (r) => r.items,

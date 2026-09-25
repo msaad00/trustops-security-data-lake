@@ -57,6 +57,7 @@ EXPECTED_TOOLS = {
     "create_agent_run",
     "get_agent_run",
     "approve_agent_decision",
+    "reject_agent_decision",
     "get_audit_readiness",
     "get_ai_governance",
     "list_ai_inventory",
@@ -1090,6 +1091,13 @@ def test_mcp_agent_run_tools_call_authenticated_api(tmp_path, monkeypatch):
     assert calls[2]["path"] == "/api/v1/agent-runs/run%2Fid%20with%20space"
     assert calls[3]["path"] == "/api/v1/agent-runs/run%2Fid%20with%20space/decisions/2/approve"
     assert calls[3]["body"] == {"note": "ok"}
+
+    rejected = call_tool(
+        server, "reject_agent_decision", run_id="run/id with space", decision_index=1, reason="covered elsewhere"
+    )
+    assert rejected["data"]["ok"] is True
+    assert calls[4]["path"] == "/api/v1/agent-runs/run%2Fid%20with%20space/decisions/1/reject"
+    assert calls[4]["body"] == {"reason": "covered elsewhere"}
 
 
 def test_list_evidence_freshness_reads_lake(tmp_path):

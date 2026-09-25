@@ -2,16 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useApproveAgentDecisionMutation } from "@/lib/api/hooks";
+import {
+  useApproveAgentDecisionMutation,
+  useRejectAgentDecisionMutation,
+} from "@/lib/api/hooks";
 import type { AgentDecision, AgentRun } from "@/lib/api/types";
 import { notify } from "@/lib/toast";
 
 function toneForStatus(status: string | undefined) {
   if (status === "completed" || status === "executed") return "ready" as const;
-  if (status === "failed") return "critical" as const;
+  if (status === "failed" || status === "rejected") return "critical" as const;
   if (status === "proposed") return "attention" as const;
   return "default" as const;
 }
@@ -54,7 +57,28 @@ export function AgentDecisionCard({
   compact = false,
 }: Props) {
   const approveDecision = useApproveAgentDecisionMutation();
+  const rejectDecision = useRejectAgentDecisionMutation();
   const [note, setNote] = useState("");
+  const [needsReason, setNeedsReason] = useState(false);
+  const busy = approveDecision.isPending || rejectDecision.isPending;
+
+  const reject = async () => {
+    const reason = note.trim();
+    if (!reason) {
+      setNeedsReason(true);
+      return;
+    }
+    try {
+      await rejectDecision.mutateAsync({
+        runId: run.id,
+        decisionIndex,
+        reason,
+      });
+      notify.success("Decision rejected; it will not run.");
+    } catch (err) {
+      notify.error(String((err as Error).message));
+    }
+  };
 
   const approve = async () => {
     try {
@@ -112,34 +136,66 @@ export function AgentDecisionCard({
             ) : null}
           </div>
         ) : null}
+        {decision.status === "rejected" ? (
+          <div className="mt-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
+            <span className="font-black">
+              Rejected
+              {decision.rejected_by ? ` by ${decision.rejected_by}` : ""}:
+            </span>{" "}
+            {decision.rejection_reason}
+          </div>
+        ) : null}
       </div>
       <div className="flex min-w-0 flex-col items-stretch gap-2 lg:items-end">
         {decision.status === "proposed" ? (
           <>
             <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
-              Approver note
+              Note or reason
               <textarea
                 value={note}
-                onChange={(event) => setNote(event.target.value)}
+                onChange={(event) => {
+                  setNote(event.target.value);
+                  setNeedsReason(false);
+                }}
                 rows={2}
-                placeholder="Optional context for audit trail"
-                className="min-w-[220px] rounded-lg border border-line bg-surface px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                aria-invalid={needsReason}
+                placeholder="Optional for approval; required to reject"
+                className="min-w-[220px] rounded-lg border border-line bg-surface px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand aria-[invalid=true]:border-rose-500"
               />
             </label>
-            <Button
-              variant="primary"
-              size="sm"
-              className="w-fit self-end"
-              disabled={approveDecision.isPending}
-              onClick={approve}
-            >
-              {approveDecision.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <CheckCircle2 className="h-4 w-4" />
-              )}
-              Approve
-            </Button>
+            {needsReason ? (
+              <p className="text-xs font-bold text-rose-600 dark:text-rose-400">
+                Add a reason to reject this decision.
+              </p>
+            ) : null}
+            <div className="flex flex-wrap justify-end gap-2">
+              <Button
+                variant="default"
+                size="sm"
+                disabled={busy}
+                onClick={reject}
+              >
+                {rejectDecision.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <XCircle className="h-4 w-4" />
+                )}
+                Reject
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                disabled={busy}
+                onClick={approve}
+              >
+                {approveDecision.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="h-4 w-4" />
+                )}
+                Approve
+              </Button>
+            </div>
           </>
         ) : (
           <Badge tone={toneForStatus(decision.status)}>

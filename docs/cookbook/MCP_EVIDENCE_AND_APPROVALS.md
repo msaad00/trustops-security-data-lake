@@ -20,7 +20,7 @@ two transport surfaces:
 | -------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | Local lake reads     | `TRUSTOPS_LAKE` (default `./lake`)     | `get_posture`, `list_controls`, `list_evidence`, `create_snapshot`, …                                                            |
 | Ingestion loop       | `TRUSTOPS_LAKE`                        | `get_ingestion_status`, `list_eval_runs`, `run_lake_eval`, `run_scheduler_tick`, `sync_connector`                                |
-| Authenticated server | `TRUSTOPS_API_URL`, `TRUSTOPS_API_KEY` | `list_agent_runs`, `create_agent_run`, `get_agent_run`, `approve_agent_decision`                                                 |
+| Authenticated server | `TRUSTOPS_API_URL`, `TRUSTOPS_API_KEY` | `list_agent_runs`, `create_agent_run`, `get_agent_run`, `approve_agent_decision`, `reject_agent_decision`                        |
 | Lake-backed reads    | same as authenticated server           | When both env vars are set, `get_ai_governance` and `list_ai_inventory` route through the server API instead of local lake files |
 
 Evidence-request approvals are **server-backed**. They call the same
@@ -157,6 +157,11 @@ On success the server:
 Approval is idempotent. Retrying an already executed decision returns
 `meta.executed: false` and the stored `execution_result` without creating a
 duplicate request.
+
+To decline a proposal instead, call `reject_agent_decision` with a reason
+(`POST .../decisions/{i}/reject`, body `{"reason": "..."}`). The decision is
+marked `rejected` with the rejecting identity and reason and is never executed;
+approving it afterwards returns `409`, as does rejecting an executed decision.
 
 ## 5. Verify The Evidence Request
 

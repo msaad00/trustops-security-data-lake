@@ -175,6 +175,7 @@ write proposals stay **approval-gated** until a human approves.
 | Run harness      | `POST /api/v1/agent-runs`                            | `create_agent_run`        |
 | Inspect run      | `GET /api/v1/agent-runs/{id}`                        | (SDK)                     |
 | Approve decision | `POST /api/v1/agent-runs/{id}/decisions/{i}/approve` | `approve_agent_decision`  |
+| Reject decision  | `POST /api/v1/agent-runs/{id}/decisions/{i}/reject`  | `reject_agent_decision`   |
 | Remediation task | `POST /api/v1/remediation/tasks`                     | `create_remediation_task` |
 | Evidence request | `POST /api/v1/remediation/evidence-requests`         | —                         |
 

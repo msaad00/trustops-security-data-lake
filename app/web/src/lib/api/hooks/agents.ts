@@ -58,3 +58,22 @@ export function useApproveAgentDecisionMutation() {
     },
   });
 }
+
+export function useRejectAgentDecisionMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      runId,
+      decisionIndex,
+      reason,
+    }: {
+      runId: string;
+      decisionIndex: number;
+      reason: string;
+    }) => api.rejectAgentDecision(runId, decisionIndex, reason),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["agent-runs"] });
+      qc.invalidateQueries({ queryKey: ["agent-run"] });
+    },
+  });
+}

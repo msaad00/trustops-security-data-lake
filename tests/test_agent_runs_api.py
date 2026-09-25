@@ -383,3 +383,52 @@ def test_agent_run_persists_needs_ingestion_when_lake_is_empty(tmp_path: Path) -
     }
     assert readiness["recommended_next_steps"][0]["action"] == "inspect_connectors"
     assert str(tmp_path) not in json.dumps(readiness, sort_keys=True)
+
+
+def _posture_run(client: TestClient, token: str) -> str:
+    created = client.post(
+        "/api/v1/agent-runs",
+        json={"harness": "posture_review", "objective": "review gaps"},
+        headers=_bearer(token),
+    )
+    assert created.status_code == HTTPStatus.CREATED
+    return str(created.json()["data"]["id"])
+
+
+def test_agent_decision_can_be_rejected_with_a_reason_and_is_never_executed(env) -> None:
+    _app, client, tokens = env
+    run_id = _posture_run(client, tokens["contributor"])
+    url = f"/api/v1/agent-runs/{run_id}/decisions/0/reject"
+
+    assert client.post(url, json={"reason": "no"}, headers=_bearer(tokens["read_only"])).status_code == 403
+    assert client.post(url, json={"reason": "  "}, headers=_bearer(tokens["contributor"])).status_code == 400
+
+    rejected = client.post(
+        url, json={"reason": "Already covered by vendor SOC report."}, headers=_bearer(tokens["contributor"])
+    )
+    assert rejected.status_code == HTTPStatus.OK
+    decision = rejected.json()["data"]["decisions"][0]
+    assert decision["status"] == "rejected"
+    assert decision["rejected_by"] == "contributor@acme.test"
+    assert decision["rejection_reason"] == "Already covered by vendor SOC report."
+    assert "execution_result" not in decision
+
+    again = client.post(url, json={"reason": "second"}, headers=_bearer(tokens["contributor"]))
+    assert again.status_code == HTTPStatus.OK
+    assert again.json()["data"]["decisions"][0]["rejection_reason"] == "Already covered by vendor SOC report."
+
+    approve = client.post(f"/api/v1/agent-runs/{run_id}/decisions/0/approve", headers=_bearer(tokens["contributor"]))
+    assert approve.status_code == HTTPStatus.CONFLICT
+    requests = client.get("/api/v1/remediation/evidence-requests", headers=_bearer(tokens["contributor"]))
+    assert requests.json()["data"] == []
+
+
+def test_executed_agent_decision_cannot_be_rejected(env) -> None:
+    _app, client, tokens = env
+    run_id = _posture_run(client, tokens["contributor"])
+    base = f"/api/v1/agent-runs/{run_id}/decisions/0"
+    assert client.post(f"{base}/approve", headers=_bearer(tokens["contributor"])).status_code == HTTPStatus.OK
+
+    rejected = client.post(f"{base}/reject", json={"reason": "too late"}, headers=_bearer(tokens["contributor"]))
+
+    assert rejected.status_code == HTTPStatus.CONFLICT
