@@ -69,6 +69,9 @@ test("control evidence request opens a prefilled form and reports save failure",
   await expect(
     page.getByRole("tab", { name: "Evidence requests", exact: true }),
   ).toHaveAttribute("aria-selected", "true");
+  // Client navigation to a query-string URL re-renders the static-export page
+  // once its segment payload settles; interact only after that.
+  await page.waitForLoadState("networkidle");
   await expect(
     page.getByRole("textbox", { name: "Control ID", exact: true }),
   ).toHaveValue("SOC2-CC6.4");

@@ -306,6 +306,7 @@ interface Props {
   filterWorkflow: string;
   filterStaleOnly: boolean;
   searchQuery: string;
+  focusId?: string | null;
   pathFrom: string | null;
   pathTo: string | null;
   onSelectNode: (node: GraphNode | null) => void;
@@ -339,6 +340,7 @@ function InnerGraphCanvas({
   filterWorkflow,
   filterStaleOnly,
   searchQuery,
+  focusId = null,
   pathFrom,
   pathTo,
   onSelectNode,
@@ -350,6 +352,9 @@ function InnerGraphCanvas({
   useEffect(() => setHydrated(true), []);
   const { fitView, setCenter } = useReactFlow();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  useEffect(() => {
+    if (focusId) setSelectedId(focusId);
+  }, [focusId]);
 
   const frameworkScopeIds = useMemo(() => {
     if (!graph || !filterFramework) return null;
@@ -533,6 +538,10 @@ function InnerGraphCanvas({
       return {
         id: n.id,
         type: "trustops-graph",
+        className:
+          n.id === focusId
+            ? "focused rounded-xl ring-2 ring-brand ring-offset-2 ring-offset-surface"
+            : undefined,
         position: { x: 0, y: 0 },
         data: {
           label: n.label,
@@ -581,16 +590,28 @@ function InnerGraphCanvas({
     matchSet,
     pathSet,
     highlightSet,
+    focusId,
   ]);
+
+  const focusNode = focusId ? rfNodes.find((n) => n.id === focusId) : null;
+  const focusX = focusNode ? focusNode.position.x : null;
+  const focusY = focusNode ? focusNode.position.y : null;
 
   useEffect(() => {
     if (rfNodes.length === 0) return;
     const frame = window.requestAnimationFrame(() => {
-      fitView({ maxZoom: 0.78, padding: 0.22, duration: 180 });
+      if (focusX !== null && focusY !== null) {
+        setCenter(focusX + 73, focusY + 29, { zoom: 0.9, duration: 300 });
+      } else {
+        fitView({ maxZoom: 0.78, padding: 0.22, duration: 180 });
+      }
     });
     return () => window.cancelAnimationFrame(frame);
   }, [
     fitView,
+    setCenter,
+    focusX,
+    focusY,
     rfNodes.length,
     layout,
     filterOwner,

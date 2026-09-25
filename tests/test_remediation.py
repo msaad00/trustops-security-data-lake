@@ -193,3 +193,94 @@ def test_evidence_request_operator_permissions(env, role: str) -> None:
         created = response.json()["data"]
         listed = client.get("/api/v1/remediation/evidence-requests", headers=_bearer(tokens[role])).json()["data"]
         assert any(row["id"] == created["id"] and row["control_id"] == "SOC2-CC6.1" for row in listed)
+
+
+# --- finding -> task -> proof ------------------------------------------------
+
+
+def test_task_links_finding_and_filters_by_control(env) -> None:
+    _app, client, tokens = env
+    headers = _bearer(tokens["contributor"])
+    linked = client.post(
+        "/api/v1/remediation/tasks",
+        json={
+            "title": "Block public S3 bucket",
+            "control_id": "SOC2-CC6.1",
+            "violation_id": "viol-123",
+            "owner": "platform",
+            "priority": "high",
+        },
+        headers=headers,
+    )
+    assert linked.status_code == HTTPStatus.CREATED
+    assert linked.json()["data"]["violation_id"] == "viol-123"
+    client.post("/api/v1/remediation/tasks", json={"title": "other", "control_id": "SOC2-CC7.2"}, headers=headers)
+
+    listed = client.get("/api/v1/remediation/tasks?control_id=SOC2-CC6.1", headers=headers).json()["data"]
+    assert [t["title"] for t in listed] == ["Block public S3 bucket"]
+    assert listed[0]["violation_id"] == "viol-123"
+
+
+def test_resolve_task_records_resolution_note(env) -> None:
+    _app, client, tokens = env
+    headers = _bearer(tokens["contributor"])
+    task = client.post("/api/v1/remediation/tasks", json={"title": "Rotate key"}, headers=headers).json()["data"]
+    assert task["resolution_note"] == ""
+
+    patched = client.patch(
+        f"/api/v1/remediation/tasks/{task['id']}",
+        json={"status": "resolved", "resolution_note": "https://github.com/acme/infra/pull/42"},
+        headers=headers,
+    )
+    assert patched.status_code == HTTPStatus.OK
+    assert patched.json()["data"]["resolution_note"] == "https://github.com/acme/infra/pull/42"
+
+    fetched = client.get(f"/api/v1/remediation/tasks/{task['id']}", headers=headers).json()["data"]
+    assert fetched["status"] == "resolved"
+    assert fetched["resolution_note"] == "https://github.com/acme/infra/pull/42"
+
+    too_long = client.patch(
+        f"/api/v1/remediation/tasks/{task['id']}", json={"resolution_note": "x" * 4001}, headers=headers
+    )
+    assert too_long.status_code == HTTPStatus.BAD_REQUEST
+
+
+def test_resolution_note_is_tenant_scoped_and_bounded(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path)
+    with session_scope(app.state.sessionmaker) as session:
+        acme = create_tenant(session, slug="acme", name="Acme")
+        other = create_tenant(session, slug="other", name="Other")
+        task = remediation.create_task(session, tenant_id=acme.id, title="x", control_id="C-1")
+        assert (
+            remediation.update_task(session, tenant_id=other.id, task_id=task.id, changes={"resolution_note": "nope"})
+            is None
+        )
+        with pytest.raises(ValueError, match="resolution_note"):
+            remediation.update_task(
+                session, tenant_id=acme.id, task_id=task.id, changes={"resolution_note": "x" * 4001}
+            )
+        remediation.update_task(
+            session, tenant_id=acme.id, task_id=task.id, changes={"status": "resolved", "resolution_note": " proof "}
+        )
+        assert task.resolution_note == "proof"
+        assert remediation.list_tasks(session, tenant_id=other.id, control_id="C-1") == []
+        assert len(remediation.list_tasks(session, tenant_id=acme.id, control_id="C-1")) == 1
+
+
+def test_resolution_note_migration_round_trips(tmp_path: Path) -> None:
+    from alembic import command
+    from sqlalchemy import inspect
+
+    from security_lakehouse.db import migrate
+    from security_lakehouse.db.base import create_engine_for, database_url
+
+    def columns() -> set[str]:
+        return {c["name"] for c in inspect(create_engine_for(tmp_path)).get_columns("remediation_tasks")}
+
+    migrate.upgrade(tmp_path)
+    assert "resolution_note" in columns()
+    command.downgrade(migrate._config(database_url(tmp_path)), "0018_billing")
+    assert "resolution_note" not in columns()
+    migrate.upgrade(tmp_path)
+    assert "resolution_note" in columns()

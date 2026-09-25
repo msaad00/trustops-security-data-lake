@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   ArrowDownToLine,
   Activity,
@@ -208,7 +209,23 @@ function downloadBlob(filename: string, blob: Blob) {
   URL.revokeObjectURL(url);
 }
 
+const SEARCH_RESULT_LIMIT = 8;
+
 export default function GraphPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="px-4 py-5 text-sm text-muted">Loading graph…</div>
+      }
+    >
+      <GraphPageContent />
+    </Suspense>
+  );
+}
+
+function GraphPageContent() {
+  const searchParams = useSearchParams();
+  const focusParam = searchParams.get("focus");
   const complianceGraph = useComplianceGraph();
   const repoGraph = useRepositoryGraph();
   const [graphMode, setGraphMode] = useState<"compliance" | "repository">(
@@ -232,6 +249,9 @@ export default function GraphPage() {
   const [pathFrom, setPathFrom] = useState<string | null>(null);
   const [pathTo, setPathTo] = useState<string | null>(null);
   const [selected, setSelected] = useState<GraphNode | null>(null);
+  const [focusId, setFocusId] = useState<string | null>(null);
+  const [focusMissing, setFocusMissing] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const canvasRef = useRef<ImperativeRef | null>(null);
 
   useEffect(() => {
@@ -356,6 +376,59 @@ export default function GraphPage() {
     return ids;
   }, [data, filterFramework]);
 
+  // `?focus=<node id>` selects and centres a node. The node's framework slice
+  // is chosen so the default single-framework view does not hide it.
+  useEffect(() => {
+    if (!focusParam || graphMode !== "compliance" || !data) return;
+    const node = graphIndex.nodesById.get(focusParam);
+    if (!node) {
+      setFocusMissing(true);
+      return;
+    }
+    setFocusMissing(false);
+    let framework = node.framework_id ?? "";
+    if (!framework) {
+      const incoming = new Map<string, string[]>();
+      for (const edge of data.edges) {
+        const sources = incoming.get(edge.target) ?? [];
+        sources.push(edge.source);
+        incoming.set(edge.target, sources);
+      }
+      const queue = [node.id];
+      const seen = new Set(queue);
+      while (queue.length > 0 && !framework) {
+        const current = graphIndex.nodesById.get(queue.shift()!);
+        if (current?.kind === "control" && current.framework_id) {
+          framework = current.framework_id;
+          break;
+        }
+        for (const next of incoming.get(current?.id ?? "") ?? []) {
+          if (!seen.has(next)) {
+            seen.add(next);
+            queue.push(next);
+          }
+        }
+      }
+    }
+    if (framework) setFilterFramework(framework);
+    setFilterOwner("");
+    setFilterEnvironment("");
+    setVisible((prev) => new Set([...prev, node.kind]));
+    setFocusId(node.id);
+  }, [focusParam, graphMode, data, graphIndex]);
+
+  const searchResults = useMemo(() => {
+    const lower = search.trim().toLowerCase();
+    if (!lower || !data) return [];
+    return data.nodes
+      .filter((n) =>
+        `${n.label} ${n.subtitle ?? ""} ${n.id} ${n.owner ?? ""}`
+          .toLowerCase()
+          .includes(lower),
+      )
+      .slice(0, SEARCH_RESULT_LIMIT);
+  }, [data, search]);
+
   const visibleSummary = useMemo(() => {
     const nodes = (data?.nodes ?? []).filter((n) => {
       if (!visible.has(n.kind)) return false;
@@ -462,6 +535,7 @@ export default function GraphPage() {
   const handleSelect = (node: GraphNode | null) => {
     setSelected(node);
     if (!node) return;
+    if (node.id !== focusId) setFocusId(null);
     if (pathMode === "from") {
       setPathFrom(node.id);
       setPathMode("to");
@@ -469,6 +543,24 @@ export default function GraphPage() {
       setPathTo(node.id);
       setPathMode(null);
     }
+  };
+
+  // Picking from the search list sets a trace endpoint when trace mode is
+  // armed; otherwise it focuses the node in the canvas.
+  const pickSearchResult = (node: GraphNode) => {
+    if (graphMode === "compliance" && node.framework_id)
+      setFilterFramework(node.framework_id);
+    setVisible((prev) => new Set([...prev, node.kind]));
+    if (pathMode === "from") {
+      setPathFrom(node.id);
+      setPathMode("to");
+    } else if (pathMode === "to") {
+      setPathTo(node.id);
+      setPathMode(null);
+    }
+    setFocusId(node.id);
+    setSearch("");
+    setSearchOpen(false);
   };
 
   const clearPath = () => {
@@ -537,7 +629,7 @@ export default function GraphPage() {
       />
 
       <QueryState queries={graph} label="compliance graph">
-        <Card className="overflow-hidden">
+        <Card className="relative z-10">
           <div className="flex flex-wrap items-center gap-2 p-2">
             <div className="inline-flex items-center gap-1 rounded-lg border border-line bg-surface p-0.5">
               {(["compliance", "repository"] as const).map((mode) => (
@@ -565,10 +657,67 @@ export default function GraphPage() {
               <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted" />
               <input
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search nodes (label, subtitle, owner)…"
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setSearchOpen(true);
+                }}
+                onFocus={() => setSearchOpen(true)}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") setSearchOpen(false);
+                  if (e.key === "Enter" && searchResults[0]) {
+                    e.preventDefault();
+                    pickSearchResult(searchResults[0]);
+                  }
+                }}
+                aria-label="Search graph nodes"
+                placeholder={
+                  pathMode
+                    ? `Search to pick the path ${pathMode === "from" ? "start" : "end"}…`
+                    : "Search nodes (label, subtitle, owner)…"
+                }
                 className="w-full rounded-lg border border-line bg-surface py-2 pl-9 pr-8 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
               />
+              {searchOpen && searchResults.length > 0 && (
+                <ul
+                  role="listbox"
+                  aria-label="Matching nodes"
+                  className="absolute left-0 right-0 top-full z-20 mt-1 max-h-72 overflow-auto rounded-lg border border-line bg-surface p-1 shadow-card"
+                >
+                  {searchResults.map((node) => (
+                    <li
+                      key={node.id}
+                      role="option"
+                      aria-selected={false}
+                      tabIndex={0}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => pickSearchResult(node)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          pickSearchResult(node);
+                        }
+                      }}
+                      className="flex min-w-0 cursor-pointer items-center justify-between gap-2 rounded-md px-2 py-1.5 text-xs hover:bg-surfaceMuted focus:bg-surfaceMuted focus:outline-none"
+                    >
+                      <span className="min-w-0 truncate font-semibold text-ink">
+                        {node.label}
+                        {node.subtitle && (
+                          <span className="ml-1 font-normal text-muted">
+                            {node.subtitle}
+                          </span>
+                        )}
+                      </span>
+                      <span className="shrink-0 text-[10px] font-black uppercase tracking-wide text-muted">
+                        {pathMode === "from"
+                          ? "set start"
+                          : pathMode === "to"
+                            ? "set end"
+                            : node.kind.replaceAll("_", " ")}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
               {search && (
                 <button
                   type="button"
@@ -895,6 +1044,15 @@ export default function GraphPage() {
           </Card>
 
           <div className="grid min-w-0 gap-3 overflow-hidden">
+            {focusMissing && focusParam && (
+              <div
+                role="status"
+                className="min-w-0 rounded-xl border border-line bg-surfaceMuted p-3 text-xs text-muted"
+              >
+                <code className="break-all text-ink">{focusParam}</code> is not
+                in the current graph.
+              </div>
+            )}
             {pathFrom && pathTo && (
               <div className="min-w-0 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
                 <b>Path trace:</b>{" "}
@@ -913,8 +1071,8 @@ export default function GraphPage() {
             {pathMode && (
               <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-xs text-blue-900 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-300">
                 {pathMode === "from"
-                  ? "Click any node in the canvas to set the path start."
-                  : "Click any node in the canvas to set the path end. Esc cancels."}
+                  ? "Click a node or search above to set the path start."
+                  : "Click a node or search above to set the path end. Esc cancels."}
               </div>
             )}
             <GraphCanvas
@@ -928,6 +1086,7 @@ export default function GraphPage() {
               filterWorkflow={filterWorkflow}
               filterStaleOnly={filterStaleOnly}
               searchQuery={search}
+              focusId={focusId}
               pathFrom={pathFrom}
               pathTo={pathTo}
               onSelectNode={handleSelect}

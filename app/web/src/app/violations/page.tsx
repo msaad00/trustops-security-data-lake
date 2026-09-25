@@ -39,6 +39,7 @@ const toneForSeverity = (s: string) =>
   s === "critical" ? "critical" : s === "high" ? "attention" : "info";
 
 const SURFACE = "violations";
+const UNASSIGNED = "__unassigned__";
 
 function ViolationsPageContent() {
   const violations = useViolations();
@@ -55,6 +56,15 @@ function ViolationsPageContent() {
   const [selected, setSelected] = useState<Violation | null>(null);
   const [activeTagId, setActiveTagId] = useState<string | null>(null);
 
+  const ownerFilter = searchParams.get("owner") ?? "all";
+  function setOwnerFilter(value: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value === "all") params.delete("owner");
+    else params.set("owner", value);
+    router.replace(`/violations${params.size ? `?${params}` : ""}`, {
+      scroll: false,
+    });
+  }
   const deepLinkId = searchParams.get("id");
   useEffect(() => {
     if (!deepLinkId) {
@@ -79,6 +89,13 @@ function ViolationsPageContent() {
   const environments = [
     ...new Set(
       (violations.data ?? []).map((v) => environmentFor(v.environment)),
+    ),
+  ].sort();
+  const owners = [
+    ...new Set(
+      (violations.data ?? [])
+        .map((v) => v.asset_owner?.trim())
+        .filter((value): value is string => Boolean(value)),
     ),
   ].sort();
   const controlTitles = useMemo(
@@ -118,6 +135,11 @@ function ViolationsPageContent() {
           return false;
         if (filters.severity !== "all" && v.severity !== filters.severity)
           return false;
+        if (ownerFilter !== "all") {
+          const owner = v.asset_owner?.trim() ?? "";
+          if (ownerFilter === UNASSIGNED ? owner !== "" : owner !== ownerFilter)
+            return false;
+        }
         return matchesQuery(
           { ...v, title: controlTitles.get(v.control_id) },
           filters.query,
@@ -131,6 +153,7 @@ function ViolationsPageContent() {
       taggedIds,
       environment,
       controlTitles,
+      ownerFilter,
     ],
   );
 
@@ -197,7 +220,10 @@ function ViolationsPageContent() {
         <Button
           size="sm"
           aria-label={`Review finding ${info.row.original.violation_id}`}
-          onClick={() => selectFinding(info.row.original)}
+          onClick={(event) => {
+            event.stopPropagation();
+            selectFinding(info.row.original);
+          }}
         >
           Review
         </Button>
@@ -273,22 +299,46 @@ function ViolationsPageContent() {
             unknown environment
           </Badge>
         </div>
-        <label className="flex items-center gap-2 text-xs font-medium text-muted">
-          Environment
-          <select
-            aria-label="Filter by environment"
-            value={environment}
-            onChange={(e) => setEnvironment(e.target.value)}
-            className="rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink"
-          >
-            <option value="all">All environments</option>
-            {environments.map((value) => (
-              <option key={value} value={value}>
-                {value === "unknown" ? "Unknown" : value}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="flex items-center gap-2 text-xs font-medium text-muted">
+            Owner
+            <select
+              aria-label="Filter by owner"
+              value={ownerFilter}
+              onChange={(e) => setOwnerFilter(e.target.value)}
+              className="max-w-[12rem] rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink"
+            >
+              <option value="all">All owners</option>
+              <option value={UNASSIGNED}>Unassigned</option>
+              {owners.map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+              {ownerFilter !== "all" &&
+                ownerFilter !== UNASSIGNED &&
+                !owners.includes(ownerFilter) && (
+                  <option value={ownerFilter}>{ownerFilter}</option>
+                )}
+            </select>
+          </label>
+          <label className="flex items-center gap-2 text-xs font-medium text-muted">
+            Environment
+            <select
+              aria-label="Filter by environment"
+              value={environment}
+              onChange={(e) => setEnvironment(e.target.value)}
+              className="rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink"
+            >
+              <option value="all">All environments</option>
+              {environments.map((value) => (
+                <option key={value} value={value}>
+                  {value === "unknown" ? "Unknown" : value}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       </div>
       <QueryState queries={violations} label="violations">
         <Card className="overflow-hidden">
@@ -337,7 +387,17 @@ function ViolationsPageContent() {
                 {table.getRowModel().rows.map((r) => (
                   <tr
                     key={r.id}
-                    className="border-b border-line last:border-0 hover:bg-blue-50/40 dark:hover:bg-blue-500/10"
+                    tabIndex={0}
+                    aria-label={`Open finding ${controlTitles.get(r.original.control_id) ?? r.original.event_type} on ${r.original.asset_id || "unknown asset"}`}
+                    onClick={() => selectFinding(r.original)}
+                    onKeyDown={(event) => {
+                      if (event.target !== event.currentTarget) return;
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        selectFinding(r.original);
+                      }
+                    }}
+                    className="cursor-pointer border-b border-line last:border-0 hover:bg-blue-50/40 focus-visible:bg-blue-50/40 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand dark:hover:bg-blue-500/10 dark:focus-visible:bg-blue-500/10"
                   >
                     {r.getVisibleCells().map((c) => (
                       <td key={c.id} className="px-4 py-3 align-top">

@@ -185,6 +185,7 @@ class UpdateTaskRequest(_StrictModel):
     status: str | None = None
     priority: str | None = None
     due_at: str | None = None
+    resolution_note: str | None = None
 
 
 class CreateEvidenceRequestRequest(_StrictModel):
@@ -2018,6 +2019,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
             identity.tenant_id,
             status=(params.get("status") or [None])[0],
             owner=(params.get("owner") or [None])[0],
+            control_id=next(iter(params.get("control_id") or []), None),
             overdue=overdue,
             limit=limit,
             offset=offset,

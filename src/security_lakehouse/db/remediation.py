@@ -25,6 +25,8 @@ from security_lakehouse.db.models import (
     RemediationTask,
 )
 
+RESOLUTION_NOTE_MAX = 4000
+
 
 def _now(now: datetime | None) -> datetime:
     return now or datetime.now(UTC)
@@ -81,6 +83,7 @@ def list_tasks(
     tenant_id: str,
     status: str | None = None,
     owner: str | None = None,
+    control_id: str | None = None,
     overdue: bool | None = None,
     now: datetime | None = None,
     limit: int | None = None,
@@ -91,6 +94,8 @@ def list_tasks(
         stmt = stmt.where(RemediationTask.status == status)
     if owner:
         stmt = stmt.where(RemediationTask.owner == owner)
+    if control_id:
+        stmt = stmt.where(RemediationTask.control_id == control_id)
     if overdue is not None:
         # Push the overdue predicate into SQL so pagination is stable.
         # overdue = due_at IS NOT NULL AND due_at < now AND status is open.
@@ -140,6 +145,11 @@ def update_task(
             setattr(task, field, str(changes[field]))
     if "due_at" in changes:
         task.due_at = changes["due_at"]
+    if changes.get("resolution_note") is not None:
+        note = str(changes["resolution_note"]).strip()
+        if len(note) > RESOLUTION_NOTE_MAX:
+            raise ValueError(f"resolution_note must be at most {RESOLUTION_NOTE_MAX} characters")
+        task.resolution_note = note
     task.updated_at = moment
     session.flush()
     return task
@@ -161,6 +171,7 @@ def task_to_dict(task: RemediationTask, *, now: datetime | None = None) -> dict[
         "created_at": _iso(task.created_at),
         "updated_at": _iso(task.updated_at),
         "resolved_at": _iso(task.resolved_at),
+        "resolution_note": task.resolution_note or "",
     }
 
 
