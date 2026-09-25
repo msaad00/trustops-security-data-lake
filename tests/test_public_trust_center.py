@@ -261,3 +261,25 @@ def test_auditor_share_above_public_ceiling_includes_counts(tmp_path: Path) -> N
         assert set(row) >= _DETAIL_FRAMEWORK_KEYS
     leaked = _FORBIDDEN_KEYS & _walk_keys(body)
     assert not leaked
+
+
+@pytest.mark.parametrize("path", ["/console/trust/tok-abc", "/console/trust/tok-abc/"])
+def test_public_trust_page_serves_with_and_without_trailing_slash(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, path: str
+) -> None:
+    from security_lakehouse import server_app
+
+    lake = tmp_path / "lake"
+    lake.mkdir()
+    _seed_lake(lake)
+    dist = tmp_path / "dist"
+    (dist / "trust" / "share").mkdir(parents=True)
+    (dist / "index.html").write_text("<!doctype html><title>root</title>", encoding="utf-8")
+    (dist / "trust" / "share" / "index.html").write_text("<!doctype html><title>public-trust</title>", encoding="utf-8")
+    monkeypatch.setattr(server_app, "web_dist_dir", lambda: dist)
+    monkeypatch.setattr(server_app, "web_dist_index", lambda: dist / "index.html")
+
+    resp = TestClient(create_app(lake)).get(path, follow_redirects=False)
+
+    assert resp.status_code == 200
+    assert "public-trust" in resp.text

@@ -54,7 +54,7 @@ See [HEADLESS_GRC.md](HEADLESS_GRC.md) for the overall architecture.
 | Surface              | Target                                                |
 | -------------------- | ----------------------------------------------------- |
 | Trust Home dashboard | Executive KPIs + audit strip + live posture           |
-| Audit room           | Single pane for audit score, gaps, workflow checklist |
+| Audit room           | Single pane for audit score, gaps, evidence freshness |
 | Framework drill-down | Control → rule → evidence → datasource (#91)          |
 | Dark mode            | CSS-variable theming across shell + review pages      |
 | Workflow canvas      | Inspector + approvals (#90)                           |
@@ -64,12 +64,20 @@ See [HEADLESS_GRC.md](HEADLESS_GRC.md) for the overall architecture.
 The audit-readiness API computes:
 
 ```text
-audit_score =
-  40% posture score
-+ 30% control test pass rate
-+ 20% framework readiness (≥85% threshold)
-+ 10% workflow coverage checklist
+audit_score = (
+  0.4 × posture score
++ 0.3 × control test pass rate
++ 0.2 × framework readiness rate
+) / 0.9
 ```
+
+A framework counts as ready only when its score is ≥ 85 **and** at least 50% of
+its catalog controls have been assessed. Each framework's `assessed_controls`,
+`total_controls`, and `coverage_pct` are returned under `frameworks`.
+
+The score reflects only the organization's own evidence, control tests, and
+frameworks. `workflow_coverage` lists product capabilities for reference; it is
+marked `scored: false` and never contributes to the score.
 
 State:
 
@@ -77,7 +85,7 @@ State:
 - `on_track` — score ≥ 60
 - `needs_work` — otherwise
 
-Blocking gaps include: no connectors, failing controls, open evidence requests, no active access review, no auditor share, overdue or missing vendor diligence, unattested published policies.
+Blocking gaps include: no connectors and no evidence from any source, failing controls, open evidence requests, no active access review, no auditor share, overdue or missing vendor diligence, unattested published policies.
 
 ## Exports and continuous eval
 

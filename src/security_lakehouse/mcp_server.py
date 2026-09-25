@@ -548,7 +548,7 @@ def build_server(lake_dir: Path | None = None) -> FastMCP:
 
     @trustops_tool(title="Audit Readiness")
     def get_audit_readiness() -> JsonObject:
-        """Return audit score, blocking gaps, and workflow coverage checklist.
+        """Return audit score, per-framework coverage, and blocking gaps.
 
         Requires ``TRUSTOPS_API_URL`` and ``TRUSTOPS_API_KEY`` — tenant-scoped
         fields (evidence requests, access reviews, trust shares) live in the app DB.

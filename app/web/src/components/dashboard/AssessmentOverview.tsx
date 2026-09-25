@@ -129,7 +129,7 @@ export function AssessmentOverview({
                 <span className="text-5xl text-slate-300">—</span>
               )}
             </div>
-            <p className="text-xs leading-5 text-slate-300 min-[640px]:hidden">
+            <p className="text-xs leading-5 text-slate-300">
               Weighted framework
               <br />
               score out of 100

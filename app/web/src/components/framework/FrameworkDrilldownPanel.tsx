@@ -113,7 +113,8 @@ function ControlRow({
             {control.title}
           </div>
           <div className="mt-1 text-xs text-muted">
-            {control.owner} · {control.evidence.count} facts ·{" "}
+            {control.owner} · {control.evidence.count}{" "}
+            {control.evidence.count === 1 ? "fact" : "facts"} ·{" "}
             {control.evidence.sources.length} source
             {control.evidence.sources.length === 1 ? "" : "s"}
           </div>
@@ -193,11 +194,11 @@ function ControlRow({
 
           <div className="rounded-lg border border-line p-3">
             <div className="text-[10px] font-black uppercase tracking-wide text-muted">
-              Reviewed source mapping
+              Source article mapping
             </div>
             {control.articles.length === 0 ? (
               <p className="mt-1 text-xs text-muted">
-                No reviewed source article mapping.
+                No source article mapping.
               </p>
             ) : (
               <div className="mt-2 grid gap-2">
@@ -215,7 +216,21 @@ function ControlRow({
                     <span className="text-muted">{article.title}</span>
                     <ExternalLink className="ml-1 inline h-3 w-3 text-brand" />
                     <div className="mt-1 text-[11px] text-muted">
-                      Reviewed by {article.reviewed_by} on {article.reviewed_at}
+                      {article.review_status &&
+                      article.review_status !== "reviewed" ? (
+                        <>
+                          <Badge tone="attention">
+                            {article.review_status}
+                          </Badge>{" "}
+                          Suggested by {article.reviewed_by}; awaiting human
+                          review
+                        </>
+                      ) : (
+                        <>
+                          Reviewed by {article.reviewed_by} on{" "}
+                          {article.reviewed_at}
+                        </>
+                      )}
                     </div>
                   </a>
                 ))}
@@ -309,7 +324,17 @@ export function FrameworkDrilldownPanel({
             requirement.
           </p>
         </div>
-        <Badge tone={data.summary.failing_control_count ? "critical" : "ready"}>
+        <Badge
+          tone={
+            data.summary.failing_control_count
+              ? "critical"
+              : data.summary.control_count > 0 &&
+                  data.summary.passing_control_count ===
+                    data.summary.control_count
+                ? "ready"
+                : "default"
+          }
+        >
           {data.summary.passing_control_count}/{data.summary.control_count} pass
         </Badge>
       </div>

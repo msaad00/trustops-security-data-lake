@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
-  CheckCircle2,
   CircleAlert,
   ClipboardCheck,
   ExternalLink,
@@ -81,7 +80,7 @@ export default function AuditRoomPage() {
                 </div>
               </CardHeader>
               <CardContent className="grid gap-3">
-                <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
+                <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
                   <KpiTile
                     label="Audit score"
                     value={`${audit.data.audit_score}%`}
@@ -106,14 +105,9 @@ export default function AuditRoomPage() {
                     }
                     detail={
                       audit.data.evidence_freshness
-                        ? `${audit.data.evidence_freshness.stale_count} breach(es)`
+                        ? `${audit.data.evidence_freshness.stale_count} ${audit.data.evidence_freshness.stale_count === 1 ? "item" : "items"} past SLA`
                         : "freshness rollup"
                     }
-                  />
-                  <KpiTile
-                    label="Workflow"
-                    value={`${audit.data.workflow_coverage.score}%`}
-                    detail="audit checklist"
                   />
                 </div>
 
@@ -248,37 +242,6 @@ export default function AuditRoomPage() {
                               {audit.data.connectors.evidence_count}
                             </b>
                           </div>
-                        </CardContent>
-                      </Card>
-
-                      <Card>
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-base">Checklist</CardTitle>
-                        </CardHeader>
-                        <CardContent className="grid max-h-[220px] gap-2 overflow-y-auto">
-                          {audit.data.workflow_coverage.checklist.map((row) => (
-                            <div
-                              key={row.id}
-                              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-2 rounded-lg border border-line bg-surface px-3 py-2"
-                            >
-                              {row.shipped ? (
-                                <CheckCircle2 className="mt-0.5 h-4 w-4 text-brand-green" />
-                              ) : (
-                                <CircleAlert className="mt-0.5 h-4 w-4 text-muted" />
-                              )}
-                              <div className="min-w-0">
-                                <div className="truncate text-sm font-bold text-ink">
-                                  {row.label}
-                                </div>
-                                <div className="truncate text-xs text-muted">
-                                  {row.note}
-                                </div>
-                              </div>
-                              <Badge tone={row.shipped ? "ready" : "default"}>
-                                {row.shipped ? "shipped" : "gap"}
-                              </Badge>
-                            </div>
-                          ))}
                         </CardContent>
                       </Card>
                     </div>
