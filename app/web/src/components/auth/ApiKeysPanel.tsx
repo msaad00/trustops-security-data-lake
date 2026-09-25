@@ -29,6 +29,7 @@ import {
 } from "@/lib/api/hooks";
 import type { AuthApiKey, CreatedAuthApiKey } from "@/lib/api/types";
 import { notify } from "@/lib/toast";
+import { formatWhen } from "@/lib/utils";
 
 const EXPIRY_OPTIONS = [
   { label: "Never", value: "" },
@@ -36,15 +37,6 @@ const EXPIRY_OPTIONS = [
   { label: "90 days", value: "90" },
   { label: "365 days", value: "365" },
 ] as const;
-
-function formatWhen(iso: string | null): string {
-  if (!iso) return "—";
-  try {
-    return new Date(iso).toLocaleString();
-  } catch {
-    return iso;
-  }
-}
 
 function mcpConfigSnippet(apiUrl: string, token: string): string {
   return JSON.stringify(
