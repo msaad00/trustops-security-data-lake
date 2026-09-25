@@ -93,6 +93,8 @@ token can never read or change another tenant's users or groups.
 
 Only a SHA-256 hash of each token is stored. Rotate by issuing a new token,
 updating the IdP, then revoking the old one; both work until the revoke.
+Admins manage the same tokens in the console under **Auth → SCIM
+provisioning**; the panel is hidden when SCIM is disabled (501).
 
 ### Users and groups
 
@@ -138,6 +140,11 @@ subscribed (for example invoiced contracts) are not restricted.
 | `POST` | `/api/v1/billing/checkout`       | admin       | `{"plan": "team"}` → Stripe Checkout URL (subscription mode) |
 | `POST` | `/api/v1/billing/portal`         | admin       | Stripe customer portal URL (payment method, plan, cancel)    |
 | `POST` | `/api/v1/billing/stripe/webhook` | Stripe sig. | Register in Stripe for the events below                      |
+
+The console shows the same state under **Auth → Billing**: plan, access badge,
+grace or read-only notices, plan checkout buttons (before a Stripe customer
+exists), and **Manage billing** for the portal. Checkout and portal return to
+`/console/auth/`. The panel is hidden when billing is disabled (501).
 
 Webhook events handled: `checkout.session.completed`,
 `customer.subscription.created`/`updated`/`deleted`/`paused`/`resumed`,

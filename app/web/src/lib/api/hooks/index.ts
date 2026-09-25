@@ -12,3 +12,4 @@ export * from "./tags";
 export * from "./insights";
 export * from "./streams";
 export * from "./governance";
+export * from "./commercial";

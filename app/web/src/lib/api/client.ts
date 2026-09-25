@@ -1,5 +1,8 @@
 import { isAuditorMode } from "@/lib/state/auditor";
 import type {
+  BillingStatus,
+  CreatedScimToken,
+  ScimToken,
   AccessReviewCampaign,
   AccessReviewCoverage,
   AccessReviewDecision,
@@ -213,6 +216,7 @@ async function mutate<T>(
       `${res.status}`;
     throw new Error(`${path} -> ${reason}`);
   }
+  if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
 }
 
@@ -255,6 +259,29 @@ export const api = {
     ).then((body) => body.data),
   createInvite: (payload: CreateInvitePayload) =>
     post<{ data: TenantInvite }>("/v1/invites", payload).then(
+      (body) => body.data,
+    ),
+  scimTokens: () =>
+    get<{ data: ScimToken[] }>("/v1/platform/scim/tokens").then(
+      (body) => body.data,
+    ),
+  createScimToken: (name: string) =>
+    post<{ data: CreatedScimToken }>("/v1/platform/scim/tokens", {
+      name,
+    }).then((body) => body.data),
+  revokeScimToken: (tokenId: string) =>
+    mutate<void>(
+      `/v1/platform/scim/tokens/${encodeURIComponent(tokenId)}`,
+      "DELETE",
+    ),
+  billing: () =>
+    get<{ data: BillingStatus }>("/v1/billing").then((body) => body.data),
+  billingCheckout: (plan: string) =>
+    post<{ data: { url: string } }>("/v1/billing/checkout", { plan }).then(
+      (body) => body.data,
+    ),
+  billingPortal: () =>
+    post<{ data: { url: string } }>("/v1/billing/portal", {}).then(
       (body) => body.data,
     ),
   acceptInvite: (payload: { token: string; display_name?: string }) =>

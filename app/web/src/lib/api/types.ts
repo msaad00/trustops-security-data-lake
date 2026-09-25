@@ -1790,3 +1790,30 @@ export interface ControlRemediation {
   steps: string[];
   references: string[];
 }
+
+export interface ScimToken {
+  id: string;
+  name: string;
+  token_prefix: string;
+  created_by: string;
+  created_at: string | null;
+  last_used_at: string | null;
+  revoked_at: string | null;
+}
+
+/** Returned once on creation; the plaintext token is never shown again. */
+export interface CreatedScimToken extends ScimToken {
+  token: string;
+}
+
+export interface BillingStatus {
+  plan_tier: string | null;
+  subscription_status: string | null;
+  access: "active" | "grace" | "read_only";
+  customer_linked: boolean;
+  current_period_end: string | null;
+  cancel_at_period_end: boolean;
+  past_due_since: string | null;
+  grace_days: number;
+  self_serve_plans: string[];
+}

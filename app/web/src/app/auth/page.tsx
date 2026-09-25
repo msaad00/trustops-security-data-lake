@@ -16,7 +16,9 @@ import { AuthIdentityDiagram } from "@/components/diagrams/AuthIdentityDiagram";
 import { ApiKeysPanel } from "@/components/auth/ApiKeysPanel";
 import { InvitesPanel } from "@/components/auth/InvitesPanel";
 import { UsersPanel } from "@/components/auth/UsersPanel";
+import { BillingPanel } from "@/components/commercial/BillingPanel";
 import { PlatformUsageStrip } from "@/components/commercial/PlatformUsageStrip";
+import { ScimTokensPanel } from "@/components/commercial/ScimTokensPanel";
 import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { useAuthMethods, useAuthWhoami } from "@/lib/api/hooks";
@@ -170,6 +172,8 @@ export default function AuthPage() {
       </div>
 
       <InvitesPanel />
+      <ScimTokensPanel />
+      <BillingPanel />
 
       <div id="api-keys">
         <ApiKeysPanel />
