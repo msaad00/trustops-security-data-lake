@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState, type ReactNode } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { Breadcrumbs } from "./Breadcrumbs";
@@ -78,18 +78,18 @@ export function Shell({ children }: { children: ReactNode }) {
             className="min-w-0 max-w-full overflow-x-hidden bg-panel"
           >
             <ApiHealthBanner />
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={normalizedPathname}
-                className="min-w-0"
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.16, ease: "easeOut" }}
-              >
-                {children}
-              </motion.div>
-            </AnimatePresence>
+            {/* Entry animation only: an exit phase (AnimatePresence mode="wait")
+                renders the next page inside the outgoing wrapper and then mounts
+                it again, which throws away anything typed in between. */}
+            <motion.div
+              key={normalizedPathname}
+              className="min-w-0"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.16, ease: "easeOut" }}
+            >
+              {children}
+            </motion.div>
           </main>
         </div>
       </div>
