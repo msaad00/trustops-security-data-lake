@@ -751,7 +751,7 @@ def _build_poc_readiness(
             label="Agent/API access",
             ready=headless_access_ready,
             detail=f"{len(active_keys)} active API key(s)" if active_keys else "Issue an API key for headless clients.",
-            href="/api/v1/auth/keys",
+            href="/console/auth/#api-keys",
             blocking=False,
         ),
         _poc_step(
@@ -1604,8 +1604,13 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         session: Session = Depends(get_session),
     ) -> JSONResponse:
         from security_lakehouse.commercial import limits as limit_services
+        from security_lakehouse.commercial.email import commercial_hosted_enabled
         from security_lakehouse.db.models import Tenant
 
+        if not commercial_hosted_enabled():
+            raise HTTPException(
+                status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="plan usage requires commercial hosting"
+            )
         tenant = session.get(Tenant, identity.tenant_id)
         if tenant is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="tenant not found")

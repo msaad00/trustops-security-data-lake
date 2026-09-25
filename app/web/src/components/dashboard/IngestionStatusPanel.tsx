@@ -378,7 +378,7 @@ export function IngestionStatusPanel({
                 status?.sources.map((source) => (
                   <span
                     key={source.source}
-                    className="inline-flex items-center gap-2 rounded-md border border-line bg-white px-2.5 py-1 text-xs font-bold text-slate-600"
+                    className="inline-flex items-center gap-2 rounded-md border border-line bg-surface px-2.5 py-1 text-xs font-bold text-muted"
                   >
                     {source.source}
                     <strong className="text-ink">
@@ -454,7 +454,7 @@ export function IngestionStatusPanel({
                   : "Run a sync to create the first proof pack."}
               </p>
             </div>
-            <div className="rounded-lg border border-line bg-white p-3">
+            <div className="rounded-lg border border-line bg-surface p-3">
               <div className="flex items-center gap-2 text-sm font-black text-ink">
                 {action?.priority === "p0" ? (
                   <AlertTriangle className="h-4 w-4 text-rose-600" />
@@ -471,7 +471,7 @@ export function IngestionStatusPanel({
         </div>
 
         {(platformJobs.data?.jobs.length ?? 0) > 0 && (
-          <div className="rounded-lg border border-line bg-white p-3">
+          <div className="rounded-lg border border-line bg-surface p-3">
             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
               <div className="text-xs font-black uppercase tracking-wide text-muted">
                 Recent platform jobs

@@ -279,7 +279,7 @@ function ViolationsPageContent() {
             aria-label="Filter by environment"
             value={environment}
             onChange={(e) => setEnvironment(e.target.value)}
-            className="rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink"
+            className="rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink"
           >
             <option value="all">All environments</option>
             {environments.map((value) => (
@@ -306,7 +306,7 @@ function ViolationsPageContent() {
                 {table.getHeaderGroups().map((hg) => (
                   <tr
                     key={hg.id}
-                    className="border-y border-line bg-slate-50/60"
+                    className="border-y border-line bg-surfaceMuted"
                   >
                     {hg.headers.map((h) => (
                       <th
@@ -337,7 +337,7 @@ function ViolationsPageContent() {
                 {table.getRowModel().rows.map((r) => (
                   <tr
                     key={r.id}
-                    className="border-b border-line last:border-0 hover:bg-blue-50/40"
+                    className="border-b border-line last:border-0 hover:bg-blue-50/40 dark:hover:bg-blue-500/10"
                   >
                     {r.getVisibleCells().map((c) => (
                       <td key={c.id} className="px-4 py-3 align-top">

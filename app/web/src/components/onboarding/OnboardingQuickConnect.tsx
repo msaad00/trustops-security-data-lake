@@ -24,7 +24,7 @@ export function OnboardingQuickConnect() {
           <Link
             key={id}
             href={`/connectors/?connect=${id}&onboarding=1`}
-            className="flex items-center gap-2 rounded-md border border-line bg-surface-muted px-2.5 py-2 transition hover:border-brand"
+            className="flex items-center gap-2 rounded-md border border-line bg-surfaceMuted px-2.5 py-2 transition hover:border-brand"
           >
             <ConnectorMark connectorId={id} name={label} size="sm" />
             <span className="text-sm font-medium text-ink">{label}</span>

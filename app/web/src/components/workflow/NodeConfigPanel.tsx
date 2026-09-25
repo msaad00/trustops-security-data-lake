@@ -65,7 +65,7 @@ export function NodeConfigPanel({
 
   if (!node || !spec) {
     return (
-      <aside className="grid min-h-[160px] w-full place-items-center rounded-2xl border border-line bg-white text-xs text-muted 2xl:min-h-[560px] 2xl:w-[340px] 2xl:rounded-none 2xl:border-y-0 2xl:border-r-0">
+      <aside className="grid min-h-[160px] w-full xl:col-span-2 2xl:col-span-1 place-items-center rounded-2xl border border-line bg-surface text-xs text-muted 2xl:min-h-[560px] 2xl:w-[340px] 2xl:rounded-none 2xl:border-y-0 2xl:border-r-0">
         <div className="px-6 text-center">
           <ChevronRight className="mx-auto mb-2 h-4 w-4 text-muted" />
           Select a node in the canvas to inspect and edit it here.
@@ -93,7 +93,7 @@ export function NodeConfigPanel({
   };
 
   return (
-    <aside className="grid max-h-[min(760px,calc(100dvh-245px))] min-h-[560px] w-full grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-2xl border border-line bg-white 2xl:w-[340px] 2xl:rounded-none 2xl:border-y-0 2xl:border-r-0">
+    <aside className="grid max-h-[min(760px,calc(100dvh-245px))] min-h-[560px] w-full xl:col-span-2 2xl:col-span-1 grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-2xl border border-line bg-surface 2xl:w-[340px] 2xl:rounded-none 2xl:border-y-0 2xl:border-r-0">
       <header className="flex items-start justify-between gap-3 border-b border-line p-4">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
@@ -107,7 +107,7 @@ export function NodeConfigPanel({
           type="button"
           aria-label="Deselect node"
           onClick={onClose}
-          className="grid h-7 w-7 place-items-center rounded-md text-muted hover:bg-slate-100"
+          className="grid h-7 w-7 place-items-center rounded-md text-muted hover:bg-surfaceMuted"
         >
           <X className="h-3.5 w-3.5" />
         </button>
@@ -119,8 +119,8 @@ export function NodeConfigPanel({
             className={[
               "mb-4 rounded-xl border p-3 text-xs",
               lastResult.result === "ok"
-                ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-                : "border-rose-200 bg-rose-50 text-rose-900",
+                ? "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300"
+                : "border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300",
             ].join(" ")}
           >
             <div className="flex items-center gap-2 font-black">
@@ -134,7 +134,7 @@ export function NodeConfigPanel({
                 </>
               )}
             </div>
-            <pre className="mt-2 overflow-auto rounded bg-white p-2 font-mono text-[11px] text-ink">
+            <pre className="mt-2 overflow-auto rounded bg-surface p-2 font-mono text-[11px] text-ink">
               {lastResult.error ?? JSON.stringify(lastResult.output, null, 2)}
             </pre>
           </section>
@@ -178,7 +178,7 @@ export function NodeConfigPanel({
                       };
                       persist(next);
                     }}
-                    className="rounded-lg border border-line bg-white px-3 py-2 text-sm normal-case text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                    className="rounded-lg border border-line bg-surface px-3 py-2 text-sm normal-case text-ink focus:outline-none focus:ring-1 focus:ring-brand"
                   />
                 </label>
               );
@@ -186,7 +186,7 @@ export function NodeConfigPanel({
           )}
         </section>
 
-        <section className="mt-4 rounded-xl border border-line bg-slate-50/60 p-3">
+        <section className="mt-4 rounded-xl border border-line bg-surfaceMuted p-3">
           <div className="text-xs font-black uppercase tracking-wide text-muted">
             Output keys (downstream nodes can read)
           </div>
@@ -194,7 +194,7 @@ export function NodeConfigPanel({
             {Object.entries(spec.output_schema).map(([key, kind]) => (
               <div
                 key={key}
-                className="flex items-center justify-between rounded border border-line bg-white px-2 py-1"
+                className="flex items-center justify-between rounded border border-line bg-surface px-2 py-1"
               >
                 <code className="text-ink">
                   &#123;&#123;{node.id}.output.{key}&#125;&#125;
@@ -210,14 +210,14 @@ export function NodeConfigPanel({
             className={[
               "mt-4 rounded-xl border p-3 text-xs",
               testError
-                ? "border-rose-200 bg-rose-50 text-rose-900"
-                : "border-emerald-200 bg-emerald-50 text-emerald-900",
+                ? "border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300"
+                : "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300",
             ].join(" ")}
           >
             <div className="font-black">
               {testError ? "Test action errored" : "Test action returned"}
             </div>
-            <pre className="mt-2 overflow-auto rounded bg-white p-2 font-mono text-[11px] text-ink">
+            <pre className="mt-2 overflow-auto rounded bg-surface p-2 font-mono text-[11px] text-ink">
               {testError ?? JSON.stringify(testResult, null, 2)}
             </pre>
           </section>

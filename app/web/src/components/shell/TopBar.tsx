@@ -88,7 +88,7 @@ export function TopBar({ onRefresh, onSnapshot, onOpenPalette }: Props) {
           onClick={onSnapshot}
           aria-label="Capture snapshot"
           title="Capture snapshot"
-          className="inline-flex h-8 shrink-0 items-center justify-center gap-2 rounded-md border border-cyan-300/25 bg-cyan-300/10 px-2 text-xs font-medium text-cyan-100 transition-colors hover:bg-cyan-300/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 sm:px-3"
+          className="inline-flex h-8 shrink-0 items-center justify-center gap-2 rounded-md border border-cyan-300/25 bg-cyan-300/10 px-2 text-xs font-medium text-cyan-100 transition-colors hover:bg-cyan-300/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 sm:px-3 dark:border-cyan-500/30"
         >
           <Camera aria-hidden="true" className="h-4 w-4" />
           <span className="hidden md:inline">Snapshot</span>

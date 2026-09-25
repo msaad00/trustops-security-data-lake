@@ -24,10 +24,11 @@ interface SignalStage {
 }
 
 const TONE: Record<StageTone, string> = {
-  cyan: "border-cyan-300/25 bg-cyan-300/[0.08] text-cyan-200",
-  blue: "border-blue-300/25 bg-blue-300/[0.08] text-blue-200",
-  amber: "border-amber-300/25 bg-amber-300/[0.08] text-amber-200",
-  mint: "border-emerald-300/25 bg-emerald-300/[0.08] text-emerald-200",
+  cyan: "border-cyan-300/25 bg-cyan-300/[0.08] text-cyan-200 dark:border-cyan-500/30",
+  blue: "border-blue-300/25 bg-blue-300/[0.08] text-blue-200 dark:border-blue-500/30",
+  amber:
+    "border-amber-300/25 bg-amber-300/[0.08] text-amber-200 dark:border-amber-500/30",
+  mint: "border-emerald-300/25 bg-emerald-300/[0.08] text-emerald-200 dark:border-emerald-500/30",
 };
 
 function percent(value: number | null | undefined) {

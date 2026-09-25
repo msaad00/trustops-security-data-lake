@@ -241,13 +241,13 @@ function WorkflowHealthStrip({
       <Badge tone={connected ? "ready" : "attention"}>
         {connected ? `${counts.edges} edges` : "connect nodes"}
       </Badge>
-      <span className="rounded-full bg-blue-50 px-2.5 py-1 font-black text-blue-700">
+      <span className="rounded-full bg-blue-50 px-2.5 py-1 font-black text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
         {counts.triggers} trigger
       </span>
-      <span className="rounded-full bg-amber-50 px-2.5 py-1 font-black text-amber-700">
+      <span className="rounded-full bg-amber-50 px-2.5 py-1 font-black text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
         {counts.checks} check
       </span>
-      <span className="rounded-full bg-emerald-50 px-2.5 py-1 font-black text-emerald-700">
+      <span className="rounded-full bg-emerald-50 px-2.5 py-1 font-black text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
         {counts.actions} action
       </span>
     </div>
@@ -262,7 +262,7 @@ function RunnerContract({
   edges: Edge[];
 }) {
   return (
-    <details className="group rounded-xl border border-line bg-white shadow-card">
+    <details className="group rounded-xl border border-line bg-surface shadow-card">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3">
         <div className="min-w-0">
           <div className="text-sm font-black text-ink">
@@ -600,7 +600,7 @@ export default function AutomationPage() {
   ]);
 
   return (
-    <div className="grid min-w-0 gap-4 px-4 py-5 sm:px-5 lg:px-7">
+    <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4 px-4 py-5 sm:px-5 lg:px-7">
       <PageHeader
         eyebrow="Workflows"
         title="Workflow builder"
@@ -620,7 +620,7 @@ export default function AutomationPage() {
                 setSelectedNode(null);
                 setLastRun(null);
               }}
-              className="max-w-full rounded-lg border border-line bg-white px-3 py-2 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand sm:max-w-[260px]"
+              className="max-w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand sm:max-w-[260px]"
             >
               <option value="">Saved workflows</option>
               {(workflows.data ?? []).map((w) => (
@@ -694,7 +694,7 @@ export default function AutomationPage() {
               onChange={(e) =>
                 setEditor((ed) => ({ ...ed, name: e.target.value }))
               }
-              className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-extrabold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+              className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-extrabold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
               disabled={auditor}
             />
           </label>
@@ -705,7 +705,7 @@ export default function AutomationPage() {
               onChange={(e) =>
                 setEditor((ed) => ({ ...ed, description: e.target.value }))
               }
-              className="rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+              className="rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
               disabled={auditor}
             />
           </label>
@@ -715,7 +715,7 @@ export default function AutomationPage() {
         </div>
       </Card>
 
-      <div className="grid min-w-0 gap-4 xl:grid-cols-[240px_minmax(0,1fr)] 2xl:grid-cols-[240px_minmax(0,1fr)_340px]">
+      <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4 xl:grid-cols-[240px_minmax(0,1fr)] 2xl:grid-cols-[240px_minmax(0,1fr)_340px]">
         <ActionPalette catalog={catalog.data ?? []} onAdd={addNode} />
         <WorkflowCanvas
           nodes={nodesWithRunState}
@@ -774,7 +774,7 @@ export default function AutomationPage() {
                 key={r.run_id ?? r.started_at + r.actor}
                 type="button"
                 onClick={() => setLastRun(r)}
-                className="grid w-full gap-1 rounded-lg border border-line bg-white p-3 text-left text-xs hover:border-brand"
+                className="grid w-full gap-1 rounded-lg border border-line bg-surface p-3 text-left text-xs hover:border-brand"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="font-black">

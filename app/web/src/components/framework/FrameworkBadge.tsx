@@ -37,7 +37,7 @@ export function FrameworkBadge({
   return (
     <span
       className={cn(
-        "inline-flex min-w-0 items-center gap-2.5 rounded-xl border border-line bg-white px-2.5 py-1.5 text-left shadow-sm",
+        "inline-flex min-w-0 items-center gap-2.5 rounded-xl border border-line bg-surface px-2.5 py-1.5 text-left shadow-sm",
         variant === "compact" && "gap-2 rounded-lg px-2 py-1",
         className,
       )}

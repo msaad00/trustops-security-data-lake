@@ -47,7 +47,7 @@ export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
       {control && (
         <div className="grid min-w-0 gap-5 [overflow-wrap:anywhere]">
           {test && (
-            <div className="rounded-xl border border-line bg-slate-50/60 p-3">
+            <div className="rounded-xl border border-line bg-surfaceMuted p-3">
               <div className="flex items-center justify-between gap-2">
                 <b>{test.name}</b>
                 <Badge
@@ -105,7 +105,7 @@ export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
                   key={v.violation_id}
                   type="button"
                   onClick={() => onOpenViolation(v.violation_id)}
-                  className="rounded-lg border border-line p-3 text-left hover:border-brand hover:bg-blue-50/40"
+                  className="rounded-lg border border-line p-3 text-left hover:border-brand hover:bg-blue-50/40 dark:hover:bg-blue-500/10"
                 >
                   <code className="text-xs text-ink">{v.event_id}</code>
                   <div className="mt-1 text-xs text-muted">{v.asset_id}</div>
@@ -125,7 +125,7 @@ export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
             </div>
           </div>
           {remediation.data && (
-            <div className="rounded-xl border border-line bg-blue-50/40 p-3">
+            <div className="rounded-xl border border-line bg-blue-50/40 p-3 dark:bg-blue-500/10">
               <div className="mb-1 text-xs font-black uppercase tracking-wide text-muted">
                 Suggested remediation
                 {!remediation.data.matched && (
@@ -155,13 +155,13 @@ export function ControlDrawer({ control, onClose, onOpenViolation }: Props) {
           />
           <div className="flex flex-wrap gap-2">
             <Link
-              className="rounded-lg border border-line px-3 py-2 text-sm font-semibold text-brand hover:bg-slate-50"
+              className="rounded-lg border border-line px-3 py-2 text-sm font-semibold text-brand hover:bg-surfaceMuted"
               href={`/remediation?tab=evidence&control=${encodeURIComponent(control.control_id)}`}
             >
               Request evidence
             </Link>
             <Link
-              className="rounded-lg border border-line px-3 py-2 text-sm font-semibold text-brand hover:bg-slate-50"
+              className="rounded-lg border border-line px-3 py-2 text-sm font-semibold text-brand hover:bg-surfaceMuted"
               href={`/remediation?tab=tasks&control=${encodeURIComponent(control.control_id)}`}
             >
               Create task

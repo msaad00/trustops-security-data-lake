@@ -47,7 +47,7 @@ export function Modal({
                 initial={{ opacity: 0, scale: 0.96, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96, y: 12 }}
-                className={`${widthClass} fixed left-1/2 top-1/2 z-50 grid max-h-[calc(100dvh-40px)] -translate-x-1/2 -translate-y-1/2 grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-2xl bg-white shadow-hero`}
+                className={`${widthClass} fixed left-1/2 top-1/2 z-50 grid max-h-[calc(100dvh-40px)] -translate-x-1/2 -translate-y-1/2 grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-2xl bg-surface shadow-hero`}
               >
                 <header className="flex items-start justify-between gap-4 border-b border-line p-5">
                   <div>
@@ -62,7 +62,7 @@ export function Modal({
                   </div>
                   <Dialog.Close
                     aria-label="Close"
-                    className="grid h-8 w-8 place-items-center rounded-md text-muted hover:bg-slate-100"
+                    className="grid h-8 w-8 place-items-center rounded-md text-muted hover:bg-surfaceMuted"
                   >
                     <X className="h-4 w-4" />
                   </Dialog.Close>

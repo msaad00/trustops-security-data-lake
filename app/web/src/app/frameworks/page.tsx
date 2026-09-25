@@ -243,12 +243,12 @@ function Detail({
             className={[
               "rounded-xl border p-3",
               framework.freshness_state === "fresh"
-                ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+                ? "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300"
                 : framework.freshness_state === "stale"
-                  ? "border-amber-200 bg-amber-50 text-amber-900"
+                  ? "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300"
                   : framework.freshness_state === "expired"
-                    ? "border-rose-200 bg-rose-50 text-rose-900"
-                    : "border-line bg-slate-50 text-slate-700",
+                    ? "border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300"
+                    : "border-line bg-surfaceMuted text-ink",
             ].join(" ")}
           >
             <div className="flex items-center gap-2 font-black">
@@ -336,7 +336,7 @@ function Detail({
                 of {framework.control_count} controls implemented
               </span>
             </div>
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-surfaceMuted">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-brand to-brand-green"
                 style={{ width: `${framework.mapping_coverage_pct}%` }}

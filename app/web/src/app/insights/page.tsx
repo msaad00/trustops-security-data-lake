@@ -49,15 +49,15 @@ function StatCard({
 }) {
   const bg =
     tone === "bad"
-      ? "bg-red-50 border-red-200"
+      ? "bg-red-50 border-red-200 dark:bg-red-500/10 dark:border-red-500/30"
       : tone === "warn"
-        ? "bg-amber-50 border-amber-200"
-        : "bg-white border-line";
+        ? "bg-amber-50 border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/30"
+        : "bg-surface border-line";
   const text =
     tone === "bad"
-      ? "text-red-700"
+      ? "text-red-700 dark:text-red-300"
       : tone === "warn"
-        ? "text-amber-700"
+        ? "text-amber-700 dark:text-amber-300"
         : "text-ink";
   return (
     <div className={`rounded-2xl border p-5 ${bg}`}>
@@ -99,7 +99,7 @@ export default function InsightsPage() {
             Time-series posture score, framework readiness, evidence freshness,
             MTTR, and SLA attainment. Capture a snapshot on demand or wire the
             scheduler to run{" "}
-            <code className="rounded bg-slate-100 px-1 text-[11px]">
+            <code className="rounded bg-surfaceMuted px-1 text-[11px]">
               POST /api/v1/insights/capture
             </code>{" "}
             daily.
@@ -158,9 +158,11 @@ export default function InsightsPage() {
                 captured at each snapshot.
               </CardDescription>
             </CardHeader>
-            <div className="h-[240px] w-full px-2 pb-4">
+            <div
+              className={`w-full px-2 pb-4 ${chartData.length === 0 ? "" : "h-[240px]"}`}
+            >
               {chartData.length === 0 ? (
-                <div className="flex h-full items-center justify-center text-sm text-muted">
+                <div className="flex h-full items-center justify-center py-6 text-center text-sm text-muted">
                   No snapshots yet — click &ldquo;Capture now&rdquo; to record
                   the first point.
                 </div>
@@ -170,7 +172,10 @@ export default function InsightsPage() {
                     data={chartData}
                     margin={{ top: 4, right: 16, left: 0, bottom: 4 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e9f0" />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="var(--color-line)"
+                    />
                     <XAxis
                       dataKey="date"
                       tick={{ fontSize: 11 }}
@@ -219,9 +224,11 @@ export default function InsightsPage() {
                 Count of open violations at each captured snapshot.
               </CardDescription>
             </CardHeader>
-            <div className="h-[200px] w-full px-2 pb-4">
+            <div
+              className={`w-full px-2 pb-4 ${chartData.length === 0 ? "" : "h-[200px]"}`}
+            >
               {chartData.length === 0 ? (
-                <div className="flex h-full items-center justify-center text-sm text-muted">
+                <div className="flex h-full items-center justify-center py-6 text-center text-sm text-muted">
                   No data yet.
                 </div>
               ) : (
@@ -244,7 +251,10 @@ export default function InsightsPage() {
                         />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e9f0" />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="var(--color-line)"
+                    />
                     <XAxis
                       dataKey="date"
                       tick={{ fontSize: 11 }}

@@ -40,7 +40,7 @@ function accountStatusLabel(status: string) {
 function ShareLinkRow({ link }: { link: DemoShareLink }) {
   const external = link.url.startsWith("http");
   return (
-    <div className="grid gap-3 rounded-xl border border-line bg-white p-4 sm:grid-cols-[minmax(0,1fr)_auto]">
+    <div className="grid gap-3 rounded-xl border border-line bg-surface p-4 sm:grid-cols-[minmax(0,1fr)_auto]">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-black text-ink">{link.label}</span>
@@ -87,7 +87,7 @@ function AccountLinkRow({ row }: { row: DemoAccountLink }) {
     : row.connect_url.replace(/^\/console/, "") ||
       `/connectors/?connect=${row.connector_id}`;
   return (
-    <div className="grid gap-3 rounded-xl border border-line bg-white p-4 sm:grid-cols-[minmax(0,1fr)_auto]">
+    <div className="grid gap-3 rounded-xl border border-line bg-surface p-4 sm:grid-cols-[minmax(0,1fr)_auto]">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
           <ConnectorMark connectorId={row.connector_id} size="sm" />
@@ -148,7 +148,7 @@ export function DemoShareKit({ kit }: { kit: DemoKit }) {
             Connect read-only cloud, identity, and evidence-lake accounts. True
             ingestion starts after probe, enable, and first sync.
             {summary.live_ingestion > 0 && (
-              <span className="mt-1 block font-bold text-emerald-700">
+              <span className="mt-1 block font-bold text-emerald-700 dark:text-emerald-300">
                 {summary.live_ingestion} source(s) actively ingesting evidence.
               </span>
             )}

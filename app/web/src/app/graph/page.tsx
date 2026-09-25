@@ -539,7 +539,7 @@ export default function GraphPage() {
       <QueryState queries={graph} label="compliance graph">
         <Card className="overflow-hidden">
           <div className="flex flex-wrap items-center gap-2 p-2">
-            <div className="inline-flex items-center gap-1 rounded-lg border border-line bg-white p-0.5">
+            <div className="inline-flex items-center gap-1 rounded-lg border border-line bg-surface p-0.5">
               {(["compliance", "repository"] as const).map((mode) => (
                 <button
                   key={mode}
@@ -548,8 +548,8 @@ export default function GraphPage() {
                   className={[
                     "inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-black",
                     graphMode === mode
-                      ? "bg-ink text-white"
-                      : "text-slate-600 hover:bg-slate-50",
+                      ? "bg-ink text-surface"
+                      : "text-muted hover:bg-surfaceMuted",
                   ].join(" ")}
                 >
                   {mode === "repository" ? (
@@ -567,20 +567,20 @@ export default function GraphPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search nodes (label, subtitle, owner)…"
-                className="w-full rounded-lg border border-line bg-white py-2 pl-9 pr-8 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
+                className="w-full rounded-lg border border-line bg-surface py-2 pl-9 pr-8 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
               />
               {search && (
                 <button
                   type="button"
                   onClick={() => setSearch("")}
                   aria-label="Clear search"
-                  className="absolute right-2 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded text-muted hover:bg-slate-100"
+                  className="absolute right-2 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded text-muted hover:bg-surfaceMuted"
                 >
                   <X className="h-3 w-3" />
                 </button>
               )}
             </div>
-            <div className="inline-flex items-center gap-1 rounded-lg border border-line bg-white p-0.5">
+            <div className="inline-flex items-center gap-1 rounded-lg border border-line bg-surface p-0.5">
               <Layout className="ml-1.5 h-3.5 w-3.5 text-muted" />
               {(["LR", "TB", "BT"] as LayoutDir[]).map((dir) => (
                 <button
@@ -590,8 +590,8 @@ export default function GraphPage() {
                   className={[
                     "rounded-md px-2 py-1 text-[11px] font-black uppercase tracking-wide",
                     layout === dir
-                      ? "bg-ink text-white"
-                      : "text-slate-600 hover:bg-slate-50",
+                      ? "bg-ink text-surface"
+                      : "text-muted hover:bg-surfaceMuted",
                   ].join(" ")}
                   title={LAYOUT_LABEL[dir]}
                 >
@@ -687,7 +687,7 @@ export default function GraphPage() {
         </div>
 
         {repoGraphEmpty && (
-          <div className="rounded-xl border border-dashed border-line bg-slate-50 p-4 text-sm text-muted">
+          <div className="rounded-xl border border-dashed border-line bg-surfaceMuted p-4 text-sm text-muted">
             <b className="text-ink">No repository graph yet.</b> Run a public
             repo audit or sync GitHub/GitLab governance evidence, then reload
             this workbench. Private signals stay explicit — the graph will show{" "}
@@ -724,8 +724,8 @@ export default function GraphPage() {
                         className={[
                           "grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1.5 rounded-lg border px-2 py-1.5 text-left text-[11px] font-extrabold",
                           on
-                            ? "bg-white text-ink shadow-sm"
-                            : "border-line bg-slate-50 text-muted hover:border-brand",
+                            ? "bg-surface text-ink shadow-sm"
+                            : "border-line bg-surfaceMuted text-muted hover:border-brand",
                         ].join(" ")}
                         style={on ? { borderColor: color } : undefined}
                       >
@@ -754,7 +754,7 @@ export default function GraphPage() {
                   value={filterFramework}
                   onChange={(e) => setFilterFramework(e.target.value)}
                   disabled={graphMode === "repository"}
-                  className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand disabled:bg-slate-50 disabled:text-muted"
+                  className="w-full rounded-lg border border-line bg-surface px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand disabled:bg-surfaceMuted disabled:text-muted"
                 >
                   <option value="">All frameworks (wide map)</option>
                   {frameworks.map((f) => (
@@ -775,7 +775,7 @@ export default function GraphPage() {
                       aria-label="Filter graph by control"
                       value={filterControl}
                       onChange={(e) => setFilterControl(e.target.value)}
-                      className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
+                      className="w-full rounded-lg border border-line bg-surface px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
                     >
                       <option value="">All linked controls</option>
                       {linkedControls.map((controlId) => (
@@ -794,7 +794,7 @@ export default function GraphPage() {
                       aria-label="Filter graph by workflow"
                       value={filterWorkflow}
                       onChange={(e) => setFilterWorkflow(e.target.value)}
-                      className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
+                      className="w-full rounded-lg border border-line bg-surface px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
                     >
                       <option value="">All workflows</option>
                       {workflowSignals.map((signal) => (
@@ -806,7 +806,7 @@ export default function GraphPage() {
                   </section>
 
                   <section>
-                    <label className="flex items-center gap-2 rounded-lg border border-line bg-white px-2 py-2 text-xs font-extrabold text-ink">
+                    <label className="flex items-center gap-2 rounded-lg border border-line bg-surface px-2 py-2 text-xs font-extrabold text-ink">
                       <input
                         type="checkbox"
                         checked={filterStaleOnly}
@@ -827,7 +827,7 @@ export default function GraphPage() {
                   aria-label="Filter graph by owner"
                   value={filterOwner}
                   onChange={(e) => setFilterOwner(e.target.value)}
-                  className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
+                  className="w-full rounded-lg border border-line bg-surface px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
                 >
                   <option value="">All owners</option>
                   {owners.map((o) => (
@@ -846,7 +846,7 @@ export default function GraphPage() {
                   aria-label="Filter graph by environment"
                   value={filterEnvironment}
                   onChange={(e) => setFilterEnvironment(e.target.value)}
-                  className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
+                  className="w-full rounded-lg border border-line bg-surface px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
                 >
                   <option value="">All environments</option>
                   {environments.map((env) => (
@@ -857,7 +857,7 @@ export default function GraphPage() {
                 </select>
               </section>
 
-              <section className="rounded-lg border border-line bg-slate-50/60 p-2.5 text-[11px] text-muted">
+              <section className="rounded-lg border border-line bg-surfaceMuted p-2.5 text-[11px] text-muted">
                 <div className="mb-1 font-black uppercase tracking-wide text-muted">
                   Legend
                 </div>
@@ -896,7 +896,7 @@ export default function GraphPage() {
 
           <div className="grid min-w-0 gap-3 overflow-hidden">
             {pathFrom && pathTo && (
-              <div className="min-w-0 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+              <div className="min-w-0 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
                 <b>Path trace:</b>{" "}
                 <code className="break-all text-ink">{pathFrom}</code> →{" "}
                 <code className="break-all text-ink">{pathTo}</code>. Dimmed
@@ -911,7 +911,7 @@ export default function GraphPage() {
               </div>
             )}
             {pathMode && (
-              <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-xs text-blue-900">
+              <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-xs text-blue-900 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-300">
                 {pathMode === "from"
                   ? "Click any node in the canvas to set the path start."
                   : "Click any node in the canvas to set the path end. Esc cancels."}
@@ -956,7 +956,7 @@ export default function GraphPage() {
                           key={control.id}
                           type="button"
                           onClick={() => handleSelect(control)}
-                          className="min-w-0 rounded-lg border border-line bg-slate-50 p-3 text-left transition hover:border-brand hover:bg-white"
+                          className="min-w-0 rounded-lg border border-line bg-surfaceMuted p-3 text-left transition hover:border-brand hover:bg-surface"
                         >
                           <div className="flex min-w-0 items-start justify-between gap-2">
                             <div className="min-w-0">
@@ -984,7 +984,7 @@ export default function GraphPage() {
                     )}
                   </div>
                 ) : (
-                  <div className="rounded-xl border border-dashed border-line bg-slate-50 p-4 text-sm text-muted">
+                  <div className="rounded-xl border border-dashed border-line bg-surfaceMuted p-4 text-sm text-muted">
                     No mapped control paths match the active filters.
                   </div>
                 )
@@ -996,7 +996,7 @@ export default function GraphPage() {
                         key={repository.id}
                         type="button"
                         onClick={() => handleSelect(repository)}
-                        className="min-w-0 rounded-lg border border-line bg-slate-50 p-3 text-left transition hover:border-brand hover:bg-white"
+                        className="min-w-0 rounded-lg border border-line bg-surfaceMuted p-3 text-left transition hover:border-brand hover:bg-surface"
                       >
                         <div className="flex min-w-0 items-start justify-between gap-2">
                           <div className="min-w-0">
@@ -1027,7 +1027,7 @@ export default function GraphPage() {
                   )}
                 </div>
               ) : (
-                <div className="rounded-xl border border-dashed border-line bg-slate-50 p-4 text-sm text-muted">
+                <div className="rounded-xl border border-dashed border-line bg-surfaceMuted p-4 text-sm text-muted">
                   Link GitHub or GitLab governance connectors and sync a
                   repository to populate the topology graph.
                 </div>

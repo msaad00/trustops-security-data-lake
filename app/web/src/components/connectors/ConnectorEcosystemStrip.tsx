@@ -27,8 +27,8 @@ export function ConnectorEcosystemStrip({
     <Card
       className={
         compact
-          ? "border-line bg-gradient-to-r from-slate-50 to-white p-3"
-          : "overflow-hidden border-line bg-gradient-to-br from-slate-50 via-white to-blue-50/40"
+          ? "border-line bg-gradient-to-r from-surfaceMuted to-surface p-3"
+          : "overflow-hidden border-line bg-gradient-to-br from-surfaceMuted via-surface to-blue-50/40 dark:to-blue-500/10"
       }
     >
       <div
@@ -69,7 +69,7 @@ export function ConnectorEcosystemStrip({
             <Link
               key={id}
               href={`/connectors/?connect=${id}`}
-              className="inline-flex items-center gap-2 rounded-xl border border-line bg-white px-2.5 py-2 shadow-sm transition-colors hover:border-brand"
+              className="inline-flex items-center gap-2 rounded-xl border border-line bg-surface px-2.5 py-2 shadow-sm transition-colors hover:border-brand"
               title={`Link ${label}`}
             >
               <ConnectorMark connectorId={id} name={label} size="sm" />

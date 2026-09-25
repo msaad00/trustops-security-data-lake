@@ -15,6 +15,10 @@ function usageTone(ok: boolean): "ready" | "attention" | "critical" {
 export function PlatformUsageStrip() {
   const usage = usePlatformUsage();
 
+  if (usage.isError && String(usage.error?.message).includes("501")) {
+    return null;
+  }
+
   return (
     <QueryState queries={usage} label="plan usage">
       {usage.data && (
@@ -26,11 +30,7 @@ export function PlatformUsageStrip() {
                 Hosted plan usage
               </CardTitle>
               <p className="mt-1 text-xs text-muted">
-                Live counters from{" "}
-                <code className="rounded bg-slate-100 px-1 text-[10px]">
-                  GET /api/v1/platform/usage
-                </code>{" "}
-                — admin only on managed hosted tenants.
+                Live counters against this workspace&apos;s plan limits.
               </p>
             </div>
             <Badge tone="info">{usage.data.plan_name}</Badge>

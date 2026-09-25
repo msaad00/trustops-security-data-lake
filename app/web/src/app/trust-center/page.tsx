@@ -132,7 +132,7 @@ export default function TrustCenterPage() {
             </div>
             <h2 className="mt-1 text-base font-black text-ink">{item.label}</h2>
             <p className="mt-1 text-sm leading-5 text-muted">{item.audience}</p>
-            <div className="mt-3 rounded-lg border border-line bg-panel p-3 text-xs leading-5 text-slate-600">
+            <div className="mt-3 rounded-lg border border-line bg-panel p-3 text-xs leading-5 text-muted">
               {item.visibility}
             </div>
           </Card>
@@ -155,7 +155,7 @@ export default function TrustCenterPage() {
               aria-label="Share expiry window"
               value={expiresInHours}
               onChange={(e) => setExpiresInHours(Number(e.target.value))}
-              className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-extrabold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+              className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-extrabold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
               disabled={auditor}
             >
               {HOURS_OPTIONS.map((h) => (
@@ -182,7 +182,7 @@ export default function TrustCenterPage() {
             Issue share
           </Button>
           {createdToken && (
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900">
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
               <div className="flex items-center justify-between gap-2 font-black">
                 <span>New token (shown once)</span>
                 <Button
@@ -193,7 +193,7 @@ export default function TrustCenterPage() {
                   <ClipboardCopy className="h-3 w-3" /> Copy
                 </Button>
               </div>
-              <code className="mt-2 block break-all rounded bg-white p-2 font-mono text-[11px] text-ink">
+              <code className="mt-2 block break-all rounded bg-surface p-2 font-mono text-[11px] text-ink">
                 {createdToken.token}
               </code>
               <div className="mt-1">
@@ -219,12 +219,12 @@ export default function TrustCenterPage() {
           {ACCESS_DEFAULTS.map((item) => (
             <div
               key={item.label}
-              className="rounded-xl border border-line bg-white p-3"
+              className="rounded-xl border border-line bg-surface p-3"
             >
               <div className="text-xs font-black uppercase tracking-wide text-muted">
                 {item.label}
               </div>
-              <div className="mt-1 text-xs leading-relaxed text-slate-600">
+              <div className="mt-1 text-xs leading-relaxed text-muted">
                 {item.detail}
               </div>
             </div>
@@ -249,7 +249,7 @@ export default function TrustCenterPage() {
           {(shares.data ?? []).map((share) => (
             <div
               key={share.share_id}
-              className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 rounded-xl border border-line bg-white p-3 text-sm"
+              className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 rounded-xl border border-line bg-surface p-3 text-sm"
             >
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">

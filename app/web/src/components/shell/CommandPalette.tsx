@@ -103,7 +103,7 @@ const ROUTE_ITEMS: PaletteItem[] = [
   {
     id: "r:connectors",
     group: "Routes",
-    label: "Connectors",
+    label: "Connections",
     href: "/connectors",
     Icon: Plug,
   },
@@ -370,7 +370,7 @@ export function CommandPalette({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-sm" />
-        <Dialog.Content className="fixed left-1/2 top-[14%] z-50 w-[min(640px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden rounded-2xl bg-white shadow-hero">
+        <Dialog.Content className="fixed left-1/2 top-[14%] z-50 w-[min(640px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden rounded-2xl bg-surface shadow-hero">
           <Dialog.Title className="sr-only">Search</Dialog.Title>
           <Dialog.Description className="sr-only">
             Search controls, violations, evidence, workflows, and routes.
@@ -397,7 +397,7 @@ export function CommandPalette({
               placeholder="Search controls, violations, evidence, workflows, routes…"
               className="flex-1 bg-transparent text-sm text-ink placeholder:text-muted focus:outline-none"
             />
-            <kbd className="rounded border border-line bg-slate-50 px-1.5 py-0.5 text-[10px] font-bold text-muted">
+            <kbd className="rounded border border-line bg-surfaceMuted px-1.5 py-0.5 text-[10px] font-bold text-muted">
               esc
             </kbd>
           </div>
@@ -424,8 +424,8 @@ export function CommandPalette({
                       className={[
                         "grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-lg px-2.5 py-2 text-left text-sm",
                         active
-                          ? "bg-ink text-white"
-                          : "text-ink hover:bg-slate-50",
+                          ? "bg-ink text-surface"
+                          : "text-ink hover:bg-surfaceMuted",
                       ].join(" ")}
                     >
                       <item.Icon
@@ -455,7 +455,7 @@ export function CommandPalette({
                           "rounded border px-1.5 py-0.5 text-[10px] font-bold",
                           active
                             ? "border-slate-600 bg-slate-800 text-slate-200"
-                            : "border-line bg-white text-muted",
+                            : "border-line bg-surface text-muted",
                         ].join(" ")}
                       >
                         ↵
@@ -466,17 +466,17 @@ export function CommandPalette({
               </div>
             ))}
           </div>
-          <div className="flex items-center justify-between gap-3 border-t border-line bg-slate-50 px-4 py-2 text-[11px] text-muted">
+          <div className="flex items-center justify-between gap-3 border-t border-line bg-surfaceMuted px-4 py-2 text-[11px] text-muted">
             <span>
-              <kbd className="rounded border border-line bg-white px-1.5 py-0.5 font-bold">
+              <kbd className="rounded border border-line bg-surface px-1.5 py-0.5 font-bold">
                 ↑↓
               </kbd>{" "}
               navigate{" "}
-              <kbd className="rounded border border-line bg-white px-1.5 py-0.5 font-bold">
+              <kbd className="rounded border border-line bg-surface px-1.5 py-0.5 font-bold">
                 ↵
               </kbd>{" "}
               open{" "}
-              <kbd className="rounded border border-line bg-white px-1.5 py-0.5 font-bold">
+              <kbd className="rounded border border-line bg-surface px-1.5 py-0.5 font-bold">
                 esc
               </kbd>{" "}
               close

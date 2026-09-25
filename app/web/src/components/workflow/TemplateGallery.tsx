@@ -28,10 +28,26 @@ const KIND_CHIP: Record<
   ActionKind,
   { bg: string; fg: string; Icon: React.ElementType }
 > = {
-  trigger: { bg: "bg-blue-50", fg: "text-blue-700", Icon: Zap },
-  check: { bg: "bg-amber-50", fg: "text-amber-700", Icon: GitFork },
-  gate: { bg: "bg-violet-50", fg: "text-violet-700", Icon: Shield },
-  action: { bg: "bg-emerald-50", fg: "text-emerald-700", Icon: Cpu },
+  trigger: {
+    bg: "bg-blue-50 dark:bg-blue-500/10",
+    fg: "text-blue-700 dark:text-blue-300",
+    Icon: Zap,
+  },
+  check: {
+    bg: "bg-amber-50 dark:bg-amber-500/10",
+    fg: "text-amber-700 dark:text-amber-300",
+    Icon: GitFork,
+  },
+  gate: {
+    bg: "bg-violet-50 dark:bg-violet-500/10",
+    fg: "text-violet-700 dark:text-violet-300",
+    Icon: Shield,
+  },
+  action: {
+    bg: "bg-emerald-50 dark:bg-emerald-500/10",
+    fg: "text-emerald-700 dark:text-emerald-300",
+    Icon: Cpu,
+  },
 };
 
 function guessKind(node_type: string): ActionKind {
@@ -66,7 +82,7 @@ function FlowPreview({ template }: { template: WorkflowTemplate }) {
               <span className="flex items-center gap-0.5 text-[9px] text-muted">
                 <ArrowRight className="h-3 w-3" />
                 {edgeAfter.condition && edgeAfter.condition !== "always" && (
-                  <span className="rounded bg-slate-100 px-1 py-px font-mono">
+                  <span className="rounded bg-surfaceMuted px-1 py-px font-mono">
                     {edgeAfter.condition}
                   </span>
                 )}
@@ -137,8 +153,8 @@ export function TemplateGallery({ open, onClose, onPick }: Props) {
               className={cn(
                 "rounded-lg border px-3 py-2 text-left text-xs font-extrabold transition-colors",
                 template.id === selected
-                  ? "border-ink bg-ink text-white"
-                  : "border-line bg-white text-ink hover:border-brand",
+                  ? "border-ink bg-ink text-surface"
+                  : "border-line bg-surface text-ink hover:border-brand",
               )}
             >
               {template.name}
@@ -148,7 +164,7 @@ export function TemplateGallery({ open, onClose, onPick }: Props) {
 
         {/* Detail panel */}
         {active && (
-          <div className="grid min-w-0 gap-4 rounded-xl border border-line bg-slate-50/60 p-4 text-sm">
+          <div className="grid min-w-0 gap-4 rounded-xl border border-line bg-surfaceMuted p-4 text-sm">
             <div>
               <div className="text-xs font-black uppercase tracking-wide text-muted">
                 Name
@@ -175,7 +191,7 @@ export function TemplateGallery({ open, onClose, onPick }: Props) {
               <div className="mb-2 text-xs font-black uppercase tracking-wide text-muted">
                 Flow preview
               </div>
-              <div className="rounded-lg border border-line bg-white p-3">
+              <div className="rounded-lg border border-line bg-surface p-3">
                 <FlowPreview template={active} />
               </div>
             </div>
@@ -188,7 +204,7 @@ export function TemplateGallery({ open, onClose, onPick }: Props) {
                 {active.nodes.map((node) => (
                   <div
                     key={node.id}
-                    className="rounded border border-line bg-white px-2 py-1"
+                    className="rounded border border-line bg-surface px-2 py-1"
                   >
                     <span className="text-muted">{node.id}</span>{" "}
                     <span className="text-muted">&rarr;</span> {node.node_type}
@@ -197,7 +213,7 @@ export function TemplateGallery({ open, onClose, onPick }: Props) {
                 {active.edges.map((edge, idx) => (
                   <div
                     key={idx}
-                    className="rounded border border-line bg-white px-2 py-1 text-muted"
+                    className="rounded border border-line bg-surface px-2 py-1 text-muted"
                   >
                     {edge.source} &mdash;{edge.condition ?? "always"}
                     &mdash;&rarr; {edge.target}

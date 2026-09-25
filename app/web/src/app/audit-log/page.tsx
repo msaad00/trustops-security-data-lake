@@ -53,12 +53,14 @@ function Row({ entry }: { entry: AuditLogEntry }) {
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone={CATEGORY_TONE[entry.category]}>{entry.category}</Badge>
-            <span className="truncate font-black text-ink">
+            <span className="min-w-0 font-black text-ink [overflow-wrap:anywhere]">
               {entry.summary}
             </span>
           </div>
-          <div className="mt-1 text-xs text-muted">
-            <code className="text-[10px] text-ink">{entry.event_id}</code>
+          <div className="mt-1 text-xs text-muted [overflow-wrap:anywhere]">
+            <code className="break-all text-[10px] text-ink">
+              {entry.event_id}
+            </code>
             {" · "}
             actor <b className="text-ink">{entry.actor}</b> · subject{" "}
             <code className="text-ink">{entry.subject}</code> ·{" "}
@@ -114,8 +116,8 @@ export default function AuditLogPage() {
               className={[
                 "rounded-full border px-3 py-1.5 text-xs font-black",
                 category === c
-                  ? "border-ink bg-ink text-white"
-                  : "border-line bg-white text-slate-600 hover:border-brand",
+                  ? "border-ink bg-ink text-surface"
+                  : "border-line bg-surface text-muted hover:border-brand",
               ].join(" ")}
             >
               {c === "all"

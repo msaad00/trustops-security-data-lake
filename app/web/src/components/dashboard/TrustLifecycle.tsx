@@ -101,7 +101,7 @@ export function TrustLifecycle({ posture, assessmentHash }: Props) {
           <Link
             key={label}
             href={href}
-            className="group relative grid min-h-[138px] grid-rows-[auto_1fr_auto] rounded-lg border border-line bg-white p-3 transition-colors hover:border-brand"
+            className="group relative grid min-h-[138px] grid-rows-[auto_1fr_auto] rounded-lg border border-line bg-surface p-3 transition-colors hover:border-brand"
           >
             {idx < lanes.length - 1 && (
               <span className="pointer-events-none absolute -right-2 top-1/2 z-10 hidden h-px w-4 bg-line xl:block" />
@@ -116,7 +116,7 @@ export function TrustLifecycle({ posture, assessmentHash }: Props) {
               <span className="block text-[11px] font-black uppercase tracking-wide text-muted">
                 {label}
               </span>
-              <span className="mt-1 block text-xs leading-5 text-slate-600">
+              <span className="mt-1 block text-xs leading-5 text-muted">
                 {detail}
               </span>
             </span>

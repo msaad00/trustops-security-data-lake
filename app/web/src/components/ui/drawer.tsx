@@ -49,7 +49,7 @@ export function Drawer({
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", stiffness: 320, damping: 32 }}
                 className={cn(
-                  "fixed bottom-0 right-0 top-0 z-50 flex max-w-full flex-col bg-white shadow-hero",
+                  "fixed bottom-0 right-0 top-0 z-50 flex max-w-full flex-col bg-surface shadow-hero",
                   widthClass,
                 )}
               >
@@ -66,7 +66,7 @@ export function Drawer({
                   </div>
                   <Dialog.Close
                     aria-label="Close"
-                    className="grid h-8 w-8 place-items-center rounded-md text-muted hover:bg-slate-100"
+                    className="grid h-8 w-8 place-items-center rounded-md text-muted hover:bg-surfaceMuted"
                   >
                     <X className="h-4 w-4" />
                   </Dialog.Close>

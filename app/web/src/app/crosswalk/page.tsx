@@ -117,7 +117,7 @@ export default function CrosswalkPage() {
           {equivalenceGroups.map((group) => (
             <div
               key={group.group_id}
-              className="rounded-lg border border-line bg-slate-50/80 p-3"
+              className="rounded-lg border border-line bg-surfaceMuted p-3"
             >
               <div className="flex flex-wrap items-center gap-2">
                 <ControlFamilyIcon domain={group.risk_domain} />
@@ -134,7 +134,7 @@ export default function CrosswalkPage() {
                 {group.controls.map((ref) => (
                   <span
                     key={ref.control_id}
-                    className="inline-flex items-center gap-1 rounded-full border border-line bg-white px-2 py-0.5 text-[11px] font-bold text-ink"
+                    className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2 py-0.5 text-[11px] font-bold text-ink"
                   >
                     <FrameworkBadge
                       frameworkId={ref.framework_id}
@@ -163,8 +163,8 @@ export default function CrosswalkPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <div className="grid gap-3 rounded-lg border border-line bg-slate-50 p-3 lg:grid-cols-[minmax(240px,1fr)_220px_auto] lg:items-center">
-            <label className="flex min-w-0 items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm">
+          <div className="grid gap-3 rounded-lg border border-line bg-surfaceMuted p-3 lg:grid-cols-[minmax(240px,1fr)_220px_auto] lg:items-center">
+            <label className="flex min-w-0 items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 text-sm">
               <Search className="h-4 w-4 text-muted" />
               <input
                 value={query}
@@ -177,7 +177,7 @@ export default function CrosswalkPage() {
               aria-label="Filter crosswalk by framework"
               value={framework}
               onChange={(event) => setFramework(event.target.value)}
-              className="h-10 rounded-lg border border-line bg-white px-3 text-sm font-bold text-ink outline-none"
+              className="h-10 rounded-lg border border-line bg-surface px-3 text-sm font-bold text-ink outline-none"
             >
               <option value="all">All frameworks</option>
               {frameworkOptions.map((item) => (
@@ -206,7 +206,7 @@ export default function CrosswalkPage() {
             <div className="overflow-x-auto rounded-lg border border-line">
               <table className="w-full min-w-[960px] border-collapse text-sm">
                 <thead>
-                  <tr className="border-b border-line bg-slate-50 text-left text-[11px] font-black uppercase tracking-wide text-muted">
+                  <tr className="border-b border-line bg-surfaceMuted text-left text-[11px] font-black uppercase tracking-wide text-muted">
                     <th className="px-3 py-2">Framework</th>
                     <th className="px-3 py-2">Control</th>
                     <th className="px-3 py-2">Source article</th>
@@ -267,7 +267,7 @@ export default function CrosswalkPage() {
         </CardContent>
       </Card>
 
-      <details className="overflow-hidden rounded-xl border border-line bg-white shadow-card">
+      <details className="overflow-hidden rounded-xl border border-line bg-surface shadow-card">
         <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-black text-ink">
           Reviewed framework overlap matrix
           <Badge tone="info">{reviewedFrameworks.length} frameworks</Badge>
@@ -276,13 +276,13 @@ export default function CrosswalkPage() {
           <table className="w-full min-w-[720px] border-collapse text-sm">
             <thead>
               <tr>
-                <th className="bg-slate-50 px-3 py-2 text-left text-[11px] font-black uppercase tracking-wide text-muted">
+                <th className="bg-surfaceMuted px-3 py-2 text-left text-[11px] font-black uppercase tracking-wide text-muted">
                   Framework
                 </th>
                 {reviewedFrameworks.map((f) => (
                   <th
                     key={f}
-                    className="border-l border-line bg-slate-50 px-3 py-2 text-left text-[11px] font-black uppercase tracking-wide text-muted"
+                    className="border-l border-line bg-surfaceMuted px-3 py-2 text-left text-[11px] font-black uppercase tracking-wide text-muted"
                   >
                     <span className="inline-flex items-center gap-1.5">
                       <FrameworkBadge
@@ -299,7 +299,7 @@ export default function CrosswalkPage() {
             <tbody>
               {reviewedMatrix.map((row) => (
                 <tr key={row.framework_id} className="border-t border-line">
-                  <th className="bg-slate-50 px-3 py-3 text-left text-xs font-black text-ink">
+                  <th className="bg-surfaceMuted px-3 py-3 text-left text-xs font-black text-ink">
                     <span className="inline-flex items-center gap-1.5">
                       <FrameworkBadge
                         frameworkId={row.framework_id}
@@ -318,7 +318,7 @@ export default function CrosswalkPage() {
                       key={cell.framework_id}
                       className={[
                         "border-l border-line p-3 align-top text-xs",
-                        cell.is_self ? "bg-slate-100" : "bg-white",
+                        cell.is_self ? "bg-surfaceMuted" : "bg-surface",
                       ].join(" ")}
                     >
                       {cell.is_self ? (
@@ -356,7 +356,7 @@ export default function CrosswalkPage() {
         </div>
       </details>
 
-      <details className="overflow-hidden rounded-xl border border-line bg-white shadow-card">
+      <details className="overflow-hidden rounded-xl border border-line bg-surface shadow-card">
         <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-black text-ink">
           Heuristic domain overlap matrix
           <Badge>{heuristicFrameworks.length} frameworks</Badge>
@@ -365,13 +365,13 @@ export default function CrosswalkPage() {
           <table className="w-full min-w-[720px] border-collapse text-sm">
             <thead>
               <tr>
-                <th className="bg-slate-50 px-3 py-2 text-left text-[11px] font-black uppercase tracking-wide text-muted">
+                <th className="bg-surfaceMuted px-3 py-2 text-left text-[11px] font-black uppercase tracking-wide text-muted">
                   Framework
                 </th>
                 {heuristicFrameworks.map((f) => (
                   <th
                     key={f}
-                    className="border-l border-line bg-slate-50 px-3 py-2 text-left text-[11px] font-black uppercase tracking-wide text-muted"
+                    className="border-l border-line bg-surfaceMuted px-3 py-2 text-left text-[11px] font-black uppercase tracking-wide text-muted"
                   >
                     <span className="inline-flex items-center gap-1.5">
                       <FrameworkBadge
@@ -388,7 +388,7 @@ export default function CrosswalkPage() {
             <tbody>
               {heuristicMatrix.map((row) => (
                 <tr key={row.framework_id} className="border-t border-line">
-                  <th className="bg-slate-50 px-3 py-3 text-left text-xs font-black text-ink">
+                  <th className="bg-surfaceMuted px-3 py-3 text-left text-xs font-black text-ink">
                     <span className="inline-flex items-center gap-1.5">
                       <FrameworkBadge
                         frameworkId={row.framework_id}
@@ -403,7 +403,7 @@ export default function CrosswalkPage() {
                       key={cell.framework_id}
                       className={[
                         "border-l border-line p-3 align-top text-xs",
-                        cell.is_self ? "bg-slate-100" : "bg-white",
+                        cell.is_self ? "bg-surfaceMuted" : "bg-surface",
                       ].join(" ")}
                     >
                       {cell.is_self ? (

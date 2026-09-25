@@ -97,7 +97,7 @@ export function UserMenu({ compact = false }: { compact?: boolean }) {
             <span className="truncate text-ink">
               {workspaceIdentity.orgName} — {workspaceIdentity.environmentName}
             </span>
-            <span className="rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
+            <span className="rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-black text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
               active
             </span>
           </DropdownMenu.Item>

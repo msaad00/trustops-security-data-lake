@@ -15,7 +15,7 @@ const LABEL: Record<string, string> = {
   automation: "Workflows",
   graph: "Graph",
   "audit-log": "Audit log",
-  connectors: "Connectors",
+  connectors: "Connections",
   frameworks: "Frameworks",
   crosswalk: "Crosswalk",
   "trust-center": "Trust center",

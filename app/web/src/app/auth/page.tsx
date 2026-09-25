@@ -25,7 +25,7 @@ import type { AuthMethod } from "@/lib/api/types";
 function MethodRow({ method }: { method: AuthMethod }) {
   const externalLogin = method.id !== "api_key";
   return (
-    <div className="grid gap-3 rounded-xl border border-line bg-white p-4 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
+    <div className="grid gap-3 rounded-xl border border-line bg-surface p-4 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
       <AuthMark
         providerKind={method.provider_kind}
         methodId={method.id}

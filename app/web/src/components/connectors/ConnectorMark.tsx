@@ -104,7 +104,7 @@ export function ConnectorMark({
       title={visual.vendor}
     >
       <span
-        className="grid shrink-0 place-items-center rounded-xl border border-line bg-white shadow-sm"
+        className="grid shrink-0 place-items-center rounded-xl border border-line bg-surface shadow-sm"
         style={boxStyle}
       >
         {hasBrand && brand ? (

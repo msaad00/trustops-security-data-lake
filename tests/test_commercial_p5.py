@@ -120,3 +120,16 @@ def test_usage_summary_for_admin(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     assert data["plan_tier"] == "starter"
     assert data["usage"]["users"] == 1
     assert data["limits"]["max_users"] == 5
+
+
+def test_usage_summary_is_501_without_commercial_hosting(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("TRUSTOPS_COMMERCIAL_HOSTED", raising=False)
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path)
+    client = TestClient(app)
+    with session_scope(app.state.sessionmaker) as session:
+        tenant = create_tenant(session, slug="ossco", name="OSS Co")
+        user = create_user(session, tenant_id=tenant.id, email="admin@ossco.test", role="admin")
+        _key, token = create_api_key(session, tenant_id=tenant.id, user_id=user.id)
+    resp = client.get("/api/v1/platform/usage", headers=_bearer(token))
+    assert resp.status_code == HTTPStatus.NOT_IMPLEMENTED

@@ -49,7 +49,7 @@ export function ControlFamilyIcon({ domain }: { domain: string }) {
   return (
     <span
       aria-hidden="true"
-      className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600"
+      className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surfaceMuted text-muted"
     >
       <Icon className="h-[18px] w-[18px]" />
     </span>

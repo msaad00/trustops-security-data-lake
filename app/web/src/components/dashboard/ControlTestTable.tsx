@@ -58,7 +58,7 @@ export function ControlTestTable({ rows }: { rows: ControlTest[] }) {
       header: "Owner",
       cell: (info) => (
         <span className="inline-flex items-center gap-2 text-xs font-extrabold">
-          <span className="grid h-6 w-6 place-items-center rounded-full bg-blue-50 text-[11px] font-black text-blue-700">
+          <span className="grid h-6 w-6 place-items-center rounded-full bg-blue-50 text-[11px] font-black text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
             {info.getValue().slice(0, 1).toUpperCase()}
           </span>
           {info.getValue()}
@@ -113,7 +113,7 @@ export function ControlTestTable({ rows }: { rows: ControlTest[] }) {
         <table className="min-w-[820px] w-full text-sm">
           <thead>
             {table.getHeaderGroups().map((hg) => (
-              <tr key={hg.id} className="border-y border-line bg-slate-50/60">
+              <tr key={hg.id} className="border-y border-line bg-surfaceMuted">
                 {hg.headers.map((h) => (
                   <th
                     key={h.id}
@@ -133,7 +133,7 @@ export function ControlTestTable({ rows }: { rows: ControlTest[] }) {
             {table.getRowModel().rows.map((r) => (
               <tr
                 key={r.id}
-                className="border-b border-line last:border-0 hover:bg-blue-50/40"
+                className="border-b border-line last:border-0 hover:bg-blue-50/40 dark:hover:bg-blue-500/10"
               >
                 {r.getVisibleCells().map((c) => (
                   <td key={c.id} className="px-4 py-3 align-top">

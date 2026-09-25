@@ -102,7 +102,7 @@ export function EvidenceFreshnessSlaPanel() {
               </div>
 
               {summary.data.sla_breach_count > 0 && (
-                <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
                   <AlertTriangle className="mt-0.5 h-4 w-4 flex-none" />
                   <p>
                     {summary.data.stale_count} stale ·{" "}
@@ -120,7 +120,7 @@ export function EvidenceFreshnessSlaPanel() {
                 {(summary.data.sources ?? []).slice(0, 6).map((row) => (
                   <div
                     key={row.source}
-                    className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line bg-white px-3 py-2"
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line bg-surface px-3 py-2"
                   >
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">

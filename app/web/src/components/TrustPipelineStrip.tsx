@@ -62,7 +62,7 @@ export function TrustPipelineStrip({
     <div
       aria-label="Trust pipeline"
       className={cn(
-        "overflow-x-auto rounded-xl border border-line bg-white",
+        "overflow-x-auto rounded-xl border border-line bg-surface",
         className,
       )}
     >
@@ -75,8 +75,8 @@ export function TrustPipelineStrip({
               href={href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "grid min-w-0 gap-2 p-3 text-left transition-colors hover:bg-blue-50/50",
-                active ? "bg-blue-50/80" : "bg-white",
+                "grid min-w-0 gap-2 p-3 text-left transition-colors hover:bg-blue-50/50 dark:hover:bg-blue-500/10",
+                active ? "bg-blue-50/80 dark:bg-blue-500/10" : "bg-surface",
               )}
             >
               <div className="flex items-center justify-between gap-2">

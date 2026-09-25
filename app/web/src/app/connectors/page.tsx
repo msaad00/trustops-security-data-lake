@@ -137,7 +137,7 @@ function ConnectorRow({
       className={`grid w-full min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 overflow-hidden rounded-lg border bg-white p-3 text-left transition-colors hover:border-brand hover:shadow-card ${
         runnable
           ? "border-line"
-          : "border-dashed border-amber-200/80 bg-amber-50/30"
+          : "border-dashed border-amber-200/80 bg-amber-50/30 dark:border-amber-500/30 dark:bg-amber-500/10"
       }`}
     >
       <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg">
@@ -261,7 +261,7 @@ export default function ConnectorsPage() {
         description="Connect a source, test access, then sync evidence. You can also read an existing lake, normalize evidence, then evaluate it."
         actions={
           totals.unhealthy > 0 ? (
-            <span className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-black text-rose-700">
+            <span className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-black text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
               {totals.unhealthy} need attention
             </span>
           ) : null
@@ -270,7 +270,7 @@ export default function ConnectorsPage() {
 
       <EvidencePathPanel />
 
-      <div className="grid min-w-0 gap-2 overflow-hidden rounded-lg border border-line bg-white p-2 shadow-card">
+      <div className="grid min-w-0 gap-2 overflow-hidden rounded-lg border border-line bg-surface p-2 shadow-card">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
           <div className="relative min-w-[min(100%,260px)] flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
@@ -278,7 +278,7 @@ export default function ConnectorsPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search sources..."
-              className="w-full rounded-lg border border-line bg-white py-2.5 pl-10 pr-3 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+              className="w-full rounded-lg border border-line bg-surface py-2.5 pl-10 pr-3 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
             />
           </div>
           <div
@@ -295,7 +295,7 @@ export default function ConnectorsPage() {
                 className={`shrink-0 rounded-md px-3 py-2 text-xs font-black ${
                   viewFilter === tab.id
                     ? "bg-brand text-white"
-                    : "text-muted hover:bg-white"
+                    : "text-muted hover:bg-surface"
                 }`}
                 onClick={() => setViewFilter(tab.id)}
               >

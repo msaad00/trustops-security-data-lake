@@ -96,7 +96,7 @@ function LaunchStep({
   const content = (
     <div
       className={[
-        "grid gap-4 rounded-xl border bg-white p-4 transition-colors sm:grid-cols-[44px_minmax(0,1fr)_auto]",
+        "grid gap-4 rounded-xl border bg-surface p-4 transition-colors sm:grid-cols-[44px_minmax(0,1fr)_auto]",
         active ? "border-brand shadow-sm" : "border-line",
       ].join(" ")}
     >
@@ -105,9 +105,9 @@ function LaunchStep({
           className={[
             "grid h-11 w-11 shrink-0 place-items-center rounded-xl ring-1",
             ready
-              ? "bg-emerald-50 text-emerald-700 ring-emerald-100"
+              ? "bg-emerald-50 text-emerald-700 ring-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-300"
               : active
-                ? "bg-blue-50 text-brand ring-blue-100"
+                ? "bg-blue-50 text-brand ring-blue-100 dark:bg-blue-500/10"
                 : "bg-panel text-muted ring-line",
           ].join(" ")}
         >
@@ -202,13 +202,13 @@ function Signal({
   tone?: "default" | "ready" | "attention" | "critical" | "info";
 }) {
   return (
-    <div className="flex min-w-0 items-start gap-3 rounded-xl border border-line bg-white p-4">
+    <div className="flex min-w-0 items-start gap-3 rounded-xl border border-line bg-surface p-4">
       <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-panel text-brand ring-1 ring-line">
         <Icon className="h-4 w-4" />
       </span>
       <div className="min-w-0">
-        <div className="flex items-center gap-2">
-          <div className="truncate text-sm font-black text-ink">{label}</div>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="min-w-0 text-sm font-black text-ink">{label}</div>
           <Badge tone={tone}>{value}</Badge>
         </div>
         <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted">
@@ -313,7 +313,7 @@ export default function PocPage() {
                 </div>
               </div>
 
-              <div className="grid gap-3 p-5 md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-3 p-5 sm:grid-cols-2">
                 <Signal
                   icon={ShieldCheck}
                   label="Auth"
@@ -420,7 +420,7 @@ export default function PocPage() {
                     .map((action) => (
                       <div
                         key={String(action.action)}
-                        className="rounded-lg border border-line bg-white p-3"
+                        className="rounded-lg border border-line bg-surface p-3"
                       >
                         <div className="text-sm font-black text-ink">
                           {titleFromAction(String(action.action))}
@@ -431,7 +431,7 @@ export default function PocPage() {
                       </div>
                     ))}
                   {data.ingestion.recommended_actions.length === 0 && (
-                    <div className="rounded-lg border border-line bg-white p-3 text-sm font-bold text-muted">
+                    <div className="rounded-lg border border-line bg-surface p-3 text-sm font-bold text-muted">
                       No ingestion actions are currently recommended.
                     </div>
                   )}
@@ -474,7 +474,7 @@ export default function PocPage() {
                 <Metric
                   label="Public URL"
                   value={data.public_url ? "set" : "missing"}
-                  detail={data.public_url ?? "TRUSTOPS_PUBLIC_URL"}
+                  detail={data.public_url ?? "Not configured"}
                 />
               </CardContent>
             </Card>

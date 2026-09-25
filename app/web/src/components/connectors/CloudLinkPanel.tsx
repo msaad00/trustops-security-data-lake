@@ -445,7 +445,7 @@ export function CloudLinkPanel({
           ].map((label, index) => (
             <div
               key={label}
-              className={`min-w-0 rounded-md border px-2 py-1.5 text-[11px] font-bold leading-4 ${(!session && index === 0) || (session && index === 1) ? "border-brand bg-white text-brand" : "border-line bg-white/60 text-muted"}`}
+              className={`min-w-0 rounded-md border px-2 py-1.5 text-[11px] font-bold leading-4 ${(!session && index === 0) || (session && index === 1) ? "border-brand bg-surface text-brand" : "border-line bg-white/60 text-muted"}`}
             >
               <span className="block break-words">{label}</span>
             </div>
@@ -471,7 +471,7 @@ export function CloudLinkPanel({
       ) : (
         <div className="mt-2 grid gap-2 text-sm">
           {linkSessionId && session.status === "pending" && (
-            <p className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs text-amber-950">
+            <p className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs text-amber-950 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
               Returned from identity provider — confirm consent completed, then
               enter your account identifier below.
             </p>
@@ -512,7 +512,7 @@ export function CloudLinkPanel({
                           type="button"
                           aria-pressed={selected}
                           onClick={() => setAwsAccountScope(option.value)}
-                          className={`relative min-h-24 rounded-lg border p-2.5 text-left transition ${selected ? "border-brand bg-brand/10 ring-1 ring-brand" : "border-line bg-white hover:border-brand/50"}`}
+                          className={`relative min-h-24 rounded-lg border p-2.5 text-left transition ${selected ? "border-brand bg-brand/10 ring-1 ring-brand" : "border-line bg-surface hover:border-brand/50"}`}
                         >
                           {selected && (
                             <Check className="absolute right-3 top-3 h-4 w-4 text-brand" />
@@ -549,7 +549,7 @@ export function CloudLinkPanel({
                       onChange={(event) =>
                         setAwsDeployMode(event.target.value as AwsDeployMode)
                       }
-                      className="rounded-lg border border-line bg-white px-3 py-2 text-sm normal-case tracking-normal text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                      className="rounded-lg border border-line bg-surface px-3 py-2 text-sm normal-case tracking-normal text-ink focus:outline-none focus:ring-1 focus:ring-brand"
                     >
                       {awsDeployOptions.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -578,7 +578,7 @@ export function CloudLinkPanel({
                   )}
                 </div>
                 {activeAwsDeployCommand && (
-                  <div className="flex flex-wrap items-center gap-2 rounded-lg border border-line bg-white p-2">
+                  <div className="flex flex-wrap items-center gap-2 rounded-lg border border-line bg-surface p-2">
                     <details className="text-xs text-muted">
                       <summary className="cursor-pointer list-none font-bold text-brand">
                         View script
@@ -600,7 +600,7 @@ export function CloudLinkPanel({
                               sanitizeAwsRoleName(event.target.value),
                             )
                           }
-                          className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink"
+                          className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-medium text-ink"
                         />
                       </label>
                     </details>
@@ -638,7 +638,7 @@ export function CloudLinkPanel({
             </Button>
           )}
           {connector.connector_id === "azure-posture" && azureDeployCommand && (
-            <div className="rounded-lg border border-line bg-white p-2">
+            <div className="rounded-lg border border-line bg-surface p-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="min-w-0">
                   <div className="text-xs font-black uppercase tracking-wide text-muted">
@@ -684,7 +684,7 @@ export function CloudLinkPanel({
           {connector.connector_id === "gcp-posture" &&
             session.template_url &&
             !deployCommand && (
-              <div className="rounded-lg border border-line bg-white p-2">
+              <div className="rounded-lg border border-line bg-surface p-2">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="min-w-0">
                     <div className="text-xs font-black uppercase tracking-wide text-muted">
@@ -711,7 +711,7 @@ export function CloudLinkPanel({
               </div>
             )}
           {deployCommand && connector.connector_id === "gcp-posture" && (
-            <div className="rounded-lg border border-line bg-white p-2">
+            <div className="rounded-lg border border-line bg-surface p-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="text-xs font-black uppercase tracking-wide text-muted">
                   Deploy GCP access
@@ -784,7 +784,7 @@ export function CloudLinkPanel({
                       autoComplete="off"
                       aria-invalid={index === 0 && Boolean(showFieldError)}
                       placeholder="AWS account ID or role ARN"
-                      className="rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                      className="rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
                     />
                   </label>
                 ))}
@@ -851,7 +851,7 @@ export function CloudLinkPanel({
                 autoComplete="off"
                 aria-invalid={Boolean(showFieldError)}
                 placeholder="00000000-0000-0000-0000-000000000000"
-                className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                className="rounded-lg border border-line bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
               />
               <span className="font-medium normal-case tracking-normal text-muted">
                 Paste the subscription ID printed by setup. No Azure password or
@@ -875,12 +875,12 @@ export function CloudLinkPanel({
                 autoComplete="off"
                 aria-invalid={Boolean(showFieldError)}
                 placeholder="my-gcp-project"
-                className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                className="rounded-lg border border-line bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </label>
           )}
           {showFieldError && (
-            <p className="text-xs font-semibold text-rose-700">
+            <p className="text-xs font-semibold text-rose-700 dark:text-rose-300">
               {showFieldError}
             </p>
           )}

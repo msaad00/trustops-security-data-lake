@@ -27,7 +27,7 @@ function ChainStep({
   href?: string;
 }) {
   const body = (
-    <div className="min-w-[120px] flex-1 rounded-lg border border-line bg-white p-2.5">
+    <div className="min-w-[120px] flex-1 rounded-lg border border-line bg-surface p-2.5">
       <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wide text-muted">
         <Icon className="h-3 w-3" />
         {label}

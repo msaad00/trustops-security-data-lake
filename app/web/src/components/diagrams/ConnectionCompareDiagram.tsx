@@ -32,10 +32,10 @@ function Column({
 }) {
   const header =
     accent === "vendor"
-      ? "border-rose-200 bg-rose-50 text-rose-900"
-      : "border-emerald-200 bg-emerald-50 text-emerald-900";
+      ? "border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300"
+      : "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300";
   return (
-    <div className="grid min-w-0 gap-2 overflow-hidden rounded-xl border border-line bg-white p-4">
+    <div className="grid min-w-0 gap-2 overflow-hidden rounded-xl border border-line bg-surface p-4">
       <div className={`overflow-hidden rounded-lg border px-3 py-2 ${header}`}>
         <div className="truncate text-[10px] font-black uppercase tracking-wide opacity-80">
           {eyebrow}

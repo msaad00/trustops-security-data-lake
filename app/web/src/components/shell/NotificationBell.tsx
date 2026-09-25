@@ -63,7 +63,7 @@ export function NotificationBell() {
           align="end"
           sideOffset={6}
           onCloseAutoFocus={markSeen}
-          className="z-[60] grid min-w-[360px] max-w-[480px] gap-0.5 rounded-xl border border-line bg-white p-1.5 shadow-hero"
+          className="z-[60] grid min-w-[360px] max-w-[480px] gap-0.5 rounded-xl border border-line bg-surface p-1.5 shadow-hero"
         >
           <DropdownMenu.Label className="flex items-center justify-between gap-2 px-2 py-2 text-[10px] font-black uppercase tracking-wider text-muted">
             <span>Audit activity</span>
@@ -86,7 +86,7 @@ export function NotificationBell() {
             >
               <Link
                 href="/audit-log"
-                className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-2 rounded-md px-2 py-2 text-xs outline-none data-[highlighted]:bg-slate-50"
+                className="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-2 rounded-md px-2 py-2 text-xs outline-none data-[highlighted]:bg-surfaceMuted"
               >
                 <Badge tone={CATEGORY_TONE[entry.category]}>
                   {entry.category}

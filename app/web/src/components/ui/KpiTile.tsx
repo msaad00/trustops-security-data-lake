@@ -7,9 +7,9 @@ export type KpiTone = "default" | "critical" | "attention" | "ready" | "brand";
 
 const TONE_VALUE: Record<KpiTone, string> = {
   default: "text-ink",
-  critical: "text-rose-700",
-  attention: "text-amber-800",
-  ready: "text-emerald-700",
+  critical: "text-rose-700 dark:text-rose-300",
+  attention: "text-amber-800 dark:text-amber-300",
+  ready: "text-emerald-700 dark:text-emerald-300",
   brand: "text-brand",
 };
 

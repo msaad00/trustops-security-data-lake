@@ -28,11 +28,14 @@ const COLUMN_TONE: Record<SlaHeatmapColumn, "ok" | "warn" | "bad" | "neutral"> =
   };
 
 function cellClass(tone: "ok" | "warn" | "bad" | "neutral", active: boolean) {
-  if (!active) return "bg-slate-50 text-slate-400";
-  if (tone === "bad") return "bg-red-100 text-red-800";
-  if (tone === "warn") return "bg-amber-100 text-amber-900";
-  if (tone === "ok") return "bg-emerald-100 text-emerald-900";
-  return "bg-slate-100 text-slate-700";
+  if (!active) return "bg-surfaceMuted text-slate-400";
+  if (tone === "bad")
+    return "bg-red-100 text-red-800 dark:bg-red-500/10 dark:text-red-300";
+  if (tone === "warn")
+    return "bg-amber-100 text-amber-900 dark:bg-amber-500/10 dark:text-amber-300";
+  if (tone === "ok")
+    return "bg-emerald-100 text-emerald-900 dark:bg-emerald-500/10 dark:text-emerald-300";
+  return "bg-surfaceMuted text-ink";
 }
 
 export function SlaHeatmapPanel() {

@@ -123,7 +123,7 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
     >
       {violation && (
         <div className="grid min-w-0 gap-5 [overflow-wrap:anywhere]">
-          <div className="rounded-xl border border-line bg-slate-50/60 p-3">
+          <div className="rounded-xl border border-line bg-surfaceMuted p-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <Badge
                 tone={
@@ -173,7 +173,7 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
           {saveError && (
             <p
               role="alert"
-              className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700"
+              className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700 dark:bg-rose-500/10 dark:text-rose-300"
             >
               Unable to save triage. Your changes are still here. Try again.
             </p>
@@ -190,7 +190,7 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
                   <select
                     value={state}
                     onChange={(e) => setState(e.target.value as TrackingState)}
-                    className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-extrabold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                    className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-extrabold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
                   >
                     {stateOptions}
                   </select>
@@ -200,7 +200,7 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
                   <input
                     value={actor}
                     onChange={(e) => setActor(e.target.value)}
-                    className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                    className="rounded-lg border border-line bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
                   />
                 </label>
                 <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
@@ -208,7 +208,7 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
                   <input
                     value={assignee}
                     onChange={(e) => setAssignee(e.target.value)}
-                    className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                    className="rounded-lg border border-line bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
                   />
                 </label>
                 <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
@@ -217,7 +217,7 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
                     value={dueAt}
                     onChange={(e) => setDueAt(e.target.value)}
                     type="datetime-local"
-                    className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                    className="rounded-lg border border-line bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
                   />
                 </label>
               </div>
@@ -227,7 +227,7 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
                   rows={3}
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
-                  className="rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+                  className="rounded-lg border border-line bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </label>
             </fieldset>

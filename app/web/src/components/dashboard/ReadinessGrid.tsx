@@ -86,7 +86,7 @@ function FrameworkCard({
   return (
     <Link
       href={frameworkDetailHref(id)}
-      className="group flex min-w-0 items-center gap-3 border-b border-line px-2 py-4 transition-colors hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
+      className="group flex min-w-0 items-center gap-3 border-b border-line px-2 py-4 transition-colors hover:bg-surfaceMuted focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
     >
       <FrameworkBadge
         frameworkId={id}
