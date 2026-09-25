@@ -10,7 +10,7 @@ BASE="http://127.0.0.1:${PORT}"
 LAKE="${TRUSTOPS_LAKE:-build/lakehouse}"
 
 echo "==> Load golden fixture into ${LAKE}"
-uv run security-lakehouse fixtures load --company golden --out "$LAKE"
+uv run security-lakehouse fixtures load --company golden --out "$LAKE" --rebase-times
 uv run security-lakehouse db upgrade --lake "$LAKE"
 
 echo "==> Build console static export"

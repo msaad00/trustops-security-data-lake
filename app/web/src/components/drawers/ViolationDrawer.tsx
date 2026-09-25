@@ -13,6 +13,7 @@ import {
   controlGraphFocusHref,
   taskFromFindingHref,
 } from "@/lib/finding-links";
+import { formatDateTime } from "@/lib/format";
 import { useAuditorMode } from "@/lib/state/auditor";
 import type { TrackingState, Violation } from "@/lib/api/types";
 
@@ -173,7 +174,9 @@ export function ViolationDrawer({ violation, onClose, onToast }: Props) {
               <dt className="text-muted">Source</dt>
               <dd className="font-extrabold">{violation.source}</dd>
               <dt className="text-muted">Detected</dt>
-              <dd className="font-extrabold">{violation.detected_at}</dd>
+              <dd className="font-extrabold" title={violation.detected_at}>
+                {formatDateTime(violation.detected_at)}
+              </dd>
             </dl>
           </div>
 

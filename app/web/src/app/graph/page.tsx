@@ -333,13 +333,17 @@ function GraphPageContent() {
     [data],
   );
 
+  // Default to one framework on first load only; "All frameworks" is a real choice.
+  const frameworkDefaulted = useRef(false);
   useEffect(() => {
     if (
+      frameworkDefaulted.current ||
       graphMode !== "compliance" ||
-      filterFramework ||
       frameworks.length === 0
     )
       return;
+    frameworkDefaulted.current = true;
+    if (filterFramework) return;
     setFilterFramework(
       frameworks.find((id) => id.toLowerCase() === "soc2") ?? frameworks[0],
     );

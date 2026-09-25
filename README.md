@@ -50,7 +50,7 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev,server]"
 make web-install web-build
-security-lakehouse fixtures load --company golden --out build/lakehouse
+security-lakehouse fixtures load --company golden --out build/lakehouse --rebase-times
 security-lakehouse db upgrade --lake build/lakehouse
 security-lakehouse serve --lake build/lakehouse --server --allow-insecure-no-auth --port 8787
 ```
@@ -59,7 +59,7 @@ For the CLI and local lake only:
 
 ```bash
 pip install trustops-security-data-lake
-security-lakehouse fixtures load --company golden --out ./lake
+security-lakehouse fixtures load --company golden --out ./lake --rebase-times
 ```
 
 [Docker, Helm, and production configuration](deploy/README.md) ·

@@ -140,7 +140,7 @@ test("audit room snapshot empty state offers a snapshot button, not a CLI comman
   await expect.poll(() => posts.length).toBe(1);
 });
 
-test("AI governance strip uses plain gap labels and hides non-AI assets", async ({
+test("AI governance strip uses plain gap labels and lists only AI assets", async ({
   page,
 }) => {
   await page.goto("/console/ai-governance/");
@@ -150,5 +150,6 @@ test("AI governance strip uses plain gap labels and hides non-AI assets", async 
   await expect(strip.getByText(/model\.lineage events/)).toHaveCount(0);
   await expect(strip.getByText("No model inventory connected")).toBeVisible();
   await expect(strip.getByText(/golden:asset:soc2-/)).toHaveCount(0);
-  await expect(strip.getByText(/no AI inventory signals/)).toBeVisible();
+  // The golden fixture types assets by event, so nothing needs hiding.
+  await expect(strip.getByText(/no AI inventory signals/)).toHaveCount(0);
 });
