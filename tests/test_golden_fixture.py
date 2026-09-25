@@ -67,8 +67,6 @@ def test_golden_asset_types_match_their_event_types() -> None:
 
 
 def test_committed_golden_fixture_asset_types_match_event_types() -> None:
-    import json
-
     from security_lakehouse.golden_fixture import golden_fixture_path
 
     ai_asset_types = {"model", "agent", "ai_model", "ai_agent"}
