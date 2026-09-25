@@ -42,4 +42,7 @@ done
 echo "==> Capture screenshots to docs/images/"
 TRUSTOPS_SCREENSHOT_URL="$BASE" npm --prefix app/web run demo-screenshots
 
+echo "==> Optimize PNGs"
+uv run python tools/optimize_screenshots.py
+
 echo "==> Done. PNGs in docs/images/trustops-demo-*.png"
