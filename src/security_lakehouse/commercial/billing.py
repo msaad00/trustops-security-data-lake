@@ -206,8 +206,8 @@ def create_checkout_session(session: Session, *, tenant_id: str, plan: str, emai
         ("client_reference_id", tenant_id),
         ("metadata[tenant_id]", tenant_id),
         ("subscription_data[metadata][tenant_id]", tenant_id),
-        ("success_url", _public_url("/console/settings/billing?checkout=success")),
-        ("cancel_url", _public_url("/console/settings/billing?checkout=cancel")),
+        ("success_url", _public_url("/console/auth/?billing=success")),
+        ("cancel_url", _public_url("/console/auth/?billing=cancel")),
     ]
     billing = session.get(TenantBilling, tenant_id)
     form.append(("customer", billing.stripe_customer_id) if billing else ("customer_email", email))
@@ -218,7 +218,7 @@ def create_portal_session(session: Session, *, tenant_id: str) -> str:
     billing = session.get(TenantBilling, tenant_id)
     if billing is None:
         raise BillingError(409, "no Stripe customer is linked to this workspace yet; start a checkout first")
-    form = [("customer", billing.stripe_customer_id), ("return_url", _public_url("/console/settings/billing"))]
+    form = [("customer", billing.stripe_customer_id), ("return_url", _public_url("/console/auth/"))]
     return str(_stripe_request("POST", "/v1/billing_portal/sessions", form=form)["url"])
 
 
