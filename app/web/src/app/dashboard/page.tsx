@@ -51,7 +51,7 @@ export default function DashboardPage() {
     : "Source sync health and control eval runs";
 
   return (
-    <div className="mx-auto grid w-full max-w-[1600px] gap-4 px-3 py-4 sm:px-5 lg:px-6">
+    <div className="page-shell grid gap-4">
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div className="min-w-0">
           <h1 className="ui-page-title">Dashboard</h1>

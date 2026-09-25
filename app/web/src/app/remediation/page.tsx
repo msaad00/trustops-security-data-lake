@@ -470,7 +470,7 @@ function RemediationContent() {
     ? requestedTab
     : "tasks";
   return (
-    <div className="grid min-w-0 gap-4 px-4 py-5 sm:px-5 lg:px-7">
+    <div className="page-shell grid gap-4">
       <PageHeader
         eyebrow="Resolve"
         title="Remediation"

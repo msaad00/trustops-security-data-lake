@@ -85,7 +85,7 @@ export default function InsightsPage() {
   }));
 
   return (
-    <div className="grid min-w-0 gap-5 px-4 py-5 sm:px-5 lg:px-7">
+    <div className="page-shell grid gap-5">
       {/* header */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>

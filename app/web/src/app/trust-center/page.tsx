@@ -109,7 +109,7 @@ export default function TrustCenterPage() {
   };
 
   return (
-    <div className="grid min-w-0 gap-4 px-3 py-4 sm:px-4 lg:px-5">
+    <div className="page-shell grid gap-4">
       <PageHeader
         eyebrow="Trust center"
         title="Trust assurance center"

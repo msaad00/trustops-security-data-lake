@@ -600,7 +600,7 @@ export default function AutomationPage() {
   ]);
 
   return (
-    <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4 px-4 py-5 sm:px-5 lg:px-7">
+    <div className="page-shell grid grid-cols-[minmax(0,1fr)] gap-4">
       <PageHeader
         eyebrow="Workflows"
         title="Workflow builder"

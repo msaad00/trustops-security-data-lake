@@ -513,7 +513,7 @@ export default function GraphPage() {
     (data?.nodes.length ?? 0) === 0;
 
   return (
-    <div className="mx-auto grid w-full max-w-[1560px] min-w-0 gap-3 px-3 py-3 sm:px-4 lg:px-4">
+    <div className="page-shell grid gap-3">
       <PageHeader
         eyebrow="Graph"
         title={
