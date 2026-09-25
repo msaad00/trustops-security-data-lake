@@ -121,6 +121,36 @@ def mark_decision_executed(
     return decision
 
 
+def mark_decision_rejected(
+    row: AgentRun,
+    *,
+    decision_index: int,
+    rejected_by: str,
+    reason: str,
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    decisions = agent_run_decisions(row)
+    if decision_index < 0 or decision_index >= len(decisions):
+        raise IndexError("decision not found")
+    moment = _now(now)
+    decision = dict(decisions[decision_index])
+    decision.update(
+        {
+            "status": "rejected",
+            "rejected_by": rejected_by,
+            "rejected_at": moment.isoformat(),
+            "rejection_reason": reason,
+        }
+    )
+    decisions[decision_index] = decision
+    state = _json_loads(row.state_json, {})
+    if isinstance(state, dict):
+        state["decisions"] = decisions
+        row.state_json = _json_dumps(state)
+    row.decisions_json = _json_dumps(decisions)
+    return decision
+
+
 def run_and_persist_agent(
     session: Session,
     *,

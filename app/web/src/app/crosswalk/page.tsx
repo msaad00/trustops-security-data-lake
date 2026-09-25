@@ -152,7 +152,7 @@ export default function CrosswalkPage() {
               title="Proposed mappings are machine-suggested and not yet human-reviewed."
             >
               <FileCheck2 className="mr-1 h-3 w-3" />{" "}
-              {`${reviewedRowCount.toLocaleString()} reviewed · ${proposedRowCount.toLocaleString()} proposed`}
+              {`Links: ${reviewedRowCount.toLocaleString()} reviewed · ${proposedRowCount.toLocaleString()} proposed`}
             </Badge>
             <Badge tone="info">
               <GitCompareArrows className="mr-1 h-3 w-3" />{" "}

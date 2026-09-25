@@ -184,9 +184,13 @@ export interface AgentDecision {
   reason?: string;
   payload?: Record<string, unknown>;
   requires_approval?: boolean;
-  status?: "proposed" | "approved" | "executed" | "skipped" | string;
+  status?:
+    "proposed" | "approved" | "executed" | "rejected" | "skipped" | string;
   approved_by?: string;
   approved_at?: string;
+  rejected_by?: string;
+  rejected_at?: string;
+  rejection_reason?: string;
   execution_result?: Record<string, unknown>;
 }
 

@@ -73,8 +73,7 @@ test("create task from a finding, then resolve it with proof", async ({
     .click();
 
   await expect(page).toHaveURL(/\/console\/remediation\/\?/);
-  // Client navigation to a query-string URL re-renders the static-export page
-  // once its segment payload settles; interact only after that.
+  // Let the target page's queries settle before asserting on prefilled values.
   await page.waitForLoadState("networkidle");
   const url = new URL(page.url());
   expect(url.searchParams.get("control")).toBe(CONTROL_ID);

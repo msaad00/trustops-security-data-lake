@@ -341,6 +341,10 @@ class CreateAgentRunRequest(_StrictModel):
     max_output_tokens: int | None = None
 
 
+class RejectAgentDecisionRequest(_StrictModel):
+    reason: str = Field(default="", max_length=2000)
+
+
 class ApproveAgentDecisionRequest(_StrictModel):
     note: str = ""
 
@@ -1988,6 +1992,8 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
         if decision_index < 0 or decision_index >= len(decisions):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="agent decision not found")
         decision = decisions[decision_index]
+        if decision.get("status") == "rejected":
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="agent decision was rejected")
         existing_result = decision.get("execution_result")
         if decision.get("status") == "executed" and isinstance(existing_result, dict):
             return JSONResponse(
@@ -2017,6 +2023,39 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
                 "agent-runs.decisions",
                 _redact_payload(agent_runs_db.agent_run_to_dict(row, include_state=True), identity),
                 meta={"executed": True, "decision_index": decision_index, "execution_result": result},
+            )
+        )
+
+    @app.post("/api/v1/agent-runs/{run_id}/decisions/{decision_index}/reject", tags=["agents"])
+    def reject_agent_decision(
+        run_id: str,
+        decision_index: int,
+        body: RejectAgentDecisionRequest,
+        identity: Identity = Depends(_require_write),
+        session: Session = Depends(get_session),
+    ) -> JSONResponse:
+        reason = body.reason.strip()
+        if not reason:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="a rejection reason is required")
+        row = agent_runs_db.get_agent_run(session, tenant_id=identity.tenant_id, run_id=run_id)
+        if row is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="agent run not found")
+        decisions = agent_runs_db.agent_run_decisions(row)
+        if decision_index < 0 or decision_index >= len(decisions):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="agent decision not found")
+        current = decisions[decision_index].get("status")
+        if current == "executed":
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="agent decision was already executed")
+        if current != "rejected":
+            agent_runs_db.mark_decision_rejected(
+                row, decision_index=decision_index, rejected_by=identity.email, reason=reason
+            )
+            session.commit()
+        return JSONResponse(
+            api_v1.envelope(
+                "agent-runs.decisions",
+                _redact_payload(agent_runs_db.agent_run_to_dict(row, include_state=True), identity),
+                meta={"rejected": current != "rejected", "decision_index": decision_index},
             )
         )
 

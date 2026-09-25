@@ -45,7 +45,7 @@ function FrameworkLine({
         <div className="mt-0.5 truncate text-xs font-medium leading-5 text-muted">
           {notEvaluated
             ? `Not evaluated · ${total ? `${total} controls in catalog` : "catalog pack pending"}`
-            : `${mapped}/${total} controls mapped · ${attestable} reviewed`}
+            : `${mapped}/${total} controls mapped · ${attestable} fully reviewed`}
         </div>
       </div>
       <Badge

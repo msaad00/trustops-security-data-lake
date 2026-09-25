@@ -290,8 +290,8 @@ export TRUSTOPS_API_KEY="..."
 trustops-mcp
 ```
 
-The MCP tools `list_agent_runs`, `create_agent_run`, `get_agent_run`, and
-`approve_agent_decision` call `/api/v1/agent-runs*` over the authenticated API.
+The MCP tools `list_agent_runs`, `create_agent_run`, `get_agent_run`,
+`approve_agent_decision`, and `reject_agent_decision` call `/api/v1/agent-runs*` over the authenticated API.
 They do not bypass RBAC, tenant isolation, data-readiness preflight,
 idempotency, approval state, or audit logging.
 

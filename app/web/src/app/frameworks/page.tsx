@@ -635,7 +635,7 @@ function FrameworksPageContent() {
           </div>
           <div className="bg-[#09182a]/95 p-4">
             <div className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
-              Reviewed mappings
+              Reviewed requirements
             </div>
             <div className="mt-1 flex items-center gap-2 text-3xl font-black text-white">
               <CheckCircle2 className="h-6 w-6 text-emerald-300" />
@@ -644,8 +644,8 @@ function FrameworksPageContent() {
                 : "—"}
             </div>
             <p className="mt-1 text-xs text-slate-400">
-              {coverageSummary?.attestable_requirement_count ?? "—"} reviewed
-              mappings
+              {coverageSummary?.attestable_requirement_count ?? "—"}{" "}
+              requirements with every mapping reviewed
             </p>
           </div>
           <div className="bg-[#09182a]/95 p-4">
@@ -659,7 +659,7 @@ function FrameworksPageContent() {
                 : "—"}
             </div>
             <p className="mt-1 text-xs text-slate-400">
-              Proposed mappings awaiting review
+              Requirements with a proposed link awaiting review
             </p>
           </div>
         </div>

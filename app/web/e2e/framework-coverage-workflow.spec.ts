@@ -14,8 +14,14 @@ test.describe("framework coverage workflow", () => {
     await expect(portfolio.getByText("Catalogued requirements")).toBeVisible();
     await expect(portfolio.getByText("Mapped requirements")).toBeVisible();
     await expect(
-      portfolio.getByText("Reviewed mappings", { exact: true }),
+      portfolio.getByText("Reviewed requirements", { exact: true }),
     ).toBeVisible();
+    await expect(
+      portfolio.getByText(/requirements with every mapping reviewed/),
+    ).toBeVisible();
+    await expect(
+      portfolio.getByText("Proposed mappings awaiting review"),
+    ).toHaveCount(0);
     await expect(
       portfolio.getByText("Review backlog", { exact: true }),
     ).toBeVisible();

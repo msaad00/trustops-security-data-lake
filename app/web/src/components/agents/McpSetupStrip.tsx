@@ -18,6 +18,7 @@ const MCP_TOOLS = [
   "get_audit_readiness",
   "create_agent_run",
   "approve_agent_decision",
+  "reject_agent_decision",
   "create_snapshot",
   "run_workflow",
 ] as const;
