@@ -223,18 +223,76 @@ function layoutGraph(
   g.setDefaultEdgeLabel(() => ({}));
   g.setGraph({ rankdir, nodesep: 10, ranksep: 26, marginx: 8, marginy: 8 });
 
-  rfNodes.forEach((node) => g.setNode(node.id, { width: 144, height: 58 }));
+  rfNodes.forEach((node) =>
+    g.setNode(node.id, { width: NODE_W, height: NODE_H }),
+  );
   rfEdges.forEach((edge) => g.setEdge(edge.source, edge.target));
   dagre.layout(g);
 
-  const laidOut = rfNodes.map((node) => {
-    const pos = g.node(node.id);
-    return {
-      ...node,
-      position: { x: pos.x - 72, y: pos.y - 29 },
-    };
-  });
+  const positions = new Map(
+    rfNodes.map((node) => {
+      const pos = g.node(node.id);
+      return [node.id, { x: pos.x - NODE_W / 2, y: pos.y - NODE_H / 2 }];
+    }),
+  );
+  wrapWideRanks(positions, rankdir);
+  const laidOut = rfNodes.map((node) => ({
+    ...node,
+    position: positions.get(node.id) ?? { x: 0, y: 0 },
+  }));
   return { nodes: laidOut, edges: rfEdges };
+}
+
+const NODE_W = 144;
+const NODE_H = 84;
+
+/**
+ * Dagre puts every node of a rank on one line, so a framework with dozens of
+ * controls becomes a strip that only fits at minimum zoom. Wrap any rank wider
+ * than a sqrt-scaled limit into rows, keeping dagre's within-rank order.
+ */
+function wrapWideRanks(
+  positions: Map<string, { x: number; y: number }>,
+  rankdir: LayoutDir,
+) {
+  const horizontal = rankdir === "LR";
+  const limit = Math.min(
+    16,
+    Math.max(6, Math.round(Math.sqrt(positions.size) * 1.2)),
+  );
+  const ranks = new Map<number, string[]>();
+  positions.forEach((pos, id) => {
+    const key = Math.round(horizontal ? pos.x : pos.y);
+    ranks.set(key, [...(ranks.get(key) ?? []), id]);
+  });
+  if (![...ranks.values()].some((ids) => ids.length > limit)) return;
+
+  const crossStep = (horizontal ? NODE_H : NODE_W) + 10;
+  const rowStep = (horizontal ? NODE_W : NODE_H) + 14;
+  const rankGap = 40;
+  const ordered = [...ranks.entries()].sort((a, b) => a[0] - b[0]);
+  if (rankdir === "BT") ordered.reverse();
+  let cursor = 0;
+  for (const [, ids] of ordered) {
+    ids.sort((a, b) => {
+      const pa = positions.get(a)!;
+      const pb = positions.get(b)!;
+      return horizontal ? pa.y - pb.y : pa.x - pb.x;
+    });
+    for (let start = 0; start < ids.length; start += limit) {
+      const row = ids.slice(start, start + limit);
+      row.forEach((id, i) => {
+        const cross = (i - (row.length - 1) / 2) * crossStep;
+        const along = rankdir === "BT" ? -cursor : cursor;
+        positions.set(
+          id,
+          horizontal ? { x: along, y: cross } : { x: cross, y: along },
+        );
+      });
+      cursor += rowStep;
+    }
+    cursor += rankGap;
+  }
 }
 
 interface Props {

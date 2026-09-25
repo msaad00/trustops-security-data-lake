@@ -78,7 +78,7 @@ export default function AuthPage() {
   const whoami = useAuthWhoami();
 
   return (
-    <div className="mx-auto grid w-full max-w-[1100px] min-w-0 gap-3 px-3 py-3 sm:px-4 lg:px-5">
+    <div className="page-shell grid gap-3">
       <PageHeader
         eyebrow="Access"
         title="Authentication"

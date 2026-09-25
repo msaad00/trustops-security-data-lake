@@ -63,7 +63,7 @@ export default function DemoLandingPage() {
   const signIn = resolveSignInTarget(auth.data);
 
   return (
-    <div className="mx-auto grid w-full max-w-[1200px] min-w-0 gap-3 px-3 py-3 sm:px-4 lg:px-5">
+    <div className="page-shell grid gap-3">
       <PageHeader
         eyebrow="Hosted demo"
         title={`${BRAND.name} live demo`}

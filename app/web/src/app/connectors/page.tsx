@@ -247,7 +247,7 @@ export default function ConnectorsPage() {
   };
 
   return (
-    <div className="mx-auto grid w-full max-w-[1600px] min-w-0 gap-2 px-3 py-2 sm:px-4 lg:px-5">
+    <div className="page-shell grid gap-2">
       {onboarding && (
         <OnboardingGuideBanner
           step={1}

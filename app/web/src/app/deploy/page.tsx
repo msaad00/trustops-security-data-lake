@@ -54,7 +54,7 @@ const EDITIONS = [
 
 export default function DeployPage() {
   return (
-    <div className="mx-auto grid w-full max-w-[960px] min-w-0 gap-2 px-3 py-2 sm:px-4 lg:px-5">
+    <div className="page-shell grid gap-2">
       <PageHeader
         eyebrow="Platform"
         title="Deployment"

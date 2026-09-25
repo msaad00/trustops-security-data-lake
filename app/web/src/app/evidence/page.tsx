@@ -258,7 +258,7 @@ function EvidencePageContent() {
   });
 
   return (
-    <div className="mx-auto grid w-full max-w-[1500px] min-w-0 gap-3 px-3 py-3 sm:px-4 lg:px-5">
+    <div className="page-shell grid gap-3">
       <PageHeader
         eyebrow="Evidence room"
         title="Normalized evidence facts"
