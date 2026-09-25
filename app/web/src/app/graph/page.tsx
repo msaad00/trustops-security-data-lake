@@ -400,7 +400,7 @@ function GraphPageContent() {
       }
       const queue = [node.id];
       const seen = new Set(queue);
-      while (queue.length > 0 && !framework) {
+      while (queue.length > 0) {
         const current = graphIndex.nodesById.get(queue.shift()!);
         if (current?.kind === "control" && current.framework_id) {
           framework = current.framework_id;
