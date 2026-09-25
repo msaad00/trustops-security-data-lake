@@ -16,6 +16,7 @@ import {
   useEscalateStaleEvidenceMutation,
   useEvidenceFreshnessSummary,
 } from "@/lib/api/hooks";
+import { formatMinutes, plural } from "@/lib/format";
 import { notify } from "@/lib/toast";
 
 export function EvidenceFreshnessSlaPanel() {
@@ -26,7 +27,7 @@ export function EvidenceFreshnessSlaPanel() {
     try {
       const result = await escalate.mutateAsync(10);
       notify.success(
-        `Created ${result.created_count} remediation task(s) for SLA breaches`,
+        `Created ${plural(result.created_count, "remediation task")} for SLA breaches`,
       );
     } catch (err) {
       notify.error(String((err as Error).message));
@@ -34,7 +35,7 @@ export function EvidenceFreshnessSlaPanel() {
   };
 
   return (
-    <Card>
+    <Card data-testid="freshness-sla-panel">
       <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
         <div>
           <CardTitle className="flex items-center gap-2">
@@ -42,8 +43,9 @@ export function EvidenceFreshnessSlaPanel() {
             Evidence freshness SLA
           </CardTitle>
           <CardDescription>
-            Per-connector SLO windows flag stale, expired, and missing proof —
-            escalate breaches into owner tasks for audit prep.
+            Each source has a refresh target. Stale, expired, or missing
+            evidence is flagged — escalate breaches into owner tasks for audit
+            prep.
           </CardDescription>
         </div>
         <Button
@@ -93,7 +95,7 @@ export function EvidenceFreshnessSlaPanel() {
                 </div>
                 <div className="rounded-lg border border-line bg-panel p-3">
                   <div className="text-[10px] font-black uppercase text-muted">
-                    Tracked rows
+                    Tracked records
                   </div>
                   <div className="mt-1 text-2xl font-black text-ink">
                     {summary.data.total}
@@ -134,17 +136,20 @@ export function EvidenceFreshnessSlaPanel() {
                               : "ready"
                           }
                         >
-                          {row.status}
+                          {row.status.replaceAll("_", " ")}
                         </Badge>
                       </div>
                       <p className="text-xs text-muted">
-                        {row.evidence_count} rows · SLO{" "}
-                        {row.freshness_slo_minutes}m
+                        {plural(row.evidence_count, "record")} · refresh every{" "}
+                        {formatMinutes(row.freshness_slo_minutes)}
                       </p>
                     </div>
                     <span className="text-xs font-bold text-muted">
-                      {row.stale_count + row.expired_count + row.missing_count}{" "}
-                      breach(es)
+                      {plural(
+                        row.stale_count + row.expired_count + row.missing_count,
+                        "breach",
+                        "breaches",
+                      )}
                     </span>
                   </div>
                 ))}

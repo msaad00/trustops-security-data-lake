@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthMethods, useSessionFromKeyMutation } from "@/lib/api/hooks";
 import type { AuthMethod } from "@/lib/api/types";
 import { notify } from "@/lib/toast";
+import { docsUrl } from "@/lib/format";
 
 function BrowserMethodCard({ method }: { method: AuthMethod }) {
   return (
@@ -37,7 +38,7 @@ function BrowserMethodCard({ method }: { method: AuthMethod }) {
           )}
         </div>
       </div>
-      {method.setup_hint && (
+      {method.configured && method.setup_hint && (
         <p className="text-xs leading-5 text-muted">{method.setup_hint}</p>
       )}
       <div className="flex flex-wrap gap-2 text-[11px] text-muted">
@@ -168,8 +169,16 @@ export default function LoginPage() {
                       No browser SSO provider is configured.
                     </div>
                     <p className="mt-1 text-sm leading-6 text-muted">
-                      Mount OIDC or SAML environment variables on the server, or
-                      sign in below with an API key.
+                      Ask your admin to enable SSO, or sign in below with an API
+                      key.{" "}
+                      <a
+                        href={docsUrl("SERVER_AUTH.md")}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-bold text-brand hover:underline"
+                      >
+                        SSO setup guide
+                      </a>
                     </p>
                   </div>
                 </div>

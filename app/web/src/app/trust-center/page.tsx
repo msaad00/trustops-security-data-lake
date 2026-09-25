@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
+  CheckCircle2,
   ClipboardCopy,
+  ExternalLink,
   Loader2,
   Share2,
   ShieldCheck,
@@ -26,6 +29,8 @@ import {
 import { useAuditorMode } from "@/lib/state/auditor";
 import { notify } from "@/lib/toast";
 import type { TrustShare } from "@/lib/api/types";
+import { formatDateTime, formatRelative, plural } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 const HOURS_OPTIONS = [1, 4, 24, 24 * 7, 24 * 30];
 
@@ -52,26 +57,51 @@ const ACCESS_DEFAULTS = [
   },
 ];
 
-const TRUST_PACKAGES = [
+type ShareAudience = "customer" | "auditor";
+
+// `sensitivity` is the share's sensitivity ceiling; the public trust endpoint
+// drops violation and stale-control counts for "public" shares.
+const SHARE_AUDIENCES: Array<{
+  id: ShareAudience;
+  label: string;
+  audience: string;
+  visibility: string;
+  sensitivity: string;
+}> = [
   {
-    label: "Internal command",
-    audience: "Security, GRC, platform, and AI owners",
-    visibility: "Private evidence, owners, remediation notes, workflows.",
-    defaultScope: "tenant_internal",
-  },
-  {
-    label: "Auditor review",
-    audience: "External auditors and assessors",
-    visibility: "Read-only posture, evidence summaries, hashes, snapshots.",
-    defaultScope: "posture_full",
-  },
-  {
+    id: "customer",
     label: "Customer trust",
     audience: "Prospects, customers, and partner reviewers",
-    visibility: "Public summary, readiness status, approved artifacts.",
-    defaultScope: "public_summary",
+    visibility:
+      "Overall and per-framework readiness with scores. No violation or stale-control counts.",
+    sensitivity: "public",
+  },
+  {
+    id: "auditor",
+    label: "Auditor review",
+    audience: "External auditors and assessors",
+    visibility:
+      "Everything in customer trust, plus open-violation and stale-control counts.",
+    sensitivity: "internal",
   },
 ];
+
+function audienceLabel(sensitivity: string | null | undefined): string {
+  return (sensitivity ?? "public") === "public"
+    ? "Customer trust"
+    : "Auditor review";
+}
+
+function shareUrl(token: string): string {
+  if (typeof window === "undefined") return "";
+  return `${window.location.origin}/console/trust/${token}`;
+}
+
+function expiryLabel(hours: number): string {
+  if (hours === 1) return "1 hour";
+  if (hours < 24) return `${hours} hours`;
+  return `${hours / 24} day${hours === 24 ? "" : "s"}`;
+}
 
 export default function TrustCenterPage() {
   const auditor = useAuditorMode();
@@ -80,6 +110,7 @@ export default function TrustCenterPage() {
   const revoke = useRevokeTrustShare();
   const posture = usePosture();
   const [expiresInHours, setExpiresInHours] = useState(24);
+  const [audience, setAudience] = useState<ShareAudience>("customer");
   const [createdToken, setCreatedToken] = useState<TrustShare | null>(null);
 
   const flash = (msg: string) => notify.success(msg);
@@ -89,11 +120,13 @@ export default function TrustCenterPage() {
       const { share } = await createShare.mutateAsync({
         role: "auditor",
         scope: "posture_full",
-        sensitivity_ceiling: "public",
+        sensitivity_ceiling:
+          SHARE_AUDIENCES.find((item) => item.id === audience)?.sensitivity ??
+          "public",
         expires_in_hours: expiresInHours,
       });
       setCreatedToken(share);
-      flash(`Share issued. Copy the token now — it is never shown again.`);
+      flash("Share link created. Copy it now — it is only shown once.");
     } catch (err) {
       flash(`Create share failed: ${(err as Error).message}`);
     }
@@ -108,12 +141,14 @@ export default function TrustCenterPage() {
     }
   };
 
+  const createdUrl = createdToken?.token ? shareUrl(createdToken.token) : "";
+
   return (
     <div className="page-shell grid gap-4">
       <PageHeader
         eyebrow="Trust center"
         title="Trust assurance center"
-        description="Package the same evaluated posture for internal operators, auditors, and customer reviewers without leaking private evidence by default. Shares are scoped, expiring, revocable, and backed by hashed assessment state."
+        description="Share your evaluated posture with customers and auditors without exposing private evidence. Every link is read-only, expires automatically, and can be revoked."
         actions={
           <Badge tone="info" className="max-w-[180px]">
             <ShieldCheck className="mr-1 h-3 w-3" />{" "}
@@ -124,82 +159,137 @@ export default function TrustCenterPage() {
         }
       />
 
-      <section className="grid gap-2 md:grid-cols-3">
-        {TRUST_PACKAGES.map((item) => (
-          <Card key={item.label} className="p-4">
-            <div className="text-[10px] font-black uppercase tracking-wide text-brand">
-              {item.defaultScope}
-            </div>
-            <h2 className="mt-1 text-base font-black text-ink">{item.label}</h2>
-            <p className="mt-1 text-sm leading-5 text-muted">{item.audience}</p>
-            <div className="mt-3 rounded-lg border border-line bg-panel p-3 text-xs leading-5 text-muted">
-              {item.visibility}
-            </div>
-          </Card>
-        ))}
-      </section>
-
       <Card className="overflow-hidden">
         <CardHeader>
-          <CardTitle>Issue a new share</CardTitle>
+          <CardTitle>Share posture with a reviewer</CardTitle>
           <CardDescription>
-            Auditor role · scope <code>posture_full</code>. Token expires
-            automatically; shared data is capped at public summary by default
-            and can be revoked below at any time.
+            Pick who the link is for. Private evidence, owners, and notes are
+            never shared.
           </CardDescription>
         </CardHeader>
-        <div className="grid min-w-0 gap-3 p-4 pt-0 sm:grid-cols-[180px_auto_minmax(0,1fr)]">
-          <label className="grid gap-1 text-xs font-black uppercase tracking-wide text-muted">
-            Expires in
-            <select
-              aria-label="Share expiry window"
-              value={expiresInHours}
-              onChange={(e) => setExpiresInHours(Number(e.target.value))}
-              className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-extrabold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
-              disabled={auditor}
-            >
-              {HOURS_OPTIONS.map((h) => (
-                <option key={h} value={h}>
-                  {h === 1
-                    ? "1 hour"
-                    : h < 24
-                      ? `${h} hours`
-                      : `${h / 24} day${h === 24 ? "" : "s"}`}
-                </option>
-              ))}
-            </select>
-          </label>
-          <Button
-            variant="primary"
-            onClick={issue}
-            disabled={createShare.isPending || auditor}
+        <div className="grid gap-4 p-4 pt-0">
+          <div
+            role="group"
+            aria-label="Share audience"
+            className="grid gap-2 md:grid-cols-3"
           >
-            {createShare.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Share2 className="h-4 w-4" />
-            )}{" "}
-            Issue share
-          </Button>
-          {createdToken && (
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
-              <div className="flex items-center justify-between gap-2 font-black">
-                <span>New token (shown once)</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => copy(createdToken.token ?? "")}
+            {SHARE_AUDIENCES.map((item) => {
+              const selected = audience === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  aria-pressed={selected}
+                  disabled={auditor}
+                  onClick={() => setAudience(item.id)}
+                  className={cn(
+                    "grid min-w-0 content-start gap-1 rounded-xl border p-4 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand",
+                    selected
+                      ? "border-brand bg-brand/5 ring-1 ring-brand"
+                      : "border-line bg-surface hover:border-brand/40",
+                  )}
                 >
-                  <ClipboardCopy className="h-3 w-3" /> Copy
-                </Button>
+                  <span className="flex items-center justify-between gap-2">
+                    <span className="text-base font-black text-ink">
+                      {item.label}
+                    </span>
+                    {selected && (
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-brand" />
+                    )}
+                  </span>
+                  <span className="text-sm leading-5 text-muted">
+                    {item.audience}
+                  </span>
+                  <span className="mt-2 rounded-lg border border-line bg-panel p-3 text-xs leading-5 text-muted">
+                    {item.visibility}
+                  </span>
+                </button>
+              );
+            })}
+            <div className="grid min-w-0 content-start gap-1 rounded-xl border border-dashed border-line bg-surface p-4">
+              <span className="text-base font-black text-ink">
+                Internal team
+              </span>
+              <span className="text-sm leading-5 text-muted">
+                Security, GRC, platform, and AI owners
+              </span>
+              <span className="mt-2 rounded-lg border border-line bg-panel p-3 text-xs leading-5 text-muted">
+                Teammates sign in to the console with their own role — no share
+                link needed.{" "}
+                <Link
+                  href="/auth/#users"
+                  className="font-bold text-brand hover:underline"
+                >
+                  Manage users
+                </Link>
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-end gap-3">
+            <label className="grid w-full gap-1 text-xs font-black uppercase tracking-wide text-muted sm:w-[180px]">
+              Expires in
+              <select
+                aria-label="Share expiry window"
+                value={expiresInHours}
+                onChange={(e) => setExpiresInHours(Number(e.target.value))}
+                className="h-10 rounded-lg border border-line bg-surface px-3 text-sm font-extrabold normal-case tracking-normal text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                disabled={auditor}
+              >
+                {HOURS_OPTIONS.map((h) => (
+                  <option key={h} value={h}>
+                    {expiryLabel(h)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Button
+              variant="primary"
+              className="h-10"
+              onClick={issue}
+              disabled={createShare.isPending || auditor}
+            >
+              {createShare.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Share2 className="h-4 w-4" />
+              )}{" "}
+              Issue share
+            </Button>
+          </div>
+
+          {createdToken && createdUrl && (
+            <div className="grid min-w-0 gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
+              <div className="flex flex-wrap items-center justify-between gap-2 font-black">
+                <span>
+                  {audienceLabel(createdToken.sensitivity_ceiling)} link — shown
+                  once, copy it now
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => copy(createdUrl)}
+                  >
+                    <ClipboardCopy className="h-3 w-3" /> Copy link
+                  </Button>
+                  <Button asChild variant="default" size="sm">
+                    <a
+                      href={createdUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <ExternalLink className="h-3 w-3" /> Open preview
+                    </a>
+                  </Button>
+                </div>
               </div>
-              <code className="mt-2 block break-all rounded bg-surface p-2 font-mono text-[11px] text-ink">
-                {createdToken.token}
+              <code className="block break-all rounded bg-surface p-2 font-mono text-[11px] text-ink">
+                {createdUrl}
               </code>
-              <div className="mt-1">
-                share_id{" "}
-                <code className="text-ink">{createdToken.share_id}</code> ·
-                expires {createdToken.expires_at}
+              <div>
+                Expires {formatRelative(createdToken.expires_at)} (
+                {formatDateTime(createdToken.expires_at)})
               </div>
             </div>
           )}
@@ -210,9 +300,9 @@ export default function TrustCenterPage() {
         <CardHeader>
           <CardTitle>Access and data boundaries</CardTitle>
           <CardDescription>
-            Recommended default: require auth in server mode, resolve every
-            request to one tenant, gate actions by role, and share externally
-            through expiring auditor tokens.
+            Recommended default: require sign-in, keep each workspace separate,
+            gate actions by role, and share externally only through expiring
+            links.
           </CardDescription>
         </CardHeader>
         <div className="grid gap-2 p-4 pt-0 md:grid-cols-5">
@@ -234,10 +324,12 @@ export default function TrustCenterPage() {
 
       <Card className="overflow-hidden">
         <CardHeader>
-          <CardTitle>{(shares.data ?? []).length} active shares</CardTitle>
+          <CardTitle>
+            {plural((shares.data ?? []).length, "active share")}
+          </CardTitle>
           <CardDescription>
-            Revoking a share appends a revocation record; future probes with
-            that token fail and the share drops from this list.
+            Revoking a link stops it working immediately and removes it from
+            this list. The revocation stays in the audit log.
           </CardDescription>
         </CardHeader>
         <div className="grid gap-2 p-5 pt-0">
@@ -253,23 +345,24 @@ export default function TrustCenterPage() {
             >
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <code className="font-black text-ink">{share.share_id}</code>
+                  <span className="font-black text-ink">
+                    {audienceLabel(share.sensitivity_ceiling)}
+                  </span>
                   <Badge tone={share.expired ? "critical" : "ready"}>
-                    {share.expired ? "expired" : "active"}
-                  </Badge>
-                  <Badge>{share.scope}</Badge>
-                  <Badge tone="info">
-                    sensitivity {share.sensitivity_ceiling ?? "public"}
+                    {share.expired ? "Expired" : "Active"}
                   </Badge>
                 </div>
                 <div className="mt-1 text-xs text-muted">
-                  created by <b className="text-ink">{share.created_by}</b> at{" "}
-                  {share.created_at} · expires {share.expires_at}
+                  Created by <b className="text-ink">{share.created_by}</b>{" "}
+                  {formatDateTime(share.created_at)} ·{" "}
+                  {share.expired ? "expired" : "expires"}{" "}
+                  {formatRelative(share.expires_at)}
                 </div>
-                <div className="mt-1 text-[10px] text-muted">
+                <div className="mt-1 text-[10px] text-muted [overflow-wrap:anywhere]">
+                  ID <code className="text-ink">{share.share_id}</code> · token
                   hash{" "}
                   <code className="text-ink">
-                    {share.token_sha256.slice(0, 24)}…
+                    {share.token_sha256.slice(0, 12)}…
                   </code>
                 </div>
               </div>
@@ -280,7 +373,7 @@ export default function TrustCenterPage() {
                 onClick={async () => {
                   try {
                     await revoke.mutateAsync(share.share_id);
-                    flash(`Revoked ${share.share_id}.`);
+                    flash("Share link revoked.");
                   } catch (err) {
                     flash(`Revoke failed: ${(err as Error).message}`);
                   }

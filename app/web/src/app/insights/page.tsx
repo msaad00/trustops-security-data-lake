@@ -27,6 +27,7 @@ import { EvidenceFreshnessTrendChart } from "@/components/insights/EvidenceFresh
 import { FrameworkReadinessTrendChart } from "@/components/insights/FrameworkReadinessTrendChart";
 import { SlaHeatmapPanel } from "@/components/insights/SlaHeatmapPanel";
 import { QueryState } from "@/components/QueryState";
+import { docsUrl } from "@/lib/format";
 
 function fmtDate(iso: string): string {
   const d = new Date(iso);
@@ -38,14 +39,18 @@ function fmt(v: number | null | undefined, digits = 1, suffix = ""): string {
   return `${v.toFixed(digits)}${suffix}`;
 }
 
+const NO_RESOLVED_TASKS_HINT = "Appears after the first task is resolved.";
+
 function StatCard({
   label,
   value,
   tone,
+  hint,
 }: {
   label: string;
   value: string;
   tone?: "ok" | "warn" | "bad";
+  hint?: string;
 }) {
   const bg =
     tone === "bad"
@@ -65,6 +70,7 @@ function StatCard({
         {label}
       </div>
       <div className={`mt-1 text-3xl font-black ${text}`}>{value}</div>
+      {hint && <p className="mt-1 text-xs leading-5 text-muted">{hint}</p>}
     </div>
   );
 }
@@ -96,13 +102,17 @@ export default function InsightsPage() {
             Metrics &amp; trends
           </h1>
           <p className="mt-2 max-w-[720px] text-sm text-muted">
-            Time-series posture score, framework readiness, evidence freshness,
-            MTTR, and SLA attainment. Capture a snapshot on demand or wire the
-            scheduler to run{" "}
-            <code className="rounded bg-surfaceMuted px-1 text-[11px]">
-              POST /api/v1/insights/capture
-            </code>{" "}
-            daily.
+            Posture score, framework readiness, evidence freshness, mean time to
+            resolve (MTTR), and SLA attainment over time. Capture a data point
+            now, or schedule a daily capture so trends fill in on their own.{" "}
+            <a
+              href={docsUrl("api/AGENT_API.md")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-brand hover:underline"
+            >
+              API reference
+            </a>
           </p>
         </div>
         <Button
@@ -131,6 +141,9 @@ export default function InsightsPage() {
             <StatCard
               label="MTTR"
               value={fmt(ins?.mttr_hours, 1, " h")}
+              hint={
+                ins?.mttr_hours == null ? NO_RESOLVED_TASKS_HINT : undefined
+              }
               tone={
                 ins?.mttr_hours != null && ins.mttr_hours > 72 ? "warn" : "ok"
               }
@@ -138,6 +151,11 @@ export default function InsightsPage() {
             <StatCard
               label="SLA attainment"
               value={fmt(ins?.sla_attainment_pct, 0, " %")}
+              hint={
+                ins?.sla_attainment_pct == null
+                  ? NO_RESOLVED_TASKS_HINT
+                  : undefined
+              }
               tone={
                 ins?.sla_attainment_pct != null && ins.sla_attainment_pct < 80
                   ? "bad"
@@ -163,8 +181,8 @@ export default function InsightsPage() {
             >
               {chartData.length === 0 ? (
                 <div className="flex h-full items-center justify-center py-6 text-center text-sm text-muted">
-                  No snapshots yet — click &ldquo;Capture now&rdquo; to record
-                  the first point.
+                  No data points yet — click &ldquo;Capture now&rdquo; to record
+                  the first one.
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
@@ -229,7 +247,7 @@ export default function InsightsPage() {
             >
               {chartData.length === 0 ? (
                 <div className="flex h-full items-center justify-center py-6 text-center text-sm text-muted">
-                  No data yet.
+                  No data points yet — capture one to start the trend.
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">

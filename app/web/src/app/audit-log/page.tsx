@@ -13,8 +13,13 @@ import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { useAuditLog } from "@/lib/api/hooks";
 import type { AuditLogEntry } from "@/lib/api/types";
+import { formatDateTime, plural } from "@/lib/format";
 
-const CATEGORIES: Array<AuditLogEntry["category"] | "all"> = [
+const PAGE_LIMIT = 200;
+
+type Category = AuditLogEntry["category"];
+
+const CATEGORIES: Array<Category | "all"> = [
   "all",
   "triage",
   "connector",
@@ -24,8 +29,27 @@ const CATEGORIES: Array<AuditLogEntry["category"] | "all"> = [
   "request",
 ];
 
+const CATEGORY_LABEL: Record<Category | "all", string> = {
+  all: "All",
+  triage: "Triage",
+  connector: "Connectors",
+  snapshot: "Snapshots",
+  workflow: "Workflows",
+  trust_share: "Trust shares",
+  request: "API requests",
+};
+
+const CATEGORY_BADGE: Record<Category, string> = {
+  triage: "Triage",
+  connector: "Connector",
+  snapshot: "Snapshot",
+  workflow: "Workflow",
+  trust_share: "Trust share",
+  request: "API request",
+};
+
 const CATEGORY_TONE: Record<
-  AuditLogEntry["category"],
+  Category,
   "info" | "ready" | "attention" | "critical" | "default"
 > = {
   triage: "attention",
@@ -42,6 +66,7 @@ function Row({ entry }: { entry: AuditLogEntry }) {
     <div className="rounded-xl border border-line bg-surface">
       <button
         type="button"
+        aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
         className="grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 p-3 text-left"
       >
@@ -52,19 +77,22 @@ function Row({ entry }: { entry: AuditLogEntry }) {
         )}
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge tone={CATEGORY_TONE[entry.category]}>{entry.category}</Badge>
+            <Badge tone={CATEGORY_TONE[entry.category]}>
+              {CATEGORY_BADGE[entry.category] ?? entry.category}
+            </Badge>
             <span className="min-w-0 font-black text-ink [overflow-wrap:anywhere]">
               {entry.summary}
             </span>
           </div>
           <div className="mt-1 text-xs text-muted [overflow-wrap:anywhere]">
-            <code className="break-all text-[10px] text-ink">
-              {entry.event_id}
-            </code>
-            {" · "}
-            actor <b className="text-ink">{entry.actor}</b> · subject{" "}
-            <code className="text-ink">{entry.subject}</code> ·{" "}
-            {entry.occurred_at}
+            <time dateTime={entry.occurred_at}>
+              {formatDateTime(entry.occurred_at)}
+            </time>{" "}
+            · by <b className="text-ink">{entry.actor}</b> · on{" "}
+            <code className="text-ink">{entry.subject}</code>
+          </div>
+          <div className="mt-0.5 text-[10px] text-muted">
+            Event <code className="break-all">{entry.event_id}</code>
           </div>
         </div>
         {entry.result && <Badge>{entry.result}</Badge>}
@@ -84,34 +112,45 @@ export default function AuditLogPage() {
   const [category, setCategory] = useState<(typeof CATEGORIES)[number]>("all");
   const log = useAuditLog({
     category: category === "all" ? undefined : category,
-    limit: 200,
+    limit: PAGE_LIMIT,
   });
+  // Chip counts come from the unfiltered stream so switching categories does
+  // not zero the others out.
+  const all = useAuditLog({ limit: PAGE_LIMIT });
 
   const entries = log.data ?? [];
-  const totals = entries.reduce<Record<string, number>>((acc, e) => {
+  const allEntries = all.data ?? [];
+  const totals = allEntries.reduce<Record<string, number>>((acc, e) => {
     acc[e.category] = (acc[e.category] ?? 0) + 1;
     return acc;
   }, {});
+  const truncated = entries.length >= PAGE_LIMIT;
 
   return (
     <div className="page-shell grid gap-5">
       <PageHeader
         eyebrow="Audit log"
         title="Console activity"
-        description="Every posture-changing event in one stream: triage decisions, connector configuration and probes, snapshot freezes, workflow runs, and trust-share lifecycle. All entries come from append-only logs in gold/."
+        description="Every posture-changing event in one stream: triage decisions, connector setup and tests, snapshots, workflow runs, and trust-share links. Entries are append-only and cannot be edited."
         actions={
           <Badge tone="info">
-            <Activity className="mr-1 h-3 w-3" /> {entries.length} entries
+            <Activity className="mr-1 h-3 w-3" />{" "}
+            {plural(entries.length, "entry", "entries")}
           </Badge>
         }
       />
 
       <Card className="overflow-hidden">
-        <div className="flex flex-wrap items-center gap-2 p-3">
+        <div
+          role="group"
+          aria-label="Filter by category"
+          className="flex flex-wrap items-center gap-2 p-3"
+        >
           {CATEGORIES.map((c) => (
             <button
               key={c}
               type="button"
+              aria-pressed={category === c}
               onClick={() => setCategory(c)}
               className={[
                 "rounded-full border px-3 py-1.5 text-xs font-black",
@@ -120,9 +159,8 @@ export default function AuditLogPage() {
                   : "border-line bg-surface text-muted hover:border-brand",
               ].join(" ")}
             >
-              {c === "all"
-                ? `all (${entries.length})`
-                : `${c} (${totals[c] ?? 0})`}
+              {CATEGORY_LABEL[c]} (
+              {c === "all" ? allEntries.length : (totals[c] ?? 0)})
             </button>
           ))}
         </div>
@@ -131,23 +169,22 @@ export default function AuditLogPage() {
       <QueryState queries={log} label="audit log">
         <Card className="overflow-hidden">
           <CardHeader>
-            <CardTitle>{entries.length} events</CardTitle>
+            <CardTitle>{plural(entries.length, "event")}</CardTitle>
             <CardDescription>
-              Newest first. Click any row to expand its raw payload.
+              Newest first
+              {truncated ? `, latest ${PAGE_LIMIT} shown` : ""}. Click any row
+              to see its full record.
             </CardDescription>
           </CardHeader>
           <div className="grid gap-2 p-5 pt-0">
             {entries.length === 0 && (
               <div className="rounded-lg border border-dashed border-line p-4 text-sm text-muted">
-                No events match this category yet. Configure a connector, triage
-                a violation, or run a workflow.
+                No events in this category yet. Configure a connector, triage a
+                violation, or run a workflow.
               </div>
             )}
-            {entries.map((entry) => (
-              <Row
-                key={entry.occurred_at + entry.subject + entry.category}
-                entry={entry}
-              />
+            {entries.map((entry, index) => (
+              <Row key={`${entry.event_id}-${index}`} entry={entry} />
             ))}
           </div>
         </Card>

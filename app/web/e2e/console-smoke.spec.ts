@@ -117,8 +117,10 @@ test.describe("console smoke", () => {
     await expect(
       page.getByText("These rows are evidence facts, not reports."),
     ).toBeVisible();
-    await expect(page.getByText("Security data lake layers")).toBeVisible();
-    await expect(page.getByText("Bronze raw -> Silver facts")).toBeVisible();
+    await expect(page.getByText("How evidence flows")).toBeVisible();
+    await expect(
+      page.getByText("This page shows the normalized facts."),
+    ).toBeVisible();
     await expect(
       page.getByRole("link", { name: "Manage schedules" }),
     ).toBeVisible();

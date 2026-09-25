@@ -19,6 +19,7 @@ import type {
   VendorAssessment,
   VendorAssessmentStatus,
   VendorQuestionnaireQuestion,
+  VendorQuestionnaireTemplateSummary,
   VendorRiskLevel,
 } from "@/lib/api/types";
 
@@ -64,26 +65,38 @@ function responseAnswer(
   return "";
 }
 
+const VENDOR_NAME_INPUT_ID = "vendor-name";
+
 function CreateAssessmentForm({
+  templates,
   defaultTemplateId,
 }: {
+  templates: VendorQuestionnaireTemplateSummary[];
   defaultTemplateId: string;
 }) {
   const create = useCreateVendorAssessmentMutation();
   const [vendorName, setVendorName] = useState("");
   const [templateId, setTemplateId] = useState(defaultTemplateId);
   const [owner, setOwner] = useState("");
+  const [nameError, setNameError] = useState(false);
+  const selectedTemplateId = templateId || defaultTemplateId;
 
   return (
     <form
-      className="flex flex-wrap items-end gap-3"
+      noValidate
+      className="flex flex-wrap items-start gap-3"
       onSubmit={(e) => {
         e.preventDefault();
-        if (!vendorName.trim() || !templateId) return;
+        if (!vendorName.trim()) {
+          setNameError(true);
+          document.getElementById(VENDOR_NAME_INPUT_ID)?.focus();
+          return;
+        }
+        if (!selectedTemplateId) return;
         create.mutate(
           {
             vendor_name: vendorName.trim(),
-            template_id: templateId,
+            template_id: selectedTemplateId,
             owner: owner.trim(),
           },
           {
@@ -95,23 +108,43 @@ function CreateAssessmentForm({
         );
       }}
     >
-      <label className="flex flex-col gap-1 text-xs text-muted">
-        Vendor name
+      <div className="flex flex-col gap-1 text-xs text-muted">
+        <label htmlFor={VENDOR_NAME_INPUT_ID}>Vendor name</label>
         <input
-          className={inputClass}
+          id={VENDOR_NAME_INPUT_ID}
+          className={`${inputClass} ${nameError ? "border-critical" : ""}`}
           value={vendorName}
-          onChange={(e) => setVendorName(e.target.value)}
+          aria-invalid={nameError}
+          aria-describedby={nameError ? "vendor-name-error" : undefined}
+          onChange={(e) => {
+            setVendorName(e.target.value);
+            if (e.target.value.trim()) setNameError(false);
+          }}
           placeholder="Acme SaaS"
         />
-      </label>
+        {nameError && (
+          <span
+            id="vendor-name-error"
+            role="alert"
+            className="font-bold text-critical"
+          >
+            Enter a vendor name.
+          </span>
+        )}
+      </div>
       <label className="flex flex-col gap-1 text-xs text-muted">
         Template
-        <input
+        <select
           className={inputClass}
-          value={templateId}
+          value={selectedTemplateId}
           onChange={(e) => setTemplateId(e.target.value)}
-          placeholder="soc2-vendor-standard"
-        />
+        >
+          {templates.map((template) => (
+            <option key={template.template_id} value={template.template_id}>
+              {template.name}
+            </option>
+          ))}
+        </select>
       </label>
       <label className="flex flex-col gap-1 text-xs text-muted">
         Owner (optional)
@@ -122,7 +155,12 @@ function CreateAssessmentForm({
           placeholder="security@company.com"
         />
       </label>
-      <Button type="submit" variant="primary" disabled={create.isPending}>
+      <Button
+        type="submit"
+        variant="primary"
+        className="mt-5"
+        disabled={create.isPending || templates.length === 0}
+      >
         {create.isPending ? "Creating…" : "New assessment"}
       </Button>
     </form>
@@ -177,7 +215,13 @@ function QuestionRow({
   );
 }
 
-function AssessmentDetail({ assessmentId }: { assessmentId: string }) {
+function AssessmentDetail({
+  assessmentId,
+  templateName,
+}: {
+  assessmentId: string;
+  templateName: (id: string) => string;
+}) {
   const detail = useVendorAssessment(assessmentId);
   const update = useUpdateVendorAssessmentMutation(assessmentId);
   const submit = useSubmitVendorAssessmentMutation();
@@ -227,8 +271,8 @@ function AssessmentDetail({ assessmentId }: { assessmentId: string }) {
         </CardTitle>
       </CardHeader>
       <p className="text-xs text-muted">
-        Template {assessment.template_id} · due {fmtDate(assessment.due_at)} ·
-        updated {fmtDate(assessment.updated_at)}
+        {templateName(assessment.template_id)} · due{" "}
+        {fmtDate(assessment.due_at)} · updated {fmtDate(assessment.updated_at)}
       </p>
 
       {questions.length ? (
@@ -288,10 +332,12 @@ function AssessmentDetail({ assessmentId }: { assessmentId: string }) {
 
 function AssessmentRow({
   assessment,
+  templateName,
   selected,
   onSelect,
 }: {
   assessment: VendorAssessment;
+  templateName: string;
   selected: boolean;
   onSelect: () => void;
 }) {
@@ -319,7 +365,7 @@ function AssessmentRow({
         </div>
       </div>
       <p className="mt-1 text-xs text-muted">
-        {assessment.template_id}
+        {templateName}
         {assessment.score != null ? ` · score ${assessment.score}` : ""}
       </p>
     </button>
@@ -330,8 +376,9 @@ export default function VendorRiskPage() {
   const templates = useVendorQuestionnaires();
   const assessments = useVendorAssessments();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const defaultTemplateId =
-    templates.data?.[0]?.template_id ?? "soc2-vendor-standard";
+  const defaultTemplateId = templates.data?.[0]?.template_id ?? "";
+  const templateName = (id: string) =>
+    templates.data?.find((t) => t.template_id === id)?.name ?? id;
 
   return (
     <div className="page-shell space-y-6">
@@ -354,7 +401,7 @@ export default function VendorRiskPage() {
               >
                 <p className="font-medium text-ink">{template.name}</p>
                 <p className="text-xs text-muted">
-                  {template.template_id} · {template.question_count} questions
+                  {template.question_count} questions
                 </p>
                 <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted">
                   <Badge
@@ -383,7 +430,10 @@ export default function VendorRiskPage() {
             <CardTitle>New vendor assessment</CardTitle>
           </CardHeader>
           <div className="mt-3">
-            <CreateAssessmentForm defaultTemplateId={defaultTemplateId} />
+            <CreateAssessmentForm
+              templates={templates.data ?? []}
+              defaultTemplateId={defaultTemplateId}
+            />
           </div>
         </Card>
 
@@ -394,17 +444,42 @@ export default function VendorRiskPage() {
                 <AssessmentRow
                   key={row.id}
                   assessment={row}
+                  templateName={templateName(row.template_id)}
                   selected={row.id === selectedId}
                   onSelect={() => setSelectedId(row.id)}
                 />
               ))
             ) : (
-              <p className="text-sm text-muted">No vendor assessments yet.</p>
+              <Card className="grid gap-3 border-dashed p-5">
+                <p className="text-sm font-bold text-ink">
+                  Start your first vendor review
+                </p>
+                <p className="text-sm leading-6 text-muted">
+                  Add a vendor above, pick a questionnaire, then answer or send
+                  the questions. Submitting scores the vendor&apos;s risk
+                  against your third-party controls.
+                </p>
+                <div>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() =>
+                      document.getElementById(VENDOR_NAME_INPUT_ID)?.focus()
+                    }
+                  >
+                    Start a vendor review
+                  </Button>
+                </div>
+              </Card>
             )}
           </div>
           <div>
             {selectedId ? (
-              <AssessmentDetail assessmentId={selectedId} />
+              <AssessmentDetail
+                key={selectedId}
+                assessmentId={selectedId}
+                templateName={templateName}
+              />
             ) : (
               <Card className="p-5 text-sm text-muted">
                 Select an assessment to answer its questionnaire.

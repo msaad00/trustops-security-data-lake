@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import threading
 import urllib.error
 import urllib.request
@@ -132,6 +133,13 @@ def test_action_catalog_includes_all_nodes() -> None:
         assert action["kind"] in {"trigger", "check", "gate", "action"}
         assert action["input_schema"]
         assert action["output_schema"]
+
+
+def test_action_catalog_descriptions_use_plain_language() -> None:
+    """Node descriptions render in the workflow builder; keep internals out."""
+    internal = re.compile(r"TRUSTOPS_|gold/|silver|bronze|\bPOST /|/rest/api/")
+    for action in action_catalog():
+        assert not internal.search(action["description"]), (action["node_type"], action["description"])
 
 
 def test_run_action_check_evidence_exists(tmp_path: Path) -> None:

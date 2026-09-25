@@ -57,9 +57,10 @@ type EvidenceRow = NormalizedEvent & { freshness?: EvidenceFreshness };
 const helper = createColumnHelper<typeof sortableTableFeatures, EvidenceRow>();
 const handoffCards = [
   {
-    title: "Security data lake layers",
-    detail: "Bronze raw -> Silver facts -> Gold posture.",
-    note: "This page shows Silver facts.",
+    title: "How evidence flows",
+    detail:
+      "Raw records are collected, normalized into facts, then scored as posture.",
+    note: "This page shows the normalized facts.",
     Icon: Database,
   },
   {
@@ -72,7 +73,7 @@ const handoffCards = [
   },
   {
     title: "Reports and proof packs",
-    detail: "Audit room exports PDF/proof packs from gold posture.",
+    detail: "Audit room exports PDF and proof packs from scored posture.",
     note: "Use these for auditor review.",
     href: "/audit-room",
     action: "Open audit room",
@@ -262,7 +263,7 @@ function EvidencePageContent() {
       <PageHeader
         eyebrow="Evidence room"
         title="Normalized evidence facts"
-        description="These rows are evidence facts, not reports. Click a row to verify its SHA-256 hash against the immutable bronze record server-side."
+        description="These rows are evidence facts, not reports. Click a row to verify its SHA-256 hash against the original, unaltered record."
         actions={
           <span className="rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-black text-muted">
             {staleCount > 0 ? (
@@ -338,9 +339,9 @@ function EvidencePageContent() {
           <CardHeader>
             <CardTitle>{filtered.length} matching records</CardTitle>
             <CardDescription>
-              All rows are append-only silver facts written from immutable
-              bronze evidence. Freshness comes from the gold freshness SLA
-              artifact agents can query directly.
+              Every row is an append-only fact normalized from the original,
+              unaltered evidence record. Freshness is checked against each
+              source&apos;s refresh target.
             </CardDescription>
           </CardHeader>
           {/* tabIndex makes the horizontal scroll reachable by keyboard;

@@ -158,22 +158,42 @@ export function UsersPanel() {
       </CardHeader>
       <CardContent className="grid gap-3">
         <QueryState queries={[users]} label="users">
-          {(users.data ?? []).map((row) => (
-            <UserRow
-              key={row.id}
-              row={row}
-              currentUserId={whoami.data?.user_id}
-              saving={updateUser.isPending}
-              onSave={save}
-            />
-          ))}
+          {(users.data ?? []).length === 0 ? (
+            <div className="grid gap-2 rounded-lg border border-dashed border-line bg-surfaceMuted p-4 text-sm">
+              <p className="font-black text-ink">No users yet</p>
+              <p className="text-muted">
+                Invite teammates below, or let them sign in with SSO — they
+                appear here after their first sign-in.
+              </p>
+              <div>
+                <Button asChild size="sm" variant="default">
+                  <a href="#invites">Invite a teammate</a>
+                </Button>
+              </div>
+            </div>
+          ) : (
+            (users.data ?? []).map((row) => (
+              <UserRow
+                key={row.id}
+                row={row}
+                currentUserId={whoami.data?.user_id}
+                saving={updateUser.isPending}
+                onSave={save}
+              />
+            ))
+          )}
         </QueryState>
-        <p className="text-xs leading-5 text-muted">
-          IdP group → role mapping uses{" "}
-          <code className="text-ink">TRUSTOPS_OIDC_ROLE_MAP</code> on SSO login
-          when sync is enabled. Manual changes here override until the next IdP
-          sync if configured.
-        </p>
+        <details className="text-xs leading-5 text-muted">
+          <summary className="w-fit cursor-pointer font-bold text-muted hover:text-ink">
+            Details
+          </summary>
+          <p className="mt-1">
+            SSO group → role mapping uses{" "}
+            <code className="text-ink">TRUSTOPS_OIDC_ROLE_MAP</code> on the
+            server when sync is enabled. Manual changes here hold until the next
+            SSO sign-in re-syncs roles.
+          </p>
+        </details>
       </CardContent>
     </Card>
   );

@@ -218,3 +218,46 @@ def test_trust_share_api_honors_idempotency_header(tmp_path: Path) -> None:
     assert replay.json()["share"]["share_id"] == first.json()["share"]["share_id"]
     assert replay.json()["share"]["idempotent_replay"] is True
     assert "token" not in replay.json()["share"]
+
+
+_DETAIL_POSTURE_KEYS = {
+    "open_violation_count",
+    "critical_violation_count",
+    "high_violation_count",
+    "stale_control_count",
+}
+_DETAIL_FRAMEWORK_KEYS = {"failing_control_count", "stale_control_count"}
+
+
+def test_public_summary_share_hides_violation_and_stale_counts(tmp_path: Path) -> None:
+    """A customer-facing (public ceiling) share carries readiness, not defect counts."""
+    _seed_lake(tmp_path)
+    share = trust_share.create_share(tmp_path, role="auditor", expires_in_hours=24, sensitivity_ceiling="public")
+    client = TestClient(create_app(tmp_path, require_auth=True))
+
+    body = client.get(f"/api/public/trust/{share['token']}").json()
+
+    assert body["detail_level"] == "summary"
+    assert not _DETAIL_POSTURE_KEYS & set(body["posture"])
+    assert body["posture"]["framework_count"] is not None
+    assert body["frameworks"]
+    for row in body["frameworks"]:
+        assert not _DETAIL_FRAMEWORK_KEYS & set(row)
+        assert "control_count" in row
+
+
+def test_auditor_share_above_public_ceiling_includes_counts(tmp_path: Path) -> None:
+    """An auditor share issued at an internal ceiling keeps the defect counts."""
+    _seed_lake(tmp_path)
+    share = trust_share.create_share(tmp_path, role="auditor", expires_in_hours=24, sensitivity_ceiling="internal")
+    client = TestClient(create_app(tmp_path, require_auth=True))
+
+    body = client.get(f"/api/public/trust/{share['token']}").json()
+
+    assert body["detail_level"] == "detailed"
+    assert body["sensitivity_ceiling"] == "internal"
+    assert set(body["posture"]) >= _DETAIL_POSTURE_KEYS
+    for row in body["frameworks"]:
+        assert set(row) >= _DETAIL_FRAMEWORK_KEYS
+    leaked = _FORBIDDEN_KEYS & _walk_keys(body)
+    assert not leaked

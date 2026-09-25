@@ -1,11 +1,13 @@
 "use client";
 
-import { ClipboardCopy, Terminal } from "lucide-react";
+import Link from "next/link";
+import { ClipboardCopy, GitBranch, KeyRound, Terminal } from "lucide-react";
 import { TrustOpsLogo } from "@/components/brand/TrustOpsLogo";
 import { TrustOpsMark } from "@/components/brand/TrustOpsMark";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BRAND } from "@/lib/brand";
+import { docsUrl } from "@/lib/format";
 import { notify } from "@/lib/toast";
 
 const MCP_TOOLS = [
@@ -31,6 +33,18 @@ const CURSOR_CONFIG = `{
     }
   }
 }`;
+
+// Mirrors docs/playbooks/CI_POSTURE_GATE.md; keep inputs in sync with
+// .github/actions/posture-gate/action.yml.
+const CI_GATE_STEP = `- name: TrustOps posture gate
+  uses: ./.github/actions/posture-gate
+  with:
+    trustops-url: \${{ secrets.TRUSTOPS_URL }}
+    api-token: \${{ secrets.TRUSTOPS_API_TOKEN }}
+    correlation-id: pr-\${{ github.event.pull_request.number }}-\${{ github.run_id }}
+    min-score: "70"
+    max-critical-violations: "0"
+    max-failing-control-tests: "0"`;
 
 export function McpSetupStrip() {
   const copy = async (text: string, label: string) => {
@@ -99,7 +113,51 @@ export function McpSetupStrip() {
           >
             {CURSOR_CONFIG}
           </pre>
+          <p className="flex flex-wrap items-center gap-x-2 text-xs text-muted">
+            Replace <code className="text-ink">tops_...</code> with an API key.
+            <Link
+              href="/auth/#api-keys"
+              className="inline-flex items-center gap-1 font-bold text-brand hover:underline"
+            >
+              <KeyRound className="h-3.5 w-3.5" />
+              Create key
+            </Link>
+          </p>
         </div>
+      </div>
+      <div className="grid min-w-0 gap-2 rounded-xl border border-line bg-surfaceMuted p-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wide text-muted">
+            <GitBranch className="h-3.5 w-3.5" />
+            GitHub Actions posture gate
+          </span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => copy(CI_GATE_STEP, "CI step")}
+          >
+            <ClipboardCopy className="h-3.5 w-3.5" />
+            Copy
+          </Button>
+        </div>
+        <p className="text-xs leading-5 text-muted">
+          Fail a pull request when posture drops below your thresholds. Store
+          the server URL and a read-only API key as repository secrets.{" "}
+          <a
+            href={docsUrl("playbooks/CI_POSTURE_GATE.md")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-bold text-brand hover:underline"
+          >
+            CI gate guide
+          </a>
+        </p>
+        <pre
+          className="max-h-48 overflow-auto rounded-lg bg-[#07111e] p-3 text-xs text-slate-100"
+          tabIndex={0}
+        >
+          {CI_GATE_STEP}
+        </pre>
       </div>
       <div className="flex min-w-0 flex-wrap gap-2">
         {MCP_TOOLS.map((tool) => (
@@ -112,13 +170,31 @@ export function McpSetupStrip() {
           </span>
         ))}
       </div>
-      <p className="text-xs text-muted">
-        Example config:{" "}
-        <code className="text-ink">examples/mcp/mcp.json.example</code> in the
-        repo. Set <code className="text-ink">TRUSTOPS_PUBLIC_URL</code> on
-        hosted servers so remote MCP clients fetch the logo from{" "}
-        <code className="text-ink">/brand/trustops-mark.svg</code>.
-      </p>
+      <details className="text-xs leading-5 text-muted">
+        <summary className="w-fit cursor-pointer font-bold hover:text-ink">
+          Details
+        </summary>
+        <div className="mt-1 grid gap-1">
+          <p>
+            Example config:{" "}
+            <code className="text-ink">examples/mcp/mcp.json.example</code> in
+            the repo. Set <code className="text-ink">TRUSTOPS_PUBLIC_URL</code>{" "}
+            on hosted servers so remote MCP clients fetch the logo from{" "}
+            <code className="text-ink">/brand/trustops-mark.svg</code>.
+          </p>
+          <p>
+            Skill bundles and their routes:{" "}
+            <a
+              href={docsUrl("api/AGENT_SKILLS.md")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-brand hover:underline"
+            >
+              AGENT_SKILLS.md
+            </a>
+          </p>
+        </div>
+      </details>
     </section>
   );
 }

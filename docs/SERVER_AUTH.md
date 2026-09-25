@@ -204,7 +204,11 @@ Recommended default ceilings:
 Trust-share records include a `sensitivity_ceiling` and default to `public`.
 The public trust endpoint returns a curated posture summary tagged
 `sensitivity=public`, `visibility=external_reviewer`, and
-`redaction_policy=trustops.public_summary.v1`.
+`redaction_policy=trustops.public_summary.v1`. A share at the `public`
+ceiling (customer trust) returns score, readiness state, and control counts
+only (`detail_level=summary`); open-violation and stale-control counts are
+included only for shares issued above `public`, such as an auditor review at
+`internal` (`detail_level=detailed`).
 
 ## Integrity, idempotency, and API errors
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,7 +36,13 @@ const STATUS_TONE: Record<
   archived: "attention",
 };
 
-function AdoptTemplateForm({ template }: { template: PolicyTemplateSummary }) {
+function AdoptTemplateForm({
+  template,
+  onAdopted,
+}: {
+  template: PolicyTemplateSummary;
+  onAdopted: (doc: PolicyDocument) => void;
+}) {
   const adopt = useAdoptPolicyMutation();
   const [companyName, setCompanyName] = useState("Acme Corp");
   const [owner, setOwner] = useState("security@company.com");
@@ -54,11 +60,14 @@ function AdoptTemplateForm({ template }: { template: PolicyTemplateSummary }) {
         for (const key of template.variables) {
           if (!(key in variables)) variables[key] = "";
         }
-        adopt.mutate({
-          template_id: template.template_id,
-          variables,
-          owner: owner.trim(),
-        });
+        adopt.mutate(
+          {
+            template_id: template.template_id,
+            variables,
+            owner: owner.trim(),
+          },
+          { onSuccess: onAdopted },
+        );
       }}
     >
       <label className="flex flex-col gap-1 text-xs text-muted">
@@ -142,8 +151,8 @@ function PolicyDetail({ documentId }: { documentId: string }) {
                 Employee acknowledgments
               </p>
               <p className="text-xs text-muted">
-                Attestation evidence for auditors — managed GRC policy sign-off
-                parity.
+                Sign-offs recorded here become attestation evidence for
+                auditors.
               </p>
             </div>
             <Button
@@ -203,7 +212,7 @@ function PolicyRow({
         <span className="font-medium text-ink">{policy.title}</span>
         <Badge tone={STATUS_TONE[policy.status]}>{policy.status}</Badge>
       </div>
-      <p className="mt-1 text-xs text-muted">{policy.template_id}</p>
+      <p className="mt-1 text-xs text-muted">Owner {policy.owner || "—"}</p>
     </button>
   );
 }
@@ -214,12 +223,27 @@ export default function PoliciesPage() {
   const coverage = usePolicyCoverage();
   const attestation = usePolicyAttestationSummary();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const firstTemplate = templates.data?.[0];
+  const [templateId, setTemplateId] = useState<string | null>(null);
+  const adoptRef = useRef<HTMLDivElement>(null);
+  const selectedTemplate =
+    templates.data?.find((t) => t.template_id === templateId) ??
+    templates.data?.[0];
+  const templateIds = useMemo(
+    () => new Set((templates.data ?? []).map((t) => t.template_id)),
+    [templates.data],
+  );
 
   const gaps = useMemo(
     () => (coverage.data ?? []).filter((row) => !row.published).slice(0, 8),
     [coverage.data],
   );
+
+  const chooseTemplate = (id: string, scroll = false) => {
+    setTemplateId(id);
+    if (scroll) {
+      adoptRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
 
   return (
     <div className="page-shell space-y-6">
@@ -266,35 +290,62 @@ export default function PoliciesPage() {
           <CardHeader className="p-0">
             <CardTitle>Templates</CardTitle>
           </CardHeader>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            {templates.data?.map((template) => (
-              <div
-                key={template.template_id}
-                className="rounded-lg border border-line px-3 py-2 text-sm"
-              >
-                <p className="font-medium text-ink">{template.title}</p>
-                <p className="text-xs text-muted">
-                  {template.category?.replaceAll("_", " ")} ·{" "}
-                  {template.related_control_ids.length}{" "}
-                  {template.related_control_ids.length === 1
-                    ? "control"
-                    : "controls"}
-                </p>
-                <p className="mt-1 text-xs text-muted">{template.summary}</p>
-              </div>
-            )) ?? <p className="text-sm text-muted">Loading templates…</p>}
+          <p className="mt-1 text-xs text-muted">
+            Choose a template to adopt it for your workspace.
+          </p>
+          <div
+            role="group"
+            aria-label="Policy templates"
+            className="mt-3 grid gap-2 sm:grid-cols-2"
+          >
+            {templates.data?.map((template) => {
+              const selected =
+                template.template_id === selectedTemplate?.template_id;
+              return (
+                <button
+                  key={template.template_id}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => chooseTemplate(template.template_id)}
+                  className={`min-w-0 rounded-lg border px-3 py-2 text-left text-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+                    selected
+                      ? "border-brand bg-brand/5 ring-1 ring-brand"
+                      : "border-line hover:border-brand/40"
+                  }`}
+                >
+                  <span className="block font-medium text-ink">
+                    {template.title}
+                  </span>
+                  <span className="block text-xs text-muted">
+                    {template.category?.replaceAll("_", " ")} ·{" "}
+                    {template.related_control_ids.length}{" "}
+                    {template.related_control_ids.length === 1
+                      ? "control"
+                      : "controls"}
+                  </span>
+                  <span className="mt-1 block text-xs text-muted">
+                    {template.summary}
+                  </span>
+                </button>
+              );
+            }) ?? <p className="text-sm text-muted">Loading templates…</p>}
           </div>
         </Card>
 
-        {firstTemplate ? (
-          <Card className="p-5">
-            <CardHeader className="p-0">
-              <CardTitle>Adopt a template</CardTitle>
-            </CardHeader>
-            <div className="mt-3">
-              <AdoptTemplateForm template={firstTemplate} />
-            </div>
-          </Card>
+        {selectedTemplate ? (
+          <div ref={adoptRef}>
+            <Card className="p-5">
+              <CardHeader className="p-0">
+                <CardTitle>Adopt {selectedTemplate.title}</CardTitle>
+              </CardHeader>
+              <div className="mt-3">
+                <AdoptTemplateForm
+                  template={selectedTemplate}
+                  onAdopted={(doc) => setSelectedId(doc.id)}
+                />
+              </div>
+            </Card>
+          </div>
         ) : null}
 
         <div className="grid gap-6 lg:grid-cols-2">
@@ -314,7 +365,7 @@ export default function PoliciesPage() {
           </div>
           <div className="space-y-6">
             {selectedId ? (
-              <PolicyDetail documentId={selectedId} />
+              <PolicyDetail key={selectedId} documentId={selectedId} />
             ) : (
               <Card className="p-5 text-sm text-muted">
                 Select a policy to edit or publish.
@@ -326,19 +377,35 @@ export default function PoliciesPage() {
               </CardHeader>
               <div className="mt-3 space-y-2">
                 {gaps.length ? (
-                  gaps.map((row) => (
-                    <div
-                      key={row.control_id}
-                      className="rounded-lg border border-line px-3 py-2 text-sm"
-                    >
-                      <span className="font-medium text-ink">
-                        {row.control_id}
-                      </span>
-                      <span className="ml-2 text-xs text-muted">
-                        {row.title}
-                      </span>
-                    </div>
-                  ))
+                  gaps.map((row) => {
+                    const covering = row.template_ids.find((id) =>
+                      templateIds.has(id),
+                    );
+                    return (
+                      <div
+                        key={row.control_id}
+                        className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-line px-3 py-2 text-sm"
+                      >
+                        <div className="min-w-0">
+                          <span className="font-medium text-ink">
+                            {row.control_id}
+                          </span>
+                          <span className="ml-2 text-xs text-muted">
+                            {row.title}
+                          </span>
+                        </div>
+                        {covering ? (
+                          <Button
+                            size="sm"
+                            variant="default"
+                            onClick={() => chooseTemplate(covering, true)}
+                          >
+                            Adopt a covering policy
+                          </Button>
+                        ) : null}
+                      </div>
+                    );
+                  })
                 ) : (
                   <p className="text-sm text-muted">
                     No policy coverage gaps detected.

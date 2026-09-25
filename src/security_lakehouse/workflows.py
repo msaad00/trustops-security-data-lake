@@ -620,7 +620,7 @@ ACTION_LIBRARY: dict[str, dict[str, Any]] = {
     "trigger.evidence_changed": {
         "kind": "trigger",
         "label": "Evidence changed",
-        "description": "Fires when new silver-layer evidence lands in the lake.",
+        "description": "Fires when new evidence is collected.",
         "input_schema": {"since": {"type": "string", "label": "Since (ISO 8601)", "optional": True}},
         "output_schema": {"trigger_kind": "string", "since": "string", "matched": "boolean"},
         "handler": _evidence_changed,
@@ -636,7 +636,7 @@ ACTION_LIBRARY: dict[str, dict[str, Any]] = {
     "check.evidence_exists": {
         "kind": "check",
         "label": "Evidence exists",
-        "description": "Passes when at least N silver-layer events match the given control_id.",
+        "description": "Passes when at least N evidence records map to the given control.",
         "input_schema": {
             "control_id": {"type": "string", "label": "Control id", "required": True},
             "minimum": {"type": "number", "label": "Minimum count", "default": 1},
@@ -676,7 +676,7 @@ ACTION_LIBRARY: dict[str, dict[str, Any]] = {
     "action.snapshot": {
         "kind": "action",
         "label": "Freeze snapshot",
-        "description": "Writes a point-in-time assessment snapshot to gold/snapshots/.",
+        "description": "Freezes a point-in-time assessment snapshot for the audit trail.",
         "input_schema": {"reason": {"type": "string", "label": "Reason", "default": "workflow_run"}},
         "output_schema": {"snapshot_path": "string", "reason": "string"},
         "handler": _action_snapshot,
@@ -699,9 +699,9 @@ ACTION_LIBRARY: dict[str, dict[str, Any]] = {
         "kind": "action",
         "label": "Send webhook",
         "description": (
-            "POSTs to an allowlisted, SSRF-guarded URL. Egress is deny-by-default "
-            "(TRUSTOPS_WORKFLOW_EGRESS_ALLOWLIST); {{secret.NAME}} tokens resolve "
-            "from TRUSTOPS_SECRET_<NAME> at run time and are never persisted."
+            "Sends a request to an approved URL. Outbound hosts must be on the "
+            "server's allowlist (deny by default); {{secret.NAME}} tokens resolve "
+            "from server-side secrets at run time and are never saved."
         ),
         "input_schema": {
             "url": {"type": "string", "label": "URL", "required": True},
@@ -742,8 +742,8 @@ ACTION_LIBRARY: dict[str, dict[str, Any]] = {
         "kind": "action",
         "label": "Create Jira issue",
         "description": (
-            "Creates a Jira issue (POST /rest/api/3/issue) over the shared egress "
-            "path (deny-by-default allowlist + SSRF guard). Auth derives from "
+            "Creates a Jira issue over the shared outbound path (deny-by-default "
+            "allowlist and SSRF guard). Auth derives from "
             "{{secret.JIRA_TOKEN}} (Bearer, or Basic with an email); resolved "
             "secrets are never persisted."
         ),

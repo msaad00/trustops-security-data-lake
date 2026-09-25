@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { KeyRound, LogIn, ShieldCheck, UserRound } from "lucide-react";
+import {
+  BookOpen,
+  KeyRound,
+  LogIn,
+  ShieldCheck,
+  UserRound,
+} from "lucide-react";
 import { AuthMark } from "@/components/auth/AuthMark";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,6 +29,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { QueryState } from "@/components/QueryState";
 import { useAuthMethods, useAuthWhoami } from "@/lib/api/hooks";
 import type { AuthMethod } from "@/lib/api/types";
+import { docsUrl } from "@/lib/format";
 
 function MethodRow({ method }: { method: AuthMethod }) {
   const externalLogin = method.id !== "api_key";
@@ -59,6 +66,18 @@ function MethodRow({ method }: { method: AuthMethod }) {
             <a href={method.login_url}>
               <LogIn className="h-4 w-4" />
               Sign in
+            </a>
+          </Button>
+        )}
+        {!method.configured && externalLogin && (
+          <Button asChild size="sm" variant="default">
+            <a
+              href={docsUrl("SERVER_AUTH.md")}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <BookOpen className="h-4 w-4" />
+              Setup guide
             </a>
           </Button>
         )}
@@ -171,7 +190,9 @@ export default function AuthPage() {
         <UsersPanel />
       </div>
 
-      <InvitesPanel />
+      <div id="invites">
+        <InvitesPanel />
+      </div>
       <ScimTokensPanel />
       <BillingPanel />
 

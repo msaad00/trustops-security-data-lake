@@ -4,22 +4,26 @@ import { useEffect, useState } from "react";
 import { Lock, Loader2, ShieldAlert } from "lucide-react";
 import { TrustOpsLogo } from "@/components/brand/TrustOpsLogo";
 import { Badge } from "@/components/ui/badge";
+import { formatDate, plural } from "@/lib/format";
 
 type FrameworkRow = {
   framework: string | null;
   score: number | null;
   state: string | null;
   control_count: number | null;
-  failing_control_count: number | null;
-  stale_control_count: number | null;
+  failing_control_count?: number | null;
+  stale_control_count?: number | null;
 };
 
+// Violation and stale-control counts are only present on detailed (auditor)
+// shares; the server omits them for customer-facing public summaries.
 type PublicTrust = {
   schema_version: string;
   data_residency: string;
   issued_by: string | null;
   scope: string | null;
   role: string | null;
+  detail_level?: "summary" | "detailed";
   expires_at: string | null;
   evaluated_at: string | null;
   posture: {
@@ -27,10 +31,10 @@ type PublicTrust = {
     state: string | null;
     framework_count: number | null;
     control_count: number | null;
-    open_violation_count: number | null;
-    critical_violation_count: number | null;
-    high_violation_count: number | null;
-    stale_control_count: number | null;
+    open_violation_count?: number | null;
+    critical_violation_count?: number | null;
+    high_violation_count?: number | null;
+    stale_control_count?: number | null;
   };
   frameworks: FrameworkRow[];
 };
@@ -41,25 +45,45 @@ function tokenFromPath(): string {
   return parts[parts.length - 1] ?? "";
 }
 
-function stateTone(state: string | null): "ready" | "attention" | "critical" {
-  if (state === "ready") return "ready";
-  if (state === "critical" || state === "at_risk") return "critical";
-  return "attention";
+// External reviewers see readiness, not internal triage severity.
+function readiness(state: string | null): {
+  label: string;
+  tone: "ready" | "info";
+} {
+  return state === "ready"
+    ? { label: "Ready", tone: "ready" }
+    : { label: "In progress", tone: "info" };
+}
+
+function roundScore(score: number | null | undefined): string {
+  return typeof score === "number" && Number.isFinite(score)
+    ? String(Math.round(score))
+    : "—";
 }
 
 function ResidencyBanner() {
   return (
-    <div className="flex items-start gap-3 rounded-xl border border-cyan-700/40 bg-[#06283d] p-4 text-cyan-50">
-      <Lock className="mt-0.5 h-5 w-5 shrink-0 text-cyan-300" />
-      <div>
+    <div className="flex items-start gap-3 rounded-xl border border-cyan-200 bg-cyan-50 p-4 text-cyan-950 dark:border-cyan-500/30 dark:bg-cyan-500/10 dark:text-cyan-50">
+      <Lock className="mt-0.5 h-5 w-5 shrink-0 text-cyan-700 dark:text-cyan-300" />
+      <div className="min-w-0">
         <p className="text-sm font-extrabold">
-          Evidence never leaves this lake — only this summary is shared.
+          Evidence stays with the issuing organization — only this summary is
+          shared.
         </p>
-        <p className="mt-1 text-xs leading-5 text-cyan-200/80">
-          This is a redacted, read-only posture issued for an external reviewer.
-          Owners, notes, raw evidence, and asset internals are not transmitted.
+        <p className="mt-1 text-xs leading-5 text-cyan-900/80 dark:text-cyan-100/80">
+          This is a read-only posture summary issued for an external reviewer.
+          Owners, notes, raw evidence, and asset details are not included.
         </p>
       </div>
+    </div>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: number | string }) {
+  return (
+    <div className="min-w-0">
+      <dt className="text-muted">{label}</dt>
+      <dd className="font-extrabold text-ink">{value}</dd>
     </div>
   );
 }
@@ -96,18 +120,21 @@ export default function PublicTrustView() {
     };
   }, []);
 
+  const overall = readiness(data?.posture.state ?? null);
+  const openViolations = data?.posture.open_violation_count;
+  const staleControls = data?.posture.stale_control_count;
+
   return (
-    <section className="grid min-h-screen place-items-center bg-[#04101c] p-6">
-      <div className="w-full max-w-[860px]">
-        <header className="mb-6 flex items-center gap-4 text-white">
+    <section className="grid min-h-screen place-items-center bg-panel p-4 sm:p-6">
+      <div className="w-full min-w-0 max-w-[860px]">
+        <header className="mb-6 flex flex-wrap items-center gap-4">
           <TrustOpsLogo
             showWordmark
             subtitle="Trust Center"
-            inverted
             markSize="lg"
             gradientId="trustops-trust-gradient"
           />
-          <p className="min-w-0 flex-1 text-sm leading-6 text-slate-400">
+          <p className="min-w-0 flex-1 text-sm leading-6 text-muted">
             Shared, read-only verification for external reviewers.
           </p>
         </header>
@@ -117,116 +144,121 @@ export default function PublicTrustView() {
         </div>
 
         {status === "loading" && (
-          <div className="flex items-center gap-3 rounded-xl border border-[#1e334a] bg-[#07111e] p-8 text-slate-300">
-            <Loader2 className="h-5 w-5 animate-spin text-cyan-300" />
+          <div className="flex items-center gap-3 rounded-xl border border-line bg-surface p-8 text-muted">
+            <Loader2 className="h-5 w-5 animate-spin text-brand" />
             Loading shared posture…
           </div>
         )}
 
         {status === "invalid" && (
-          <div className="rounded-xl border border-rose-700/40 bg-[#1a0c12] p-8 text-rose-100">
+          <div className="rounded-xl border border-rose-200 bg-rose-50 p-8 text-rose-900 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-100">
             <div className="flex items-center gap-3">
-              <ShieldAlert className="h-6 w-6 text-rose-300" />
+              <ShieldAlert className="h-6 w-6 shrink-0 text-rose-600 dark:text-rose-300" />
               <h2 className="text-lg font-extrabold">
                 This trust link is invalid or has expired.
               </h2>
             </div>
-            <p className="mt-3 text-sm leading-6 text-rose-200/80">
-              The token may have been revoked, reached its expiry, or was never
-              issued. Ask the issuing organization for a fresh link. No posture
-              data is disclosed for unrecognized tokens.
+            <p className="mt-3 text-sm leading-6 text-rose-800 dark:text-rose-200/80">
+              The link may have been revoked, reached its expiry, or was never
+              issued. Ask the issuing organization for a fresh link.
             </p>
           </div>
         )}
 
         {status === "ok" && data && (
           <div className="grid gap-4">
-            <div className="rounded-xl border border-[#1e334a] bg-[#07111e] p-6 text-white">
+            <div
+              data-testid="trust-posture-card"
+              className="rounded-xl border border-line bg-surface p-6 text-ink shadow-sm"
+            >
               <div className="flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-slate-400">
+                <div className="min-w-0">
+                  <p className="text-xs uppercase tracking-wide text-muted">
                     Overall posture
                   </p>
                   <p className="mt-1 text-5xl font-black">
-                    {data.posture.score ?? "—"}
+                    {roundScore(data.posture.score)}
                     <span className="ml-1 text-xl text-muted">/ 100</span>
                   </p>
                 </div>
-                <Badge tone={stateTone(data.posture.state)}>
-                  {data.posture.state ?? "unknown"}
-                </Badge>
+                <Badge tone={overall.tone}>{overall.label}</Badge>
               </div>
               <dl className="mt-6 grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
-                <div>
-                  <dt className="text-slate-400">Frameworks</dt>
-                  <dd className="font-extrabold">
-                    {data.posture.framework_count ?? 0}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-slate-400">Controls</dt>
-                  <dd className="font-extrabold">
-                    {data.posture.control_count ?? 0}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-slate-400">Open violations</dt>
-                  <dd className="font-extrabold">
-                    {data.posture.open_violation_count ?? 0}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-slate-400">Stale controls</dt>
-                  <dd className="font-extrabold">
-                    {data.posture.stale_control_count ?? 0}
-                  </dd>
-                </div>
+                <Stat
+                  label="Frameworks"
+                  value={data.posture.framework_count ?? 0}
+                />
+                <Stat
+                  label="Controls"
+                  value={data.posture.control_count ?? 0}
+                />
+                {typeof openViolations === "number" && (
+                  <Stat label="Open violations" value={openViolations} />
+                )}
+                {typeof staleControls === "number" && (
+                  <Stat label="Stale controls" value={staleControls} />
+                )}
               </dl>
             </div>
 
-            <div className="rounded-xl border border-[#1e334a] bg-[#07111e] p-6 text-white">
-              <h2 className="mb-4 text-sm font-extrabold uppercase tracking-wide text-slate-300">
+            <div className="rounded-xl border border-line bg-surface p-4 text-ink shadow-sm sm:p-6">
+              <h2 className="mb-4 text-sm font-extrabold uppercase tracking-wide text-muted">
                 Framework readiness
               </h2>
               <div className="grid gap-2">
                 {data.frameworks.length === 0 && (
-                  <p className="text-sm text-slate-400">
+                  <p className="text-sm text-muted">
                     No framework readiness to report.
                   </p>
                 )}
-                {data.frameworks.map((row) => (
-                  <div
-                    key={row.framework ?? Math.random()}
-                    className="flex items-center justify-between rounded-lg border border-[#16283c] bg-[#0a1726] px-4 py-3"
-                  >
-                    <div>
-                      <p className="font-extrabold">{row.framework ?? "—"}</p>
-                      <p className="text-xs text-slate-400">
-                        {row.control_count ?? 0} controls ·{" "}
-                        {row.failing_control_count ?? 0} failing ·{" "}
-                        {row.stale_control_count ?? 0} stale
-                      </p>
+                {data.frameworks.map((row, index) => {
+                  const state = readiness(row.state);
+                  const detail = [plural(row.control_count ?? 0, "control")];
+                  if (typeof row.failing_control_count === "number") {
+                    detail.push(`${row.failing_control_count} failing`);
+                  }
+                  if (typeof row.stale_control_count === "number") {
+                    detail.push(`${row.stale_control_count} stale`);
+                  }
+                  return (
+                    <div
+                      key={row.framework ?? `framework-${index}`}
+                      className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-lg border border-line bg-surfaceMuted px-4 py-3"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="font-extrabold [overflow-wrap:anywhere]">
+                          {row.framework ?? "—"}
+                        </p>
+                        <p className="text-xs text-muted">
+                          {detail.join(" · ")}
+                        </p>
+                      </div>
+                      <div
+                        data-testid="framework-score"
+                        className="flex shrink-0 items-center gap-3"
+                      >
+                        <span className="text-lg font-black">
+                          {roundScore(row.score)}
+                        </span>
+                        <Badge tone={state.tone}>{state.label}</Badge>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg font-black">
-                        {row.score ?? "—"}
-                      </span>
-                      <Badge tone={stateTone(row.state)}>
-                        {row.state ?? "unknown"}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
-            <footer className="rounded-xl border border-[#1e334a] bg-[#07111e] px-6 py-4 text-xs text-slate-400">
+            <footer className="rounded-xl border border-line bg-surface px-6 py-4 text-xs text-muted">
               Issued by{" "}
-              <span className="font-extrabold text-slate-200">
+              <span className="font-extrabold text-ink">
                 {data.issued_by ?? "the data owner"}
               </span>
-              {data.expires_at && <> · expires {data.expires_at}</>}
-              {data.evaluated_at && <> · evaluated {data.evaluated_at}</>}
+              {data.evaluated_at && (
+                <> · Last verified {formatDate(data.evaluated_at)}</>
+              )}
+              {data.expires_at && (
+                <> · Link expires {formatDate(data.expires_at)}</>
+              )}
             </footer>
           </div>
         )}
