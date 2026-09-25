@@ -105,7 +105,7 @@ export default function AuditRoomPage() {
                     }
                     detail={
                       audit.data.evidence_freshness
-                        ? `${audit.data.evidence_freshness.stale_count} breach(es)`
+                        ? `${audit.data.evidence_freshness.stale_count} ${audit.data.evidence_freshness.stale_count === 1 ? "item" : "items"} past SLA`
                         : "freshness rollup"
                     }
                   />

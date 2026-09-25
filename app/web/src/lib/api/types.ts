@@ -493,8 +493,9 @@ export interface AuditReadinessFramework {
   framework: string;
   score: number;
   assessed_controls: number;
-  total_controls: number;
-  coverage_pct: number;
+  /** null when the framework is not in the control catalog (coverage unknown). */
+  total_controls: number | null;
+  coverage_pct: number | null;
   ready: boolean;
 }
 

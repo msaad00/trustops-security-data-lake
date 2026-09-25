@@ -231,3 +231,12 @@ def test_connector_gap_fires_when_no_evidence_and_no_connectors(tmp_path: Path) 
 
     assert data["connectors"]["evidence_sources"] == 0
     assert any(gap["id"] == "connectors" for gap in data["gaps"])
+
+
+def test_framework_outside_catalog_has_unknown_coverage_and_is_not_ready() -> None:
+    from security_lakehouse.audit_readiness import _framework_readiness
+
+    (row,) = _framework_readiness([{"framework": "Custom Internal Standard", "score": 100, "control_count": 4}])
+    assert row["coverage_pct"] is None
+    assert row["total_controls"] is None
+    assert row["ready"] is False

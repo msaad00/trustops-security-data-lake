@@ -135,8 +135,10 @@ def _framework_readiness(frameworks: list[dict[str, Any]]) -> list[dict[str, Any
         name = str(row.get("framework") or "")
         score = float(row.get("score") or 0)
         assessed = int(row.get("control_count") or 0)
-        total = max(catalog_totals.get(name, 0), assessed)
-        coverage_pct = round(100 * assessed / total, 1) if total else 0.0
+        catalog_total = catalog_totals.get(name, 0)
+        # Outside the catalog the denominator is unknown; never infer full coverage.
+        total = max(catalog_total, assessed) if catalog_total else None
+        coverage_pct = round(100 * assessed / total, 1) if total else None
         out.append(
             {
                 "framework": name,
@@ -144,7 +146,9 @@ def _framework_readiness(frameworks: list[dict[str, Any]]) -> list[dict[str, Any
                 "assessed_controls": assessed,
                 "total_controls": total,
                 "coverage_pct": coverage_pct,
-                "ready": score >= FRAMEWORK_READY_SCORE and coverage_pct >= FRAMEWORK_READY_MIN_COVERAGE_PCT,
+                "ready": coverage_pct is not None
+                and score >= FRAMEWORK_READY_SCORE
+                and coverage_pct >= FRAMEWORK_READY_MIN_COVERAGE_PCT,
             }
         )
     return out

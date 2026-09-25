@@ -74,14 +74,17 @@ export default function OnboardingPage() {
             <CardContent className="grid gap-1.5 p-3 pt-0">
               {onboarding.steps.map((step) => {
                 const ready = step.status === "ready";
+                const skipped = step.status === "skipped";
                 const href = stepHref(step);
                 return (
                   <div
                     key={step.id}
                     className="flex items-start gap-2 rounded-md border border-line bg-surface px-2.5 py-2"
                   >
-                    {ready ? (
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                    {ready || skipped ? (
+                      <CheckCircle2
+                        className={`mt-0.5 h-4 w-4 shrink-0 ${ready ? "text-emerald-600" : "text-muted"}`}
+                      />
                     ) : (
                       <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
                     )}
@@ -90,8 +93,12 @@ export default function OnboardingPage() {
                         <span className="text-sm font-medium text-ink">
                           {step.label}
                         </span>
-                        <Badge tone={ready ? "ready" : "attention"}>
-                          {ready ? "done" : "todo"}
+                        <Badge
+                          tone={
+                            ready ? "ready" : skipped ? "default" : "attention"
+                          }
+                        >
+                          {ready ? "done" : skipped ? "skipped" : "todo"}
                         </Badge>
                         {!step.blocking ? (
                           <Badge tone="info">optional</Badge>
