@@ -117,6 +117,8 @@ def summarize_control_freshness(
                 latest_by_type[event_type] = row
 
     required = [str(item) for item in required_evidence_types]
+    if not required:
+        return _untyped_control_freshness(freshness_rows, default_slo_minutes)
     missing = [event_type for event_type in required if event_type not in latest_by_type]
     stale = [
         event_type
@@ -148,6 +150,33 @@ def summarize_control_freshness(
         "missing_evidence_types": sorted(missing),
         "stale_evidence_types": sorted(stale),
         "expired_evidence_types": sorted(expired),
+    }
+
+
+def _untyped_control_freshness(freshness_rows: list[dict[str, Any]], default_slo_minutes: int) -> dict[str, Any]:
+    # With no configured evidence types, the control is only as fresh as its newest evidence row.
+    dated = [row for row in freshness_rows if row["status"] != "missing"]
+    if not dated:
+        return {
+            "status": "missing",
+            "score": STATUS_SCORES["missing"],
+            "latest_evidence_at": None,
+            "freshness_slo_minutes": default_slo_minutes,
+            "missing_evidence_types": [],
+            "stale_evidence_types": [],
+            "expired_evidence_types": [],
+        }
+    latest = max(dated, key=lambda row: str(row.get("evidence_collected_at") or ""))
+    status = str(latest["status"])
+    latest_types = sorted(set(_record_evidence_types(latest)))
+    return {
+        "status": status,
+        "score": STATUS_SCORES[status],
+        "latest_evidence_at": str(latest.get("evidence_collected_at") or "") or None,
+        "freshness_slo_minutes": default_slo_minutes,
+        "missing_evidence_types": [],
+        "stale_evidence_types": latest_types if status == "stale" else [],
+        "expired_evidence_types": latest_types if status == "expired" else [],
     }
 
 

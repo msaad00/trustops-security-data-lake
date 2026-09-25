@@ -320,7 +320,7 @@ export interface AuthMethods {
 export interface PocReadinessStep {
   id: string;
   label: string;
-  status: "ready" | "needs_setup" | string;
+  status: "ready" | "needs_setup" | "skipped" | string;
   detail: string;
   href: string | null;
   blocking: boolean;
@@ -445,7 +445,12 @@ export interface AuditReadiness {
   evidence_requests: { open: number };
   access_reviews: { active: number; completed: number };
   trust_shares: { active: number; auditor: number };
-  connectors: { enabled: number; failed: number; evidence_count: number };
+  connectors: {
+    enabled: number;
+    failed: number;
+    evidence_count: number;
+    evidence_sources?: number;
+  };
   snapshots: {
     latest_hash: string | null;
     latest_at: string | null;
@@ -472,8 +477,25 @@ export interface AuditReadiness {
     pending_certifications: number;
     certified: number;
   };
+  frameworks?: AuditReadinessFramework[];
+  framework_ready_criteria?: { min_score: number; min_coverage_pct: number };
   gaps: AuditReadinessGap[];
-  workflow_coverage: { score: number; checklist: AuditWorkflowItem[] };
+  /** Product capabilities; informational only and not part of audit_score. */
+  workflow_coverage: {
+    scored: false;
+    description?: string;
+    score: number;
+    checklist: AuditWorkflowItem[];
+  };
+}
+
+export interface AuditReadinessFramework {
+  framework: string;
+  score: number;
+  assessed_controls: number;
+  total_controls: number;
+  coverage_pct: number;
+  ready: boolean;
 }
 
 export interface AiGovernanceFramework {
@@ -716,6 +738,7 @@ export interface EvalAccuracy {
   passing: number;
   failing: number;
   warning: number;
+  needs_evidence?: number;
   pass_rate: number | null;
   framework_count: number;
   evidence_source_count: number;

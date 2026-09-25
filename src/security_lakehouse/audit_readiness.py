@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -10,6 +11,7 @@ from sqlalchemy.orm import Session
 
 from security_lakehouse import trust_share
 from security_lakehouse.assessment import _iter_snapshots, build_current_posture
+from security_lakehouse.catalog import load_control_catalog
 from security_lakehouse.db import agent_runs as agent_runs_db
 from security_lakehouse.db import policy_acknowledgments as policy_acknowledgment_db
 from security_lakehouse.db import remediation
@@ -20,7 +22,7 @@ from security_lakehouse.services import access_reviews as access_review_services
 
 
 def _workflow_checklist(*, posture_score: int, framework_total: int) -> list[dict[str, Any]]:
-    """Audit-center workflow capabilities — shipped vs roadmap gaps."""
+    """Product capabilities available to the org; informational only, never part of the audit score."""
     return [
         {
             "id": "continuous_controls",
@@ -117,6 +119,36 @@ def _workflow_checklist(*, posture_score: int, framework_total: int) -> list[dic
 
 IDENTITY_CONNECTOR_IDS = frozenset({"okta-identity", "okta-system-log"})
 
+FRAMEWORK_READY_SCORE = 85
+FRAMEWORK_READY_MIN_COVERAGE_PCT = 50.0
+
+
+def _framework_readiness(frameworks: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """A framework is ready only when its score clears the bar AND enough of its catalog was assessed."""
+    catalog_totals = Counter(
+        str(control.get("framework") or "")
+        for control in load_control_catalog().values()
+        if str(control.get("lifecycle_status") or "active") == "active"
+    )
+    out: list[dict[str, Any]] = []
+    for row in frameworks:
+        name = str(row.get("framework") or "")
+        score = float(row.get("score") or 0)
+        assessed = int(row.get("control_count") or 0)
+        total = max(catalog_totals.get(name, 0), assessed)
+        coverage_pct = round(100 * assessed / total, 1) if total else 0.0
+        out.append(
+            {
+                "framework": name,
+                "score": score,
+                "assessed_controls": assessed,
+                "total_controls": total,
+                "coverage_pct": coverage_pct,
+                "ready": score >= FRAMEWORK_READY_SCORE and coverage_pct >= FRAMEWORK_READY_MIN_COVERAGE_PCT,
+            }
+        )
+    return out
+
 
 def _personnel_summary(
     session: Session,
@@ -199,7 +231,8 @@ def build_audit_readiness(
     total_tests = len(control_tests)
 
     framework_total = len(frameworks)
-    frameworks_ready = sum(1 for row in frameworks if int(row.get("score") or 0) >= 85)
+    framework_readiness = _framework_readiness(frameworks)
+    frameworks_ready = sum(1 for row in framework_readiness if row["ready"])
     posture_score = int(posture.get("score") or 0)
 
     open_evidence = remediation.list_evidence_requests(session, tenant_id=tenant_id, status="open", limit=500)
@@ -210,6 +243,7 @@ def build_audit_readiness(
     ingestion = build_ingestion_status(lake)
     summary = ingestion.get("summary") or {}
     connector_rows = ingestion.get("connectors") or []
+    evidence_sources = sum(1 for row in ingestion.get("sources") or [] if int(row.get("evidence_count") or 0) > 0)
     active_shares = [share for share in trust_share.list_shares(lake) if not share.get("expired")]
     auditor_shares = [share for share in active_shares if str(share.get("role") or "") == "auditor"]
 
@@ -225,7 +259,7 @@ def build_audit_readiness(
     latest_snapshot = snapshot_rows[-1][1] if snapshot_rows else None
 
     gaps: list[dict[str, str]] = []
-    if int(summary.get("enabled_connectors") or 0) == 0:
+    if int(summary.get("enabled_connectors") or 0) == 0 and evidence_sources == 0:
         gaps.append(
             {"id": "connectors", "label": "Connect at least one evidence source", "href": "/console/connectors"}
         )
@@ -331,11 +365,14 @@ def build_audit_readiness(
     checklist = _workflow_checklist(posture_score=posture_score, framework_total=framework_total)
     coverage_score = round(100 * sum(1 for row in checklist if row["shipped"]) / max(len(checklist), 1))
 
+    # Scored only on the org's own evidence, controls, and frameworks, never on product features.
     audit_score = round(
-        posture_score * 0.4
-        + (100 * passing / total_tests if total_tests else 0) * 0.3
-        + (100 * frameworks_ready / framework_total if framework_total else 0) * 0.2
-        + coverage_score * 0.1
+        (
+            posture_score * 0.4
+            + (100 * passing / total_tests if total_tests else 0) * 0.3
+            + (100 * frameworks_ready / framework_total if framework_total else 0) * 0.2
+        )
+        / 0.9
     )
 
     state = "audit_ready" if audit_score >= 85 and not gaps else ("on_track" if audit_score >= 60 else "needs_work")
@@ -378,6 +415,7 @@ def build_audit_readiness(
             "enabled": int(summary.get("enabled_connectors") or 0),
             "failed": int(summary.get("failed_connectors") or 0),
             "evidence_count": int(summary.get("evidence_count") or 0),
+            "evidence_sources": evidence_sources,
         },
         "snapshots": {
             "latest_hash": latest_snapshot.get("assessment_hash") if latest_snapshot else None,
@@ -388,8 +426,15 @@ def build_audit_readiness(
         "vendor_risk": vendor_risk,
         "personnel": personnel,
         "policy_attestation": policy_attestation,
+        "frameworks": framework_readiness,
+        "framework_ready_criteria": {
+            "min_score": FRAMEWORK_READY_SCORE,
+            "min_coverage_pct": FRAMEWORK_READY_MIN_COVERAGE_PCT,
+        },
         "gaps": gaps,
         "workflow_coverage": {
+            "scored": False,
+            "description": "Product capabilities available in TrustOps; not part of the audit score.",
             "score": coverage_score,
             "checklist": checklist,
         },
