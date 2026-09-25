@@ -46,7 +46,27 @@ function frameworkLabel(framework: FrameworkView) {
   return framework.name;
 }
 
-function statusFor(framework: FrameworkPosture) {
+const MIN_COVERAGE = 0.5;
+
+type Coverage = { assessed: number; total: number | null; sufficient: boolean };
+
+// A score over a sliver of the catalog is not a readiness signal, so below
+// MIN_COVERAGE the card reports coverage instead of a percentage.
+function coverageFor(
+  framework: FrameworkPosture,
+  catalogById: Map<string, FrameworkView>,
+): Coverage {
+  const total =
+    catalogById.get(frameworkIdFor(framework.framework))?.control_count ?? null;
+  const assessed = framework.control_count;
+  const sufficient = !total || assessed / total >= MIN_COVERAGE;
+  return { assessed, total: total || null, sufficient };
+}
+
+function statusFor(framework: FrameworkPosture, coverage: Coverage) {
+  if (!coverage.sufficient) {
+    return { label: "Insufficient coverage", tone: "default" as const };
+  }
   if (framework.state === "ready") {
     return { label: "Ready", tone: "ready" as const };
   }
@@ -68,9 +88,11 @@ function worstFirst(a: FrameworkPosture, b: FrameworkPosture) {
 
 function FrameworkCard({
   framework,
+  coverage,
   unmonitored,
 }: {
   framework?: FrameworkPosture;
+  coverage?: Coverage;
   unmonitored?: FrameworkView;
 }) {
   if (!framework && !unmonitored) return null;
@@ -78,8 +100,9 @@ function FrameworkCard({
   const label = unmonitored
     ? frameworkLabel(unmonitored)
     : framework!.framework;
+  const showScore = Boolean(framework && coverage?.sufficient);
   const status = framework
-    ? statusFor(framework).label
+    ? statusFor(framework, coverage!).label
     : unmonitored?.implementation_status === "planned"
       ? "Planned"
       : "Not assessed";
@@ -100,12 +123,16 @@ function FrameworkCard({
         </div>
         <div className="mt-1 text-xs leading-5 text-muted">
           {framework
-            ? `${framework.control_count} ${framework.control_count === 1 ? "control" : "controls"} · ${framework.failing_control_count} failing · ${framework.stale_control_count} stale`
-            : `${unmonitored!.implemented_control_count} implemented controls`}
+            ? `${
+                coverage?.total
+                  ? `${coverage.assessed} of ${coverage.total} controls assessed`
+                  : `${framework.control_count} ${framework.control_count === 1 ? "control" : "controls"} assessed`
+              } · ${framework.failing_control_count} failing · ${framework.stale_control_count} stale`
+            : `${unmonitored!.implemented_control_count} mapped controls`}
         </div>
       </div>
       <div className="w-24 shrink-0 text-right">
-        {framework && (
+        {framework && showScore && (
           <div
             className="text-xl font-semibold tabular-nums"
             title="Assessment score"
@@ -115,7 +142,14 @@ function FrameworkCard({
             <span className="text-sm">%</span>
           </div>
         )}
-        <div className="text-[11px] font-medium text-muted">{status}</div>
+        <div
+          className={cn(
+            "font-medium text-muted",
+            showScore || !framework ? "text-[11px]" : "text-xs",
+          )}
+        >
+          {status}
+        </div>
       </div>
     </Link>
   );
@@ -133,6 +167,20 @@ export function ReadinessGrid({
   const [expanded, setExpanded] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const sorted = useMemo(() => [...frameworks].sort(worstFirst), [frameworks]);
+  const catalogById = useMemo(
+    () => new Map(catalog.map((entry) => [entry.framework_id, entry])),
+    [catalog],
+  );
+  const coverageByName = useMemo(
+    () =>
+      new Map(
+        sorted.map((framework) => [
+          framework.framework,
+          coverageFor(framework, catalogById),
+        ]),
+      ),
+    [sorted, catalogById],
+  );
   const monitoredIds = useMemo(
     () =>
       new Set(sorted.map((framework) => frameworkIdFor(framework.framework))),
@@ -149,8 +197,13 @@ export function ReadinessGrid({
         ),
     [catalog, monitoredIds],
   );
-  const readyCount = sorted.filter((f) => f.state === "ready").length;
-  const workCount = sorted.length - readyCount;
+  const lowCoverageCount = sorted.filter(
+    (f) => !coverageByName.get(f.framework)?.sufficient,
+  ).length;
+  const readyCount = sorted.filter(
+    (f) => f.state === "ready" && coverageByName.get(f.framework)?.sufficient,
+  ).length;
+  const workCount = sorted.length - readyCount - lowCoverageCount;
   const totalCount = sorted.length + unmonitored.length;
   const visibleLimit = showAll || expanded ? totalCount : 3;
   const visibleFrameworks = sorted.slice(0, visibleLimit);
@@ -162,7 +215,13 @@ export function ReadinessGrid({
     totalCount - visibleFrameworks.length - visibleUnmonitored.length,
     0,
   );
-  const summary = `${sorted.length} assessed · ${workCount} need attention · ${readyCount} ready · ${unmonitored.length} not assessed`;
+  const summary = [
+    `${sorted.length} assessed`,
+    `${workCount} need attention`,
+    `${readyCount} ready`,
+    ...(lowCoverageCount ? [`${lowCoverageCount} insufficient coverage`] : []),
+    `${unmonitored.length} not assessed`,
+  ].join(" · ");
 
   return (
     <CollapsibleCard
@@ -217,7 +276,11 @@ export function ReadinessGrid({
               aria-label="Framework posture list"
             >
               {visibleFrameworks.map((f) => (
-                <FrameworkCard key={f.framework} framework={f} />
+                <FrameworkCard
+                  key={f.framework}
+                  framework={f}
+                  coverage={coverageByName.get(f.framework)}
+                />
               ))}
               {visibleUnmonitored.map((framework) => (
                 <FrameworkCard

@@ -1,10 +1,12 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { Violation } from "@/lib/api/types";
 import { Badge } from "@/components/ui/badge";
 import { CollapsibleCard } from "@/components/ui/collapsible-card";
+import { useControls } from "@/lib/api/hooks";
 
 const SEVERITY_TONE: Record<
   string,
@@ -24,6 +26,17 @@ export function FixNext({
   violations: Violation[];
   embedded?: boolean;
 }) {
+  const controls = useControls();
+  const titles = useMemo(
+    () =>
+      new Map(
+        (controls.data ?? []).map((control) => [
+          control.control_id,
+          control.title,
+        ]),
+      ),
+    [controls.data],
+  );
   const top = [...violations]
     .sort((a, b) => b.severity_score - a.severity_score)
     .slice(0, 6);
@@ -46,40 +59,55 @@ export function FixNext({
         {top.length === 0 && (
           <div className="px-5 py-6 text-sm text-muted">No open findings.</div>
         )}
-        {top.map((v) => (
-          <Link
-            key={v.violation_id}
-            href={`/violations?id=${encodeURIComponent(v.violation_id)}`}
-            className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-surfaceMuted"
-          >
-            <Badge tone={SEVERITY_TONE[v.severity] ?? "default"}>
-              {v.severity}
-            </Badge>
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-black text-ink">
-                {v.control_id}
-              </div>
-              <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
-                <span
-                  className={`rounded px-1.5 py-0.5 font-semibold ${["prod", "production"].includes(v.environment?.toLowerCase()) ? "bg-amber-50 text-amber-800 dark:bg-amber-500/10 dark:text-amber-300" : "bg-surfaceMuted text-muted"}`}
+        {top.map((v) => {
+          const title = titles.get(v.control_id);
+          const showAsset =
+            Boolean(v.asset_id) && !v.asset_id.startsWith("golden:");
+          return (
+            <Link
+              key={v.violation_id}
+              href={`/violations?id=${encodeURIComponent(v.violation_id)}`}
+              className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-surfaceMuted"
+            >
+              <Badge tone={SEVERITY_TONE[v.severity] ?? "default"}>
+                {v.severity}
+              </Badge>
+              <div className="min-w-0 flex-1">
+                <div
+                  className="truncate text-sm font-black text-ink"
+                  title={title ?? v.control_id}
                 >
-                  {v.environment || "Environment unknown"}
-                </span>
-                <span>{v.source}</span>
-                <span className="truncate">
-                  Owner: {v.asset_owner || "Unassigned"}
-                </span>
+                  {title ?? v.control_id}
+                </div>
+                {title ? (
+                  <div className="mt-0.5 truncate font-mono text-[11px] text-muted">
+                    {v.control_id}
+                  </div>
+                ) : null}
+                <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
+                  <span
+                    className={`rounded px-1.5 py-0.5 font-semibold ${["prod", "production"].includes(v.environment?.toLowerCase()) ? "bg-amber-50 text-amber-800 dark:bg-amber-500/10 dark:text-amber-300" : "bg-surfaceMuted text-muted"}`}
+                  >
+                    {v.environment || "Environment unknown"}
+                  </span>
+                  <span>{v.source}</span>
+                  <span className="truncate">
+                    Owner: {v.asset_owner || "Unassigned"}
+                  </span>
+                </div>
+                {showAsset ? (
+                  <div
+                    className="mt-1 truncate text-xs text-muted"
+                    title={v.asset_id}
+                  >
+                    {v.asset_id}
+                  </div>
+                ) : null}
               </div>
-              <div
-                className="mt-1 truncate text-xs text-muted"
-                title={v.asset_id}
-              >
-                {v.asset_id || "Asset unknown"}
-              </div>
-            </div>
-            <ArrowRight className="h-4 w-4 shrink-0 text-muted" />
-          </Link>
-        ))}
+              <ArrowRight className="h-4 w-4 shrink-0 text-muted" />
+            </Link>
+          );
+        })}
       </div>
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line px-5 py-3">
         <span className="text-xs text-muted">

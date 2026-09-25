@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import {
   ExternalLink,
   FileCheck2,
@@ -26,9 +27,22 @@ import {
   useMappings,
   useReviewedCrosswalk,
 } from "@/lib/api/hooks";
+import { frameworkVisual } from "@/lib/framework-visuals";
 
 const PAGE_SIZE = 25;
 const CHIP_LIMIT = 6;
+
+type ReviewFilter = "all" | "reviewed" | "proposed";
+
+// Legacy rows predate `review_status` and carry a named reviewer, so an absent
+// status means reviewed; any explicit non-"reviewed" value is not.
+function reviewStatusOf(status: string | undefined): string {
+  return status ? status : "reviewed";
+}
+
+function frameworkName(frameworkId: string): string {
+  return frameworkVisual(frameworkId, frameworkId).label;
+}
 
 function CappedChips({
   items,
@@ -59,6 +73,7 @@ export default function CrosswalkPage() {
   const mappings = useMappings();
   const [query, setQuery] = useState("");
   const [framework, setFramework] = useState("all");
+  const [reviewFilter, setReviewFilter] = useState<ReviewFilter>("all");
   const [page, setPage] = useState(0);
 
   const heuristicFrameworks = heuristic.data?.frameworks ?? [];
@@ -72,22 +87,30 @@ export default function CrosswalkPage() {
           ...article,
           control_id: mapping.control_id,
           framework_id: mapping.framework_id,
+          status: reviewStatusOf(article.review_status),
         })),
       ),
     [mappings.data],
   );
   const frameworkOptions = useMemo(
     () =>
-      Array.from(new Set(mappingRows.map((row) => row.framework_id))).sort(),
+      Array.from(new Set(mappingRows.map((row) => row.framework_id)))
+        .map((id) => ({ id, label: frameworkName(id) }))
+        .sort((a, b) => a.label.localeCompare(b.label)),
     [mappingRows],
   );
   const filteredRows = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return mappingRows.filter((row) => {
       if (framework !== "all" && row.framework_id !== framework) return false;
+      if (reviewFilter === "reviewed" && row.status !== "reviewed")
+        return false;
+      if (reviewFilter === "proposed" && row.status === "reviewed")
+        return false;
       if (!needle) return true;
       return [
         row.framework_id,
+        frameworkName(row.framework_id),
         row.control_id,
         row.article_id,
         row.title,
@@ -98,14 +121,18 @@ export default function CrosswalkPage() {
         .toLowerCase()
         .includes(needle);
     });
-  }, [mappingRows, framework, query]);
+  }, [mappingRows, framework, reviewFilter, query]);
   const pageCount = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount - 1);
   const pageRows = filteredRows.slice(
     currentPage * PAGE_SIZE,
     (currentPage + 1) * PAGE_SIZE,
   );
-  const reviewedControlCount = new Set(mappingRows.map((row) => row.control_id))
+  const reviewedRowCount = mappingRows.filter(
+    (row) => row.status === "reviewed",
+  ).length;
+  const proposedRowCount = mappingRows.length - reviewedRowCount;
+  const mappedControlCount = new Set(mappingRows.map((row) => row.control_id))
     .size;
   const reviewedArticleCount = new Set(
     mappingRows.map((row) => `${row.framework_id}:${row.article_id}`),
@@ -117,20 +144,23 @@ export default function CrosswalkPage() {
       <PageHeader
         eyebrow="Crosswalk"
         title="Control mapping coverage"
-        description="Reviewed control mappings and framework overlap."
+        description="Control-to-article mappings, their review status, and framework overlap."
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <Badge tone="ready">
+            <Badge
+              tone="ready"
+              title="Proposed mappings are machine-suggested and not yet human-reviewed."
+            >
               <FileCheck2 className="mr-1 h-3 w-3" />{" "}
-              {mappings.data?.length ?? 0} reviewed mappings
+              {`${reviewedRowCount.toLocaleString()} reviewed · ${proposedRowCount.toLocaleString()} proposed`}
             </Badge>
             <Badge tone="info">
               <GitCompareArrows className="mr-1 h-3 w-3" />{" "}
               {equivalenceGroups.length} equivalence groups
             </Badge>
             <Badge tone="info">
-              <Layers className="mr-1 h-3 w-3" /> {heuristicFrameworks.length} ×{" "}
-              {heuristicFrameworks.length} heuristic
+              <Layers className="mr-1 h-3 w-3" /> {heuristicFrameworks.length}{" "}
+              frameworks compared by shared risk area
             </Badge>
           </div>
         }
@@ -165,9 +195,11 @@ export default function CrosswalkPage() {
               </p>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {group.controls.map((ref) => (
-                  <span
+                  <Link
                     key={ref.control_id}
-                    className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2 py-0.5 text-[11px] font-bold text-ink"
+                    href={`/controls/?id=${encodeURIComponent(ref.control_id)}`}
+                    aria-label={ref.control_id}
+                    className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2 py-0.5 text-[11px] font-bold text-ink transition-colors hover:border-brand hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
                   >
                     <FrameworkBadge
                       frameworkId={ref.framework_id}
@@ -176,7 +208,7 @@ export default function CrosswalkPage() {
                       variant="mark-only"
                     />
                     {ref.control_id}
-                  </span>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -189,14 +221,15 @@ export default function CrosswalkPage() {
 
       <Card className="overflow-hidden">
         <CardHeader>
-          <CardTitle>Reviewed mappings</CardTitle>
+          <CardTitle>Control mappings</CardTitle>
           <CardDescription>
-            Signed control-to-article links that support framework overlap,
-            evidence requests, and trust-center exports.
+            Control-to-article links. Reviewed links are signed off by a named
+            reviewer; proposed links are suggestions awaiting review and are not
+            evidence of coverage.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <div className="grid gap-3 rounded-lg border border-line bg-surfaceMuted p-3 lg:grid-cols-[minmax(240px,1fr)_220px_auto] lg:items-center">
+          <div className="grid gap-3 rounded-lg border border-line bg-surfaceMuted p-3 lg:grid-cols-[minmax(240px,1fr)_220px_170px_auto] lg:items-center">
             <label className="flex min-w-0 items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 text-sm">
               <Search className="h-4 w-4 text-muted" />
               <input
@@ -220,13 +253,26 @@ export default function CrosswalkPage() {
             >
               <option value="all">All frameworks</option>
               {frameworkOptions.map((item) => (
-                <option key={item} value={item}>
-                  {item}
+                <option key={item.id} value={item.id}>
+                  {item.label}
                 </option>
               ))}
             </select>
+            <select
+              aria-label="Filter crosswalk by review status"
+              value={reviewFilter}
+              onChange={(event) => {
+                setReviewFilter(event.target.value as ReviewFilter);
+                setPage(0);
+              }}
+              className="h-10 rounded-lg border border-line bg-surface px-3 text-sm font-bold text-ink outline-none"
+            >
+              <option value="all">All review states</option>
+              <option value="reviewed">Reviewed</option>
+              <option value="proposed">Proposed</option>
+            </select>
             <div className="flex flex-wrap gap-2 lg:justify-end">
-              <Badge tone="ready">{reviewedControlCount} controls</Badge>
+              <Badge>{mappedControlCount} controls</Badge>
               <Badge tone="info">{reviewedArticleCount} articles</Badge>
               <Badge>{filteredRows.length} rows</Badge>
             </div>
@@ -234,7 +280,7 @@ export default function CrosswalkPage() {
 
           {mappingRows.length === 0 ? (
             <div className="rounded-lg border border-dashed border-line p-4 text-sm text-muted">
-              No reviewed mappings found in{" "}
+              No control mappings found in{" "}
               <code>mappings/control_articles.json</code>.
             </div>
           ) : filteredRows.length === 0 ? (
@@ -262,7 +308,7 @@ export default function CrosswalkPage() {
                       <td className="px-3 py-3 align-top">
                         <FrameworkBadge
                           frameworkId={row.framework_id}
-                          fallbackLabel={row.framework_id}
+                          fallbackLabel={frameworkName(row.framework_id)}
                           size={30}
                         />
                       </td>
@@ -276,7 +322,13 @@ export default function CrosswalkPage() {
                           <code className="font-black text-ink">
                             {row.article_id}
                           </code>
-                          <Badge tone="ready">reviewed</Badge>
+                          <Badge
+                            tone={
+                              row.status === "reviewed" ? "ready" : "attention"
+                            }
+                          >
+                            {row.status}
+                          </Badge>
                         </div>
                         <div className="mt-1 text-xs leading-5 text-muted">
                           {row.title}
@@ -294,8 +346,17 @@ export default function CrosswalkPage() {
                         {row.rationale}
                       </td>
                       <td className="px-3 py-3 align-top text-xs text-muted">
-                        <b className="block text-ink">{row.reviewed_by}</b>
-                        {row.reviewed_at}
+                        {row.status === "reviewed" ? (
+                          <>
+                            <b className="block text-ink">{row.reviewed_by}</b>
+                            {row.reviewed_at}
+                          </>
+                        ) : (
+                          <>
+                            <b className="block text-ink">Awaiting review</b>
+                            Suggested by {row.reviewed_by}
+                          </>
+                        )}
                       </td>
                     </tr>
                   ))}

@@ -31,6 +31,7 @@ import { FrameworkRoster } from "@/components/framework/FrameworkRoster";
 import { frameworkDetailHref } from "@/lib/framework-links";
 import {
   useFrameworkCoverage,
+  useFrameworkDetail,
   useFrameworks,
   useReadiness,
 } from "@/lib/api/hooks";
@@ -178,12 +179,13 @@ function Row({
           </a>
           <div className="mt-1 truncate">
             {sourceMappingPct}% source mapped ·{" "}
-            {framework.freshness_state.replaceAll("_", " ")} · pulled{" "}
             {framework.pulled_age_days === null
-              ? "never"
-              : framework.pulled_age_days === 0
-                ? "today"
-                : `${framework.pulled_age_days}d ago`}
+              ? "Not yet synced"
+              : `${framework.freshness_state.replaceAll("_", " ")} · pulled ${
+                  framework.pulled_age_days === 0
+                    ? "today"
+                    : `${framework.pulled_age_days}d ago`
+                }`}
             {framework.source_sha256
               ? ` · sha ${framework.source_sha256.slice(0, 10)}…`
               : " · hash pending"}
@@ -218,6 +220,23 @@ function Detail({
   onExpandedControlChange: (controlId: string | null) => void;
   onClose: () => void;
 }) {
+  const detail = useFrameworkDetail(framework?.framework_id ?? null);
+  const summary = detail.data?.summary;
+  const results = summary
+    ? {
+        total: summary.control_count,
+        pass: summary.passing_control_count,
+        fail: summary.failing_control_count,
+        notEvaluated: Math.max(
+          summary.control_count -
+            summary.passing_control_count -
+            summary.failing_control_count,
+          0,
+        ),
+      }
+    : null;
+  const share = (n: number) =>
+    results && results.total > 0 ? (n / results.total) * 100 : 0;
   return (
     <Drawer
       open={Boolean(framework)}
@@ -310,7 +329,7 @@ function Detail({
             </dd>
             <dt className="text-muted">Last pulled</dt>
             <dd className="font-extrabold">
-              {framework.pulled_at ?? "never (run scripts/sync_framework.py)"}
+              {framework.pulled_at ?? "Not yet synced"}
             </dd>
             <dt className="text-muted">Source sha256</dt>
             <dd>
@@ -326,27 +345,47 @@ function Detail({
 
           <section className="rounded-xl border border-line p-3">
             <div className="text-xs font-black uppercase tracking-wide text-muted">
-              Control mapping coverage
+              Control results
             </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-black text-ink">
-                {framework.implemented_control_count}
-              </span>
-              <span className="text-muted">
-                of {framework.control_count} controls implemented
-              </span>
+            {results ? (
+              <>
+                <div className="mt-2 text-base font-black text-ink">
+                  {results.pass} passing · {results.fail} failing ·{" "}
+                  {results.notEvaluated} not evaluated
+                </div>
+                <div className="text-xs text-muted">
+                  of {results.total}{" "}
+                  {results.total === 1 ? "control" : "controls"}
+                </div>
+                <div
+                  className="mt-2 flex h-2 overflow-hidden rounded-full bg-surfaceMuted"
+                  aria-hidden="true"
+                >
+                  <div
+                    className="h-full bg-emerald-500"
+                    style={{ width: `${share(results.pass)}%` }}
+                  />
+                  <div
+                    className="h-full bg-rose-500"
+                    style={{ width: `${share(results.fail)}%` }}
+                  />
+                </div>
+              </>
+            ) : (
+              <p className="mt-2 text-xs text-muted">
+                {detail.isError
+                  ? "Control results could not be loaded."
+                  : "Loading control results…"}
+              </p>
+            )}
+            <div className="mt-3 border-t border-line pt-2 text-xs text-muted">
+              <span className="font-bold text-ink">
+                {framework.implemented_control_count} of{" "}
+                {framework.control_count} controls mapped
+              </span>{" "}
+              to source requirements ({framework.mapping_coverage_pct}%). Mapped
+              means linked to a requirement, not implemented or passing.
             </div>
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-surfaceMuted">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-brand to-brand-green"
-                style={{ width: `${framework.mapping_coverage_pct}%` }}
-              />
-            </div>
-            <p className="mt-2 text-xs text-muted">
-              Coverage ≥ 95% is the threshold for claiming framework readiness.
-              {framework.mapping_coverage_pct < 95 &&
-                ` This framework is currently at ${framework.mapping_coverage_pct}% — additional mapped controls required before posture rolls up to this framework.`}
-            </p>
           </section>
 
           <section className="grid gap-2 rounded-xl border border-line p-3">
