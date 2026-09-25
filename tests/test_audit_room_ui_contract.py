@@ -32,3 +32,10 @@ def test_audit_room_does_not_render_every_audit_surface_by_default() -> None:
     assert "<AuditSnapshotTimeline />" not in page
     assert "Audit workflow checklist" not in page
     assert "Extended audit programs" not in page
+
+
+def test_audit_room_does_not_present_product_features_as_readiness() -> None:
+    page = PAGE.read_text(encoding="utf-8")
+
+    assert "workflow_coverage" not in page
+    assert '"shipped"' not in page

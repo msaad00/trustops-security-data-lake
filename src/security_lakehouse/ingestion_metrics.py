@@ -13,6 +13,7 @@ JsonObject = dict[str, Any]
 _PASS_RESULTS = frozenset({"pass", "ready"})
 _FAIL_RESULTS = frozenset({"fail"})
 _WARN_RESULTS = frozenset({"warn", "warning"})
+_NEEDS_EVIDENCE_RESULTS = frozenset({"needs_evidence"})
 
 
 def build_eval_accuracy(lake_dir: str | Path) -> JsonObject:
@@ -22,6 +23,7 @@ def build_eval_accuracy(lake_dir: str | Path) -> JsonObject:
     passing = sum(1 for row in rows if str(row.get("result", "")).lower() in _PASS_RESULTS)
     failing = sum(1 for row in rows if str(row.get("result", "")).lower() in _FAIL_RESULTS)
     warning = sum(1 for row in rows if str(row.get("result", "")).lower() in _WARN_RESULTS)
+    needs_evidence = sum(1 for row in rows if str(row.get("result", "")).lower() in _NEEDS_EVIDENCE_RESULTS)
     total = len(rows)
     frameworks = {str(row.get("framework_id") or "") for row in rows if row.get("framework_id")}
     frameworks.discard("")
@@ -36,6 +38,7 @@ def build_eval_accuracy(lake_dir: str | Path) -> JsonObject:
         "passing": passing,
         "failing": failing,
         "warning": warning,
+        "needs_evidence": needs_evidence,
         "pass_rate": round(passing / total, 4) if total else None,
         "framework_count": len(frameworks),
         "evidence_source_count": len(source_counts),

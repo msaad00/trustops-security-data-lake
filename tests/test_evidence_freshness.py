@@ -160,3 +160,54 @@ def test_pipeline_writes_evidence_freshness_gold_and_mart(tmp_path: Path) -> Non
         count = conn.execute("select count(*) from evidence_freshness").fetchone()[0]
 
     assert count == result.silver_count
+
+
+def test_control_freshness_without_required_types_uses_latest_evidence_age() -> None:
+    old = _event(evidence_collected_at="2026-02-26T00:00:00Z", event_time="2026-02-26T00:00:00Z")
+
+    summary = summarize_control_freshness(
+        [old],
+        required_evidence_types=[],
+        now=datetime(2026, 5, 24, 0, 0, tzinfo=UTC),
+    )
+
+    assert summary["status"] == "expired"
+    assert summary["score"] == 0
+    assert summary["expired_evidence_types"] == ["runtime.tool_call"]
+    assert summary["latest_evidence_at"] == "2026-02-26T00:00:00Z"
+
+
+def test_control_freshness_without_required_types_stale_when_between_one_and_two_slos() -> None:
+    summary = summarize_control_freshness(
+        [_event(source="manual-upload", evidence_collected_at="2026-05-22T12:00:00Z")],
+        required_evidence_types=[],
+        now=datetime(2026, 5, 24, 0, 0, tzinfo=UTC),
+    )
+
+    assert summary["status"] == "stale"
+    assert summary["score"] == 30
+
+
+def test_control_freshness_without_required_types_fresh_when_latest_row_is_current() -> None:
+    summary = summarize_control_freshness(
+        [
+            _event(event_id="old", source="manual-upload", evidence_collected_at="2026-02-26T00:00:00Z"),
+            _event(event_id="new", source="manual-upload", evidence_collected_at="2026-05-23T23:00:00Z"),
+        ],
+        required_evidence_types=[],
+        now=datetime(2026, 5, 24, 0, 0, tzinfo=UTC),
+    )
+
+    assert summary["status"] == "fresh"
+    assert summary["score"] == 100
+
+
+def test_control_freshness_without_required_types_or_evidence_is_missing() -> None:
+    summary = summarize_control_freshness(
+        [],
+        required_evidence_types=[],
+        now=datetime(2026, 5, 24, 0, 0, tzinfo=UTC),
+    )
+
+    assert summary["status"] == "missing"
+    assert summary["score"] == 0

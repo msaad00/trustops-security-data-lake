@@ -22,7 +22,10 @@ def test_build_eval_accuracy_from_control_tests(tmp_path: Path) -> None:
 
     accuracy = build_eval_accuracy(lake)
     assert accuracy["total_tests"] > 0
-    assert accuracy["passing"] + accuracy["failing"] + accuracy["warning"] == accuracy["total_tests"]
+    assert (
+        accuracy["passing"] + accuracy["failing"] + accuracy["warning"] + accuracy["needs_evidence"]
+        == accuracy["total_tests"]
+    )
     assert accuracy["pass_rate"] is not None
     assert accuracy["evidence_source_count"] >= 1
 

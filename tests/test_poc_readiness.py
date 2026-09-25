@@ -111,3 +111,40 @@ def test_poc_readiness_is_in_resource_catalog() -> None:
     resources = {row["resource"]: row for row in api_v1.resource_catalog()}
     assert resources["platform.poc-readiness"]["path"] == "/api/v1/platform/poc-readiness"
     assert resources["platform.poc-readiness"]["scopes"] == ["auth_admin"]
+
+
+def _local_readiness(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> dict[str, object]:
+    for name in ("TRUSTOPS_PUBLIC_URL", "TRUSTOPS_BASE_URL", "TRUSTOPS_APP_URL"):
+        monkeypatch.delenv(name, raising=False)
+    _seed_lake(tmp_path)
+    app = create_app(tmp_path, require_auth=False)
+    client = TestClient(app)
+    resp = client.get("/api/v1/platform/poc-readiness")
+    assert resp.status_code == HTTPStatus.OK
+    return resp.json()["data"]
+
+
+def test_local_mode_does_not_claim_human_access_ready(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    data = _local_readiness(tmp_path, monkeypatch)
+    human = next(step for step in data["steps"] if step["id"] == "human_access")
+
+    assert data["access"]["require_auth"] is False
+    assert human["status"] == "skipped"
+    assert human["detail"] == "Local mode — browser sign-in is off"
+    assert data["shareable"] is False
+    assert data["onboarding"]["completed_blocking"] < data["onboarding"]["blocking_total"]
+
+
+def test_public_url_step_has_plain_copy_link_and_follows_source_sync(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    data = _local_readiness(tmp_path, monkeypatch)
+    order = [step["id"] for step in data["steps"]]
+    public = next(step for step in data["steps"] if step["id"] == "public_url")
+
+    assert order.index("public_url") > order.index("source_sync")
+    assert order[0] != "public_url"
+    assert public["status"] == "needs_setup"
+    assert public["detail"] == "Set the public URL so invite and share links work"
+    assert public["href"] == "/console/deploy/"
+    assert "TRUSTOPS_PUBLIC_URL" not in public["detail"]

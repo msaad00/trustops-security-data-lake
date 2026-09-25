@@ -654,11 +654,12 @@ def _poc_step(
     detail: str,
     href: str | None = None,
     blocking: bool = True,
+    skipped: bool = False,
 ) -> dict[str, object]:
     return {
         "id": step_id,
         "label": label,
-        "status": "ready" if ready else "needs_setup",
+        "status": "skipped" if skipped else ("ready" if ready else "needs_setup"),
         "detail": detail,
         "href": href,
         "blocking": blocking,
@@ -720,7 +721,8 @@ def _build_poc_readiness(
     failed_connectors = int(ingestion_summary.get("failed_connectors") or 0)
     silent_connectors = int(ingestion_summary.get("silent_connectors") or 0)
     source_ready = enabled_connectors > 0 and evidence_count > 0 and failed_connectors == 0 and silent_connectors == 0
-    human_access_ready = (not bool(app.state.require_auth)) or sso_configured
+    local_mode = not bool(app.state.require_auth)
+    human_access_ready = not local_mode and sso_configured
     headless_access_ready = len(active_keys) > 0
     agent_run_rows = agent_runs_db.list_agent_runs(session, tenant_id=identity.tenant_id, limit=100)
     completed_agent_runs = [row for row in agent_run_rows if row.status == "completed"]
@@ -732,18 +734,20 @@ def _build_poc_readiness(
     )
     latest_agent_run_at = agent_run_rows[0].created_at.isoformat() if agent_run_rows else None
 
+    if local_mode:
+        human_access_detail = "Local mode — browser sign-in is off"
+    elif sso_configured:
+        human_access_detail = "SSO configured"
+    else:
+        human_access_detail = "Configure OIDC or SAML for browser login."
+
     steps = [
-        _poc_step(
-            step_id="public_url",
-            label="Public URL",
-            ready=bool(public_url),
-            detail=public_url or "Set TRUSTOPS_PUBLIC_URL for invite links.",
-        ),
         _poc_step(
             step_id="human_access",
             label="Human access",
             ready=human_access_ready,
-            detail="SSO configured" if sso_configured else "Configure OIDC or SAML for browser login.",
+            skipped=local_mode,
+            detail=human_access_detail,
             href="/console/login",
         ),
         _poc_step(
@@ -764,6 +768,13 @@ def _build_poc_readiness(
                 else "Connect, test, enable, and sync at least one source."
             ),
             href="/console/connectors",
+        ),
+        _poc_step(
+            step_id="public_url",
+            label="Public URL",
+            ready=bool(public_url),
+            detail=public_url or "Set the public URL so invite and share links work",
+            href="/console/deploy/",
         ),
         _poc_step(
             step_id="trust_share",
@@ -788,9 +799,13 @@ def _build_poc_readiness(
         ),
     ]
     blocking_ready = all(step["status"] == "ready" for step in steps if step["blocking"])
-    any_access_ready = human_access_ready or headless_access_ready
+    # Local mode still lets people on this machine in, so it counts for internal use but never for sharing.
+    any_access_ready = human_access_ready or headless_access_ready or local_mode
     state = "ready" if blocking_ready else ("internal_ready" if source_ready and any_access_ready else "needs_setup")
-    next_step = next((step for step in steps if step["status"] != "ready"), None)
+    next_step = next(
+        (step for step in steps if step["status"] == "needs_setup"),
+        next((step for step in steps if step["status"] != "ready"), None),
+    )
     blocking_steps = [step for step in steps if step["blocking"]]
     completed_blocking = sum(1 for step in blocking_steps if step["status"] == "ready")
     onboarding_steps = [
@@ -3209,6 +3224,7 @@ def create_app(lake_dir: str | Path, *, require_auth: bool = True) -> FastAPI:
     trust_page = web_dist / "trust" / "share" / "index.html" if web_dist is not None else None
 
     @app.get("/console/trust/{token}", response_class=HTMLResponse)
+    @app.get("/console/trust/{token}/", response_class=HTMLResponse, include_in_schema=False)
     def public_trust_page(token: str) -> HTMLResponse:  # noqa: ARG001 - token read client-side
         if trust_page is None or not trust_page.is_file():
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not found")

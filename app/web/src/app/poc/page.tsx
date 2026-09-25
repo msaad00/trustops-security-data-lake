@@ -41,7 +41,15 @@ const stateCopy: Record<
 };
 
 function stepTone(status: string) {
-  return status === "ready" ? "ready" : "attention";
+  if (status === "ready") return "ready";
+  if (status === "skipped") return "default";
+  return "attention";
+}
+
+function stepBadgeLabel(status: string) {
+  if (status === "ready") return "ready";
+  if (status === "skipped") return "skipped";
+  return "setup";
 }
 
 function stepIcon(step: PocReadinessStep) {
@@ -66,6 +74,7 @@ function actionLabel(step: PocReadinessStep) {
     if (step.id === "agent_review") return "Review runs";
     return "Review";
   }
+  if (step.status === "skipped") return "Review";
   if (step.id === "public_url") return "Configure URL";
   if (step.id === "human_access") return "Set up login";
   if (step.id === "headless_access") return "Issue API key";
@@ -122,7 +131,7 @@ function LaunchStep({
             Step {index + 1}
           </div>
           <Badge tone={stepTone(step.status)}>
-            {ready ? "ready" : "setup"}
+            {stepBadgeLabel(step.status)}
           </Badge>
         </div>
       </div>
@@ -134,7 +143,7 @@ function LaunchStep({
         <div className="mt-1 flex flex-wrap items-center gap-2">
           <div className="text-base font-black text-ink">{step.label}</div>
           <Badge tone={stepTone(step.status)}>
-            {ready ? "ready" : "setup"}
+            {stepBadgeLabel(step.status)}
           </Badge>
           {!step.blocking && <Badge tone="info">optional</Badge>}
         </div>

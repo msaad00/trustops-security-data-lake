@@ -17,7 +17,7 @@ from security_lakehouse.audit_readiness import build_audit_readiness  # noqa: E4
 from security_lakehouse.db import vendor_assessments as vendor_assessment_db  # noqa: E402
 from security_lakehouse.db.repository import create_api_key, create_tenant, create_user  # noqa: E402
 from security_lakehouse.server_app import create_app  # noqa: E402
-from test_api_v1 import _seed_lake  # noqa: E402
+from test_api_v1 import _seed_lake, _write_jsonl  # noqa: E402
 
 
 def _bearer(token: str) -> dict[str, str]:
@@ -34,7 +34,7 @@ def test_build_audit_readiness_fixture(tmp_path: Path) -> None:
         data = build_audit_readiness(lake=tmp_path, session=session, tenant_id=tenant.id)
     assert "audit_score" in data
     assert data["control_tests"]["total"] >= 0
-    assert len(data["workflow_coverage"]["checklist"]) >= 8
+    assert data["workflow_coverage"]["scored"] is False
 
 
 def test_audit_readiness_api(tmp_path: Path) -> None:
@@ -49,8 +49,9 @@ def test_audit_readiness_api(tmp_path: Path) -> None:
     resp = client.get("/api/v1/platform/audit-readiness", headers=_bearer(token))
     assert resp.status_code == HTTPStatus.OK
     body = resp.json()["data"]
-    assert body["workflow_coverage"]["score"] >= 0
+    assert body["workflow_coverage"]["scored"] is False
     assert any(row["id"] == "continuous_controls" for row in body["workflow_coverage"]["checklist"])
+    assert all("assessed_controls" in row for row in body["frameworks"])
     assert "vendor_risk" in body
     assert body["vendor_risk"]["total"] == 0
 
@@ -136,3 +137,106 @@ def test_audit_readiness_api_requires_auth(tmp_path: Path) -> None:
     client = TestClient(app)
     resp = client.get("/api/v1/platform/audit-readiness")
     assert resp.status_code == HTTPStatus.UNAUTHORIZED
+
+
+def _readiness(tmp_path: Path, slug: str) -> dict[str, object]:
+    app = create_app(tmp_path)
+    with app.state.sessionmaker() as session:
+        tenant = create_tenant(session, slug=slug, name=slug)
+        create_user(session, tenant_id=tenant.id, email=f"admin@{slug}.test", role="admin")
+        session.commit()
+        return build_audit_readiness(lake=tmp_path, session=session, tenant_id=tenant.id)
+
+
+def _passing_control(control_id: str, framework: str) -> dict[str, object]:
+    return {
+        "control_id": control_id,
+        "framework": framework,
+        "owner": "security",
+        "risk_score": 0,
+        "status": "pass",
+        "title": control_id,
+    }
+
+
+def test_framework_with_one_assessed_control_is_not_ready(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    data = _readiness(tmp_path, "coverage-floor")
+
+    ai_rmf = next(row for row in data["frameworks"] if row["framework"] == "NIST AI RMF")
+    assert ai_rmf["score"] >= 85
+    assert ai_rmf["assessed_controls"] == 1
+    assert ai_rmf["total_controls"] > 50
+    assert ai_rmf["coverage_pct"] < 50
+    assert ai_rmf["ready"] is False
+    assert data["posture"]["frameworks_ready"] == 0
+
+
+def test_framework_ready_when_score_and_coverage_meet_floor(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    _write_jsonl(
+        tmp_path / "gold" / "control_posture.jsonl",
+        [_passing_control(f"HIPAA-SR-{idx}", "HIPAA Security Rule") for idx in range(3)],
+    )
+    data = _readiness(tmp_path, "coverage-ready")
+
+    hipaa = next(row for row in data["frameworks"] if row["framework"] == "HIPAA Security Rule")
+    assert hipaa["assessed_controls"] == 3
+    assert hipaa["total_controls"] == 6
+    assert hipaa["coverage_pct"] == 50.0
+    assert hipaa["ready"] is True
+    assert data["posture"]["frameworks_ready"] == 1
+
+
+def test_product_capabilities_do_not_move_audit_score(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from security_lakehouse import audit_readiness
+
+    _seed_lake(tmp_path)
+    baseline = _readiness(tmp_path, "caps-a")["audit_score"]
+    monkeypatch.setattr(
+        audit_readiness,
+        "_workflow_checklist",
+        lambda **_kwargs: [{"id": "x", "label": "x", "shipped": False, "note": ""}],
+    )
+    assert _readiness(tmp_path, "caps-b")["audit_score"] == baseline
+
+
+def test_audit_score_is_evidence_based_only(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    data = _readiness(tmp_path, "score-formula")
+
+    posture = data["posture"]["score"]
+    tests = data["control_tests"]
+    pass_rate = 100 * tests["passing"] / tests["total"] if tests["total"] else 0
+    ready_rate = (
+        100 * data["posture"]["frameworks_ready"] / data["posture"]["frameworks_total"]
+        if data["posture"]["frameworks_total"]
+        else 0
+    )
+    assert data["audit_score"] == round((posture * 0.4 + pass_rate * 0.3 + ready_rate * 0.2) / 0.9)
+
+
+def test_connector_gap_suppressed_when_evidence_sources_exist(tmp_path: Path) -> None:
+    _seed_lake(tmp_path)
+    data = _readiness(tmp_path, "sources-present")
+
+    assert data["connectors"]["enabled"] == 0
+    assert data["connectors"]["evidence_sources"] > 0
+    assert not any(gap["id"] == "connectors" for gap in data["gaps"])
+
+
+def test_connector_gap_fires_when_no_evidence_and_no_connectors(tmp_path: Path) -> None:
+    (tmp_path / "console.html").write_bytes(b"<!doctype html>")
+    data = _readiness(tmp_path, "empty-lake")
+
+    assert data["connectors"]["evidence_sources"] == 0
+    assert any(gap["id"] == "connectors" for gap in data["gaps"])
+
+
+def test_framework_outside_catalog_has_unknown_coverage_and_is_not_ready() -> None:
+    from security_lakehouse.audit_readiness import _framework_readiness
+
+    (row,) = _framework_readiness([{"framework": "Custom Internal Standard", "score": 100, "control_count": 4}])
+    assert row["coverage_pct"] is None
+    assert row["total_controls"] is None
+    assert row["ready"] is False
