@@ -26,7 +26,7 @@ const PATHS = [
 
 export function OnboardingEvidencePaths() {
   return (
-    <Card className="overflow-hidden border-brand/20 bg-slate-50/70">
+    <Card className="overflow-hidden border-brand/20 bg-surfaceMuted">
       <CardHeader className="p-3 pb-2">
         <CardTitle className="text-base">
           Choose how evidence enters TrustOps

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import dagre from "@dagrejs/dagre";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import {
@@ -136,8 +137,8 @@ function GraphNodeCard({ data, selected }: NodeProps<FlowGraphNode>) {
       <Tooltip.Trigger asChild>
         <div
           style={{
-            borderColor: selected ? "#101623" : tone.border,
-            background: tone.bg,
+            borderColor: selected ? "var(--color-ink)" : tone.border,
+            background: `color-mix(in srgb, ${tone.border} 10%, var(--color-surface))`,
             borderWidth: selected ? 2 : 1.5,
           }}
           className={`w-[144px] max-w-[144px] rounded-lg px-2 py-1.5 transition-all ${emphasisClass(data.emphasis)}`}
@@ -145,7 +146,10 @@ function GraphNodeCard({ data, selected }: NodeProps<FlowGraphNode>) {
           <div className="flex items-center justify-between gap-2">
             <span
               className="inline-flex min-w-0 items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide"
-              style={{ color: tone.chip, background: "#ffffff" }}
+              style={{
+                color: `color-mix(in srgb, ${tone.chip} 60%, var(--color-ink))`,
+                background: "var(--color-surface)",
+              }}
             >
               <Icon className="h-3 w-3 shrink-0" />
               <span className="truncate">{data.kind.replace("_", " ")}</span>
@@ -161,11 +165,9 @@ function GraphNodeCard({ data, selected }: NodeProps<FlowGraphNode>) {
           <div className="mt-1 truncate text-[11px] font-black text-ink">
             {data.label}
           </div>
-          <div className="truncate text-[9px] text-slate-600">
-            {data.subtitle}
-          </div>
+          <div className="truncate text-[9px] text-muted">{data.subtitle}</div>
           {data.owner && (
-            <div className="mt-1 truncate text-[9px] text-slate-500">
+            <div className="mt-1 truncate text-[9px] text-muted">
               owner {data.owner}
             </div>
           )}
@@ -175,7 +177,7 @@ function GraphNodeCard({ data, selected }: NodeProps<FlowGraphNode>) {
         <Tooltip.Content
           side="top"
           sideOffset={8}
-          className="z-[80] max-w-[280px] rounded-lg border border-line bg-white p-3 text-xs text-ink shadow-hero"
+          className="z-[80] max-w-[280px] rounded-lg border border-line bg-surface p-3 text-xs text-ink shadow-hero"
         >
           <div className="text-[10px] font-black uppercase tracking-wider text-muted">
             {data.kind.replace("_", " ")}
@@ -284,6 +286,7 @@ function InnerGraphCanvas({
   onSelectNode,
   canvasRef,
 }: Props & { canvasRef?: React.MutableRefObject<ImperativeRef | null> }) {
+  const { resolved: resolvedTheme } = useTheme();
   const [hydrated, setHydrated] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   useEffect(() => setHydrated(true), []);
@@ -501,7 +504,11 @@ function InnerGraphCanvas({
           target: e.target,
           animated: e.kind === "evidence_covers_asset" || onPath,
           style: {
-            stroke: onPath ? "#f59e0b" : onHighlight ? "#0f172a" : "#94a3b8",
+            stroke: onPath
+              ? "#f59e0b"
+              : onHighlight
+                ? "var(--color-ink)"
+                : "#94a3b8",
             strokeWidth: onPath ? 2.5 : 1.5,
             opacity: dimmed && !onPath && !onHighlight ? 0.2 : 1,
           },
@@ -578,16 +585,17 @@ function InnerGraphCanvas({
 
   if (!hydrated) {
     return (
-      <div className="h-[clamp(400px,calc(100dvh-300px),650px)] min-h-[400px] rounded-xl border border-line bg-white" />
+      <div className="h-[clamp(400px,calc(100dvh-300px),650px)] min-h-[400px] rounded-xl border border-line bg-surface" />
     );
   }
 
   return (
     <div
       ref={wrapperRef}
-      className="h-[clamp(400px,calc(100dvh-300px),650px)] min-h-[400px] overflow-hidden rounded-xl border border-line bg-white"
+      className="h-[clamp(400px,calc(100dvh-300px),650px)] min-h-[400px] overflow-hidden rounded-xl border border-line bg-surface"
     >
       <ReactFlow
+        colorMode={resolvedTheme}
         nodes={rfNodes}
         edges={rfEdges}
         nodeTypes={nodeTypes}
@@ -601,11 +609,11 @@ function InnerGraphCanvas({
         proOptions={{ hideAttribution: true }}
         onSelectionChange={handleSelectionChange}
       >
-        <Background gap={20} color="#e2e8f0" />
+        <Background gap={20} color="var(--color-line)" />
         <MiniMap
           pannable
           zoomable
-          className="!h-20 !w-28 !rounded-lg !border !border-line !bg-white/90 !shadow-card"
+          className="!h-20 !w-28 !rounded-lg !border !border-line !bg-surface/90 !shadow-card"
           style={{ width: 112, height: 80 }}
           maskColor="rgba(15,23,42,0.06)"
         />

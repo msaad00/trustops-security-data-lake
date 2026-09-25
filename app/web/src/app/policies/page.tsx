@@ -25,7 +25,7 @@ import type {
 } from "@/lib/api/types";
 
 const inputClass =
-  "rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand";
+  "rounded-lg border border-line bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand";
 
 const STATUS_TONE: Record<
   PolicyDocumentStatus,
@@ -112,7 +112,7 @@ function PolicyDetail({ documentId }: { documentId: string }) {
         {new Date(doc.updated_at).toLocaleDateString()}
       </p>
       <textarea
-        className="min-h-64 w-full rounded-lg border border-line bg-white p-3 font-mono text-xs"
+        className="min-h-64 w-full rounded-lg border border-line bg-surface p-3 font-mono text-xs"
         value={draftContent}
         disabled={doc.status === "published" || update.isPending}
         onChange={(e) => setContent(e.target.value)}
@@ -160,7 +160,7 @@ function PolicyDetail({ documentId }: { documentId: string }) {
               {acknowledgments.data.map((row) => (
                 <li
                   key={row.id}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded border border-line bg-white px-3 py-2"
+                  className="flex flex-wrap items-center justify-between gap-2 rounded border border-line bg-surface px-3 py-2"
                 >
                   <span className="font-medium text-ink">{row.user_email}</span>
                   <span className="text-xs text-muted">
@@ -222,7 +222,7 @@ export default function PoliciesPage() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto w-full max-w-[1500px] min-w-0 space-y-6 px-3 py-3 sm:px-4 lg:px-5">
       <PageHeader
         eyebrow="Governance"
         title="Policy template library"
@@ -274,8 +274,11 @@ export default function PoliciesPage() {
               >
                 <p className="font-medium text-ink">{template.title}</p>
                 <p className="text-xs text-muted">
-                  {template.category} · {template.related_control_ids.length}{" "}
-                  controls
+                  {template.category?.replaceAll("_", " ")} ·{" "}
+                  {template.related_control_ids.length}{" "}
+                  {template.related_control_ids.length === 1
+                    ? "control"
+                    : "controls"}
                 </p>
                 <p className="mt-1 text-xs text-muted">{template.summary}</p>
               </div>

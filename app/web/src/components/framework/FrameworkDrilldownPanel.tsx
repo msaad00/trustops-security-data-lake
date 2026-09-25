@@ -92,7 +92,7 @@ function ControlRow({
     <section
       id={`control-${control.control_id}`}
       className={cn(
-        "rounded-xl border border-line bg-white transition-shadow",
+        "rounded-xl border border-line bg-surface transition-shadow",
         expanded && "shadow-card",
         control.posture.status === "fail" &&
           !expanded &&
@@ -135,7 +135,7 @@ function ControlRow({
           <FrameworkEvidenceChain control={control} frameworkId={frameworkId} />
 
           <div className="grid gap-3 lg:grid-cols-2">
-            <div className="rounded-lg bg-slate-50 p-3">
+            <div className="rounded-lg bg-surfaceMuted p-3">
               <div className="text-[10px] font-black uppercase tracking-wide text-muted">
                 Requirement
               </div>
@@ -143,7 +143,7 @@ function ControlRow({
                 {control.evidence_requirement}
               </p>
               {control.posture.rule_reasons.length > 0 && (
-                <ul className="mt-2 space-y-1 text-xs text-rose-700">
+                <ul className="mt-2 space-y-1 text-xs text-rose-700 dark:text-rose-300">
                   {control.posture.rule_reasons.map((reason) => (
                     <li key={reason}>• {reason}</li>
                   ))}
@@ -151,7 +151,7 @@ function ControlRow({
               )}
             </div>
 
-            <div className="rounded-lg bg-slate-50 p-3">
+            <div className="rounded-lg bg-surfaceMuted p-3">
               <div className="text-[10px] font-black uppercase tracking-wide text-muted">
                 Evidence + test state
               </div>
@@ -289,7 +289,7 @@ export function FrameworkDrilldownPanel({
 
   if (detail.isError) {
     return (
-      <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700">
+      <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
         Framework detail could not be loaded.
       </div>
     );
@@ -315,7 +315,7 @@ export function FrameworkDrilldownPanel({
       </div>
 
       <div className="grid grid-cols-2 gap-2 lg:grid-cols-5">
-        <div className="rounded-lg bg-slate-50 p-3">
+        <div className="rounded-lg bg-surfaceMuted p-3">
           <div className="text-[10px] font-black uppercase text-muted">
             Evidence facts
           </div>
@@ -323,7 +323,7 @@ export function FrameworkDrilldownPanel({
             {data.summary.evidence_count}
           </div>
         </div>
-        <div className="rounded-lg bg-slate-50 p-3">
+        <div className="rounded-lg bg-surfaceMuted p-3">
           <div className="text-[10px] font-black uppercase text-muted">
             Sources
           </div>
@@ -331,7 +331,7 @@ export function FrameworkDrilldownPanel({
             {data.summary.source_count}
           </div>
         </div>
-        <div className="rounded-lg bg-slate-50 p-3">
+        <div className="rounded-lg bg-surfaceMuted p-3">
           <div className="text-[10px] font-black uppercase text-muted">
             Mapped
           </div>
@@ -339,7 +339,7 @@ export function FrameworkDrilldownPanel({
             {data.summary.mapped_control_count}
           </div>
         </div>
-        <div className="rounded-lg bg-slate-50 p-3">
+        <div className="rounded-lg bg-surfaceMuted p-3">
           <div className="text-[10px] font-black uppercase text-muted">
             Failing
           </div>
@@ -347,7 +347,7 @@ export function FrameworkDrilldownPanel({
             {data.summary.failing_control_count}
           </div>
         </div>
-        <div className="rounded-lg bg-slate-50 p-3">
+        <div className="rounded-lg bg-surfaceMuted p-3">
           <div className="text-[10px] font-black uppercase text-muted">
             Connectors
           </div>
@@ -366,20 +366,20 @@ export function FrameworkDrilldownPanel({
         <SourcePills sources={data.sources} />
       </div>
 
-      <div className="grid gap-2 rounded-lg border border-line bg-white p-2.5 md:grid-cols-[minmax(180px,1fr)_minmax(140px,180px)]">
+      <div className="grid gap-2 rounded-lg border border-line bg-surface p-2.5 md:grid-cols-[minmax(180px,1fr)_minmax(140px,180px)]">
         <div className="relative min-w-0">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search controls, rules, sources…"
-            className="w-full rounded-lg border border-line bg-white py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+            className="w-full rounded-lg border border-line bg-surface py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-1 focus:ring-brand"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-          className="min-w-0 rounded-lg border border-line bg-white px-3 py-2 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand"
+          className="min-w-0 rounded-lg border border-line bg-surface px-3 py-2 text-sm font-extrabold focus:outline-none focus:ring-1 focus:ring-brand"
         >
           <option value="all">All statuses</option>
           <option value="pass">Passing</option>

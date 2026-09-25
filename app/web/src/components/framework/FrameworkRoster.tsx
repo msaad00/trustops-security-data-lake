@@ -42,7 +42,7 @@ function FrameworkLine({
         <div className="truncate text-sm font-black text-ink">
           {framework.name}
         </div>
-        <div className="mt-0.5 truncate text-xs font-medium leading-5 text-slate-600">
+        <div className="mt-0.5 truncate text-xs font-medium leading-5 text-muted">
           {notEvaluated
             ? `Not evaluated · ${total ? `${total} controls in catalog` : "catalog pack pending"}`
             : `${mapped}/${total} controls mapped · ${attestable} reviewed`}

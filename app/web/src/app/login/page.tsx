@@ -14,7 +14,7 @@ import { notify } from "@/lib/toast";
 
 function BrowserMethodCard({ method }: { method: AuthMethod }) {
   return (
-    <div className="grid gap-3 rounded-xl border border-line bg-white p-4">
+    <div className="grid gap-3 rounded-xl border border-line bg-surface p-4">
       <div className="flex flex-wrap items-center gap-3">
         <AuthMark
           providerKind={method.provider_kind}
@@ -116,7 +116,10 @@ export default function LoginPage() {
             className="mb-6"
             gradientId="trustops-login-gradient"
           />
-          <Badge tone="info" className="mb-5 bg-cyan-100 text-cyan-800">
+          <Badge
+            tone="info"
+            className="mb-5 bg-cyan-100 text-cyan-800 dark:bg-cyan-500/10 dark:text-cyan-300"
+          >
             Server mode
           </Badge>
           <h1 className="max-w-[680px] text-4xl font-black leading-[1.04]">
@@ -146,7 +149,7 @@ export default function LoginPage() {
           </CardHeader>
           <CardContent className="grid gap-3">
             {auth.isPending && (
-              <div className="rounded-lg border border-line bg-slate-50 p-4 text-sm font-bold text-muted">
+              <div className="rounded-lg border border-line bg-surfaceMuted p-4 text-sm font-bold text-muted">
                 Checking identity providers...
               </div>
             )}
@@ -157,7 +160,7 @@ export default function LoginPage() {
               ))}
 
             {!auth.isPending && configured.length === 0 && (
-              <div className="rounded-lg border border-line bg-slate-50 p-4">
+              <div className="rounded-lg border border-line bg-surfaceMuted p-4">
                 <div className="flex items-start gap-3">
                   <Terminal className="mt-0.5 h-5 w-5 text-muted" />
                   <div>
@@ -198,7 +201,7 @@ export default function LoginPage() {
                     type="password"
                     autoComplete="off"
                     placeholder="tops_…"
-                    className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                    className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
                   />
                 </label>
                 <Button
@@ -219,7 +222,7 @@ export default function LoginPage() {
             )}
 
             {auth.isError && (
-              <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm font-bold text-amber-900">
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm font-bold text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
                 Auth discovery is unavailable on this server.
               </div>
             )}

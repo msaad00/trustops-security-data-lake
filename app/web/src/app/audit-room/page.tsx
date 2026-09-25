@@ -158,7 +158,7 @@ export default function AuditRoomPage() {
                       className={`rounded-md px-3 py-2 text-sm font-black transition ${
                         activeAuditTab === tab
                           ? "bg-brand text-white shadow-sm"
-                          : "text-muted hover:bg-white hover:text-ink"
+                          : "text-muted hover:bg-surface hover:text-ink"
                       }`}
                       onClick={() => setActiveAuditTab(tab)}
                       role="tab"

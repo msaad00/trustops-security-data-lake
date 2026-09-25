@@ -587,7 +587,8 @@ function AgentsPageContent() {
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone={agentRuns.isError ? "critical" : "info"}>
-              <Bot className="mr-1 h-3 w-3" /> {runs.length} runs
+              <Bot className="mr-1 h-3 w-3" /> {runs.length}{" "}
+              {runs.length === 1 ? "run" : "runs"}
             </Badge>
             {pendingDecisionCount > 0 && (
               <Badge tone="attention">{pendingDecisionCount} pending</Badge>
@@ -618,7 +619,7 @@ function AgentsPageContent() {
               key={skill.id}
               type="button"
               onClick={() => selectSkill(skill)}
-              className="rounded-lg border border-line bg-white p-3 text-left transition-colors hover:border-brand"
+              className="rounded-lg border border-line bg-surface p-3 text-left transition-colors hover:border-brand"
             >
               <div className="text-xs font-black text-brand">{skill.id}</div>
               <div className="mt-1 text-sm font-black text-ink">
@@ -641,7 +642,7 @@ function AgentsPageContent() {
 
       <McpSetupStrip />
 
-      <div className="grid gap-5 xl:grid-cols-[360px_minmax(0,1fr)]">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
         <Card className="overflow-hidden" id="start-harness">
           <CardHeader>
             <CardTitle>Start a harness</CardTitle>
@@ -652,7 +653,7 @@ function AgentsPageContent() {
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3">
-            <div className="grid gap-3 rounded-xl border border-line bg-slate-50 p-3">
+            <div className="grid gap-3 rounded-xl border border-line bg-surfaceMuted p-3">
               <div className="grid gap-2">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-xs font-black uppercase tracking-wide text-muted">
@@ -671,8 +672,8 @@ function AgentsPageContent() {
                       className={[
                         "rounded-lg border px-3 py-2 text-left text-xs font-black capitalize",
                         orchestrator === value
-                          ? "border-brand bg-blue-50 text-brand"
-                          : "border-line bg-white text-ink",
+                          ? "border-brand bg-blue-50 text-brand dark:bg-blue-500/10"
+                          : "border-line bg-surface text-ink",
                       ].join(" ")}
                     >
                       {value}
@@ -681,7 +682,7 @@ function AgentsPageContent() {
                 </div>
               </div>
 
-              <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-line bg-white p-3">
+              <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-line bg-surface p-3">
                 <input
                   type="checkbox"
                   checked={useModel}
@@ -708,7 +709,7 @@ function AgentsPageContent() {
                   onChange={(event) =>
                     setBudgetProfile(event.target.value as BudgetProfile)
                   }
-                  className="rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                  className="rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
                 >
                   {Object.entries(BUDGETS).map(([value, budget]) => (
                     <option key={value} value={value}>
@@ -720,20 +721,20 @@ function AgentsPageContent() {
               </label>
             </div>
 
-            <div className="grid gap-2 sm:grid-cols-3">
-              <div className="rounded-lg border border-line bg-white p-3">
+            <div className="grid gap-2 sm:grid-cols-3 xl:grid-cols-1">
+              <div className="rounded-lg border border-line bg-surface p-3">
                 <LockKeyhole className="h-4 w-4 text-brand" />
                 <div className="mt-2 text-xs font-black text-ink">
                   Writes require approval
                 </div>
               </div>
-              <div className="rounded-lg border border-line bg-white p-3">
+              <div className="rounded-lg border border-line bg-surface p-3">
                 <Gauge className="h-4 w-4 text-brand" />
                 <div className="mt-2 text-xs font-black text-ink">
                   Budget is enforced
                 </div>
               </div>
-              <div className="rounded-lg border border-line bg-white p-3">
+              <div className="rounded-lg border border-line bg-surface p-3">
                 <ShieldCheck className="h-4 w-4 text-brand" />
                 <div className="mt-2 text-xs font-black text-ink">
                   Core owns verdicts
@@ -769,7 +770,7 @@ function AgentsPageContent() {
               );
             })}
             {agentRuns.isError && (
-              <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-bold text-rose-700">
+              <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-bold text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
                 Agent run API is unreachable.
               </div>
             )}
@@ -800,8 +801,8 @@ function AgentsPageContent() {
                   className={[
                     "grid min-w-0 gap-2 rounded-lg border px-3 py-3 transition",
                     selectedRun?.id === run.id
-                      ? "border-brand bg-blue-50"
-                      : "border-line bg-white hover:bg-slate-50",
+                      ? "border-brand bg-blue-50 dark:bg-blue-500/10"
+                      : "border-line bg-surface hover:bg-surfaceMuted",
                   ].join(" ")}
                 >
                   <button
@@ -875,7 +876,7 @@ function AgentsPageContent() {
             </div>
           ) : (
             <div className="grid gap-4">
-              <div className="grid gap-3 rounded-lg border border-line bg-slate-50 p-3 md:grid-cols-4">
+              <div className="grid gap-3 rounded-lg border border-line bg-surfaceMuted p-3 md:grid-cols-4">
                 <div>
                   <div className="text-xs font-black uppercase tracking-wide text-muted">
                     Harness
@@ -911,7 +912,7 @@ function AgentsPageContent() {
               </div>
 
               {selectedRun.errors.length > 0 && (
-                <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-bold text-rose-700">
+                <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-bold text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
                   {selectedRun.errors.join(" ")}
                 </div>
               )}
@@ -926,7 +927,7 @@ function AgentsPageContent() {
                   };
                 }
               ).data_readiness?.status === "needs_ingestion" ? (
-                <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-950">
+                <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-950 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
                   <div className="font-black">Lake needs ingestion</div>
                   <p className="mt-1 font-bold leading-5">
                     Fixture mode is ready, but this lake has no assessment data
@@ -972,7 +973,7 @@ function AgentsPageContent() {
         </CardContent>
       </Card>
 
-      <details className="grid gap-3 rounded-xl border border-line bg-white p-4">
+      <details className="grid gap-3 rounded-xl border border-line bg-surface p-4">
         <summary className="flex min-w-0 cursor-pointer list-none flex-wrap items-center justify-between gap-2">
           <div className="min-w-0">
             <h2 className="text-lg font-black text-ink">API runner</h2>
@@ -1001,8 +1002,8 @@ function AgentsPageContent() {
                     "grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs",
                     selected.method + selected.path ===
                     route.method + route.path
-                      ? "bg-ink text-white"
-                      : "text-slate-700 hover:bg-slate-50",
+                      ? "bg-ink text-surface"
+                      : "text-ink hover:bg-surfaceMuted",
                   ].join(" ")}
                 >
                   <Badge tone={route.method === "POST" ? "critical" : "ready"}>
@@ -1048,7 +1049,7 @@ function AgentsPageContent() {
                           [p.name]: e.target.value,
                         }))
                       }
-                      className="rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                      className="rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
                     />
                   </label>
                 ))}
@@ -1058,7 +1059,7 @@ function AgentsPageContent() {
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
                     placeholder="auditor (leave blank for default)"
-                    className="rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                    className="rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-brand"
                   />
                 </label>
                 {selected.method === "POST" && (
@@ -1068,7 +1069,7 @@ function AgentsPageContent() {
                       rows={6}
                       value={body}
                       onChange={(e) => setBody(e.target.value)}
-                      className="rounded-lg border border-line bg-white px-3 py-2 font-mono text-xs text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                      className="rounded-lg border border-line bg-surface px-3 py-2 font-mono text-xs text-ink focus:outline-none focus:ring-1 focus:ring-brand"
                     />
                   </label>
                 )}
@@ -1122,7 +1123,7 @@ function AgentsPageContent() {
                   Raw response from the selected endpoint.
                 </CardDescription>
               </CardHeader>
-              <pre className="max-h-[420px] overflow-auto bg-slate-50 p-4 text-xs text-ink">
+              <pre className="max-h-[420px] overflow-auto bg-surfaceMuted p-4 text-xs text-ink">
                 {response ?? "Click Run to fire the request."}
               </pre>
             </Card>

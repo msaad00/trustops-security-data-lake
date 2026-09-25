@@ -42,9 +42,9 @@ export function EvidencePathPanel() {
       </div>
 
       <div className="grid gap-3 md:grid-cols-2">
-        <div className="grid gap-3 rounded-lg border border-line bg-white p-3">
+        <div className="grid gap-3 rounded-lg border border-line bg-surface p-3">
           <div className="flex items-start gap-3">
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-blue-50 text-brand">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-blue-50 text-brand dark:bg-blue-500/10">
               <Database className="h-4 w-4" aria-hidden="true" />
             </span>
             <div className="min-w-0">
@@ -62,9 +62,9 @@ export function EvidencePathPanel() {
           </Button>
         </div>
 
-        <div className="grid gap-3 rounded-lg border border-line bg-white p-3">
+        <div className="grid gap-3 rounded-lg border border-line bg-surface p-3">
           <div className="flex items-start gap-3">
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-700">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-surfaceMuted text-ink">
               <FileJson2 className="h-4 w-4" aria-hidden="true" />
             </span>
             <div className="min-w-0">

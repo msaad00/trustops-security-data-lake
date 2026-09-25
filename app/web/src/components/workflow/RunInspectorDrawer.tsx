@@ -116,7 +116,7 @@ export function RunInspectorDrawer({
           {run.node_results.map((node) => (
             <div
               key={`${runKey}-${node.node_id}`}
-              className="rounded-lg border border-line bg-white p-3 text-xs"
+              className="rounded-lg border border-line bg-surface p-3 text-xs"
             >
               <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                 <span className="font-black text-ink">
@@ -138,12 +138,12 @@ export function RunInspectorDrawer({
                 <p className="mb-2 text-muted">{node.reason}</p>
               ) : null}
               {node.error ? (
-                <pre className="mb-2 overflow-x-auto rounded bg-rose-50 p-2 text-[11px] text-rose-800">
+                <pre className="mb-2 overflow-x-auto rounded bg-rose-50 p-2 text-[11px] text-rose-800 dark:bg-rose-500/10 dark:text-rose-300">
                   {node.error}
                 </pre>
               ) : null}
               {node.output ? (
-                <pre className="overflow-x-auto rounded bg-slate-50 p-2 text-[11px] text-ink">
+                <pre className="overflow-x-auto rounded bg-surfaceMuted p-2 text-[11px] text-ink">
                   {JSON.stringify(node.output, null, 2)}
                 </pre>
               ) : null}

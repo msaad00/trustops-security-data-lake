@@ -47,13 +47,15 @@ export function FrameworkReadinessTrendChart() {
           posture baseline.
         </CardDescription>
       </CardHeader>
-      <div className="h-[260px] w-full px-2 pb-4">
+      <div
+        className={`w-full px-2 pb-4 ${chartData.length === 0 ? "" : "h-[260px]"}`}
+      >
         {trends.isLoading ? (
-          <div className="flex h-full items-center justify-center text-sm text-muted">
+          <div className="flex h-full items-center justify-center py-6 text-center text-sm text-muted">
             Loading framework trends…
           </div>
         ) : chartData.length === 0 ? (
-          <div className="flex h-full items-center justify-center text-sm text-muted">
+          <div className="flex h-full items-center justify-center py-6 text-center text-sm text-muted">
             No snapshot history yet — freeze a snapshot from the audit room or
             capture metrics to start plotting framework readiness.
           </div>
@@ -63,7 +65,7 @@ export function FrameworkReadinessTrendChart() {
               data={chartData}
               margin={{ top: 4, right: 16, left: 0, bottom: 4 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e9f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-line)" />
               <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="#94a3b8" />
               <YAxis
                 domain={[0, 100]}

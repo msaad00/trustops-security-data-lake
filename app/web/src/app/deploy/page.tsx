@@ -101,7 +101,7 @@ export default function DeployPage() {
         <CardContent className="overflow-x-auto p-0">
           <table className="w-full min-w-[480px] text-left text-sm">
             <thead>
-              <tr className="border-b border-line bg-surface-muted">
+              <tr className="border-b border-line bg-surfaceMuted">
                 <th className="ui-label px-3 py-2">Edition</th>
                 <th className="ui-label px-3 py-2">Deploy</th>
                 <th className="ui-label px-3 py-2">Console</th>

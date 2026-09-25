@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import {
   Background,
   Controls,
@@ -142,7 +143,7 @@ function NodeCard({ data, selected }: NodeProps<FlowNode>) {
     <div
       style={{
         borderColor,
-        background: tone.bg,
+        background: `color-mix(in srgb, ${tone.border} 10%, var(--color-surface))`,
         borderWidth,
         boxShadow: `0 0 0 3px ${runRingColor}, 0 2px 8px rgba(15,23,42,0.08)`,
         minWidth: 220,
@@ -162,7 +163,10 @@ function NodeCard({ data, selected }: NodeProps<FlowNode>) {
         <div className="flex items-center justify-between gap-2">
           <span
             className="flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-widest"
-            style={{ background: tone.badgeBg, color: tone.badgeFg }}
+            style={{
+              background: `color-mix(in srgb, ${tone.border} 18%, var(--color-surface))`,
+              color: `color-mix(in srgb, ${tone.badgeFg} 60%, var(--color-ink))`,
+            }}
           >
             <Icon className="h-2.5 w-2.5" aria-hidden />
             {data.kind}
@@ -192,7 +196,7 @@ function NodeCard({ data, selected }: NodeProps<FlowNode>) {
               .map(([k, v]) => (
                 <span
                   key={k}
-                  className="inline-flex max-w-[160px] items-center truncate rounded border border-line bg-white px-1.5 py-0.5 text-[10px] text-muted"
+                  className="inline-flex max-w-[160px] items-center truncate rounded border border-line bg-surface px-1.5 py-0.5 text-[10px] text-muted"
                   title={`${k}: ${String(v)}`}
                 >
                   <span className="mr-0.5 font-black text-ink">{k}</span>
@@ -247,7 +251,7 @@ function fallbackLabel(nodeType: string): string {
 function EmptyCanvas({ onOpenTemplates }: { onOpenTemplates?: () => void }) {
   return (
     <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-4 px-8 text-center">
-      <div className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-dashed border-line bg-white shadow-card">
+      <div className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-dashed border-line bg-surface shadow-card">
         <Play className="h-6 w-6 text-muted" />
       </div>
       <div>
@@ -263,7 +267,7 @@ function EmptyCanvas({ onOpenTemplates }: { onOpenTemplates?: () => void }) {
         <button
           type="button"
           onClick={onOpenTemplates}
-          className="pointer-events-auto rounded-lg border border-line bg-white px-3 py-1.5 text-xs font-black text-ink shadow-card transition-colors hover:border-brand hover:text-brand"
+          className="pointer-events-auto rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-black text-ink shadow-card transition-colors hover:border-brand hover:text-brand"
         >
           Browse templates
         </button>
@@ -286,7 +290,7 @@ function RunSummaryPanel({ run, onDismiss }: RunSummaryProps) {
   const err = run.node_results.filter((r) => r.result === "error").length;
 
   return (
-    <div className="absolute bottom-3 left-1/2 z-10 w-[460px] max-w-[calc(100%-24px)] -translate-x-1/2 rounded-2xl border border-line bg-white shadow-hero">
+    <div className="absolute bottom-3 left-1/2 z-10 w-[460px] max-w-[calc(100%-24px)] -translate-x-1/2 rounded-2xl border border-line bg-surface shadow-hero">
       <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
         <div className="flex items-center gap-2">
           {run.result === "ok" ? (
@@ -315,7 +319,7 @@ function RunSummaryPanel({ run, onDismiss }: RunSummaryProps) {
         {run.node_results.map((nr, idx) => (
           <div
             key={`${nr.node_id}-${idx}`}
-            className="flex items-center gap-2.5 rounded-lg border border-line bg-slate-50 px-3 py-1.5"
+            className="flex items-center gap-2.5 rounded-lg border border-line bg-surfaceMuted px-3 py-1.5"
           >
             {nr.result === "ok" ? (
               <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
@@ -393,6 +397,7 @@ export function WorkflowCanvas({
   onDismissRun,
   onOpenTemplates,
 }: Props) {
+  const { resolved: resolvedTheme } = useTheme();
   const instanceRef = useRef<ReactFlowInstance<FlowNode, Edge> | null>(null);
 
   const handleDragOver = useCallback((event: React.DragEvent) => {
@@ -488,13 +493,14 @@ export function WorkflowCanvas({
 
   return (
     <div
-      className="relative h-[min(760px,calc(100dvh-245px))] min-h-[560px] overflow-hidden rounded-2xl border border-line bg-white"
+      className="relative h-[min(760px,calc(100dvh-245px))] min-h-[560px] overflow-hidden rounded-2xl border border-line bg-surface"
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       role="application"
       aria-label="Workflow canvas"
     >
       <ReactFlow
+        colorMode={resolvedTheme}
         nodes={decoratedNodes}
         edges={edges}
         nodeTypes={nodeTypes}
@@ -513,7 +519,7 @@ export function WorkflowCanvas({
           style: { stroke: "#64748b", strokeWidth: 2 },
         }}
       >
-        <Background gap={24} color="#e2e8f0" />
+        <Background gap={24} color="var(--color-line)" />
         <MiniMap
           pannable
           zoomable

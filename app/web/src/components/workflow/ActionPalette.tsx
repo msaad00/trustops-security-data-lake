@@ -33,37 +33,37 @@ const KIND_META: Record<
   trigger: {
     label: "Triggers",
     Icon: Zap,
-    iconBg: "bg-blue-50",
+    iconBg: "bg-blue-50 dark:bg-blue-500/10",
     iconFg: "text-blue-600",
-    pillBg: "bg-blue-50",
-    pillFg: "text-blue-700",
+    pillBg: "bg-blue-50 dark:bg-blue-500/10",
+    pillFg: "text-blue-700 dark:text-blue-300",
     borderHover: "hover:border-blue-400",
   },
   check: {
     label: "Checks",
     Icon: GitFork,
-    iconBg: "bg-amber-50",
+    iconBg: "bg-amber-50 dark:bg-amber-500/10",
     iconFg: "text-amber-600",
-    pillBg: "bg-amber-50",
-    pillFg: "text-amber-700",
+    pillBg: "bg-amber-50 dark:bg-amber-500/10",
+    pillFg: "text-amber-700 dark:text-amber-300",
     borderHover: "hover:border-amber-400",
   },
   gate: {
     label: "Gates",
     Icon: Shield,
-    iconBg: "bg-violet-50",
+    iconBg: "bg-violet-50 dark:bg-violet-500/10",
     iconFg: "text-violet-600",
-    pillBg: "bg-violet-50",
-    pillFg: "text-violet-700",
+    pillBg: "bg-violet-50 dark:bg-violet-500/10",
+    pillFg: "text-violet-700 dark:text-violet-300",
     borderHover: "hover:border-violet-400",
   },
   action: {
     label: "Actions",
     Icon: Cpu,
-    iconBg: "bg-emerald-50",
+    iconBg: "bg-emerald-50 dark:bg-emerald-500/10",
     iconFg: "text-emerald-600",
-    pillBg: "bg-emerald-50",
-    pillFg: "text-emerald-700",
+    pillBg: "bg-emerald-50 dark:bg-emerald-500/10",
+    pillFg: "text-emerald-700 dark:text-emerald-300",
     borderHover: "hover:border-emerald-400",
   },
 };
@@ -103,7 +103,7 @@ export function ActionPalette({ catalog, onAdd }: Props) {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search actions..."
             aria-label="Search action library"
-            className="w-full rounded-lg border border-line bg-white py-2 pl-9 pr-3 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
+            className="w-full rounded-lg border border-line bg-surface py-2 pl-9 pr-3 text-xs focus:outline-none focus:ring-1 focus:ring-brand"
           />
         </div>
       </div>
@@ -155,7 +155,7 @@ export function ActionPalette({ catalog, onAdd }: Props) {
                         }}
                         onClick={() => onAdd(action)}
                         className={cn(
-                          "grid cursor-grab grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-2.5 rounded-lg border border-line bg-white px-3 py-2 text-left transition-colors hover:shadow-card active:cursor-grabbing",
+                          "grid cursor-grab grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-2.5 rounded-lg border border-line bg-surface px-3 py-2 text-left transition-colors hover:shadow-card active:cursor-grabbing",
                           meta.borderHover,
                         )}
                       >

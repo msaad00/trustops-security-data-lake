@@ -14,7 +14,7 @@ export default function AiGovernancePage() {
   const { connected } = usePlatformStream();
 
   return (
-    <div className="grid gap-6">
+    <div className="mx-auto grid w-full max-w-[1500px] min-w-0 gap-6 px-3 py-3 sm:px-4 lg:px-5">
       <PageHeader
         eyebrow="AI programs"
         title="AI governance"

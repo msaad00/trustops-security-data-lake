@@ -30,7 +30,7 @@ import type {
 } from "@/lib/api/types";
 
 const inputClass =
-  "rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand";
+  "rounded-lg border border-line bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand";
 
 const STATUS_TONE: Record<
   string,
@@ -161,7 +161,7 @@ function TasksSection() {
       {(create.isError || update.isError) && (
         <p
           role="alert"
-          className="mx-5 mb-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-700"
+          className="mx-5 mb-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-700 dark:bg-rose-500/10 dark:text-rose-300"
         >
           Unable to save task. Try again.
         </p>
@@ -176,7 +176,7 @@ function TasksSection() {
               key={task.id}
               className="flex flex-wrap items-center gap-3 px-5 py-3"
             >
-              <div className="min-w-0 flex-1">
+              <div className="min-w-[12rem] flex-1">
                 <div className="text-sm font-semibold text-ink [overflow-wrap:anywhere]">
                   {task.title}
                 </div>
@@ -279,14 +279,17 @@ function EvidenceRequestsSection() {
       {(create.isError || setStatus.isError) && (
         <p
           role="alert"
-          className="mx-5 mb-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-700"
+          className="mx-5 mb-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-700 dark:bg-rose-500/10 dark:text-rose-300"
         >
           Unable to save evidence request. Your entries are still here. Try
           again.
         </p>
       )}
       {create.isSuccess && (
-        <p role="status" className="px-5 pb-4 text-sm text-emerald-700">
+        <p
+          role="status"
+          className="px-5 pb-4 text-sm text-emerald-700 dark:text-emerald-300"
+        >
           Evidence request saved.
         </p>
       )}
@@ -302,7 +305,7 @@ function EvidenceRequestsSection() {
               key={req.id}
               className="flex flex-wrap items-center gap-3 px-5 py-3"
             >
-              <div className="min-w-0 flex-1">
+              <div className="min-w-[12rem] flex-1">
                 <div className="text-sm font-semibold text-ink [overflow-wrap:anywhere]">
                   {req.control_id}
                 </div>
@@ -409,7 +412,7 @@ function ExceptionsSection() {
       {(create.isError || revoke.isError) && (
         <p
           role="alert"
-          className="mx-5 mb-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-700"
+          className="mx-5 mb-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-700 dark:bg-rose-500/10 dark:text-rose-300"
         >
           Unable to save exception. Try again.
         </p>
@@ -424,7 +427,7 @@ function ExceptionsSection() {
               key={exc.id}
               className="flex flex-wrap items-center gap-3 px-5 py-3"
             >
-              <div className="min-w-0 flex-1">
+              <div className="min-w-[12rem] flex-1">
                 <div className="text-sm font-semibold text-ink [overflow-wrap:anywhere]">
                   {exc.control_id}
                 </div>
@@ -476,7 +479,7 @@ function RemediationContent() {
       <div
         role="tablist"
         aria-label="Remediation view"
-        className="flex flex-wrap gap-1 rounded-xl border border-line bg-white p-2"
+        className="flex flex-wrap gap-1 rounded-xl border border-line bg-surface p-2"
       >
         {TABS.map((item) => (
           <button
@@ -484,7 +487,7 @@ function RemediationContent() {
             type="button"
             role="tab"
             aria-selected={tab === item.id}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold ${tab === item.id ? "bg-brand text-white" : "text-muted hover:bg-slate-50"}`}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold ${tab === item.id ? "bg-brand text-white" : "text-muted hover:bg-surfaceMuted"}`}
             onClick={() => {
               const params = new URLSearchParams(searchParams.toString());
               params.set("tab", item.id);

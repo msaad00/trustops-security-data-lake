@@ -129,7 +129,7 @@ export default function DemoLandingPage() {
               <Link
                 key={title}
                 href={href}
-                className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 rounded-xl border border-line bg-white p-3 transition-colors hover:border-brand"
+                className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 rounded-xl border border-line bg-surface p-3 transition-colors hover:border-brand"
               >
                 <span className="grid h-10 w-10 place-items-center rounded-lg bg-panel text-brand ring-1 ring-line">
                   <Icon className="h-4 w-4" />

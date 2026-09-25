@@ -178,8 +178,8 @@ function EvidencePageContent() {
     helper.accessor("event_time", {
       header: "Time",
       cell: (info) => (
-        <code className="text-xs text-ink">
-          {String(info.getValue()).slice(0, 19)}
+        <code className="whitespace-nowrap text-xs text-ink">
+          {String(info.getValue()).slice(0, 19).replace("T", " ")}
         </code>
       ),
     }),
@@ -201,9 +201,11 @@ function EvidencePageContent() {
     helper.accessor("control_ids", {
       header: "Controls",
       cell: (info) => (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex min-w-[180px] flex-wrap gap-1">
           {(info.getValue() as string[]).map((c) => (
-            <Badge key={c}>{c}</Badge>
+            <Badge key={c} className="whitespace-nowrap">
+              {c}
+            </Badge>
           ))}
         </div>
       ),
@@ -262,7 +264,7 @@ function EvidencePageContent() {
         title="Normalized evidence facts"
         description="These rows are evidence facts, not reports. Click a row to verify its SHA-256 hash against the immutable bronze record server-side."
         actions={
-          <span className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-black text-slate-600">
+          <span className="rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-black text-muted">
             {staleCount > 0 ? (
               <AlertTriangle className="mr-1 inline h-3 w-3 text-amber-600" />
             ) : (
@@ -278,7 +280,7 @@ function EvidencePageContent() {
         {handoffCards.map(({ title, detail, note, href, action, Icon }) => (
           <div
             key={title}
-            className="grid min-w-0 gap-2 rounded-xl border border-line bg-white p-3 shadow-sm sm:grid-cols-[auto_minmax(0,1fr)]"
+            className="grid min-w-0 gap-2 rounded-xl border border-line bg-surface p-3 shadow-sm sm:grid-cols-[auto_minmax(0,1fr)]"
           >
             <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-panel text-brand">
               <Icon className="h-4 w-4" />
@@ -349,7 +351,7 @@ function EvidencePageContent() {
                 {table.getHeaderGroups().map((hg) => (
                   <tr
                     key={hg.id}
-                    className="border-y border-line bg-slate-50/60"
+                    className="border-y border-line bg-surfaceMuted"
                   >
                     {hg.headers.map((h) => (
                       <th
@@ -375,7 +377,7 @@ function EvidencePageContent() {
                   <tr
                     key={r.id}
                     onClick={() => setSelected(r.original)}
-                    className="cursor-pointer border-b border-line last:border-0 hover:bg-blue-50/40"
+                    className="cursor-pointer border-b border-line last:border-0 hover:bg-blue-50/40 dark:hover:bg-blue-500/10"
                   >
                     {r.getVisibleCells().map((c) => (
                       <td key={c.id} className="px-3 py-2.5 align-top">

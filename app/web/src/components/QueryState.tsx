@@ -24,7 +24,7 @@ function ErrorState({
   return (
     <div
       role="alert"
-      className="m-5 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
+      className="m-5 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300"
     >
       <span className="flex items-center gap-2">
         <AlertTriangle className="h-4 w-4 flex-none" />
@@ -34,7 +34,7 @@ function ErrorState({
       <button
         type="button"
         onClick={onRetry}
-        className="inline-flex items-center gap-1.5 rounded-md border border-rose-300 bg-white px-2.5 py-1 font-semibold text-rose-700 outline-none hover:bg-rose-100 focus-visible:ring-2 focus-visible:ring-rose-400"
+        className="inline-flex items-center gap-1.5 rounded-md border border-rose-300 bg-surface px-2.5 py-1 font-semibold text-rose-700 outline-none hover:bg-rose-100 focus-visible:ring-2 focus-visible:ring-rose-400 dark:border-rose-500/30 dark:text-rose-300 dark:hover:bg-rose-500/10"
       >
         <RefreshCw className="h-3.5 w-3.5" />
         Retry

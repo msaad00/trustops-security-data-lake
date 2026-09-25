@@ -163,7 +163,7 @@ export function ApiKeysPanel() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="rounded-lg border border-line bg-slate-50 p-4 text-sm text-muted">
+          <p className="rounded-lg border border-line bg-surfaceMuted p-4 text-sm text-muted">
             Only workspace admins can mint or revoke API keys. Your current role
             is <span className="font-black text-ink">{whoami.data?.role}</span>.
           </p>
@@ -206,7 +206,7 @@ export function ApiKeysPanel() {
                 {(keys.data ?? []).map((keyRow) => (
                   <div
                     key={keyRow.id}
-                    className="grid gap-3 rounded-xl border border-line bg-white p-4 lg:grid-cols-[minmax(0,1fr)_auto]"
+                    className="grid gap-3 rounded-xl border border-line bg-surface p-4 lg:grid-cols-[minmax(0,1fr)_auto]"
                   >
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
@@ -294,7 +294,7 @@ export function ApiKeysPanel() {
             <input
               value={userEmail}
               onChange={(e) => setUserEmail(e.target.value)}
-              className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+              className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
               placeholder="you@company.com"
             />
           </label>
@@ -303,7 +303,7 @@ export function ApiKeysPanel() {
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+              className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
               placeholder="cursor-mcp"
             />
           </label>
@@ -312,7 +312,7 @@ export function ApiKeysPanel() {
             <select
               value={expiresDays}
               onChange={(e) => setExpiresDays(e.target.value)}
-              className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+              className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
             >
               {EXPIRY_OPTIONS.map((opt) => (
                 <option key={opt.label} value={opt.value}>
@@ -342,7 +342,7 @@ export function ApiKeysPanel() {
       >
         {revealed && (
           <div className="grid gap-4">
-            <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+            <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
               <AlertTriangle className="mt-0.5 h-4 w-4 flex-none" />
               <p>
                 Prefix <code className="font-bold">{revealed.prefix}</code> for

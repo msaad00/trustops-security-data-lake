@@ -52,7 +52,7 @@ function ControlRow({
       type="button"
       onClick={onSelect}
       className={cn(
-        "block w-full rounded-xl border border-line bg-white p-3 text-left transition-colors hover:border-brand hover:shadow-card",
+        "block w-full rounded-xl border border-line bg-surface p-3 text-left transition-colors hover:border-brand hover:shadow-card",
       )}
     >
       <div className="flex flex-wrap items-start justify-between gap-2">

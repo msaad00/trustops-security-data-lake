@@ -6,14 +6,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "var(--color-ink)",
-        muted: "var(--color-muted)",
-        line: "var(--color-line)",
-        panel: "var(--color-panel)",
-        rail: "var(--color-rail)",
-        railLine: "var(--color-rail-line)",
-        surface: "var(--color-surface)",
-        surfaceMuted: "var(--color-surface-muted)",
+        ink: "rgb(var(--rgb-ink) / <alpha-value>)",
+        muted: "rgb(var(--rgb-muted) / <alpha-value>)",
+        line: "rgb(var(--rgb-line) / <alpha-value>)",
+        panel: "rgb(var(--rgb-panel) / <alpha-value>)",
+        rail: "rgb(var(--rgb-rail) / <alpha-value>)",
+        railLine: "rgb(var(--rgb-rail-line) / <alpha-value>)",
+        surface: "rgb(var(--rgb-surface) / <alpha-value>)",
+        surfaceMuted: "rgb(var(--rgb-surface-muted) / <alpha-value>)",
         brand: {
           DEFAULT: "#4f7cff",
           cyan: "#30c7d2",

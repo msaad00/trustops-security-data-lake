@@ -60,7 +60,7 @@ export function EvidenceTrend() {
                   <stop offset="100%" stopColor="#4f7cff" stopOpacity={0.02} />
                 </linearGradient>
               </defs>
-              <CartesianGrid stroke="#e2e8f0" />
+              <CartesianGrid stroke="var(--color-line)" />
               <XAxis dataKey="date" stroke="#64748b" tickLine={false} />
               <YAxis
                 stroke="#64748b"

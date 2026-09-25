@@ -47,7 +47,7 @@ function UserRow({
   const isSelf = row.id === currentUserId;
 
   return (
-    <div className="grid gap-3 rounded-xl border border-line bg-white p-4 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto] lg:items-center">
+    <div className="grid gap-3 rounded-xl border border-line bg-surface p-4 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto] lg:items-center">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
           <span className="truncate text-sm font-black text-ink">
@@ -64,7 +64,7 @@ function UserRow({
         value={role}
         disabled={saving}
         onChange={(e) => setRole(e.target.value)}
-        className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+        className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
       >
         {ROLES.map((item) => (
           <option key={item} value={item}>
@@ -135,7 +135,7 @@ export function UsersPanel() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="rounded-lg border border-line bg-slate-50 p-4 text-sm text-muted">
+          <p className="rounded-lg border border-line bg-surfaceMuted p-4 text-sm text-muted">
             Only workspace admins can change user roles. Your current role is{" "}
             <span className="font-black text-ink">{whoami.data?.role}</span>.
           </p>
@@ -152,8 +152,8 @@ export function UsersPanel() {
           Users & roles
         </CardTitle>
         <CardDescription>
-          Make Alice admin, demote contributors, or deactivate accounts. Last
-          active admin cannot be demoted or deactivated.
+          Promote, demote, or deactivate teammates. Last active admin cannot be
+          demoted or deactivated.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3">

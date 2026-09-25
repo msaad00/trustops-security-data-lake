@@ -89,6 +89,7 @@ def test_poc_readiness_reports_launch_gates_without_secrets(tmp_path: Path, monk
     assert by_id["public_url"]["status"] == "ready"
     assert by_id["human_access"]["status"] == "needs_setup"
     assert by_id["headless_access"]["status"] == "ready"
+    assert all(str(step["href"] or "/console/").startswith("/console/") for step in data["steps"])
     assert by_id["agent_review"]["status"] == "ready"
     assert data["trust_shares"]["active"] == 1
     assert data["agents"]["completed"] == 1

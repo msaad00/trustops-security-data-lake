@@ -43,7 +43,7 @@ export function McpSetupStrip() {
   };
 
   return (
-    <section className="grid gap-4 rounded-2xl border border-line bg-white p-4 shadow-sm sm:p-5">
+    <section className="grid gap-4 rounded-2xl border border-line bg-surface p-4 shadow-sm sm:p-5">
       <div className="flex min-w-0 flex-wrap items-start justify-between gap-4">
         <TrustOpsLogo markSize="lg" subtitle="MCP Server" />
         <Badge tone="info">stdio · {MCP_TOOLS.length}+ tools</Badge>
@@ -55,7 +55,7 @@ export function McpSetupStrip() {
         <code className="text-ink">/api/v1</code>.
       </p>
       <div className="grid gap-3 lg:grid-cols-2">
-        <div className="grid gap-2 rounded-xl border border-line bg-slate-50 p-3">
+        <div className="grid gap-2 rounded-xl border border-line bg-surfaceMuted p-3">
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs font-black uppercase tracking-wide text-muted">
               Install
@@ -78,7 +78,7 @@ export function McpSetupStrip() {
             pip install &apos;trustops-security-data-lake[mcp]&apos;
           </pre>
         </div>
-        <div className="grid gap-2 rounded-xl border border-line bg-slate-50 p-3">
+        <div className="grid gap-2 rounded-xl border border-line bg-surfaceMuted p-3">
           <div className="flex items-center justify-between gap-2">
             <span className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wide text-muted">
               <Terminal className="h-3.5 w-3.5" />

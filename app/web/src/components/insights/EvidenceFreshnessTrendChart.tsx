@@ -42,13 +42,15 @@ export function EvidenceFreshnessTrendChart({
           metrics snapshot.
         </CardDescription>
       </CardHeader>
-      <div className="h-[240px] w-full px-2 pb-4">
+      <div
+        className={`w-full px-2 pb-4 ${chartData.length === 0 ? "" : "h-[240px]"}`}
+      >
         {timeseries.isLoading ? (
-          <div className="flex h-full items-center justify-center text-sm text-muted">
+          <div className="flex h-full items-center justify-center py-6 text-center text-sm text-muted">
             Loading freshness trend…
           </div>
         ) : chartData.length === 0 ? (
-          <div className="flex h-full items-center justify-center text-sm text-muted">
+          <div className="flex h-full items-center justify-center py-6 text-center text-sm text-muted">
             No metrics snapshots yet — capture a point to plot evidence
             freshness over time.
           </div>
@@ -64,7 +66,7 @@ export function EvidenceFreshnessTrendChart({
                   <stop offset="100%" stopColor="#22c55e" stopOpacity={0.02} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e9f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-line)" />
               <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="#94a3b8" />
               <YAxis
                 yAxisId="left"

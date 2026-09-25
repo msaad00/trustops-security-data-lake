@@ -88,8 +88,7 @@ export function InvitesPanel() {
               Invites
             </CardTitle>
             <CardDescription>
-              Email invitations for commercial hosted workspaces. Self-hosted
-              OSS returns 501 unless TRUSTOPS_COMMERCIAL_HOSTED is enabled.
+              Invite teammates by email. Available on hosted workspaces.
             </CardDescription>
           </div>
           <Button
@@ -104,7 +103,7 @@ export function InvitesPanel() {
         </CardHeader>
         <CardContent className="grid gap-3">
           {commercialUnavailable ? (
-            <p className="rounded-lg border border-line bg-slate-50 p-4 text-sm text-muted">
+            <p className="rounded-lg border border-line bg-surfaceMuted p-4 text-sm text-muted">
               Invites require commercial hosted mode. Provision users via CLI{" "}
               <code className="text-ink">auth create-user</code> or SSO
               auto-provision instead.
@@ -120,7 +119,7 @@ export function InvitesPanel() {
                   {(invites.data ?? []).map((row) => (
                     <div
                       key={row.id}
-                      className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line bg-white p-4"
+                      className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line bg-surface p-4"
                     >
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
@@ -174,7 +173,7 @@ export function InvitesPanel() {
             <input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+              className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
               placeholder="alice@company.com"
             />
           </label>
@@ -183,7 +182,7 @@ export function InvitesPanel() {
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+              className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
             >
               {ROLES.map((item) => (
                 <option key={item} value={item}>

@@ -20,7 +20,7 @@ import {
 import type { Risk, RiskLevel, RiskStatus } from "@/lib/api/types";
 
 const inputClass =
-  "rounded-lg border border-line bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand";
+  "rounded-lg border border-line bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand";
 
 const LEVELS: RiskLevel[] = ["low", "medium", "high", "critical"];
 
@@ -221,7 +221,7 @@ export default function RisksPage() {
   const rows = risks.data ?? [];
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto w-full max-w-[1500px] min-w-0 space-y-6 px-3 py-3 sm:px-4 lg:px-5">
       <PageHeader
         eyebrow="Operate"
         title="Risk register"

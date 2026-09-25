@@ -236,7 +236,7 @@ export function IngestionLoopStrip() {
                   {evalRuns.data?.map((run, index) => (
                     <div
                       key={`${run.occurred_at}-${index}`}
-                      className="rounded-md border border-line bg-white px-2.5 py-2"
+                      className="rounded-md border border-line bg-surface px-2.5 py-2"
                     >
                       <div className="flex items-center justify-between gap-2">
                         <span className="truncate text-xs font-bold text-ink">

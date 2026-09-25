@@ -111,8 +111,8 @@ export function EvidenceDrawer({ evidence, onClose }: Props) {
               className={[
                 "rounded-xl border p-3 text-sm",
                 result.verified
-                  ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-                  : "border-rose-200 bg-rose-50 text-rose-900",
+                  ? "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300"
+                  : "border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300",
               ].join(" ")}
             >
               <div className="flex items-center gap-2 font-black">

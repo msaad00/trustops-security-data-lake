@@ -52,7 +52,7 @@ export function AgentRunDrawer({ runId, onClose }: Props) {
         </div>
       ) : null}
       {detail.isError ? (
-        <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-bold text-rose-700">
+        <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-bold text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
           Could not load agent run detail.
         </div>
       ) : null}
@@ -86,7 +86,7 @@ export function AgentRunDrawer({ runId, onClose }: Props) {
           </dl>
 
           {run.errors.length > 0 ? (
-            <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-bold text-rose-700">
+            <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-bold text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
               {run.errors.join(" ")}
             </div>
           ) : null}
@@ -95,7 +95,7 @@ export function AgentRunDrawer({ runId, onClose }: Props) {
             <span className="text-xs font-bold uppercase tracking-wide text-muted">
               Evaluation summary
             </span>
-            <pre className="max-h-40 overflow-auto rounded-lg bg-slate-50 p-3 text-xs text-ink">
+            <pre className="max-h-40 overflow-auto rounded-lg bg-surfaceMuted p-3 text-xs text-ink">
               {jsonPreview(run.evaluation)}
             </pre>
           </div>
@@ -105,7 +105,7 @@ export function AgentRunDrawer({ runId, onClose }: Props) {
               <span className="text-xs font-bold uppercase tracking-wide text-muted">
                 Persisted state
               </span>
-              <pre className="max-h-48 overflow-auto rounded-lg bg-slate-50 p-3 text-xs text-ink">
+              <pre className="max-h-48 overflow-auto rounded-lg bg-surfaceMuted p-3 text-xs text-ink">
                 {jsonPreview(run.state)}
               </pre>
             </div>

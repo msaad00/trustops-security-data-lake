@@ -57,7 +57,7 @@ export function SavedViewsBar({
           <button
             type="button"
             onClick={() => onApply(view.filters)}
-            className="rounded-md border border-line bg-white px-2 py-0.5 text-[11px] font-medium text-ink hover:bg-slate-50"
+            className="rounded-md border border-line bg-surface px-2 py-0.5 text-[11px] font-medium text-ink hover:bg-surfaceMuted"
           >
             {view.name}
           </button>
@@ -79,7 +79,7 @@ export function SavedViewsBar({
       <button
         type="button"
         onClick={() => setShowSavePanel(!showSavePanel)}
-        className="flex items-center gap-1 rounded-md border border-line bg-white px-2 py-0.5 text-[11px] font-medium text-muted hover:text-ink"
+        className="flex items-center gap-1 rounded-md border border-line bg-surface px-2 py-0.5 text-[11px] font-medium text-muted hover:text-ink"
       >
         <BookmarkCheck className="h-3 w-3" />
         Save current

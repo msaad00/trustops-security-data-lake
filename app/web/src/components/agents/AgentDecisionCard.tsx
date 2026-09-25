@@ -74,7 +74,7 @@ export function AgentDecisionCard({
   return (
     <div
       className={[
-        "grid min-w-0 gap-3 rounded-lg border border-line bg-white p-3",
+        "grid min-w-0 gap-3 rounded-lg border border-line bg-surface p-3",
         compact ? "" : "lg:grid-cols-[minmax(0,1fr)_auto]",
       ].join(" ")}
     >
@@ -93,11 +93,11 @@ export function AgentDecisionCard({
         <p className="mt-1 text-sm font-bold leading-5 text-muted">
           {decision.reason ?? "No reason provided."}
         </p>
-        <pre className="mt-2 max-h-32 overflow-auto rounded-lg bg-slate-50 p-3 text-xs text-ink">
+        <pre className="mt-2 max-h-32 overflow-auto rounded-lg bg-surfaceMuted p-3 text-xs text-ink">
           {jsonPreview(decision.payload)}
         </pre>
         {decision.execution_result ? (
-          <div className="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
+          <div className="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
             <div className="font-black">Execution result</div>
             <pre className="mt-1 overflow-auto">
               {jsonPreview(decision.execution_result)}
@@ -123,7 +123,7 @@ export function AgentDecisionCard({
                 onChange={(event) => setNote(event.target.value)}
                 rows={2}
                 placeholder="Optional context for audit trail"
-                className="min-w-[220px] rounded-lg border border-line bg-white px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
+                className="min-w-[220px] rounded-lg border border-line bg-surface px-3 py-2 text-sm font-bold text-ink focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </label>
             <Button

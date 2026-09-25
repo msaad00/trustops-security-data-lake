@@ -15,7 +15,13 @@ export function ApiHealthBanner() {
   const cache = useQueryClient().getQueryCache();
   const errorCount = useSyncExternalStore(
     (onChange) => cache.subscribe(onChange),
-    () => cache.getAll().filter((q) => q.state.status === "error").length,
+    () =>
+      cache.getAll().filter(
+        (q) =>
+          q.state.status === "error" &&
+          // 501 means the feature is off on this install, not an outage.
+          !/\b501\b/.test(String(q.state.error?.message ?? "")),
+      ).length,
     () => 0,
   );
 
@@ -24,7 +30,7 @@ export function ApiHealthBanner() {
   return (
     <div
       role="alert"
-      className="mx-3 mt-2 rounded-lg border border-[#f3b9b3] bg-[#fef3f2] px-3 py-2 text-sm font-semibold text-[#b42318] sm:mx-4"
+      className="mx-3 mt-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300 sm:mx-4"
     >
       Can&apos;t reach the assessment API — some data failed to load. What you
       see may be incomplete, not an all-clear. Check that the server is

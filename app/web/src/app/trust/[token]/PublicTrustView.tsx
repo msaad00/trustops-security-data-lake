@@ -149,7 +149,7 @@ export default function PublicTrustView() {
                   </p>
                   <p className="mt-1 text-5xl font-black">
                     {data.posture.score ?? "—"}
-                    <span className="ml-1 text-xl text-slate-500">/ 100</span>
+                    <span className="ml-1 text-xl text-muted">/ 100</span>
                   </p>
                 </div>
                 <Badge tone={stateTone(data.posture.state)}>

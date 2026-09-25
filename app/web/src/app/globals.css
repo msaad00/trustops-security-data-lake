@@ -6,13 +6,21 @@
   :root {
     /* Light — crisp enterprise surfaces with strong contrast */
     --color-ink: #0f172a;
+    --rgb-ink: 15 23 42;
     --color-muted: #475569;
+    --rgb-muted: 71 85 105;
     --color-line: #dbe3ee;
+    --rgb-line: 219 227 238;
     --color-panel: #f1f5f9;
+    --rgb-panel: 241 245 249;
     --color-rail: #0f172a;
+    --rgb-rail: 15 23 42;
     --color-rail-line: #1e293b;
+    --rgb-rail-line: 30 41 59;
     --color-surface: #ffffff;
+    --rgb-surface: 255 255 255;
     --color-surface-muted: #f8fafc;
+    --rgb-surface-muted: 248 250 252;
     --color-brand: #4f7cff;
     --color-brand-cyan: #30c7d2;
     --color-ready: #059669;
@@ -33,13 +41,21 @@
   .dark {
     /* Dark — high-contrast cards on deep rail (readable, not muddy) */
     --color-ink: #f1f5f9;
+    --rgb-ink: 241 245 249;
     --color-muted: #94a3b8;
+    --rgb-muted: 148 163 184;
     --color-line: #334155;
+    --rgb-line: 51 65 85;
     --color-panel: #0f172a;
+    --rgb-panel: 15 23 42;
     --color-rail: #020617;
+    --rgb-rail: 2 6 23;
     --color-rail-line: #1e293b;
+    --rgb-rail-line: 30 41 59;
     --color-surface: #1e293b;
+    --rgb-surface: 30 41 59;
     --color-surface-muted: #273549;
+    --rgb-surface-muted: 39 53 73;
     --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2), 0 8px 24px rgba(0, 0, 0, 0.25);
   }
 
@@ -77,7 +93,7 @@
     @apply text-xl font-semibold tabular-nums leading-none text-ink;
   }
   .ui-input {
-    @apply rounded-md border border-line bg-white px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand;
+    @apply rounded-md border border-line bg-surface px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand;
   }
   .ui-input-error {
     @apply border-rose-300 focus:ring-rose-400;
@@ -144,4 +160,8 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+.react-flow {
+  --xy-background-color: var(--color-surface);
 }
